@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Queries & Databases: Από το Μηδέν στο ACID</title>
+    <style>
+        :root {
+            --dark-slate-grey: #335c67ff;
+            --vanilla-custard: #fff3b0ff;
+            --honey-bronze: #e09f3eff;
+            --brown-red: #9e2a2bff;
+            --night-bordeaux: #540b0eff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--dark-slate-grey);
+            color: var(--night-bordeaux);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--night-bordeaux);
+        }
+
+        #progress-bar {
+            height: 100%;
+            background-color: var(--honey-bronze);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #presentation-area {
+            flex-grow: 1;
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: var(--vanilla-custard);
+            border: 4px solid var(--night-bordeaux);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
+        }
+
+        h1, h2, h3 {
+            color: var(--night-bordeaux);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--honey-bronze);
+            padding-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        pre {
+            background-color: var(--dark-slate-grey);
+            color: var(--vanilla-custard);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--honey-bronze);
+        }
+
+        code {
+            font-family: 'Consolas', 'Courier New', monospace;
+            background-color: rgba(51, 92, 103, 0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: var(--brown-red);
+        }
+
+        .highlight-box {
+            background-color: rgba(224, 159, 62, 0.2);
+            border-left: 4px solid var(--honey-bronze);
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            background-color: white;
+            border: 2px solid var(--dark-slate-grey);
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .quiz-question {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .quiz-option {
+            display: block;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: var(--vanilla-custard);
+            border: 2px solid var(--dark-slate-grey);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.05rem;
+        }
+
+        .quiz-option:hover {
+            background-color: var(--honey-bronze);
+            color: var(--night-bordeaux);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--honey-bronze);
+            background-color: rgba(224, 159, 62, 0.3);
+        }
+
+        .quiz-option.correct {
+            background-color: #4CAF50; /* Hardcoded solid color for correct */
+            color: white;
+            border-color: #2E7D32;
+        }
+
+        .quiz-option.wrong {
+            background-color: var(--brown-red);
+            color: white;
+            border-color: var(--night-bordeaux);
+        }
+
+        .quiz-explanation {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--dark-slate-grey);
+            color: var(--vanilla-custard);
+            border-radius: 4px;
+            font-size: 1.05rem;
+        }
+
+        /* Controls */
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--dark-slate-grey);
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto 20px auto;
+            border-radius: 8px;
+        }
+
+        button.nav-btn {
+            background-color: var(--honey-bronze);
+            color: var(--night-bordeaux);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button.nav-btn:hover {
+            background-color: var(--vanilla-custard);
+        }
+
+        button.nav-btn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        #dots-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: var(--vanilla-custard);
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0.4;
+        }
+
+        .dot.active {
+            opacity: 1;
+            background-color: var(--honey-bronze);
+            transform: scale(1.2);
+        }
+
+        .slide-counter {
+            color: var(--vanilla-custard);
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div id="presentation-area">
+
+        <!-- SLIDE 1: Intro -->
+        <div class="slide active">
+            <h1>Εισαγωγή στα Queries: Από το Μηδέν</h1>
+            <p>Όταν ακούμε τον όρο <strong>"Βάση Δεδομένων" (Database)</strong>, το μυαλό μας συχνά πάει σε πολύπλοκα συστήματα. Στην πραγματικότητα, η κεντρική ιδέα είναι εξαιρετικά απλή.</p>
+            <p>Φαντάσου ένα αρχείο Excel. Σε αυτό το αρχείο, έχεις διάφορα "Φύλλα" (Sheets). Κάθε φύλλο έχει <strong>Στήλες</strong> (π.χ. Όνομα, Ηλικία, Email) και <strong>Γραμμές</strong> (κάθε γραμμή είναι και ένας διαφορετικός άνθρωπος).</p>
+            <div class="highlight-box">
+                <p>Μια Σχεσιακή Βάση Δεδομένων είναι πρακτικά μια εξελιγμένη, ταχύτατη μορφή αυτού του Excel. Τα "Φύλλα" τα ονομάζουμε <strong>Πίνακες (Tables)</strong>. Τις "Γραμμές" τις ονομάζουμε <strong>Εγγραφές (Rows)</strong> και τις "Στήλες" τις ονομάζουμε <strong>Πεδία (Columns)</strong>.</p>
+            </div>
+            <p>Τι γίνεται όμως όταν το Excel σου αποκτήσει 10 εκατομμύρια γραμμές και θέλεις να βρεις "όλους τους χρήστες άνω των 18 που το email τους λήγει σε @gmail.com"; Εκεί το Excel "κολλάει". Εκεί χρειαζόμαστε τα <strong>Queries</strong>.</p>
+        </div>
+
+        <!-- SLIDE 2: Τι είναι το Query -->
+        <div class="slide">
+            <h2>Τι ακριβώς είναι ένα Query;</h2>
+            <p>Η λέξη <strong>Query</strong> σημαίνει "Ερώτημα". Είναι μια εντολή που δίνουμε στη Βάση Δεδομένων για να κάνει μία από τις εξής τέσσερις βασικές δουλειές (γνωστές και ως <strong>CRUD</strong>):</p>
+            <ul>
+                <li><strong>C</strong>reate: Να δημιουργήσει/εισάγει νέα δεδομένα.</li>
+                <li><strong>R</strong>ead: Να διαβάσει/αναζητήσει υπάρχοντα δεδομένα.</li>
+                <li><strong>U</strong>pdate: Να ενημερώσει/αλλάξει δεδομένα που ήδη υπάρχουν.</li>
+                <li><strong>D</strong>elete: Να διαγράψει δεδομένα.</li>
+            </ul>
+            <p>Για να "μιλήσουμε" στη Βάση, χρησιμοποιούμε μια ειδική, πολύ απλή γλώσσα που ονομάζεται <strong>SQL (Structured Query Language)</strong>. Διαβάζεται σχεδόν σαν απλά Αγγλικά!</p>
+            <pre>
+-- Select (Read) all columns (*) from the 'users' table
+-- where the age is greater than 18.
+SELECT * FROM users WHERE age > 18;
+            </pre>
+            <p>Αυτό είναι ένα Query! Ζητάει συγκεκριμένα δεδομένα με βάση κάποιους κανόνες (φίλτρα).</p>
+        </div>
+
+        <!-- SLIDE 3: Σχέσεις και Κλειδιά (Απλά) -->
+        <div class="slide">
+            <h2>Κλειδιά: Πώς ξεχωρίζουμε τα δεδομένα</h2>
+            <p>Σε έναν πίνακα, χρειαζόμαστε έναν τρόπο να ξεχωρίζουμε κάθε εγγραφή (γραμμή) με απόλυτη βεβαιότητα. Δύο χρήστες μπορεί να λέγονται "Γιώργος", αλλά είναι διαφορετικά άτομα.</p>
+            <p>Για αυτόν τον λόγο, εισάγουμε το <strong>Primary Key (Πρωτεύον Κλειδί)</strong>. Συνήθως είναι ένας αριθμός (ID) που είναι μοναδικός για κάθε γραμμή. Κανένας άλλος χρήστης δεν μπορεί να έχει το ID `5`.</p>
+            <div class="highlight-box">
+                <p><strong>Σχεσιακές Βάσεις (Relational):</strong> Το μεγάλο τους ατού είναι ότι οι Πίνακες μπορούν να συνδέονται. Για παράδειγμα, αν έχουμε έναν πίνακα `posts` και έναν πίνακα `reactions`, στο `reactions` δεν γράφουμε ξανά το όνομα του χρήστη. Γράφουμε απλά το ID του χρήστη (αυτό λέγεται <strong>Foreign Key - Ξένο Κλειδί</strong>). Έτσι "συσχετίζουμε" την αντίδραση με τον χρήστη που την έκανε.</p>
+            </div>
+<pre>
+// ── Table Structure Concept ───────────────────────────────────────────── ⊃
+// Table: users
+// ID (Primary Key) | Name
+// 1                | Alice
+// 2                | Bob
+
+// Table: reactions
+// user_id (Foreign) | post_id | value
+// 1                 | 42      | like
+// 2                 | 42      | dislike
+</pre>
+        </div>
+
+        <!-- SLIDE 4: Quiz 1 -->
+        <div class="slide">
+            <h2>Checkpoint 1: Βασικές Έννοιες</h2>
+            <div class="quiz-container" data-correct="2">
+                <div class="quiz-question">Τι ακριβώς πετυχαίνει η χρήση ενός Foreign Key (Ξένου Κλειδιού) σε μια βάση δεδομένων;</div>
+                <div class="quiz-option" data-idx="1">Επιτρέπει στη βάση δεδομένων να δημιουργεί αυτόματα μοναδικούς αύξοντες αριθμούς για κάθε νέα εγγραφή που προστίθεται σε έναν πίνακα.</div>
+                <div class="quiz-option" data-idx="2">Δημιουργεί μια εννοιολογική "γέφυρα" που συνδέει μια εγγραφή ενός πίνακα με μια συγκεκριμένη εγγραφή σε έναν άλλο, αποφεύγοντας την επανάληψη δεδομένων.</div>
+                <div class="quiz-option" data-idx="3">Κλειδώνει προσωρινά τη γραμμή δεδομένων ώστε να μην μπορεί να τροποποιηθεί από άλλους χρήστες κατά τη διάρκεια ενός ενεργού Query.</div>
+                <div class="quiz-explanation">
+                    <strong>Σωστό!</strong> Το Ξένο Κλειδί (όπως το `user_id` στον πίνακα αντιδράσεων) δείχνει στο Πρωτεύον Κλειδί ενός άλλου πίνακα (όπως το `id` στον πίνακα χρηστών). Έτσι συνδέουμε δεδομένα χωρίς να αντιγράφουμε το όνομα του χρήστη παντού (επιλογή 1 περιγράφει το Auto-Increment, επιλογή 3 περιγράφει το Row Locking).
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: Φιλτράρισμα και DML -->
+        <div class="slide">
+            <h2>Τροποποίηση Δεδομένων (DML)</h2>
+            <p>Ας δούμε πώς "γράφουμε" στη βάση (Data Manipulation Language). Οι τρεις βασικές εντολές είναι το `INSERT`, το `UPDATE` και το `DELETE`.</p>
+<pre>
+-- Insert a new row into the table.
+INSERT INTO reactions (user_id, post_id, value) 
+VALUES (1, 42, 'like');
+
+-- Update existing data: change the value where conditions are met.
+UPDATE reactions 
+SET value = 'dislike' 
+WHERE user_id = 1 AND post_id = 42;
+
+-- Delete data entirely.
+DELETE FROM reactions WHERE user_id = 1;
+</pre>
+            <p>Πρόσεξε πολύ το `WHERE` στο `UPDATE` και στο `DELETE`. Αν το ξεχάσεις (π.χ. γράψεις σκέτο `UPDATE reactions SET value = 'like'`), <strong>όλες</strong> οι γραμμές του πίνακα θα αλλάξουν! Το `WHERE` είναι το "φίλτρο" μας.</p>
+        </div>
+
+        <!-- SLIDE 6: Το πρόβλημα του "Βάλε ή Ανανέωσε" (UPSERT) -->
+        <div class="slide">
+            <h2>Το πρόβλημα του "Set or Replace" (UPSERT)</h2>
+            <p>Στη λογική της άσκησής σου, θέλουμε ο χρήστης να έχει <strong>ακριβώς μία</strong> αντίδραση ανά post. Αν κάνει 'like', μπαίνει νέο like. Αν μετά κάνει 'dislike', το προηγούμενο 'like' <strong>πρέπει να αντικατασταθεί</strong>. Δεν θέλουμε δύο εγγραφές.</p>
+            <p>Μια προφανής λύση στον κώδικά μας θα ήταν να κάνουμε 2 Queries: Πρώτα να ρωτήσουμε (SELECT) αν υπάρχει εγγραφή. Αν ναι, κάνουμε UPDATE. Αν όχι, κάνουμε INSERT.</p>
+            <div class="highlight-box">
+                <p><strong>Αυτό είναι ΛΑΘΟΣ στον προγραμματισμό βάσεων (Race Condition)!</strong> Τι γίνεται αν δύο αιτήματα φτάσουν στο server την ίδια ακριβώς χιλιοστή του δευτερολέπτου; Και τα δύο θα κάνουν SELECT, θα δουν ότι δεν υπάρχει εγγραφή, και θα κάνουν και τα δύο INSERT. Αποτέλεσμα: Διπλοτυπία.</p>
+            </div>
+            <p>Χρειαζόμαστε μια <strong>Ατομική (Atomic)</strong> λειτουργία που να τα κάνει όλα σε ένα βήμα. Στην SQLite, αυτό λύνεται κομψά με το UPSERT (Update or Insert):</p>
+<pre>
+-- Standard SQL way to handle conflicts (UPSERT)
+-- 'UNIQUE' constraint must exist on (user_id, post_id) for this to trigger.
+INSERT INTO reactions (user_id, post_id, value)
+VALUES (1, 42, 'like')
+ON CONFLICT (user_id, post_id) DO UPDATE SET value = 'like';
+</pre>
+        </div>
+
+        <!-- SLIDE 7: Quiz 2 -->
+        <div class="slide">
+            <h2>Checkpoint 2: Ατομικότητα (Atomicity) & UPSERT</h2>
+            <div class="quiz-container" data-correct="1">
+                <div class="quiz-question">Γιατί θεωρείται "επικίνδυνο" να ελέγξουμε με κώδικα (π.χ. σε Go) αν υπάρχει μια εγγραφή (SELECT) και αμέσως μετά να κάνουμε INSERT ή UPDATE ανάλογα με το αποτέλεσμα, αντί να χρησιμοποιήσουμε μια SQL εντολή UPSERT;</div>
+                <div class="quiz-option" data-idx="1">Επειδή ανάμεσα στον έλεγχο (SELECT) και την εγγραφή (INSERT/UPDATE), μια άλλη διεργασία μπορεί να τροποποιήσει τη βάση, προκαλώντας καταστάσεις συναγωνισμού (race conditions).</div>
+                <div class="quiz-option" data-idx="2">Επειδή η κλήση πολλαπλών ερωτημάτων (SELECT ακολουθούμενο από INSERT) καταναλώνει υπερβολική μνήμη RAM στον database server και οδηγεί σε κρασαρίσματα αν οι χρήστες είναι πολλοί.</div>
+                <div class="quiz-option" data-idx="3">Επειδή τα σύγχρονα συστήματα βάσεων δεδομένων απαγορεύουν από τον σχεδιασμό τους την εκτέλεση εντολών SELECT και INSERT μέσα στην ίδια σύνδεση (database connection).</div>
+                <div class="quiz-explanation">
+                    <strong>Σωστό!</strong> Αυτό ονομάζεται "Race Condition" ή TOCTOU (Time of Check to Time of Use). Δύο ταυτόχρονα αιτήματα μπορεί να διαβάσουν την ίδια παλιά κατάσταση πριν προλάβει κάποιο να γράψει. Μια ατομική λειτουργία σε επίπεδο βάσης (όπως το ON CONFLICT) εγγυάται ότι η αλλαγή θα γίνει χωρίς παρεμβολές.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 8: Aggregations & COUNT -->
+        <div class="slide">
+            <h2>Συγκεντρωτικοί Υπολογισμοί (Aggregations)</h2>
+            <p>Συχνά δεν θέλουμε τα ίδια τα δεδομένα, αλλά μια <strong>σύνοψη</strong> τους. Η SQL διαθέτει συναρτήσεις άθροισης (Aggregate Functions) όπως `COUNT()`, `SUM()`, `AVG()` κ.α.</p>
+            <p>Η πιο χρήσιμη είναι η `COUNT()`. Μετράει πόσες γραμμές ικανοποιούν το κριτήριο μας.</p>
+<pre>
+-- Count how many reactions post 42 has in total
+SELECT COUNT(*) FROM reactions WHERE post_id = 42;
+
+-- Count only the likes for post 42
+SELECT COUNT(*) FROM reactions 
+WHERE post_id = 42 AND value = 'like';
+</pre>
+            <p>Πώς μπορούμε όμως να πάρουμε <strong>Ταυτόχρονα</strong> (σε ένα query) και τα likes και τα dislikes για να γλιτώσουμε χρόνο (roundtrips) στη βάση;</p>
+        </div>
+
+        <!-- SLIDE 9: Conditional Aggregation (Προχωρημένο) -->
+        <div class="slide">
+            <h2>Conditional Aggregations (Υπό Συνθήκη Καταμέτρηση)</h2>
+            <p>Μπορούμε να συνδυάσουμε συναρτήσεις στη βάση δεδομένων. Μπορούμε να βάλουμε λογική <code>if-else</code> (στην SQL λέγεται <code>CASE WHEN</code>) μέσα στο COUNT ή στο SUM!</p>
+<pre>
+-- Conditional counting in a single query
+SELECT 
+    SUM(CASE WHEN value = 'like' THEN 1 ELSE 0 END) as likes,
+    SUM(CASE WHEN value = 'dislike' THEN 1 ELSE 0 END) as dislikes
+FROM reactions 
+WHERE post_id = 42;
+</pre>
+            <div class="highlight-box">
+                <p><strong>Πώς λειτουργεί:</strong> Για κάθε εγγραφή του post 42, ελέγχει την τιμή. Αν είναι 'like', προσθέτει 1 στη στήλη "likes" και 0 στα dislikes. Αν είναι 'dislike', κάνει το αντίθετο. Στο τέλος το <code>SUM</code> μας δίνει τα συνολικά αθροίσματα, με ένα μόνο Query, ταχύτατα!</p>
+            </div>
+            <p>Αυτό είναι ιδανικό για την υλοποίηση της <code>count()</code> συνάρτησης στην άσκησή σου.</p>
+        </div>
+
+        <!-- SLIDE 10: Quiz 3 -->
+        <div class="slide">
+            <h2>Checkpoint 3: Aggregations</h2>
+            <div class="quiz-container" data-correct="3">
+                <div class="quiz-question">Όταν χρησιμοποιούμε τη σύνταξη <code>SUM(CASE WHEN συνθήκη THEN 1 ELSE 0 END)</code> μέσα σε ένα SELECT, τι ακριβώς πετυχαίνουμε λειτουργικά;</div>
+                <div class="quiz-option" data-idx="1">Εξάγουμε από τη βάση δεδομένων όλες τις γραμμές που ικανοποιούν τη συνθήκη ως μια λίστα, προκειμένου να τις μετρήσουμε αργότερα στον κώδικα της Go.</div>
+                <div class="quiz-option" data-idx="2">Αυξάνουμε (κάνουμε Update) έναν εσωτερικό μετρητή στον πίνακα της βάσης κάθε φορά που κάποιος χρήστης προσθέτει ένα νέο like ή dislike.</div>
+                <div class="quiz-option" data-idx="3">Αξιολογούμε κάθε γραμμή ξεχωριστά, μετατρέποντας τη συνθήκη σε μια αριθμητική τιμή (0 ή 1), την οποία η βάση αθροίζει τελικά για να μας δώσει το συνολικό πλήθος.</div>
+                <div class="quiz-explanation">
+                    <strong>Σωστό!</strong> Η αξιολόγηση (mapping) γίνεται γραμμή-γραμμή. Αν η συνθήκη ισχύει, η γραμμή "μεταφράζεται" σε 1, αλλιώς σε 0. Στη συνέχεια, η εξωτερική συνάρτηση SUM προσθέτει αυτούς τους άσους και τα μηδενικά, δίνοντάς μας τον αριθμό των γραμμών που ικανοποιούν τη συνθήκη, χωρίς να χρειαστεί να φέρουμε τα δεδομένα στον κώδικά μας (Go) για καταμέτρηση (όπως λέει λανθασμένα η επιλογή 1).
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 11: Transactions (Κεφαλαιώδες!) -->
+        <div class="slide">
+            <h2>Συναλλαγές (Transactions): Όλα ή Τίποτα</h2>
+            <p>Η άσκησή σου αναφέρει ρητά: <em>"Use a database/sql transaction to preserve the rule..."</em> και <em>"Until a replacement commits, other operations must continue to see the previous row"</em>.</p>
+            <p>Τι είναι το <strong>Transaction</strong>; Είναι μια ομάδα από SQL εντολές που εκτελούνται ως <strong>ένα ενιαίο, αδιαίρετο μπλοκ</strong>. Είτε θα πετύχουν <strong>όλες</strong> (Commit), είτε, αν έστω και μία αποτύχει (ή αν πέσει το ρεύμα!), καμία δεν θα αποθηκευτεί και η βάση θα επιστρέψει στην αρχική της κατάσταση (Rollback).</p>
+<pre>
+// ── Go Transaction Pattern ────────────────────────────────────────────── ⊃
+tx, err := db.Begin() // Start Transaction
+if err != nil { return err }
+
+// Execute query on the TRANSACTION object (tx), NOT the db object!
+_, err = tx.Exec("UPDATE ...") 
+if err != nil {
+    tx.Rollback() // Undo everything!
+    return err
+}
+
+err = tx.Commit() // Save permanently
+</pre>
+            <p>Αυτή η απομόνωση (Isolation) είναι που εγγυάται ότι αν το replacement αποτύχει, η προηγούμενη αντίδραση θα μείνει άθικτη.</p>
+        </div>
+
+        <!-- SLIDE 12: ACID Ιδιότητες -->
+        <div class="slide">
+            <h2>Οι αρχές A.C.I.D.</h2>
+            <p>Τα σύγχρονα RDBMS (συμπεριλαμβανομένης της SQLite) υπακούουν σε 4 αυστηρούς κανόνες, γνωστούς ως ACID:</p>
+            <ul>
+                <li><strong>A - Atomicity (Ατομικότητα):</strong> Το "Όλα ή Τίποτα" που περιγράψαμε. Μια συναλλαγή δεν μένει ποτέ "μισοτελειωμένη".</li>
+                <li><strong>C - Consistency (Συνέπεια):</strong> Μια συναλλαγή φέρνει τη βάση από μια έγκυρη κατάσταση σε μια άλλη έγκυρη κατάσταση (π.χ. σεβόμενη τα Constraints και τα Foreign Keys).</li>
+                <li><strong>I - Isolation (Απομόνωση):</strong> Πολλαπλές συναλλαγές που γίνονται ταυτόχρονα, δεν βλέπει η μία την ημιτελή δουλειά της άλλης (Dirty Reads). Γι' αυτό οι άλλοι χρήστες συνεχίζουν να βλέπουν το παλιό 'like' μέχρι να γίνει `Commit` το 'dislike'.</li>
+                <li><strong>D - Durability (Ανθεκτικότητα):</strong> Μόλις γίνει `Commit`, τα δεδομένα είναι γραμμένα μόνιμα στον δίσκο. Ακόμα και αν κοπεί το ρεύμα την επόμενη στιγμή, τα δεδομένα σώθηκαν.</li>
+            </ul>
+        </div>
+
+        <!-- SLIDE 13: Quiz 4 -->
+        <div class="slide">
+            <h2>Checkpoint 4: Transactions</h2>
+            <div class="quiz-container" data-correct="2">
+                <div class="quiz-question">Σύμφωνα με την ιδιότητα της Απομόνωσης (Isolation) στο μοντέλο ACID, τι συμβαίνει όταν η Συναλλαγή Α (Transaction A) τροποποιεί μια γραμμή, αλλά <strong>πριν</strong> κάνει Commit, μια Συναλλαγή Β ζητήσει να διαβάσει την ίδια γραμμή;</div>
+                <div class="quiz-option" data-idx="1">Η Συναλλαγή Β θα διαβάσει τα νέα δεδομένα που έγραψε η Συναλλαγή Α, διότι τα δεδομένα μπαίνουν αμέσως στην προσωρινή μνήμη (RAM) της βάσης για βελτίωση της ταχύτητας.</div>
+                <div class="quiz-option" data-idx="2">Η Συναλλαγή Β θα διαβάσει την παλιά έκδοση της γραμμής (αυτή που υπήρχε πριν ξεκινήσει η Συναλλαγή Α), ώστε να μην επηρεαστεί από αλλαγές που δεν έχουν οριστικοποιηθεί.</div>
+                <div class="quiz-option" data-idx="3">Η Συναλλαγή Β θα απορριφθεί αυτόματα με μήνυμα σφάλματος, επειδή απαγορεύεται αυστηρά η ανάγνωση δεδομένων που εμπλέκονται σε οποιαδήποτε ενεργή διαδικασία.</div>
+                <div class="quiz-explanation">
+                    <strong>Σωστό!</strong> Αυτό είναι το νόημα του Isolation. Μέχρι να γίνει Commit (οριστικοποίηση), η μερική δουλειά του Transaction A είναι "αόρατη" στους υπολοίπους. Αυτό αποτρέπει τα λεγόμενα "Dirty Reads", δηλαδή το να διαβάσει κάποιος δεδομένα που τελικά ακυρώθηκαν (έγιναν Rollback). Η επιλογή 3 είναι λάθος γιατί η βάση δεν απορρίπτει το αίτημα, απλά σερβίρει την παλιά έγκυρη κατάσταση.
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 14: Η ιδιαιτερότητα του Go sql.DB -->
+        <div class="slide">
+            <h2>Συμβουλές Σχεδίασης στη Go (database/sql)</h2>
+            <p>Για την άσκησή σου, υπάρχουν μερικά "κρυφά" σημεία στο πακέτο `database/sql` της Go που πρέπει να γνωρίζεις:</p>
+            <ul>
+                <li><strong>Το `*sql.DB` είναι ένα Pool:</strong> Δεν είναι μια απλή σύνδεση, αλλά μια δεξαμενή από συνδέσεις. Μπορεί να διαχειριστεί concurrent requests από μόνο του (είναι goroutine-safe).</li>
+                <li><strong>`QueryRow` vs `Query`:</strong> Όταν περιμένεις <strong>ακριβώς μία γραμμή</strong> ως απάντηση (π.χ. στο `count()`), χρησιμοποίησε το `db.QueryRow()`. Αυτό αποθηκεύει τα δεδομένα απευθείας στις μεταβλητές σου μέσω του `.Scan(&likes, &dislikes)`.</li>
+                <li><strong>Το Isolation στην SQLite:</strong> Η SQLite λειτουργεί παραδοσιακά "κλειδώνοντας" όλο το αρχείο σε Writes. Αν αρχίσεις ένα Transaction με σκοπό να γράψεις (Write), κλειδώνει τη βάση. Αυτό εγγυάται ακριβώς τη συμπεριφορά ατομικότητας που ζητάει η άσκηση (καμία επικάλυψη στις εγγραφές).</li>
+            </ul>
+        </div>
+
+        <!-- SLIDE 15: FINAL QUIZ -->
+        <div class="slide">
+            <h2>🏆 Τελικό Συνδυαστικό Quiz (Final Assessment)</h2>
+            <p>Ώρα να συνδυάσουμε όλα όσα μάθαμε! Πρόσεξε καλά τις επιλογές.</p>
+            
+            <div class="quiz-container" data-correct="3">
+                <div class="quiz-question">Έχεις τη συνάρτηση <code>setReaction</code>. Αντί να χρησιμοποιήσεις Transactions ή UPSERT SQL logic, επιλέγεις να γράψεις τον κώδικα κάνοντας πρώτα `db.Query()` για έλεγχο και μετά `db.Exec()` για Update/Insert. Ποιος είναι ο κύριος λόγος που αυτή η σχεδίαση αποτυγχάνει στους κανόνες της άσκησης;</div>
+                <div class="quiz-option" data-idx="1">Ο κώδικας της Go είναι πιο αργός από τον κώδικα SQL, συνεπώς το πρόγραμμα θα απορριφθεί λόγω κακής απόδοσης στο parsing των δεδομένων.</div>
+                <div class="quiz-option" data-idx="2">Η βάση δεδομένων SQLite επιτρέπει μόνο ένα ενεργό Query ανά αρχείο, οπότε η κλήση του `Exec()` θα αποτύχει εάν το αποτέλεσμα του `Query()` δεν κλείσει (close) σωστά.</div>
+                <div class="quiz-option" data-idx="3">Εάν δύο ταυτόχρονες κλήσεις της συνάρτησης (π.χ. από δύο goroutines) εκτελέσουν το `Query()` την ίδια στιγμή, μπορεί και οι δύο να διαπιστώσουν ότι δεν υπάρχει αντίδραση, εκτελώντας στη συνέχεια διπλό INSERT.</div>
+                <div class="quiz-explanation">
+                    <strong>Σωστό!</strong> Αυτό ακριβώς είναι το κλασικό Race Condition. Χωρίς Transaction ή Atomic εντολή (UPSERT/ON CONFLICT), τα overlapping calls δεν είναι ασφαλή, παραβιάζοντας τον κανόνα της άσκησης που λέει "exactly one row". Η Go επιτρέπει εξαιρετικά γρήγορα concurrent αιτήματα, κάνοντας αυτό το σφάλμα σχεδόν βέβαιο να συμβεί.
+                </div>
+            </div>
+            
+            <br><p><em>Μόλις τελειώσεις, είσαι έτοιμος/η να δοκιμάσεις την άσκηση. Σκέψου το schema, σκέψου το UPSERT για το setReaction, και σκέψου το conditional COUNT (CASE WHEN) για την αναφορά. Καλή επιτυχία!</em></p>
+        </div>
+
+    </div>
+
+    <div id="controls">
+        <button id="prev-btn" class="nav-btn" disabled>&#8592; Προηγούμενο</button>
+        <div id="dots-container"></div>
+        <div class="slide-counter"><span id="current-slide-num">1</span> / <span id="total-slide-num">X</span></div>
+        <button id="next-btn" class="nav-btn">Επόμενο &#8594;</button>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const dotsContainer = document.getElementById('dots-container');
+        const currentNumDisplay = document.getElementById('current-slide-num');
+        const totalNumDisplay = document.getElementById('total-slide-num');
+        
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+        totalNumDisplay.textContent = totalSlides;
+
+        // Create dots
+        slides.forEach((_, idx) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (idx === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(idx));
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = document.querySelectorAll('.dot');
+
+        function updateUI() {
+            // Update Slides
+            slides.forEach((slide, idx) => {
+                if (idx === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Update Buttons
+            prevBtn.disabled = currentSlide === 0;
+            nextBtn.disabled = currentSlide === totalSlides - 1;
+
+            // Update Progress Bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Update Dots
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // Update Counter
+            currentNumDisplay.textContent = currentSlide + 1;
+        }
+
+        function goToSlide(idx) {
+            currentSlide = idx;
+            updateUI();
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) goToSlide(currentSlide - 1);
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+        });
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                if (currentSlide < totalSlides - 1) goToSlide(currentSlide + 1);
+            } else if (e.key === 'ArrowLeft') {
+                if (currentSlide > 0) goToSlide(currentSlide - 1);
+            }
+        });
+
+        // Quiz Logic
+        const quizzes = document.querySelectorAll('.quiz-container');
+        quizzes.forEach(quiz => {
+            const options = quiz.querySelectorAll('.quiz-option');
+            const explanation = quiz.querySelector('.quiz-explanation');
+            const correctIdx = quiz.getAttribute('data-correct');
+            let answered = false;
+
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    if (answered) return; // Only allow one answer
+                    
+                    answered = true;
+                    const selectedIdx = option.getAttribute('data-idx');
+                    
+                    // Style selected and correct answers
+                    options.forEach(opt => {
+                        opt.style.cursor = 'default';
+                        if (opt.getAttribute('data-idx') === correctIdx) {
+                            opt.classList.add('correct');
+                        } else if (opt.getAttribute('data-idx') === selectedIdx && selectedIdx !== correctIdx) {
+                            opt.classList.add('wrong');
+                        } else {
+                            opt.style.opacity = '0.6';
+                        }
+                    });
+
+                    // Show explanation
+                    explanation.style.display = 'block';
+                });
+            });
+        });
+
+        // Initialize UI
+        updateUI();
+    </script>
+</body>
+</html>
