@@ -4,118 +4,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avgerinos8 | Netrunner Terminal</title>
+    <title>Avgerinos8 | Developer Dashboard</title>
     <style>
-        /* Cyberpunk CLI Theme - Cyan & Purple */
+        /* Premium Minimalist Developer Theme */
         @import url('https://googleapis.com');
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: 'Fira Code', monospace;
-            background-color: #0b0514;
-            /* Deep purple/black background */
-            color: #00ffff;
-            /* Neon Cyan */
+            background-color: #0d0e12;
+            /* Calm, ultra-dark slate */
+            color: #e2e8f0;
+            /* Soft off-white for high readability */
             max-width: 850px;
-            /* Slightly wider to accommodate large ASCII art */
-            margin: 40px auto;
-            padding: 0 20px;
-            text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+            margin: 60px auto;
+            padding: 0 24px;
+            line-height: 1.5;
         }
 
-        /* Clean, Modern Terminal Header */
+        /* Minimal Header Grid */
         .terminal-header {
-            border-bottom: 2px solid #bd00ff;
-            /* Neon Purple line */
-            padding-bottom: 20px;
-            margin-top: 40px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 10px -5px rgba(189, 0, 255, 0.5);
+            border-bottom: 1px solid #222530;
+            /* Subdued divider */
+            padding-bottom: 16px;
+            margin-bottom: 32px;
         }
 
         .status-line {
-            font-size: 0.9rem;
-            color: #bd00ff;
-            /* Purple accent for secondary info */
-            text-shadow: 0 0 5px rgba(189, 0, 255, 0.3);
+            font-size: 0.85rem;
+            color: #718096;
+            /* Muted gray for secondary info */
             text-align: center;
-            /* Center alignment for the status row */
+            letter-spacing: 0.5px;
         }
 
-        /* Centering Container for ASCII Art */
+        /* Specific style to make selected text cyan */
+        .cyan-text {
+            color: #00ffff;
+            font-weight: 500;
+        }
+
+        /* Responsive Center for ASCII Logo */
         .ascii-container {
             display: flex;
             justify-content: center;
             width: 100%;
             overflow-x: auto;
-            /* Fallback scrollbar for smaller screens */
-            margin-bottom: 20px;
+            margin-bottom: 32px;
         }
 
-        /* ASCII Art Styling */
+        /* Clean ASCII Art - Completely static */
         .ascii-art {
             margin: 0 auto;
             font-size: 8px;
-            color: rgba(189, 0, 255, 0.7);
+            color: #6366f1;
+            /* Premium Indigo Accent */
             line-height: 1.2;
             white-space: pre;
             font-family: 'Fira Code', monospace;
         }
 
         .prompt {
-            color: #bd00ff;
-            /* Purple command prompt */
-            text-shadow: 0 0 5px rgba(189, 0, 255, 0.4);
-            font-weight: bold;
+            color: #a855f7;
+            /* Subtle Purple for command path */
+            font-weight: 600;
         }
 
-        /* Link List */
+        .section-title {
+            color: #718096;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Structured List */
         ul {
             list-style-type: none;
-            padding: 0;
         }
 
         li {
-            margin: 18px 0;
-            position: relative;
+            margin-bottom: 14px;
         }
 
-        /* CLI Action Buttons */
+        /* CLI Action Buttons - Minimalist Base Style */
         a {
-            display: block;
-            color: #00ffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #e2e8f0;
             text-decoration: none;
-            padding: 14px 18px;
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            background: rgba(18, 10, 31, 0.6);
-            border-radius: 6px;
+            padding: 16px 20px;
+            background: #141722;
+            /* Slightly lighter card background */
+            border: 1px solid #222530;
+            border-radius: 8px;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Snappy animation curve */
         }
 
-        /* Hover effect: Vibrant Cyan/Purple Highlight with subtle translation */
+        /* Cyberpunk Hover Button Effect (Slide + Cyan Glow) */
         a:hover {
+            color: #00ffff;
+            /* Switch text to Neon Cyan */
             background: rgba(0, 255, 255, 0.1);
+            /* Subtle cyan fill */
             border-color: #00ffff;
+            /* Neon Cyan border */
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.1);
+            /* Cyberpunk glow */
             transform: translateX(6px);
+            /* Smooth 6px horizontal slide */
         }
 
-        /* Dynamic metadata badge inside the button */
+        /* Minimalist Tech Tags */
         .tag {
-            float: right;
-            color: #bd00ff;
-            font-size: 0.8rem;
-            border: 1px solid rgba(189, 0, 255, 0.4);
-            padding: 1px 6px;
-            border-radius: 4px;
+            color: #6366f1;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(99, 102, 241, 0.15);
             transition: all 0.25s ease;
         }
 
+        /* Tag adaptation on button hover */
         a:hover .tag {
             color: #00ffff;
+            background: rgba(0, 255, 255, 0.05);
             border-color: #00ffff;
             text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
         }
@@ -123,12 +146,13 @@
         /* Blinking Terminal Cursor */
         .cursor {
             display: inline-block;
-            background-color: #00ffff;
-            width: 10px;
-            height: 18px;
+            background-color: #6366f1;
+            width: 8px;
+            height: 15px;
             animation: blink 1s step-end infinite;
+            /* Re-enabled the infinite blinking animation */
             vertical-align: middle;
-            margin-left: 5px;
+            margin-left: 6px;
         }
 
         @keyframes blink {
@@ -142,11 +166,13 @@
 <body>
 
     <header class="terminal-header">
-        <div class="status-line">USER: pavgerin // ACCESS_LEVEL: LEARNER_ // HOST: avgerinos8.github.io/Zone01Guides/
+        <div class="status-line">
+            USER: <span class="cyan-text">pavgerin</span> // ACCESS_LEVEL: <span class="cyan-text">LEARNER_</span> //
+            HOST: <span class="cyan-text">avgerinos8.github.io/Zone01Guides/</span>
         </div>
     </header>
 
-    <!-- Wrapper for perfect responsive centering -->
+    <!-- Balanced & Centered Header Section -->
     <div class="ascii-container">
         <pre class="ascii-art">
  8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                    
@@ -160,23 +186,25 @@
     </div>
 
     <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor"></span></p>
-    <p style="color: rgba(0, 255, 255, 0.6); font-size: 0.9rem; margin-bottom: 25px;">SELECT TARGET MODULE FOR
-        DEPLOYMENT:</p>
+    <p class="section-title">SELECT TARGET MODULE FOR DEPLOYMENT:</p>
 
     <ul>
         <li>
             <a href="00-goroutines-channels.html">
-                &gt; ./00_goroutines_channels.sh <span class="tag">[CONCURRENCY]</span>
+                <span>&gt; ./00_goroutines_channels</span>
+                <span class="tag">[CONCURRENCY]</span>
             </a>
         </li>
         <li>
             <a href="01-go_networking_theory.html">
-                &gt; ./01_netcat_networking_theory.sh <span class="tag">[NETWORKING] + [CONCURRENCY]</span>
+                <span>&gt; ./01_netcat_networking_goroutines</span>
+                <span class="tag">[NETWORKING] + [CONCURRENCY]</span>
             </a>
         </li>
         <li>
             <a href="02-SQL-go-database-notes.html">
-                &gt; ./02_queries_database_sql.sh <span class="tag">[DATABASE]</span>
+                <span>&gt; ./02_queries_database_sql_go</span>
+                <span class="tag">[DATABASE]</span>
             </a>
         </li>
     </ul>
