@@ -1,7 +1,7 @@
-<h1 align="center">Zone01 HTML GUIDES</h1>
+<h1 align="center">Visit the following link:</h1>
 
-<p align="center">
-    <img src="_docs/icon.png" alt="logo" height="256px" width="256px" />
+<p align="center" style="font-size: 18px;">
+    <a href="https://avgerinos8.github.io/Zone01Guides">https://avgerinos8.github.io/Zone01Guides</a>
 </p>
 
 <p align="center">

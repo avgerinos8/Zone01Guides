@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL & Go database/sql — Σημειώσεις</title>
+  <style>
+    :root {
+      --dark-slate-grey: #335c67ff;
+      --vanilla-custard: #fff3b0ff;
+      --honey-bronze: #e09f3eff;
+      --brown-red: #9e2a2bff;
+      --night-bordeaux: #540b0eff;
+      --ink: #1c1c1c;
+      --paper: #fffdf6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+      background: var(--dark-slate-grey);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      padding: 64px 88px 40px 88px;
+      background: var(--paper);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    .slide.title-slide {
+      background: var(--dark-slate-grey);
+      color: var(--vanilla-custard);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 14px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--brown-red);
+      margin-bottom: 10px;
+    }
+
+    .title-slide .eyebrow {
+      color: var(--honey-bronze);
+    }
+
+    h1 {
+      font-size: 44px;
+      margin: 0 0 8px 0;
+      color: var(--night-bordeaux);
+      line-height: 1.15;
+    }
+
+    .title-slide h1 {
+      font-size: 64px;
+      color: var(--vanilla-custard);
+    }
+
+    h2 {
+      font-size: 30px;
+      margin: 0 0 22px 0;
+      color: var(--night-bordeaux);
+      border-bottom: 3px solid var(--honey-bronze);
+      padding-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 21px;
+      color: var(--brown-red);
+      margin: 22px 0 8px 0;
+    }
+
+    p,
+    li {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: var(--honey-bronze);
+      margin-top: 18px;
+    }
+
+    .content {
+      flex: 1;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+
+    .card {
+      background: #faf6e9;
+      border: 1px solid #e5dcc0;
+      border-left: 6px solid var(--honey-bronze);
+      border-radius: 4px;
+      padding: 18px 22px;
+      margin: 14px 0;
+    }
+
+    .card.warn {
+      border-left-color: var(--brown-red);
+    }
+
+    .card.note {
+      border-left-color: var(--dark-slate-grey);
+    }
+
+    code,
+    pre {
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Menlo', monospace;
+    }
+
+    pre {
+      background: var(--night-bordeaux);
+      color: var(--vanilla-custard);
+      padding: 18px 20px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 15.5px;
+      line-height: 1.55;
+      margin: 14px 0;
+    }
+
+    code.inline {
+      background: #f0e6c8;
+      color: var(--night-bordeaux);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: .92em;
+    }
+
+    .sep {
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Menlo', monospace;
+      color: var(--dark-slate-grey);
+      font-size: 13px;
+      white-space: pre;
+      margin: 18px 0 6px 0;
+      opacity: .75;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 16.5px;
+    }
+
+    th,
+    td {
+      border: 1px solid #d8cca0;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: var(--dark-slate-grey);
+      color: var(--vanilla-custard);
+    }
+
+    tr:nth-child(even) {
+      background: #f6efd9;
+    }
+
+    /* navigation */
+    .nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 74px;
+      background: var(--night-bordeaux);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      z-index: 50;
+      padding-left: 2vw;
+      padding-right: 2vw;
+
+    }
+
+    .nav-btn {
+      background: var(--honey-bronze);
+      color: var(--night-bordeaux);
+      border: none;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .nav-btn:hover {
+      background: var(--vanilla-custard);
+    }
+
+    .nav-btn:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      max-width: 50vw;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: #7a3a3c;
+      border: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .dot.active {
+      background: var(--vanilla-custard);
+    }
+
+    .dot.quiz-dot {
+      background: var(--brown-red);
+    }
+
+    .dot.quiz-dot.active {
+      background: var(--honey-bronze);
+    }
+
+    .progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: #26454d;
+      z-index: 60;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--honey-bronze);
+      transition: width .25s ease;
+    }
+
+    .slide-counter {
+      position: fixed;
+      top: 14px;
+      right: 24px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 13px;
+      color: var(--vanilla-custard);
+      background: var(--night-bordeaux);
+      padding: 5px 12px;
+      border-radius: 14px;
+      z-index: 60;
+    }
+
+    /* quiz */
+    .quiz-slide {
+      background: #fbf2e0;
+    }
+
+    .quiz-badge {
+      display: inline-block;
+      background: var(--brown-red);
+      color: var(--vanilla-custard);
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Menlo', monospace;
+      font-size: 13px;
+      letter-spacing: .1em;
+      padding: 5px 14px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+
+    .quiz-q {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--night-bordeaux);
+      margin-bottom: 22px;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      background: #fff;
+      border: 2px solid #d8cca0;
+      border-radius: 6px;
+      padding: 14px 18px;
+      font-size: 17px;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .quiz-opt:hover {
+      border-color: var(--honey-bronze);
+    }
+
+    .quiz-opt.correct {
+      border-color: var(--dark-slate-grey);
+      background: #e4efe8;
+      font-weight: 700;
+    }
+
+    .quiz-opt.wrong {
+      border-color: var(--brown-red);
+      background: #f7e3e3;
+    }
+
+    .quiz-opt.disabled {
+      cursor: default;
+    }
+
+    .quiz-explain {
+      margin-top: 20px;
+      background: #eef2ea;
+      border-left: 6px solid var(--dark-slate-grey);
+      padding: 16px 20px;
+      border-radius: 4px;
+      display: none;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .quiz-explain.show {
+      display: block;
+    }
+
+    .final-quiz-progress {
+      font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Menlo', monospace;
+      color: var(--brown-red);
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .final-score-box {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .final-score-box .big {
+      font-size: 64px;
+      color: var(--night-bordeaux);
+      font-weight: 700;
+    }
+
+    .sources {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sources li {
+      margin-bottom: 10px;
+    }
+
+    .sources a {
+      color: var(--honey-bronze);
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--honey-bronze);
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="slide-counter" id="slideCounter">1 / 1</div>
+
+  <div class="deck" id="deck"></div>
+
+  <div class="nav-bar">
+    <button class="nav-btn" id="prevBtn">← Πίσω</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn" id="nextBtn">Επόμενο →</button>
+  </div>
+
+  <script>
+    /* ── slide registry ─────────────────────────────────────────────────────── ⊃ */
+    // Populated by content modules pushed into window.SLIDES before init() runs.
+    window.SLIDES = [];
+  </script>
+
+  <script>
+    /* ── section 1 · title + relational model ─────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'title',
+      html: `
+    <div class="eyebrow">Zone01 Athens — Αναφορά Reactions</div>
+    <h1>SQL &amp; Go <code style="color:var(--vanilla-custard)">database/sql</code></h1>
+    <div class="subtitle">Από τη θεωρία των σχεσιακών βάσεων μέχρι τα atomic transactions</div>
+    <div class="subtitle" style="margin-top:40px;font-size:15px;opacity:.8;">Σημειώσεις · avgerinos8</div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '1 · Θεμέλια',
+      title: 'Τι είναι μια σχεσιακή βάση δεδομένων',
+      html: `
+    <div class="content">
+      <p>Μια <strong>σχεσιακή βάση δεδομένων</strong> (relational database) οργανώνει τα δεδομένα σε
+      <strong>πίνακες</strong> (tables). Κάθε πίνακας είναι ένα σύνολο από γραμμές που έχουν όλες την ίδια δομή στηλών.
+      Η ιδέα βγαίνει από τη «σχεσιακή άλγεβρα» (relational algebra) του Edgar F. Codd (1970) — μαθηματική θεωρία
+      συνόλων, ή πιο απλά ...τα δεδομένα μπαίνουν σε σειρές και στήλες.</p>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>Γραμμή (row / record / tuple)</h3>
+          <p>Μία συγκεκριμένη «οντότητα». Στην άσκησή σου, μία γραμμή στον πίνακα <code class="inline">reactions</code>
+          είναι μία συγκεκριμένη αντίδραση ενός χρήστη σε ένα post.</p>
+        </div>
+        <div class="card">
+          <h3>Στήλη (column / field / attribute)</h3>
+          <p>Μία ιδιότητα που έχουν όλες οι γραμμές. Στο <code class="inline">reactions</code>:
+          <code class="inline">user_id</code>, <code class="inline">post_id</code>, <code class="inline">value</code>.</p>
+        </div>
+      </div>
+
+      <h3>Schema</h3>
+      <p>Το <strong>schema</strong> είναι η «δομή» της βάσης — ποιοι πίνακες υπάρχουν, ποιες στήλες έχει ο καθένας,
+      τι τύπο δεδομένων δέχεται κάθε στήλη, και ποιοι περιορισμοί (constraints) ισχύουν. Ορίζεται με SQL μέσω
+      <code class="inline">CREATE TABLE</code>. Στο δικό σου project, αυτό ζει στο <code class="inline">schema.sql</code>.</p>
+
+      <pre>CREATE TABLE reactions (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    value   TEXT    NOT NULL  -- 'like' or 'dislike'
+);</pre>
+
+      <div class="card note">
+        <h3>Τύποι δεδομένων (data types) — θεωρητικά</h3>
+        <p>Κάθε SQL διάλεκτος έχει τους δικούς της τύπους, αλλά οι πιο κοινοί σε όλες είναι:
+        ακέραιοι (<code class="inline">INTEGER</code>), δεκαδικοί (<code class="inline">REAL</code>,
+        <code class="inline">NUMERIC</code>), κείμενο (<code class="inline">TEXT</code>, <code class="inline">VARCHAR</code>),
+        ημερομηνία/ώρα, και boolean (πολλές βάσεις, όπως η SQLite, δεν έχουν πραγματικό boolean τύπο — χρησιμοποιούν
+        0/1 ή ειδικές λέξεις).</p>
+      </div>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '1 · Θεμέλια',
+      title: 'SQL: Γλώσσα, όχι πρόγραμμα',
+      html: `
+    <div class="content">
+      <p>Η <strong>SQL</strong> (Structured Query Language) δεν είναι μια γλώσσα προγραμματισμού με τη γενική έννοια
+      (δεν έχεις βρόχους <code class="inline">for</code> ή μεταβλητές όπως στη Go) — είναι μια
+      <strong>δηλωτική γλώσσα</strong> (declarative language). Δεν λες <em>πώς</em> να βρεις τα δεδομένα,
+      λες <em>τι</em> θέλεις, και η βάση αποφασίζει το πώς (execution plan).</p>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>Imperative (π.χ. Go)</h3>
+          <p>«Πήγαινε σε κάθε γραμμή, έλεγξε αν το post_id είναι 5, αν ναι πρόσθεσέ την σε μια λίστα, μετά μέτρα τη λίστα»</p>
+        </div>
+        <div class="card">
+          <h3>Declarative (SQL)</h3>
+          <p>«Δώσε μου τον αριθμό των γραμμών όπου post_id = 5»</p>
+        </div>
+      </div>
+
+      <h3>Οι 4 κατηγορίες εντολών SQL</h3>
+      <table>
+        <tr><th>Κατηγορία</th><th>Σκοπός</th><th>Παραδείγματα εντολών</th></tr>
+        <tr><td><strong>DDL</strong> (Data Definition)</td><td>Ορισμός δομής</td><td><code class="inline">CREATE</code>, <code class="inline">ALTER</code>, <code class="inline">DROP</code></td></tr>
+        <tr><td><strong>DML</strong> (Data Manipulation)</td><td>Δουλειά με δεδομένα</td><td><code class="inline">SELECT</code>, <code class="inline">INSERT</code>, <code class="inline">UPDATE</code>, <code class="inline">DELETE</code></td></tr>
+        <tr><td><strong>DCL</strong> (Data Control)</td><td>Δικαιώματα</td><td><code class="inline">GRANT</code>, <code class="inline">REVOKE</code></td></tr>
+        <tr><td><strong>TCL</strong> (Transaction Control)</td><td>Ατομικές συναλλαγές</td><td><code class="inline">BEGIN</code>, <code class="inline">COMMIT</code>, <code class="inline">ROLLBACK</code></td></tr>
+      </table>
+
+      <div class="card">
+        <p>Στην άσκησή σου θα χρησιμοποιήσεις κυρίως <strong>DML</strong> (SELECT/INSERT/UPDATE/DELETE) και
+        <strong>TCL</strong> (γιατί χρειάζεσαι atomic replace).</p>
+      </div>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '1 · Έλεγχος',
+      question: 'Γιατί η SQL χαρακτηρίζεται ως «δηλωτική» (declarative) γλώσσα;',
+      options: [
+        'Επειδή χρησιμοποιεί μόνο κεφαλαία γράμματα στις εντολές, κάτι που τη διαφοροποιεί οπτικά από γλώσσες όπως η Go',
+        'Επειδή περιγράφεις τι δεδομένα θέλεις να πάρεις, χωρίς να καθορίζεις τον ακριβή αλγόριθμο με τον οποίο η βάση θα τα βρει',
+        'Επειδή δεν επιτρέπει καθόλου μεταβλητές ή συνθήκες μέσα στις εντολές της, σε αντίθεση με κάθε imperative γλώσσα',
+        'Επειδή κάθε εντολή της εκτελείται πάντα άμεσα σε μία μόνο γραμμή του πίνακα και ποτέ σε πολλές ταυτόχρονα'
+      ],
+      correct: 1,
+      explain: `Σωστά — λες «τι» θέλεις (π.χ. «όλες τις γραμμές όπου post_id=5»), και το database engine αποφασίζει
+  εσωτερικά «πώς» θα το κάνει πιο αποδοτικά (execution plan, indexes, κ.λπ.). Οι υπόλοιπες επιλογές είναι
+  λεπτομέρειες σύνταξης ή απλά λάθος — η SQL έχει και conditions (WHERE) μέσα στις εντολές της, απλά όχι με τη
+  μορφή προστακτικού βρόχου.`
+    });
+
+  </script>
+  <script>
+    /* ── section 2 · SELECT basics ──────────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '2 · SELECT',
+      title: 'Η βασική δομή: SELECT ... FROM ... WHERE',
+      html: `
+    <div class="content">
+      <p>Η πιο θεμελιώδης εντολή στη SQL είναι η <code class="inline">SELECT</code> — «διάβασέ μου δεδομένα».
+      Η βασική της δομή έχει μια συγκεκριμένη σειρά λέξεων-κλειδιών:</p>
+
+      <pre>SELECT column1, column2   -- ποιες στήλες θέλω να δω
+FROM   table_name          -- από ποιον πίνακα
+WHERE  condition           -- ποιες γραμμές να φιλτράρω (προαιρετικό)
+ORDER BY column1           -- πώς να τις ταξινομήσω (προαιρετικό)
+LIMIT  10;                 -- πόσες γραμμές max να επιστρέψει (προαιρετικό)</pre>
+
+      <div class="card warn">
+        <h3>Προσοχή στη σειρά εκτέλεσης!</h3>
+        <p>Η SQL <strong>γράφεται</strong> με τη σειρά SELECT → FROM → WHERE, αλλά <strong>εκτελείται</strong>
+        εννοιολογικά με διαφορετική σειρά: πρώτα <code class="inline">FROM</code> (ποιος πίνακας), μετά
+        <code class="inline">WHERE</code> (φιλτράρισμα γραμμών), και μόνο στο τέλος <code class="inline">SELECT</code>
+        (ποιες στήλες κρατάω). Γι' αυτό δεν μπορείς να χρησιμοποιήσεις ένα alias που όρισες στο SELECT μέσα στο WHERE
+        της ίδιας εντολής — το WHERE «τρέχει» πριν καν υπάρξει το alias.</p>
+      </div>
+
+      <h3>Παράδειγμα πάνω στο δικό σου schema</h3>
+      <pre>-- όλες οι αντιδράσεις για το post με id = 5
+SELECT user_id, value
+FROM   reactions
+WHERE  post_id = 5;</pre>
+
+      <h3>Το αστέρι *</h3>
+      <p>Το <code class="inline">SELECT *</code> σημαίνει «όλες οι στήλες». Είναι βολικό για exploration στο
+      terminal, αλλά σε πραγματικό κώδικα Go αποφεύγεται — γιατί αν αλλάξει το schema (προστεθεί στήλη), ο κώδικάς
+      σου που κάνει <code class="inline">rows.Scan(...)</code> με συγκεκριμένο αριθμό μεταβλητών θα σπάσει.
+      Πάντα προτίμα να ονομάζεις ρητά τις στήλες που χρειάζεσαι.</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '2 · SELECT',
+      title: 'Ταξινόμηση και όριο: ORDER BY, LIMIT, DISTINCT',
+      html: `
+    <div class="content">
+      <h3>ORDER BY</h3>
+      <p>Ταξινομεί τα αποτελέσματα. Από προεπιλογή είναι αύξουσα (<code class="inline">ASC</code>) — μπορείς να
+      ζητήσεις φθίνουσα με <code class="inline">DESC</code>.</p>
+      <pre>SELECT user_id, post_id
+FROM   reactions
+ORDER BY post_id DESC, user_id ASC;
+-- ταξινομεί πρώτα με βάση post_id (φθίνουσα), και όσες γραμμές
+-- έχουν ίδιο post_id, τις ταξινομεί δευτερευόντως με user_id (αύξουσα)</pre>
+
+      <h3>LIMIT / OFFSET</h3>
+      <p><code class="inline">LIMIT</code> κόβει τα αποτελέσματα σε συγκεκριμένο αριθμό γραμμών.
+      Το <code class="inline">OFFSET</code> λέει «παράλειψε τις πρώτες Ν γραμμές» — μαζί υλοποιούν pagination.</p>
+      <pre>SELECT * FROM reactions
+ORDER BY post_id
+LIMIT 10 OFFSET 20;  -- σελίδα 3, αν κάθε σελίδα έχει 10 αποτελέσματα</pre>
+
+      <h3>DISTINCT</h3>
+      <p>Αφαιρεί διπλότυπες γραμμές από το αποτέλεσμα (όχι από τον πίνακα — μόνο από αυτό που επιστρέφεται).</p>
+      <pre>-- ποιοι χρήστες έχουν αφήσει τουλάχιστον μία αντίδραση;
+SELECT DISTINCT user_id FROM reactions;</pre>
+
+      <div class="card note">
+        <p>Παρατήρηση σχετική με την άσκησή σου: επειδή ο πίνακας <code class="inline">reactions</code> ΔΕΝ έχει
+        uniqueness constraint, ένας χρήστης θα μπορούσε — αν δεν προσέξεις στο <code class="inline">setReaction</code> —
+        να καταλήξει με πολλαπλές γραμμές για το ίδιο post. Το <code class="inline">DISTINCT</code> είναι εργαλείο
+        ανάγνωσης (query), όχι λύση στο πρόβλημα ακεραιότητας δεδομένων (data integrity) — αυτό λύνεται στη
+        λογική εγγραφής, όχι ανάγνωσης.</p>
+      </div>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '2 · Έλεγχος',
+      question: 'Γιατί δεν μπορείς να χρησιμοποιήσεις στο WHERE ένα alias που όρισες στο ίδιο SELECT (π.χ. SELECT price*2 AS double_price ... WHERE double_price > 10);',
+      options: [
+        'Επειδή τα aliases επιτρέπονται μόνο μέσα σε JOIN εντολές και πουθενά αλλού στη γλώσσα SQL',
+        'Επειδή το WHERE εκτελείται εννοιολογικά πριν από το SELECT, οπότε το alias δεν έχει ακόμα υπολογιστεί σε εκείνο το σημείο',
+        'Επειδή η SQLite συγκεκριμένα απαγορεύει τη χρήση alias, ενώ άλλες βάσεις σαν τη MySQL το επιτρέπουν κανονικά',
+        'Επειδή τα aliases μπορούν να χρησιμοποιηθούν μόνο μέσα σε αριθμητικές εκφράσεις, όχι σε συνθήκες σύγκρισης'
+      ],
+      correct: 1,
+      explain: `Η σειρά γραφής (SELECT ... FROM ... WHERE) δεν είναι η σειρά εκτέλεσης. Η βάση επεξεργάζεται πρώτα το
+  FROM (επιλογή πίνακα), μετά το WHERE (φιλτράρισμα γραμμών) και μόνο στο τέλος υπολογίζει το SELECT — άρα το
+  όνομα (alias) που δίνεις σε μια στήλη στο SELECT δεν υπάρχει ακόμα όταν «τρέχει» το WHERE. (Μπορείς όμως να το
+  χρησιμοποιήσεις σε ORDER BY, που εκτελείται μετά το SELECT.)`
+    });
+
+  </script>
+  <script>
+    /* ── section 3 · filtering in depth ─────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '3 · Φιλτράρισμα',
+      title: 'Τελεστές σύγκρισης και λογικοί τελεστές',
+      html: `
+    <div class="content">
+      <table>
+        <tr><th>Τελεστής</th><th>Σημασία</th></tr>
+        <tr><td><code class="inline">=</code></td><td>Ισότητα (όχι <code class="inline">==</code> όπως στη Go!)</td></tr>
+        <tr><td><code class="inline">!=</code> ή <code class="inline">&lt;&gt;</code></td><td>Διαφορετικό από</td></tr>
+        <tr><td><code class="inline">&lt;</code> <code class="inline">&gt;</code> <code class="inline">&lt;=</code> <code class="inline">&gt;=</code></td><td>Αριθμητικές/χρονικές συγκρίσεις</td></tr>
+        <tr><td><code class="inline">BETWEEN a AND b</code></td><td>Ανάμεσα σε δύο τιμές (inclusive και στα δύο άκρα)</td></tr>
+        <tr><td><code class="inline">IN (a, b, c)</code></td><td>Ταιριάζει με οποιαδήποτε από μια λίστα τιμών</td></tr>
+        <tr><td><code class="inline">LIKE</code></td><td>Ταίριασμα προτύπου κειμένου (pattern matching)</td></tr>
+      </table>
+
+      <h3>Λογικοί συνδυασμοί</h3>
+      <pre>SELECT * FROM reactions
+WHERE post_id = 5 AND value = 'like';
+
+SELECT * FROM reactions
+WHERE value = 'like' OR value = 'dislike';
+-- ισοδύναμο με: WHERE value IN ('like', 'dislike')
+
+SELECT * FROM reactions
+WHERE NOT (post_id = 5);   -- δηλαδή post_id != 5</pre>
+
+      <div class="card warn">
+        <h3>Προτεραιότητα AND / OR</h3>
+        <p>Το <code class="inline">AND</code> έχει μεγαλύτερη προτεραιότητα από το <code class="inline">OR</code>,
+        ακριβώς όπως το <code class="inline">&&</code> έχει μεγαλύτερη προτεραιότητα από το
+        <code class="inline">||</code> στη Go. Όταν συνδυάζεις τα δύο, βάλε πάντα παρενθέσεις για σαφήνεια:</p>
+        <pre>-- ΠΑΓΙΔΑ: αυτό ΔΕΝ σημαίνει "post 5 OR post 6, και τα δύο μόνο likes"
+WHERE post_id = 5 OR post_id = 6 AND value = 'like'
+-- εκτελείται ως: post_id = 5 OR (post_id = 6 AND value = 'like')
+
+-- ΣΩΣΤΟ αν αυτό ήθελες:
+WHERE (post_id = 5 OR post_id = 6) AND value = 'like'</pre>
+      </div>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '3 · Φιλτράρισμα',
+      title: 'LIKE και το πρόβλημα του NULL',
+      html: `
+    <div class="content">
+      <h3>LIKE — pattern matching</h3>
+      <p>Χρησιμοποιεί δύο ειδικούς χαρακτήρες (wildcards):</p>
+      <table>
+        <tr><th>Σύμβολο</th><th>Ταιριάζει με</th></tr>
+        <tr><td><code class="inline">%</code></td><td>Μηδέν ή περισσότερους οποιουσδήποτε χαρακτήρες</td></tr>
+        <tr><td><code class="inline">_</code></td><td>Ακριβώς έναν οποιονδήποτε χαρακτήρα</td></tr>
+      </table>
+      <pre>SELECT * FROM reactions WHERE value LIKE 'lik%';   -- 'like', 'likeness', ...
+SELECT * FROM reactions WHERE value LIKE '_ike';   -- 'like' αλλά όχι 'dislike'</pre>
+
+      <h3>Το NULL δεν είναι τιμή — είναι απουσία τιμής</h3>
+      <p>Αυτό μπερδεύει σχεδόν όλους στην αρχή. Το <code class="inline">NULL</code> σημαίνει «άγνωστο» ή
+      «δεν υπάρχει τιμή» — δεν είναι το ίδιο με το 0, το κενό string <code class="inline">''</code>, ή το false.
+      Επειδή είναι «άγνωστο», <strong>καμία σύγκριση με NULL δεν επιστρέφει true</strong> — ούτε καν
+      <code class="inline">NULL = NULL</code>!</p>
+
+      <pre>-- ΛΑΘΟΣ — ΠΟΤΕ δεν επιστρέφει γραμμές, ό,τι κι αν περιέχει η στήλη
+SELECT * FROM reactions WHERE value = NULL;
+
+-- ΣΩΣΤΟ
+SELECT * FROM reactions WHERE value IS NULL;
+SELECT * FROM reactions WHERE value IS NOT NULL;</pre>
+
+      <div class="card">
+        <p>Στο schema σου, όλες οι στήλες του <code class="inline">reactions</code> είναι
+        <code class="inline">NOT NULL</code>, άρα δεν θα συναντήσεις NULL εκεί — αλλά είναι θεμελιώδης έννοια
+        που θα σε ακολουθεί σε κάθε βάση δεδομένων που θα δεις στη ζωή σου.</p>
+      </div>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '3 · Έλεγχος',
+      question: "Τι θα επιστρέψει η εντολή SELECT * FROM reactions WHERE value = NULL; αν υποθέσουμε ότι (υποθετικά) υπάρχουν γραμμές με value = NULL;",
+      options: [
+        'Όλες τις γραμμές όπου η στήλη value δεν έχει καθόλου τιμή αποθηκευμένη μέσα της',
+        'Ένα σφάλμα σύνταξης, αφού η SQL δεν επιτρέπει καθόλου τη λέξη NULL μέσα σε συνθήκη WHERE με τον τελεστή ισότητας',
+        'Καμία γραμμή, ανεξάρτητα από το αν κάποιες γραμμές έχουν πράγματι NULL στη στήλη value — γιατί η σύγκριση με = NULL δεν αξιολογείται ποτέ ως true',
+        'Όλες τις γραμμές του πίνακα χωρίς εξαίρεση, επειδή το NULL ερμηνεύεται σαν wildcard που ταιριάζει με οτιδήποτε'
+      ],
+      correct: 2,
+      explain: `Το NULL αντιπροσωπεύει "άγνωστη τιμή", και σε τρίτιμη λογική (three-valued logic) καμία σύγκριση με
+  NULL — ούτε καν NULL = NULL — δεν αξιολογείται ως TRUE· αξιολογείται ως UNKNOWN, το οποίο για τους σκοπούς του
+  WHERE συμπεριφέρεται σαν FALSE. Γι' αυτό χρειάζεσαι το ειδικό κατηγόρημα IS NULL / IS NOT NULL για να ελέγξεις
+  απουσία τιμής.`
+    });
+
+  </script>
+  <script>
+    /* ── section 4 · aggregate functions & GROUP BY ─────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '4 · Aggregates',
+      title: 'Συναρτήσεις συνόλου (Aggregate Functions)',
+      html: `
+    <div class="content">
+      <p>Οι aggregate functions παίρνουν <strong>πολλές γραμμές</strong> και επιστρέφουν <strong>μία τιμή</strong>.
+      Είναι κεντρικές στο <code class="inline">count()</code> που πρέπει να υλοποιήσεις.</p>
+
+      <table>
+        <tr><th>Συνάρτηση</th><th>Τι κάνει</th></tr>
+        <tr><td><code class="inline">COUNT(*)</code></td><td>Μετράει πόσες γραμμές ταιριάζουν (συμπεριλαμβανομένων NULLs)</td></tr>
+        <tr><td><code class="inline">COUNT(column)</code></td><td>Μετράει πόσες γραμμές έχουν <strong>μη-NULL</strong> τιμή σε αυτή τη στήλη</td></tr>
+        <tr><td><code class="inline">SUM(column)</code></td><td>Άθροισμα αριθμητικής στήλης</td></tr>
+        <tr><td><code class="inline">AVG(column)</code></td><td>Μέσος όρος</td></tr>
+        <tr><td><code class="inline">MIN(column)</code> / <code class="inline">MAX(column)</code></td><td>Ελάχιστη / μέγιστη τιμή</td></tr>
+      </table>
+
+      <h3>Απλό παράδειγμα — ο πυρήνας του count()</h3>
+      <pre>-- πόσες γραμμές έχει το post 5 με value='like';
+SELECT COUNT(*) FROM reactions
+WHERE post_id = 5 AND value = 'like';</pre>
+
+      <div class="card note">
+        <p>Αυτό επιστρέφει <strong>μία γραμμή, μία στήλη</strong> — ακριβώς ό,τι χρειάζεσαι για
+        <code class="inline">db.QueryRow(...).Scan(&count)</code> στη Go. Δεν χρειάζεσαι
+        <code class="inline">db.Query</code> (πολλές γραμμές) εδώ.</p>
+      </div>
+
+      <h3>COUNT(*) vs COUNT(column) — μια σημαντική διαφορά</h3>
+      <pre>-- Αν υπήρχαν γραμμές με value = NULL:
+SELECT COUNT(*)     FROM reactions;   -- μετράει ΟΛΕΣ τις γραμμές
+SELECT COUNT(value) FROM reactions;   -- ΔΕΝ μετράει τις γραμμές όπου value IS NULL</pre>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '4 · Aggregates',
+      title: 'GROUP BY — «ομαδοποίησε και μέτρα ανά ομάδα»',
+      html: `
+    <div class="content">
+      <p>Το <code class="inline">GROUP BY</code> χωρίζει τις γραμμές σε <strong>ομάδες</strong> με βάση την τιμή
+      μιας ή περισσότερων στηλών, και μετά εφαρμόζει τις aggregate functions <strong>ξεχωριστά σε κάθε ομάδα</strong>.</p>
+
+      <h3>Παράδειγμα: likes και dislikes σε μία εντολή</h3>
+      <pre>SELECT value, COUNT(*) AS total
+FROM   reactions
+WHERE  post_id = 5
+GROUP BY value;
+
+-- πιθανό αποτέλεσμα:
+-- value    | total
+-- ---------+------
+-- like     |   7
+-- dislike  |   2</pre>
+
+      <div class="card">
+        <p>Αυτό είναι μια <strong>εναλλακτική</strong> στρατηγική από δύο ξεχωριστά COUNT queries (ένα για like,
+        ένα για dislike) — μία μόνο εντολή, αλλά επιστρέφει πολλές γραμμές αντί για μία, οπότε στη Go θα χρειαζόσουν
+        <code class="inline">db.Query</code> + βρόχο <code class="inline">rows.Next()</code> αντί για
+        <code class="inline">QueryRow</code>. Και οι δύο προσεγγίσεις είναι έγκυρες — είναι σχεδιαστική επιλογή
+        δική σου ποια ταιριάζει καλύτερα στο <code class="inline">count()</code> που θα γράψεις.</p>
+      </div>
+
+      <h3>Ο χρυσός κανόνας του GROUP BY</h3>
+      <p>Κάθε στήλη στο <code class="inline">SELECT</code> που <strong>δεν</strong> είναι μέσα σε aggregate function
+      πρέπει να εμφανίζεται και στο <code class="inline">GROUP BY</code>. Η βάση δεν ξέρει αλλιώς ποια τιμή να
+      διαλέξει να δείξει από την ομάδα.</p>
+      <pre>-- ΛΑΘΟΣ (στις περισσότερες βάσεις): user_id δεν είναι σε aggregate ούτε σε GROUP BY
+SELECT user_id, value, COUNT(*) FROM reactions GROUP BY value;
+
+-- ΣΩΣΤΟ
+SELECT value, COUNT(*) FROM reactions GROUP BY value;</pre>
+
+      <h3>HAVING — WHERE για ομάδες</h3>
+      <p>Το <code class="inline">WHERE</code> φιλτράρει γραμμές <em>πριν</em> την ομαδοποίηση.
+      Το <code class="inline">HAVING</code> φιλτράρει <em>ομάδες</em>, <em>μετά</em> την ομαδοποίηση — γι' αυτό
+      μόνο το HAVING μπορεί να χρησιμοποιήσει aggregate functions στη συνθήκη του.</p>
+      <pre>-- posts που έχουν πάνω από 10 likes
+SELECT post_id, COUNT(*) AS total
+FROM   reactions
+WHERE  value = 'like'
+GROUP BY post_id
+HAVING COUNT(*) > 10;</pre>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '4 · Έλεγχος',
+      question: 'Γιατί δεν μπορείς να γράψεις WHERE COUNT(*) > 10 και πρέπει αντ\' αυτού να χρησιμοποιήσεις HAVING COUNT(*) > 10;',
+      options: [
+        'Επειδή η λέξη COUNT απαγορεύεται να εμφανιστεί οπουδήποτε μέσα σε μια συνθήκη WHERE, ανεξαρτήτως GROUP BY',
+        'Επειδή το WHERE φιλτράρει μεμονωμένες γραμμές πριν σχηματιστούν οι ομάδες, οπότε δεν υπάρχει ακόμα κάποιο σύνολο γραμμών πάνω στο οποίο να υπολογιστεί το COUNT',
+        'Επειδή το COUNT(*) επιτρέπεται μόνο μέσα στο SELECT και πουθενά αλλού μέσα στην ίδια εντολή SQL',
+        'Επειδή το HAVING είναι απλά ένα συνώνυμο του WHERE που εισήγαγε η SQLite για λόγους συμβατότητας με παλαιότερες εκδόσεις'
+      ],
+      correct: 1,
+      explain: `Η σειρά εκτέλεσης είναι: FROM → WHERE (φιλτράρισμα ανά γραμμή) → GROUP BY (σχηματισμός ομάδων) → aggregate
+  functions υπολογίζονται πάνω σε κάθε ομάδα → HAVING (φιλτράρισμα ανά ομάδα) → SELECT. Το WHERE εκτελείται πριν
+  καν υπάρξουν ομάδες, άρα το COUNT(*) δεν έχει ακόμα νόημα εκεί — δεν υπάρχει "σύνολο" να μετρηθεί.`
+    });
+
+  </script>
+  <script>
+    /* ── section 5 · data modification ──────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '5 · Τροποποίηση',
+      title: 'INSERT — προσθήκη νέων γραμμών',
+      html: `
+    <div class="content">
+      <pre>INSERT INTO reactions (user_id, post_id, value)
+VALUES (1, 5, 'like');</pre>
+
+      <p>Μπορείς επίσης να εισάγεις πολλές γραμμές σε μία εντολή:</p>
+      <pre>INSERT INTO reactions (user_id, post_id, value)
+VALUES
+    (1, 5, 'like'),
+    (2, 5, 'dislike'),
+    (3, 6, 'like');</pre>
+
+      <div class="card warn">
+        <h3>Πάντα ονόμαζε τις στήλες ρητά</h3>
+        <p>Η σύνταξη <code class="inline">INSERT INTO reactions VALUES (1, 5, 'like')</code> (χωρίς λίστα
+        στηλών) δουλεύει, αλλά βασίζεται στη <strong>σειρά</strong> των στηλών όπως ορίστηκαν στο
+        <code class="inline">CREATE TABLE</code>. Αν κάποιος αλλάξει τη σειρά ή προσθέσει στήλη στο schema,
+        ο κώδικάς σου θα εισάγει λάθος δεδομένα σιωπηλά, χωρίς error. Ονόμαζε πάντα τις στήλες.</p>
+      </div>
+
+      <h3>Σύνδεση με Go: γιατί ΠΟΤΕ δεν κάνεις string concatenation</h3>
+      <pre>// NEVER do this — vulnerable to SQL injection
+query := "INSERT INTO reactions VALUES (" + userInput + ")"
+
+// ALWAYS use parameterized queries with placeholders
+db.Exec("INSERT INTO reactions (user_id, post_id, value) VALUES (?, ?, ?)", user, post, value)</pre>
+      <p>Το <code class="inline">?</code> είναι ένα <strong>placeholder</strong> — λες στη βάση «εδώ θα μπει μια
+      παράμετρος», και ο driver φροντίζει να «γλιτώσει» (escape) σωστά την τιμή, ώστε να μην μπορεί κάποιος να
+      περάσει κακόβουλο SQL κώδικα μέσα από ένα πεδίο εισόδου. Αυτό θα το χρησιμοποιήσεις άμεσα στο
+      <code class="inline">setReaction</code>.</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '5 · Τροποποίηση',
+      title: 'UPDATE και DELETE — ο κίνδυνος του "ξεχασμένου WHERE"',
+      html: `
+    <div class="content">
+      <h3>UPDATE</h3>
+      <pre>UPDATE reactions
+SET    value = 'dislike'
+WHERE  user_id = 1 AND post_id = 5;</pre>
+
+      <h3>DELETE</h3>
+      <pre>DELETE FROM reactions
+WHERE  user_id = 1 AND post_id = 5;</pre>
+
+      <div class="card warn">
+        <h3>Ο πιο κλασικός φόβος κάθε προγραμματιστή SQL</h3>
+        <p>Αν ξεχάσεις το <code class="inline">WHERE</code> σε ένα <code class="inline">UPDATE</code> ή
+        <code class="inline">DELETE</code>, η εντολή εφαρμόζεται σε <strong>όλες</strong> τις γραμμές του πίνακα:</p>
+        <pre>-- Καταστρέφει ΟΛΕΣ τις αντιδράσεις όλων των χρηστών σε όλα τα posts!
+DELETE FROM reactions;</pre>
+        <p>Δεν υπάρχει "undo" αν δεν είσαι μέσα σε transaction. Αυτός είναι ένας από τους λόγους που τα
+        transactions δεν είναι απλά "καλή πρακτική" αλλά ουσιαστικό δίχτυ ασφαλείας.</p>
+      </div>
+
+      <h3>Σχέδιο για το setReaction — δύο θεωρητικές προσεγγίσεις</h3>
+      <p>Η άσκηση ζητά: «μία γραμμή ανά (user, post), η νέα τιμή αντικαθιστά την παλιά». Υπάρχουν (τουλάχιστον)
+      δύο θεωρητικές στρατηγικές SQL για αυτό, και ΔΕΝ θα σου πω ποια να διαλέξεις — αυτό είναι δικό σου
+      σχεδιαστικό ερώτημα:</p>
+      <div class="two-col">
+        <div class="card">
+          <h3>Στρατηγική Α</h3>
+          <p>Έλεγξε αν υπάρχει ήδη γραμμή για το (user, post) — αν ναι κάνε UPDATE, αν όχι κάνε INSERT.
+          (Το γνωστό μοτίβο "upsert").</p>
+        </div>
+        <div class="card">
+          <h3>Στρατηγική Β</h3>
+          <p>Διάγραψε ό,τι υπάρχει για το (user, post), μετά εισήγαγε τη νέα γραμμή. Πιο απλό λογικά, αλλά σκέψου
+          τι σημαίνει αυτό για την ατομικότητα.</p>
+        </div>
+      </div>
+      <p>Σκέψου: ποια στρατηγική είναι πιο εύκολο να κάνεις atomic μέσα σε transaction; Τι θα συμβεί αν
+      overlapping calls τρέξουν ταυτόχρονα και οι δύο ακολουθούν την ίδια στρατηγική;</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '5 · Έλεγχος',
+      question: 'Ποιος είναι ο βασικός λόγος που χρησιμοποιούμε parameterized queries (π.χ. ? placeholders) αντί να "κολλάμε" (concatenate) τις τιμές απευθείας μέσα στο SQL string;',
+      options: [
+        'Επειδή τα placeholders κάνουν το query να εκτελείται σημαντικά πιο γρήγορα σε κάθε περίπτωση, ανεξαρτήτως μεγέθους δεδομένων',
+        'Επειδή η Go δεν επιτρέπει καθόλου τη δημιουργία string μέσω concatenation όταν αυτό πρόκειται να χρησιμοποιηθεί ως SQL',
+        'Επειδή έτσι αποφεύγεται το SQL injection — ο driver χειρίζεται τις τιμές ως δεδομένα και όχι ως εκτελέσιμο κομμάτι της εντολής, ό,τι κι αν περιέχουν',
+        'Επειδή τα placeholders είναι υποχρεωτικά μόνο όταν χρησιμοποιείς transactions, ενώ σε απλά queries είναι προαιρετικά'
+      ],
+      correct: 2,
+      explain: `Όταν χρησιμοποιείς placeholders, ο driver ξέρει με βεβαιότητα ότι αυτό που περνάς είναι δεδομένα
+  (data), όχι κομμάτι εντολής (code) — άρα ακόμα κι αν κάποιος βάλει ως input κάτι σαν
+  "'; DROP TABLE reactions; --", αυτό αντιμετωπίζεται σαν κυριολεκτικό string, όχι σαν SQL προς εκτέλεση. Το
+  concatenation ανοίγει την πόρτα σε SQL injection επειδή η βάση δεν μπορεί να ξεχωρίσει "εντολή" από "δεδομένα".`
+    });
+
+  </script>
+  <script>
+    /* ── section 6 · constraints ─────────────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '6 · Περιορισμοί',
+      title: 'PRIMARY KEY, UNIQUE, CHECK — κανόνες ακεραιότητας',
+      html: `
+    <div class="content">
+      <p>Ένα <strong>constraint</strong> είναι ένας κανόνας που η βάση επιβάλλει αυτόματα σε κάθε
+      INSERT/UPDATE — αν παραβιαστεί, η βάση επιστρέφει error και η εντολή δεν εφαρμόζεται.</p>
+
+      <h3>PRIMARY KEY</h3>
+      <p>Ορίζει τη στήλη (ή συνδυασμό στηλών) που προσδιορίζει μοναδικά κάθε γραμμή. Συνεπάγεται αυτόματα
+      <code class="inline">UNIQUE</code> + <code class="inline">NOT NULL</code>. Κάθε πίνακας έχει (συνήθως)
+      ακριβώς ένα primary key.</p>
+      <pre>CREATE TABLE reactions (
+    id      INTEGER PRIMARY KEY,   -- auto-increment στη SQLite
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    value   TEXT NOT NULL
+);</pre>
+
+      <h3>UNIQUE — και composite unique</h3>
+      <p>Μπορείς να ζητήσεις μοναδικότητα σε <strong>συνδυασμό</strong> στηλών, όχι μόνο σε μία. Αυτό είναι
+      ακριβώς αυτό <strong>που λείπει</strong> από το σημερινό schema του <code class="inline">reactions</code>:</p>
+      <pre>-- Αυτό ΘΑ επέβαλλε "μία γραμμή ανά (user_id, post_id)" αυτόματα, στο επίπεδο της βάσης:
+CREATE TABLE reactions (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    value   TEXT NOT NULL,
+    UNIQUE(user_id, post_id)
+);</pre>
+
+      <div class="card warn">
+        <h3>Γιατί έχει σημασία για την άσκησή σου</h3>
+        <p>Το <code class="inline">schema.sql</code> σου είναι read-only και <strong>δεν</strong> έχει αυτό το
+        constraint. Αυτό σημαίνει ότι η βάση <strong>δεν</strong> θα σε προστατέψει αν κατά λάθος γράψεις κώδικα
+        που εισάγει δεύτερη γραμμή για το ίδιο (user, post). Η ευθύνη διατήρησης του κανόνα «μία γραμμή ανά ζεύγος»
+        πέφτει εξ ολοκλήρου πάνω στη <strong>λογική</strong> που θα γράψεις στο <code class="inline">setReaction</code>
+        — γι' αυτό η άσκηση σου ζητά ρητά transaction.</p>
+      </div>
+
+      <h3>CHECK — αυθαίρετος κανόνας εγκυρότητας</h3>
+      <pre>CREATE TABLE reactions (
+    ...
+    value TEXT NOT NULL CHECK (value IN ('like', 'dislike'))
+);</pre>
+      <p>Θα μπορούσε (θεωρητικά) να εξασφαλίσει ότι η στήλη <code class="inline">value</code> περιέχει πάντα
+      είτε <code class="inline">'like'</code> είτε <code class="inline">'dislike'</code> — ξανά, δεν υπάρχει
+      στο δικό σου schema, οπότε η εκφώνηση σου λέει ρητά «value is always like or dislike» ως
+      <strong>προϋπόθεση</strong> (assumption) και όχι εγγύηση από τη βάση.</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '6 · Περιορισμοί',
+      title: 'FOREIGN KEY — σύνδεση ανάμεσα σε πίνακες (θεωρητικά)',
+      html: `
+    <div class="content">
+      <p>Ένα <strong>foreign key</strong> είναι μια στήλη που αναφέρεται στο primary key ενός <em>άλλου</em>
+      πίνακα — έτσι «συνδέονται» δύο πίνακες. Δεν χρειάζεται άμεσα στην άσκησή σου (δεν έχεις ξεχωριστούς πίνακες
+      <code class="inline">users</code>/<code class="inline">posts</code> εδώ), αλλά είναι θεμελιώδης έννοια
+      σχεσιακών βάσεων που σίγουρα θα συναντήσεις σύντομα.</p>
+
+      <pre>CREATE TABLE posts (
+    id    INTEGER PRIMARY KEY,
+    title TEXT NOT NULL
+);
+
+CREATE TABLE reactions (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL REFERENCES posts(id),  -- foreign key
+    value   TEXT NOT NULL
+);</pre>
+
+      <p>Το <code class="inline">REFERENCES posts(id)</code> λέει στη βάση: «κάθε τιμή στο post_id πρέπει να
+      αντιστοιχεί σε ένα υπαρκτό id στον πίνακα posts». Αν προσπαθήσεις να εισάγεις αντίδραση για post_id=999
+      που δεν υπάρχει, η βάση θα αρνηθεί (referential integrity).</p>
+
+      <div class="card note">
+        <p>Η SQLite, χαρακτηριστικά, <strong>δεν</strong> επιβάλλει foreign keys από προεπιλογή — χρειάζεται
+        ρητά <code class="inline">PRAGMA foreign_keys = ON;</code> σε κάθε σύνδεση. Είναι μια ιδιαιτερότητα
+        της συγκεκριμένης βάσης, καλό να το ξέρεις.</p>
+      </div>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '6 · Έλεγχος',
+      question: 'Το schema.sql της άσκησής σου ΔΕΝ έχει UNIQUE(user_id, post_id) στον πίνακα reactions. Τι συνεπάγεται αυτό πρακτικά;',
+      options: [
+        'Ότι η βάση δεδομένων θα εμφανίσει προειδοποίηση (warning), αλλά θα εξακολουθεί να εμποδίζει αυτόματα διπλές γραμμές για το ίδιο ζεύγος',
+        'Ότι η ευθύνη να διατηρείται ακριβώς μία γραμμή ανά (user, post) μεταφέρεται εξ ολοκλήρου στη λογική του κώδικα, αφού η ίδια η βάση δεν θα εμποδίσει διπλότυπες γραμμές',
+        'Ότι δεν επηρεάζεται τίποτα πρακτικά, αφού το SQLite προσθέτει πάντα αυτόματα ένα εσωτερικό ισοδύναμο constraint σε κάθε πίνακα',
+        'Ότι είναι αδύνατο να υπάρξουν ποτέ δύο γραμμές με το ίδιο ζεύγος (user_id, post_id), ανεξαρτήτως του τι κάνει ο κώδικας που γράφεις'
+      ],
+      correct: 1,
+      explain: `Χωρίς το constraint UNIQUE(user_id, post_id), η βάση δεν έχει κανέναν ενσωματωμένο μηχανισμό που να
+  εμποδίζει διπλότυπες γραμμές για το ίδιο ζεύγος χρήστη/post. Αν ο κώδικάς σου (π.χ. το setReaction) δεν
+  χειριστεί σωστά αυτή την περίπτωση — με κατάλληλο έλεγχο ή αντικατάσταση μέσα σε transaction — η βάση θα
+  δεχτεί χωρίς αντίρρηση όσες διπλές γραμμές της στείλεις.`
+    });
+
+  </script>
+  <script>
+    /* ── section 7 · joins ───────────────────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '7 · JOINs',
+      title: 'Γιατί χρειαζόμαστε JOINs',
+      html: `
+    <div class="content">
+      <p>Σε μια καλά σχεδιασμένη σχεσιακή βάση, τα δεδομένα <strong>δεν</strong> επαναλαμβάνονται σε κάθε πίνακα
+      (κανονικοποίηση / normalization). Αντί να γράφεις τον τίτλο ενός post ξανά και ξανά σε κάθε γραμμή του
+      <code class="inline">reactions</code>, κρατάς μόνο το <code class="inline">post_id</code> — και όταν
+      χρειαστείς και τα δύο μαζί, τα «ενώνεις» με ένα <code class="inline">JOIN</code>.</p>
+
+      <p>Ένα JOIN συνδυάζει γραμμές από δύο (ή περισσότερους) πίνακες με βάση μια κοινή στήλη.</p>
+
+      <h3>INNER JOIN — μόνο τα ταιριάσματα</h3>
+      <pre>SELECT reactions.value, posts.title
+FROM   reactions
+INNER JOIN posts ON reactions.post_id = posts.id
+WHERE  posts.id = 5;</pre>
+      <p>Επιστρέφει γραμμές μόνο όπου υπάρχει αντιστοιχία <strong>και στους δύο</strong> πίνακες. Αν ένα post
+      δεν έχει καμία αντίδραση, δεν θα εμφανιστεί καθόλου σε αυτό το αποτέλεσμα.</p>
+
+      <h3>LEFT JOIN — όλα από αριστερά, ό,τι ταιριάζει από δεξιά</h3>
+      <pre>SELECT posts.title, reactions.value
+FROM   posts
+LEFT JOIN reactions ON posts.id = reactions.post_id;</pre>
+      <p>Επιστρέφει <strong>όλα</strong> τα posts, ακόμα κι αν δεν έχουν καμία αντίδραση — σε αυτή την περίπτωση,
+      οι στήλες του <code class="inline">reactions</code> θα είναι <code class="inline">NULL</code>.</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '7 · JOINs',
+      title: 'RIGHT JOIN, FULL JOIN, και οπτικοποίηση με διαγράμματα',
+      html: `
+    <div class="content">
+      <table>
+        <tr><th>Τύπος</th><th>Επιστρέφει</th></tr>
+        <tr><td><code class="inline">INNER JOIN</code></td><td>Μόνο γραμμές που ταιριάζουν και στους δύο πίνακες</td></tr>
+        <tr><td><code class="inline">LEFT JOIN</code></td><td>Όλες οι γραμμές του αριστερού πίνακα + ταιριάσματα δεξιά (ή NULL)</td></tr>
+        <tr><td><code class="inline">RIGHT JOIN</code></td><td>Όλες οι γραμμές του δεξιού πίνακα + ταιριάσματα αριστερά (ή NULL)</td></tr>
+        <tr><td><code class="inline">FULL OUTER JOIN</code></td><td>Όλες οι γραμμές και από τους δύο πίνακες, με NULL όπου δεν υπάρχει ταίριασμα</td></tr>
+      </table>
+
+      <div class="card note">
+        <p><strong>Ιδιαιτερότητα SQLite:</strong> η SQLite (μέχρι πρόσφατα) δεν υποστήριζε
+        <code class="inline">RIGHT JOIN</code> ούτε <code class="inline">FULL OUTER JOIN</code> — μόνο
+        <code class="inline">INNER</code> και <code class="inline">LEFT</code>. Στην πράξη, ένα RIGHT JOIN
+        μπορείς πάντα να το γράψεις σαν LEFT JOIN αντιστρέφοντας ποιος πίνακας μπαίνει πρώτος στο FROM.</p>
+      </div>
+
+      <h3>Οπτικά (Venn-style νοητικό μοντέλο)</h3>
+      <pre>INNER JOIN:      A ∩ B (μόνο η τομή)
+LEFT JOIN:       Όλο το A, με ό,τι ταιριάζει από το B
+RIGHT JOIN:      Όλο το B, με ό,τι ταιριάζει από το A
+FULL OUTER JOIN: A ∪ B (η ένωση όλων)</pre>
+
+      <p>Ένας χρήσιμος τρόπος να το σκέφτεσαι: το <code class="inline">FROM table_a</code> λέει «ξεκίνα εδώ, με
+      αυτές τις γραμμές σίγουρα». Το <code class="inline">JOIN table_b ON ...</code> λέει «τώρα κόλλησε πάνω σε
+      κάθε μία από αυτές, ό,τι ταιριάζει (ή δεν ταιριάζει, ανάλογα με τον τύπο) από τον άλλο πίνακα».</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '7 · Έλεγχος',
+      question: 'Αν κάνεις LEFT JOIN posts με reactions, και ένα συγκεκριμένο post δεν έχει καμία αντίδραση καταγεγραμμένη, τι θα δεις στο αποτέλεσμα για εκείνο το post;',
+      options: [
+        'Το post αυτό θα λείπει εντελώς από το αποτέλεσμα, ακριβώς όπως θα συνέβαινε και με ένα INNER JOIN',
+        'Θα εμφανιστεί μία γραμμή για το post, με τις στήλες του πίνακα reactions να έχουν την τιμή NULL',
+        'Θα προκύψει σφάλμα εκτέλεσης, αφού το LEFT JOIN απαιτεί υποχρεωτικά τουλάχιστον μία αντιστοιχία σε κάθε γραμμή',
+        'Θα εμφανιστεί μία γραμμή με τις στήλες του reactions να περιέχουν την αριθμητική τιμή 0 αντί για NULL'
+      ],
+      correct: 1,
+      explain: `Αυτό είναι ακριβώς το νόημα του LEFT JOIN: κρατάει ΟΛΕΣ τις γραμμές του αριστερού πίνακα (posts) ό,τι
+  κι αν συμβαίνει στον δεξιό. Όταν δεν υπάρχει αντιστοιχία στο δεξί πίνακα (reactions), οι στήλες εκείνου του
+  πίνακα γεμίζουν με NULL αντί το post να εξαφανιστεί από το αποτέλεσμα — αυτό ακριβώς το κάνει διαφορετικό από
+  το INNER JOIN.`
+    });
+
+  </script>
+  <script>
+    /* ── section 8 · transactions ────────────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '8 · Transactions',
+      title: 'Τι είναι ένα transaction — και γιατί το χρειάζεσαι',
+      html: `
+    <div class="content">
+      <p>Ένα <strong>transaction</strong> είναι μια ομάδα από SQL εντολές που εκτελούνται σαν
+      <strong>μία αδιαίρετη μονάδα</strong>: είτε εφαρμόζονται <em>όλες</em> (commit), είτε
+      <em>καμία</em> (rollback). Δεν υπάρχει ενδιάμεση κατάσταση ορατή από «έξω».</p>
+
+      <h3>Το ακρωνύμιο ACID</h3>
+      <table>
+        <tr><th>Ιδιότητα</th><th>Σημασία</th></tr>
+        <tr><td><strong>A</strong>tomicity</td><td>Όλες οι εντολές του transaction επιτυγχάνουν, ή καμία — «όλα ή τίποτα»</td></tr>
+        <tr><td><strong>C</strong>onsistency</td><td>Η βάση μεταβαίνει από μια έγκυρη κατάσταση σε άλλη έγκυρη κατάσταση</td></tr>
+        <tr><td><strong>I</strong>solation</td><td>Ταυτόχρονα transactions δεν «βλέπουν» το ένα τις ημιτελείς αλλαγές του άλλου</td></tr>
+        <tr><td><strong>D</strong>urability</td><td>Μόλις γίνει commit, η αλλαγή επιβιώνει ακόμα κι αν κρασάρει το σύστημα</td></tr>
+      </table>
+
+      <p>Η άσκησή σου αναφέρεται ρητά σε δύο από αυτά: <strong>Atomicity</strong> («The replacement is atomic: if
+      it fails, return the error and leave the previous committed row unchanged») και
+      <strong>Isolation</strong> («other database operations must continue to see the previous committed row,
+      never the transaction's partial work»).</p>
+
+      <h3>Βασική σύνταξη</h3>
+      <pre>BEGIN;
+    UPDATE reactions SET value = 'dislike' WHERE user_id = 1 AND post_id = 5;
+COMMIT;   -- ή ROLLBACK; αν κάτι πάει στραβά</pre>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '8 · Transactions',
+      title: 'Transactions στη Go: sql.Tx',
+      html: `
+    <div class="content">
+      <p>Στο πακέτο <code class="inline">database/sql</code>, ένα transaction αναπαρίσταται από τον τύπο
+      <code class="inline">*sql.Tx</code>, που τον παίρνεις καλώντας <code class="inline">db.Begin()</code>.</p>
+
+      <pre>tx, err := db.Begin()
+if err != nil {
+    return err
+}
+defer tx.Rollback() // safety net — see next slide
+
+// use tx.Exec / tx.QueryRow instead of db.Exec / db.QueryRow from here on
+_, err = tx.Exec("UPDATE reactions SET value = ? WHERE user_id = ? AND post_id = ?", value, user, post)
+if err != nil {
+    return err
+}
+
+return tx.Commit()</pre>
+
+      <div class="card warn">
+        <h3>Κρίσιμο σημείο: tx.Exec, όχι db.Exec</h3>
+        <p>Μόλις καλέσεις <code class="inline">db.Begin()</code>, όλες οι εντολές που θέλεις να ανήκουν στο ίδιο
+        transaction πρέπει να καλούνται πάνω στο <code class="inline">tx</code> (π.χ.
+        <code class="inline">tx.Exec</code>, <code class="inline">tx.QueryRow</code>), <strong>όχι</strong>
+        πάνω στο αρχικό <code class="inline">db</code>. Αν καλέσεις κατά λάθος <code class="inline">db.Exec</code>
+        μέσα σε ένα transaction block, αυτή η εντολή θα τρέξει <strong>εκτός</strong> transaction, σε δικό της
+        αυτόματο (auto-commit) πλαίσιο — χάνεις εντελώς την ατομικότητα.</p>
+      </div>
+
+      <h3>Το πρότυπο defer tx.Rollback()</h3>
+      <p>Αυτό είναι ένα από τα πιο γνωστά idioms στη Go για transactions. Λειτουργεί ως δίχτυ ασφαλείας: αν
+      <strong>κάπου ενδιάμεσα</strong> επιστρέψεις error (πριν φτάσεις σε <code class="inline">tx.Commit()</code>),
+      το deferred <code class="inline">tx.Rollback()</code> θα εκτελεστεί αυτόματα και θα ακυρώσει ό,τι έγινε.
+      Αν όμως έχεις ήδη κάνει επιτυχώς <code class="inline">tx.Commit()</code>, το επακόλουθο
+      <code class="inline">tx.Rollback()</code> απλά επιστρέφει ένα αβλαβές error
+      (<code class="inline">sql.ErrTxDone</code>) που αγνοείς — το transaction έχει ήδη «κλειδώσει».</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '8 · Transactions',
+      title: 'Isolation: τι «βλέπουν» τα ταυτόχρονα transactions',
+      html: `
+    <div class="content">
+      <p>Η εκφώνηση λέει: <em>«Until a replacement commits, other database operations must continue to see the
+      previous committed row, never the transaction's partial work.»</em> Αυτό είναι ακριβώς η ιδιότητα
+      <strong>Isolation</strong> του ACID.</p>
+
+      <h3>Νοητικό μοντέλο</h3>
+      <pre>Χρόνος →
+
+Transaction A:  BEGIN ── UPDATE value='dislike' ──────────── COMMIT
+Transaction B:              (τρέχει SELECT εδώ) ↑
+                             βλέπει ακόμα την ΠΑΛΙΑ τιμή,
+                             όχι το 'dislike' που δεν έχει
+                             ακόμα γίνει commit</pre>
+
+      <p>Όσο το transaction A δεν έχει κάνει <code class="inline">COMMIT</code>, οι αλλαγές του είναι «αόρατες»
+      σε οποιαδήποτε άλλη σύνδεση/ερώτημα — ό,τι κι αν έχει ήδη γράψει εσωτερικά. Αυτό είναι που σου επιτρέπει
+      να λες με σιγουριά «η προηγούμενη committed γραμμή δεν αλλάζει αν κάτι αποτύχει στη μέση».</p>
+
+      <h3>Isolation levels (μόνο για να ξέρεις ότι υπάρχουν)</h3>
+      <p>Διαφορετικές βάσεις προσφέρουν διαφορετικά «επίπεδα» ισχύος αυτής της απομόνωσης
+      (<code class="inline">READ UNCOMMITTED</code>, <code class="inline">READ COMMITTED</code>,
+      <code class="inline">REPEATABLE READ</code>, <code class="inline">SERIALIZABLE</code>) — ένα trade-off
+      ανάμεσα σε αυστηρότητα εγγυήσεων και ταχύτητα/παραλληλισμό. Η SQLite, από σχεδιασμό, χρησιμοποιεί ένα
+      μοντέλο κλειδώματος (locking) που στην πράξη σου δίνει πολύ ισχυρές εγγυήσεις — απλοποιεί πολύ τη ζωή σου
+      εδώ σε σχέση με distributed databases.</p>
+
+      <div class="card note">
+        <p>Δεν χρειάζεται να διαλέξεις isolation level ρητά για την άσκηση — απλά κατάλαβε <strong>γιατί</strong>
+        η ιδιότητα αυτή είναι αυτό που σου εγγυάται η εκφώνηση όταν λέει «other operations must continue to see
+        the previous committed row».</p>
+      </div>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '8 · Έλεγχος',
+      question: 'Γιατί το idiom defer tx.Rollback() αμέσως μετά το db.Begin() θεωρείται καλή πρακτική, ακόμα κι όταν το transaction τελικά κάνει επιτυχώς Commit;',
+      options: [
+        'Επειδή εγγυάται ότι κάθε αλλαγή θα ακυρώνεται πάντα στο τέλος, ό,τι κι αν συμβεί, ώστε η βάση να μένει πάντα στην αρχική της κατάσταση',
+        'Επειδή λειτουργεί ως δίχτυ ασφαλείας: αν η συνάρτηση επιστρέψει νωρίτερα λόγω κάποιου σφάλματος πριν φτάσει στο Commit, το Rollback καθαρίζει αυτόματα το μισοτελειωμένο transaction, ενώ μετά από επιτυχές Commit είναι αβλαβές',
+        'Επειδή χωρίς αυτή τη γραμμή κώδικα, η Go αρνείται να μεταγλωττίσει (compile) οποιαδήποτε συνάρτηση που καλεί db.Begin()',
+        'Επειδή το Rollback πρέπει πάντα να καλείται πριν από το Commit για να ενεργοποιηθεί σωστά η σύνδεση με τη βάση δεδομένων'
+      ],
+      correct: 1,
+      explain: `Το defer εγγυάται εκτέλεση όταν η συνάρτηση επιστρέφει, ό,τι μονοπάτι κι αν ακολούθησε ο κώδικας. Αν
+  κάτι αποτύχει ανάμεσα σε Begin και Commit (π.χ. ένα Exec επιστρέψει error και κάνεις return), το deferred
+  Rollback καθαρίζει το μισοτελειωμένο transaction αυτόματα — δεν μένει "κρεμασμένο". Αν έχεις ήδη κάνει
+  επιτυχημένο Commit, το SQLite/driver απλά αγνοεί το επακόλουθο Rollback call (επιστρέφει sql.ErrTxDone), οπότε
+  δεν κάνει κακό να υπάρχει εκεί σε κάθε περίπτωση.`
+    });
+
+  </script>
+  <script>
+    /* ── section 9 · go database/sql ────────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '9 · Go database/sql',
+      title: 'sql.Open, *sql.DB, και το connection pool',
+      html: `
+    <div class="content">
+      <pre>db, err := sql.Open("sqlite", "path/to/file.db")
+if err != nil {
+    return err
+}
+defer db.Close()</pre>
+
+      <div class="card note">
+        <h3>Παρανόηση #1: sql.Open ΔΕΝ ανοίγει σύνδεση</h3>
+        <p>Αντίθετα με ό,τι υποδηλώνει το όνομά της, η <code class="inline">sql.Open</code> δεν συνδέεται αμέσως
+        στη βάση. Απλά προετοιμάζει το αντικείμενο <code class="inline">*sql.DB</code>, το οποίο είναι στην
+        πραγματικότητα ένα <strong>connection pool</strong> — μια δεξαμενή από συνδέσεις που δημιουργούνται
+        lazily, τη στιγμή που πραγματικά χρειαστούν (στο πρώτο query). Το error που επιστρέφει αφορά μόνο
+        προβλήματα στη μορφή του connection string, όχι το αν η βάση είναι "ζωντανή".</p>
+      </div>
+
+      <p>Στο δικό σου <code class="inline">main.go</code>, αυτό το κομμάτι είναι ήδη γραμμένο (provided) — αλλά
+      είναι σημαντικό να καταλάβεις τι κάνει το <code class="inline">*sql.DB</code> που περνάει σαν παράμετρος
+      στο <code class="inline">setReaction</code> και το <code class="inline">count</code>.</p>
+
+      <h3>Το *sql.DB είναι thread-safe (safe for concurrent use)</h3>
+      <p>Μπορείς να καλέσεις μεθόδους πάνω στο ίδιο <code class="inline">*sql.DB</code> από πολλά goroutines
+      ταυτόχρονα χωρίς πρόσθετο locking από τη μεριά σου — το πακέτο διαχειρίζεται εσωτερικά τις συνδέσεις. Αυτό
+      είναι ακριβώς γιατί η εκφώνηση λέει «calls for the same pair may overlap»: το ίδιο <code class="inline">db</code>
+      θα δεχτεί πολλαπλές ταυτόχρονες κλήσεις στο <code class="inline">setReaction</code> με ασφάλεια στο επίπεδο
+      της σύνδεσης — η ατομικότητα των δεδομένων όμως είναι δική σου ευθύνη μέσω του transaction.</p>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '9 · Go database/sql',
+      title: 'Exec vs Query vs QueryRow — ποιο πότε',
+      html: `
+    <div class="content">
+      <table>
+        <tr><th>Μέθοδος</th><th>Πότε τη χρησιμοποιείς</th><th>Επιστρέφει</th></tr>
+        <tr><td><code class="inline">Exec</code></td><td>INSERT / UPDATE / DELETE — εντολές που δεν επιστρέφουν γραμμές</td><td><code class="inline">sql.Result</code>, error</td></tr>
+        <tr><td><code class="inline">QueryRow</code></td><td>SELECT που περιμένεις να επιστρέψει ακριβώς 0 ή 1 γραμμή</td><td><code class="inline">*sql.Row</code></td></tr>
+        <tr><td><code class="inline">Query</code></td><td>SELECT που μπορεί να επιστρέψει πολλές γραμμές</td><td><code class="inline">*sql.Rows</code>, error</td></tr>
+      </table>
+
+      <h3>Exec και sql.Result</h3>
+      <pre>result, err := tx.Exec("UPDATE reactions SET value = ? WHERE user_id = ? AND post_id = ?", value, user, post)
+if err != nil {
+    return err
+}
+rowsAffected, _ := result.RowsAffected()
+// rowsAffected σου λέει πόσες γραμμές άλλαξαν — χρήσιμο για να ξέρεις
+// αν το UPDATE "βρήκε" καθόλου γραμμή να αλλάξει, ή αν χρειάζεται INSERT</pre>
+
+      <h3>QueryRow — για μία γραμμή, όπως στο count()</h3>
+      <pre>var total int
+err := db.QueryRow("SELECT COUNT(*) FROM reactions WHERE post_id = ? AND value = ?", post, "like").
+    Scan(&total)
+if err != nil {
+    return err
+}</pre>
+
+      <div class="card warn">
+        <h3>Ιδιαιτερότητα του QueryRow: δεν επιστρέφει error αμέσως</h3>
+        <p>Το <code class="inline">QueryRow</code> δεν επιστρέφει <code class="inline">error</code> σαν δεύτερη
+        τιμή — επιστρέφει μόνο <code class="inline">*sql.Row</code>. Το error "κρύβεται" μέσα σε αυτό το
+        αντικείμενο και εμφανίζεται μόνο όταν καλέσεις <code class="inline">.Scan(...)</code> πάνω του. Γι' αυτό
+        η αλυσίδα <code class="inline">QueryRow(...).Scan(...)</code> είναι το κανονικό μοτίβο — δεν τα σπάμε σε
+        δύο γραμμές με ενδιάμεσο έλεγχο error.</p>
+      </div>
+
+      <h3>Query + Rows — πολλαπλές γραμμές (π.χ. GROUP BY προσέγγιση)</h3>
+      <pre>rows, err := db.Query("SELECT value, COUNT(*) FROM reactions WHERE post_id = ? GROUP BY value", post)
+if err != nil {
+    return err
+}
+defer rows.Close() // ΠΑΝΤΑ — αλλιώς "διαρροή" connections από το pool
+
+for rows.Next() {
+    var value string
+    var total int
+    if err := rows.Scan(&value, &total); err != nil {
+        return err
+    }
+    // ... χρησιμοποίησε value, total
+}
+return rows.Err() // ΠΑΝΤΑ έλεγξε αυτό μετά τον βρόχο — πιάνει errors που συνέβησαν ΚΑΤΑ τη διάρκεια της επανάληψης</pre>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'quiz',
+      section: '9 · Έλεγχος',
+      question: 'Γιατί το QueryRow δεν επιστρέφει error ως ξεχωριστή δεύτερη τιμή, σε αντίθεση με το Exec ή το Query;',
+      options: [
+        'Επειδή το QueryRow στην πραγματικότητα δεν μπορεί ποτέ να αποτύχει, αφού πάντα υπάρχει ακριβώς μία γραμμή αποτελέσματος',
+        'Επειδή επιστρέφει ένα αντικείμενο *sql.Row που "μεταφέρει" εσωτερικά το ενδεχόμενο error μέχρι να καλέσεις Scan πάνω του, ώστε η αλυσιδωτή κλήση QueryRow(...).Scan(...) να παραμένει σύντομη',
+        'Επειδή το πακέτο database/sql θεωρεί ξεπερασμένο (deprecated) το QueryRow και προτείνει πάντα το Query αντ\' αυτού',
+        'Επειδή το error σε αυτή την περίπτωση εμφανίζεται πάντα ως panic αντί να επιστρέφεται κανονικά ως τιμή'
+      ],
+      correct: 1,
+      explain: `Ο σχεδιαστικός λόγος είναι εργονομία: το QueryRow επιστρέφει ένα *sql.Row που "κουβαλάει" μέσα του
+  οποιοδήποτε error συνέβη (είτε στο ίδιο το query είτε ErrNoRows αν δεν βρέθηκε γραμμή), και αυτό το error
+  "ενεργοποιείται" μόνο όταν καλέσεις .Scan(). Έτσι μπορείς να γράφεις τη σύντομη αλυσίδα
+  QueryRow(...).Scan(&x) χωρίς ενδιάμεσο if err != nil.`
+    });
+
+  </script>
+  <script>
+    /* ── section 10 · quick reference ───────────────────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '10 · Quick Reference',
+      title: 'Cheat Sheet — SQL εντολές',
+      html: `
+    <div class="content">
+      <table>
+        <tr><th>Εντολή</th><th>Χρήση</th></tr>
+        <tr><td><code class="inline">SELECT col FROM t WHERE ...</code></td><td>Ανάγνωση γραμμών</td></tr>
+        <tr><td><code class="inline">ORDER BY col [ASC|DESC]</code></td><td>Ταξινόμηση</td></tr>
+        <tr><td><code class="inline">LIMIT n OFFSET m</code></td><td>Pagination</td></tr>
+        <tr><td><code class="inline">DISTINCT</code></td><td>Αφαίρεση διπλότυπων στο αποτέλεσμα</td></tr>
+        <tr><td><code class="inline">WHERE a AND/OR/NOT b</code></td><td>Λογικό φιλτράρισμα</td></tr>
+        <tr><td><code class="inline">BETWEEN / IN / LIKE</code></td><td>Ειδικές συνθήκες σύγκρισης</td></tr>
+        <tr><td><code class="inline">IS NULL / IS NOT NULL</code></td><td>Έλεγχος απουσίας τιμής</td></tr>
+        <tr><td><code class="inline">COUNT / SUM / AVG / MIN / MAX</code></td><td>Aggregate functions</td></tr>
+        <tr><td><code class="inline">GROUP BY col</code></td><td>Ομαδοποίηση πριν από aggregate</td></tr>
+        <tr><td><code class="inline">HAVING cond</code></td><td>Φιλτράρισμα ομάδων (μετά aggregate)</td></tr>
+        <tr><td><code class="inline">INSERT INTO t (cols) VALUES (...)</code></td><td>Νέα γραμμή</td></tr>
+        <tr><td><code class="inline">UPDATE t SET col=v WHERE ...</code></td><td>Τροποποίηση γραμμών</td></tr>
+        <tr><td><code class="inline">DELETE FROM t WHERE ...</code></td><td>Διαγραφή γραμμών</td></tr>
+        <tr><td><code class="inline">CREATE TABLE t (...)</code></td><td>Ορισμός νέου πίνακα (DDL)</td></tr>
+        <tr><td><code class="inline">PRIMARY KEY / UNIQUE / CHECK / NOT NULL</code></td><td>Constraints</td></tr>
+        <tr><td><code class="inline">FOREIGN KEY ... REFERENCES</code></td><td>Σύνδεση πινάκων</td></tr>
+        <tr><td><code class="inline">INNER / LEFT / RIGHT / FULL JOIN</code></td><td>Συνδυασμός πινάκων</td></tr>
+        <tr><td><code class="inline">BEGIN / COMMIT / ROLLBACK</code></td><td>Transaction control</td></tr>
+      </table>
+    </div>
+  `
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: '10 · Quick Reference',
+      title: 'Cheat Sheet — Go database/sql',
+      html: `
+    <div class="content">
+      <table>
+        <tr><th>Κλήση</th><th>Χρήση</th></tr>
+        <tr><td><code class="inline">sql.Open(driver, dsn)</code></td><td>Δημιουργεί *sql.DB (connection pool, lazy)</td></tr>
+        <tr><td><code class="inline">db.Close()</code></td><td>Κλείνει το pool (defer αμέσως μετά το Open)</td></tr>
+        <tr><td><code class="inline">db.Begin()</code></td><td>Ξεκινά transaction → *sql.Tx</td></tr>
+        <tr><td><code class="inline">tx.Commit()</code></td><td>Επιβεβαιώνει μόνιμα το transaction</td></tr>
+        <tr><td><code class="inline">tx.Rollback()</code></td><td>Ακυρώνει το transaction</td></tr>
+        <tr><td><code class="inline">db.Exec / tx.Exec(query, args...)</code></td><td>INSERT/UPDATE/DELETE → sql.Result</td></tr>
+        <tr><td><code class="inline">result.RowsAffected()</code></td><td>Πόσες γραμμές επηρεάστηκαν</td></tr>
+        <tr><td><code class="inline">db.QueryRow / tx.QueryRow(...)</code></td><td>SELECT με 0 ή 1 αναμενόμενη γραμμή → *sql.Row</td></tr>
+        <tr><td><code class="inline">row.Scan(&dest...)</code></td><td>Αντιγράφει στήλες σε μεταβλητές· επιστρέφει error</td></tr>
+        <tr><td><code class="inline">db.Query / tx.Query(...)</code></td><td>SELECT με πολλές πιθανές γραμμές → *sql.Rows</td></tr>
+        <tr><td><code class="inline">rows.Next()</code></td><td>Προχωρά στην επόμενη γραμμή, false όταν τελειώσουν</td></tr>
+        <tr><td><code class="inline">rows.Scan(&dest...)</code></td><td>Ίδιο με row.Scan, μέσα στον βρόχο</td></tr>
+        <tr><td><code class="inline">rows.Close()</code></td><td>ΠΑΝΤΑ defer αμέσως μετά από Query</td></tr>
+        <tr><td><code class="inline">rows.Err()</code></td><td>Έλεγξε ΜΕΤΑ τον βρόχο for rows.Next()</td></tr>
+        <tr><td><code class="inline">sql.ErrNoRows</code></td><td>Ειδικό error όταν QueryRow δεν βρίσκει γραμμή</td></tr>
+        <tr><td><code class="inline">?</code> placeholder</td><td>Parameterized query — αποφυγή SQL injection</td></tr>
+      </table>
+
+      <div class="card note">
+        <p>Στη σειρά: <code class="inline">Open → Begin → (Exec / QueryRow / Query μέσω tx) → Commit</code>,
+        με <code class="inline">defer tx.Rollback()</code> ως δίχτυ ασφαλείας αμέσως μετά το
+        <code class="inline">Begin</code>.</p>
+      </div>
+    </div>
+  `
+    });
+
+  </script>
+  <script>
+    /* ── section 11 · final combined quiz + sources ─────────────────────────── ⊃ */
+
+    window.SLIDES.push({
+      type: 'final-quiz-intro',
+      section: '11 · Τελικό Quiz',
+      html: `
+    <div class="content" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;">
+      <div class="eyebrow">Τελικό συνδυαστικό quiz</div>
+      <h1 style="font-size:38px;">Όλα μαζί</h1>
+      <p style="max-width:600px;">Οκτώ ερωτήσεις που συνδυάζουν όσα είδαμε — από τη σχεσιακή θεωρία μέχρι
+      τα transactions στη Go. Κάθε σωστή απάντηση συνοδεύεται από εξήγηση.</p>
+    </div>
+  `
+    });
+
+    window.FINAL_QUIZ = [
+      {
+        q: 'Ποια δηλωτική (declarative) εντολή SQL θα χρησιμοποιούσες μέσα σε ένα Go handler για να πάρεις μόνο τον αριθμό των likes ενός συγκεκριμένου post, ως μία τιμή;',
+        options: [
+          'SELECT * FROM reactions WHERE post_id = ? AND value = \'like\'',
+          'SELECT COUNT(*) FROM reactions WHERE post_id = ? AND value = \'like\'',
+          'SELECT COUNT(post_id) FROM reactions GROUP BY value',
+          'UPDATE reactions SET value = \'like\' WHERE post_id = ?'
+        ],
+        correct: 1,
+        explain: 'Το SELECT COUNT(*) ... WHERE ... επιστρέφει ακριβώς μία γραμμή με έναν αριθμό — ιδανικό για QueryRow().Scan(&likes) στη Go, χωρίς να χρειάζεται βρόχος rows.Next().'
+      },
+      {
+        q: 'Γιατί το WHERE value = NULL δεν πιάνει ποτέ γραμμές, ακόμα κι αν υπάρχουν πράγματι γραμμές με NULL στη στήλη value;',
+        options: [
+          'Επειδή το NULL αντιπροσωπεύει άγνωστη τιμή και καμία σύγκριση ισότητας με NULL δεν αξιολογείται ως αληθής',
+          'Επειδή η στήλη value στο schema της άσκησης έχει πάντα NOT NULL constraint που το εμποδίζει',
+          'Επειδή το = λειτουργεί μόνο με αριθμητικές τιμές και όχι με το ειδικό keyword NULL',
+          'Επειδή χρειάζεται πρώτα CAST(NULL AS TEXT) για να λειτουργήσει σωστά η σύγκριση'
+        ],
+        correct: 0,
+        explain: 'Το NULL δεν είναι "τιμή" — είναι απουσία τιμής/άγνωστο. Καμία σύγκριση με αυτό (ούτε καν NULL=NULL) δεν επιστρέφει TRUE· χρειάζεται IS NULL / IS NOT NULL.'
+      },
+      {
+        q: 'Ποια είναι η βασική διαφορά ανάμεσα σε WHERE και HAVING όταν χρησιμοποιείς GROUP BY;',
+        options: [
+          'Το HAVING είναι απλά συνώνυμο του WHERE, χωρίς καμία πρακτική διαφορά μεταξύ τους',
+          'Το WHERE φιλτράρει μεμονωμένες γραμμές πριν την ομαδοποίηση, ενώ το HAVING φιλτράρει ολόκληρες ομάδες μετά τον υπολογισμό των aggregate functions',
+          'Το WHERE μπορεί να χρησιμοποιηθεί μόνο μαζί με JOIN, ενώ το HAVING μόνο χωρίς JOIN',
+          'Το HAVING επιτρέπεται μόνο σε εντολές INSERT, ποτέ σε SELECT'
+        ],
+        correct: 1,
+        explain: 'Σειρά εκτέλεσης: FROM → WHERE (ανά γραμμή) → GROUP BY → aggregate functions → HAVING (ανά ομάδα) → SELECT. Μόνο το HAVING μπορεί να αναφέρεται σε αποτελέσματα aggregate functions στη συνθήκη του.'
+      },
+      {
+        q: 'Το schema.sql της άσκησης ΔΕΝ έχει UNIQUE(user_id, post_id). Τι σημαίνει αυτό για τον κώδικα που θα γράψεις στο setReaction;',
+        options: [
+          'Τίποτα ιδιαίτερο — η SQLite προσθέτει αυτόματα ισοδύναμο έλεγχο σε κάθε πίνακα από προεπιλογή',
+          'Ότι η βάση δεν θα εμποδίσει ποτέ αυτόματα διπλές γραμμές για το ίδιο ζεύγος· η ευθύνη μεταφέρεται εξ ολοκλήρου στη λογική που θα γράψεις εσύ',
+          'Ότι είναι αδύνατο να υπάρξει ποτέ δεύτερη γραμμή για το ίδιο ζεύγος, ανεξαρτήτως του τι κάνει ο κώδικάς σου',
+          'Ότι πρέπει υποχρεωτικά να χρησιμοποιήσεις FOREIGN KEY αντί για UNIQUE για να λύσεις το πρόβλημα'
+        ],
+        correct: 1,
+        explain: 'Χωρίς το constraint, η βάση δεν έχει κανέναν ενσωματωμένο μηχανισμό να εμποδίσει διπλότυπα ζεύγη (user_id, post_id) — αυτό πρέπει να το διασφαλίσει η λογική σου, μέσα σε transaction.'
+      },
+      {
+        q: 'Γιατί το idiom defer tx.Rollback() τοποθετείται αμέσως μετά το db.Begin(), ακόμα κι όταν αναμένεις το transaction να καταλήξει σε επιτυχές Commit;',
+        options: [
+          'Ώστε κάθε αλλαγή να ακυρώνεται πάντα, ανεξαρτήτως αποτελέσματος, διατηρώντας τη βάση αμετάβλητη',
+          'Ως δίχτυ ασφαλείας: αν η συνάρτηση επιστρέψει νωρίς λόγω σφάλματος πριν το Commit, καθαρίζει αυτόματα το μισοτελειωμένο transaction — και μετά από επιτυχές Commit είναι αβλαβές',
+          'Επειδή το compiler της Go απαιτεί υποχρεωτικά ένα deferred Rollback μετά από κάθε Begin',
+          'Επειδή το Rollback ενεργοποιεί τη σύνδεση με τη βάση δεδομένων πριν μπορέσει να γίνει οποιοδήποτε Exec'
+        ],
+        correct: 1,
+        explain: 'Το defer εγγυάται εκτέλεση σε κάθε μονοπάτι εξόδου. Αν κάτι αποτύχει πριν το Commit, το Rollback καθαρίζει· αν έχει ήδη γίνει Commit, το επακόλουθο Rollback απλά αγνοείται αβλαβώς.'
+      },
+      {
+        q: 'Ποια ιδιότητα του ACID εγγυάται ότι, όσο ένα transaction δεν έχει κάνει commit, κανένα άλλο query δεν βλέπει τις ημιτελείς αλλαγές του — μόνο την προηγούμενη committed κατάσταση;',
+        options: [
+          'Durability',
+          'Consistency',
+          'Isolation',
+          'Atomicity'
+        ],
+        correct: 2,
+        explain: 'Αυτή είναι ακριβώς η Isolation: τα ταυτόχρονα transactions δεν "βλέπουν" το ένα τις μερικές αλλαγές του άλλου πριν από commit — μόνο την τελευταία committed κατάσταση.'
+      },
+      {
+        q: 'Γιατί χρησιμοποιούμε ? placeholders (parameterized queries) αντί να "κολλάμε" τιμές απευθείας μέσα στο SQL string με concatenation;',
+        options: [
+          'Για να τρέχει το query ταχύτερα σε κάθε περίπτωση, ανεξαρτήτως μεγέθους δεδομένων',
+          'Για να αποφευχθεί το SQL injection — ο driver χειρίζεται την τιμή ως δεδομένο, ποτέ ως εκτελέσιμο κομμάτι της εντολής',
+          'Επειδή η SQLite συγκεκριμένα δεν υποστηρίζει καθόλου string concatenation στα queries',
+          'Επειδή το database/sql απαιτεί υποχρεωτικά τουλάχιστον έναν placeholder σε κάθε εντολή'
+        ],
+        correct: 1,
+        explain: 'Με placeholders, ο driver ξέρει με βεβαιότητα ότι η τιμή είναι δεδομένο, όχι κομμάτι SQL εντολής — έτσι αποτρέπεται το SQL injection ό,τι κι αν περιέχει το input.'
+      },
+      {
+        q: 'Στη Go, γιατί η μέθοδος QueryRow δεν επιστρέφει error ως ξεχωριστή δεύτερη τιμή (σε αντίθεση με το Exec ή το Query), αλλά «κρύβει» το ενδεχόμενο error μέσα στο επιστρεφόμενο αντικείμενο;',
+        options: [
+          'Επειδή το QueryRow δεν μπορεί ποτέ στην πράξη να αποτύχει, αφού πάντα υπάρχει ακριβώς μία γραμμή αποτελέσματος',
+          'Ώστε να είναι δυνατή η σύντομη αλυσιδωτή κλήση QueryRow(...).Scan(&x) — το error "ενεργοποιείται" μόνο όταν καλέσεις Scan πάνω στο επιστρεφόμενο *sql.Row',
+          'Επειδή το πακέτο database/sql θεωρεί το QueryRow παρωχημένο και προτείνει πάντα το Query',
+          'Επειδή το error σε αυτή την περίπτωση προκαλεί πάντα panic αντί να επιστρέφεται κανονικά'
+        ],
+        correct: 1,
+        explain: 'Σχεδιαστική επιλογή για εργονομία: το *sql.Row "κουβαλάει" το ενδεχόμενο error μέχρι να καλέσεις .Scan(), επιτρέποντας τη σύντομη αλυσίδα QueryRow(...).Scan(&x) χωρίς ενδιάμεσο if err != nil.'
+      }
+    ];
+
+    window.SLIDES.push({
+      type: 'final-quiz-result',
+      section: '11 · Αποτέλεσμα',
+      html: `<!-- populated dynamically by engine -->`
+    });
+
+    window.SLIDES.push({
+      type: 'content',
+      section: 'Πηγές',
+      title: 'Πηγές & Credits',
+      html: `
+    <div class="content">
+      <ul class="sources">
+        <li>📘 <a href="https://go.dev/tour/" target="_blank">go.dev/tour</a> — Επίσημο interactive tutorial της Go (A Tour of Go)</li>
+        <li>📗 <a href="https://go101.org/" target="_blank">go101.org</a> — Εις βάθος, ανεξάρτητες σημειώσεις πάνω στα εσωτερικά της Go</li>
+        <li>📙 <a href="https://pkg.go.dev/database/sql" target="_blank">pkg.go.dev/database/sql</a> — Επίσημη τεκμηρίωση του πακέτου</li>
+      </ul>
+      <p style="margin-top:50px;font-size:16px;color:var(--dark-slate-grey);">
+      Αυτό το presentation δημιουργήθηκε από τον <strong>avgerinos8</strong>, Zone01 Athens.</p>
+    </div>
+  `
+    });
+
+  </script>
+  <script>
+    /* ── deck engine · rendering, navigation, quiz logic ────────────────────── ⊃ */
+
+    (function () {
+      let current = 0;
+      let finalQuizIndex = 0;
+      let finalQuizScore = 0;
+      let finalQuizAnswers = []; // per-question chosen index or null
+
+      const deckEl = document.getElementById('deck');
+      const dotsEl = document.getElementById('dots');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const progressFill = document.getElementById('progressFill');
+      const counterEl = document.getElementById('slideCounter');
+
+      /* ── build DOM for every slide once ───────────────────────────────────── ⊃ */
+      function buildSlideElement(slide, idx) {
+        const el = document.createElement('div');
+        el.className = 'slide';
+        el.dataset.index = idx;
+
+        if (slide.type === 'title') {
+          el.classList.add('title-slide');
+          el.innerHTML = slide.html;
+        } else if (slide.type === 'content') {
+          el.innerHTML = `
+        <div class="eyebrow">${slide.section}</div>
+        <h2>${slide.title}</h2>
+        ${slide.html}
+      `;
+        } else if (slide.type === 'quiz') {
+          el.classList.add('quiz-slide');
+          el.innerHTML = renderQuizBody(slide);
+          wireQuizOptions(el, slide);
+        } else if (slide.type === 'final-quiz-intro') {
+          el.innerHTML = slide.html;
+        } else if (slide.type === 'final-quiz-result') {
+          el.dataset.finalResult = 'true';
+          el.innerHTML = `<div class="content"><div class="final-score-box" id="finalScoreBox"></div></div>`;
+        }
+        return el;
+      }
+
+      function renderQuizBody(slide) {
+        const letters = ['Α', 'Β', 'Γ', 'Δ'];
+        return `
+      <div class="eyebrow">${slide.section}</div>
+      <div class="quiz-badge">QUIZ CHECKPOINT</div>
+      <div class="quiz-q">${slide.question}</div>
+      <div class="quiz-options">
+        ${slide.options.map((opt, i) => `
+          <button class="quiz-opt" data-idx="${i}">${letters[i]}. ${opt}</button>
+        `).join('')}
+      </div>
+      <div class="quiz-explain" id="explain-${slide.__uid}"></div>
+    `;
+      }
+
+      function wireQuizOptions(el, slide) {
+        const buttons = el.querySelectorAll('.quiz-opt');
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (el.dataset.answered === 'true') return;
+            el.dataset.answered = 'true';
+            const chosen = parseInt(btn.dataset.idx, 10);
+            buttons.forEach(b => {
+              b.classList.add('disabled');
+              const bi = parseInt(b.dataset.idx, 10);
+              if (bi === slide.correct) b.classList.add('correct');
+              else if (bi === chosen) b.classList.add('wrong');
+            });
+            const explainEl = el.querySelector('.quiz-explain');
+            explainEl.textContent = slide.explain;
+            explainEl.classList.add('show');
+          });
+        });
+      }
+
+      /* ── final quiz (multi-question flow inside one slide) ───────────────── ⊃ */
+      function renderFinalQuizQuestion() {
+        const box = document.querySelector('.slide[data-final-result="true"] #finalScoreBox') ||
+          document.querySelector('#finalScoreBox');
+        const total = window.FINAL_QUIZ.length;
+
+        if (finalQuizIndex >= total) {
+          renderFinalScore();
+          return;
+        }
+
+        const q = window.FINAL_QUIZ[finalQuizIndex];
+        const letters = ['Α', 'Β', 'Γ', 'Δ'];
+        box.parentElement.innerHTML = `
+      <div class="content">
+        <div class="final-quiz-progress">Ερώτηση ${finalQuizIndex + 1} / ${total}</div>
+        <div class="quiz-q">${q.q}</div>
+        <div class="quiz-options">
+          ${q.options.map((opt, i) => `<button class="quiz-opt" data-idx="${i}">${letters[i]}. ${opt}</button>`).join('')}
+        </div>
+        <div class="quiz-explain" id="finalExplain"></div>
+        <button class="nav-btn" id="finalNextBtn" style="display:none;margin-top:20px;">Επόμενη ερώτηση →</button>
+      </div>
+    `;
+
+        const buttons = document.querySelectorAll('.quiz-opt');
+        const explainEl = document.getElementById('finalExplain');
+        const nextQBtn = document.getElementById('finalNextBtn');
+        let answered = false;
+
+        buttons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            if (answered) return;
+            answered = true;
+            const chosen = parseInt(btn.dataset.idx, 10);
+            if (chosen === q.correct) finalQuizScore++;
+            buttons.forEach(b => {
+              b.classList.add('disabled');
+              const bi = parseInt(b.dataset.idx, 10);
+              if (bi === q.correct) b.classList.add('correct');
+              else if (bi === chosen) b.classList.add('wrong');
+            });
+            explainEl.textContent = q.explain;
+            explainEl.classList.add('show');
+            nextQBtn.style.display = 'inline-block';
+          });
+        });
+
+        nextQBtn.addEventListener('click', () => {
+          finalQuizIndex++;
+          renderFinalQuizQuestion();
+        });
+      }
+
+      function renderFinalScore() {
+        const total = window.FINAL_QUIZ.length;
+        const box = document.querySelector('#finalScoreBox') || document.querySelector('.slide[data-final-result="true"] .content');
+        const pct = Math.round((finalQuizScore / total) * 100);
+        let verdict;
+        if (pct === 100) verdict = 'Τέλεια κατανόηση — έτοιμος/η για την άσκηση!';
+        else if (pct >= 75) verdict = 'Πολύ καλή βάση — ρίξε μια ματιά στα σημεία που έχασες.';
+        else if (pct >= 50) verdict = 'Καλή αρχή — αξίζει να ξαναδείς 1-2 ενότητες.';
+        else verdict = 'Χρειάζεται περισσότερη μελέτη πριν την άσκηση — γύρνα πίσω στις ενότητες.';
+
+        box.parentElement.innerHTML = `
+      <div class="content">
+        <div class="final-score-box">
+          <div class="eyebrow">Τελικό αποτέλεσμα</div>
+          <div class="big">${finalQuizScore} / ${total}</div>
+          <p style="font-size:20px;margin-top:12px;">${verdict}</p>
+        </div>
+      </div>
+    `;
+      }
+
+      /* ── navigation core ───────────────────────────────────────────────────── ⊃ */
+      function renderDots() {
+        dotsEl.innerHTML = '';
+        window.SLIDES.forEach((s, i) => {
+          const d = document.createElement('button');
+          d.className = 'dot' + (s.type === 'quiz' || s.type.startsWith('final-quiz') ? ' quiz-dot' : '');
+          d.addEventListener('click', () => goTo(i));
+          dotsEl.appendChild(d);
+        });
+      }
+
+      function updateChrome() {
+        const total = window.SLIDES.length;
+        counterEl.textContent = `${current + 1} / ${total}`;
+        progressFill.style.width = `${((current + 1) / total) * 100}%`;
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === total - 1;
+        Array.from(dotsEl.children).forEach((d, i) => d.classList.toggle('active', i === current));
+      }
+
+      function goTo(idx) {
+        if (idx < 0 || idx >= window.SLIDES.length) return;
+        const slides = Array.from(deckEl.children);
+        slides[current].classList.remove('active');
+        current = idx;
+        slides[current].classList.add('active');
+
+        // lazy-trigger final quiz start when entering the intro slide's *next* slide
+        if (window.SLIDES[current].type === 'final-quiz-result' && finalQuizIndex === 0 && finalQuizScore === 0 && !window.__finalQuizStarted) {
+          window.__finalQuizStarted = true;
+          renderFinalQuizQuestion();
+        }
+
+        updateChrome();
+        deckEl.scrollTop = 0;
+      }
+
+      function init() {
+        window.SLIDES.forEach((slide, i) => {
+          slide.__uid = i;
+          const el = buildSlideElement(slide, i);
+          deckEl.appendChild(el);
+        });
+        deckEl.children[0].classList.add('active');
+        renderDots();
+        updateChrome();
+
+        prevBtn.addEventListener('click', () => goTo(current - 1));
+        nextBtn.addEventListener('click', () => goTo(current + 1));
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight') goTo(current + 1);
+          if (e.key === 'ArrowLeft') goTo(current - 1);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+
+  </script>
+
+</body>
+
+</html>
