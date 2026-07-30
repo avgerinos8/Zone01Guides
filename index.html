@@ -1,35 +1,186 @@
 <!DOCTYPE html>
 <html lang="el">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avgerinos8 | Ευρετήριο</title>
+    <title>Avgerinos8 | Netrunner Terminal</title>
     <style>
-        /* Απλό, καθαρό dark mode */
-        body {
-            font-family: sans-serif;
-            background-color: #0d1117;
-            color: #c9d1d9;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 0 20px;
+        /* Cyberpunk CLI Theme - Cyan & Purple */
+        @import url('https://googleapis.com');
+
+        * {
+            box-sizing: border-box;
         }
-        h1 { color: #58a6ff; border-bottom: 1px solid #21262d; padding-bottom: 10px; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin: 15px 0; padding: 10px; background: #161b22; border-radius: 6px; }
-        a { color: #58a6ff; text-decoration: none; font-weight: bold; }
-        a:hover { text-decoration: underline; }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: #0b0514;
+            /* Deep purple/black background */
+            color: #00ffff;
+            /* Neon Cyan */
+            max-width: 850px;
+            /* Slightly wider to accommodate large ASCII art */
+            margin: 40px auto;
+            padding: 0 20px;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Clean, Modern Terminal Header */
+        .terminal-header {
+            border-bottom: 2px solid #bd00ff;
+            /* Neon Purple line */
+            padding-bottom: 20px;
+            margin-top: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px -5px rgba(189, 0, 255, 0.5);
+        }
+
+        .status-line {
+            font-size: 0.9rem;
+            color: #bd00ff;
+            /* Purple accent for secondary info */
+            text-shadow: 0 0 5px rgba(189, 0, 255, 0.3);
+            text-align: center;
+            /* Center alignment for the status row */
+        }
+
+        /* Centering Container for ASCII Art */
+        .ascii-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            overflow-x: auto;
+            /* Fallback scrollbar for smaller screens */
+            margin-bottom: 20px;
+        }
+
+        /* ASCII Art Styling */
+        .ascii-art {
+            margin: 0 auto;
+            font-size: 8px;
+            color: rgba(189, 0, 255, 0.7);
+            line-height: 1.2;
+            white-space: pre;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .prompt {
+            color: #bd00ff;
+            /* Purple command prompt */
+            text-shadow: 0 0 5px rgba(189, 0, 255, 0.4);
+            font-weight: bold;
+        }
+
+        /* Link List */
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 18px 0;
+            position: relative;
+        }
+
+        /* CLI Action Buttons */
+        a {
+            display: block;
+            color: #00ffff;
+            text-decoration: none;
+            padding: 14px 18px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            background: rgba(18, 10, 31, 0.6);
+            border-radius: 6px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Hover effect: Vibrant Cyan/Purple Highlight with subtle translation */
+        a:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.1);
+            transform: translateX(6px);
+        }
+
+        /* Dynamic metadata badge inside the button */
+        .tag {
+            float: right;
+            color: #bd00ff;
+            font-size: 0.8rem;
+            border: 1px solid rgba(189, 0, 255, 0.4);
+            padding: 1px 6px;
+            border-radius: 4px;
+            transition: all 0.25s ease;
+        }
+
+        a:hover .tag {
+            color: #00ffff;
+            border-color: #00ffff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        /* Blinking Terminal Cursor */
+        .cursor {
+            display: inline-block;
+            background-color: #00ffff;
+            width: 10px;
+            height: 18px;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <h1>Zone01 Guides | Avgerinos8 | GitHub Pages</h1>
-    <p>Επιλέξτε έναν από τους παρακάτω οδηγούς:</p>
+    <header class="terminal-header">
+        <div class="status-line">USER: pavgerin // ACCESS_LEVEL: LEARNER_ // HOST: avgerinos8.github.io/Zone01Guides/
+        </div>
+    </header>
+
+    <!-- Wrapper for perfect responsive centering -->
+    <div class="ascii-container">
+        <pre class="ascii-art">
+ 8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                    
+       d88P                                           d88P  Y88b  d8888              d88P  Y88b            888       888                     
+      d88P                                            888    888    888              888    888                      888                     
+     d88P      .d88b.   88888b.    .d88b.             888    888    888              888         888  888 "888   .d88888   .d88b.   .d8888b  
+    d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              888  88888  888  888  888  d88" 888  d8P  Y8b  88K      
+   d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  88888888  "Y8888b. 
+  d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888              Y88b  d88P  Y88b 888  888  Y88b 888  Y8b.           X88 
+ d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888             "Y8888P88   "Y88888  888   "Y88888   "Y8888    88888P'  </pre>
+    </div>
+
+    <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor"></span></p>
+    <p style="color: rgba(0, 255, 255, 0.6); font-size: 0.9rem; margin-bottom: 25px;">SELECT TARGET MODULE FOR
+        DEPLOYMENT:</p>
 
     <ul>
-        <li>🔗 <a href="00-goroutines-channels.html">00. Goroutines & Channels</a></li>
-        <li>🔗 <a href="01-go_networking_theory.html">01. NETCAT Go Networking Theory</a></li>
+        <li>
+            <a href="00-goroutines-channels.html">
+                &gt; ./00_goroutines_channels.sh <span class="tag">[CONCURRENCY]</span>
+            </a>
+        </li>
+        <li>
+            <a href="01-go_networking_theory.html">
+                &gt; ./01_netcat_networking_theory.sh <span class="tag">[NETWORKING] + [CONCURRENCY]</span>
+            </a>
+        </li>
+        <li>
+            <a href="02-SQL-go-database-notes.html">
+                &gt; ./02_queries_database_sql.sh <span class="tag">[DATABASE]</span>
+            </a>
+        </li>
     </ul>
 
 </body>
+
 </html>
