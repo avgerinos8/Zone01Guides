@@ -102,6 +102,7 @@ function decorateCodeBlocks(container) {
 
 // ── storage keys and state persistence ──────────────────────────────────── ⊃
 let savedAnswers = {};
+let savedScores = {}; // storeKey -> 0 | 50 | 100, see computeTotalScore()
 let current = 0;
 let activeCourseVersion = "1.0.0";
 
@@ -128,11 +129,13 @@ function checkCourseVersion(courseVersion) {
   if (savedVersion !== courseVersion) {
     localStorage.removeItem(prefix + "current_slide");
     localStorage.removeItem(prefix + "answers");
+    localStorage.removeItem(prefix + "scores");
     localStorage.setItem(versionKey, courseVersion);
   }
 
   current = parseInt(localStorage.getItem(prefix + "current_slide")) || 0;
   savedAnswers = JSON.parse(localStorage.getItem(prefix + "answers")) || {};
+  savedScores = JSON.parse(localStorage.getItem(prefix + "scores")) || {};
 }
 
 /**
@@ -144,12 +147,108 @@ function persistAnswers() {
 }
 
 /**
+ * Persists score state (0/50/100 per storeKey) to local storage.
+ */
+function persistScores() {
+  localStorage.setItem(getStoragePrefix() + "scores", JSON.stringify(savedScores));
+}
+
+/**
  * Persists current slide index to local storage using unique page prefix.
  * @param {number} slideIndex - Active slide index.
  */
 function persistCurrentSlide(slideIndex) {
   const prefix = getStoragePrefix();
   localStorage.setItem(prefix + "current_slide", slideIndex);
+}
+
+// ── scoring: 0 (wrong) / 50 (hint used) / 100 (correct) per storeKey ────── ⊃
+/**
+ * @param {number} pct
+ * @returns {"good"|"mid"|"bad"} CSS tier class matching existing --correct/--accent/--wrong tokens.
+ */
+function scoreTier(pct) {
+  if (pct >= 70) return "good";
+  if (pct >= 40) return "mid";
+  return "bad";
+}
+
+/**
+ * Builds a small "Score: N%" pill and appends it to a header row.
+ * @param {HTMLElement} headerEl
+ * @returns {HTMLElement} the badge element, update via refreshScoreBadge().
+ */
+function createScoreBadge(headerEl) {
+  const badge = document.createElement("span");
+  badge.className = "score-badge";
+  badge.textContent = "Score: —";
+  headerEl.appendChild(badge);
+  return badge;
+}
+
+/**
+ * Recomputes a slide's own score (average over its storeKeys) and updates the badge.
+ * @param {HTMLElement} badge
+ * @param {string[]} storeKeys - every storeKey that belongs to this slide.
+ */
+function refreshScoreBadge(badge, storeKeys) {
+  const relevant = storeKeys.filter(k => savedScores[k] !== undefined);
+  badge.classList.remove("good", "mid", "bad");
+  if (relevant.length === 0) {
+    badge.textContent = "Score: —";
+    return;
+  }
+  const avg = Math.round(relevant.reduce((sum, k) => sum + savedScores[k], 0) / relevant.length);
+  badge.textContent = "Score: " + avg + "%";
+  badge.classList.add(scoreTier(avg));
+}
+
+/**
+ * @returns {{percent:number, answered:number, total:number}|null} null if nothing scored yet.
+ */
+function computeTotalScore() {
+  const vals = Object.values(savedScores);
+  let total = 0;
+  slides.forEach(s => {
+    if (s.type === "quiz") total += s.data.length;
+    else if (s.type === "fillblank") total += s.data.length;
+    else if (s.type === "matching") total += 1;
+  });
+  if (vals.length === 0) return null;
+  const percent = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+  return { percent, answered: vals.length, total };
+}
+
+/**
+ * Renders/updates the total-score box appended to the LAST slide of the deck.
+ * Called on init and every time the user navigates to the last slide.
+ */
+function updateTotalScoreDisplay() {
+  if (!slideEls || slideEls.length === 0) return; // not built yet — goTo() at end of init will catch it
+  const lastEl = slideEls[slideEls.length - 1];
+  if (!lastEl) return;
+  let box = lastEl.querySelector(".total-score-box");
+  const result = computeTotalScore();
+  if (!result) {
+    if (box) box.remove();
+    return;
+  }
+  if (!box) {
+    box = document.createElement("div");
+    box.className = "total-score-box";
+    lastEl.appendChild(box);
+  }
+  const tier = scoreTier(result.percent);
+  const messages = {
+    good: "Άψογα — τα πήγες πολύ καλά!",
+    mid: "Καλή προσπάθεια — ξαναδές μερικά σημεία.",
+    bad: "Χρειάζεται λίγο ακόμα διάβασμα, ξαναπροσπάθησε."
+  };
+  box.className = "total-score-box " + tier;
+  box.innerHTML =
+    `<div class="ts-percent">Score ${result.percent}%</div>` +
+    `<div class="ts-message">${messages[tier]}</div>` +
+    `<div class="ts-progress">Απαντήθηκαν ${result.answered} / ${result.total}</div>`;
 }
 
 // ── multiple-choice question renderer ───────────────────────────────────── ⊃
@@ -159,8 +258,9 @@ function persistCurrentSlide(slideIndex) {
  * @param {HTMLElement} box - Container element to append question to.
  * @param {Object} q - Question data object.
  * @param {string} storeKey - Unique key for local storage persistence.
+ * @param {Function} [onScored] - Called after this question's score is (re)written.
  */
-function renderQuestion(box, q, storeKey) {
+function renderQuestion(box, q, storeKey, onScored) {
   const order = q._order;
 
   const qDiv = document.createElement("div");
@@ -201,6 +301,10 @@ function renderQuestion(box, q, storeKey) {
     });
 
     explainDiv.classList.add("show");
+
+    savedScores[storeKey] = selectedIndex === q.correct ? 100 : 0;
+    persistScores();
+    if (onScored) onScored();
   }
 
   order.forEach(origIndex => {
@@ -238,14 +342,23 @@ function renderQuestion(box, q, storeKey) {
  * @param {Object} item - Exercise data item.
  * @param {string} storeKey - Unique key for local storage persistence.
  */
-function renderFillBlank(wrap, item, storeKey) {
+/**
+ * Renders one fill-in-the-blank exercise, including its "Reveal hint" button
+ * and score (100 correct / 50 if any hint was revealed / 0 wrong).
+ * @param {HTMLElement} wrap
+ * @param {Object} item - { code, blanks: [{id, answer}], explain }.
+ * @param {string} storeKey
+ * @param {Function} [onScored] - Called after this item's score is (re)written.
+ */
+function renderFillBlank(wrap, item, storeKey, onScored) {
   const box = document.createElement("div");
   box.className = "fb-item";
 
   const pre = document.createElement("pre");
   const codeEl = document.createElement("code");
 
-  const savedData = savedAnswers[storeKey] || { inputs: {}, checked: false };
+  const savedData = savedAnswers[storeKey] || { inputs: {}, checked: false, revealed: [] };
+  const revealedIds = new Set(savedData.revealed || []);
 
   const parts = item.code.split(/__([a-zA-Z0-9]+)__/g);
   for (let i = 0; i < parts.length; i++) {
@@ -265,7 +378,7 @@ function renderFillBlank(wrap, item, storeKey) {
       }
       inp.addEventListener("input", () => {
         if (!savedAnswers[storeKey]) {
-          savedAnswers[storeKey] = { inputs: {}, checked: false };
+          savedAnswers[storeKey] = { inputs: {}, checked: false, revealed: [] };
         }
         savedAnswers[storeKey].inputs[blankId] = inp.value;
         persistAnswers();
@@ -288,6 +401,53 @@ function renderFillBlank(wrap, item, storeKey) {
   actions.appendChild(resultSpan);
   box.appendChild(actions);
 
+  // "Reveal hint": shows ONE not-yet-revealed answer as plain text, for a
+  // currently-empty blank — never says which blank it belongs to. Repeated
+  // clicks reveal more, one at a time, until every blank has been revealed.
+  const hintsDiv = document.createElement("div");
+  hintsDiv.className = "fb-hints";
+  box.appendChild(hintsDiv);
+
+  const hintBtn = document.createElement("button");
+  hintBtn.className = "fb-hint-btn";
+  hintBtn.type = "button";
+  box.appendChild(hintBtn);
+
+  function renderHints() {
+    hintsDiv.innerHTML = "";
+    revealedIds.forEach(id => {
+      const answer = item.blanks.find(b => b.id === id)?.answer ?? "";
+      const line = document.createElement("div");
+      line.className = "fb-hint-line";
+      line.textContent = answer;
+      hintsDiv.appendChild(line);
+    });
+    const totalBlanks = item.blanks.length;
+    if (revealedIds.size >= totalBlanks) {
+      hintBtn.textContent = "Όλα αποκαλύφθηκαν";
+      hintBtn.disabled = true;
+    } else {
+      hintBtn.textContent = "Reveal hint (" + revealedIds.size + "/" + totalBlanks + ")";
+    }
+  }
+
+  hintBtn.addEventListener("click", () => {
+    const emptyIds = Array.from(box.querySelectorAll(".fb-blank"))
+      .filter(inp => inp.value.trim() === "")
+      .map(inp => inp.dataset.blankId)
+      .filter(id => !revealedIds.has(id));
+    if (emptyIds.length === 0) return;
+    revealedIds.add(emptyIds[0]);
+    if (!savedAnswers[storeKey]) {
+      savedAnswers[storeKey] = { inputs: {}, checked: false, revealed: [] };
+    }
+    savedAnswers[storeKey].revealed = Array.from(revealedIds);
+    persistAnswers();
+    renderHints();
+  });
+
+  renderHints();
+
   const explainDiv = document.createElement("div");
   explainDiv.className = "quiz-explain";
   explainDiv.innerHTML = item.explain;
@@ -304,15 +464,23 @@ function renderFillBlank(wrap, item, storeKey) {
       inp.disabled = true;
       if (!ok) allCorrect = false;
     });
-    resultSpan.textContent = allCorrect ? "ΣΩΣΤΟ!" : "Υπάρχουν λάθη — δες τα κόκκινα κενά.";
-    resultSpan.className = "fb-result " + (allCorrect ? "ok" : "bad");
+    const usedHint = revealedIds.size > 0;
+    resultSpan.textContent = allCorrect
+      ? (usedHint ? "ΣΩΣΤΟ! (με hint — 50%)" : "ΣΩΣΤΟ!")
+      : "Υπάρχουν λάθη — δες τα κόκκινα κενά.";
+    resultSpan.className = "fb-result " + (allCorrect && !usedHint ? "ok" : "bad");
     explainDiv.classList.add("show");
     checkBtn.disabled = true;
+    hintBtn.disabled = true;
+
+    savedScores[storeKey] = usedHint ? 50 : (allCorrect ? 100 : 0);
+    persistScores();
+    if (onScored) onScored();
   }
 
   checkBtn.addEventListener("click", () => {
     if (!savedAnswers[storeKey]) {
-      savedAnswers[storeKey] = { inputs: {}, checked: false };
+      savedAnswers[storeKey] = { inputs: {}, checked: false, revealed: [] };
     }
     box.querySelectorAll(".fb-blank").forEach(inp => {
       savedAnswers[storeKey].inputs[inp.dataset.blankId] = inp.value;
@@ -333,12 +501,14 @@ function renderFillBlank(wrap, item, storeKey) {
 /**
  * Renders a matching-pairs exercise separating solved pairs from active options.
  * Displays matched pairs side-by-side with a visual connecting line.
+ * Score = percentage of pairs matched so far (100 once all are solved).
  * @param {HTMLElement} wrap - Container element to append exercise to.
  * @param {Array} pairs - Array of term-definition matching objects.
  * @param {number} seed - Seed used for shuffling options deterministically.
  * @param {string} storeKey - Unique key for local storage persistence.
+ * @param {Function} [onScored] - Called after this slide's score is (re)written.
  */
-function renderMatching(wrap, pairs, seed, storeKey) {
+function renderMatching(wrap, pairs, seed, storeKey, onScored) {
   const container = document.createElement("div");
   container.className = "matching-container";
 
@@ -360,6 +530,9 @@ function renderMatching(wrap, pairs, seed, storeKey) {
   const rightOrder = shuffleSeed(pairs.map((_, i) => i), seed + 101);
 
   const matchedPairs = new Set(savedAnswers[storeKey] || []);
+  if (matchedPairs.size > 0) {
+    savedScores[storeKey] = Math.round((matchedPairs.size / pairs.length) * 100);
+  }
   let selected = null;
 
   function createMatchedRow(pairIndex) {
@@ -431,6 +604,10 @@ function renderMatching(wrap, pairs, seed, storeKey) {
       matchedPairs.add(pairIndex);
       savedAnswers[storeKey] = Array.from(matchedPairs);
       persistAnswers();
+
+      savedScores[storeKey] = Math.round((matchedPairs.size / pairs.length) * 100);
+      persistScores();
+      if (onScored) onScored();
     } else {
       const a = selected.btn, b = btn;
       a.classList.add("flash-wrong");
@@ -476,6 +653,12 @@ function renderMatching(wrap, pairs, seed, storeKey) {
  * @param {Object} [opts] - Optional configuration options.
  * @returns {HTMLButtonElement} Created reset button element.
  */
+/**
+ * @param {HTMLElement} el
+ * @param {string} defaultLabel
+ * @param {Object} [opts]
+ * @returns {{resetBtn: HTMLButtonElement, scoreBadge: HTMLElement}}
+ */
 function buildInteractiveHeader(el, defaultLabel, opts) {
   const header = document.createElement("div");
   header.className = "quiz-head-row";
@@ -483,12 +666,18 @@ function buildInteractiveHeader(el, defaultLabel, opts) {
   eyebrow.className = "eyebrow";
   eyebrow.style.marginBottom = "0";
   eyebrow.textContent = (opts && opts.label) || defaultLabel;
+
+  const rightGroup = document.createElement("div");
+  rightGroup.className = "quiz-head-right";
+  const scoreBadge = createScoreBadge(rightGroup);
   const resetQuizBtn = document.createElement("button");
   resetQuizBtn.className = "reset-quiz-btn";
   resetQuizBtn.type = "button";
   resetQuizBtn.textContent = "↺ Reset this quiz";
+  rightGroup.appendChild(resetQuizBtn);
+
   header.appendChild(eyebrow);
-  header.appendChild(resetQuizBtn);
+  header.appendChild(rightGroup);
   el.appendChild(header);
 
   if (opts && opts.note) {
@@ -499,7 +688,7 @@ function buildInteractiveHeader(el, defaultLabel, opts) {
     el.appendChild(note);
   }
 
-  return resetQuizBtn;
+  return { resetBtn: resetQuizBtn, scoreBadge };
 }
 
 // ── slide renderer and type dispatcher ─────────────────────────────────── ⊃
@@ -525,7 +714,9 @@ function renderSlide(el, slide, idx) {
 
   if (slide.type === "quiz") {
     el.innerHTML = "";
-    const resetQuizBtn = buildInteractiveHeader(el, "Quiz Checkpoint", slide.opts);
+    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Quiz Checkpoint", slide.opts);
+    const storeKeys = slide.data.map((_, qIdx) => idx + "_" + qIdx);
+    const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
 
     function renderAllQuestions() {
       el.querySelectorAll(".quiz-box").forEach(n => n.remove());
@@ -533,17 +724,20 @@ function renderSlide(el, slide, idx) {
         const box = document.createElement("div");
         box.className = "quiz-box";
         box.style.marginBottom = "18px";
-        renderQuestion(box, q, idx + "_" + qIdx);
+        renderQuestion(box, q, idx + "_" + qIdx, refresh);
         el.appendChild(box);
       });
+      refresh();
     }
 
     resetQuizBtn.addEventListener("click", () => {
       slide.data.forEach((q, qIdx) => {
         delete savedAnswers[idx + "_" + qIdx];
+        delete savedScores[idx + "_" + qIdx];
         q._order = shuffleSeed(q.options.map((_, i2) => i2), Date.now() % 100000 + qIdx);
       });
       persistAnswers();
+      persistScores();
       renderAllQuestions();
     });
 
@@ -553,20 +747,25 @@ function renderSlide(el, slide, idx) {
 
   if (slide.type === "fillblank") {
     el.innerHTML = "";
-    const resetQuizBtn = buildInteractiveHeader(el, "Fill in the Blank", slide.opts);
+    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Fill in the Blank", slide.opts);
+    const storeKeys = slide.data.map((_, itemIdx) => idx + "_fb_" + itemIdx);
+    const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
 
     function renderAllItems() {
       el.querySelectorAll(".fb-item").forEach(n => n.remove());
       slide.data.forEach((item, itemIdx) => {
-        renderFillBlank(el, item, idx + "_fb_" + itemIdx);
+        renderFillBlank(el, item, idx + "_fb_" + itemIdx, refresh);
       });
+      refresh();
     }
 
     resetQuizBtn.addEventListener("click", () => {
       slide.data.forEach((_, itemIdx) => {
         delete savedAnswers[idx + "_fb_" + itemIdx];
+        delete savedScores[idx + "_fb_" + itemIdx];
       });
       persistAnswers();
+      persistScores();
       renderAllItems();
     });
 
@@ -576,19 +775,24 @@ function renderSlide(el, slide, idx) {
 
   if (slide.type === "matching") {
     el.innerHTML = "";
-    const resetQuizBtn = buildInteractiveHeader(el, "Matching Pairs", slide.opts);
+    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Matching Pairs", slide.opts);
+    const storeKeys = [idx + "_match"];
+    const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
 
     let seed = idx * 17 + 3;
 
     function renderAllPairs() {
       el.querySelectorAll(".matching-container").forEach(n => n.remove());
-      renderMatching(el, slide.data, seed, idx + "_match");
+      renderMatching(el, slide.data, seed, idx + "_match", refresh);
+      refresh();
     }
 
     resetQuizBtn.addEventListener("click", () => {
       seed = Date.now() % 100000;
       delete savedAnswers[idx + "_match"];
+      delete savedScores[idx + "_match"];
       persistAnswers();
+      persistScores();
       renderAllPairs();
     });
 
@@ -624,6 +828,8 @@ function goTo(i) {
 
   prevBtn.disabled = current === 0;
   nextBtn.disabled = current === slides.length - 1;
+
+  if (current === slides.length - 1) updateTotalScoreDisplay();
 }
 
 /**
@@ -633,6 +839,7 @@ function performHardReset() {
   const prefix = getStoragePrefix();
   localStorage.removeItem(prefix + "current_slide");
   localStorage.removeItem(prefix + "answers");
+  localStorage.removeItem(prefix + "scores");
   localStorage.setItem(prefix + "version", activeCourseVersion);
   window.location.reload();
 }

@@ -541,6 +541,44 @@ pre code {
   margin-bottom: 14px;
 }
 
+/* Groups the score badge + reset button together on the right, so
+   justify-content:space-between above keeps them as one right-aligned
+   cluster instead of spreading 3 children across the row. */
+.quiz-head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Score badge — reuses --accent/--correct/--wrong, no new colors. */
+.score-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(var(--ink-rgb), 0.25);
+  color: rgba(var(--ink-rgb), 0.7);
+  white-space: nowrap;
+}
+
+.score-badge.good {
+  color: var(--correct);
+  border-color: var(--correct);
+  background: rgba(var(--correct-rgb), 0.12);
+}
+
+.score-badge.mid {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.12);
+}
+
+.score-badge.bad {
+  color: var(--wrong);
+  border-color: var(--wrong);
+  background: rgba(var(--wrong-rgb), 0.12);
+}
+
 .reset-quiz-btn {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -632,6 +670,102 @@ pre code {
 
 .fb-result.bad {
   color: var(--wrong);
+}
+
+/* Reveal-hint: each revealed answer gets its own dashed pill, stacked in a
+   column ABOVE the "Reveal hint" button — never says which blank it's for. */
+.fb-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.fb-hint-line {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.12);
+  border: 1px dashed rgba(var(--accent-rgb), 0.45);
+  border-radius: 6px;
+  padding: 5px 10px;
+  width: fit-content;
+}
+
+.fb-hint-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: transparent;
+  color: rgba(var(--ink-rgb), 0.65);
+  border: 1px dashed rgba(var(--ink-rgb), 0.35);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.fb-hint-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.fb-hint-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── total score box — auto-appended to the deck's last slide ───────────── ⊃ */
+.total-score-box {
+  margin-top: 30px;
+  padding: 22px 26px;
+  border-radius: 12px;
+  background: rgba(var(--panel-rgb), 0.4);
+  border: 1px solid rgba(var(--ink-rgb), 0.18);
+  max-width: 420px;
+}
+
+.total-score-box.good {
+  border-color: var(--correct);
+}
+
+.total-score-box.mid {
+  border-color: var(--accent);
+}
+
+.total-score-box.bad {
+  border-color: var(--wrong);
+}
+
+.total-score-box .ts-percent {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.total-score-box.good .ts-percent {
+  color: var(--correct);
+}
+
+.total-score-box.mid .ts-percent {
+  color: var(--accent);
+}
+
+.total-score-box.bad .ts-percent {
+  color: var(--wrong);
+}
+
+.total-score-box .ts-message {
+  font-size: 15px;
+  margin-top: 6px;
+  color: rgba(var(--ink-rgb), 0.85);
+}
+
+.total-score-box .ts-progress {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  margin-top: 10px;
+  color: rgba(var(--ink-rgb), 0.55);
 }
 
 /* ── glossary — 3 alternative layouts, generator picks per category ─────── ⊃ */
@@ -929,13 +1063,8 @@ li {
   border-radius: 5px;
 }
 
-/* ── mobile text toggle defaults ─────────────────────────────────────────── ⊃ */
-.mobile-text {
-  display: none;
-}
-
 /* ── compact navigation bar for screens under 500px ──────────────────────── ⊃ */
-@media (max-width: 500px) {
+@media (max-width: 600px) {
 
   /* Hide dots and slide counter entirely on small screens */
   #dots {
