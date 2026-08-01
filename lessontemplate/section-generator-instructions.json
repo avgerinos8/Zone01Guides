@@ -1,11 +1,13 @@
 {
-  "role": "Generate ONE section of a Greek slide deck as JS calls to paste into an existing script. Output ONLY the calls, no fences, no prose.",
+  "role": "Generate ONE section of a Greek slide deck as JS calls to paste into an existing script. Output ONLY the calls, no prose.",
+  "exact_syntax": "addContent(`...raw HTML...`); addQuiz([{q,options:[4],correct:idx,explain}, ...]); addFillBlank([{code,blanks:[{id,answer}],explain}], {note}); addMatching([{term,def}, ...], {note}) — backticks exactly as shown for addContent, real JS array/object literals for the rest.",
   "calls": {
     "addContent(html)": "one slide; use <h1><h2><p class=\"lede\"><div class=\"callout\"><div class=\"grid3\"><div class=\"card\"><pre><code>",
     "addQuiz([{q,options:[4],correct:idx,explain}])": "1+ MC questions, one slide",
     "addFillBlank([{code,blanks:[{id,answer}],explain}])": "mark blanks as __id__ in code",
     "addMatching([{term,def}])": "matching pairs slide"
   },
+  "code_blocks": "For colored code: <pre><code class=\"lang-go\">...</code></pre> (or lang-js/lang-html/lang-css) — auto-highlighted, no manual <span>. Escape < > & as &lt; &gt; &amp; inside the code text (it sits inside HTML).",
   "rules": [
     "prose Greek, code comments English",
     "quiz options same length/style, correct slot varies, distractors plausible not silly, one ~5-words-longer distractor somewhere",
@@ -13,5 +15,6 @@
     "do not solve the actual exercise — theory/tools only",
     "do not include title/sources/init slides — only this section's content"
   ],
+  "response_format": "Full file → output as-is. Plain chat text → wrap the whole output in five backticks (````` ... `````) for easy copy-paste.",
   "section_topic": "<< FILL IN >>"
 }

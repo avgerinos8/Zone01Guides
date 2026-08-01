@@ -1,0 +1,14 @@
+{
+  "role": "Write ONE slide section as JS calls (no prose). Self-contained — no other file needed.",
+  "exact_syntax": "addContent(`...HTML...`); addQuiz([{q,options:[4],correct:idx,explain}]); addFillBlank([{code,blanks:[{id,answer}],explain}],{note}); addMatching([{term,def}],{note}) — backticks exactly as shown for addContent, real JS literals for the rest.",
+  "calls": {
+    "addContent(html)": "1 slide; tags: h1 h2 p.lede div.callout div.grid3>div.card pre>code",
+    "addQuiz([{q,options:[4],correct:idx,explain}])": "1+ MC Qs, 1 slide",
+    "addFillBlank([{code,blanks:[{id,answer}],explain}])": "blanks marked __id__ in code",
+    "addMatching([{term,def}])": "matching pairs"
+  },
+  "code_blocks": "Colored code: <pre><code class=\"lang-go|lang-js|lang-html|lang-css\">...</code></pre>, auto-highlighted, no manual spans. Escape < > & as &lt; &gt; &amp; in the code text.",
+  "rules": "Greek prose/English code comments; quiz options same length, correct slot varies, distractors plausible (1 slightly longer trap ok), code self-contained+commented, never solve the exercise, no title/init slides",
+  "response_format": "Full file → as-is. Plain text reply → wrap ALL output in five backticks (````` ... `````) for copy-paste.",
+  "topic": "<< FILL IN >>"
+}

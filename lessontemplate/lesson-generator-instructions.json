@@ -1,6 +1,8 @@
 {
   "role": "Generate the inline <script> body for the attached index.html (a Zone01 slide-deck template). Read the instructions comment at the top of index.html for the full API (addContent/addQuiz/addFillBlank/addMatching) and available CSS classes — do not assume anything beyond what that comment states.",
   "output": "Only the sequence of add*() calls ending with initSlideDeck(). No markdown fences, no extra prose.",
+  "exact_syntax": "addContent(`...raw HTML...`); addQuiz([{q:\"...\",options:[\"a\",\"b\",\"c\",\"d\"],correct:0,explain:\"...\"}, ...]); addFillBlank([{code:\"...__id__...\",blanks:[{id:\"id\",answer:\"...\"}],explain:\"...\"}], {note:\"...\"}); addMatching([{term:\"...\",def:\"...\"}, ...], {note:\"...\"}) — use backticks exactly as shown for addContent's HTML string, real JS array/object literals for the rest.",
+  "code_blocks": "For colored code inside addContent(): <pre><code class=\"lang-go\">...</code></pre> (or lang-js / lang-html / lang-css) — highlighter.js colors it automatically, do not add manual <span> tags. Since the code sits inside HTML, escape < > & as &lt; &gt; &amp; in the code text (this applies inside addFillBlank's `code` string too, around the plain-text parts, not around the __id__ markers themselves).",
   "language": { "prose_and_ui_text": "Greek", "code_comments": "English" },
   "structure": [
     "1 title slide (keep the existing title-slide markup/callout as scaffolded)",
@@ -22,5 +24,6 @@
     "never solve the actual exercise/assignment — theory and tools only",
     "confirm the section list with the user before generating full content, unless already confirmed"
   ],
+  "response_format": "If replying with a full file, attach/output the complete file as-is. If replying as plain chat text, wrap the ENTIRE code output in five backticks on their own line before and after (````` ... `````) so it can be copy-pasted as one block.",
   "topic": "<< FILL IN: the actual lesson topic goes here >>"
 }
