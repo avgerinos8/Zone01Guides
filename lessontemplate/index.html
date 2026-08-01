@@ -48,7 +48,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>[TOPIC] — Θεωρητικό Υλικό</title>
-  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <link rel="stylesheet" href="style.css?v=20260801">
 </head>
 
 <body>
@@ -83,7 +83,8 @@
     </div>
   </div>
 
-  <script src="static/script.js?v=20260801"></script>
+  <script src="script.js?v=20260801"></script>
+  <script src="highlighter.js?v=20260801"></script>
   <script>
     // Course content below — see instructions comment at the top of this file.
 
@@ -152,8 +153,8 @@ someCode()
 <div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 1</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
-  <div class="gc-line"><span class="gc-term">[term1]</span> — <span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
-  <div class="gc-line"><span class="gc-term">[term2]</span> — <span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
+  <div class="gc-line"><span class="gc-term">[term1]</span><span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
+  <div class="gc-line"><span class="gc-term">[term2]</span><span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
 </div>
 `);
 
@@ -169,37 +170,37 @@ someCode()
 <p>[Δεύτερη παράγραφος — ιστορικό πλαίσιο, σύγκριση προσεγγίσεων, ή edge case.]</p>
 
 <h2>[Υποενότητα Β — παράδειγμα κώδικα]</h2>
-<p>Χρωματισμός στο χέρι με <code>&lt;span class="tok-*"&gt;</code>:</p>
+<p>Χρωματισμός με class=&quot;lang-go&quot; | &quot;lang-js&quot; | &quot;lang-html&quot; | &quot;lang-css&quot; on any &lt;code&gt; element (inside a &lt;pre&gt;, as usual)</p>
 
-<pre><code><span class="tok-kw">package</span> main
+<pre><code class="lang-go">package main
 
-<span class="tok-kw">import</span> (
-	<span class="tok-str">"fmt"</span>
-	<span class="tok-str">"sync"</span>
+import (
+	"fmt"
+	"sync"
 )
 
-<span class="tok-com">// [placeholder comment]</span>
-<span class="tok-kw">func</span> <span class="tok-func">worker</span>(id <span class="tok-type">int</span>, jobs &lt;-<span class="tok-kw">chan</span> <span class="tok-type">int</span>, results <span class="tok-kw">chan</span>&lt;- <span class="tok-type">int</span>, wg *sync.WaitGroup) {
-	<span class="tok-kw">defer</span> wg.Done()
-	<span class="tok-kw">for</span> j := <span class="tok-kw">range</span> jobs {
-		result := j * <span class="tok-num">2</span>
-		results &lt;- result
+// [placeholder comment]
+func worker(id int, jobs <-chan int, results chan<- int, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for j := range jobs {
+		result := j * 2
+		results <- result
 	}
-	fmt.<span class="tok-func">Println</span>(<span class="tok-str">"worker"</span>, id, <span class="tok-str">"finished"</span>)
+	fmt.Println("worker", id, "finished")
 }
 
-<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
-	jobs := <span class="tok-kw">make</span>(<span class="tok-kw">chan</span> <span class="tok-type">int</span>, <span class="tok-num">100</span>)
-	results := <span class="tok-kw">make</span>(<span class="tok-kw">chan</span> <span class="tok-type">int</span>, <span class="tok-num">100</span>)
-	<span class="tok-kw">var</span> wg sync.WaitGroup
+func main() {
+	jobs := make(chan int, 100)
+	results := make(chan int, 100)
+	var wg sync.WaitGroup
 
-	<span class="tok-kw">for</span> w := <span class="tok-num">1</span>; w &lt;= <span class="tok-num">3</span>; w++ {
-		wg.Add(<span class="tok-num">1</span>)
-		<span class="tok-kw">go</span> worker(w, jobs, results, &amp;wg)
+	for w := 1; w <= 3; w++ {
+		wg.Add(1)
+		go worker(w, jobs, results, &wg)
 	}
-	<span class="tok-kw">close</span>(jobs)
+	close(jobs)
 	wg.Wait()
-	<span class="tok-kw">close</span>(results)
+	close(results)
 }</code></pre>
 
 <h2>[Υποενότητα Γ]</h2>
@@ -310,8 +311,8 @@ wg.__wait__() // block here until all 3 goroutines have reported in`,
 <div class="glossary-group">
   <h2>[Κατηγορία Γ] · στυλ: πυκνές στήλες</h2>
   <div class="glossary-columns">
-    <div class="gc-line"><span class="gc-term">[pattern1]</span> — <span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
-    <div class="gc-line"><span class="gc-term">[pattern2]</span> — <span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
+    <div class="gc-line"><span class="gc-term">[pattern1]</span><span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
+    <div class="gc-line"><span class="gc-term">[pattern2]</span><span class="gc-def">[πολύ σύντομος ορισμός]</span></div>
   </div>
 </div>
 `);
@@ -331,7 +332,7 @@ wg.__wait__() // block here until all 3 goroutines have reported in`,
 `);
 
 
-    initSlideDeck();
+    initSlideDeck({ version: "1.0.1" });
   </script>
 </body>
 
