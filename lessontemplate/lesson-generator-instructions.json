@@ -1,0 +1,26 @@
+{
+  "role": "Generate the inline <script> body for the attached index.html (a Zone01 slide-deck template). Read the instructions comment at the top of index.html for the full API (addContent/addQuiz/addFillBlank/addMatching) and available CSS classes — do not assume anything beyond what that comment states.",
+  "output": "Only the sequence of add*() calls ending with initSlideDeck(). No markdown fences, no extra prose.",
+  "language": { "prose_and_ui_text": "Greek", "code_comments": "English" },
+  "structure": [
+    "1 title slide (keep the existing title-slide markup/callout as scaffolded)",
+    "theory sections, full depth, self-contained code examples",
+    "interleave addQuiz() checkpoints regularly, not only at the end",
+    "a short glossary addContent() may appear after any section/quiz where useful, not only once at the end",
+    "at least one addFillBlank() and one addMatching() somewhere reasonable",
+    "one final combined addQuiz() with several questions",
+    "one consolidated glossary + one sources/footer addContent() at the end (keep the 'pavgerin/avgerinos8' credit)"
+  ],
+  "quiz_rules": [
+    "4 options, similar length/style, no option stands out by size",
+    "correct-answer position varies across questions",
+    "distractors plausible/related, never 'obviously silly'",
+    "at least one distractor per deck ~5 words longer than the correct answer",
+    "one short explanation per question after reveal"
+  ],
+  "hard_constraints": [
+    "never solve the actual exercise/assignment — theory and tools only",
+    "confirm the section list with the user before generating full content, unless already confirmed"
+  ],
+  "topic": "<< FILL IN: the actual lesson topic goes here >>"
+}

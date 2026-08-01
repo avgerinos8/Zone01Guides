@@ -2,40 +2,546 @@
 <html lang="el">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goroutines &amp; Channels — Ταυτόχρονος Προγραμματισμός σε Go</title>
-    <link rel="stylesheet" href="static/style-burgundy.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goroutines &amp; Channels — Ταυτόχρονος Προγραμματισμός σε Go</title>
+  <style>
+    :root {
+      --rich-mahogany: #1b0502ff;
+      --rich-mahogany-2: #2d030aff;
+      --black-cherry: #52060bff;
+      --dark-wine: #70070bff;
+      --brown-red: #c96f2cff;
+
+      --rich-mahogany-rgb: 27, 5, 2;
+      --rich-mahogany-2-rgb: 45, 3, 10;
+      --black-cherry-rgb: 82, 6, 11;
+      --dark-wine-rgb: 112, 7, 11;
+      --brown-red-rgb: 201, 111, 44;
+
+      --parchment: #f9ebe0ff;
+      --parchment-rgb: 249, 235, 224;
+
+
+      /* semantic roles — every other rule below reads ONLY these variables */
+      --bg: var(--rich-mahogany);
+      --panel: var(--black-cherry);
+      --panel-rgb: var(--black-cherry-rgb);
+      --ink: var(--parchment);
+      --ink-rgb: var(--parchment-rgb);
+      --accent: var(--brown-red);
+      --accent-rgb: var(--brown-red-rgb);
+      --danger: var(--dark-wine);
+      --danger-rgb: var(--dark-wine-rgb);
+
+      /* correct/wrong stay green/red on purpose — outside the 5-tone palette */
+      --correct: rgb(0, 224, 67);
+      --correct-rgb: 0, 224, 67;
+      --wrong: rgb(255, 56, 38);
+      --wrong-rgb: 255, 56, 38;
+
+      --font-display: "Iowan Old Style", "Georgia", "Times New Roman", serif;
+      --font-body: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", "Consolas", "Menlo", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: var(--bg);
+      font-family: var(--font-body);
+      color: var(--ink);
+      overflow: hidden;
+    }
+
+    /* ── layout shell ─────────────────────────────────────────────────────── ⊃ */
+
+    #progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: rgba(var(--ink-rgb), 0.12);
+      z-index: 50;
+    }
+
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width .35s ease;
+    }
+
+    #deck {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: 64px 9vw 120px 9vw;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      display: block;
+      animation: fadeIn .35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: 1.08;
+      margin: 0 0 22px 0;
+      color: var(--ink);
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2.6vw, 32px);
+      color: var(--accent);
+      margin: 34px 0 14px 0;
+      border-bottom: 1px solid rgba(var(--ink-rgb), 0.18);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      font-family: var(--font-body);
+      font-size: 19px;
+      color: var(--ink);
+      margin: 22px 0 8px 0;
+    }
+
+    p,
+    li {
+      font-size: 17px;
+      line-height: 1.62;
+      color: rgba(var(--ink-rgb), 0.92);
+    }
+
+    strong {
+      color: var(--ink);
+    }
+
+    a {
+      color: var(--accent);
+    }
+
+    .lede {
+      font-size: 19px;
+      color: rgba(var(--ink-rgb), 0.92);
+      max-width: 900px;
+      line-height: 1.7;
+    }
+
+    code,
+    .inline-code {
+      font-family: var(--font-mono);
+      background: rgba(var(--rich-mahogany-rgb), 0.55);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.92em;
+      color: var(--ink);
+    }
+
+    pre {
+      background: rgba(var(--rich-mahogany-rgb), 0.85);
+      border: 1px solid rgba(var(--accent-rgb), 0.35);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 18px 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-family: var(--font-mono);
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: rgba(var(--ink-rgb), 0.95);
+      white-space: pre;
+    }
+
+    .cm {
+      color: rgba(var(--ink-rgb), 0.5);
+    }
+
+    /* comment tint, applied manually via span */
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width:900px) {
+
+      .grid2,
+      .grid3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: rgba(var(--panel-rgb), 0.45);
+      border: 1px solid rgba(var(--ink-rgb), 0.15);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: var(--accent);
+    }
+
+    .callout {
+      border-left: 4px solid var(--danger);
+      background: rgba(var(--danger-rgb), 0.18);
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin: 18px 0;
+    }
+
+    .callout.good {
+      border-left-color: var(--correct);
+      background: rgba(var(--correct-rgb), 0.14);
+    }
+
+    .callout .tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .title-slide {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .title-badge {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 26px;
+      overflow: hidden;
+    }
+
+    .title-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .title-badge .fallback {
+      font-family: var(--font-display);
+      font-size: 34px;
+      color: var(--bg);
+      font-weight: 700;
+    }
+
+    .kicker-line {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 14px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    /* ── quiz ──────────────────────────────────────────────────────────────── ⊃ */
+
+    .quiz-box {
+      background: rgba(var(--panel-rgb), 0.35);
+      border: 1px solid rgba(var(--ink-rgb), 0.18);
+      border-radius: 12px;
+      padding: 26px 28px;
+      max-width: 920px;
+    }
+
+    .quiz-q {
+      font-size: 19px;
+      margin-bottom: 18px;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quiz-opt {
+      text-align: left;
+      background: rgba(var(--ink-rgb), 0.06);
+      border: 1px solid rgba(var(--ink-rgb), 0.22);
+      color: rgba(var(--ink-rgb), 0.92);
+      font-family: var(--font-body);
+      font-size: 15.5px;
+      padding: 13px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .quiz-opt:hover {
+      background: rgba(var(--accent-rgb), 0.16);
+      border-color: var(--accent);
+    }
+
+    .quiz-opt.correct {
+      background: rgba(var(--correct-rgb), 0.28);
+      border-color: var(--correct);
+    }
+
+    .quiz-opt.wrong {
+      background: rgba(var(--wrong-rgb), 0.32);
+      border-color: var(--wrong);
+    }
+
+    .quiz-opt.disabled {
+      pointer-events: none;
+      opacity: 0.9;
+    }
+
+    .quiz-badge {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: .06em;
+      padding: 3px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: none;
+    }
+
+    .quiz-opt.correct .quiz-badge {
+      display: inline-block;
+      background: var(--correct);
+      color: var(--rich-mahogany);
+    }
+
+    .quiz-opt.wrong .quiz-badge {
+      display: inline-block;
+      background: var(--wrong);
+      color: var(--parchment);
+    }
+
+    .quiz-explain {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: rgba(var(--rich-mahogany-rgb), 0.5);
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(var(--ink-rgb), 0.92);
+      border-left: 3px solid var(--accent);
+    }
+
+    .quiz-explain.show {
+      display: block;
+    }
+
+    /* ── nav ───────────────────────────────────────────────────────────────── ⊃ */
+
+    #nav-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      background: linear-gradient(0deg, rgba(var(--rich-mahogany-rgb), 0.98) 60%, rgba(var(--rich-mahogany-rgb), 0) 100%);
+      z-index: 50;
+    }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid rgba(var(--ink-rgb), 0.3);
+      padding: 10px 18px;
+      border-radius: 7px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .nav-btn:disabled:hover {
+      background: var(--panel);
+      color: var(--ink);
+    }
+
+    #dots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      max-width: 50vw;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(var(--ink-rgb), 0.25);
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: var(--accent);
+      width: 22px;
+      border-radius: 5px;
+    }
+
+    .dot.quiz-dot {
+      background: rgba(var(--danger-rgb), 0.55);
+    }
+
+    .dot.quiz-dot.active {
+      background: var(--danger);
+    }
+
+    #slide-counter {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: rgba(var(--ink-rgb), 0.6);
+      white-space: nowrap;
+    }
+
+    ul {
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .sources-list a {
+      display: block;
+      margin: 6px 0;
+      font-family: var(--font-mono);
+      font-size: 15px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(var(--accent-rgb), 0.4);
+      border-radius: 5px;
+    }
+  </style>
 </head>
 
 <body>
 
-    <div id="progress-track">
-        <div id="progress-fill"></div>
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-reset">Reset Progress</button>
+      <button class="nav-btn" id="btn-prev">← Πίσω</button>
     </div>
-    <div id="deck"></div>
-
-    <div id="nav-bar">
-        <div class="nav-group">
-            <button class="nav-btn" id="btn-reset">Reset Progress</button>
-            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank"
-                rel="noopener">Return</a>
-            <button class="nav-btn" id="btn-prev">← Back</button>
-        </div>
-        <div id="dots"></div>
-        <div style="display:flex; align-items:center; gap:16px;">
-            <span id="slide-counter"></span>
-            <button class="nav-btn" id="btn-next">Next →</button>
-        </div>
+    <div id="dots"></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">Επόμενο →</button>
     </div>
+  </div>
 
-    <script src="static/script.js"></script>
-    <script src="static/highlighter.js"></script>
+  <script>
+    // ── slide data ───────────────────────────────────────────────────────────── ⊃
+    // Each slide is either { type:"content", html:"..." } or { type:"quiz", data:{...} }
+    const slides = [];
 
-    <script>// ── 0. Τίτλος ────────────────────────────────────────────────────────────── ⊃
-        addContent(`
+    function addContent(html) { slides.push({ type: "content", html }); }
+    function addQuiz(q) { slides.push({ type: "quiz", data: q }); }
+
+    // ── 0. Τίτλος ────────────────────────────────────────────────────────────── ⊃
+    addContent(`
 <div class="title-slide">
-  <div class="title-badge"><img src="./icons/goroutines.png" alt="goroutines icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>G</span>'"></div>
+  <div class="title-badge"><span class="fallback">Go</span></div>
   <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Θεωρητικό υλικό · Author: AVGERINOS PAVLOS</div>
   <h1>Goroutines &amp; Channels<br>Ταυτόχρονος Προγραμματισμός στη Go</h1>
   <p class="lede">Από το keyword <code>go</code> μέχρι τα advanced patterns με channels: futures, notifications, semaphores.
@@ -47,9 +553,9 @@
 </div>
 `);
 
-        // ── ΕΝΟΤΗΤΑ 1 — Εισαγωγή στο Concurrency ────────────────────────────────── ⊃
+    // ── ΕΝΟΤΗΤΑ 1 — Εισαγωγή στο Concurrency ────────────────────────────────── ⊃
 
-        addContent(`
+    addContent(`
 <div class="eyebrow">Ενότητα 1 / 9 — Θεμέλια</div>
 <h1>Τι είναι ο Ταυτόχρονος Προγραμματισμός (Concurrency)</h1>
 <p class="lede">Πριν δούμε έστω και μία γραμμή κώδικα με <code>go</code> ή <code>chan</code>, χρειάζεται να καταλάβουμε
@@ -98,20 +604,20 @@ channel) είναι ένα σημείο συγχρονισμού — μια «γ
 </div>
 `);
 
-        addQuiz({
-            q: "Ποια είναι η πιο ακριβής περιγραφή του τι σημαίνει «concurrency»;",
-            options: [
-                "Το πρόγραμμα είναι δομημένο ως σύνολο ανεξάρτητων εργασιών που θα μπορούσαν να τρέξουν ταυτόχρονα, ανεξάρτητα από το αν όντως εκτελούνται τη ίδια ακριβή χρονική στιγμή",
-                "Το πρόγραμμα χρησιμοποιεί περισσότερους από έναν πυρήνες CPU ταυτόχρονα για να εκτελέσει κώδικα πραγματικά την ίδια στιγμή",
-                "Το πρόγραμμα τρέχει πιο γρήγορα επειδή αποφεύγει τελείως τις αναμονές σε I/O λειτουργίες",
-                "Το πρόγραμμα χρησιμοποιεί το keyword go σε κάθε συνάρτηση ώστε να μην μπλοκάρει ποτέ ο κύριος βρόχος εκτέλεσης"
-            ],
-            correct: 0,
-            explain: "Concurrency είναι ιδιότητα του σχεδιασμού (structure), όχι της εκτέλεσης (execution). Το αν όντως τρέχουν παράλληλα σε πραγματικό χρόνο εξαρτάται από το hardware και τον scheduler — αυτό είναι το parallelism, διαφορετική έννοια."
-        });
+    addQuiz({
+      q: "Ποια είναι η πιο ακριβής περιγραφή του τι σημαίνει «concurrency»;",
+      options: [
+        "Το πρόγραμμα είναι δομημένο ως σύνολο ανεξάρτητων εργασιών που θα μπορούσαν να τρέξουν ταυτόχρονα, ανεξάρτητα από το αν όντως εκτελούνται τη ίδια ακριβή χρονική στιγμή",
+        "Το πρόγραμμα χρησιμοποιεί περισσότερους από έναν πυρήνες CPU ταυτόχρονα για να εκτελέσει κώδικα πραγματικά την ίδια στιγμή",
+        "Το πρόγραμμα τρέχει πιο γρήγορα επειδή αποφεύγει τελείως τις αναμονές σε I/O λειτουργίες",
+        "Το πρόγραμμα χρησιμοποιεί το keyword go σε κάθε συνάρτηση ώστε να μην μπλοκάρει ποτέ ο κύριος βρόχος εκτέλεσης"
+      ],
+      correct: 0,
+      explain: "Concurrency είναι ιδιότητα του σχεδιασμού (structure), όχι της εκτέλεσης (execution). Το αν όντως τρέχουν παράλληλα σε πραγματικό χρόνο εξαρτάται από το hardware και τον scheduler — αυτό είναι το parallelism, διαφορετική έννοια."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 1β — Concurrency vs Parallelism, select{} προεπισκόπηση ─────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 1β — Concurrency vs Parallelism, select{} προεπισκόπηση ─────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 1 / 9 — Θεμέλια</div>
 <h1>Concurrency vs Parallelism</h1>
 <p class="lede">Αυτή είναι ίσως η πιο συχνά μπερδεμένη διάκριση σε όλο το concurrent programming. Ας τη ξεκαθαρίσουμε με ένα
@@ -153,20 +659,20 @@ memory; instead, share memory by communicating.»</em> Δηλαδή: αντί ν
 παρακάτω), αλλά είναι η δεύτερη επιλογή, όχι η πρώτη.</p>
 `);
 
-        addQuiz({
-            q: "Ένα πρόγραμμα Go τρέχει σε μηχανή με έναν και μόνο πυρήνα CPU διαθέσιμο, αλλά έχει 5 ενεργές goroutines. Τι ισχύει;",
-            options: [
-                "Οι goroutines είναι concurrent αλλά δεν εκτελούνται πραγματικά parallel, αφού ο scheduler τις εναλλάσσει σε έναν πυρήνα",
-                "Δεν μπορεί να τρέξει καθόλου πρόγραμμα με πάνω από μία goroutine αν υπάρχει μόνο ένας πυρήνας διαθέσιμος",
-                "Οι goroutines μετατρέπονται αυτόματα σε sequential κλήσεις συναρτήσεων επειδή δεν υπάρχει δεύτερος πυρήνας",
-                "Οι goroutines γίνονται parallel αυτόματα μόλις ξεπεράσουν τις 3, ανεξάρτητα από τους διαθέσιμους πυρήνες"
-            ],
-            correct: 0,
-            explain: "Το concurrency είναι θέμα δομής του προγράμματος — υπάρχει ανεξάρτητα από το hardware. Το parallelism απαιτεί πραγματικά πολλαπλούς πυρήνες να εκτελούν κώδικα την ίδια χρονική στιγμή. Με έναν πυρήνα, ο scheduler κάνει time-slicing ανάμεσα στις goroutines — αυτές είναι concurrent, όχι parallel."
-        });
+    addQuiz({
+      q: "Ένα πρόγραμμα Go τρέχει σε μηχανή με έναν και μόνο πυρήνα CPU διαθέσιμο, αλλά έχει 5 ενεργές goroutines. Τι ισχύει;",
+      options: [
+        "Οι goroutines είναι concurrent αλλά δεν εκτελούνται πραγματικά parallel, αφού ο scheduler τις εναλλάσσει σε έναν πυρήνα",
+        "Δεν μπορεί να τρέξει καθόλου πρόγραμμα με πάνω από μία goroutine αν υπάρχει μόνο ένας πυρήνας διαθέσιμος",
+        "Οι goroutines μετατρέπονται αυτόματα σε sequential κλήσεις συναρτήσεων επειδή δεν υπάρχει δεύτερος πυρήνας",
+        "Οι goroutines γίνονται parallel αυτόματα μόλις ξεπεράσουν τις 3, ανεξάρτητα από τους διαθέσιμους πυρήνες"
+      ],
+      correct: 0,
+      explain: "Το concurrency είναι θέμα δομής του προγράμματος — υπάρχει ανεξάρτητα από το hardware. Το parallelism απαιτεί πραγματικά πολλαπλούς πυρήνες να εκτελούν κώδικα την ίδια χρονική στιγμή. Με έναν πυρήνα, ο scheduler κάνει time-slicing ανάμεσα στις goroutines — αυτές είναι concurrent, όχι parallel."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 2 — go keyword & anonymous functions ────────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 2 — go keyword & anonymous functions ────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
 <h1>Το keyword <code>go</code></h1>
 <p class="lede">Το <code>go</code> είναι η πύλη εισόδου σε όλο το concurrency της Go. Μία λέξη-κλειδί, μπροστά από μια κλήση
@@ -177,22 +683,14 @@ memory; instead, share memory by communicating.»</em> Δηλαδή: αντί ν
 τελειώσει. Αντίθετα, δημιουργεί μια νέα, ανεξάρτητη «γραμμή εκτέλεσης» (goroutine) που θα τρέξει την <code>f()</code>
 <strong>ταυτόχρονα</strong> με τον υπόλοιπο κώδικα, και προχωράει αμέσως στην επόμενη γραμμή χωρίς να περιμένει.</p>
 
-<pre><code class="lang-go">func sayHello() {
-	fmt.Println("Hello!")
-}
+<pre><code><span class="cm">// without "go" — sequential, blocks until done</span>
+sayHello()
+fmt.Println("this runs after sayHello finishes")
 
-func main() {
-	// without "go" — sequential, blocks until done
-	sayHello()
-	fmt.Println("this runs after sayHello finishes")
-
-	// with "go" — starts a new goroutine, does NOT wait
-	go sayHello()
-	fmt.Println("this runs immediately, maybe even before sayHello prints anything")
-}</code></pre>
-
-
-
+<span class="cm">// with "go" — starts a new goroutine, does NOT wait</span>
+go sayHello()
+fmt.Println("this runs immediately, maybe even before sayHello prints anything")
+</code></pre>
 
 <h2>Τι είναι μια goroutine — και τι <strong>δεν</strong> είναι</h2>
 <p>Μια goroutine <strong>δεν</strong> είναι thread του λειτουργικού συστήματος. Είναι κάτι πολύ πιο «ελαφρύ»: τη διαχειρίζεται
@@ -212,16 +710,16 @@ func main() {
 <p>Μια <strong>ανώνυμη συνάρτηση</strong> (anonymous function) είναι μια συνάρτηση χωρίς όνομα, που ορίζεται «επί τόπου», εκεί
 όπου τη χρειαζόμαστε — συχνά ακριβώς εκεί όπου τη χρησιμοποιούμε μία φορά και δεν χρειάζεται ξανά αλλού στο πρόγραμμα.</p>
 
-<pre><code class="lang-go">// a normal, named function — declared once, can be reused anywhere
+<pre><code><span class="cm">// a normal, named function — declared once, can be reused anywhere</span>
 func greet(name string) {
     fmt.Println("Hello,", name)
 }
 greet("Afroman")
 
-// an anonymous function — has no name, defined inline
+<span class="cm">// an anonymous function — has no name, defined inline</span>
 func(name string) {
     fmt.Println("Hello,", name)
-}("Afroman") // the trailing () calls it immediately
+}("Afroman") <span class="cm">// the trailing () calls it immediately</span>
 </code></pre>
 
 <h2>Το νόημα της τελικής παρένθεσης</h2>
@@ -238,9 +736,9 @@ JavaScript, όπου είναι πολύ κοινός.</p>
 <p>Τώρα βάζουμε τα δύο κομμάτια μαζί. Αντί να ορίσουμε μια ξεχωριστή, ονομασμένη συνάρτηση για να τη στείλουμε με <code>go</code>,
 ορίζουμε μια ανώνυμη συνάρτηση <strong>και</strong> τη στέλνουμε να τρέξει ως goroutine, όλα σε μία γραμμή:</p>
 
-<pre><code class="lang-go">go func() {
+<pre><code>go func() {
     fmt.Println("running inside a goroutine")
-}() // defined AND launched concurrently, in one expression
+}() <span class="cm">// defined AND launched concurrently, in one expression</span>
 </code></pre>
 
 <p>Αυτό είναι εξαιρετικά κοινό στη Go, γιατί συχνά η λογική που θέλουμε να τρέξει concurrent είναι μικρή και χρησιμοποιείται
@@ -250,11 +748,12 @@ JavaScript, όπου είναι πολύ κοινός.</p>
 <p>Ακριβώς όπως μια κανονική συνάρτηση, μια ανώνυμη συνάρτηση μπορεί να δέχεται παραμέτρους. Τις περνάμε μέσα από την τελική
 παρένθεση κλήσης:</p>
 
-<pre><code class="lang-go">for i := 0; i < 3; i++ {
+<pre><code>for i := 0; i < 3; i++ {
     go func(n int) {
         fmt.Println("goroutine number:", n)
-    }(i) // pass the current value of i as an explicit argument
-}</code></pre>
+    }(i) <span class="cm">// pass the current value of i as an explicit argument</span>
+}
+</code></pre>
 
 <div class="callout">
   <span class="tag">Γιατί το arguments περνιέται explicit εδώ έχει σημασία</span>
@@ -280,102 +779,20 @@ JavaScript, όπου είναι πολύ κοινός.</p>
 να κάνει το αντίστοιχο send (ή receive) στο ίδιο channel.</p>
 `);
 
-        addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
-<h2>Όροι που μόλις είδαμε</h2>
-<div class="glossary-columns">
-  <div class="gc-line"><span class="gc-term">go</span><span class="gc-def">keyword που εκκινεί μια νέα goroutine χωρίς να περιμένει το αποτέλεσμα</span></div>
-  <div class="gc-line"><span class="gc-term">goroutine</span><span class="gc-def">ελαφριά, ανεξάρτητη γραμμή εκτέλεσης διαχειριζόμενη από τον Go runtime</span></div>
-  <div class="gc-line"><span class="gc-term">anonymous function</span><span class="gc-def">συνάρτηση χωρίς όνομα, ορισμένη επιτόπου</span></div>
-  <div class="gc-line"><span class="gc-term">IIFE (Immediately Invoked Function Expression)</span><span class="gc-def">Μια ανώνυμη συνάρτηση που ορίζεται και εκτελείται επί τόπου, π.χ. func(){...}()</span></div>
-  <div class="gc-line"><span class="gc-term">main goroutine</span><span class="gc-def">η κύρια goroutine· όταν τελειώνει, τερματίζεται όλο το πρόγραμμα</span></div>
-  <div class="gc-line"><span class="gc-term">closure</span><span class="gc-def">συνάρτηση που έχει πρόσβαση στις μεταβλητές του περιβάλλοντός της</span></div>
-  <div class="gc-line"><span class="gc-term">explicit argument</span><span class="gc-def">τιμή που περνιέται ρητά σε μια goroutine ώστε να "παγώσει" τη στιγμή της κλήσης</span></div>
-  <div class="gc-line"><span class="gc-term">deadlock</span><span class="gc-def">όλες οι goroutines έχουν κολλήσει περιμένοντας η μία την άλλη</span></div>
-</div>
-`);
+    addQuiz({
+      q: "Στη δομή go func(n int){ ... }(i), ποιος είναι ο κύριος λόγος που περνάμε το i ως όρισμα n αντί να βασιστούμε στο closure πάνω στο i απευθείας;",
+      options: [
+        "Επειδή έτσι κάθε goroutine παίρνει το δικό της ανεξάρτητο αντίγραφο της τιμής τη στιγμή εκκίνησης, αντί να μοιράζεται τη μεταβλητή i που αλλάζει σε κάθε επανάληψη του βρόχου",
+        "Επειδή τα closures στη Go δεν επιτρέπονται καθόλου μέσα σε ανώνυμες συναρτήσεις που καλούνται με go",
+        "Επειδή χωρίς όρισμα η ανώνυμη συνάρτηση δεν μπορεί να μεταγλωττιστεί, αφού η Go απαιτεί ρητή δήλωση παραμέτρων σε κάθε func literal",
+        "Επειδή το compiler της Go μετατρέπει αυτόματα κάθε closure πάνω σε μεταβλητή βρόχου σε goroutine leak αν δεν περαστεί ως παράμετρος"
+      ],
+      correct: 0,
+      explain: "Το closure στο i θα «έβλεπε» τη μεταβλητή του βρόχου, η οποία συνεχίζει να αλλάζει καθώς ο βρόχος προχωράει, οπότε το ποια τιμή θα διαβάσει τελικά κάθε goroutine είναι απρόβλεπτο. Περνώντας την τιμή ως όρισμα, «παγώνουμε» την τρέχουσα τιμή τη στιγμή της κλήσης — κάθε goroutine κρατάει το δικό της αντίγραφο."
+    });
 
-        // ── Fill in the blank — απλό, εστιασμένο στο go + anonymous functions ── ⊃
-        addFillBlank([
-            {
-                code:
-                    `// starts a new goroutine, does NOT wait for it to finish
-__kw__ sayHello()
-fmt.Println("this runs immediately")`,
-                blanks: [
-                    { id: "kw", answer: "go" }
-                ],
-                explain: "Το go μπροστά από μια κλήση συνάρτησης τη στέλνει να τρέξει ως goroutine, χωρίς να περιμένουμε."
-            },
-            {
-                code:
-                    `// anonymous function, defined and called immediately (IIFE)
-func() {
-    fmt.Println("Hello!")
-}__call__`,
-                blanks: [
-                    { id: "call", answer: "()" }
-                ],
-                explain: "Η τελική () καλεί αμέσως την ανώνυμη συνάρτηση που μόλις ορίστηκε."
-            },
-            {
-                code:
-                    `for i := 0; i < 3; i++ {
-    // pass i explicitly so each goroutine gets its own copy
-    go func(n int) {
-        fmt.Println(n)
-    }__arg__
-}`,
-                blanks: [
-                    { id: "arg", answer: "(i)" }
-                ],
-                explain: "Περνάμε το i ως explicit argument ώστε κάθε goroutine να \"παγώσει\" τη δική της τιμή."
-            }
-        ], {
-            note: "Σημείωση: τα παραπάνω παραδείγματα βασίζονται στο go keyword και τις anonymous functions της Ενότητας 2."
-        });
-
-        // ── Matching pairs ──────────────────────────────────────────────────── ⊃
-        addMatching([
-            { term: "go f()", def: "Εκκινεί την f() ως νέα goroutine, χωρίς αναμονή" },
-            { term: "func(){...}()", def: "Ανώνυμη συνάρτηση που ορίζεται και καλείται αμέσως (IIFE)" },
-            { term: "closure", def: "Πρόσβαση μιας συνάρτησης στις μεταβλητές του περιβάλλοντός της" },
-            { term: "main() τελειώνει", def: "Το πρόγραμμα τερματίζεται αμέσως, χωρίς να περιμένει άλλες goroutines" },
-            { term: "goroutine", def: "Ελαφριά, ανεξάρτητη γραμμή εκτέλεσης διαχειριζόμενη από τον Go runtime" }
-        ], {
-            note: "Διάλεξε τα ζευγάρια που ταιριάζουν."
-        });
-
-        // Final combined quiz
-        addQuiz([
-            {
-                q: "Στη δομή go func(n int){ ... }(i), ποιος είναι ο κύριος λόγος που περνάμε το i ως όρισμα n αντί να βασιστούμε στο closure πάνω στο i απευθείας;",
-                options: [
-                    "Επειδή έτσι κάθε goroutine παίρνει το δικό της ανεξάρτητο αντίγραφο της τιμής τη στιγμή εκκίνησης, αντί να μοιράζεται τη μεταβλητή i που αλλάζει σε κάθε επανάληψη του βρόχου",
-                    "Επειδή τα closures στη Go δεν επιτρέπονται καθόλου μέσα σε ανώνυμες συναρτήσεις που καλούνται με go",
-                    "Επειδή χωρίς όρισμα η ανώνυμη συνάρτηση δεν μπορεί να μεταγλωττιστεί, αφού η Go απαιτεί ρητή δήλωση παραμέτρων σε κάθε func literal",
-                    "Επειδή το compiler της Go μετατρέπει αυτόματα κάθε closure πάνω σε μεταβλητή βρόχου σε goroutine leak αν δεν περαστεί ως παράμετρος"
-                ],
-                correct: 0,
-                explain: "Το closure στο i θα «έβλεπε» τη μεταβλητή του βρόχου, η οποία συνεχίζει να αλλάζει καθώς ο βρόχος προχωράει, οπότε το ποια τιμή θα διαβάσει τελικά κάθε goroutine είναι απρόβλεπτο. Περνώντας την τιμή ως όρισμα, «παγώνουμε» την τρέχουσα τιμή τη στιγμή της κλήσης — κάθε goroutine κρατάει το δικό της αντίγραφο."
-            },
-            {
-                q: "Τι κάνει ακριβώς το go f() σε σχέση με μια απλή κλήση f()?",
-                options: [
-                    "Ξεκινά την f() ως νέα goroutine και συνεχίζει αμέσως χωρίς να περιμένει",
-                    "Καλεί την f() κανονικά αλλά την κάνει πιο γρήγορη",
-                    "Καθυστερεί την εκτέλεση της f() μέχρι το τέλος του προγράμματος",
-                    "Μετατρέπει την f() σε anonymous function"
-                ],
-                correct: 0,
-                explain: "Το go δημιουργεί μια νέα goroutine που τρέχει ταυτόχρονα, ενώ ο κώδικας που ακολουθεί εκτελείται αμέσως."
-            }
-        ]);
-
-
-
-        // ── ΕΝΟΤΗΤΑ 3 — Channels βασικά ─────────────────────────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 3 — Channels βασικά ─────────────────────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 3 / 9 — Channels (βασικά)</div>
 <h1>Τι είναι ένα Channel</h1>
 <p class="lede">Αν το <code>go</code> είναι το πώς ξεκινάμε ανεξάρτητη εκτέλεση, το <strong>channel</strong> είναι το πώς αυτές οι
@@ -480,20 +897,20 @@ fmt.Println(cap(ch)) <span class="cm">// 3 — total buffer capacity, unchanged<
 είναι η μόνη goroutine στο πρόγραμμα, ο runtime ανιχνεύει ότι απολύτως τίποτα δεν μπορεί να προχωρήσει, και τερματίζει με σφάλμα.</p>
 `);
 
-        addQuiz({
-            q: "Ποια είναι η θεμελιώδης διαφορά συμπεριφοράς ανάμεσα σε unbuffered και buffered channel κατά το send;",
-            options: [
-                "Σε unbuffered channel το send μπλοκάρει μέχρι κάποια goroutine να κάνει ταυτόχρονο receive· σε buffered channel το send μπλοκάρει μόνο αν ο buffer είναι ήδη γεμάτος",
-                "Σε unbuffered channel το send ολοκληρώνεται πάντα αμέσως χωρίς αναμονή, ενώ σε buffered channel το send περιμένει πάντα κάποιο receive",
-                "Δεν υπάρχει καμία πρακτική διαφορά — και τα δύο μπλοκάρουν πάντα μέχρι να γίνει receive, ανεξάρτητα από τη χωρητικότητα",
-                "Σε buffered channel το send αποτυγχάνει σιωπηλά αν δεν υπάρχει receiver, ενώ σε unbuffered channel προκαλεί πάντα panic αμέσως"
-            ],
-            correct: 0,
-            explain: "Το unbuffered channel απαιτεί «χειραψία» — sender και receiver πρέπει να είναι έτοιμοι ταυτόχρονα. Το buffered channel επιτρέπει στο send να «αποθέσει» την τιμή στον buffer και να προχωρήσει αμέσως, όσο υπάρχει ελεύθερος χώρος, χωρίς να χρειάζεται άμεσος receiver."
-        });
+    addQuiz({
+      q: "Ποια είναι η θεμελιώδης διαφορά συμπεριφοράς ανάμεσα σε unbuffered και buffered channel κατά το send;",
+      options: [
+        "Σε unbuffered channel το send μπλοκάρει μέχρι κάποια goroutine να κάνει ταυτόχρονο receive· σε buffered channel το send μπλοκάρει μόνο αν ο buffer είναι ήδη γεμάτος",
+        "Σε unbuffered channel το send ολοκληρώνεται πάντα αμέσως χωρίς αναμονή, ενώ σε buffered channel το send περιμένει πάντα κάποιο receive",
+        "Δεν υπάρχει καμία πρακτική διαφορά — και τα δύο μπλοκάρουν πάντα μέχρι να γίνει receive, ανεξάρτητα από τη χωρητικότητα",
+        "Σε buffered channel το send αποτυγχάνει σιωπηλά αν δεν υπάρχει receiver, ενώ σε unbuffered channel προκαλεί πάντα panic αμέσως"
+      ],
+      correct: 0,
+      explain: "Το unbuffered channel απαιτεί «χειραψία» — sender και receiver πρέπει να είναι έτοιμοι ταυτόχρονα. Το buffered channel επιτρέπει στο send να «αποθέσει» την τιμή στον buffer και να προχωρήσει αμέσως, όσο υπάρχει ελεύθερος χώρος, χωρίς να χρειάζεται άμεσος receiver."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 4 — select, for-range, defer ────────────────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 4 — select, for-range, defer ────────────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 4 / 9 — Έλεγχος Ροής με Channels</div>
 <h1><code>select { case ... }</code></h1>
 <p class="lede">Αν το <code>&lt;-ch</code> είναι το πώς λαμβάνουμε από <strong>ένα</strong> συγκεκριμένο channel, το
@@ -584,20 +1001,20 @@ case result := <-slowServer:
 <p>Θα δούμε συγκεκριμένα παραδείγματα των παραπάνω στις επόμενες ενότητες.</p>
 `);
 
-        addQuiz({
-            q: "Σε ένα select με πολλαπλά cases όπου ΔΕΝ υπάρχει default case, τι συμβαίνει αν κανένα από τα channel operations δεν είναι έτοιμο να εκτελεστεί;",
-            options: [
-                "Το select μπλοκάρει μέχρι κάποιο case να γίνει έτοιμο προς εκτέλεση",
-                "Το select επιστρέφει αμέσως χωρίς να εκτελέσει κανένα case, σαν να υπήρχε άδειο default",
-                "Το πρόγραμμα προκαλεί πάντα panic επειδή λείπει το default case από τη δήλωση",
-                "Εκτελείται αυτόματα το πρώτο case στη σειρά δήλωσης, ανεξάρτητα από το αν είναι έτοιμο ή όχι"
-            ],
-            correct: 0,
-            explain: "Χωρίς default case, το select συμπεριφέρεται σαν ένα «πολλαπλό» receive/send — μπλοκάρει μέχρι τουλάχιστον ένα case να γίνει εφικτό. Το default υπάρχει ακριβώς για να αποφύγουμε αυτό το μπλοκάρισμα, όταν θέλουμε μια μη-αποκλειστική (non-blocking) εκδοχή."
-        });
+    addQuiz({
+      q: "Σε ένα select με πολλαπλά cases όπου ΔΕΝ υπάρχει default case, τι συμβαίνει αν κανένα από τα channel operations δεν είναι έτοιμο να εκτελεστεί;",
+      options: [
+        "Το select μπλοκάρει μέχρι κάποιο case να γίνει έτοιμο προς εκτέλεση",
+        "Το select επιστρέφει αμέσως χωρίς να εκτελέσει κανένα case, σαν να υπήρχε άδειο default",
+        "Το πρόγραμμα προκαλεί πάντα panic επειδή λείπει το default case από τη δήλωση",
+        "Εκτελείται αυτόματα το πρώτο case στη σειρά δήλωσης, ανεξάρτητα από το αν είναι έτοιμο ή όχι"
+      ],
+      correct: 0,
+      explain: "Χωρίς default case, το select συμπεριφέρεται σαν ένα «πολλαπλό» receive/send — μπλοκάρει μέχρι τουλάχιστον ένα case να γίνει εφικτό. Το default υπάρχει ακριβώς για να αποφύγουμε αυτό το μπλοκάρισμα, όταν θέλουμε μια μη-αποκλειστική (non-blocking) εκδοχή."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 5 — Synchronization ──────────────────────────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 5 — Synchronization ──────────────────────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 5 / 9 — Concurrency Synchronization</div>
 <h1><code>sync.WaitGroup</code></h1>
 <p class="lede">Είδαμε ότι το <code>main()</code> δεν περιμένει αυτόματα τις goroutines που ξεκινάει. Το <code>sync.WaitGroup</code>
@@ -693,20 +1110,20 @@ for i := 0; i < 1000; i++ {
 </div>
 `);
 
-        addQuiz({
-            q: "Γιατί είναι σημαντικό το wg.Add(1) να καλείται πριν το go func(), και όχι μέσα στο σώμα της goroutine που θα εκτελεστεί;",
-            options: [
-                "Γιατί αλλιώς το wg.Wait() μπορεί να τρέξει και να δει μετρητή 0 πριν προλάβει η goroutine να κάνει το δικό της Add, οπότε επιστρέφει πρόωρα χωρίς πραγματική αναμονή",
-                "Γιατί η μέθοδος Add() δεν επιτρέπεται συντακτικά να κληθεί μέσα σε goroutine που ξεκίνησε με το keyword go",
-                "Γιατί το Add() πρέπει πάντα να καλείται με defer για να λειτουργήσει σωστά, ανεξάρτητα από τη θέση του σε σχέση με το go",
-                "Γιατί χωρίς αυτή τη σειρά το πρόγραμμα δεν μεταγλωττίζεται, αφού ο compiler ελέγχει τη σειρά κλήσεων WaitGroup στατικά"
-            ],
-            correct: 0,
-            explain: "Αν το Add(1) καλείται μέσα στη goroutine, υπάρχει race condition ανάμεσα στην εκκίνηση της goroutine και στο Wait() του καλούντα — το Wait() μπορεί να προλάβει να δει μετρητή 0 πριν η goroutine προλάβει καν να ξεκινήσει και να κάνει το Add. Καλώντας το Add πριν το go, εξασφαλίζουμε ότι ο μετρητής είναι σωστός πριν καν ξεκινήσει η αναμονή."
-        });
+    addQuiz({
+      q: "Γιατί είναι σημαντικό το wg.Add(1) να καλείται πριν το go func(), και όχι μέσα στο σώμα της goroutine που θα εκτελεστεί;",
+      options: [
+        "Γιατί αλλιώς το wg.Wait() μπορεί να τρέξει και να δει μετρητή 0 πριν προλάβει η goroutine να κάνει το δικό της Add, οπότε επιστρέφει πρόωρα χωρίς πραγματική αναμονή",
+        "Γιατί η μέθοδος Add() δεν επιτρέπεται συντακτικά να κληθεί μέσα σε goroutine που ξεκίνησε με το keyword go",
+        "Γιατί το Add() πρέπει πάντα να καλείται με defer για να λειτουργήσει σωστά, ανεξάρτητα από τη θέση του σε σχέση με το go",
+        "Γιατί χωρίς αυτή τη σειρά το πρόγραμμα δεν μεταγλωττίζεται, αφού ο compiler ελέγχει τη σειρά κλήσεων WaitGroup στατικά"
+      ],
+      correct: 0,
+      explain: "Αν το Add(1) καλείται μέσα στη goroutine, υπάρχει race condition ανάμεσα στην εκκίνηση της goroutine και στο Wait() του καλούντα — το Wait() μπορεί να προλάβει να δει μετρητή 0 πριν η goroutine προλάβει καν να ξεκινήσει και να κάνει το Add. Καλώντας το Add πριν το go, εξασφαλίζουμε ότι ο μετρητής είναι σωστός πριν καν ξεκινήσει η αναμονή."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 6 — Channels as Futures/Promises ────────────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 6 — Channels as Futures/Promises ────────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 6 / 9 — Channels as Futures / Promises</div>
 <h1>Η ιδέα του Future / Promise</h1>
 <p class="lede">Σε πολλές γλώσσες προγραμματισμού υπάρχει η έννοια του <strong>future</strong> ή <strong>promise</strong>: ένα
@@ -817,20 +1234,20 @@ func fetchFastest(sources []string) string {
 </div>
 `);
 
-        addQuiz({
-            q: "Μια συνάρτηση δηλώνεται ως func fetchData() <-chan string. Τι σημαίνει αυτός ο τύπος επιστροφής για τον κώδικα που καλεί τη fetchData;",
-            options: [
-                "Ο καλών παίρνει ένα channel από το οποίο μπορεί μόνο να λάβει (receive) τιμές — οποιαδήποτε προσπάθεια send σε αυτό δεν θα μεταγλωττιστεί",
-                "Ο καλών παίρνει ένα channel από το οποίο μπορεί μόνο να στείλει (send) τιμές, ενώ η λήψη γίνεται αποκλειστικά εσωτερικά στη fetchData",
-                "Η συνάρτηση εκτελείται αυτόματα ως αυτόνομη goroutine στο παρασκήνιο λόγω του <-chan και χρησιμοποιώντας αυτό το κανάλι επιστρέφει μια τιμή string",
-                "Το channel που επιστρέφεται είναι πάντα ήδη κλειστό (closed) τη στιγμή που φτάνει στον καλούντα, οπότε κάθε receive επιστρέφει αμέσως το zero value"
-            ],
-            correct: 0,
-            explain: "Το <-chan T είναι receive-only channel type — ο compiler απαγορεύει οποιοδήποτε send σε αυτό από την πλευρά που το έλαβε με αυτόν τον τύπο. Είναι πραγματικός, στατικά επιβαλλόμενος περιορισμός, όχι απλή σύμβαση ονοματολογίας."
-        });
+    addQuiz({
+      q: "Μια συνάρτηση δηλώνεται ως func fetchData() <-chan string. Τι σημαίνει αυτός ο τύπος επιστροφής για τον κώδικα που καλεί τη fetchData;",
+      options: [
+        "Ο καλών παίρνει ένα channel από το οποίο μπορεί μόνο να λάβει (receive) τιμές — οποιαδήποτε προσπάθεια send σε αυτό δεν θα μεταγλωττιστεί",
+        "Ο καλών παίρνει ένα channel από το οποίο μπορεί μόνο να στείλει (send) τιμές, ενώ η λήψη γίνεται αποκλειστικά εσωτερικά στη fetchData",
+        "Η συνάρτηση εκτελείται αυτόματα ως αυτόνομη goroutine στο παρασκήνιο λόγω του <-chan και χρησιμοποιώντας αυτό το κανάλι επιστρέφει μια τιμή string",
+        "Το channel που επιστρέφεται είναι πάντα ήδη κλειστό (closed) τη στιγμή που φτάνει στον καλούντα, οπότε κάθε receive επιστρέφει αμέσως το zero value"
+      ],
+      correct: 0,
+      explain: "Το <-chan T είναι receive-only channel type — ο compiler απαγορεύει οποιοδήποτε send σε αυτό από την πλευρά που το έλαβε με αυτόν τον τύπο. Είναι πραγματικός, στατικά επιβαλλόμενος περιορισμός, όχι απλή σύμβαση ονοματολογίας."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 7 — Channels for Notifications ──────────────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 7 — Channels for Notifications ──────────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 7 / 9 — Channels for Notifications</div>
 <h1>Channel ως σήμα, όχι μεταφορέας δεδομένων</h1>
 <p class="lede">Μέχρι τώρα χρησιμοποιούσαμε channels για να μεταφέρουμε <strong>δεδομένα</strong> — αποτελέσματα υπολογισμών,
@@ -921,20 +1338,20 @@ case <-time.After(3 * time.Second):
 πολύ— το «ξυπνητήρι» του <code>time.After</code> να μας «σώσει» από άπειρη αναμονή.</p>
 `);
 
-        addQuiz({
-            q: "Τρεις goroutines περιμένουν σε ένα κοινό channel ch (τύπου chan struct{}) με <-ch. Ποια ενέργεια θα «ξυπνήσει» και τις τρεις ταυτόχρονα;",
-            options: [
-                "close(ch) — το κλείσιμο του channel λειτουργεί ως broadcast, κάθε αναμένον receive επιστρέφει αμέσως ανεξάρτητα από τον αριθμό των goroutines",
-                "ch <- struct{}{} μία φορά — μία μόνο τιμή send αρκεί ώστε όλες οι goroutines που περιμένουν να τη λάβουν ταυτόχρονα",
-                "Τρεις διαδοχικά ch <- struct{}{}, μία ανά goroutine, ώστε καθεμία να λάβει ξεχωριστή τιμή με ασφάλεια και προβλεψιμότητα",
-                "Καμία ενέργεια σε ίδιο channel δεν μπορεί ποτέ να ξυπνήσει πάνω από μία goroutine ταυτόχρονα στη Go, ανεξαρτήτως μεθόδου"
-            ],
-            correct: 0,
-            explain: "Ένα απλό send δίνει μία τιμή σε μία μόνο goroutine (όποια την «αρπάξει» πρώτη) — οι υπόλοιπες θα συνέχιζαν να περιμένουν. Το close(ch) όμως αλλάζει την ίδια την κατάσταση του channel, και κάθε receive πάνω του, από όσες goroutines κι αν περιμένουν, επιστρέφει αμέσως — πραγματικό broadcast."
-        });
+    addQuiz({
+      q: "Τρεις goroutines περιμένουν σε ένα κοινό channel ch (τύπου chan struct{}) με <-ch. Ποια ενέργεια θα «ξυπνήσει» και τις τρεις ταυτόχρονα;",
+      options: [
+        "close(ch) — το κλείσιμο του channel λειτουργεί ως broadcast, κάθε αναμένον receive επιστρέφει αμέσως ανεξάρτητα από τον αριθμό των goroutines",
+        "ch <- struct{}{} μία φορά — μία μόνο τιμή send αρκεί ώστε όλες οι goroutines που περιμένουν να τη λάβουν ταυτόχρονα",
+        "Τρεις διαδοχικά ch <- struct{}{}, μία ανά goroutine, ώστε καθεμία να λάβει ξεχωριστή τιμή με ασφάλεια και προβλεψιμότητα",
+        "Καμία ενέργεια σε ίδιο channel δεν μπορεί ποτέ να ξυπνήσει πάνω από μία goroutine ταυτόχρονα στη Go, ανεξαρτήτως μεθόδου"
+      ],
+      correct: 0,
+      explain: "Ένα απλό send δίνει μία τιμή σε μία μόνο goroutine (όποια την «αρπάξει» πρώτη) — οι υπόλοιπες θα συνέχιζαν να περιμένουν. Το close(ch) όμως αλλάζει την ίδια την κατάσταση του channel, και κάθε receive πάνω του, από όσες goroutines κι αν περιμένουν, επιστρέφει αμέσως — πραγματικό broadcast."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 8 — Locks, Semaphores, Advanced Patterns ────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 8 — Locks, Semaphores, Advanced Patterns ────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 8 / 9 — Channels as Locks, Semaphores &amp; Advanced Patterns</div>
 <h1>Channels as Mutex Locks</h1>
 <p class="lede">Ένα buffered channel χωρητικότητας 1 μπορεί να λειτουργήσει σαν κλειδαριά (lock), εκμεταλλευόμενο ακριβώς τη
@@ -1077,20 +1494,20 @@ func main() {
 σχεδιασμός με channel ή <code>sync</code> primitive — το «busy-waiting σε βρόχο» είναι σπάνια η βέλτιστη λύση.</p>
 `);
 
-        addQuiz({
-            q: "Ποια είναι η κύρια διαφορά ανάμεσα σε ένα channel-based mutex (buffer 1) και ένα channel-based counting semaphore (buffer N > 1);",
-            options: [
-                "Το mutex-channel επιτρέπει μόνο έναν «κάτοχο» τη φορά, ενώ το semaphore-channel επιτρέπει μέχρι N ταυτόχρονους «κατόχους», περιορίζοντας παράλληλη πρόσβαση χωρίς να την απαγορεύει πλήρως",
-                "Δεν υπάρχει καμία λειτουργική διαφορά — και τα δύο επιτρέπουν απεριόριστο αριθμό ταυτόχρονων κατόχων ανεξάρτητα από τη χωρητικότητα buffer",
-                "Το semaphore-channel χρησιμοποιείται αποκλειστικά για επικοινωνία μεταξύ διαφορετικών προγραμμάτων, ενώ το mutex-channel μόνο εντός της ίδιας goroutine",
-                "Το mutex-channel απαιτεί πάντα unbuffered channel, ενώ το semaphore-channel λειτουργεί μόνο με unbuffered channels χωρίς κανένα buffer"
-            ],
-            correct: 0,
-            explain: "Και τα δύο εκμεταλλεύονται τη συμπεριφορά «send μπλοκάρει όταν ο buffer είναι γεμάτος» — απλά με διαφορετική χωρητικότητα. Buffer 1 σημαίνει αμοιβαίο αποκλεισμό (μόνο ένας κάθε φορά), buffer N σημαίνει ότι επιτρέπονται μέχρι N ταυτόχρονοι «κάτοχοι», χρήσιμο για rate limiting."
-        });
+    addQuiz({
+      q: "Ποια είναι η κύρια διαφορά ανάμεσα σε ένα channel-based mutex (buffer 1) και ένα channel-based counting semaphore (buffer N > 1);",
+      options: [
+        "Το mutex-channel επιτρέπει μόνο έναν «κάτοχο» τη φορά, ενώ το semaphore-channel επιτρέπει μέχρι N ταυτόχρονους «κατόχους», περιορίζοντας παράλληλη πρόσβαση χωρίς να την απαγορεύει πλήρως",
+        "Δεν υπάρχει καμία λειτουργική διαφορά — και τα δύο επιτρέπουν απεριόριστο αριθμό ταυτόχρονων κατόχων ανεξάρτητα από τη χωρητικότητα buffer",
+        "Το semaphore-channel χρησιμοποιείται αποκλειστικά για επικοινωνία μεταξύ διαφορετικών προγραμμάτων, ενώ το mutex-channel μόνο εντός της ίδιας goroutine",
+        "Το mutex-channel απαιτεί πάντα unbuffered channel, ενώ το semaphore-channel λειτουργεί μόνο με unbuffered channels χωρίς κανένα buffer"
+      ],
+      correct: 0,
+      explain: "Και τα δύο εκμεταλλεύονται τη συμπεριφορά «send μπλοκάρει όταν ο buffer είναι γεμάτος» — απλά με διαφορετική χωρητικότητα. Buffer 1 σημαίνει αμοιβαίο αποκλεισμό (μόνο ένας κάθε φορά), buffer N σημαίνει ότι επιτρέπονται μέχρι N ταυτόχρονοι «κάτοχοι», χρήσιμο για rate limiting."
+    });
 
-        // ── ΕΝΟΤΗΤΑ 9 — Τελικό Quiz ──────────────────────────────────────────────── ⊃
-        addContent(`
+    // ── ΕΝΟΤΗΤΑ 9 — Τελικό Quiz ──────────────────────────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Ενότητα 9 / 9 — Ανακεφαλαίωση</div>
 <h1>Πριν το τελικό quiz</h1>
 <p class="lede">Καλύψαμε πολύ δρόμο: από το απλό keyword <code>go</code>, μέχρι buffered/unbuffered channels, το
@@ -1119,80 +1536,80 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
 <p class="lede">Έτοιμος/η για το τελικό, συνδυαστικό quiz;</p>
 `);
 
-        addQuiz({
-            q: "[Τελικό Quiz 1/6] Ένα πρόγραμμα δηλώνει ch := make(chan int) (χωρίς δεύτερο όρισμα) και αμέσως μετά εκτελεί ch <- 10 στο main, χωρίς καμία άλλη goroutine να έχει ξεκινήσει. Τι θα συμβεί;",
-            options: [
-                "Deadlock — το unbuffered send μπλοκάρει περιμένοντας ταυτόχρονο receiver που δεν υπάρχει, και ο runtime το ανιχνεύει",
-                "Η τιμή 10 αποθηκεύεται προσωρινά στο channel και το πρόγραμμα συνεχίζει κανονικά χωρίς προβλήματα",
-                "Το πρόγραμμα εκτυπώνει αυτόματα το zero value του int, αφού δεν υπάρχει κανείς να λάβει την τιμή",
-                "Ο compiler αρνείται να μεταγλωττίσει τον κώδικα επειδή λείπει δεύτερο όρισμα στο make(chan int)"
-            ],
-            correct: 0,
-            explain: "Unbuffered channel σημαίνει ότι το send χρειάζεται ταυτόχρονο receive από άλλη goroutine. Αφού δεν υπάρχει καμία άλλη goroutine, το send μπλοκάρει για πάντα, και ο runtime ανιχνεύει ότι όλες οι goroutines (εδώ μόνο η main) είναι μπλοκαρισμένες."
-        });
+    addQuiz({
+      q: "[Τελικό Quiz 1/6] Ένα πρόγραμμα δηλώνει ch := make(chan int) (χωρίς δεύτερο όρισμα) και αμέσως μετά εκτελεί ch <- 10 στο main, χωρίς καμία άλλη goroutine να έχει ξεκινήσει. Τι θα συμβεί;",
+      options: [
+        "Deadlock — το unbuffered send μπλοκάρει περιμένοντας ταυτόχρονο receiver που δεν υπάρχει, και ο runtime το ανιχνεύει",
+        "Η τιμή 10 αποθηκεύεται προσωρινά στο channel και το πρόγραμμα συνεχίζει κανονικά χωρίς προβλήματα",
+        "Το πρόγραμμα εκτυπώνει αυτόματα το zero value του int, αφού δεν υπάρχει κανείς να λάβει την τιμή",
+        "Ο compiler αρνείται να μεταγλωττίσει τον κώδικα επειδή λείπει δεύτερο όρισμα στο make(chan int)"
+      ],
+      correct: 0,
+      explain: "Unbuffered channel σημαίνει ότι το send χρειάζεται ταυτόχρονο receive από άλλη goroutine. Αφού δεν υπάρχει καμία άλλη goroutine, το send μπλοκάρει για πάντα, και ο runtime ανιχνεύει ότι όλες οι goroutines (εδώ μόνο η main) είναι μπλοκαρισμένες."
+    });
 
-        addQuiz({
-            q: "[Τελικό Quiz 2/6] Ποιο από τα παρακάτω περιγράφει σωστά τη λειτουργία του select{} με πολλαπλά cases όπου περισσότερα από ένα είναι έτοιμα ταυτόχρονα, χωρίς default;",
-            options: [
-                "Επιλέγεται τυχαία ένα από τα έτοιμα cases προς εκτέλεση, ώστε κανένα channel να μην ευνοείται συστηματικά έναντι των άλλων",
-                "Εκτελούνται όλα τα έτοιμα cases με τη σειρά που εμφανίζονται στον κώδικα, το ένα μετά το άλλο",
-                "Επιλέγεται πάντα το πρώτο case στη σειρά δήλωσης, ανεξάρτητα από τα υπόλοιπα έτοιμα cases",
-                "Το select επιστρέφει σφάλμα χρόνου εκτέλεσης όταν παραπάνω από ένα case είναι έτοιμα ταυτόχρονα"
-            ],
-            correct: 0,
-            explain: "Όταν πολλά cases είναι έτοιμα ταυτόχρονα, η Go επιλέγει ένα τυχαία — σκόπιμη σχεδιαστική επιλογή ώστε να μην υπάρχει συστηματική προτίμηση προς κάποιο συγκεκριμένο channel βάσει σειράς δήλωσης."
-        });
+    addQuiz({
+      q: "[Τελικό Quiz 2/6] Ποιο από τα παρακάτω περιγράφει σωστά τη λειτουργία του select{} με πολλαπλά cases όπου περισσότερα από ένα είναι έτοιμα ταυτόχρονα, χωρίς default;",
+      options: [
+        "Επιλέγεται τυχαία ένα από τα έτοιμα cases προς εκτέλεση, ώστε κανένα channel να μην ευνοείται συστηματικά έναντι των άλλων",
+        "Εκτελούνται όλα τα έτοιμα cases με τη σειρά που εμφανίζονται στον κώδικα, το ένα μετά το άλλο",
+        "Επιλέγεται πάντα το πρώτο case στη σειρά δήλωσης, ανεξάρτητα από τα υπόλοιπα έτοιμα cases",
+        "Το select επιστρέφει σφάλμα χρόνου εκτέλεσης όταν παραπάνω από ένα case είναι έτοιμα ταυτόχρονα"
+      ],
+      correct: 0,
+      explain: "Όταν πολλά cases είναι έτοιμα ταυτόχρονα, η Go επιλέγει ένα τυχαία — σκόπιμη σχεδιαστική επιλογή ώστε να μην υπάρχει συστηματική προτίμηση προς κάποιο συγκεκριμένο channel βάσει σειράς δήλωσης."
+    });
 
-        addQuiz({
-            q: "[Τελικό Quiz 3/6] Ποια είναι η βασική διαφορά ανάμεσα σε ένα απλό send σε κοινό channel και σε close() του channel, όσον αφορά goroutines που περιμένουν με <-ch;",
-            options: [
-                "Το send δίνει την τιμή σε μία μόνο αναμένουσα goroutine, ενώ το close() «ξυπνάει» ταυτόχρονα όλες τις goroutines που περιμένουν, ανεξάρτητα από τον αριθμό τους",
-                "Και τα δύο έχουν ακριβώς την ίδια συμπεριφορά — ξυπνάνε πάντα όλες τις αναμένουσες goroutines με την ίδια τιμή",
-                "Το close() ξυπνάει μόνο μία τυχαία goroutine, ενώ το send ξυπνάει πάντα όλες τις αναμένουσες goroutines ταυτόχρονα",
-                "Το send λειτουργεί μόνο σε buffered channels, ενώ το close() λειτουργεί μόνο σε unbuffered channels"
-            ],
-            correct: 0,
-            explain: "Ένα send «καταναλώνεται» από μία μόνο goroutine — όποια το «αρπάξει» πρώτη. Το close() αλλάζει την ίδια την κατάσταση του channel με τρόπο ορατό σε όλους ταυτόχρονα, οπότε λειτουργεί σαν πραγματικό broadcast σε όλες τις αναμένουσες goroutines."
-        });
+    addQuiz({
+      q: "[Τελικό Quiz 3/6] Ποια είναι η βασική διαφορά ανάμεσα σε ένα απλό send σε κοινό channel και σε close() του channel, όσον αφορά goroutines που περιμένουν με <-ch;",
+      options: [
+        "Το send δίνει την τιμή σε μία μόνο αναμένουσα goroutine, ενώ το close() «ξυπνάει» ταυτόχρονα όλες τις goroutines που περιμένουν, ανεξάρτητα από τον αριθμό τους",
+        "Και τα δύο έχουν ακριβώς την ίδια συμπεριφορά — ξυπνάνε πάντα όλες τις αναμένουσες goroutines με την ίδια τιμή",
+        "Το close() ξυπνάει μόνο μία τυχαία goroutine, ενώ το send ξυπνάει πάντα όλες τις αναμένουσες goroutines ταυτόχρονα",
+        "Το send λειτουργεί μόνο σε buffered channels, ενώ το close() λειτουργεί μόνο σε unbuffered channels"
+      ],
+      correct: 0,
+      explain: "Ένα send «καταναλώνεται» από μία μόνο goroutine — όποια το «αρπάξει» πρώτη. Το close() αλλάζει την ίδια την κατάσταση του channel με τρόπο ορατό σε όλους ταυτόχρονα, οπότε λειτουργεί σαν πραγματικό broadcast σε όλες τις αναμένουσες goroutines."
+    });
 
-        addQuiz({
-            q: "[Τελικό Quiz 4/6] Γιατί το defer mu.Unlock() αμέσως μετά το mu.Lock() θεωρείται καλή πρακτική σε σχέση με sync.Mutex;",
-            options: [
-                "Γιατί εγγυάται ότι το κλείδωμα θα απελευθερωθεί όταν η συνάρτηση επιστρέψει, ό,τι κι αν συμβεί ενδιάμεσα — πρόωρο return ή ακόμα και panic",
-                "Γιατί το Unlock() δεν λειτουργεί καθόλου αν δεν καλείται μέσω defer, ανεξάρτητα από τη θέση του στη συνάρτηση",
-                "Γιατί το defer κάνει το Lock() να εκτελείται ταυτόχρονα σε πολλαπλές goroutines χωρίς κίνδυνο race condition",
-                "Γιατί χωρίς defer, το mutex κλειδώνει αυτόματα κάθε άλλη μεταβλητή στο ίδιο πακέτο, όχι μόνο την προστατευόμενη"
-            ],
-            correct: 0,
-            explain: "Το defer εξασφαλίζει εκτέλεση κατά την έξοδο της συνάρτησης ανεξάρτητα από το μονοπάτι εξόδου. Χωρίς αυτό, ένα πρόωρο return ή ένα panic θα μπορούσε να αφήσει το mutex μόνιμα κλειδωμένο, οδηγώντας σε deadlock για όποιον προσπαθήσει να το ξανακλειδώσει."
-        });
+    addQuiz({
+      q: "[Τελικό Quiz 4/6] Γιατί το defer mu.Unlock() αμέσως μετά το mu.Lock() θεωρείται καλή πρακτική σε σχέση με sync.Mutex;",
+      options: [
+        "Γιατί εγγυάται ότι το κλείδωμα θα απελευθερωθεί όταν η συνάρτηση επιστρέψει, ό,τι κι αν συμβεί ενδιάμεσα — πρόωρο return ή ακόμα και panic",
+        "Γιατί το Unlock() δεν λειτουργεί καθόλου αν δεν καλείται μέσω defer, ανεξάρτητα από τη θέση του στη συνάρτηση",
+        "Γιατί το defer κάνει το Lock() να εκτελείται ταυτόχρονα σε πολλαπλές goroutines χωρίς κίνδυνο race condition",
+        "Γιατί χωρίς defer, το mutex κλειδώνει αυτόματα κάθε άλλη μεταβλητή στο ίδιο πακέτο, όχι μόνο την προστατευόμενη"
+      ],
+      correct: 0,
+      explain: "Το defer εξασφαλίζει εκτέλεση κατά την έξοδο της συνάρτησης ανεξάρτητα από το μονοπάτι εξόδου. Χωρίς αυτό, ένα πρόωρο return ή ένα panic θα μπορούσε να αφήσει το mutex μόνιμα κλειδωμένο, οδηγώντας σε deadlock για όποιον προσπαθήσει να το ξανακλειδώσει."
+    });
 
-        addQuiz({
-            q: "[Τελικό Quiz 5/6] Σε ποιο σενάριο ταιριάζει καλύτερα ένα channel-based counting semaphore (buffered channel χωρητικότητας N) αντί για sync.Mutex;",
-            options: [
-                "Όταν θέλουμε να επιτρέψουμε μέχρι N ταυτόχρονες εκτελέσεις μιας εργασίας (π.χ. rate limiting σε εξωτερικό API), όχι μόνο μία τη φορά",
-                "Όταν θέλουμε ακριβώς έναν μόνο κάτοχο τη φορά, όπως ακριβώς κάνει και το sync.Mutex, χωρίς καμία πρακτική διαφορά μεταξύ τους",
-                "Όταν θέλουμε να αποτρέψουμε εντελώς κάθε ταυτόχρονη πρόσβαση σε κοινόχρηστη μνήμη, ανεξαρτήτως αριθμού goroutines",
-                "Όταν το πρόγραμμα δεν έχει καθόλου goroutines και τρέχει αποκλειστικά σειριακά"
-            ],
-            correct: 0,
-            explain: "Ένα mutex επιτρέπει μόνο έναν κάτοχο τη φορά (buffer 1, ουσιαστικά). Ένα semaphore με buffer N > 1 επιτρέπει μέχρι N ταυτόχρονους κατόχους — ιδανικό όταν θέλουμε να περιορίσουμε, όχι να απαγορεύσουμε πλήρως, την παράλληλη πρόσβαση, π.χ. σε rate limiting σεναρίων."
-        });
+    addQuiz({
+      q: "[Τελικό Quiz 5/6] Σε ποιο σενάριο ταιριάζει καλύτερα ένα channel-based counting semaphore (buffered channel χωρητικότητας N) αντί για sync.Mutex;",
+      options: [
+        "Όταν θέλουμε να επιτρέψουμε μέχρι N ταυτόχρονες εκτελέσεις μιας εργασίας (π.χ. rate limiting σε εξωτερικό API), όχι μόνο μία τη φορά",
+        "Όταν θέλουμε ακριβώς έναν μόνο κάτοχο τη φορά, όπως ακριβώς κάνει και το sync.Mutex, χωρίς καμία πρακτική διαφορά μεταξύ τους",
+        "Όταν θέλουμε να αποτρέψουμε εντελώς κάθε ταυτόχρονη πρόσβαση σε κοινόχρηστη μνήμη, ανεξαρτήτως αριθμού goroutines",
+        "Όταν το πρόγραμμα δεν έχει καθόλου goroutines και τρέχει αποκλειστικά σειριακά"
+      ],
+      correct: 0,
+      explain: "Ένα mutex επιτρέπει μόνο έναν κάτοχο τη φορά (buffer 1, ουσιαστικά). Ένα semaphore με buffer N > 1 επιτρέπει μέχρι N ταυτόχρονους κατόχους — ιδανικό όταν θέλουμε να περιορίσουμε, όχι να απαγορεύσουμε πλήρως, την παράλληλη πρόσβαση, π.χ. σε rate limiting σεναρίων."
+    });
 
-        addQuiz({
-            q: "[Τελικό Quiz 6/6] Ένας βρόχος for i := 0; i < 5; i++ { go func(){ fmt.Println(i) }() } (ΧΩΡΙΣ να περνάει το i ως όρισμα) τι προβληματική συμπεριφορά μπορεί να παρουσιάσει σε σχέση με το τι θα εκτυπωθεί;",
-            options: [
-                "Οι goroutines μοιράζονται όλες την ίδια μεταβλητή βρόχου i μέσω closure, οπότε μπορεί να εκτυπωθούν απρόβλεπτες ή επαναλαμβανόμενες τιμές αντί των αναμενόμενων 0 έως 4",
-                "Το πρόγραμμα αρνείται να μεταγλωττιστεί επειδή απαιτείται πάντα ρητό όρισμα σε κάθε ανώνυμη συνάρτηση που καλείται με go",
-                "Κάθε goroutine εγγυημένα εκτυπώνει τη σωστή, μοναδική τιμή του i που είχε τη στιγμή της δικής της εκκίνησης, χωρίς κίνδυνο",
-                "Το πρόγραμμα μπλοκάρει σε deadlock επειδή το fmt.Println δεν μπορεί να κληθεί από περισσότερες από μία goroutine ταυτόχρονα"
-            ],
-            correct: 0,
-            explain: "Χωρίς να περάσουμε το i ως παράμετρο, όλες οι ανώνυμες συναρτήσεις «βλέπουν» μέσω closure την ίδια, κοινή μεταβλητή i του βρόχου, η οποία συνεχίζει να αλλάζει καθώς προχωράει ο βρόχος — οπότε το ποια τιμή θα διαβάσει τελικά κάθε goroutine είναι απρόβλεπτο (πολύ πιθανό να δούμε πολλά 5άρια, ή οποιοδήποτε συνδυασμό)."
-        });
+    addQuiz({
+      q: "[Τελικό Quiz 6/6] Ένας βρόχος for i := 0; i < 5; i++ { go func(){ fmt.Println(i) }() } (ΧΩΡΙΣ να περνάει το i ως όρισμα) τι προβληματική συμπεριφορά μπορεί να παρουσιάσει σε σχέση με το τι θα εκτυπωθεί;",
+      options: [
+        "Οι goroutines μοιράζονται όλες την ίδια μεταβλητή βρόχου i μέσω closure, οπότε μπορεί να εκτυπωθούν απρόβλεπτες ή επαναλαμβανόμενες τιμές αντί των αναμενόμενων 0 έως 4",
+        "Το πρόγραμμα αρνείται να μεταγλωττιστεί επειδή απαιτείται πάντα ρητό όρισμα σε κάθε ανώνυμη συνάρτηση που καλείται με go",
+        "Κάθε goroutine εγγυημένα εκτυπώνει τη σωστή, μοναδική τιμή του i που είχε τη στιγμή της δικής της εκκίνησης, χωρίς κίνδυνο",
+        "Το πρόγραμμα μπλοκάρει σε deadlock επειδή το fmt.Println δεν μπορεί να κληθεί από περισσότερες από μία goroutine ταυτόχρονα"
+      ],
+      correct: 0,
+      explain: "Χωρίς να περάσουμε το i ως παράμετρο, όλες οι ανώνυμες συναρτήσεις «βλέπουν» μέσω closure την ίδια, κοινή μεταβλητή i του βρόχου, η οποία συνεχίζει να αλλάζει καθώς προχωράει ο βρόχος — οπότε το ποια τιμή θα διαβάσει τελικά κάθε goroutine είναι απρόβλεπτο (πολύ πιθανό να δούμε πολλά 5άρια, ή οποιοδήποτε συνδυασμό)."
+    });
 
-        // ── Πηγές ────────────────────────────────────────────────────────────────── ⊃
-        addContent(`
+    // ── Πηγές ────────────────────────────────────────────────────────────────── ⊃
+    addContent(`
 <div class="eyebrow">Τέλος παρουσίασης</div>
 <h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
 <p class="lede">Για περαιτέρω εμβάθυνση στη Go και το concurrency model της:</p>
@@ -1205,8 +1622,230 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
   Το παρόν presentation δημιουργήθηκε από τον avgerinos8.
 </p>
 `);
-        initSlideDeck();
-    </script>
+
+    // ── DOM Elements Selection ──────────────────────────────────────────────────
+    const deckEl = document.getElementById("deck");
+    const dotsEl = document.getElementById("dots");
+    const counterEl = document.getElementById("slide-counter");
+    const fillEl = document.getElementById("progress-fill");
+    const prevBtn = document.getElementById("btn-prev");
+    const nextBtn = document.getElementById("btn-next");
+    const resetBtn = document.getElementById("btn-reset");
+
+    // ── State Persistence (localStorage) ────────────────────────────────────────
+    // Load the last visited slide index from localStorage. Default to 0 if not found.
+    let current = parseInt(localStorage.getItem("quiz_current_slide")) || 0;
+
+    // Load previously submitted answers from localStorage. Default to an empty object.
+    let savedAnswers = JSON.parse(localStorage.getItem("quiz_answers")) || {};
+
+    /**
+     * Deterministic shuffle algorithm (Linear Congruential Generator).
+     * Ensures option order stays fixed per slide across reloads, but varies between questions.
+     * @param {Array} arr - The array of indices to shuffle.
+     * @param {number} seed - The numerical seed used for initialization.
+     * @returns {Array} - The shuffled copy of the array.
+     */
+    function shuffleSeed(arr, seed) {
+      const a = arr.slice();
+      let s = seed;
+      for (let i = a.length - 1; i > 0; i--) {
+        s = (s * 9301 + 49297) % 233280;
+        const j = Math.floor((s / 233280) * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    /**
+     * Generates the HTML layout for a content slide or interactive quiz checkpoint.
+     * @param {HTMLElement} el - The slide container element.
+     * @param {Object} slide - The slide data object.
+     * @param {number} idx - The index of the slide.
+     */
+    function renderSlide(el, slide, idx) {
+      // If it's a standard content slide, inject the raw HTML and exit
+      if (slide.type === "content") {
+        el.innerHTML = slide.html;
+        return;
+      }
+
+      // Quiz slide configuration
+      const q = slide.data;
+      const order = q._order; // Precomputed shuffled index layout
+
+      // Create quiz layout structural elements
+      const box = document.createElement("div");
+      box.className = "quiz-box";
+
+      const qDiv = document.createElement("div");
+      qDiv.className = "quiz-q";
+      qDiv.textContent = q.q;
+      box.appendChild(qDiv);
+
+      const optsDiv = document.createElement("div");
+      optsDiv.className = "quiz-options";
+
+      const explainDiv = document.createElement("div");
+      explainDiv.className = "quiz-explain";
+
+      /**
+       * Inner helper function to handle UI changes when a choice is made or restored.
+       * @param {number} selectedIndex - The original un-shuffled index of the chosen option.
+       * @param {HTMLElement|null} clickedBtn - The button element clicked, or null if loading from storage.
+       */
+      function handleSelection(selectedIndex, clickedBtn = null) {
+        const allBtns = optsDiv.querySelectorAll(".quiz-opt");
+
+        // Disable all buttons to freeze interaction after an answer is chosen
+        allBtns.forEach(b => b.classList.add("disabled"));
+
+        // Evaluate the answer accuracy and format the prefix in the explanation container
+        if (selectedIndex === q.correct) {
+          if (clickedBtn) clickedBtn.classList.add("correct");
+          explainDiv.innerHTML = "<strong>ΣΩΣΤΟ!</strong><br>" + q.explain;
+        } else {
+          if (clickedBtn) clickedBtn.classList.add("wrong");
+          explainDiv.innerHTML = "<strong>ΛΑΘΟΣ.</strong><br>" + q.explain;
+        }
+
+        // Loop through all options to visually reveal the correct choice (green highlight)
+        // Also retrospectively flag the incorrect chosen answer if pulling state from localStorage
+        allBtns.forEach((b, i2) => {
+          if (order[i2] === q.correct) b.classList.add("correct");
+          if (!clickedBtn && order[i2] === selectedIndex && selectedIndex !== q.correct) {
+            b.classList.add("wrong");
+          }
+        });
+
+        // Make the explanation text box visible
+        explainDiv.classList.add("show");
+      }
+
+      // Generate individual option buttons based on the pre-shuffled sequence
+      order.forEach(origIndex => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-opt";
+        btn.textContent = q.options[origIndex];
+
+        // Setup click listener for dynamic answering
+        btn.addEventListener("click", () => {
+          // Save state: Record the selected choice index under the current slide key
+          savedAnswers[idx] = origIndex;
+          localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+
+          // Process choice UI adjustments
+          handleSelection(origIndex, btn);
+        });
+
+        optsDiv.appendChild(btn);
+      });
+
+      // Assemble components into the main container
+      box.appendChild(optsDiv);
+      box.appendChild(explainDiv);
+      el.innerHTML = `<div class="eyebrow">Quiz Checkpoint</div>`;
+      el.appendChild(box);
+
+      // Persistence Check: If a historical answer exists for this slide, restore the locked UI layout immediately
+      if (savedAnswers[idx] !== undefined) {
+        handleSelection(savedAnswers[idx]);
+      }
+    }
+
+    // ── Initialization Logic ────────────────────────────────────────────────────
+
+    // Step 1: Precompute the deterministic shuffled arrangement for all quiz slides
+    slides.forEach((s, i) => {
+      if (s.type === "quiz") {
+        const idxArr = s.data.options.map((_, i2) => i2);
+        s.data._order = shuffleSeed(idxArr, i * 7 + 13);
+      }
+    });
+
+    // Step 2: Dynamically construct DOM slides and navigation pagination indicators (dots)
+    slides.forEach((s, i) => {
+      const el = document.createElement("div");
+      el.className = "slide";
+      el.dataset.index = i;
+      deckEl.appendChild(el);
+      renderSlide(el, s, i);
+
+      const dot = document.createElement("div");
+      dot.className = "dot" + (s.type === "quiz" ? " quiz-dot" : "");
+      dot.addEventListener("click", () => goTo(i));
+      dotsEl.appendChild(dot);
+    });
+
+    // Cache reference arrays for slides and pagination selectors after generation
+    const slideEls = Array.from(document.querySelectorAll(".slide"));
+    const dotEls = Array.from(document.querySelectorAll(".dot"));
+
+    /**
+     * Triggers slide transitions, tracks indices, and stores spatial history.
+     * @param {number} i - Targeted slide index.
+     */
+    function goTo(i) {
+      if (i < 0 || i >= slides.length) return; // Boundary safeguard
+
+      // Clear active UI indicators from the old current slide
+      slideEls[current].classList.remove("active");
+      dotEls[current].classList.remove("active");
+
+      // Track current position state
+      current = i;
+
+      // Save state: Lock current coordinate directly inside localStorage
+      localStorage.setItem("quiz_current_slide", current);
+
+      // Bind active indicator classes to the target active slide
+      slideEls[current].classList.add("active");
+      dotEls[current].classList.add("active");
+      slideEls[current].scrollTop = 0; // Scroll view back to top
+
+      // Refresh navigational progress metrics
+      counterEl.textContent = (current + 1) + " / " + slides.length;
+      fillEl.style.width = (((current + 1) / slides.length) * 100) + "%";
+
+      // Toggle active accessibility boundaries for controls
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+    }
+
+    // Helper function to perform a clean hard reset
+    function performHardReset() {
+      // 1. Clear the quiz session data from localStorage
+      localStorage.removeItem("quiz_current_slide");
+      localStorage.removeItem("quiz_answers");
+
+      // 2. Trigger a strict hard reload from the server (bypassing cache)
+      window.location.href = window.location.pathname + '?cache-bust=' + Date.now() + window.location.hash;
+    }
+
+    // Trigger Hard Reset when clicking the "Reset Progress" button
+    resetBtn.addEventListener("click", performHardReset);
+
+    // Also keep the Ctrl + F5 keyboard shortcut for convenience
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "F5") {
+        e.preventDefault();
+        performHardReset();
+      }
+    });
+
+    // ── Interactive Navigation Events ───────────────────────────────────────────
+    prevBtn.addEventListener("click", () => goTo(current - 1));
+    nextBtn.addEventListener("click", () => goTo(current + 1));
+
+    // Keyboard listeners for desktop directional tracking
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") goTo(current + 1);
+      if (e.key === "ArrowLeft") goTo(current - 1);
+    });
+
+    // Kickstart presentation layout at the exact historical position retrieved from localStorage
+    goTo(current);
+  </script>
 </body>
 
 </html>
