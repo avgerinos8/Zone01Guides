@@ -6,7 +6,7 @@
    building blocks (addContent, addQuiz, addFillBlank, addMatching) and the
    rendering/navigation engine. All actual lesson content lives in the
    inline <script> at the bottom of index.html, which calls these functions
-   and finishes with initSlideDeck().
+   and finishes with initSlideDeck({ version: "..." }).
    ══════════════════════════════════════════════════════════════════════════ */
 
 // ── slide data store ────────────────────────────────────────────────────── ⊃
@@ -14,7 +14,7 @@ const slides = [];
 
 /**
  * Adds a plain content slide to the slide deck data array.
- * Accepts HTML string and optional background configuration options.
+ * Accepts raw HTML and optional background configuration options.
  * @param {string} html - Raw HTML for the slide body.
  * @param {Object} [opts] - Background and overlay options.
  */
@@ -24,8 +24,8 @@ function addContent(html, opts) {
 
 /**
  * Adds one or more multiple-choice questions on a single slide.
- * Wraps single question objects in an array for unified processing.
- * @param {Object|Object[]} qOrArray - Single question object or array of questions.
+ * Accepts either a single question object or an array of question objects.
+ * @param {Object|Object[]} qOrArray - Question object or array of questions.
  */
 function addQuiz(qOrArray) {
   const questions = Array.isArray(qOrArray) ? qOrArray : [qOrArray];
@@ -34,8 +34,8 @@ function addQuiz(qOrArray) {
 
 /**
  * Adds one or more fill-in-the-blank code exercises on a single slide.
- * Accepts code templates containing __id__ markers and corresponding answers.
- * @param {Object|Object[]} itemOrArray - Single exercise or array of exercises.
+ * Accepts code templates containing __id__ markers and answers.
+ * @param {Object|Object[]} itemOrArray - Single item or array of items.
  * @param {Object} [opts] - Optional slide header label and note paragraph.
  */
 function addFillBlank(itemOrArray, opts) {
@@ -54,7 +54,7 @@ function addMatching(pairs, opts) {
 
 // ── deterministic shuffle ────────────────────────────────────────────────── ⊃
 /**
- * Shuffles an array deterministically using a Linear Congruential Generator algorithm.
+ * Shuffles an array deterministically using a Linear Congruential Generator.
  * Guarantees consistent ordering across reloads for a given seed.
  * @param {Array} arr - The target array to shuffle.
  * @param {number} seed - The numeric seed used to randomize the order.
@@ -73,9 +73,9 @@ function shuffleSeed(arr, seed) {
 
 // ── code blocks and syntax helper ───────────────────────────────────────── ⊃
 /**
- * Scans the container for code blocks and wraps them with an interactive copy button.
- * Avoids double-wrapping by checking for existing wrapper elements.
- * @param {HTMLElement} container - The element containing pre code blocks.
+ * Scans container for code blocks and wraps them with an interactive copy button.
+ * Prevents duplicate wrappers by checking existing structure.
+ * @param {HTMLElement} container - Container element to decorate.
  */
 function decorateCodeBlocks(container) {
   container.querySelectorAll("pre").forEach(preEl => {
@@ -100,13 +100,65 @@ function decorateCodeBlocks(container) {
   });
 }
 
+// ── storage keys and state persistence ──────────────────────────────────── ⊃
+let savedAnswers = {};
+let current = 0;
+let activeCourseVersion = "1.0.0";
+
+/**
+ * Generates a unique storage key prefix based on the current page URL path.
+ * Keeps local storage progress isolated between different lessons/HTML pages.
+ * @returns {string} Unique storage key prefix.
+ */
+function getStoragePrefix() {
+  return "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+}
+
+/**
+ * Validates stored course version against current active HTML version.
+ * Resets local storage progress for this specific course if version changes.
+ * @param {string} courseVersion - Current release version defined by HTML page.
+ */
+function checkCourseVersion(courseVersion) {
+  activeCourseVersion = courseVersion;
+  const prefix = getStoragePrefix();
+  const versionKey = prefix + "version";
+  const savedVersion = localStorage.getItem(versionKey);
+
+  if (savedVersion !== courseVersion) {
+    localStorage.removeItem(prefix + "current_slide");
+    localStorage.removeItem(prefix + "answers");
+    localStorage.setItem(versionKey, courseVersion);
+  }
+
+  current = parseInt(localStorage.getItem(prefix + "current_slide")) || 0;
+  savedAnswers = JSON.parse(localStorage.getItem(prefix + "answers")) || {};
+}
+
+/**
+ * Persists user answer state to local storage using unique page prefix.
+ */
+function persistAnswers() {
+  const prefix = getStoragePrefix();
+  localStorage.setItem(prefix + "answers", JSON.stringify(savedAnswers));
+}
+
+/**
+ * Persists current slide index to local storage using unique page prefix.
+ * @param {number} slideIndex - Active slide index.
+ */
+function persistCurrentSlide(slideIndex) {
+  const prefix = getStoragePrefix();
+  localStorage.setItem(prefix + "current_slide", slideIndex);
+}
+
 // ── multiple-choice question renderer ───────────────────────────────────── ⊃
 /**
- * Renders one MC question inside a given quiz-box container.
- * Restores previous user selections and evaluates correctness.
- * @param {HTMLElement} box - Container to append this question's markup to.
- * @param {Object} q - Question object containing options, correct index, and explanation.
- * @param {string} storeKey - localStorage key for persisting answer state.
+ * Renders a single multiple-choice question inside a quiz box container.
+ * Handles answer click events, correctness feedback, and state persistence.
+ * @param {HTMLElement} box - Container element to append question to.
+ * @param {Object} q - Question data object.
+ * @param {string} storeKey - Unique key for local storage persistence.
  */
 function renderQuestion(box, q, storeKey) {
   const order = q._order;
@@ -163,7 +215,7 @@ function renderQuestion(box, q, storeKey) {
 
     btn.addEventListener("click", () => {
       savedAnswers[storeKey] = origIndex;
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       handleSelection(origIndex, btn);
     });
 
@@ -180,11 +232,11 @@ function renderQuestion(box, q, storeKey) {
 
 // ── fill-in-the-blank renderer ──────────────────────────────────────────── ⊃
 /**
- * Renders one fill-in-the-blank exercise with code inputs and validation logic.
- * Restores previous user inputs and submitted correctness states from local storage.
- * @param {HTMLElement} wrap - Container element to append this exercise to.
- * @param {Object} item - Exercise object with code template, blank answers, and explanation.
- * @param {string} storeKey - Unique localStorage key for this fill-blank item.
+ * Renders a fill-in-the-blank code exercise with interactive inputs.
+ * Restores input values and validation state from local storage.
+ * @param {HTMLElement} wrap - Container element to append exercise to.
+ * @param {Object} item - Exercise data item.
+ * @param {string} storeKey - Unique key for local storage persistence.
  */
 function renderFillBlank(wrap, item, storeKey) {
   const box = document.createElement("div");
@@ -216,7 +268,7 @@ function renderFillBlank(wrap, item, storeKey) {
           savedAnswers[storeKey] = { inputs: {}, checked: false };
         }
         savedAnswers[storeKey].inputs[blankId] = inp.value;
-        localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+        persistAnswers();
       });
       codeEl.appendChild(inp);
     }
@@ -266,7 +318,7 @@ function renderFillBlank(wrap, item, storeKey) {
       savedAnswers[storeKey].inputs[inp.dataset.blankId] = inp.value;
     });
     savedAnswers[storeKey].checked = true;
-    localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+    persistAnswers();
     evaluateBlanks();
   });
 
@@ -279,14 +331,24 @@ function renderFillBlank(wrap, item, storeKey) {
 
 // ── matching-pairs renderer ─────────────────────────────────────────────── ⊃
 /**
- * Renders a matching-pairs exercise with interactive column selection.
- * Restores previously matched pairs and persists new matches to local storage.
- * @param {HTMLElement} wrap - Container element to append the exercise to.
+ * Renders a matching-pairs exercise separating solved pairs from active options.
+ * Displays matched pairs side-by-side with a visual connecting line.
+ * @param {HTMLElement} wrap - Container element to append exercise to.
  * @param {Array} pairs - Array of term-definition matching objects.
  * @param {number} seed - Seed used for shuffling options deterministically.
- * @param {string} storeKey - Unique localStorage key for matching state.
+ * @param {string} storeKey - Unique key for local storage persistence.
  */
 function renderMatching(wrap, pairs, seed, storeKey) {
+  const container = document.createElement("div");
+  container.className = "matching-container";
+
+  const matchedArea = document.createElement("div");
+  matchedArea.className = "matched-area";
+  matchedArea.style.display = "flex";
+  matchedArea.style.flexDirection = "column";
+  matchedArea.style.gap = "10px";
+  matchedArea.style.marginBottom = "20px";
+
   const grid = document.createElement("div");
   grid.className = "matching-wrap";
   const leftCol = document.createElement("div");
@@ -300,9 +362,55 @@ function renderMatching(wrap, pairs, seed, storeKey) {
   const matchedPairs = new Set(savedAnswers[storeKey] || []);
   let selected = null;
 
-  function onPick(btn, side, pairIndex) {
-    if (btn.classList.contains("matched")) return;
+  function createMatchedRow(pairIndex) {
+    const row = document.createElement("div");
+    row.className = "matched-row";
+    row.style.display = "flex";
+    row.style.alignItems = "center";
+    row.style.justifyContent = "space-between";
+    row.style.gap = "12px";
 
+    const termBox = document.createElement("button");
+    termBox.className = "match-btn matched";
+    termBox.style.flex = "1";
+    termBox.style.margin = "0";
+    termBox.textContent = pairs[pairIndex].term;
+
+    const line = document.createElement("div");
+    line.style.flex = "0 0 60px";
+    line.style.height = "2px";
+    line.style.backgroundColor = "var(--accent, #4caf50)";
+    line.style.display = "flex";
+    line.style.alignItems = "center";
+    line.style.justifyContent = "center";
+
+    const badge = document.createElement("span");
+    badge.textContent = "✓";
+    badge.style.fontSize = "11px";
+    badge.style.fontWeight = "bold";
+    badge.style.padding = "2px 6px";
+    badge.style.borderRadius = "10px";
+    badge.style.backgroundColor = "var(--accent, #4caf50)";
+    badge.style.color = "#fff";
+    line.appendChild(badge);
+
+    const defBox = document.createElement("button");
+    defBox.className = "match-btn matched";
+    defBox.style.flex = "1";
+    defBox.style.margin = "0";
+    defBox.textContent = pairs[pairIndex].def;
+
+    row.appendChild(termBox);
+    row.appendChild(line);
+    row.appendChild(defBox);
+    return row;
+  }
+
+  matchedPairs.forEach(pairIndex => {
+    matchedArea.appendChild(createMatchedRow(pairIndex));
+  });
+
+  function onPick(btn, side, pairIndex) {
     if (!selected) {
       selected = { side, btn, pairIndex };
       btn.classList.add("selected");
@@ -315,13 +423,14 @@ function renderMatching(wrap, pairs, seed, storeKey) {
       return;
     }
     if (selected.pairIndex === pairIndex) {
-      selected.btn.classList.remove("selected");
-      selected.btn.classList.add("matched");
-      btn.classList.add("matched");
+      selected.btn.remove();
+      btn.remove();
+
+      matchedArea.appendChild(createMatchedRow(pairIndex));
 
       matchedPairs.add(pairIndex);
       savedAnswers[storeKey] = Array.from(matchedPairs);
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
     } else {
       const a = selected.btn, b = btn;
       a.classList.add("flash-wrong");
@@ -335,39 +444,37 @@ function renderMatching(wrap, pairs, seed, storeKey) {
   }
 
   leftOrder.forEach(pairIndex => {
+    if (matchedPairs.has(pairIndex)) return;
     const btn = document.createElement("button");
     btn.className = "match-btn";
     btn.textContent = pairs[pairIndex].term;
-    if (matchedPairs.has(pairIndex)) {
-      btn.classList.add("matched");
-    }
     btn.addEventListener("click", () => onPick(btn, "L", pairIndex));
     leftCol.appendChild(btn);
   });
+
   rightOrder.forEach(pairIndex => {
+    if (matchedPairs.has(pairIndex)) return;
     const btn = document.createElement("button");
     btn.className = "match-btn";
     btn.textContent = pairs[pairIndex].def;
-    if (matchedPairs.has(pairIndex)) {
-      btn.classList.add("matched");
-    }
     btn.addEventListener("click", () => onPick(btn, "R", pairIndex));
     rightCol.appendChild(btn);
   });
 
   grid.appendChild(leftCol);
   grid.appendChild(rightCol);
-  wrap.appendChild(grid);
+  container.appendChild(matchedArea);
+  container.appendChild(grid);
+  wrap.appendChild(container);
 }
 
 // ── header row shared by interactive slides ────────────────────────────── ⊃
 /**
- * Constructs the header row with an eyebrow label and reset button for interactive slides.
- * Appends an optional instructional note paragraph when provided.
- * @param {HTMLElement} el - Parent slide element to append the header components to.
- * @param {string} defaultLabel - Default text label for the eyebrow header.
- * @param {Object} [opts] - Optional configuration containing custom label and note.
- * @returns {HTMLButtonElement} The created reset button element for attaching click events.
+ * Constructs the header row with eyebrow text and reset button for slides.
+ * @param {HTMLElement} el - Slide element to append header to.
+ * @param {string} defaultLabel - Default text for header eyebrow.
+ * @param {Object} [opts] - Optional configuration options.
+ * @returns {HTMLButtonElement} Created reset button element.
  */
 function buildInteractiveHeader(el, defaultLabel, opts) {
   const header = document.createElement("div");
@@ -397,11 +504,10 @@ function buildInteractiveHeader(el, defaultLabel, opts) {
 
 // ── slide renderer and type dispatcher ─────────────────────────────────── ⊃
 /**
- * Renders slide content dynamically according to the slide type definition.
- * Handles DOM construction and resets for content, quiz, fillblank, and matching types.
- * @param {HTMLElement} el - Target DOM element representing the slide container.
- * @param {Object} slide - Slide definition object containing type and payload data.
- * @param {number} idx - Index position of the current slide in the deck.
+ * Dispatches rendering logic based on slide type (content, quiz, fillblank, matching).
+ * @param {HTMLElement} el - Target slide element container.
+ * @param {Object} slide - Slide data payload.
+ * @param {number} idx - Index position of slide in deck.
  */
 function renderSlide(el, slide, idx) {
   if (slide.type === "content") {
@@ -437,7 +543,7 @@ function renderSlide(el, slide, idx) {
         delete savedAnswers[idx + "_" + qIdx];
         q._order = shuffleSeed(q.options.map((_, i2) => i2), Date.now() % 100000 + qIdx);
       });
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       renderAllQuestions();
     });
 
@@ -460,7 +566,7 @@ function renderSlide(el, slide, idx) {
       slide.data.forEach((_, itemIdx) => {
         delete savedAnswers[idx + "_fb_" + itemIdx];
       });
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       renderAllItems();
     });
 
@@ -475,14 +581,14 @@ function renderSlide(el, slide, idx) {
     let seed = idx * 17 + 3;
 
     function renderAllPairs() {
-      el.querySelectorAll(".matching-wrap").forEach(n => n.remove());
+      el.querySelectorAll(".matching-container").forEach(n => n.remove());
       renderMatching(el, slide.data, seed, idx + "_match");
     }
 
     resetQuizBtn.addEventListener("click", () => {
       seed = Date.now() % 100000;
       delete savedAnswers[idx + "_match"];
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       renderAllPairs();
     });
 
@@ -490,16 +596,12 @@ function renderSlide(el, slide, idx) {
   }
 }
 
-// ── persisted state management ──────────────────────────────────────────── ⊃
-let current = parseInt(localStorage.getItem("quiz_current_slide")) || 0;
-let savedAnswers = JSON.parse(localStorage.getItem("quiz_answers")) || {};
-
 let deckEl, dotsEl, counterEl, fillEl, prevBtn, nextBtn, resetBtn;
 let slideEls, dotEls;
 
 // ── deck initialization and navigation ─────────────────────────────────── ⊃
 /**
- * Navigates to a target slide index while updating state, UI, and transitions.
+ * Navigates to target slide index updating state, progress bar, and transitions.
  * @param {number} i - Target slide index to display.
  */
 function goTo(i) {
@@ -510,7 +612,7 @@ function goTo(i) {
   dotEls[current].classList.remove("active");
 
   current = i;
-  localStorage.setItem("quiz_current_slide", current);
+  persistCurrentSlide(current);
 
   slideEls[current].classList.toggle("dir-prev", goingBack);
   slideEls[current].classList.add("active");
@@ -525,19 +627,27 @@ function goTo(i) {
 }
 
 /**
- * Clears all stored application state from localStorage and reloads the browser window.
+ * Clears stored application state for the active course and reloads page.
  */
 function performHardReset() {
-  localStorage.removeItem("quiz_current_slide");
-  localStorage.removeItem("quiz_answers");
-  window.location.href = window.location.pathname + "?cache-bust=" + Date.now() + window.location.hash;
+  const prefix = getStoragePrefix();
+  localStorage.removeItem(prefix + "current_slide");
+  localStorage.removeItem(prefix + "answers");
+  localStorage.setItem(prefix + "version", activeCourseVersion);
+  window.location.reload();
 }
 
 /**
- * Initializes the entire slide deck framework, binding events and rendering slides.
- * Must be invoked after all content builder functions have been called.
+ * Initializes slide deck engine with optional course configuration.
+ * @param {Object} [config] - Configuration object containing course version string.
+ * @param {string} [config.version="1.0.0"] - Active version string of this lesson.
  */
-function initSlideDeck() {
+function initSlideDeck(config) {
+  const opts = config || {};
+  const courseVersion = opts.version || "1.0.0";
+
+  checkCourseVersion(courseVersion);
+
   deckEl = document.getElementById("deck");
   dotsEl = document.getElementById("dots");
   counterEl = document.getElementById("slide-counter");

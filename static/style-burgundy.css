@@ -398,29 +398,32 @@ pre code {
 }
 
 .title-badge {
-  width: 96px;
-  height: 96px;
-  border-radius: 20px;
-  background: var(--accent);
+  height: min(32vh, 512px);
+  width: auto;
+  max-width: 512px;
+  background: transparent;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 26px;
-  overflow: hidden;
-  padding: 14px;
   box-sizing: border-box;
 }
 
 .title-badge img {
-  width: 100%;
+  width: auto;
   height: 100%;
+  max-width: 100%;
   object-fit: contain;
 }
 
 .title-badge .fallback {
   font-family: var(--font-display);
-  font-size: 34px;
-  color: var(--bg);
+  font-size: min(8vh, 120px);
+  color: var(--accent);
   font-weight: 700;
 }
 

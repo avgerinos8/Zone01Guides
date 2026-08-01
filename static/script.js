@@ -6,10 +6,12 @@
    building blocks (addContent, addQuiz, addFillBlank, addMatching) and the
    rendering/navigation engine. All actual lesson content lives in the
    inline <script> at the bottom of index.html, which calls these functions
-   and finishes with initSlideDeck().
+   and finishes with initSlideDeck({ version: "..." }).
    ══════════════════════════════════════════════════════════════════════════ */
 
 // ── slide data store ────────────────────────────────────────────────────── ⊃
+const slides = [];
+
 /**
  * Adds a plain content slide to the slide deck data array.
  * Accepts raw HTML and optional background configuration options.
@@ -98,6 +100,58 @@ function decorateCodeBlocks(container) {
   });
 }
 
+// ── storage keys and state persistence ──────────────────────────────────── ⊃
+let savedAnswers = {};
+let current = 0;
+let activeCourseVersion = "1.0.0";
+
+/**
+ * Generates a unique storage key prefix based on the current page URL path.
+ * Keeps local storage progress isolated between different lessons/HTML pages.
+ * @returns {string} Unique storage key prefix.
+ */
+function getStoragePrefix() {
+  return "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+}
+
+/**
+ * Validates stored course version against current active HTML version.
+ * Resets local storage progress for this specific course if version changes.
+ * @param {string} courseVersion - Current release version defined by HTML page.
+ */
+function checkCourseVersion(courseVersion) {
+  activeCourseVersion = courseVersion;
+  const prefix = getStoragePrefix();
+  const versionKey = prefix + "version";
+  const savedVersion = localStorage.getItem(versionKey);
+
+  if (savedVersion !== courseVersion) {
+    localStorage.removeItem(prefix + "current_slide");
+    localStorage.removeItem(prefix + "answers");
+    localStorage.setItem(versionKey, courseVersion);
+  }
+
+  current = parseInt(localStorage.getItem(prefix + "current_slide")) || 0;
+  savedAnswers = JSON.parse(localStorage.getItem(prefix + "answers")) || {};
+}
+
+/**
+ * Persists user answer state to local storage using unique page prefix.
+ */
+function persistAnswers() {
+  const prefix = getStoragePrefix();
+  localStorage.setItem(prefix + "answers", JSON.stringify(savedAnswers));
+}
+
+/**
+ * Persists current slide index to local storage using unique page prefix.
+ * @param {number} slideIndex - Active slide index.
+ */
+function persistCurrentSlide(slideIndex) {
+  const prefix = getStoragePrefix();
+  localStorage.setItem(prefix + "current_slide", slideIndex);
+}
+
 // ── multiple-choice question renderer ───────────────────────────────────── ⊃
 /**
  * Renders a single multiple-choice question inside a quiz box container.
@@ -161,7 +215,7 @@ function renderQuestion(box, q, storeKey) {
 
     btn.addEventListener("click", () => {
       savedAnswers[storeKey] = origIndex;
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       handleSelection(origIndex, btn);
     });
 
@@ -214,7 +268,7 @@ function renderFillBlank(wrap, item, storeKey) {
           savedAnswers[storeKey] = { inputs: {}, checked: false };
         }
         savedAnswers[storeKey].inputs[blankId] = inp.value;
-        localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+        persistAnswers();
       });
       codeEl.appendChild(inp);
     }
@@ -264,7 +318,7 @@ function renderFillBlank(wrap, item, storeKey) {
       savedAnswers[storeKey].inputs[inp.dataset.blankId] = inp.value;
     });
     savedAnswers[storeKey].checked = true;
-    localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+    persistAnswers();
     evaluateBlanks();
   });
 
@@ -376,7 +430,7 @@ function renderMatching(wrap, pairs, seed, storeKey) {
 
       matchedPairs.add(pairIndex);
       savedAnswers[storeKey] = Array.from(matchedPairs);
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
     } else {
       const a = selected.btn, b = btn;
       a.classList.add("flash-wrong");
@@ -489,7 +543,7 @@ function renderSlide(el, slide, idx) {
         delete savedAnswers[idx + "_" + qIdx];
         q._order = shuffleSeed(q.options.map((_, i2) => i2), Date.now() % 100000 + qIdx);
       });
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       renderAllQuestions();
     });
 
@@ -512,7 +566,7 @@ function renderSlide(el, slide, idx) {
       slide.data.forEach((_, itemIdx) => {
         delete savedAnswers[idx + "_fb_" + itemIdx];
       });
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       renderAllItems();
     });
 
@@ -534,18 +588,13 @@ function renderSlide(el, slide, idx) {
     resetQuizBtn.addEventListener("click", () => {
       seed = Date.now() % 100000;
       delete savedAnswers[idx + "_match"];
-      localStorage.setItem("quiz_answers", JSON.stringify(savedAnswers));
+      persistAnswers();
       renderAllPairs();
     });
 
     renderAllPairs();
   }
 }
-
-// ── persisted state management ──────────────────────────────────────────── ⊃
-const slides = [];
-let current = parseInt(localStorage.getItem("quiz_current_slide")) || 0;
-let savedAnswers = JSON.parse(localStorage.getItem("quiz_answers")) || {};
 
 let deckEl, dotsEl, counterEl, fillEl, prevBtn, nextBtn, resetBtn;
 let slideEls, dotEls;
@@ -563,7 +612,7 @@ function goTo(i) {
   dotEls[current].classList.remove("active");
 
   current = i;
-  localStorage.setItem("quiz_current_slide", current);
+  persistCurrentSlide(current);
 
   slideEls[current].classList.toggle("dir-prev", goingBack);
   slideEls[current].classList.add("active");
@@ -578,18 +627,27 @@ function goTo(i) {
 }
 
 /**
- * Clears stored application state from local storage and reloads browser window.
+ * Clears stored application state for the active course and reloads page.
  */
 function performHardReset() {
-  localStorage.removeItem("quiz_current_slide");
-  localStorage.removeItem("quiz_answers");
-  window.location.href = window.location.pathname + "?cache-bust=" + Date.now() + window.location.hash;
+  const prefix = getStoragePrefix();
+  localStorage.removeItem(prefix + "current_slide");
+  localStorage.removeItem(prefix + "answers");
+  localStorage.setItem(prefix + "version", activeCourseVersion);
+  window.location.reload();
 }
 
 /**
- * Initializes slide deck engine, sets up event listeners and loads stored state.
+ * Initializes slide deck engine with optional course configuration.
+ * @param {Object} [config] - Configuration object containing course version string.
+ * @param {string} [config.version="1.0.0"] - Active version string of this lesson.
  */
-function initSlideDeck() {
+function initSlideDeck(config) {
+  const opts = config || {};
+  const courseVersion = opts.version || "1.0.0";
+
+  checkCourseVersion(courseVersion);
+
   deckEl = document.getElementById("deck");
   dotsEl = document.getElementById("dots");
   counterEl = document.getElementById("slide-counter");
