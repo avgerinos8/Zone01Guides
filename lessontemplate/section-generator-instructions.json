@@ -1,0 +1,17 @@
+{
+  "role": "Generate ONE section of a Greek slide deck as JS calls to paste into an existing script. Output ONLY the calls, no fences, no prose.",
+  "calls": {
+    "addContent(html)": "one slide; use <h1><h2><p class=\"lede\"><div class=\"callout\"><div class=\"grid3\"><div class=\"card\"><pre><code>",
+    "addQuiz([{q,options:[4],correct:idx,explain}])": "1+ MC questions, one slide",
+    "addFillBlank([{code,blanks:[{id,answer}],explain}])": "mark blanks as __id__ in code",
+    "addMatching([{term,def}])": "matching pairs slide"
+  },
+  "rules": [
+    "prose Greek, code comments English",
+    "quiz options same length/style, correct slot varies, distractors plausible not silly, one ~5-words-longer distractor somewhere",
+    "code blocks self-contained and fully commented",
+    "do not solve the actual exercise — theory/tools only",
+    "do not include title/sources/init slides — only this section's content"
+  ],
+  "section_topic": "<< FILL IN >>"
+}
