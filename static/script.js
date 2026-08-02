@@ -235,7 +235,7 @@ function computeTotalScore() {
     else if (s.type === "fillblank") total += s.data.length;
     else if (s.type === "matching") total += s.data.length; // one per set
   });
-  const percent = vals.length === 0 ? 0 : Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+  const percent = vals.length === 0 ? 0 : Math.round(vals.reduce((a, b) => a + b, 0) / total);
   return { percent, answered: vals.length, total };
 }
 
@@ -252,7 +252,7 @@ function updateTotalScoreDisplay() {
   if (answered === 0) {
     el.textContent = "Κάνε το μάθημα και εδώ θα γράφεται η τελική σου βαθμολογία!";
   } else if (answered < total) {
-    el.textContent = "Αποτέλεσμα SO FAR: " + percent + "%";
+    el.textContent = "Αποτέλεσμα μέχρι στιγμής: " + percent + "%";
   } else {
     el.textContent = "Αποτέλεσμα: " + percent + "%";
   }
