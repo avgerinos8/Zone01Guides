@@ -252,9 +252,9 @@ function updateTotalScoreDisplay() {
   if (answered === 0) {
     el.textContent = "Κάνε το μάθημα και εδώ θα γράφεται η τελική σου βαθμολογία!";
   } else if (answered < total) {
-    el.textContent = "Αποτέλεσμα μέχρι στιγμής: " + percent + "%";
+    el.textContent = "Αποτέλεσμα μέχρι στιγμής (Score %): " + percent + "%";
   } else {
-    el.textContent = "Αποτέλεσμα: " + percent + "%";
+    el.textContent = "Συγχαρητήρια! Ολοκλήρωσες το μάθημα με τελικό αποτέλεσμα (Score %): " + percent + "%";
   }
 }
 
