@@ -980,37 +980,26 @@ volumes:
 
         addQuiz([
             {
-                q: "Ποια είναι η επίπτωση αν εκτελέσεις την εντολή docker-compose down σε ένα περιβάλλον παραγωγής;",
+                q: "Τι συμβαίνει στα δεδομένα που γράφτηκαν μέσα σε ένα container αν αυτό διαγραφεί, ΧΩΡΙΣ τη χρήση Volume;",
                 options: [
-                    "Θα κάνει απλή επανεκκίνηση (restart) την εφαρμογή",
-                    "Θα σταματήσει τα containers, θα τα διαγράψει, και θα καταστρέψει το τοπικό δίκτυο του compose",
-                    "Θα διαγράψει τα images από το registry, αλλά θα αφήσει τα containers να τρέχουν",
-                    "Θα εκτελέσει το Docker Garbage Collection"
+                    "Χάνονται για πάντα, επειδή τα containers είναι εξ ορισμού προσωρινά (ephemeral).",
+                    "Αποθηκεύονται αυτόματα στον τοπικό μας δίσκο για λόγους ασφαλείας από το Docker.",
+                    "Μεταφέρονται αυτόματα στο Docker Hub.",
+                    "Παραμένουν κρυμμένα μέσα στο Docker Image."
                 ],
-                correct: 1,
-                explain: "Η εντολή `down` δεν είναι απλά `stop`. Είναι καταστροφική ως προς τα instance (containers) και τα δίκτυα που έστησε το YAML (όχι όμως για τον κώδικα/image)."
+                correct: 0,
+                explain: "Τα containers είναι ephemeral (προσωρινά). Αν διαγραφούν χωρίς να υπάρχει Volume, όλα τα δεδομένα που δημιουργήθηκαν μέσα σε αυτά χάνονται οριστικά."
             },
             {
-                q: "Αν παρατηρήσεις ότι ο δίσκος σου έχει γεμίσει με GBs από τοπικά builds (cache και παλιά images) και θες να καθαρίσεις ό,τι δεν τρέχει αυτή τη στιγμή, ποια εντολή θα εκτελέσεις;",
+                q: "Ποιος είναι ο κύριος σκοπός της χρήσης των Docker Volumes;",
                 options: [
-                    "docker container prune",
-                    "docker system prune",
-                    "docker image prune",
-                    "docker volume prune"
+                    "Η διατήρηση των δεδομένων (Data Persistence) εκτός container, ώστε να μην χάνονται αν αυτό καταστραφεί.",
+                    "Η μείωση του μεγέθους της εικόνας της Go κατά το build.",
+                    "Η αυτόματη συγχρονισμένη κοινή χρήση των μεταβλητών περιβάλλοντος (ENV) και των θυρών δικτύου ανάμεσα σε διαφορετικά containers στο ίδιο Compose network.",
+                    "Η προσωρινή αποθήκευση της μνήμης RAM του container στον δίσκο του host, με σκοπό την επιτάχυνση του build process και τη βελτιστοποίηση των layers."
                 ],
-                correct: 1,
-                explain: "Το system prune είναι η μοναδική συνολική εντολή που καθαρίζει μαζικά containers, networks, images και cache.<br>• <b>docker container prune:</b> Διαγράφει <u>μόνο</u> τα σταματημένα containers.<br>• <b>docker system prune:</b> Η σωστή εντολή που καθαρίζει συνολικά τα αδρανή containers, τα δίκτυα, τις εικόνες και την cache.<br>• <b>docker image prune:</b> Διαγράφει <u>μόνο</u> τις αχρησιμοποίητες εικόνες.<br>• <b>docker volume prune:</b> Διαγράφει <u>μόνο</u> τα αχρησιμοποίητα volumes."
-            },
-            {
-                q: "Τι θα συμβεί στα δεδομένα μιας βάσης PostgreSQL αν το container καταστραφεί (`docker rm`), ΑΛΛΑ τα δεδομένα αποθηκεύονταν σε ένα Docker Volume;",
-                options: [
-                    "Τα δεδομένα θα διαγραφούν οριστικά μαζί με το container",
-                    "Τα δεδομένα θα παραμείνουν ασφαλή στο Volume και θα συνδεθούν στο νέο container",
-                    "Τα δεδομένα θα ανεβούν αυτόματα στο Docker Hub",
-                    "Το Docker θα αρνηθεί να διαγράψει το container λόγω του volume"
-                ],
-                correct: 1,
-                explain: "Τα Docker Volumes υπάρχουν ανεξάρτητα από τον κύκλο ζωής (lifecycle) των containers. Ακόμα κι αν το container διαγραφεί εντελώς, τα δεδομένα παραμένουν άθικτα στο host σύστημα."
+                correct: 0,
+                explain: "Τα Volumes επιτρέπουν την αποθήκευση αρχείων στο σύστημα του host, διασφαλίζοντας ότι δεδομένα όπως οι βάσεις δεδομένων (PostgreSQL, MySQL) παραμένουν ασφαλή."
             }
         ]);
 
@@ -1039,6 +1028,153 @@ volumes:
   <div class="gc-line"><span class="gc-term">LABEL</span><span class="gc-def">Προσθήκη metadata key=value</span></div>
 </div>
 `);
+
+        // ── slide final review section ────────────────────────────────────────── ⊃
+
+        // 1. Multiple Choice Questions (addQuiz)
+        addQuiz([
+            {
+                q: "Γιατί θεωρείται σημαντικό κενό ασφαλείας να αφήνουμε τον πηγαίο κώδικο (.go) μέσα στο τελικό container παραγωγής;",
+                options: [
+                    "Επειδή αποκαλύπτει τη λογική της εφαρμογής και πιθανά κενά ασφαλείας.",
+                    "Επειδή ο Go compiler χρειάζεται να επανεκτελείται αυτόματα σε κάθε αίτημα του χρήστη καταναλώνοντας υπερβολική μνήμη RAM.",
+                    "Επειδή το Docker Hub διαγράφει αυτόματα όλα τα containers που περιέχουν πηγαίο κώδικο.",
+                    "Επειδή η Go αρνείται να εκτελέσει το compiled binary αν στον ίδιο φάκελο υπάρχουν τα αρχεία .go."
+                ],
+                correct: 0,
+                explain: "Η απουσία του πηγαίου κώδικα από το τελικό image προστατεύει το business logic και δυσκολεύει σημαντικά την ανάλυση ευπαθειών (reverse engineering)."
+            },
+            {
+                q: "Ποια είναι η βασική διαφορά μεταξύ των εντολών COPY και ADD στο Dockerfile;",
+                options: [
+                    "Η COPY είναι για αρχεία κειμένου ενώ η ADD μόνο για binary αρχεία.",
+                    "Η ADD εκτελείται κατά το runtime ενώ η COPY αποκλειστικά κατά το build.",
+                    "Η COPY κάνει απλή αντιγραφή τοπικών αρχείων, ενώ η ADD αποσυμπιέζει archives και κατεβάζει URLs.",
+                    "Δεν υπάρχει καμία διαφορά, είναι εντελώς συνώνυμες εντολές."
+                ],
+                correct: 2,
+                explain: "Η COPY προτιμάται ως best practice για απλή μεταφορά τοπικών αρχείων. Η ADD χρησιμοποιείται μόνο όταν θέλουμε αυτόματη αποσυμπίεση archives ή λήψη από URL."
+            },
+            {
+                q: "Τι συμβαίνει αν εκτελέσουμε την εντολή docker system prune -a --volumes;",
+                options: [
+                    "Διαγράφονται ΜΟΝΟ τα σταματημένα containers, αφήνοντας τα images και τα volumes άθικτα.",
+                    "Διαγράφονται όλα τα αχρησιμοποίητα containers, δίκτυα, images και τα μη συνδεδεμένα volumes.",
+                    "Εκτελεί πλήρη επανεκκίνηση της υπηρεσίας του Docker daemon διαγράφοντας μόνο τα προσωρινά logs του συστήματος Linux.",
+                    "Γίνεται αυτόματο backup των volumes στο Docker Hub πριν τη διαγραφή των containers."
+                ],
+                correct: 1,
+                explain: "Είναι η πιο καθολική εντολή καθαρισμού. Η σημαία --volumes διαγράφει και τα αχρησιμοποίητα volumes, οπότε οδηγεί σε απώλεια δεδομένων."
+            },
+            {
+                q: "Γιατί χρησιμοποιούμε τη μεταβλητή CGO_ENABLED=0 κατά τη μεταγλώττιση (build) μιας εφαρμογής Go σε Multi-stage Build;",
+                options: [
+                    "Επιβάλλει την αυτόματη συμπίεση όλων των static αρχείων HTML και CSS μέσα στο εκτελέσιμο binary κατά το runtime.",
+                    "Δημιουργεί ένα πλήρως στατικό binary χωρίς εξάρτηση από εξωτερικές C βιβλιοθήκες του OS.",
+                    "Απενεργοποιεί το layer caching του Docker ώστε να ξανακατεβαίνουν τα Go modules σε κάθε build.",
+                    "Επιτρέπει στο container να τρέχει υποχρεωτικά με δικαιώματα root χρήστη."
+                ],
+                correct: 1,
+                explain: "Το CGO_ENABLED=0 παράγει static binary. Χωρίς αυτό, το binary εξαρτάται από C libraries που λείπουν από ελάχιστα images όπως το Alpine."
+            },
+            {
+                q: "Τι συμβαίνει στα δεδομένα ενός Docker Volume όταν εκτελούμε την εντολή docker-compose down;",
+                options: [
+                    "Τα δεδομένα διαγράφονται οριστικά εκτός αν έχουμε ορίσει τη μεταβλητή περιβάλλοντος ENV SAVE_DATA=true στο YAML.",
+                    "Τα δεδομένα παραμένουν ασφαλή στο Volume και δεν διαγράφονται.",
+                    "Τα δεδομένα μεταφέρονται αυτόματα σε προσωρινή μνήμη RAM μέχρι το επόμενο up.",
+                    "Το Volume μετατρέπεται αυτόματα σε Bind Mount στον τοπικό φάκελο."
+                ],
+                correct: 1,
+                explain: "Τα Docker Volumes έχουν ανεξάρτητο κύκλο ζωής. Η εντολή down διαγράφει containers και δίκτυα, αλλά αφήνει τα volumes άθικτα."
+            },
+            {
+                q: "Ποια είναι η κύρια λειτουργική διαφορά μεταξύ ARG και ENV;",
+                options: [
+                    "Η ARG υπάρχει μόνο κατά το build, ενώ η ENV παραμένει διαθέσιμη στο runtime.",
+                    "Η ARG επιτρέπει την πρόσβαση στο εξωτερικό δίκτυο Internet, ενώ η ENV περιορίζει το container μόνο στο τοπικό δίκτυο.",
+                    "Η ENV χρησιμοποιείται μόνο πριν από την εντολή FROM, ενώ η ARG οπουδήποτε αλλού.",
+                    "Η ARG ορίζει τη θύρα δικτύου, ενώ η ENV ορίζει το working directory."
+                ],
+                correct: 0,
+                explain: "Οι τιμές της ARG διαγράφονται μόλις ολοκληρωθεί το build image. Αν η εφαρμογή χρειάζεται μια τιμή όταν τρέχει (runtime), χρησιμοποιούμε ENV."
+            }
+        ]);
+
+        // 2. Large Multi-stage Fill-in-the-Blanks (addFillBlank)
+        addFillBlank([
+            {
+                code: `__id1__ __id11__=1.22
+FROM golang:\${GO_VERSION}-alpine __id2__ stage1
+
+__id3__ /app
+__id15__ go.mod go.sum ./
+__id14__ go mod download
+
+__id4__ . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o prisma .
+
+FROM alpine:3.19
+__id5__ PORT=8080
+WORKDIR /__id13__
+
+RUN adduser -D -g '' appuser
+COPY __id6__=__id10__ /executables/prisma .
+
+__id7__ appuser
+__id8__ 8080
+__id9__ ["./prisma"]`,
+                blanks: [
+                    { id: "id1", answer: "ARG" },
+                    { id: "id2", answer: "AS" },
+                    { id: "id3", answer: "WORKDIR" },
+                    { id: "id4", answer: "COPY" },
+                    { id: "id5", answer: "ENV" },
+                    { id: "id6", answer: "--from" },
+                    { id: "id7", answer: "USER" },
+                    { id: "id8", answer: "EXPOSE" },
+                    { id: "id9", answer: "CMD" },
+                    { id: "id10", answer: "stage1" },
+                    { id: "id11", answer: "GO_VERSION" },
+                    { id: "id12", answer: "myapp" },
+                    { id: "id13", answer: "executables" },
+                    { id: "id14", answer: "RUN" },
+                    { id: "id15", answer: "COPY" }
+                ],
+                explain: "<b>Ανακεφαλαίωση Εντολών:</b><br>• <code>ARG</code>: Ορισμός μεταβλητής πριν τη FROM.<br>• <code>AS</code>: Ονομασία του build stage.<br>• <code>WORKDIR</code>: Ορισμός φακέλου εργασίας.<br>• <code>COPY</code>: Αντιγραφή αρχείων κώδικα.<br>• <code>ENV</code>: Ορισμός μεταβλητής runtime (PORT).<br>• <code>--from</code>: Επιλεκτική μεταφορά του binary από το stage builder.<br>• <code>USER</code>: Αλλαγή από root σε απλό χρήστη (appuser) για λόγους ασφαλείας.<br>• <code>EXPOSE</code>: Τεκμηρίωση θύρας.<br>• <code>CMD</code>: Εντολή εκκίνησης στο runtime."
+            }
+        ], {
+            label: "Πλήρες Multi-stage Dockerfile (9 Κενά)",
+            note: "Συμπλήρωσε τις κατάλληλες εντολές Dockerfile που λείπουν.",
+            bg: "./images/code-bg.jpg",
+            overlayAlpha: 0.65
+        });
+
+        // 3. Matching Game (addMatching)
+        addMatching([
+            // Set A: 6 Dockerfile Instructions
+            [
+                { term: "FROM", def: "Ορίζει το αρχικό (base) image εκκίνησης." },
+                { term: "WORKDIR", def: "Καθορίζει τον ενεργό κατάλογο εκτέλεσης των εντολών." },
+                { term: "RUN", def: "Εκτελεί εντολές κατά το build δημιουργώντας νέο layer." },
+                { term: "EXPOSE", def: "Δηλώνει τη θύρα δικτύου της εφαρμογής (documentation)." },
+                { term: "ENV", def: "Ορίζει μόνιμη μεταβλητή περιβάλλοντος για το runtime." },
+                { term: "CMD", def: "Προεπιλεγμένη εντολή που εκτελείται όταν ξεκινά το container." }
+            ],
+            // Set B: 6 Course Concepts
+            [
+                { term: "Shared Kernel", def: "Βασικό χαρακτηριστικό απομόνωσης των Containers έναντι των VMs." },
+                { term: "Multi-stage Build", def: "Τεχνική για ελαχιστοποίηση μεγέθους και αφαίρεση πηγαίου κώδικα." },
+                { term: "Layer Caching", def: "Επαναχρησιμοποίηση βημάτων build που δεν έχουν αλλάξει για ταχύτητα." },
+                { term: "Docker Volume", def: "Μηχανισμός ανεξάρτητης διατήρησης δεδομένων (data persistence)." },
+                { term: "Docker Registry", def: "Απομακρυσμένη κεντρική αποθήκη εικόνων (π.χ. Docker Hub)." },
+                { term: "docker-compose down", def: "Τερματίζει/διαγράφει τα containers και το αυτόματο δίκτυο." }
+            ]
+        ], {
+            note: "Αντιστοίχισε τις 6 εντολές Dockerfile (Σετ A) και τα 6 Concepts του μαθήματος (Σετ B).",
+            bg: "./images/matching-bg.jpg",
+            overlayAlpha: 0.6
+        });
 
         // ── Sources ──────────────────────────────────────────────────────────── ⊃
         addContent(`
