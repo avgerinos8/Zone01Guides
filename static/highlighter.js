@@ -109,16 +109,22 @@
   }
 
   // ── Bash / shell ─────────────────────────────────────────────────────── ⊃
+  // <placeholder> segments (e.g. "docker run <container-name>") get a
+  // distinct color — common in guide/tutorial snippets that aren't meant to
+  // actually run as-is. IMPORTANT: write them as &lt;container-name&gt; in
+  // the source HTML, not literal < > — otherwise the browser parses them as
+  // real (unknown) HTML tags before this highlighter ever sees the text.
   const BASH_KEYWORDS = new Set(["if", "then", "else", "elif", "fi", "for", "while", "until", "do", "done", "case", "esac", "function", "return", "export", "local", "in", "select", "break", "continue", "exit", "set", "unset", "readonly", "declare", "true", "false", "echo", "printf", "shift", "trap"]);
 
   function highlightBash(source) {
-    const tokenRe = /(#[^\n]*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)|(\b\d+\b)|(\b[A-Za-z_][A-Za-z0-9_-]*\b)/g;
+    const tokenRe = /(#[^\n]*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(<[^<>\n]+>)|(\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)|(\b\d+\b)|(\b[A-Za-z_][A-Za-z0-9_-]*\b)/g;
     let out = "", last = 0, m;
     while ((m = tokenRe.exec(source)) !== null) {
       out += escapeHtml(source.slice(last, m.index));
-      const [, comment, str, variable, num, ident] = m;
+      const [, comment, str, placeholder, variable, num, ident] = m;
       if (comment) out += `<span class="tok-com">${escapeHtml(comment)}</span>`;
       else if (str) out += `<span class="tok-str">${escapeHtml(str)}</span>`;
+      else if (placeholder) out += `<span class="tok-type">${escapeHtml(placeholder)}</span>`;
       else if (variable) out += `<span class="tok-attr">${escapeHtml(variable)}</span>`;
       else if (num) out += `<span class="tok-num">${escapeHtml(num)}</span>`;
       else if (ident) out += BASH_KEYWORDS.has(ident) ? `<span class="tok-kw">${ident}</span>` : ident;

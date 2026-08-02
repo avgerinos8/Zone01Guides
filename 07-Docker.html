@@ -873,22 +873,42 @@ LABEL description="Go backend for the project"</code></pre>
         // ── slide garbage collection ───────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 6 / 6 — Garbage Collection</div>
-<h1>Διαχείριση Πόρων και System Prune</h1>
-<p class="lede">Το Docker κρατάει cache, παλιά images και stopped containers για να επιταχύνει τη διαδικασία, αλλά συχνά γεμίζει το δίσκο.</p>
+<h1>Διαχείριση Πόρων & Καθαρισμός</h1>
+<p class="lede">Το Docker διατηρεί cache, παλιά images και stopped containers. Πριν καθαρίσεις τα πάντα μαζικά, μπορείς να ελέγξεις και να διαγράψεις συγκεκριμένους πόρους.</p>
 
-<h2>Εντολές Καθαρισμού CLI</h2>
+<h2>1. Προβολή Πόρων (Inspection)</h2>
 
-<pre><code>// check disk usage
+<pre><code class="lang-bash">// list active containers
+docker ps
+
+// list all containers (including stopped)
+docker ps -a
+
+// list all local images
+docker images
+
+// check total disk usage
 docker system df</code></pre>
-<p>Αυτή η εντολή δείχνει ακριβώς πόσα MB/GB καταλαμβάνουν τα Images, Containers, Volumes και το Build Cache.</p>
 
-<pre><code>// remove unused dangling images
-docker image prune</code></pre>
-<p>Η εντολή αυτή καθαρίζει τα <em>dangling images</em> (εικόνες που δεν έχουν όνομα και δεν σχετίζονται με κανένα container). Μπορείς να προσθέσεις το <code>-a</code> για να καθαρίσεις όλα τα αχρησιμοποίητα images.</p>
+<h2>2. Στοχευμένη Διαγραφή (Specific Cleanup)</h2>
 
-<pre><code>// clean up everything not actively running
+<pre><code class="lang-bash">// remove a specific container (must be stopped first)
+docker rm &lt;container_id_or_name&gt;
+
+// force remove a running container
+docker rm -f &lt;container_id_or_name&gt;
+
+// remove a specific image
+docker rmi &lt;image_id_or_name&gt;</code></pre>
+
+<h2>3. Μαζικός Καθαρισμός (Garbage Collection)</h2>
+
+<pre><code class="lang-bash">// remove unused dangling images
+docker image prune
+
+// clean up EVERYTHING not actively in use
 docker system prune -a --volumes</code></pre>
-<p>Η πιο δραστική εντολή (το Garbage Collection του Docker). Διαγράφει: stopped containers, όλα τα δίκτυα που δεν χρησιμοποιούνται, <strong>dangling images και unreferenced images</strong>, και τέλος (με το flag) όλα τα αχρησιμοποίητα volumes (<strong>ΠΡΟΣΟΧΗ: τα δεδομένα χάνονται</strong>).</p>
+<p>Η εντολή <code>docker system prune -a --volumes</code> είναι η πιο δραστική: Διαγράφει όλα τα σταματημένα containers, τα αχρησιμοποίητα δίκτυα, όλα τα αδρανή images και με το <code>--volumes</code> διαγράφει και τα αχρησιμοποίητα volumes (<strong>ΠΡΟΣΟΧΗ: τα δεδομένα χάνονται</strong>).</p>
 `);
 
         // ── slide quiz 3 ───────────────────────────────────────────────────────── ⊃
