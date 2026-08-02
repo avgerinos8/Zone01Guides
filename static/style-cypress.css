@@ -111,6 +111,8 @@ body {
        stays readable, override with inline --slide-bg-overlay-alpha. */
 .slide.has-bg {
   --slide-bg-overlay-alpha: 0.5;
+  --slide-bg-size: auto;
+  --slide-bg-repeat: no-repeat;
 }
 
 .slide.has-bg::before,
@@ -123,8 +125,9 @@ body {
 
 .slide.has-bg::before {
   background-image: var(--slide-bg-image);
-  background-size: cover;
-  background-position: center;
+  background-size: var(--slide-bg-size);
+  background-repeat: var(--slide-bg-repeat);
+  background-position: top left;
 }
 
 .slide.has-bg::after {
