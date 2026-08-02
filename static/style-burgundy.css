@@ -118,7 +118,7 @@ body {
 .slide.has-bg::before,
 .slide.has-bg::after {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
 }
@@ -619,8 +619,10 @@ pre code {
   border-radius: 4px;
   color: var(--ink);
   padding: 1px 6px;
-  width: 9ch;
+  width: 4ch;
+  min-width: 3ch;
   text-align: center;
+  transition: width .1s ease;
 }
 
 .fb-blank.correct {
@@ -714,58 +716,13 @@ pre code {
   cursor: default;
 }
 
-/* ── total score box — auto-appended to the deck's last slide ───────────── ⊃ */
-.total-score-box {
-  margin-top: 30px;
-  padding: 22px 26px;
-  border-radius: 12px;
-  background: rgba(var(--panel-rgb), 0.4);
-  border: 1px solid rgba(var(--ink-rgb), 0.18);
-  max-width: 420px;
-}
-
-.total-score-box.good {
-  border-color: var(--correct);
-}
-
-.total-score-box.mid {
-  border-color: var(--accent);
-}
-
-.total-score-box.bad {
-  border-color: var(--wrong);
-}
-
-.total-score-box .ts-percent {
-  font-family: var(--font-display);
-  font-size: 42px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.total-score-box.good .ts-percent {
-  color: var(--correct);
-}
-
-.total-score-box.mid .ts-percent {
-  color: var(--accent);
-}
-
-.total-score-box.bad .ts-percent {
-  color: var(--wrong);
-}
-
-.total-score-box .ts-message {
-  font-size: 15px;
-  margin-top: 6px;
-  color: rgba(var(--ink-rgb), 0.85);
-}
-
-.total-score-box .ts-progress {
+/* ── final score — minimal text placeholder, styled via CSS (see index.html) ─ ⊃ */
+#final-score {
+  display: block;
+  margin-top: 28px;
   font-family: var(--font-mono);
-  font-size: 12px;
-  margin-top: 10px;
-  color: rgba(var(--ink-rgb), 0.55);
+  font-size: 15px;
+  color: var(--accent);
 }
 
 /* ── glossary — 3 alternative layouts, generator picks per category ─────── ⊃ */
@@ -880,6 +837,21 @@ pre code {
 
 /* ── matching pairs ────────────────────────────────────────────────────── ⊃ */
 
+.matching-container + .matching-container {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px dashed rgba(var(--ink-rgb), 0.15);
+}
+
+.matching-set-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
 .matching-wrap {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -984,6 +956,13 @@ pre code {
   /* .nav-btn is also used on the <a> "Return" link */
 }
 
+/* Base state: only the desktop label shows. The 720px query below swaps
+   this (bug fix — .mobile-text had no default here, so both labels used
+   to render together, e.g. "Reset ProgressReset", on wider screens). */
+.mobile-text {
+  display: none;
+}
+
 .nav-btn:hover {
   background: var(--accent);
   color: var(--bg);
@@ -1063,8 +1042,8 @@ li {
   border-radius: 5px;
 }
 
-/* ── compact navigation bar for screens under 500px ──────────────────────── ⊃ */
-@media (max-width: 600px) {
+/* ── compact navigation bar for screens under 720px ──────────────────────── ⊃ */
+@media (max-width: 720px) {
 
   /* Hide dots and slide counter entirely on small screens */
   #dots {
@@ -1098,5 +1077,19 @@ li {
     padding: 8px 10px;
     font-size: 12px;
     gap: 4px;
+  }
+
+  /* Slide content gets a lot of vertical padding on desktop (64px/120px);
+     tighten it on small phones so there's more usable reading space. */
+  .slide {
+    padding: 24px 6vw 100px 6vw;
+  }
+
+  /* Safety net: eyebrow + score badge + reset button can get tight on very
+     narrow phones — let the right-side cluster wrap under the eyebrow
+     instead of overflowing/clipping. */
+  .quiz-head-row {
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 }
