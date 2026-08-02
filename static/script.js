@@ -369,7 +369,7 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
 
   /** Grows/shrinks a fill-blank input to fit its content, ~4ch minimum. */
   function autosizeInput(inp) {
-    inp.style.width = Math.max(4, inp.value.length + 1) + "ch";
+    inp.style.width = Math.max(4, inp.value.length + 2) + "ch";
   }
 
   const parts = item.code.split(/__([a-zA-Z0-9]+)__/g);
