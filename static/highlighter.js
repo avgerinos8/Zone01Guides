@@ -4,10 +4,13 @@
    include it separately (see the 3 CSS additions needed, listed at the
    bottom of this file) and it does the rest on its own, automatically.
 
-   USAGE: put class="lang-go" | "lang-js" | "lang-html" | "lang-css" on any
-   <code> element (inside a <pre>, as usual). No other setup needed — this
-   file watches the page and highlights matching elements as soon as they
-   appear, including ones added later (e.g. by script.js building slides).
+   USAGE: put class="lang-go" | "lang-js" | "lang-html" | "lang-css" |
+   "lang-bash" | "lang-docker" | "lang-yml" | "lang-json" | "lang-generic"
+   on any <code> element (inside a <pre>, as usual). "lang-generic" only
+   grays out line comments (#, //, --, ;) — everything else stays plain, for
+   languages without a dedicated highlighter above. No other setup needed —
+   this file watches the page and highlights matching elements as soon as
+   they appear, including ones added later (e.g. by script.js building slides).
 
    Each highlighter below is a lightweight, single-pass-ish regex tokenizer
    — good for teaching snippets, NOT a full language parser/lexer. It won't
@@ -105,6 +108,115 @@
     return out;
   }
 
+  // ── Bash / shell ─────────────────────────────────────────────────────── ⊃
+  const BASH_KEYWORDS = new Set(["if", "then", "else", "elif", "fi", "for", "while", "until", "do", "done", "case", "esac", "function", "return", "export", "local", "in", "select", "break", "continue", "exit", "set", "unset", "readonly", "declare", "true", "false", "echo", "printf", "shift", "trap"]);
+
+  function highlightBash(source) {
+    const tokenRe = /(#[^\n]*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)|(\b\d+\b)|(\b[A-Za-z_][A-Za-z0-9_-]*\b)/g;
+    let out = "", last = 0, m;
+    while ((m = tokenRe.exec(source)) !== null) {
+      out += escapeHtml(source.slice(last, m.index));
+      const [, comment, str, variable, num, ident] = m;
+      if (comment) out += `<span class="tok-com">${escapeHtml(comment)}</span>`;
+      else if (str) out += `<span class="tok-str">${escapeHtml(str)}</span>`;
+      else if (variable) out += `<span class="tok-attr">${escapeHtml(variable)}</span>`;
+      else if (num) out += `<span class="tok-num">${escapeHtml(num)}</span>`;
+      else if (ident) out += BASH_KEYWORDS.has(ident) ? `<span class="tok-kw">${ident}</span>` : ident;
+      last = tokenRe.lastIndex;
+    }
+    out += escapeHtml(source.slice(last));
+    return out;
+  }
+
+  // ── Dockerfile ───────────────────────────────────────────────────────── ⊃
+  // Instructions (FROM, RUN, ...) are only colored when they start a line,
+  // matching real Dockerfile syntax; case-insensitive per the spec, but
+  // colored as-typed either way.
+  const DOCKER_INSTRUCTIONS = new Set(["FROM", "RUN", "CMD", "LABEL", "MAINTAINER", "EXPOSE", "ENV", "ADD", "COPY", "ENTRYPOINT", "VOLUME", "USER", "WORKDIR", "ARG", "ONBUILD", "STOPSIGNAL", "HEALTHCHECK", "SHELL"]);
+
+  function highlightDocker(source) {
+    const tokenRe = /(^|\n)(\s*)(#[^\n]*)|(^|\n)(\s*)([A-Za-z]+)\b|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b\d+\b)/g;
+    let out = "", last = 0, m;
+    while ((m = tokenRe.exec(source)) !== null) {
+      out += escapeHtml(source.slice(last, m.index));
+      const [, nlA, wsA, comment, nlB, wsB, word, str, num] = m;
+      if (comment !== undefined) {
+        out += escapeHtml(nlA) + escapeHtml(wsA) + `<span class="tok-com">${escapeHtml(comment)}</span>`;
+      } else if (word !== undefined) {
+        out += escapeHtml(nlB) + escapeHtml(wsB);
+        out += DOCKER_INSTRUCTIONS.has(word.toUpperCase()) ? `<span class="tok-kw">${word}</span>` : word;
+      } else if (str) {
+        out += `<span class="tok-str">${escapeHtml(str)}</span>`;
+      } else if (num) {
+        out += `<span class="tok-num">${escapeHtml(num)}</span>`;
+      }
+      last = tokenRe.lastIndex;
+    }
+    out += escapeHtml(source.slice(last));
+    return out;
+  }
+
+  // ── YAML ─────────────────────────────────────────────────────────────── ⊃
+  // Note: real YAML only supports "#" comments — "//" is accepted here too
+  // since annotated teaching snippets often use it for inline explanations.
+  const YAML_KEYWORDS = new Set(["true", "false", "null", "yes", "no", "on", "off"]);
+
+  function highlightYAML(source) {
+    const tokenRe = /(#[^\n]*|\/\/[^\n]*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(^|\n)(\s*(?:-\s*)?)([A-Za-z_][\w.-]*)(\s*:)|(\b\d+\.?\d*\b)|(\b[A-Za-z]+\b)/g;
+    let out = "", last = 0, m;
+    while ((m = tokenRe.exec(source)) !== null) {
+      out += escapeHtml(source.slice(last, m.index));
+      const [, comment, str, nl, ws, key, colon, num, word] = m;
+      if (comment) out += `<span class="tok-com">${escapeHtml(comment)}</span>`;
+      else if (str) out += `<span class="tok-str">${escapeHtml(str)}</span>`;
+      else if (key !== undefined) {
+        out += escapeHtml(nl) + escapeHtml(ws) + `<span class="tok-attr">${escapeHtml(key)}</span>` + escapeHtml(colon);
+      } else if (num) out += `<span class="tok-num">${escapeHtml(num)}</span>`;
+      else if (word) out += YAML_KEYWORDS.has(word.toLowerCase()) ? `<span class="tok-kw">${word}</span>` : word;
+      last = tokenRe.lastIndex;
+    }
+    out += escapeHtml(source.slice(last));
+    return out;
+  }
+
+  // ── JSON ─────────────────────────────────────────────────────────────── ⊃
+  // A string is a KEY (tok-attr) only when followed by ":"; otherwise it's
+  // a value (tok-str). Real JSON has no comments, but # / // are still
+  // colored gray in case the snippet is JSONC/JSON5.
+  function highlightJSON(source) {
+    const tokenRe = /(#[^\n]*|\/\/[^\n]*)|("(?:[^"\\]|\\.)*")(\s*:)?|(-?\b\d+\.?\d*\b)|(\btrue\b|\bfalse\b|\bnull\b)/g;
+    let out = "", last = 0, m;
+    while ((m = tokenRe.exec(source)) !== null) {
+      out += escapeHtml(source.slice(last, m.index));
+      const [, comment, str, colon, num, lit] = m;
+      if (comment) out += `<span class="tok-com">${escapeHtml(comment)}</span>`;
+      else if (str) {
+        out += `<span class="${colon ? "tok-attr" : "tok-str"}">${escapeHtml(str)}</span>` + (colon ? escapeHtml(colon) : "");
+      } else if (num) out += `<span class="tok-num">${escapeHtml(num)}</span>`;
+      else if (lit) out += `<span class="tok-kw">${lit}</span>`;
+      last = tokenRe.lastIndex;
+    }
+    out += escapeHtml(source.slice(last));
+    return out;
+  }
+
+  // ── generic fallback ─────────────────────────────────────────────────── ⊃
+  // Colors line comments only (#, //, --) — everything else stays plain.
+  // For any language without a dedicated highlighter above. ";" was
+  // deliberately left out — it's a statement terminator in most C-like/SQL
+  // code, not a comment marker, so including it would mis-color real code.
+  function highlightGeneric(source) {
+    const tokenRe = /(#[^\n]*|\/\/[^\n]*|--[^\n]*)/g;
+    let out = "", last = 0, m;
+    while ((m = tokenRe.exec(source)) !== null) {
+      out += escapeHtml(source.slice(last, m.index));
+      out += `<span class="tok-com">${escapeHtml(m[1])}</span>`;
+      last = tokenRe.lastIndex;
+    }
+    out += escapeHtml(source.slice(last));
+    return out;
+  }
+
   // ── CSS ──────────────────────────────────────────────────────────────── ⊃
   // Structural approximation, not a real parser: comments/strings are
   // protected first, then hex colors, numbers+units, @-rules, property
@@ -136,7 +248,17 @@
   }
 
   // ── dispatch + auto-run ─────────────────────────────────────────────── ⊃
-  const LANG_MAP = { "lang-go": highlightGo, "lang-js": highlightJS, "lang-html": highlightHTML, "lang-css": highlightCSS };
+  const LANG_MAP = {
+    "lang-go": highlightGo,
+    "lang-js": highlightJS,
+    "lang-html": highlightHTML,
+    "lang-css": highlightCSS,
+    "lang-bash": highlightBash,
+    "lang-docker": highlightDocker,
+    "lang-yml": highlightYAML,
+    "lang-json": highlightJSON,
+    "lang-generic": highlightGeneric
+  };
 
   function highlightElement(codeEl) {
     if (codeEl.dataset.highlighted === "1") return;

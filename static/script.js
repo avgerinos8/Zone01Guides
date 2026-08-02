@@ -446,7 +446,7 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
         .map(inp => inp.dataset.blankId)
         .filter(id => !revealedIds.has(id));
       if (emptyIds.length === 0) return;
-      revealedIds.add(emptyIds[0]);
+      revealedIds.add(emptyIds[Math.floor(Math.random() * emptyIds.length)]);
       if (!savedAnswers[storeKey]) {
         savedAnswers[storeKey] = { inputs: {}, checked: false, revealed: [] };
       }

@@ -3,7 +3,11 @@
   "output": "Only the sequence of add*() calls ending with initSlideDeck(). No markdown fences, no extra prose.",
   "exact_syntax": "addContent(`...raw HTML...`); addQuiz([{q:\"...\",options:[\"a\",\"b\",\"c\",\"d\"],correct:0,explain:\"...\"}, ...]); addFillBlank([{code:\"...__id__...\",blanks:[{id:\"id\",answer:\"...\"}],explain:\"...\"}], {note:\"...\"}); addMatching([{term:\"...\",def:\"...\"}, ...], {note:\"...\"}) — use backticks exactly as shown for addContent's HTML string, real JS array/object literals for the rest.",
   "code_blocks": "For colored code inside addContent(): <pre><code class=\"lang-go\">...</code></pre> (or lang-js / lang-html / lang-css) — highlighter.js colors it automatically, do not add manual <span> tags. Since the code sits inside HTML, escape < > & as &lt; &gt; &amp; in the code text (this applies inside addFillBlank's `code` string too, around the plain-text parts, not around the __id__ markers themselves).",
-  "language": { "prose_and_ui_text": "Greek", "code_comments": "English" },
+  "html_tags": "Every addContent() HTML string MUST be built ONLY from these tags/classes (never plain unwrapped text): <h1> <h2> <h3> <p> <p class=\"lede\"> <div class=\"callout\"><span class=\"tag\">LABEL</span>...</div> <div class=\"callout good\">...</div> <div class=\"grid2\"><div class=\"card\"><h3>..</h3><p>..</p></div>...</div> <div class=\"grid3\">...same as grid2 with 3 cards...</div> <pre><code>...</code></pre> (optionally <code class=\"lang-go|lang-js|lang-html|lang-css\"> for auto color) <table class=\"glossary-table\"><tr><td class=\"gt-term\">x</td><td class=\"gt-def\">y</td></tr></table> <div class=\"glossary-strip\"><div class=\"gs-pill\"><span class=\"gs-name\">x</span><span class=\"gs-def\">y</span></div></div> <div class=\"glossary-columns\"><div class=\"gc-line\"><span class=\"gc-term\">x</span> — <span class=\"gc-def\">y</span></div></div> <div class=\"sources-list\"><a href=\"#\">text</a></div>",
+  "language": {
+    "prose_and_ui_text": "Greek",
+    "code_comments": "English"
+  },
   "structure": [
     "1 title slide (keep the existing title-slide markup/callout as scaffolded)",
     "theory sections, full depth, self-contained code examples",
