@@ -16,25 +16,23 @@
   /* ── palette (hex, source of truth) — INDICATIVE values for this template. ⊃ */
   /* Always dark-mode: keep --tone-1/--tone-2 near-black/near-black-red so text */
   /* stays readable; swap these 7 values (+ rgb triplets) for a different course. */
-  --tone-1: #120401ff;
-  --tone-2: #23060eff;
-  --tone-3: #3d0c14ff;
-  --tone-4: #6e1420ff;
-  --tone-5: #d97b3fff;
+  --tone-1: #0b120cff;
+  --tone-2: #142416ff;
+  --tone-3: #1f3a23ff;
+  --tone-4: #2d5a35ff;
+  --tone-5: #c5a059ff;
 
-  --tone-1-rgb: 18, 4, 1;
-  --tone-2-rgb: 35, 6, 14;
-  --tone-3-rgb: 61, 12, 20;
-  --tone-4-rgb: 110, 20, 32;
-  --tone-5-rgb: 217, 123, 63;
+  --tone-1-rgb: 11, 18, 12;
+  --tone-2-rgb: 20, 36, 22;
+  --tone-3-rgb: 31, 58, 35;
+  --tone-4-rgb: 45, 90, 53;
+  --tone-5-rgb: 197, 160, 89;
 
-  --tone-text: #f6e9dcff;
-  --tone-text-rgb: 246, 233, 220;
+  --tone-text: #f0f5f1ff;
+  --tone-text-rgb: 240, 245, 241;
 
-  /* dedicated code-block background — its own root token, not reused from
-         --tone-1, so code panels can be retuned independently of the page bg */
-  --code-bg: #0d1117ff;
-  --code-bg-rgb: 13, 17, 23;
+  --code-bg: #080d09ff;
+  --code-bg-rgb: 8, 13, 9;
 
 
   /* semantic roles — every other rule below reads ONLY these variables */
@@ -118,7 +116,7 @@ body {
 .slide.has-bg::before,
 .slide.has-bg::after {
   content: "";
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
 }
@@ -278,6 +276,7 @@ pre code {
   line-height: 1.6;
   color: rgba(var(--ink-rgb), 0.95);
   white-space: pre;
+  font-variant-ligatures: none;
 }
 
 .cm {
@@ -541,6 +540,44 @@ pre code {
   margin-bottom: 14px;
 }
 
+/* Groups the score badge + reset button together on the right, so
+   justify-content:space-between above keeps them as one right-aligned
+   cluster instead of spreading 3 children across the row. */
+.quiz-head-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Score badge — reuses --accent/--correct/--wrong, no new colors. */
+.score-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(var(--ink-rgb), 0.25);
+  color: rgba(var(--ink-rgb), 0.7);
+  white-space: nowrap;
+}
+
+.score-badge.good {
+  color: var(--correct);
+  border-color: var(--correct);
+  background: rgba(var(--correct-rgb), 0.12);
+}
+
+.score-badge.mid {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.12);
+}
+
+.score-badge.bad {
+  color: var(--wrong);
+  border-color: var(--wrong);
+  background: rgba(var(--wrong-rgb), 0.12);
+}
+
 .reset-quiz-btn {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -581,8 +618,11 @@ pre code {
   border-radius: 4px;
   color: var(--ink);
   padding: 1px 6px;
-  width: 9ch;
+  width: 4ch;
+  min-width: 3ch;
   text-align: center;
+  transition: width .1s ease;
+  font-variant-ligatures: none;
 }
 
 .fb-blank.correct {
@@ -632,6 +672,57 @@ pre code {
 
 .fb-result.bad {
   color: var(--wrong);
+}
+
+/* Reveal-hint: each revealed answer gets its own dashed pill, stacked in a
+   column ABOVE the "Reveal hint" button — never says which blank it's for. */
+.fb-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.fb-hint-line {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.12);
+  border: 1px dashed rgba(var(--accent-rgb), 0.45);
+  border-radius: 6px;
+  padding: 5px 10px;
+  width: fit-content;
+}
+
+.fb-hint-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: transparent;
+  color: rgba(var(--ink-rgb), 0.65);
+  border: 1px dashed rgba(var(--ink-rgb), 0.35);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.fb-hint-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.fb-hint-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── final score — minimal text placeholder, styled via CSS (see index.html) ─ ⊃ */
+#final-score {
+  display: block;
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  color: var(--accent);
 }
 
 /* ── glossary — 3 alternative layouts, generator picks per category ─────── ⊃ */
@@ -746,6 +837,21 @@ pre code {
 
 /* ── matching pairs ────────────────────────────────────────────────────── ⊃ */
 
+.matching-container+.matching-container {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px dashed rgba(var(--ink-rgb), 0.15);
+}
+
+.matching-set-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
 .matching-wrap {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -850,6 +956,13 @@ pre code {
   /* .nav-btn is also used on the <a> "Return" link */
 }
 
+/* Base state: only the desktop label shows. The 720px query below swaps
+   this (bug fix — .mobile-text had no default here, so both labels used
+   to render together, e.g. "Reset ProgressReset", on wider screens). */
+.mobile-text {
+  display: none;
+}
+
 .nav-btn:hover {
   background: var(--accent);
   color: var(--bg);
@@ -929,13 +1042,8 @@ li {
   border-radius: 5px;
 }
 
-/* ── mobile text toggle defaults ─────────────────────────────────────────── ⊃ */
-.mobile-text {
-  display: none;
-}
-
-/* ── compact navigation bar for screens under 500px ──────────────────────── ⊃ */
-@media (max-width: 500px) {
+/* ── compact navigation bar for screens under 720px ──────────────────────── ⊃ */
+@media (max-width: 720px) {
 
   /* Hide dots and slide counter entirely on small screens */
   #dots {
@@ -969,5 +1077,19 @@ li {
     padding: 8px 10px;
     font-size: 12px;
     gap: 4px;
+  }
+
+  /* Slide content gets a lot of vertical padding on desktop (64px/120px);
+     tighten it on small phones so there's more usable reading space. */
+  .slide {
+    padding: 24px 6vw 100px 6vw;
+  }
+
+  /* Safety net: eyebrow + score badge + reset button can get tight on very
+     narrow phones — let the right-side cluster wrap under the eyebrow
+     instead of overflowing/clipping. */
+  .quiz-head-row {
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 }

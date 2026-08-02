@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="el">
+<!--
+  ZONE01 SLIDE-DECK TEMPLATE. This file is self-contained instruction-wise —
+  script.js/style.css are a fixed engine you never need to see or edit.
+
+  Edit only the inline <script> at the bottom of <body>. It's a sequence of
+  calls, ending with initSlideDeck() exactly once:
+
+    addContent(html, opts?)
+      One slide. HTML classes available: h1 h2 h3 p .lede .callout
+      .callout.good .card .grid2 .grid3 <pre><code> (hand-color tokens with
+      <span class="tok-kw|tok-type|tok-str|tok-com|tok-num|tok-func">, no
+      auto-highlighter exists) .glossary-table/.glossary-strip/.glossary-columns
+      (mix all three for variety) .title-slide/.title-badge/.kicker-line
+      (title slide only, keep the "ask an AI when stuck" callout as-is).
+      opts = { bg: "path/to/image.jpg", overlayAlpha: 0..1 (default 0.5) }
+      → optional per-slide background image with a solid readability
+      overlay; different slides can use different images or none at all.
+
+    addQuiz(question | [question,...], opts?)
+      One or more MC questions on one slide.
+      question = { q, options:[4 strings], correct: index, explain }
+      opts = { bg, overlayAlpha } — same background option as addContent.
+      Rules: options similar length/style; correct-answer slot varies
+      across questions; distractors are plausible, never "obviously
+      silly"; include at least one distractor ~5 words longer than the
+      correct answer somewhere in the deck; one short explain per question.
+
+    addFillBlank(item | [item,...], opts?)
+      item = { code (mark blanks with __id__), blanks:[{id,answer}], explain }
+      opts = { label, note }
+      Auto-adds a "Reveal hint"/"Check" UI — nothing else to wire up. If an
+      item has exactly 1 blank, the hint button is disabled automatically
+      (shows "[Time to Guess]" instead) since there'd be nothing to guess.
+
+    addMatching(pairs | [set1, set2, ...], opts?)
+      pairs = [{term, def}, ...] for ONE set, OR an array of 2-3 such sets
+      to stack multiple independent matching games on the same slide.
+      opts = { label, note }
+
+  Score: every quiz/fillblank/matching item is scored automatically (100
+  correct, 50 fill-blank-with-hint-used, 0 wrong) and shown as a small
+  badge next to each slide's "Reset this quiz". To show the aggregate
+  result, put <div id="final-score"></div> ANYWHERE in the deck (typically
+  the sources/last slide) — it fills itself in automatically.
+
+  Deck structure: title → theory sections (interleave addQuiz() checkpoints
+  regularly, not just at the end) → a glossary addContent() may appear
+  after ANY section/quiz where it helps (not only once at the very end) →
+  one final combined addQuiz() with 2-3 questions → sources/footer slide
+  with the #final-score placeholder (keep the "pavgerin/avgerinos8" credit).
+
+  Never solve the actual exercise — theory/tools only. Prose Greek, code
+  comments English. Confirm the section list with the user before writing
+  full content, unless already confirmed.
+-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker σημειώσεις</title>
+    <link rel="stylesheet" href="static/style-cypress.css?v=20260801">
+</head>
+
+<body>
+
+    <div id="progress-track">
+        <div id="progress-fill"></div>
+    </div>
+    <div id="deck"></div>
+
+    <div id="nav-bar">
+        <div class="nav-group">
+            <button class="nav-btn" id="btn-reset">
+                <span class="desktop-text">Reset Progress</span>
+                <span class="mobile-text">Reset</span>
+            </button>
+            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+                <span class="desktop-text">Return</span>
+                <span class="mobile-text">Home</span>
+            </a>
+            <button class="nav-btn" id="btn-prev">
+                <span class="desktop-text">←Back</span>
+                <span class="mobile-text">←</span>
+            </button>
+        </div>
+        <div id="dots"></div>
+        <div style="display:flex; align-items:center; gap:16px;">
+            <span id="slide-counter"></span>
+            <button class="nav-btn" id="btn-next">
+                <span class="desktop-text">Next→</span>
+                <span class="mobile-text">→</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="static/script.js?v=20260801"></script>
+    <script src="static/highlighter.js?v=20260802"></script>
+    <script>
+        // Course content below — see instructions comment at the top of this file.
+
+        addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/docker.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>D</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Docker Fundamentals<br>>Αρχιτεκτονική, Multi-stage Builds &amp; Compose</h1>
+  <p class="lede">Ένας πλήρης θεωρητικός οδηγός για τη σωστή χρήση του Docker στην ανάπτυξη και το deployment εφαρμογών</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+`);
+
+        // ── slide intro to docker ──────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 1 / 6 — Εισαγωγή στο Docker</div>
+<h1>Ορισμός και Σκοπός</h1>
+<p class="lede">Το Docker είναι μια πλατφόρμα ανοιχτού λογισμικού που επιτρέπει την αυτοματοποίηση της ανάπτυξης, της
+αποστολής και της εκτέλεσης εφαρμογών μέσα σε απομονωμένα περιβάλλοντα εκτέλεσης, τα οποία ονομάζονται
+<strong>containers</strong>.</p>
+
+<h2>Το πρόβλημα: «Δουλεύει στο μηχάνημά μου»</h2>
+<p>Σε ομαδικά έργα λογισμικού είναι σύνηθες ένας κώδικας να εκτελείται σωστά σε ένα σύστημα και να αποτυγχάνει
+σε άλλο. Οι συνήθεις αιτίες είναι:</p>
+<ul>
+  <li>Διαφορετική έκδοση της γλώσσας ή του runtime (π.χ. Go 1.21 έναντι 1.22)</li>
+  <li>Διαφορετικό λειτουργικό σύστημα (Windows, Linux, macOS)</li>
+  <li>Ελλιπείς βιβλιοθήκες συστήματος ή διαφορετικά δικαιώματα στους φακέλους</li>
+</ul>
+<p>Το Docker περικλείει την εφαρμογή μαζί με όλα τα dependencies, τις ρυθμίσεις και το runtime της σε ένα
+ενιαίο πακέτο. Αν η εφαρμογή εκτελείται μέσα σε Docker, θα εκτελείται με πανομοιότυπο τρόπο σε οποιοδήποτε
+σύστημα διαθέτει τον Docker engine.</p>
+
+<h2>Containers έναντι Virtual Machines</h2>
+<p>Είναι συχνό λάθος να ταυτίζονται τα Docker containers με τα Virtual Machines. Η
+θεμελιώδης διαφορά έγκειται στο επίπεδο απομόνωσης:</p>
+<table class="glossary-table">
+  <tr>
+    <th>Χαρακτηριστικό</th>
+    <th>Virtual Machine</th>
+    <th>Docker Container</th>
+  </tr>
+  <tr>
+    <td>Αρχιτεκτονική</td>
+    <td>Περιλαμβάνει ολόκληρο Guest OS</td>
+    <td class="hl">Μοιράζεται τον Kernel του Host OS</td>
+  </tr>
+  <tr>
+    <td>Μέγεθος</td>
+    <td>Τάξη μεγέθους Gigabytes</td>
+    <td class="hl">Τάξη μεγέθους Megabytes</td>
+  </tr>
+  <tr>
+    <td>Εκκίνηση</td>
+    <td>Λεπτά (πλήρες boot του OS)</td>
+    <td class="hl">Χιλιοστά του δευτερολέπτου έως δευτερόλεπτα</td>
+  </tr>
+  <tr>
+    <td>Performance</td>
+    <td>Σημαντικό overhead σε RAM/CPU</td>
+    <td class="hl">Σχεδόν native performance, μηδενικό επιπλέον overhead</td>
+  </tr>
+</table>
+<p>Επειδή τα containers δεν φορτώνουν ξεχωριστό πυρήνα λειτουργικού συστήματος, η κατανάλωση πόρων και ο
+χρόνος εκκίνησης είναι δραστικά μικρότεροι σε σχέση με μια πλήρη εικονική μηχανή.</p>
+`);
+        // ── slide fundamentals ─────────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 1 / 6 — Εισαγωγή στο Docker</div>
+<h1>Τα τέσσερα θεμελιώδη αντικείμενα</h1>
+<p class="lede">Για να κατανοήσεις το οικοσύστημα, πρέπει να ξεχωρίσεις τις βασικές έννοιες.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Dockerfile</h3>
+    <p>Αρχείο απλού κειμένου που περιέχει τις βήμα-προς-βήμα οδηγίες κατασκευής μιας εικόνας.</p>
+  </div>
+  <div class="card">
+    <h3>Docker Image</h3>
+    <p>Αυτό που δημιουργείται όταν κάνουμε build σύμφωνα με τα instructions του Dockerfile. Read-only στιγμιότυπο (snapshot) που περιέχει τον κώδικα, τα binaries, τα static assets και το runtime περιβάλλον. Δεν μεταβάλλεται μετά τη δημιουργία του.</p>
+  </div>
+  <div class="card">
+    <h3>Docker Container</h3>
+    <p>Η ενεργή, ζωντανή εκτέλεση ενός image. Από το ίδιο image μπορούν να εκκινηθούν πολλαπλά, ανεξάρτητα containers ταυτόχρονα, το καθένα απομονωμένο τόσο από το host σύστημα όσο και από τα υπόλοιπα containers.</p>
+  </div>
+  <div class="card">
+    <h3>Docker Registry</h3>
+    <p>Κεντρική αποθήκη όπου ανεβαίνουν (push) και κατεβαίνουν (pull) εικόνες, π.χ. το Docker Hub ή ένα GitHub Container Registry. Από εκεί αντλούνται επίσημες βασικές εικόνες όπως οι golang ή alpine όπως ζητούνται στο Dockerfile.</p>
+  </div>
+</div>
+
+<br>
+
+<div class="callout attention">
+  <span class="tag">Με λίγα λόγια</span>
+  <p><strong>Πώς κάνεις dockerize μια εφαρμογή;</strong></p>
+  <ul>
+    <li>Δημιουργείς ένα αρχείο με όνομα <code>Dockerfile</code> (case sensitive) στον root φάκελο με τις οδηγίες χτισίματος.</li>
+    <li>Προαιρετικά, προσθέτεις ένα επιπλέον αρχείο με όνομα <code>docker-compose.yml</code> (επίσης case sensitive - lowercase) για τη ρύθμιση και εκτέλεση των containers.</li>
+  </ul>
+  <p>Έχοντας αυτά τα αρχεία, η εφαρμογή σου μπορεί να ξεκινήσει σε οποιοδήποτε περιβάλλον Docker με την κατάλληλη εντολή από το CLI! (όπως θα δούμε αργότερα)</p>
+</div>
+`);
+
+        // ── slide quiz 1 ───────────────────────────────────────────────────────── ⊃
+        addQuiz([
+            {
+                q: "Τι ακριβώς μοιράζεται ένα container με το host σύστημα, σε αντίθεση με μια Virtual Machine;",
+                options: [
+                    "Ολόκληρο το λειτουργικό σύστημα, συμπεριλαμβανομένου του kernel και όλων των system services",
+                    "Μόνο τον Kernel του host· τα υπόλοιπα (βιβλιοθήκες, filesystem) είναι απομονωμένα ανά container",
+                    "Μόνο το firmware της μητρικής πλακέτας",
+                    "Τίποτα· κάθε container έχει τον δικό του ανεξάρτητο kernel"
+                ],
+                correct: 1,
+                explain: "Ο διαμοιρασμός του kernel είναι ο λόγος για τον οποίο τα containers εκκινούν σχεδόν ακαριαία και καταναλώνουν πολύ λιγότερους πόρους από μια πλήρη εικονική μηχανή."
+            },
+            {
+                q: "Αν διαγράψουμε ένα container, διαγράφεται αυτόματα και το image από το οποίο δημιουργήθηκε;",
+                options: [
+                    "Ναι, πάντα, γιατί το image εξαρτάται από το container",
+                    "Όχι· το image παραμένει στο σύστημα ανεξάρτητα από τη διαγραφή του container, εκτός αν διαγραφεί ρητά",
+                    "Ναι, αλλά μόνο αν το container ήταν σε κατάσταση «stopped»",
+                    "Εξαρτάται αποκλειστικά από το λειτουργικό σύστημα του host"
+                ],
+                correct: 1,
+                explain: "Η σχέση image → container είναι ένα-προς-πολλά. Το image είναι ανεξάρτητο και επαναχρησιμοποιήσιμο· χρειάζεται ξεχωριστή εντολή (docker image rm) για τη διαγραφή του."
+            }
+        ]);
+        addMatching([
+            [
+                { "term": "Dockerfile", "def": "Αρχείο κειμένου με τις οδηγίες κατασκευής μιας εικόνας." },
+                { "term": "Docker Image", "def": "Read-only snapshot που περιέχει τον κώδικα και το περιβάλλον." },
+                { "term": "Docker Container", "def": "Η ενεργή εκτέλεση ενός image σε πλήρη απομόνωση." },
+                { "term": "Docker Registry", "def": "Κεντρική αποθήκη για push και pull εικόνων (π.χ. Docker Hub)." }
+            ],
+            [
+                {
+                    "term": "Dockerfile",
+                    "def": "Συνταγή / Script Οδηγιών"
+                },
+                {
+                    "term": "Docker Image",
+                    "def": "Έτοιμο/Αμετάβλητο Πακέτο (Package Archive)"
+                },
+                {
+                    "term": "Docker Container",
+                    "def": "Εκτελούμενη Διεργασία / Server Process"
+                },
+                {
+                    "term": "Docker Registry",
+                    "def": "Αποθήκη Λήψεων / App Store"
+                }
+            ]
+        ], {
+            "note": "Aντιστοίχισε τα θεμελιώδη αντικείμενα του Docker με τον ορισμό τους."
+        });
+        // ── dockerfile ──────────────────────────────────────────────── ⊃
+
+        addContent(`
+    <div class="eyebrow">Ενότητα 2 / 6 — Dockerfile</div>
+  <h1>Dockerfile Syntax & Instructions Reference</h1>
+  <p class="lede">Το Dockerfile είναι το αρχείο κειμένου που θα δημιουργήσουμε εμείς και θα περιέχει εντολές σε σειρά, τις οποίες εκτελεί ο Docker builder για τη δημιουργία του image.</p>
+  <div class="callout good">
+    <p>Κάθε εντολή δημιουργεί ένα νέο image layer. Η σειρά και η ομαδοποίηση επηρεάζουν το μέγεθος του image.</p>
+  </div>
+  
+  <h2>Ένα τυπικό αρχείο Dockerfile:</h2>
+<pre><code class="lang-docker"># Base image with Go installed
+FROM golang:1.22-alpine
+
+# Set working directory inside container
+WORKDIR /app
+
+# Download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code and build application binary
+COPY . .
+RUN go build -o myapp .
+
+# Expose network port
+EXPOSE 8080
+
+# Execute compiled binary
+CMD ["./myapp"]</code></pre></code></pre>
+
+  <h2>Αναλυτικές Εντολές Dockerfile</h2>
+  <table class="glossary-table">
+    <tr>
+      <td class="gt-term">1. FROM</td>
+      <td class="gt-def">
+        Η εντολή FROM ορίζει ποιο image θα κατεβεί και από ποιο θα ξεκινήσει το χτίσιμο. Πρέπει να είναι η πρώτη εντολή στο Dockerfile. Ένα Dockerfile μπορεί να έχει πολλαπλές εντολές FROM, πράγμα που σημαίνει ότι παράγει περισσότερες από μία εικόνες (multi-stage build).
+        <br><b>Παράδειγμα:</b> <code>FROM java:8</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">2. LABEL</td>
+      <td class="gt-def">
+        Προσθέτει μεταδεδομένα (metadata) στο image με τη μορφή ζευγών κλειδιού-τιμής (key-value). Χρησιμοποιείται για την αναγραφή του δημιουργού (maintainer), της έκδοσης, της περιγραφής κ.ά. (Έχει αντικαταστήσει την παλαιότερη εντολή <code>MAINTAINER</code>).
+        <br><b>Παράδειγμα:</b> <code>LABEL maintainer=&quot;Firstname Lastname &lt;example@zone01.gr&gt;&quot;</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">3. RUN</td>
+      <td class="gt-def">
+        Η εντολή RUN εκτελεί εντολές κατά τη διάρκεια της διαδικασίας build του image και αποθηκεύει το αποτέλεσμα σε ένα νέο layer. Χρησιμοποιείται κυρίως για την εγκατάσταση πακέτων, τη δημιουργία καταλόγων ή τη ρύθμιση του περιβάλλοντος.
+        <br><b>Παράδειγμα:</b> <code>RUN unzip install.zip /opt/install</code> | <code>RUN echo hello</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">4. ADD</td>
+      <td class="gt-def">
+        Χρησιμοποιείται για την προσθήκη αρχείων. Δίνει οδηγίες για την αντιγραφή νέων αρχείων, καταλόγων ή απομακρυσμένων URLs στο σύστημα αρχείων του image. Μπορεί να προσθέσει τοπικά αρχεία, περιεχόμενα αρχείων tar (τα οποία αποσυμπιέζει αυτόματα) καθώς και URLs.
+        <br><b>Παράδειγμα:</b> <code>ADD run.sh /run.sh</code> | <code>ADD project.tar.gz /install/</code> | <code>ADD https://example.com/test.rpm /test</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">5. COPY</td>
+      <td class="gt-def">
+        Αντιγράφει αρχεία ή καταλόγους από το σύστημα του host μέσα στο σύστημα αρχείων του image.
+        <br><b>Παράδειγμα:</b> <code>COPY go.mod go.sum ./</code>
+        <br><small><b>Διαφορά με ADD:</b> Η <code>COPY</code> κάνει <i>μόνο</i> απλή αντιγραφή τοπικών αρχείων (best practice). Η <code>ADD</code> επιπλέον αποσυμπιέζει αυτόματα αρχεία (π.χ. <code>.tar.gz</code>) και μπορεί να κατεβάζει αρχεία από URLs.</small>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">6. ENV</td>
+      <td class="gt-def">
+        Η εντολή ENV ορίζει μεταβλητές περιβάλλοντος τόσο κατά το build όσο και κατά την εκτέλεση του container. Μπορεί να χρησιμοποιηθεί μέσα στο Dockerfile και σε οποιαδήποτε scripts καλεί αυτό. Είναι μόνιμες στο container και προσβάσιμες ανά πάσα στιγμή.
+        <br><b>Παράδειγμα:</b> <code>ENV URL_POST=production.example.com</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">7. ENTRYPOINT</td>
+      <td class="gt-def">
+        Καθορίζει την αρχική εντολή/έκφραση που θα χρησιμοποιηθεί κατά την εκκίνηση του container. Ορίζει την κύρια εντολή που θα εκτελεστεί. Αν το container λειτουργεί ως πρόγραμμα γραμμής εντολών, χρησιμοποιείται το ENTRYPOINT.
+        <br><b>Παράδειγμα:</b> <code>ENTRYPOINT ["/start.sh"]</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">8. CMD</td>
+      <td class="gt-def">
+        Η εντολή CMD καθορίζει την προεπιλεγμένη εντολή που θα εκτελεστεί όταν ξεκινά ένα container. Μπορεί επίσης να παράσχει προεπιλεγμένα ορίσματα για την εντολή ENTRYPOINT. Αν υπάρχουν ENTRYPOINT και CMD, συνδυάζονται μαζί.
+        <br><b>Παράδειγμα:</b> <code>CMD ["program-foreground"]</code> | <code>CMD ["executable", "p1", "p2"]</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">9. EXPOSE</td>
+      <td class="gt-def">
+        Η εντολή EXPOSE ενημερώνει το Docker ότι το container ακούει σε συγκεκριμένη θύρα δικτύου κατά το runtime. Προεπιλεγμένα το πρωτόκολλο είναι το TCP, αλλά μπορεί να οριστεί και UDP.
+        <br><b>Παράδειγμα:</b> <code>EXPOSE 5000</code> | <code>EXPOSE 8080/udp</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">10. WORKDIR</td>
+      <td class="gt-def">
+        Ορίζει τον κατάλογο στον οποίο ξεκινά το container. Ο κύριος σκοπός της είναι να ορίσει τον κατάλογο εργασίας για όλες τις μελλοντικές εντολές του Dockerfile.
+        <br><b>Παράδειγμα:</b> <code>WORKDIR /directory-name</code>
+      </td>
+    </tr>
+    <tr>
+      <td class="gt-term">11. ARG</td>
+      <td class="gt-def">
+        Ορίζει μια μεταβλητή που παρέχεται κατά τη διάρκεια του build (μέσω της παραμέτρου <code>--build-arg</code>). Είναι η μόνη εντολή που μπορεί να μπει πριν από την FROM.
+        <br><b>Παράδειγμα:</b> <code>ARG NODE_VERSION=20</code> | <code>FROM node:\${NODE_VERSION}-alpine</code>
+      </td>
+    </tr>
+  </table>`);
+
+        addQuiz([
+            {
+                "q": "Ποια είναι η μοναδική εντολή που μπορεί να προηγηθεί της εντολής FROM σε ένα Dockerfile;",
+                "options": [
+                    "ARG",
+                    "ENTRYPOINT",
+                    "ENV",
+                    "WORKDIR"
+                ],
+                "correct": 0,
+                "explain": "Η εντολή ARG είναι η μόνη οδηγία που επιτρέπεται να τοποθετηθεί πριν από την FROM για τον καθορισμό μιας μεταβλητής που θα χρησιμοποιήσω αργότερα."
+            },
+            {
+                "q": "Ποια είναι η κύρια διαφορά μεταξύ των εντολών ARG και ENV;",
+                "options": [
+                    "Η ARG είναι προσβάσιμη μόνο κατά το build, ενώ η ENV παραμένει διαθέσιμη και στο τρέχον container.",
+                    "Η ENV χρησιμοποιείται μόνο για αριθμούς, ενώ η ARG μόνο για κείμενο.",
+                    "Η ARG δημιουργεί volume, ενώ η ENV ορίζει το working directory.",
+                    "Δεν υπάρχει καμία διαφορά, είναι πλήρως συνώνυμες."
+                ],
+                "correct": 0,
+                "explain": "Οι τιμές της ARG είναι διαθέσιμες αποκλειστικά κατά τη διάρκεια του build, ενώ οι μεταβλητές ENV παραμένουν ενεργές και στο εκτελούμενο container."
+            }
+        ]);
+        addFillBlank([
+            {
+                "code": "ARG image_name=latest\n__id1__ centos:$image_name\n__id2__ /app\nRUN echo hello",
+                "blanks": [
+                    {
+                        "id": "id1",
+                        "answer": "FROM"
+                    },
+                    {
+                        "id": "id2",
+                        "answer": "WORKDIR"
+                    }
+                ],
+                "explain": "Η FROM ορίζει το base image χρησιμοποιώντας τη μεταβλητή ARG, ενώ η WORKDIR καθορίζει τον κατάλογο εργασίας."
+            },
+            {
+                "code": "FROM golang:1.22-alpine\nWORKDIR /app\n__id1__ go.mod go.sum ./\n__id2__ go mod download",
+                "blanks": [
+                    {
+                        "id": "id1",
+                        "answer": "COPY"
+                    },
+                    {
+                        "id": "id2",
+                        "answer": "RUN"
+                    }
+                ],
+                "explain": "Η COPY μεταφέρει τα αρχεία εξαρτήσεων στο container (θα λειτουργούσε και η ADD, αλλά η COPY είναι best practice για απλή αντιγραφή), ενώ η RUN εκτελεί την εντολή go mod download για τη λήψη των packages."
+            },
+            {
+                "code": "__id1__ golang:1.22-alpine\nWORKDIR /app\nCOPY . .\nRUN go build -o myapp .\n__id2__ 8080\n__id3__ [\"./myapp\"]",
+                "blanks": [
+                    {
+                        "id": "id1",
+                        "answer": "FROM"
+                    },
+                    {
+                        "id": "id2",
+                        "answer": "EXPOSE"
+                    },
+                    {
+                        "id": "id3",
+                        "answer": "CMD"
+                    }
+                ],
+                "explain": "Η EXPOSE δηλώνει τη θύρα δικτύου της εφαρμογής και η CMD καθορίζει την προεπιλεγμένη εντολή εκτέλεσης του binary κατά το runtime."
+            },
+            {
+                "code": "__id1__ PORT=8080\n__id2__ GO_VERSION=1.22\nFROM golang:\${GO_VERSION}-alpine",
+                "blanks": [
+                    {
+                        "id": "id1",
+                        "answer": "ENV"
+                    },
+                    {
+                        "id": "id2",
+                        "answer": "ARG"
+                    }
+                ],
+                "explain": "Η ENV ορίζει μεταβλητή περιβάλλοντος για το runtime (Προσοχή! Εδώ ορίζουμε env μεταβλητή με όνομα PORT, δεν κάνουμε EXPOSE τη θύρα PORT όπως παραπάνω), ενώ η ARG ορίζει μια δική μας μεταβλητή (που χρησιμοποιείται αποκλειστικά κατά το build)."
+            },
+            {
+                "code": "FROM golang:1.22-alpine\n__id1__ /app/src\nCOPY . .\n__id2__ go build -o appExe .",
+                "blanks": [
+                    {
+                        "id": "id1",
+                        "answer": "WORKDIR"
+                    },
+                    {
+                        "id": "id2",
+                        "answer": "RUN"
+                    }
+                ],
+                "explain": "Η WORKDIR ορίζει τον κατάλογο εργασίας μέσα στο container και η RUN εκτελεί τη μεταγλώττιση (build) του εκτελέσιμου αρχείου μας."
+            }
+        ], {
+            "note": "Συμπληρώστε τις κατάλληλες εντολές Dockerfile."
+        });
+        addMatching([
+            {
+                "term": "FROM",
+                "def": "Ορίζει το βασικό image από το οποίο ξεκινά η κατασκευή."
+            },
+            {
+                "term": "RUN",
+                "def": "Εκτελεί εντολές κατά το build και αποθηκεύει το αποτέλεσμα σε νέο layer."
+            },
+            {
+                "term": "CMD",
+                "def": "Καθορίζει την προεπιλεγμένη εντολή εκτέλεσης του container."
+            },
+            {
+                "term": "EXPOSE",
+                "def": "Ενημερώνει για τη θύρα δικτύου στην οποία ακούει το container."
+            }
+        ], {
+            "note": "Αντιστοιχίστε τις εντολές Dockerfile με τη λειτουργία τους."
+        });
+
+        // -->
+
+
+        // Mini-glossary right after a section/quiz, when it helps consolidate
+        // just what was covered — not only reserved for the end of the deck.
+        addContent(`
+<div class="eyebrow">Ανακεφαλαίωση εντολών Dockerfile — Ενότητα 2 / 6</div>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">Dockerfile</span><span class="gc-def">Το αρχείο ρυθμίσεων με τις οδηγίες (instructions) για το χτίσιμο ενός image.</span></div>
+  <div class="gc-line"><span class="gc-term">FROM</span><span class="gc-def">Ορίζει το αρχικό (base) image πάνω στο οποίο χτίζεται το περιβάλλον.</span></div>
+  <div class="gc-line"><span class="gc-term">WORKDIR</span><span class="gc-def">Καθορίζει τον ενεργό κατάλογο εργασίας για τις εντολές που ακολουθούν.</span></div>
+  <div class="gc-line"><span class="gc-term">COPY</span><span class="gc-def">Μεταφέρει τοπικά αρχεία από το σύστημα του host μέσα στο container (Best practice).</span></div>
+  <div class="gc-line"><span class="gc-term">RUN</span><span class="gc-def">Εκτελεί εντολές κατά το build του image (π.χ. <code>go build</code>, <code>go mod download</code>).</span></div>
+  <div class="gc-line"><span class="gc-term">EXPOSE</span><span class="gc-def">Δηλώνει τη θύρα δικτύου (port) στην οποία ακούει η εφαρμογή.</span></div>
+  <div class="gc-line"><span class="gc-term">CMD</span><span class="gc-def">Η προεπιλεγμένη εντολή που εκτελείται όταν ξεκινάει το container (runtime).</span></div>
+  <div class="gc-line"><span class="gc-term">ENV</span><span class="gc-def">Ορίζει μεταβλητές περιβάλλοντος διαθέσιμες κατά την εκτέλεση (runtime).</span></div>
+  <div class="gc-line"><span class="gc-term">ARG</span><span class="gc-def">Ορίζει μεταβλητές προσβάσιμες αποκλειστικά κατά τη διάρκεια του build.</span></div>
+</div>
+`);
+
+        // ── slide multi stage theory ───────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 6 — Ανάλυση Dockerfile & Multi-stage</div>
+<h1>Το πρόβλημα του Single-stage Build</h1>
+<p class="lede">Ένα απλό, μη βελτιστοποιημένο Dockerfile για μια εφαρμογή Go έχει τυπικά την εξής μορφή:</p>
+
+<pre><code class="lang-docker">FROM golang:1.22-alpine
+WORKDIR /app
+COPY . .
+RUN go build -o app ./cmd/main.go
+EXPOSE 8080
+CMD ["./app"]</code></pre>
+
+<p>Αυτή η εικόνα περιέχει ολόκληρο το περιβάλλον ανάπτυξης της Go: τον compiler, τα εργαλεία build, τα headers
+και ολόκληρο τον πηγαίο κώδικα. Το αποτέλεσμα είναι ένα τελικό image μεγέθους περίπου <strong>350MB έως
+800MB</strong>.</p>
+<p>Πέραν του μεγέθους, υπάρχει και ζήτημα ασφάλειας: όποιος αποκτήσει πρόσβαση στο container έχει άμεση
+πρόσβαση σε όλα τα αρχεία πηγαίου κώδικα (<code>.go</code>), κάτι που θεωρείται σημαντικό κενό ασφαλείας σε
+παραγωγικό περιβάλλον.</p>
+
+<h2>Η λύση: Multi-stage Build</h2>
+<p>Η τεχνική του multi-stage build χωρίζει τη διαδικασία σε δύο διακριτά στάδια:</p>
+<ul>
+  <li><strong>Στάδιο 1 (Builder):</strong> χρησιμοποιείται το πλήρες περιβάλλον της Go αποκλειστικά για τη
+  μεταγλώττιση (compile) του κώδικα, με τελικό προϊόν ένα έτοιμο εκτελέσιμο αρχείο (binary).</li>
+  <li><strong>Στάδιο 2 (Runtime):</strong> ξεκινά από μια καθαρή, ελαφριά εικόνα Linux (π.χ. Alpine, περίπου
+  5MB) και μεταφέρονται σε αυτήν μόνο το έτοιμο binary και τα απαραίτητα assets (static, templates,
+  δεδομένα).</li>
+</ul>
+<p>Το αποτέλεσμα αυτής της διαδικασίας είναι μια τελική εικόνα της τάξης των <strong>27-30MB</strong>:
+ταχύτατη στο download, χωρίς περιττά αρχεία, χωρίς εκτεθειμένο πηγαίο κώδικα.</p>
+`);
+
+        // ── slide multi stage breakdown ────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 6 — Ανάλυση Dockerfile & Multi-stage</div>
+<h1>Ανάλυση multi-stage γραμμή-γραμμή</h1>
+
+<pre><code class="lang-docker"># Stage 1: Builder
+FROM golang:1.22-alpine AS builder
+WORKDIR /app
+COPY go.mod ./
+RUN go mod download
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o app ./cmd/main.go
+
+# Stage 2: Runtime
+FROM alpine:3.19
+WORKDIR /app
+RUN adduser -D -g '' appuser
+COPY --from=builder /app/app .
+USER appuser
+CMD ["./app"]</code></pre>
+
+<h2>Στάδιο 1 (Builder)</h2>
+<pre><code class="lang-docker">FROM golang:1.22-alpine AS builder</code></pre>
+<p>Κατεβάζει την επίσημη εικόνα της Go και το <code>AS builder</code> ονομάζει το στάδιο, ώστε να μπορεί να γίνει αναφορά σε αυτό αργότερα.</p>
+
+<pre><code class="lang-docker">WORKDIR /app
+COPY go.mod ./
+RUN go mod download
+COPY . .</code></pre>
+<p>Η αντιγραφή του αρχείου διαχείρισης εξαρτήσεων και η λήψη τους γίνεται <strong>πριν</strong> αντιγραφεί ο υπόλοιπος κώδικας, ώστε το Docker να μπορεί να κάνει cache αυτό το layer· αν αλλάξει π.χ. μόνο ένα αρχείο HTML στη συνέχεια, δεν θα χρειαστεί να ξαναγίνει λήψη των βιβλιοθηκών.</p>
+
+<pre><code class="lang-docker">RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o app ./cmd/main.go</code></pre>
+<ul>
+  <li><code class="lang-docker">CGO_ENABLED=0</code>: απενεργοποιεί τα C bindings, παράγοντας ένα πλήρως στατικό (statically linked) binary που εκτελείται σε οποιοδήποτε περιβάλλον Linux χωρίς εξάρτηση από εξωτερικές system libraries.</li>
+  <li><code class="lang-docker">-ldflags="-w -s"</code>: αφαιρεί τις πληροφορίες debugging και τα symbols από το binary, μειώνοντας το μέγεθός του κατά περίπου 30-40%.</li>
+</ul>
+
+<h2>Στάδιο 2 (Runtime)</h2>
+<pre><code class="lang-docker">FROM alpine:3.19
+WORKDIR /app
+RUN adduser -D -g '' appuser</code></pre>
+<p>Δημιουργείται ένας απλός, μη προνομιούχος χρήστης συστήματος. Για λόγους ασφαλείας, η εφαρμογή πρέπει να εκτελείται με περιορισμένα δικαιώματα.</p>
+
+<pre><code class="lang-docker">COPY --from=builder /app/app .
+USER appuser
+CMD ["./app"]</code></pre>
+<p>Το <code class="lang-docker">COPY --from=builder</code> αντιγράφει επιλεκτικά αρχεία από το προηγούμενο στάδιο (που ονομάσαμε εμείς <code>AS builder</code>). Μεταφέρεται μόνο το έτοιμο εκτελέσιμο· κανένα αρχείο πηγαίου κώδικα δεν μεταφέρεται. Στη συνέχεια ενεργοποιείται ο χρήστης <code>appuser</code>.</p>
+`);
+
+        // ── slide fill the blank dockerfile ────────────────────────────────────── ⊃
+        addFillBlank([
+            {
+                code: `// build stage setup
+FROM golang:1.22-alpine __as__ builder
+WORKDIR /app
+COPY go.mod ./
+RUN go mod download
+COPY . .
+
+// build a statically linked binary
+RUN CGO_ENABLED=0 GOOS=linux go __build__ -o myapp main.go
+
+// runtime stage setup
+FROM alpine:3.19
+__workdir__ /root/
+// grab the binary from the first stage
+COPY __from__=builder /app/myapp .
+CMD ["./__myapp__"]`,
+                blanks: [
+                    { id: "as", answer: "AS" },
+                    { id: "build", answer: "build" },
+                    { id: "workdir", answer: "WORKDIR" },
+                    { id: "from", answer: "--from" },
+                    { id: "myapp", answer: "myapp" }
+                ],
+                explain: "Εξήγηση:<br>Το <code>AS</code> ονομάζει το στάδιο.<br>Το <code>build</code> είναι η CLI εντολή για να κάνουμε build το binary myapp από το source main.go.<br>Το <code>WORKDIR</code> ορίζει τον κατάλογο εργασίας μέσα στο container.<br>Το <code>--from</code> φέρνει το αρχείο από το προηγούμενο στάδιο. Προσοχή δεν είναι FROM αλλά --from. Close enough!<br>Το <code>myapp</code> είναι το όνομα του εκτελέσιμου αρχείου (που κάναμε build με αυτό το όνομα πιο πάνω) που τρέχει κατά την εκκίνηση."
+            }
+
+        ]);
+
+
+        // ── slide quiz 2 ───────────────────────────────────────────────────────── ⊃
+        addQuiz([
+            {
+                q: "Αν παραλείψουμε το CGO_ENABLED=0 κατά το build ενός Go binary που προορίζεται για ένα ελάχιστο Alpine runtime image, τι είναι πιθανό να συμβεί;",
+                options: [
+                    "Το build της εφαρμογής θα αποτύχει άμεσα με syntax error κατά το compilation του go.mod αρχείου στο Alpine environment.",
+                    "Το binary ενδέχεται να συνδεθεί δυναμικά με system libraries που δεν υπάρχουν στο ελάχιστο runtime image, προκαλώντας σφάλμα εκτέλεσης",
+                    "Το image θα γίνει αυτόματα πολύ μικρότερο σε μέγεθος επειδή παραλείπεται η ενσωμάτωση του C compiler layer.",
+                    "Δεν έχει καμία πρακτική επίπτωση σε καμία περίπτωση εφόσον το binary εκτελείται εντός απομονωμένου Docker container χωρίς εξωτερικές εξαρτήσεις."
+                ],
+                correct: 1,
+                explain: "Το CGO_ENABLED=0 εξασφαλίζει static linking. Χωρίς αυτό, το binary μπορεί να εξαρτάται από dynamic C libraries που απουσιάζουν σε ένα ελάχιστο Alpine image, οδηγώντας σε σφάλματα κατά την εκτέλεση."
+            },
+            {
+                q: "Ποιο είναι το κύριο πλεονέκτημα της χρήσης Multi-stage Build σε μια εφαρμογή Go;",
+                options: [
+                    "Παράγει πολύ μικρότερο και ασφαλέστερο image χωρίς τον Go compiler ή τον πηγαίο κώδικο.",
+                    "Επιτρέπει την παράλληλη μεταγλώττιση πολλαπλών main.go αρχείων ταυτόχρονα, αυξάνοντας την ταχύτητα του build.",
+                    "Εξασφαλίζει ότι το container θα εκτελείται αυτόματα με δικαιώματα root χρήστη χωρίς να χρειάζεται η δημιουργία appuser.",
+                    "Επιτρέπει την αυτόματη ενημέρωση των εξωτερικών Go modules κατά τη διάρκεια που το container εκτελείται σε production."
+                ],
+                correct: 0,
+                explain: "Το τελικό runtime image περιέχει μόνο το έτοιμο binary και το ελαφρύ Alpine OS (27-30MB αντί για 350-800MB), αφήνοντας πίσω τον compiler και τον πηγαίο κώδικα."
+            },
+            {
+                q: "Τι επιτυγχάνουμε με την παράμετρο -ldflags=\"-w -s\" κατά την εκτέλεση του go build;",
+                options: [
+                    "Αφαιρούμε τα debug symbols, μειώνοντας το μέγεθος του binary κατά 30-40%.",
+                    "Ενεργοποιούμε το σύστημα caching του Docker για να μην ξαναγίνεται build αν δεν αλλάξει το go.mod αρχείο.",
+                    "Επιβάλλουμε τη δυναμική σύνδεση του binary με τις απαραίτητες C βιβλιοθήκες του συστήματος Linux κατά το runtime.",
+                    "Δημιουργούμε αυτόματα έναν νέο χρήστη appuser στο Alpine Linux image για την ασφαλή εκτέλεση του εκτελέσιμου."
+                ],
+                correct: 0,
+                explain: "Το -w αφαιρεί τα DWARF debugging symbols και το -s αφαιρεί το symbol table, παράγοντας ένα πολύ πιο μικρό binary."
+            },
+            {
+                q: "Γιατί τοποθετούμε τις εντολές COPY go.mod ./ και RUN go mod download ΠΡΙΝ από την COPY . .;",
+                options: [
+                    "Για να αξιοποιηθεί το layer caching, αποφεύγοντας το ξανακατέβασμα των dependencies αν αλλάξει μόνο ο κώδικας.",
+                    "Επειδή ο Go compiler αρνείται να μεταγλωττίσει τον κώδικα αν τα modules δεν βρίσκονται στον κατάλογο /app/src του container.",
+                    "Διότι η εντολή COPY . . διαγράφει αυτόματα όλα τα προηγούμενα αρχεία αν εκτελεστεί πριν από το go mod download.",
+                    "Για να μπορέσει η μεταβλητή CGO_ENABLED=0 να εντοπίσει τις C βιβλιοθήκες πριν την μεταφορά των .go αρχείων."
+                ],
+                correct: 0,
+                explain: "Αν δεν αλλάξουν τα αρχεία go.mod/go.sum, το Docker επαναχρησιμοποιεί το cached layer των εξαρτήσεων, γλιτώνοντας χρόνο στο build."
+            }
+        ]);
+
+        // ── slide manual docker workflow ──────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 6 — Docker Compose</div>
+<h1>Χωρίς Docker Compose</h1>
+<p class="lede">Για να καταλάβουμε την αξία του Docker Compose, ας δούμε πώς θα εκτελούσαμε την εφαρμογή μας χρησιμοποιώντας αποκλειστικά τις εντολές του Docker CLI.</p>
+
+<h2>Βήμα 1: Χτίσιμο της Εικόνας (Build Image)</h2>
+<pre><code class="lang-bash">docker build -t project-app:v1 .</code></pre>
+<p>Η εντολή αυτή διαβάζει το <code>Dockerfile</code> στον τρέχοντα κατάλογο (<code>.</code>) και δημιουργεί μια εικόνα με το όνομα/tag <code>project-app:v1</code>.</p>
+
+<h2>Βήμα 2: Εκτέλεση του Container (Run Container)</h2>
+<pre><code class="lang-bash">docker run -d \
+  --name project-app \
+  -p 8080:8080 \
+  --restart unless-stopped \
+  project-app:v1</code></pre>
+
+<p>Για να ρυθμίσουμε σωστά το container κατά την εκτέλεση, πρέπει να απομνημονεύουμε και να πληκτρολογούμε κάθε φορά μια σειρά από flags:</p>
+<ul>
+  <li><code>-d</code>: Εκτελεί το container στο παρασκήνιο (detached mode).</li>
+  <li><code>--name project-app</code>: Ορίζει ένα σταθερό όνομα στο container (αντί για κάποιο τυχαίο).</li>
+  <li><code>-p 8080:8080</code>: Αντιστοιχίζει τη θύρα 8080 του host machine στη θύρα 8080 του container.</li>
+  <li><code>--restart unless-stopped</code>: Επανεκκινεί αυτόματα το container αν καταρρεύσει ή αν επανεκκινηθεί ο Docker daemon.</li>
+</ul>
+
+
+
+<h3>Επιβεβαίωση Κατάστασης</h3>
+<p>Μετά το build ή το run, χρησιμοποιούμε τις παρακάτω εντολές για να ελέγξουμε τις εικόνες και τα containers στο σύστημά μας:</p>
+
+<pre><code class="lang-bash"># Προβολή όλων των τοπικών εικόνων (images)
+docker images
+
+# Προβολή των ενεργών (running) containers
+docker ps
+
+# Προβολή ΟΛΩΝ των containers (ενεργών και σταματημένων)
+docker ps -a</code></pre>
+
+<hr />
+
+<div class="callout attention">
+  <span class="tag">Το Πρόβλημα</span>
+  Αυτή η διαδικασία απαιτεί <strong>πολλαπλές εντολές</strong> με πολλά παραμετρικά flags. Αν αλλάξει ο κώδικας, πρέπει χειροκίνητα να κάνουμε <code>docker stop</code>, <code>docker rm</code> (σβήσιμο) το παλιό container, ξανά <code>build</code> και ξανά <code>run</code>.
+</div>
+`);
+
+        addQuiz([
+            {
+                q: "Ποια εντολή χρησιμοποιούμε για να δούμε ΟΛΑ τα containers στο σύστημά μας (ακόμη και αυτά που έχουν σταματήσει);",
+                options: [
+                    "docker ps -a",
+                    "docker images --all",
+                    "docker container list --running-only",
+                    "docker inspect --status=stopped"
+                ],
+                correct: 0,
+                explain: "Η εντολή docker ps δείχνει μόνο τα ενεργά (running) containers, ενώ η παράμετρος -a (all) προβάλλει όλα τα containers ανεξαρτήτως της κατάστασής τους."
+            },
+            {
+                q: "Ποιο είναι το κύριο μειονέκτημα της εκτέλεσης εφαρμογών αποκλειστικά μέσω του Docker CLI (χωρίς Compose);",
+                options: [
+                    "Απαιτεί χειροκίνητη πληκτρολόγηση πολλών εντολών και flags κάθε φορά που αλλάζει ο κώδικας.",
+                    "Απαγορεύει τη χρήση του Alpine Linux ως base image επειδή λείπουν τα απαραίτητα CLI build tools.",
+                    "Περιορίζει την εκτέλεση της εφαρμογής μόνο στο προσκήνιο χωρίς δυνατότητα χρήσης του detached mode (-d).",
+                    "Αυξάνει το μέγεθος του τελικού image κατά 30-40% επειδή αποθηκεύει το ιστορικό των CLI εντολών."
+                ],
+                correct: 0,
+                explain: "Χωρίς το Compose, κάθε αλλαγή στον κώδικα απαιτεί χειροκίνητα stop, rm του παλιού container, ξανά build και ξανά run με όλα τα απαραίτητα flags (-p, --name, κλπ.)."
+            },
+            {
+                q: "Τι επιτυγχάνουμε με τη χρήση του flag -p 8080:8080 στην εντολή docker run;",
+                options: [
+                    "Αντιστοιχίζουμε τη θύρα 8080 του host machine στη θύρα 8080 του container.",
+                    "Ορίζουμε τη μεταβλητή περιβάλλοντος PORT=8080 εντός του container αποκλειστικά κατά τη διάρκεια του build.",
+                    "Εξασφαλίζουμε ότι το container θα επανεκκινείται αυτόματα σε περίπτωση που καταρρεύσει η εφαρμογή.",
+                    "Δημιουργούμε έναν νέο μη προνομιούχο χρήστη συστήματος με δικαιώματα πρόσβασης στη θύρα δικτύου."
+                ],
+                correct: 0,
+                explain: "Η παράμετρος -p (publish) συνδέει τη θύρα του host (αριστερά) με τη θύρα του container (δεξιά), επιτρέποντας την εξωτερική πρόσβαση στην εφαρμογή."
+            }
+        ]);
+
+        // ── slide docker compose ───────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 6 — Docker Compose</div>
+<h1>Με Docker Compose</h1>
+<p class="lede">Το Docker Compose είναι εργαλείο που επιτρέπει τον ορισμό και την εκτέλεση εφαρμογών μέσω ενός απλού αρχείου ρυθμίσεων σε μορφή YAML.</p>
+
+<p>Ακόμη και σε έργα με ένα και μόνο container, λειτουργεί ως το επίσημο <strong>αρχείο ρυθμίσεων (configuration file)</strong> του deployment. Αντί να απαιτείται απομνημόνευση θυρών, ονομάτων και ρυθμίσεων ασφαλείας μέσω επαναλαμβανόμενων εντολών τερματικού, όλες οι παράμετροι καταγράφονται μία φορά στο YAML αρχείο.</p>
+
+<h2>Ανάλυση του docker-compose.yml</h2>
+<pre><code class="lang-yml">version: '3.8'                    // version of the Compose file format
+
+services:
+  web-app:                         // name of our service
+    build:
+      context: .                   // build context: current directory
+      dockerfile: Dockerfile       // which file builds the image
+
+    container_name: project-app    // replaces --name
+
+    ports:
+      - "8080:8080"                // replaces -p (host:container)
+
+    restart: unless-stopped        // replaces --restart</code></pre>
+<p>Κάθε πεδίο του yml αντιστοιχεί ένα-προς-ένα σε ένα flag της χειροκίνητης εντολής <code>docker container run</code>.</p>
+`);
+
+        // ── slide compose commands ─────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 6 — Docker Compose</div>
+<h1>Βασικές Εντολές Λειτουργίας</h1>
+<p class="lede">Η χρήση του Compose απλοποιεί τη διαχείριση του κύκλου ζωής της εφαρμογής.</p>
+
+<div class="callout good">
+  <span class="tag">Αυτόματο Δίκτυο</span>
+  Το Docker Compose δημιουργεί αυτόματα ένα ιδιωτικό δίκτυο στο οποίο εντάσσονται όλα τα services που δηλώνονται στο ίδιο YAML, επιτρέποντας άμεση επικοινωνία μεταξύ τους.
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Εκκίνηση (Up)</h3>
+    <pre><code>docker-compose up -d --build</code></pre>
+    <p>Η εντολή αυτή λειτουργεί ως "έξυπνος μεταγλωττιστής": 
+    Το flag <code>--build</code> ελέγχει αν έχει αλλάξει ο κώδικας, αναδημιουργεί το image εφόσον χρειάζεται, εκκινεί το container και το <code>-d</code> το αφήνει να τρέχει στο παρασκήνιο.</p>
+  </div>
+  <div class="card">
+    <h3>Καταστροφή (Down)</h3>
+    <pre><code>docker-compose down</code></pre>
+    <p>Αντίθετα με το απλό <code>stop</code>, η εντολή <code>down</code> τερματίζει τα containers και επιπλέον <strong>καθαρίζει το σύστημα</strong>: διαγράφει τα ίδια τα containers και καταστρέφει το αυτόματο δίκτυο.</p>
+  </div>
+</div>
+`);
+
+        addMatching([
+            [
+                { "term": "docker-compose.yml", "def": "Δηλωτικό αρχείο ρυθμίσεων (Configuration File)" },
+                { "term": "docker-compose up -d", "def": "Χτίζει, εκκινεί και αφήνει τα containers στο παρασκήνιο." },
+                { "term": "docker-compose down", "def": "Τερματίζει τα containers και διαγράφει το αυτόματο δίκτυο." }
+            ],
+            [
+                { "term": "ports: \"8080:8080\"", "def": "Αντιστοίχιση θύρας του host με τη θύρα του container (-p)." },
+                { "term": "container_name", "def": "Ορισμός προσαρμοσμένου ονόματος για το container (--name)." },
+                { "term": "restart: unless-stopped", "def": "Αυτόματη επανεκκίνηση του container εκτός αν σταματήσει ρητά (--restart)." }
+            ]
+        ], {
+            "note": "Αντιστοίχισε τις βασικές έννοιες και εντολές του Docker Compose με τη λειτουργία τους."
+        });
+
+        // ── slide fill the blank compose ───────────────────────────────────────── ⊃
+        addFillBlank([
+            {
+                code:
+                    `version: '3.8'
+
+__services__: // define all the containers here
+  backend_api:
+    build: .
+    __ports__: // map host port 80 to container port 8080
+      - "80:8080"
+    __restart__: unless-stopped // recovery policy if it crashes`,
+                blanks: [
+                    { id: "services", answer: "services" },
+                    { id: "ports", answer: "ports" },
+                    { id: "restart", answer: "restart" }
+                ],
+                explain: "Εξήγηση: Το <code>services</code> αποτελεί τον βασικό κόμβο του YAML. Το <code>ports</code> ρυθμίζει το port-mapping, και το <code>restart</code> καθορίζει τη συμπεριφορά του container μετά από αποτυχία."
+            }
+        ]);
+
+        // ── slide metadata ─────────────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 5 / 6 — Metadata</div>
+<h1>Οργάνωση με Labels (Μεταδεδομένα)</h1>
+<p class="lede">Τα Labels είναι ετικέτες μορφής key-value που ενσωματώνουν μεταδεδομένα στο Image ή στο Container.</p>
+
+<h2>Στο Dockerfile</h2>
+<p>Μπορείς να προσθέσεις πληροφορίες για τον συντηρητή, την έκδοση και το είδος του image.</p>
+<pre><code class="lang-go">LABEL org.opencontainers.image.authors="student@zone01athens.gr"
+LABEL org.opencontainers.image.version="1.0"
+LABEL description="Go backend for the project"</code></pre>
+
+<h2>Στο docker-compose.yaml</h2>
+<p>Τα labels εδώ βοηθούν στην οργάνωση των containers όταν υπάρχουν πολλά running services σε ένα server, ή συνεργάζονται με reverse proxies (π.χ. Traefik).</p>
+<pre><code class="lang-go">services:
+  web-app:
+    build: .
+    labels:
+      - "environment=production"
+      - "project=zone01-final"</code></pre>
+
+<div class="callout">
+  <span class="tag">ΣΗΜΕΙΩΣΗ</span>
+  Αυτές οι ετικέτες δεν επηρεάζουν τη λειτουργία της εφαρμογής. Είναι αμιγώς πληροφοριακές, 
+  αλλά αποδεικνύονται σωτήριες για την αυτοματοποίηση και την παρακολούθηση (monitoring).
+</div>
+`);
+
+        // ── slide garbage collection ───────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 6 / 6 — Garbage Collection</div>
+<h1>Διαχείριση Πόρων και System Prune</h1>
+<p class="lede">Το Docker κρατάει cache, παλιά images και stopped containers για να επιταχύνει τη διαδικασία, αλλά συχνά γεμίζει το δίσκο.</p>
+
+<h2>Εντολές Καθαρισμού CLI</h2>
+
+<pre><code>// check disk usage
+docker system df</code></pre>
+<p>Αυτή η εντολή δείχνει ακριβώς πόσα MB/GB καταλαμβάνουν τα Images, Containers, Volumes και το Build Cache.</p>
+
+<pre><code>// remove unused dangling images
+docker image prune</code></pre>
+<p>Η εντολή αυτή καθαρίζει τα <em>dangling images</em> (εικόνες που δεν έχουν όνομα και δεν σχετίζονται με κανένα container). Μπορείς να προσθέσεις το <code>-a</code> για να καθαρίσεις όλα τα αχρησιμοποίητα images.</p>
+
+<pre><code>// clean up everything not actively running
+docker system prune -a --volumes</code></pre>
+<p>Η πιο δραστική εντολή (το Garbage Collection του Docker). Διαγράφει: stopped containers, όλα τα δίκτυα που δεν χρησιμοποιούνται, <strong>dangling images και unreferenced images</strong>, και τέλος (με το flag) όλα τα αχρησιμοποίητα volumes (<strong>ΠΡΟΣΟΧΗ: τα δεδομένα χάνονται</strong>).</p>
+`);
+
+        // ── slide quiz 3 ───────────────────────────────────────────────────────── ⊃
+        addQuiz([
+            {
+                q: "Ποια είναι η επίπτωση αν εκτελέσεις την εντολή docker-compose down σε ένα περιβάλλον παραγωγής;",
+                options: [
+                    "Θα κάνει απλή επανεκκίνηση (restart) την εφαρμογή",
+                    "Θα σταματήσει τα containers, θα τα διαγράψει, και θα καταστρέψει το τοπικό δίκτυο του compose",
+                    "Θα διαγράψει τα images από το registry, αλλά θα αφήσει τα containers να τρέχουν",
+                    "Θα εκτελέσει το Docker Garbage Collection"
+                ],
+                correct: 1,
+                explain: "Η εντολή `down` δεν είναι απλά `stop`. Είναι καταστροφική ως προς τα instance (containers) και τα δίκτυα που έστησε το YAML (όχι όμως για τον κώδικα/image)."
+            },
+            {
+                q: "Αν παρατηρήσεις ότι ο δίσκος σου έχει γεμίσει με GBs από τοπικά builds (cache και παλιά images) και θες να καθαρίσεις ό,τι δεν τρέχει αυτή τη στιγμή, ποια εντολή θα εκτελέσεις?",
+                options: [
+                    "docker container prune",
+                    "docker system prune",
+                    "docker image prune",
+                    "docker volume prune"
+                ],
+                correct: 1,
+                explain: "Το system prune είναι η μοναδική συνολική εντολή που καθαρίζει μαζικά containers, networks, images και cache.<br>• <b>docker container prune:</b> Διαγράφει <u>μόνο</u> τα σταματημένα containers.<br>• <b>docker system prune:</b> Η σωστή εντολή που καθαρίζει συνολικά τα αδρανή containers, τα δίκτυα, τις εικόνες και την cache.<br>• <b>docker image prune:</b> Διαγράφει <u>μόνο</u> τις αχρησιμοποίητες εικόνες.<br>• <b>docker volume prune:</b> Διαγράφει <u>μόνο</u> τα αχρησιμοποίητα volumes (αποθηκευτικοί χώροι που κρατούν τα δεδομένα των εφαρμογών σας <strong>εκτός</strong> των containers)."
+            }
+        ]);
+
+        // ── slide glossary ─────────────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
+
+<h2>Αντικείμενα Docker</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">Dockerfile</span><span class="gc-def">Κείμενο/συνταγή για το χτίσιμο της εικόνας</span></div>
+  <div class="gc-line"><span class="gc-term">Image</span><span class="gc-def">Στατικό, read-only snapshot/τελικό build</span></div>
+  <div class="gc-line"><span class="gc-term">Container</span><span class="gc-def">Το εκτελούμενο, "ζωντανό" στιγμιότυπο (instance) του Image</span></div>
+</div>
+
+<h2>Docker CLI</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">docker-compose up</span><span class="gc-def">Διαβάζει το YML και ξεκινά την εφαρμογή</span></div>
+  <div class="gc-line"><span class="gc-term">docker-compose down</span><span class="gc-def">Σταματά και καταστρέφει containers & networks</span></div>
+  <div class="gc-line"><span class="gc-term">docker system prune</span><span class="gc-def">Καθαρίζει resources που δεν χρησιμοποιούνται πλέον.</span></div>
+</div>
+
+<h2>Build & Multi-stage</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">FROM ... AS &lt;stagename&gt;</span><span class="gc-def">Ορισμός ονόματος σταδίου (multi-stage)</span></div>
+  <div class="gc-line"><span class="gc-term">COPY --from &lt;stagename&gt;</span><span class="gc-def">Αντιγραφή από προηγούμενο στάδιο (stagename)</span></div>
+  <div class="gc-line"><span class="gc-term">LABEL</span><span class="gc-def">Προσθήκη metadata key=value</span></div>
+</div>
+`);
+
+        // ── Sources ──────────────────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+<p class="lede">Για περαιτέρω εμβάθυνση:</p>
+<div class="sources-list">
+  <a href="https://docker-handbook.farhan.dev/" target="_blank" rel="noopener">The Docker Handbook</a>
+  <a href="https://www.geeksforgeeks.org/devops/docker-tutorial/" target="_blank" rel="noopener">Docker Tutorial</a>
+  <a href="https://devopscycle.com/blog/the-ultimate-docker-cheat-sheet" target="_blank" rel="noopener">The ultimate Docker Cheat Sheet</a>
+</div>
+<div id="final-score"></div>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
+  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+</p>
+`);
+
+
+        initSlideDeck({ version: "1.0.0" });
+    </script>
+</body>
+
+</html>
