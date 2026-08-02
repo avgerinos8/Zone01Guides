@@ -89,6 +89,8 @@ function applyBackground(el, opts) {
   if (opts.overlayAlpha !== undefined) {
     el.style.setProperty("--slide-bg-overlay-alpha", opts.overlayAlpha);
   }
+  if (opts.backgroundSize) el.style.setProperty("--slide-bg-size", opts.backgroundSize);
+  if (opts.backgroundRepeat) el.style.setProperty("--slide-bg-repeat", opts.backgroundRepeat);
 }
 
 /**

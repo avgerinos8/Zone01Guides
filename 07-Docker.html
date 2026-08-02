@@ -60,7 +60,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Docker σημειώσεις</title>
-    <link rel="stylesheet" href="static/style-cypress.css?v=20260801">
+    <link rel="stylesheet" href="static/style-cypress.css?v=20260802">
 </head>
 
 <body>
@@ -95,7 +95,7 @@
         </div>
     </div>
 
-    <script src="static/script.js?v=20260801"></script>
+    <script src="static/script.js?v=20260802"></script>
     <script src="static/highlighter.js?v=20260802"></script>
     <script>
         // Course content below — see instructions comment at the top of this file.
@@ -1112,7 +1112,7 @@ __id15__ go.mod go.sum ./
 __id14__ go mod download
 
 __id4__ . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o prisma .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o __id12__ .
 
 FROM alpine:3.19
 __id5__ PORT=8080
@@ -1123,7 +1123,7 @@ COPY __id6__=__id10__ /executables/prisma .
 
 __id7__ appuser
 __id8__ 8080
-__id9__ ["./prisma"]`,
+__id9__ ["./myapp"]`,
                 blanks: [
                     { id: "id1", answer: "ARG" },
                     { id: "id2", answer: "AS" },
@@ -1144,10 +1144,12 @@ __id9__ ["./prisma"]`,
                 explain: "<b>Ανακεφαλαίωση Εντολών:</b><br>• <code>ARG</code>: Ορισμός μεταβλητής πριν τη FROM.<br>• <code>AS</code>: Ονομασία του build stage.<br>• <code>WORKDIR</code>: Ορισμός φακέλου εργασίας.<br>• <code>COPY</code>: Αντιγραφή αρχείων κώδικα.<br>• <code>ENV</code>: Ορισμός μεταβλητής runtime (PORT).<br>• <code>--from</code>: Επιλεκτική μεταφορά του binary από το stage builder.<br>• <code>USER</code>: Αλλαγή από root σε απλό χρήστη (appuser) για λόγους ασφαλείας.<br>• <code>EXPOSE</code>: Τεκμηρίωση θύρας.<br>• <code>CMD</code>: Εντολή εκκίνησης στο runtime."
             }
         ], {
-            label: "Πλήρες Multi-stage Dockerfile (9 Κενά)",
+            label: "Τελικό Fill in the Blanks τεστ",
             note: "Συμπλήρωσε τις κατάλληλες εντολές Dockerfile που λείπουν.",
-            bg: "./images/code-bg.jpg",
-            overlayAlpha: 0.65
+            bg: "images/docker-bg.png",
+            overlayAlpha: 0.65,
+            backgroundSize: "auto",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat" // ή "repeat" / "repeat-x" / "repeat-y"
         });
 
         // 3. Matching Game (addMatching)

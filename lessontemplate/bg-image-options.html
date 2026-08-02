@@ -1,0 +1,54 @@
+/* ────────────────────────────────────────────────────────────────────────
+BACKGROUND IMAGE OPTIONS — works on ANY slide type:
+addContent(html, opts) / addQuiz(questions, opts) /
+addFillBlank(items, opts) / addMatching(pairs, opts)
+
+opts = {
+bg: "./images/example.jpg",
+// Path to the background image for THIS slide only. Omit entirely
+// (or leave opts without "bg") for a slide with no background at all.
+
+overlayAlpha: 0.65,
+// 0 to 1 — how strong the solid dark overlay on top of the image is,
+// so text stays readable. 0 = fully transparent (no overlay, image
+// shows raw). 1 = fully solid (image completely hidden behind the
+// overlay color). Default if omitted: 0.5. Higher = more readable
+// text but less visible image; lower = more visible image but text
+// may be harder to read depending on the image.
+
+backgroundSize: "cover",
+// How the image is scaled to fit the slide. Options:
+// "cover" → fills the ENTIRE slide, keeps proportions,
+// CROPS whatever doesn't fit (no empty gaps).
+// "contain" → fits the WHOLE image inside the slide, keeps
+// proportions, may leave empty gaps top/bottom
+// or left/right if the aspect ratio doesn't match.
+// "100% 100%" → STRETCHES the image to exactly fill width and
+// height, ignoring proportions — can look distorted.
+// "100% auto" → fits image to the slide's WIDTH exactly, height
+// scales proportionally (may overflow vertically).
+// "auto" → natural image size, no scaling at all.
+// Default if omitted: "auto" (natural size, top-left, no scaling).
+
+backgroundRepeat: "no-repeat"
+// Whether the image tiles/repeats to fill empty space. Options:
+// "no-repeat" → shows the image ONCE, no matter how small it is.
+// "repeat" → tiles the image both horizontally AND vertically
+// (like wallpaper) — useful for small patterns/
+// textures, NOT for a single photo/illustration.
+// "repeat-x" → tiles only horizontally (one row, left to right).
+// "repeat-y" → tiles only vertically (one column, top to bottom).
+// Default if omitted: "no-repeat".
+}
+
+Position is always fixed to top-left of the slide and does not scroll
+with the content (position: fixed in CSS).
+
+COMMON COMBINATIONS:
+- Full-bleed photo covering the whole slide:
+{ bg: "...", backgroundSize: "cover", backgroundRepeat: "no-repeat" }
+- Small repeating texture/pattern as backdrop:
+{ bg: "...", backgroundSize: "auto", backgroundRepeat: "repeat" }
+- Logo/image shown once at its natural size, top-left corner:
+{ bg: "..." } (defaults already do exactly this)
+──────────────────────────────────────────────────────────────────────── */
