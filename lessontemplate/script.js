@@ -26,10 +26,11 @@ function addContent(html, opts) {
  * Adds one or more multiple-choice questions on a single slide.
  * Accepts either a single question object or an array of question objects.
  * @param {Object|Object[]} qOrArray - Question object or array of questions.
+ * @param {Object} [opts] - Optional { bg, overlayAlpha } background options.
  */
-function addQuiz(qOrArray) {
+function addQuiz(qOrArray, opts) {
   const questions = Array.isArray(qOrArray) ? qOrArray : [qOrArray];
-  slides.push({ type: "quiz", data: questions });
+  slides.push({ type: "quiz", data: questions, opts: opts || {} });
 }
 
 /**
@@ -44,12 +45,15 @@ function addFillBlank(itemOrArray, opts) {
 }
 
 /**
- * Adds a matching-pairs exercise slide with term-definition pairs.
- * @param {Array} pairs - Array of objects with term and def properties.
+ * Adds a matching-pairs exercise slide. Accepts either a single flat array
+ * of {term,def} pairs (one set), or an array of such arrays (2-3 sets
+ * stacked on the same slide, each scored and reset independently).
+ * @param {Array} setsOrPairs - [{term,def}, ...] or [[{term,def},...], ...].
  * @param {Object} [opts] - Optional label and instructional note options.
  */
-function addMatching(pairs, opts) {
-  slides.push({ type: "matching", data: pairs, opts: opts || {} });
+function addMatching(setsOrPairs, opts) {
+  const sets = Array.isArray(setsOrPairs[0]) ? setsOrPairs : [setsOrPairs];
+  slides.push({ type: "matching", data: sets, opts: opts || {} });
 }
 
 // ── deterministic shuffle ────────────────────────────────────────────────── ⊃
@@ -72,6 +76,21 @@ function shuffleSeed(arr, seed) {
 }
 
 // ── code blocks and syntax helper ───────────────────────────────────────── ⊃
+/**
+ * Applies an optional per-slide background image + overlay (shared by
+ * content and quiz slides). No-op if opts.bg is not set.
+ * @param {HTMLElement} el
+ * @param {Object} [opts] - { bg: "path.jpg", overlayAlpha: 0..1 }.
+ */
+function applyBackground(el, opts) {
+  if (!opts || !opts.bg) return;
+  el.classList.add("has-bg");
+  el.style.setProperty("--slide-bg-image", `url('${opts.bg}')`);
+  if (opts.overlayAlpha !== undefined) {
+    el.style.setProperty("--slide-bg-overlay-alpha", opts.overlayAlpha);
+  }
+}
+
 /**
  * Scans container for code blocks and wraps them with an interactive copy button.
  * Prevents duplicate wrappers by checking existing structure.
@@ -204,7 +223,9 @@ function refreshScoreBadge(badge, storeKeys) {
 }
 
 /**
- * @returns {{percent:number, answered:number, total:number}|null} null if nothing scored yet.
+ * @returns {{percent:number, answered:number, total:number}} always returns
+ *   a value (percent is 0 when nothing is answered yet) — the 3 message
+ *   states below are what distinguish "not started" from "0%".
  */
 function computeTotalScore() {
   const vals = Object.values(savedScores);
@@ -212,43 +233,29 @@ function computeTotalScore() {
   slides.forEach(s => {
     if (s.type === "quiz") total += s.data.length;
     else if (s.type === "fillblank") total += s.data.length;
-    else if (s.type === "matching") total += 1;
+    else if (s.type === "matching") total += s.data.length; // one per set
   });
-  if (vals.length === 0) return null;
-  const percent = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+  const percent = vals.length === 0 ? 0 : Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
   return { percent, answered: vals.length, total };
 }
 
 /**
- * Renders/updates the total-score box appended to the LAST slide of the deck.
- * Called on init and every time the user navigates to the last slide.
+ * Fills the #final-score placeholder (if present in the HTML) with the
+ * course's aggregate result. Reads only already-computed savedScores — never
+ * re-grades anything. Three states: not started / in progress / complete.
+ * Called on init and whenever any test/exercise anywhere gets (re)scored.
  */
 function updateTotalScoreDisplay() {
-  if (!slideEls || slideEls.length === 0) return; // not built yet — goTo() at end of init will catch it
-  const lastEl = slideEls[slideEls.length - 1];
-  if (!lastEl) return;
-  let box = lastEl.querySelector(".total-score-box");
-  const result = computeTotalScore();
-  if (!result) {
-    if (box) box.remove();
-    return;
+  const el = document.getElementById("final-score");
+  if (!el) return;
+  const { percent, answered, total } = computeTotalScore();
+  if (answered === 0) {
+    el.textContent = "Κάνε το μάθημα και εδώ θα γράφεται η τελική σου βαθμολογία!";
+  } else if (answered < total) {
+    el.textContent = "Αποτέλεσμα μέχρι στιγμής: " + percent + "%";
+  } else {
+    el.textContent = "Αποτέλεσμα: " + percent + "%";
   }
-  if (!box) {
-    box = document.createElement("div");
-    box.className = "total-score-box";
-    lastEl.appendChild(box);
-  }
-  const tier = scoreTier(result.percent);
-  const messages = {
-    good: "Άψογα — τα πήγες πολύ καλά!",
-    mid: "Καλή προσπάθεια — ξαναδές μερικά σημεία.",
-    bad: "Χρειάζεται λίγο ακόμα διάβασμα, ξαναπροσπάθησε."
-  };
-  box.className = "total-score-box " + tier;
-  box.innerHTML =
-    `<div class="ts-percent">Score ${result.percent}%</div>` +
-    `<div class="ts-message">${messages[tier]}</div>` +
-    `<div class="ts-progress">Απαντήθηκαν ${result.answered} / ${result.total}</div>`;
 }
 
 // ── multiple-choice question renderer ───────────────────────────────────── ⊃
@@ -280,10 +287,10 @@ function renderQuestion(box, q, storeKey, onScored) {
 
     if (selectedIndex === q.correct) {
       if (clickedBtn) clickedBtn.classList.add("correct");
-      explainDiv.innerHTML = "<strong>ΣΩΣΤΟ!</strong><br>" + q.explain;
+      explainDiv.innerHTML = "<strong>CORRECT!</strong><br>" + q.explain;
     } else {
       if (clickedBtn) clickedBtn.classList.add("wrong");
-      explainDiv.innerHTML = "<strong>ΛΑΘΟΣ.</strong><br>" + q.explain;
+      explainDiv.innerHTML = "<strong>WRONG.</strong><br>" + q.explain;
     }
 
     allBtns.forEach((b, i2) => {
@@ -296,8 +303,8 @@ function renderQuestion(box, q, storeKey, onScored) {
     allBtns.forEach(b => {
       const badge = b.querySelector(".quiz-badge");
       if (!badge) return;
-      if (b.classList.contains("correct")) badge.textContent = "ΣΩΣΤΟ";
-      else if (b.classList.contains("wrong")) badge.textContent = "ΛΑΘΟΣ";
+      if (b.classList.contains("correct")) badge.textContent = "CORRECT";
+      else if (b.classList.contains("wrong")) badge.textContent = "WRONG";
     });
 
     explainDiv.classList.add("show");
@@ -360,6 +367,11 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
   const savedData = savedAnswers[storeKey] || { inputs: {}, checked: false, revealed: [] };
   const revealedIds = new Set(savedData.revealed || []);
 
+  /** Grows/shrinks a fill-blank input to fit its content, ~4ch minimum. */
+  function autosizeInput(inp) {
+    inp.style.width = Math.max(4, inp.value.length + 1) + "ch";
+  }
+
   const parts = item.code.split(/__([a-zA-Z0-9]+)__/g);
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 0) {
@@ -372,11 +384,12 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
       inp.dataset.blankId = blankId;
       inp.autocomplete = "off";
       inp.spellcheck = false;
-      inp.size = 6;
       if (savedData.inputs && savedData.inputs[blankId] !== undefined) {
         inp.value = savedData.inputs[blankId];
       }
+      autosizeInput(inp);
       inp.addEventListener("input", () => {
+        autosizeInput(inp);
         if (!savedAnswers[storeKey]) {
           savedAnswers[storeKey] = { inputs: {}, checked: false, revealed: [] };
         }
@@ -389,64 +402,73 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
   pre.appendChild(codeEl);
   box.appendChild(pre);
 
+  // "Reveal hint": shows ONE not-yet-revealed answer as plain text, for a
+  // currently-empty blank — never says which blank it belongs to. Repeated
+  // clicks reveal more, one at a time, until every blank has been revealed.
+  // Disabled entirely when the exercise has only 1 blank (nothing to guess
+  // which slot a reveal would go in, so hinting would just be the answer).
+  const hintsDiv = document.createElement("div");
+  hintsDiv.className = "fb-hints";
+  box.appendChild(hintsDiv);
+
+  const totalBlanks = item.blanks.length;
+  const hintBtn = document.createElement("button");
+  hintBtn.className = "fb-hint-btn";
+  hintBtn.type = "button";
+
+  if (totalBlanks <= 1) {
+    hintBtn.textContent = "[Time to Guess]";
+    hintBtn.disabled = true;
+    box.appendChild(hintBtn);
+  } else {
+    box.appendChild(hintBtn);
+
+    function renderHints() {
+      hintsDiv.innerHTML = "";
+      revealedIds.forEach(id => {
+        const answer = item.blanks.find(b => b.id === id)?.answer ?? "";
+        const line = document.createElement("div");
+        line.className = "fb-hint-line";
+        line.textContent = answer;
+        hintsDiv.appendChild(line);
+      });
+      if (revealedIds.size >= totalBlanks) {
+        hintBtn.textContent = "Everything Shown";
+        hintBtn.disabled = true;
+      } else {
+        hintBtn.textContent = "Reveal hint (" + revealedIds.size + "/" + totalBlanks + ")";
+      }
+    }
+
+    hintBtn.addEventListener("click", () => {
+      const emptyIds = Array.from(box.querySelectorAll(".fb-blank"))
+        .filter(inp => inp.value.trim() === "")
+        .map(inp => inp.dataset.blankId)
+        .filter(id => !revealedIds.has(id));
+      if (emptyIds.length === 0) return;
+      revealedIds.add(emptyIds[0]);
+      if (!savedAnswers[storeKey]) {
+        savedAnswers[storeKey] = { inputs: {}, checked: false, revealed: [] };
+      }
+      savedAnswers[storeKey].revealed = Array.from(revealedIds);
+      persistAnswers();
+      renderHints();
+    });
+
+    renderHints();
+  }
+
   const actions = document.createElement("div");
   actions.className = "fb-actions";
   const checkBtn = document.createElement("button");
   checkBtn.className = "fb-check-btn";
   checkBtn.type = "button";
-  checkBtn.textContent = "Έλεγχος";
+  checkBtn.textContent = "Check";
   const resultSpan = document.createElement("span");
   resultSpan.className = "fb-result";
   actions.appendChild(checkBtn);
   actions.appendChild(resultSpan);
   box.appendChild(actions);
-
-  // "Reveal hint": shows ONE not-yet-revealed answer as plain text, for a
-  // currently-empty blank — never says which blank it belongs to. Repeated
-  // clicks reveal more, one at a time, until every blank has been revealed.
-  const hintsDiv = document.createElement("div");
-  hintsDiv.className = "fb-hints";
-  box.appendChild(hintsDiv);
-
-  const hintBtn = document.createElement("button");
-  hintBtn.className = "fb-hint-btn";
-  hintBtn.type = "button";
-  box.appendChild(hintBtn);
-
-  function renderHints() {
-    hintsDiv.innerHTML = "";
-    revealedIds.forEach(id => {
-      const answer = item.blanks.find(b => b.id === id)?.answer ?? "";
-      const line = document.createElement("div");
-      line.className = "fb-hint-line";
-      line.textContent = answer;
-      hintsDiv.appendChild(line);
-    });
-    const totalBlanks = item.blanks.length;
-    if (revealedIds.size >= totalBlanks) {
-      hintBtn.textContent = "Όλα αποκαλύφθηκαν";
-      hintBtn.disabled = true;
-    } else {
-      hintBtn.textContent = "Reveal hint (" + revealedIds.size + "/" + totalBlanks + ")";
-    }
-  }
-
-  hintBtn.addEventListener("click", () => {
-    const emptyIds = Array.from(box.querySelectorAll(".fb-blank"))
-      .filter(inp => inp.value.trim() === "")
-      .map(inp => inp.dataset.blankId)
-      .filter(id => !revealedIds.has(id));
-    if (emptyIds.length === 0) return;
-    revealedIds.add(emptyIds[0]);
-    if (!savedAnswers[storeKey]) {
-      savedAnswers[storeKey] = { inputs: {}, checked: false, revealed: [] };
-    }
-    savedAnswers[storeKey].revealed = Array.from(revealedIds);
-    persistAnswers();
-    renderHints();
-  });
-
-  renderHints();
 
   const explainDiv = document.createElement("div");
   explainDiv.className = "quiz-explain";
@@ -466,8 +488,8 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
     });
     const usedHint = revealedIds.size > 0;
     resultSpan.textContent = allCorrect
-      ? (usedHint ? "ΣΩΣΤΟ! (με hint — 50%)" : "ΣΩΣΤΟ!")
-      : "Υπάρχουν λάθη — δες τα κόκκινα κενά.";
+      ? (usedHint ? "CORRECT! (with hint — 50%)" : "CORRECT!")
+      : "There are mistakes — check the highlighted fields.";
     resultSpan.className = "fb-result " + (allCorrect && !usedHint ? "ok" : "bad");
     explainDiv.classList.add("show");
     checkBtn.disabled = true;
@@ -508,9 +530,28 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
  * @param {string} storeKey - Unique key for local storage persistence.
  * @param {Function} [onScored] - Called after this slide's score is (re)written.
  */
-function renderMatching(wrap, pairs, seed, storeKey, onScored) {
+/**
+ * Renders ONE matching-pairs set (a slide may stack 2-3 of these — see the
+ * "matching" branch in renderSlide). Displays matched pairs side-by-side
+ * with a visual connecting line, separated from the still-active options.
+ * Score = percentage of pairs matched so far (100 once all are solved).
+ * @param {HTMLElement} wrap - Container element to append exercise to.
+ * @param {Array} pairs - Array of term-definition matching objects.
+ * @param {number} seed - Seed used for shuffling options deterministically.
+ * @param {string} storeKey - Unique key for local storage persistence.
+ * @param {Function} [onScored] - Called after this set's score is (re)written.
+ * @param {string} [setLabel] - Optional small heading above this set (used when multiple sets share a slide).
+ */
+function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel) {
   const container = document.createElement("div");
   container.className = "matching-container";
+
+  if (setLabel) {
+    const heading = document.createElement("div");
+    heading.className = "matching-set-label";
+    heading.textContent = setLabel;
+    container.appendChild(heading);
+  }
 
   const matchedArea = document.createElement("div");
   matchedArea.className = "matched-area";
@@ -701,19 +742,14 @@ function buildInteractiveHeader(el, defaultLabel, opts) {
 function renderSlide(el, slide, idx) {
   if (slide.type === "content") {
     el.innerHTML = slide.html;
-    if (slide.opts && slide.opts.bg) {
-      el.classList.add("has-bg");
-      el.style.setProperty("--slide-bg-image", `url('${slide.opts.bg}')`);
-      if (slide.opts.overlayAlpha !== undefined) {
-        el.style.setProperty("--slide-bg-overlay-alpha", slide.opts.overlayAlpha);
-      }
-    }
+    applyBackground(el, slide.opts);
     decorateCodeBlocks(el);
     return;
   }
 
   if (slide.type === "quiz") {
     el.innerHTML = "";
+    applyBackground(el, slide.opts);
     const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Quiz Checkpoint", slide.opts);
     const storeKeys = slide.data.map((_, qIdx) => idx + "_" + qIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
@@ -776,27 +812,30 @@ function renderSlide(el, slide, idx) {
   if (slide.type === "matching") {
     el.innerHTML = "";
     const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Matching Pairs", slide.opts);
-    const storeKeys = [idx + "_match"];
+    const sets = slide.data; // array of pair-arrays, 1 or more sets per slide
+    const storeKeys = sets.map((_, setIdx) => idx + "_match_" + setIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
 
-    let seed = idx * 17 + 3;
+    let seeds = sets.map((_, setIdx) => idx * 17 + 3 + setIdx * 53);
 
-    function renderAllPairs() {
+    function renderAllSets() {
       el.querySelectorAll(".matching-container").forEach(n => n.remove());
-      renderMatching(el, slide.data, seed, idx + "_match", refresh);
+      sets.forEach((pairs, setIdx) => {
+        const label = sets.length > 1 ? `Set ${setIdx + 1} / ${sets.length}` : null;
+        renderMatching(el, pairs, seeds[setIdx], idx + "_match_" + setIdx, refresh, label);
+      });
       refresh();
     }
 
     resetQuizBtn.addEventListener("click", () => {
-      seed = Date.now() % 100000;
-      delete savedAnswers[idx + "_match"];
-      delete savedScores[idx + "_match"];
+      seeds = sets.map((_, setIdx) => Date.now() % 100000 + setIdx);
+      storeKeys.forEach(k => { delete savedAnswers[k]; delete savedScores[k]; });
       persistAnswers();
       persistScores();
-      renderAllPairs();
+      renderAllSets();
     });
 
-    renderAllPairs();
+    renderAllSets();
   }
 }
 
@@ -828,8 +867,6 @@ function goTo(i) {
 
   prevBtn.disabled = current === 0;
   nextBtn.disabled = current === slides.length - 1;
-
-  if (current === slides.length - 1) updateTotalScoreDisplay();
 }
 
 /**
@@ -905,4 +942,5 @@ function initSlideDeck(config) {
 
   if (current >= slides.length) current = 0;
   goTo(current);
+  updateTotalScoreDisplay();
 }

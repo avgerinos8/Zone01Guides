@@ -18,10 +18,9 @@
       → optional per-slide background image with a solid readability
       overlay; different slides can use different images or none at all.
 
-    addQuiz(question | [question,...], opts?)
+    addQuiz(question | [question,...])
       One or more MC questions on one slide.
       question = { q, options:[4 strings], correct: index, explain }
-      opts = { bg, overlayAlpha } — same background option as addContent.
       Rules: options similar length/style; correct-answer slot varies
       across questions; distractors are plausible, never "obviously
       silly"; include at least one distractor ~5 words longer than the
@@ -30,26 +29,15 @@
     addFillBlank(item | [item,...], opts?)
       item = { code (mark blanks with __id__), blanks:[{id,answer}], explain }
       opts = { label, note }
-      Auto-adds a "Reveal hint"/"Check" UI — nothing else to wire up. If an
-      item has exactly 1 blank, the hint button is disabled automatically
-      (shows "[Time to Guess]" instead) since there'd be nothing to guess.
 
-    addMatching(pairs | [set1, set2, ...], opts?)
-      pairs = [{term, def}, ...] for ONE set, OR an array of 2-3 such sets
-      to stack multiple independent matching games on the same slide.
-      opts = { label, note }
-
-  Score: every quiz/fillblank/matching item is scored automatically (100
-  correct, 50 fill-blank-with-hint-used, 0 wrong) and shown as a small
-  badge next to each slide's "Reset this quiz". To show the aggregate
-  result, put <div id="final-score"></div> ANYWHERE in the deck (typically
-  the sources/last slide) — it fills itself in automatically.
+    addMatching(pairs, opts?)
+      pairs = [{term, def}, ...]   opts = { label, note }
 
   Deck structure: title → theory sections (interleave addQuiz() checkpoints
   regularly, not just at the end) → a glossary addContent() may appear
   after ANY section/quiz where it helps (not only once at the very end) →
-  one final combined addQuiz() with 2-3 questions → sources/footer slide
-  with the #final-score placeholder (keep the "pavgerin/avgerinos8" credit).
+  one final combined addQuiz() → sources/footer (keep the
+  "pavgerin/avgerinos8" credit).
 
   Never solve the actual exercise — theory/tools only. Prose Greek, code
   comments English. Confirm the section list with the user before writing
@@ -81,7 +69,7 @@
         <span class="mobile-text">Home</span>
       </a>
       <button class="nav-btn" id="btn-prev">
-        <span class="desktop-text">←Back</span>
+        <span class="desktop-text">Back</span>
         <span class="mobile-text">←</span>
       </button>
     </div>
@@ -89,7 +77,7 @@
     <div style="display:flex; align-items:center; gap:16px;">
       <span id="slide-counter"></span>
       <button class="nav-btn" id="btn-next">
-        <span class="desktop-text">Next→</span>
+        <span class="desktop-text">Next</span>
         <span class="mobile-text">→</span>
       </button>
     </div>
@@ -282,7 +270,7 @@ wg.__wait__() // block here until all 3 goroutines have reported in`,
       note: "Σημείωση: τα ζευγάρια παρακάτω είναι τυχαία/άσχετα με το πραγματικό θέμα."
     });
 
-    // Final combined quiz — 3 questions, with a background image (opts.bg).
+    // Final combined quiz (add more questions as needed for a real deck).
     addQuiz([
       {
         q: "[Τελικό συνδυαστικό quiz — ερώτηση Α]",
@@ -294,30 +282,8 @@ wg.__wait__() // block here until all 3 goroutines have reported in`,
         ],
         correct: 1,
         explain: "[Σύντομη εξήγηση.]"
-      },
-      {
-        q: "[Τελικό συνδυαστικό quiz — ερώτηση Β]",
-        options: [
-          "[Σωστή απάντηση, εδώ στην 1η θέση]",
-          "[Λάθος αλλά εύλογη επιλογή]",
-          "[Λάθος αλλά εύλογη επιλογή]",
-          "[Λάθος αλλά εύλογη επιλογή]"
-        ],
-        correct: 0,
-        explain: "[Σύντομη εξήγηση.]"
-      },
-      {
-        q: "[Τελικό συνδυαστικό quiz — ερώτηση Γ]",
-        options: [
-          "[Λάθος αλλά εύλογη επιλογή]",
-          "[Λάθος αλλά εύλογη επιλογή]",
-          "[Λάθος αλλά εύλογη επιλογή]",
-          "[Σωστή απάντηση, εδώ στην 4η θέση]"
-        ],
-        correct: 3,
-        explain: "[Σύντομη εξήγηση.]"
       }
-    ], { bg: "./images/bg.jpg", overlayAlpha: 0.6 });
+    ]);
 
     // ── Consolidated glossary — 3 layout variants, mix as needed ───────────── ⊃
     // .glossary-table (rows) · .glossary-strip (horizontal pills) · .glossary-columns (dense list)
@@ -360,14 +326,13 @@ wg.__wait__() // block here until all 3 goroutines have reported in`,
   <a href="#" target="_blank" rel="noopener">[Πηγή 1]</a>
   <a href="#" target="_blank" rel="noopener">[Πηγή 2]</a>
 </div>
-<div id="final-score"></div>
 <p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
   Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
 </p>
 `);
 
 
-    initSlideDeck({ version: "1.0.2" });
+    initSlideDeck({ version: "1.0.1" });
   </script>
 </body>
 
