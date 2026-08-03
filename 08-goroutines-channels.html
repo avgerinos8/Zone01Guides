@@ -431,8 +431,7 @@ buffered := make(chan int, 5) <span class="cm">// a buffered channel that can ho
   <div class="card"><h3>Receive</h3><p><code>value := &lt;-ch</code> — λαμβάνει μια τιμή από το channel.</p></div>
   <div class="card"><h3>Close</h3><p><code>close(ch)</code> — δηλώνει ότι δεν θα σταλούν άλλες τιμές. Θα το αναλύσουμε στην Ενότητα 7.</p></div>
 </div>
-        `);
-        addContent(`
+
 <h2>Unbuffered vs Buffered channels — η πιο σημαντική έννοια εδώ</h2>
 <p>Αυτή είναι ίσως η πιο κρίσιμη λεπτομέρεια στα channels, και αξίζει να τη σταματήσουμε και να τη σκεφτούμε καλά:</p>
 <ul>
@@ -444,6 +443,9 @@ buffered := make(chan int, 5) <span class="cm">// a buffered channel that can ho
   είναι έτοιμη να λάβει <em>εκείνη τη στιγμή</em>.</li>
 </ul>
 
+        `);
+        addContent(`
+        
 <h2>Το operator <code>&lt;-</code></h2>
 <p>Το <code>&lt;-</code> είναι το βέλος-κλειδί της Go για channels, και έχει <strong>δύο</strong> εντελώς διαφορετικές χρήσεις
 ανάλογα με τη θέση του:</p>
