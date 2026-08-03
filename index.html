@@ -4,14 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avgerinos8 | Developer Dashboard</title>
+    <title>Avgerinos8 · Developer Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
     <style>
-        /* Premium Minimalist Developer Theme */
+        /* ——— premium minimalist developer theme ——— */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -21,19 +19,15 @@
         body {
             font-family: 'Fira Code', monospace;
             background-color: #0d0e12;
-            /* Calm, ultra-dark slate */
             color: #e2e8f0;
-            /* Soft off-white for high readability */
             max-width: 850px;
             margin: 60px auto;
             padding: 0 24px;
             line-height: 1.5;
         }
 
-        /* Minimal Header Grid */
         .terminal-header {
             border-bottom: 1px solid #222530;
-            /* Subdued divider */
             padding-bottom: 16px;
             margin-bottom: 32px;
         }
@@ -41,18 +35,15 @@
         .status-line {
             font-size: 0.85rem;
             color: #718096;
-            /* Muted gray for secondary info */
             text-align: center;
             letter-spacing: 0.5px;
         }
 
-        /* Specific style to make selected text cyan */
         .cyan-text {
             color: #00ffff;
             font-weight: 500;
         }
 
-        /* Responsive Center for ASCII Logo */
         .ascii-container {
             display: flex;
             justify-content: center;
@@ -61,12 +52,10 @@
             margin-bottom: 32px;
         }
 
-        /* Clean ASCII Art - Completely static */
         .ascii-art {
             margin: 0 auto;
             font-size: 8px;
             color: #6366f1;
-            /* Premium Indigo Accent */
             line-height: 1.2;
             white-space: pre;
             font-family: 'Fira Code', monospace;
@@ -74,7 +63,6 @@
 
         .prompt {
             color: #a855f7;
-            /* Subtle Purple for command path */
             font-weight: 600;
         }
 
@@ -87,7 +75,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Structured List */
         ul {
             list-style-type: none;
         }
@@ -96,7 +83,6 @@
             margin-bottom: 14px;
         }
 
-        /* CLI Action Buttons - Minimalist Base Style */
         a {
             display: flex;
             justify-content: space-between;
@@ -105,28 +91,19 @@
             text-decoration: none;
             padding: 16px 20px;
             background: #141722;
-            /* Slightly lighter card background */
             border: 1px solid #222530;
             border-radius: 8px;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            /* Snappy animation curve */
         }
 
-        /* Cyberpunk Hover Button Effect (Slide + Cyan Glow) */
         a:hover {
             color: #00ffff;
-            /* Switch text to Neon Cyan */
             background: rgba(0, 255, 255, 0.1);
-            /* Subtle cyan fill */
             border-color: #00ffff;
-            /* Neon Cyan border */
             box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.1);
-            /* Cyberpunk glow */
             transform: translateX(6px);
-            /* Smooth 6px horizontal slide */
         }
 
-        /* Minimalist Tech Tags */
         .tag {
             color: #6366f1;
             font-size: 0.75rem;
@@ -138,7 +115,6 @@
             transition: all 0.25s ease;
         }
 
-        /* Tag adaptation on button hover */
         a:hover .tag {
             color: #00ffff;
             background: rgba(0, 255, 255, 0.05);
@@ -146,22 +122,46 @@
             text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
         }
 
-        /* Blinking Terminal Cursor */
+        /* ——— blinking cursor ——— */
         .cursor {
             display: inline-block;
             background-color: #6366f1;
             width: 8px;
             height: 15px;
             animation: blink 1s step-end infinite;
-            /* Re-enabled the infinite blinking animation */
             vertical-align: middle;
             margin-left: 6px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .cursor:hover {
+            background: #00ffff;
+            box-shadow: 0 0 12px #00ffff;
         }
 
         @keyframes blink {
             50% {
                 opacity: 0;
             }
+        }
+
+        /* ——— transition for the module list ——— */
+        .module-list {
+            transition: opacity 0.2s ease;
+        }
+
+        /* μικρή βελτίωση για τα παλιά μαθήματα */
+        .old-lesson .tag {
+            color: #f472b6;
+            border-color: rgba(244, 114, 182, 0.3);
+            background: rgba(244, 114, 182, 0.08);
+        }
+
+        .old-lesson a:hover .tag {
+            color: #00ffff;
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.05);
         }
     </style>
 </head>
@@ -175,7 +175,6 @@
         </div>
     </header>
 
-    <!-- Balanced & Centered Header Section -->
     <div class="ascii-container">
         <pre class="ascii-art">
  8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                    
@@ -188,10 +187,11 @@
  d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888             "Y8888P88   "Y88888  888   "Y88888   "Y8888    88888P'  </pre>
     </div>
 
-    <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor"></span></p>
-    <p class="section-title">SELECT TARGET MODULE FOR DEPLOYMENT:</p>
+    <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor" id="secretTrigger"></span></p>
+    <p class="section-title" id="sectionTitle">SELECT TARGET MODULE FOR DEPLOYMENT:</p>
 
-    <ul>
+    <!-- ΚΥΡΙΑ ΛΙΣΤΑ ΜΑΘΗΜΑΤΩΝ (αντικαθίσταται) -->
+    <ul class="module-list" id="mainModuleList">
         <li>
             <a href="07-Docker.html">
                 <span>&gt; ./07_dockerize</span>
@@ -204,19 +204,76 @@
                 <span class="tag">[CONCURRENCY]</span>
             </a>
         </li>
-        <!-- <li>
+    </ul>
+
+    <!-- ΠΑΛΙΑ ΜΑΘΗΜΑΤΑ (κρυφά, θα εμφανιστούν με το κλικ) -->
+    <ul class="module-list old-lesson" id="oldModuleList" style="display: none;">
+        <li>
             <a href="01-go_networking_theory.html">
-                <span>&gt; ./09_netcat_networking_goroutines</span>
+                <span>&gt; ./01_go_networking_theory</span>
                 <span class="tag">[NETWORKING] + [CONCURRENCY]</span>
             </a>
         </li>
         <li>
-            <a href="03-SQL-go-database-notes.html">
-                <span>&gt; ./10_queries_database_sql_go</span>
+            <a href="_oldUnused/03-SQL-go-database-notes.html">
+                <span>&gt; ./03_SQL_go_database_notes</span>
                 <span class="tag">[DATABASE]</span>
             </a>
-        </li>-->
+        </li>
+        <li>
+            <a href="_oldUnused/03-SQL-go-database-notes.html">
+                <span>&gt; ./OLD_SQL-go-database-notes</span>
+                <span class="tag">[DATABASE]</span>
+            </a>
+        </li>
+        <li>
+            <a href="_oldUnused/00-Docker.html">
+                <span>&gt; ./OLD_Docker</span>
+                <span class="tag">[DOCKER]</span>
+            </a>
+        </li>
     </ul>
+
+    <script>
+        (function () {
+            const trigger = document.getElementById('secretTrigger');
+            const mainList = document.getElementById('mainModuleList');
+            const oldList = document.getElementById('oldModuleList');
+            const sectionTitle = document.getElementById('sectionTitle');
+
+            let isOld = false;   // κατάσταση: false = κύρια, true = παλιά
+
+            function toggleLessons() {
+                if (isOld) {
+                    // επιστροφή στα κύρια μαθήματα
+                    mainList.style.display = '';
+                    oldList.style.display = 'none';
+                    sectionTitle.textContent = 'SELECT TARGET MODULE FOR DEPLOYMENT:';
+                    isOld = false;
+                } else {
+                    // εμφάνιση παλιών μαθημάτων
+                    mainList.style.display = 'none';
+                    oldList.style.display = '';
+                    sectionTitle.textContent = 'SECRET OLD LESSONS (legacy)';
+                    isOld = true;
+                }
+            }
+
+            // το cursor κάνει εναλλαγή
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleLessons();
+            });
+
+            // προαιρετικά: αν ο χρήστης πατήσει ESC, επιστρέφουμε στα κύρια
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && isOld) {
+                    toggleLessons();   // γυρίζει πίσω
+                }
+            });
+
+        })();
+    </script>
 
 </body>
 
