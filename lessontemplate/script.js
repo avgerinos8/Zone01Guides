@@ -785,6 +785,7 @@ function renderSlide(el, slide, idx) {
 
   if (slide.type === "fillblank") {
     el.innerHTML = "";
+    applyBackground(el, slide.opts);
     const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Fill in the Blank", slide.opts);
     const storeKeys = slide.data.map((_, itemIdx) => idx + "_fb_" + itemIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
@@ -813,6 +814,7 @@ function renderSlide(el, slide, idx) {
 
   if (slide.type === "matching") {
     el.innerHTML = "";
+    applyBackground(el, slide.opts);
     const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Matching Pairs", slide.opts);
     const sets = slide.data; // array of pair-arrays, 1 or more sets per slide
     const storeKeys = sets.map((_, setIdx) => idx + "_match_" + setIdx);

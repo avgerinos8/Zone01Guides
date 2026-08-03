@@ -89,7 +89,7 @@
 (π.χ. όταν περιμένουμε το αποτέλεσμά τους). Ένα χρήσιμο νοητικό μοντέλο είναι να φαντάζεσαι το πρόγραμμα σαν <strong>ένα σύνολο από
 «λωρίδες χρόνου»</strong> που τρέχουν παράλληλα σε ένα διάγραμμα, και το σημείο όπου μία λωρίδα περιμένει μια άλλη (π.χ. μέσω ενός
 channel) είναι ένα σημείο συγχρονισμού — μια «γέφυρα» ανάμεσα στις λωρίδες.</p>
-<div class="callout good">
+<div class="callout">
   <span class="tag">Πρακτική συμβουλή σχεδίασης</span>
   Όταν σχεδιάζεις concurrent κώδικα, ζωγράφισε (έστω νοητικά ή σε χαρτί) ποιες goroutines υπάρχουν, τι περιμένει η καθεμία, και
   <em>ποιος στέλνει σε ποιον</em>. Αν δεν μπορείς να το σχεδιάσεις καθαρά σε ένα διάγραμμα, πιθανότατα δεν το έχεις καταλάβει ακόμα
@@ -164,6 +164,20 @@ memory; instead, share memory by communicating.»</em> Δηλαδή: αντί ν
             explain: "Το concurrency είναι θέμα δομής του προγράμματος — υπάρχει ανεξάρτητα από το hardware. Το parallelism απαιτεί πραγματικά πολλαπλούς πυρήνες να εκτελούν κώδικα την ίδια χρονική στιγμή. Με έναν πυρήνα, ο scheduler κάνει time-slicing ανάμεσα στις goroutines — αυτές είναι concurrent, όχι parallel."
         });
 
+        addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 1</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">Concurrency</span><span class="gc-def">Ιδιότητα σχεδιασμού όπου το πρόγραμμα είναι δομημένο ως σύνολο ανεξάρτητων εργασιών που μπορούν να εκτελεστούν ταυτόχρονα</span></div>
+    <div class="gc-line"><span class="gc-term">Parallelism</span><span class="gc-def">Ιδιότητα εκτέλεσης όπου πολλαπλές εργασίες τρέχουν κυριολεκτικά την ίδια στιγμή σε διαφορετικούς πυρήνες CPU</span></div>
+    <div class="gc-line"><span class="gc-term">Sequential Programming</span><span class="gc-def">Παραδοσιακό μοντέλο όπου οι εντολές εκτελούνται με σειρά, μία μετά την άλλη</span></div>
+    <div class="gc-line"><span class="gc-term">I/O-bound</span><span class="gc-def">Εργασίες που περνούν τον περισσότερο χρόνο τους περιμένοντας είσοδο/έξοδο (δίκτυο, δίσκος, database)</span></div>
+    <div class="gc-line"><span class="gc-term">CPU-bound</span><span class="gc-def">Εργασίες που περνούν τον περισσότερο χρόνο τους σε υπολογισμούς εντός της CPU</span></div>
+    <div class="gc-line"><span class="gc-term">GOMAXPROCS</span><span class="gc-def">Μεταβλητή που καθορίζει πόσοι πυρήνες CPU χρησιμοποιούνται από τον Go runtime scheduler</span></div>
+    <div class="gc-line"><span class="gc-term">Scheduler</span><span class="gc-def">Το κομμάτι του Go runtime που αποφασίζει πότε και σε ποιον πυρήνα θα τρέξει κάθε goroutine</span></div>
+    <div class="gc-line"><span class="gc-term">Time-slicing</span><span class="gc-def">Τεχνική όπου ένας πυρήνας εναλλάσσεται γρήγορα ανάμεσα σε πολλαπλές εργασίες, δίνοντας την ψευδαίσθηση ταυτοχρονίας</span></div> </div>
+`);
+
         // ── ΕΝΟΤΗΤΑ 2 — go keyword & anonymous functions ────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
@@ -206,7 +220,9 @@ func main() {
   περιμένεις τις goroutines σου (θα δούμε πώς με <code>sync.WaitGroup</code> και channels), ίσως το πρόγραμμα τελειώσει πριν
   προλάβουν καν να τρέξουν.
 </div>
-
+        `);
+        addContent(`
+<div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
 <h2>Anonymous functions</h2>
 <p>Μια <strong>ανώνυμη συνάρτηση</strong> (anonymous function) είναι μια συνάρτηση χωρίς όνομα, που ορίζεται «επί τόπου», εκεί
 όπου τη χρειαζόμαστε — συχνά ακριβώς εκεί όπου τη χρησιμοποιούμε μία φορά και δεν χρειάζεται ξανά αλλού στο πρόγραμμα.</p>
@@ -232,7 +248,9 @@ func(name string) {
 <p>Στη ουσία, <code>func(){...}()</code> σημαίνει: «όρισε αυτή τη συνάρτηση, και κάλεσέ την αμέσως, εδώ, τώρα». Αυτό το pattern
 λέγεται συχνά <strong>IIFE</strong> (Immediately Invoked Function Expression) — όρος που έρχεται και από άλλες γλώσσες όπως η
 JavaScript, όπου είναι πολύ κοινός.</p>
-
+        `);
+        addContent(`
+<div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
 <h2>Ο συνδυασμός: <code>go func(){...}()</code></h2>
 <p>Τώρα βάζουμε τα δύο κομμάτια μαζί. Αντί να ορίσουμε μια ξεχωριστή, ονομασμένη συνάρτηση για να τη στείλουμε με <code>go</code>,
 ορίζουμε μια ανώνυμη συνάρτηση <strong>και</strong> τη στέλνουμε να τρέξει ως goroutine, όλα σε μία γραμμή:</p>
@@ -264,35 +282,26 @@ JavaScript, όπου είναι πολύ κοινός.</p>
   Περνώντας το <code>i</code> ως <strong>παράμετρο</strong>, «παγώνουμε» την τρέχουσα τιμή του τη στιγμή που ξεκινάει η goroutine —
   κάθε goroutine παίρνει το δικό της, ανεξάρτητο αντίγραφο. Αυτό είναι μια πολύ κλασική, πολύ συχνή παγίδα για αρχάριους.
 </div>
-
+        `);
+        addContent(`
+<div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
 <h2>Deadlock — μια πρώτη γεύση</h2>
-<p>Πριν προχωρήσουμε στα channels, αξίζει να δούμε νωρίς τι σημαίνει <strong>deadlock</strong>, γιατί θα το ξανασυναντήσουμε
-συνέχεια. Deadlock συμβαίνει όταν όλες οι ενεργές goroutines ενός προγράμματος έχουν «κολλήσει» περιμένοντας η μία την άλλη — και
-καμία δεν μπορεί να προχωρήσει. Ο Go runtime είναι αρκετά έξυπνος ώστε να το ανιχνεύει σε πολλές περιπτώσεις και να τερματίζει
-το πρόγραμμα με το χαρακτηριστικό μήνυμα:</p>
+<p class="lede">Πριν προχωρήσουμε στα channels, αξίζει να δούμε νωρίς τι σημαίνει <strong>deadlock</strong>, γιατί θα το ξανασυναντήσουμε συνέχεια. Είναι ένα από τα πιο συχνά λάθη σε concurrent προγράμματα, και η Go έχει έναν από τους καλύτερους τρόπους ανίχνευσής του.</p>
 
-<pre><code>fatal error: all goroutines are asleep - deadlock!
-</code></pre>
+<h2>Τι είναι το Deadlock</h2>
+<p>Deadlock συμβαίνει όταν <strong>όλες</strong> οι ενεργές goroutines ενός προγράμματος έχουν «κολλήσει» περιμένοντας η μία την άλλη — και καμία δεν μπορεί να προχωρήσει.
+Είναι σαν πέντε άτομα σε ένα δωμάτιο που το καθένα περιμένει να του δώσει κάτι το επόμενο, αλλά κανένας δεν κάνει το πρώτο βήμα.</p>
+
+<div class="callout">
+  <span class="tag">Ο Go runtime σε προστατεύει</span>
+  Ο Go runtime είναι αρκετά έξυπνος ώστε να ανιχνεύει deadlocks σε πολλές περιπτώσεις και να τερματίζει το πρόγραμμα με το χαρακτηριστικό μήνυμα:
+  <pre style="margin-top:8px; background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:6px; font-size:14px;">fatal error: all goroutines are asleep - deadlock!</pre>
+  Αυτό είναι <strong>πολύ καλύτερο</strong> από το να μείνει το πρόγραμμα κρεμασμένο χωρίς καμία ένδειξη — κάτι που συμβαίνει σε άλλες γλώσσες.
+</div>
 
 <p>Θα δούμε ένα συγκεκριμένο παράδειγμα deadlock αφού μάθουμε τι είναι τα channels, γιατί το πιο κλασικό deadlock συμβαίνει
 ακριβώς εκεί: όταν μια goroutine περιμένει να λάβει (ή να στείλει) σε ένα channel, αλλά καμία άλλη goroutine δεν πρόκειται ποτέ
-να κάνει το αντίστοιχο send (ή receive) στο ίδιο channel.</p>
-`);
-
-        addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
-<h2>Όροι που μόλις είδαμε</h2>
-<div class="glossary-columns">
-  <div class="gc-line"><span class="gc-term">go</span><span class="gc-def">keyword που εκκινεί μια νέα goroutine χωρίς να περιμένει το αποτέλεσμα</span></div>
-  <div class="gc-line"><span class="gc-term">goroutine</span><span class="gc-def">ελαφριά, ανεξάρτητη γραμμή εκτέλεσης διαχειριζόμενη από τον Go runtime</span></div>
-  <div class="gc-line"><span class="gc-term">anonymous function</span><span class="gc-def">συνάρτηση χωρίς όνομα, ορισμένη επιτόπου</span></div>
-  <div class="gc-line"><span class="gc-term">IIFE (Immediately Invoked Function Expression)</span><span class="gc-def">Μια ανώνυμη συνάρτηση που ορίζεται και εκτελείται επί τόπου, π.χ. func(){...}()</span></div>
-  <div class="gc-line"><span class="gc-term">main goroutine</span><span class="gc-def">η κύρια goroutine· όταν τελειώνει, τερματίζεται όλο το πρόγραμμα</span></div>
-  <div class="gc-line"><span class="gc-term">closure</span><span class="gc-def">συνάρτηση που έχει πρόσβαση στις μεταβλητές του περιβάλλοντός της</span></div>
-  <div class="gc-line"><span class="gc-term">explicit argument</span><span class="gc-def">τιμή που περνιέται ρητά σε μια goroutine ώστε να "παγώσει" τη στιγμή της κλήσης</span></div>
-  <div class="gc-line"><span class="gc-term">deadlock</span><span class="gc-def">όλες οι goroutines έχουν κολλήσει περιμένοντας η μία την άλλη</span></div>
-</div>
-`);
+να κάνει το αντίστοιχο send (ή receive) στο ίδιο channel.</p>`);
 
         // ── Fill in the blank — απλό, εστιασμένο στο go + anonymous functions ── ⊃
         addFillBlank([
@@ -372,6 +381,21 @@ func() {
         ]);
 
 
+        addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">go</span><span class="gc-def">keyword που εκκινεί μια νέα goroutine χωρίς να περιμένει το αποτέλεσμα</span></div>
+  <div class="gc-line"><span class="gc-term">goroutine</span><span class="gc-def">ελαφριά, ανεξάρτητη γραμμή εκτέλεσης διαχειριζόμενη από τον Go runtime</span></div>
+  <div class="gc-line"><span class="gc-term">anonymous function</span><span class="gc-def">συνάρτηση χωρίς όνομα, ορισμένη επιτόπου</span></div>
+  <div class="gc-line"><span class="gc-term">IIFE (Immediately Invoked Function Expression)</span><span class="gc-def">Μια ανώνυμη συνάρτηση που ορίζεται και εκτελείται επί τόπου, π.χ. func(){...}()</span></div>
+  <div class="gc-line"><span class="gc-term">main goroutine</span><span class="gc-def">η κύρια goroutine· όταν τελειώνει, τερματίζεται όλο το πρόγραμμα</span></div>
+  <div class="gc-line"><span class="gc-term">closure</span><span class="gc-def">συνάρτηση που έχει πρόσβαση στις μεταβλητές του περιβάλλοντός της</span></div>
+  <div class="gc-line"><span class="gc-term">explicit argument</span><span class="gc-def">τιμή που περνιέται ρητά σε μια goroutine ώστε να "παγώσει" τη στιγμή της κλήσης</span></div>
+  <div class="gc-line"><span class="gc-term">deadlock</span><span class="gc-def">όλες οι goroutines έχουν κολλήσει περιμένοντας η μία την άλλη</span></div>
+</div>
+        `);
+
 
         // ── ΕΝΟΤΗΤΑ 3 — Channels βασικά ─────────────────────────────────────────── ⊃
         addContent(`
@@ -407,7 +431,8 @@ buffered := make(chan int, 5) <span class="cm">// a buffered channel that can ho
   <div class="card"><h3>Receive</h3><p><code>value := &lt;-ch</code> — λαμβάνει μια τιμή από το channel.</p></div>
   <div class="card"><h3>Close</h3><p><code>close(ch)</code> — δηλώνει ότι δεν θα σταλούν άλλες τιμές. Θα το αναλύσουμε στην Ενότητα 7.</p></div>
 </div>
-
+        `);
+        addContent(`
 <h2>Unbuffered vs Buffered channels — η πιο σημαντική έννοια εδώ</h2>
 <p>Αυτή είναι ίσως η πιο κρίσιμη λεπτομέρεια στα channels, και αξίζει να τη σταματήσουμε και να τη σκεφτούμε καλά:</p>
 <ul>
@@ -490,6 +515,25 @@ fmt.Println(cap(ch)) <span class="cm">// 3 — total buffer capacity, unchanged<
             correct: 0,
             explain: "Το unbuffered channel απαιτεί «χειραψία» — sender και receiver πρέπει να είναι έτοιμοι ταυτόχρονα. Το buffered channel επιτρέπει στο send να «αποθέσει» την τιμή στον buffer και να προχωρήσει αμέσως, όσο υπάρχει ελεύθερος χώρος, χωρίς να χρειάζεται άμεσος receiver."
         });
+
+        addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">channel</span><span class="gc-def">Type-safe αγωγός επικοινωνίας ανάμεσα σε goroutines, με σύνταξη chan T (όπου T ο τύπος που μεταφέρει το channel — π.χ. chan int)</span></div>
+    <div class="gc-line"><span class="gc-term">unbuffered channel</span><span class="gc-def">Channel χωρίς buffer· το send μπλοκάρει μέχρι να γίνει ταυτόχρονο receive (χειραψία)</span></div>
+    <div class="gc-line"><span class="gc-term">buffered channel</span><span class="gc-def">Channel με buffer χωρητικότητας N· το send μπλοκάρει μόνο όταν ο buffer είναι γεμάτος</span></div>
+    <div class="gc-line"><span class="gc-term">send operation</span><span class="gc-def">Στέλνει μια τιμή σε ένα channel: ch <- value</span></div>
+    <div class="gc-line"><span class="gc-term">receive operation</span><span class="gc-def">Λαμβάνει μια τιμή από ένα channel: value := <-ch</span></div>
+    <div class="gc-line"><span class="gc-term">close()</span><span class="gc-def">Κλείνει ένα channel, δηλώνοντας ότι δεν θα σταλούν άλλες τιμές</span></div>
+    <div class="gc-line"><span class="gc-term">send-only channel</span><span class="gc-def">Τύπος channel που επιτρέπει μόνο send: chan<- T</span></div>
+    <div class="gc-line"><span class="gc-term">receive-only channel</span><span class="gc-def">Τύπος channel που επιτρέπει μόνο receive: <-chan T</span></div>
+    <div class="gc-line"><span class="gc-term">make(chan T)</span><span class="gc-def">Συνάρτηση δημιουργίας (αρχικοποίησης) ενός νέου channel</span></div>
+    <div class="gc-line"><span class="gc-term">cap(ch)</span><span class="gc-def">Επιστρέφει τη συνολική χωρητικότητα του buffer ενός channel</span></div>
+    <div class="gc-line"><span class="gc-term">len(ch)</span><span class="gc-def">Επιστρέφει πόσες τιμές βρίσκονται αυτή τη στιγμή στον buffer ενός channel</span></div>
+    <div class="gc-line"><span class="gc-term">nil channel</span><span class="gc-def">Ένα μη-αρχικοποιημένο channel (zero value), που μπλοκάρει για πάντα σε κάθε send ή receive</span></div> </div>
+</div>
+        `);
 
         // ── ΕΝΟΤΗΤΑ 4 — select, for-range, defer ────────────────────────────────── ⊃
         addContent(`
@@ -595,6 +639,21 @@ case result := <-slowServer:
             explain: "Χωρίς default case, το select συμπεριφέρεται σαν ένα «πολλαπλό» receive/send — μπλοκάρει μέχρι τουλάχιστον ένα case να γίνει εφικτό. Το default υπάρχει ακριβώς για να αποφύγουμε αυτό το μπλοκάρισμα, όταν θέλουμε μια μη-αποκλειστική (non-blocking) εκδοχή."
         });
 
+        addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 4</div>
+<h2>Όροι που μόλις είδαμε</h2>
+    <div class="glossary-columns">
+        <div class="gc-line"><span class="gc-term">select</span><span class="gc-def">Δομή ελέγχου που μπλοκάρει μέχρι ένα από τα cases (send/receive) να είναι έτοιμο να εκτελεστεί</span></div>
+        <div class="gc-line"><span class="gc-term">select case</span><span class="gc-def">Μια πράξη send ή receive μέσα σε select, που εκτελείται όταν το αντίστοιχο channel είναι έτοιμο</span></div>
+        <div class="gc-line"><span class="gc-term">default case</span><span class="gc-def">Case σε select που εκτελείται αμέσως αν κανένα άλλο case δεν είναι έτοιμο — non-blocking select</span></div>
+        <div class="gc-line"><span class="gc-term">for-range over channel</span><span class="gc-def">Βρόχος που λαμβάνει τιμές από channel μέχρι αυτό να κλείσει</span></div>
+        <div class="gc-line"><span class="gc-term">defer</span><span class="gc-def">Λέξη-κλειδί που αναβάλλει την εκτέλεση μιας συνάρτησης μέχρι την έξοδο της περιβάλλουσας συνάρτησης</span></div>
+        <div class="gc-line"><span class="gc-term">LIFO</span><span class="gc-def">Last In, First Out — η σειρά εκτέλεσης των deferred κλήσεων (η τελευταία που δηλώθηκε εκτελείται πρώτη)</span></div>
+        <div class="gc-line"><span class="gc-term">non-blocking check</span><span class="gc-def">Έλεγχος σε channel που δεν μπλοκάρει, χρησιμοποιώντας select με default case</span></div>
+        <div class="gc-line"><span class="gc-term">drained channel</span><span class="gc-def">Ένα κλειστό channel από το οποίο έχουν ληφθεί όλες οι τιμές που είχαν μείνει</span></div>
+    </div>
+        `);
+
         // ── ΕΝΟΤΗΤΑ 5 — Synchronization ──────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 5 / 9 — Concurrency Synchronization</div>
@@ -610,7 +669,7 @@ goroutines να τελειώσουν».</p>
   <div class="card"><h3><code>wg.Wait()</code></h3><p>Μπλοκάρει μέχρι ο μετρητής να φτάσει στο 0 — «περίμενε να τελειώσουν όλες». Καλείται από τη goroutine που θέλει να περιμένει (συνήθως το <code>main</code>).</p></div>
 </div>
 
-<pre><code>var wg sync.WaitGroup
+<pre><code class="lang-go">var wg sync.WaitGroup
 
 for i := 0; i < 3; i++ {
     wg.Add(1) <span class="cm">// register one goroutine we expect to wait for</span>
@@ -630,49 +689,61 @@ fmt.Println("all workers finished")
   <strong>όχι μέσα</strong> σε αυτήν. Αν το βάλεις μέσα στη goroutine, υπάρχει race condition: το <code>wg.Wait()</code> μπορεί
   να προλάβει να τρέξει και να δει μετρητή 0 <strong>πριν</strong> προλάβει η goroutine να καλέσει το δικό της <code>Add</code>,
   με αποτέλεσμα το <code>Wait()</code> να επιστρέψει πρόωρα, χωρίς να έχει περιμένει τίποτα.
-</div>
+</div>`);
 
-<h1>Το <code>sync.Mutex</code></h1>
-<p>Θυμήσου το μότο: <em>«share memory by communicating»</em> — προτιμάμε channels. Όμως, υπάρχουν περιπτώσεις όπου το πιο απλό,
-πιο κατανοητό εργαλείο είναι απλά να «κλειδώσουμε» μια κοινόχρηστη μεταβλητή όσο κάποιος τη χρησιμοποιεί. Εκεί μπαίνει το
-<strong>Mutex</strong> (mutual exclusion lock).</p>
+        addContent(`
+<div class="eyebrow">Ενότητα 5 / 9 — Concurrency Synchronization</div>
+<h1>sync.Mutex — Αμοιβαίος Αποκλεισμός</h1>
+<p class="lede">Το <code>sync.Mutex</code> (mutual exclusion lock) είναι το βασικό εργαλείο για την προστασία κοινόχρηστων δεδομένων από ταυτόχρονη τροποποίηση. Είναι η υλοποίηση της ιδέας «μόνο μία goroutine κάθε φορά μπορεί να βρίσκεται εδώ».</p>
 
-<h2>Το πρόβλημα που λύνει: race condition</h2>
-<pre><code>var counter int
+<h2>Το πρόβλημα: Race Condition</h2>
+<p>Όταν πολλαπλές goroutines διαβάζουν και γράφουν την ίδια μεταβλητή χωρίς συγχρονισμό, το αποτέλεσμα είναι απρόβλεπτο. Αυτό ονομάζεται <strong>race condition</strong> (συνθήκη ανταγωνισμού).</p>
+<pre><code class="lang-go">var counter int
 
-<span class="cm">// WITHOUT protection — multiple goroutines increment counter at the same time</span>
+// WITHOUT protection — multiple goroutines increment counter at the same time
 for i := 0; i < 1000; i++ {
     go func() {
-        counter++ <span class="cm">// NOT atomic! read-modify-write can interleave between goroutines</span>
+        counter++ // NOT atomic! read-modify-write can interleave between goroutines
     }()
 }
-<span class="cm">// final value of counter is unpredictable — could be less than 1000</span>
+// final value of counter is unpredictable — could be less than 1000
 </code></pre>
-<p>Το <code>counter++</code> φαίνεται σαν μία πράξη, αλλά στην πραγματικότητα είναι τρεις: διάβασε την τρέχουσα τιμή, πρόσθεσε 1,
-γράψε την πίσω. Αν δύο goroutines κάνουν αυτά τα τρία βήματα «στριμωγμένα» μεταξύ τους, μπορεί και οι δύο να διαβάσουν την ίδια
-αρχική τιμή, και η μία αύξηση να «χαθεί».</p>
+<p>Το <code>counter++</code> φαίνεται σαν μία πράξη, αλλά στην πραγματικότητα είναι τρεις: διάβασε την τιμή, πρόσθεσε 1, γράψε την πίσω. Αν δύο goroutines κάνουν αυτά τα τρία βήματα με μπερδεμένη σειρά, η μία αύξηση μπορεί να «χαθεί».</p>
 
-<h2>Η λύση</h2>
-<pre><code>var counter int
+<h2>Η λύση με Mutex</h2>
+<p>Το Mutex λειτουργεί σαν κλειδαριά: μόνο μία goroutine μπορεί να την κρατάει κάθε στιγμή.</p>
+<pre><code class="lang-go">var counter int
 var mu sync.Mutex
 
 for i := 0; i < 1000; i++ {
     go func() {
-        mu.Lock()         <span class="cm">// only one goroutine can hold the lock at a time</span>
-        counter++          <span class="cm">// now safe: no other goroutine can be here simultaneously</span>
-        mu.Unlock()        <span class="cm">// release the lock so others can proceed</span>
+        mu.Lock()   // acquire the lock — blocks if another goroutine already holds it
+        counter++    // critical section — only one goroutine can be here at a time
+        mu.Unlock()  // release the lock — other goroutines can now acquire it
     }()
 }
 </code></pre>
-<p>Το <code>Lock()</code> μπλοκάρει αν κάποια άλλη goroutine κατέχει ήδη το κλείδωμα, μέχρι να το απελευθερώσει με
-<code>Unlock()</code>. Έτσι εξασφαλίζεται ότι μόνο <strong>μία</strong> goroutine κάθε φορά μπορεί να βρίσκεται ανάμεσα στο
-<code>Lock()</code> και το <code>Unlock()</code> — αυτό το κομμάτι λέγεται <strong>critical section</strong>.</p>
 
 <div class="callout good">
   <span class="tag">Best practice</span>
-  Σχεδόν πάντα, γράφε <code>defer mu.Unlock()</code> αμέσως μετά το <code>mu.Lock()</code>. Έτσι το κλείδωμα εγγυημένα
-  απελευθερώνεται όταν η συνάρτηση επιστρέψει — ό,τι κι αν συμβεί ενδιάμεσα (πρόωρο <code>return</code>, panic, κλπ). Αν ξεχάσεις
-  ένα <code>Unlock()</code> σε κάποιο μονοπάτι εκτέλεσης, το πρόγραμμα μπορεί να μπλοκάρει μόνιμα — deadlock.
+  Σχεδόν πάντα, γράφε <code>defer mu.Unlock()</code> αμέσως μετά το <code>mu.Lock()</code>. Έτσι το κλείδωμα εγγυημένα απελευθερώνεται όταν η συνάρτηση επιστρέψει — ό,τι κι αν συμβεί ενδιάμεσα (πρόωρο <code>return</code>, panic, κλπ).
+</div>
+
+<pre><code class="lang-go">func updateSafely(key string, val int) {
+    mu.Lock()
+    defer mu.Unlock() // ensures unlock even on panic or early return
+
+    // critical section — safe to read/modify shared state
+    sharedMap[key] = val
+}
+</code></pre>
+
+<h2>Κρίσιμο Τμήμα (Critical Section)</h2>
+<p>Το κομμάτι κώδικα ανάμεσα στο <code>Lock()</code> και το <code>Unlock()</code> ονομάζεται <strong>critical section</strong>. Πρέπει να είναι όσο το δυνατόν μικρότερο και ταχύτερο — αν κρατάς το lock ενώ κάνεις I/O ή χρονοβόρες πράξεις, όλες οι άλλες goroutines περιμένουν άδικα.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή</span>
+  Το Mutex <strong>δεν</strong> είναι reentrant — αν η ίδια goroutine προσπαθήσει να ξαναπάρει το ίδιο lock (π.χ. μέσω recursive κλήσης), θα μπλοκάρει για πάντα (deadlock). Η Go δεν υποστηρίζει reentrant locks.
 </div>
 
 <h2>Δύο καταστάσεις: Running και Blocked</h2>
@@ -691,6 +762,299 @@ for i := 0; i < 1000; i++ {
   <code>fatal error: all goroutines are asleep - deadlock!</code>
 </div>
 `);
+
+        addQuiz([
+            {
+                q: "Ποιο είναι το κύριο πρόβλημα που λύνει το sync.Mutex σε concurrent κώδικα;",
+                options: [
+                    "Εξασφαλίζει ότι μόνο μία goroutine κάθε φορά μπορεί να εκτελέσει ένα προστατευμένο τμήμα κώδικα, αποτρέποντας race conditions σε κοινόχρηστα δεδομένα",
+                    "Επιταχύνει την εκτέλεση των goroutines επιτρέποντας ταυτόχρονη εγγραφή σε μεταβλητές χωρίς συγκρούσεις",
+                    "Αντικαθιστά πλήρως τα channels ως τον μοναδικό μηχανισμό επικοινωνίας μεταξύ goroutines",
+                    "Μετατρέπει αυτόματα όλες τις μεταβλητές σε ασφαλείς για ταυτόχρονη χρήση χωρίς κανένα επιπλέον κόστος σε απόδοση"
+                ],
+                correct: 0,
+                explain: "Το sync.Mutex παρέχει αμοιβαίο αποκλεισμό (mutual exclusion) — εξασφαλίζει ότι ένα προστατευμένο τμήμα κώδικα (critical section) εκτελείται από μία μόνο goroutine κάθε στιγμή, προστατεύοντας τα κοινόχρηστα δεδομένα από data races."
+            },
+            {
+                q: "Γιατί θεωρείται κακή πρακτική να κάνεις I/O ή χρονοβόρες πράξεις μέσα στο critical section ενός Mutex;",
+                options: [
+                    "Γιατί όσο κρατάς το lock, όλες οι υπόλοιπες goroutines που χρειάζονται το ίδιο lock μπλοκάρουν άσκοπα, σπαταλώντας τα πλεονεκτήματα του concurrency",
+                    "Γιατί το Mutex απαγορεύει εξ ορισμού οποιαδήποτε κλήση σε συναρτήσεις του πακέτου fmt ή net/http",
+                    "Γιατί το I/O μέσα σε critical section προκαλεί πάντα panic στον runtime της Go",
+                    "Γιατί το lock απελευθερώνεται αυτόματα μετά από 1 δευτερόλεπτο, οπότε η πράξη θα διακοπεί απότομα αν αργήσει περισσότερο"
+                ],
+                correct: 0,
+                explain: "Το critical section πρέπει να είναι όσο το δυνατόν συντομότερο. Αν κρατάς το lock ενώ περιμένεις δίκτυο, δίσκο ή κάνεις βαριά επεξεργασία, όλες οι άλλες goroutines που χρειάζονται το ίδιο lock μπλοκάρουν — αναιρώντας το όφελος του concurrency."
+            }
+        ]);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 5 / 9 — Concurrency Synchronization</div>
+<h1>sync.RWMutex — Read/Write Mutex</h1>
+<p class="lede">Το <code>sync.RWMutex</code> είναι μια εξειδικευμένη παραλλαγή του Mutex που διαχωρίζει το διάβασμα από το γράψιμο. Επιτρέπει σε πολλαπλούς «αναγνώστες» (readers) να έχουν ταυτόχρονη πρόσβαση, αλλά μόνο έναν writer κάθε φορά.</p>
+
+<h2>Η λογική: Readers vs Writers</h2>
+<p>Σε πολλά σενάρια, τα δεδομένα διαβάζονται πολύ συχνότερα απ' ό,τι τροποποιούνται. Με ένα απλό Mutex, ακόμα και πολλαπλά απλά διαβάσματα θα μπλοκάραν το ένα το άλλο — άσκοπα, αφού τα διαβάσματα δεν αλλάζουν την κατάσταση. Το RWMutex το λύνει αυτό:</p>
+<ul>
+  <li><strong>Readers (RLock)</strong>: Πολλαπλές goroutines μπορούν να κρατάνε read lock <strong>ταυτόχρονα</strong>, εφόσον καμία δεν κρατάει write lock.</li>
+  <li><strong>Writers (Lock)</strong>: Μόνο <strong>μία</strong> goroutine μπορεί να κρατάει write lock, και όταν το κρατάει, <strong>καμία</strong> άλλη δεν μπορεί να έχει ούτε read ούτε write lock.</li>
+</ul>
+
+<pre><code class="lang-go">var cache map[string]string = make(map[string]string)
+var rwMu sync.RWMutex
+
+// Read — multiple readers can do this concurrently
+func getFromCache(key string) string {
+    rwMu.RLock()         // acquire a read lock — shared with other readers
+    defer rwMu.RUnlock() // release it when done
+    return cache[key]
+}
+
+// Write — only one writer, and blocks all readers
+func setToCache(key, value string) {
+    rwMu.Lock()          // acquire an EXCLUSIVE write lock
+    defer rwMu.Unlock()  // release it when done
+    cache[key] = value
+}
+</code></pre>
+
+<h2>Πότε αξίζει RWMutex αντί για Mutex</h2>
+<div class="grid2">
+  <div class="card"><h3>RWMutex συμφέρει</h3><p>Όταν έχεις πολλούς readers (π.χ. cache, configuration, in-memory database reads) και σχετικά λίγους writers. Τα ταυτόχρονα διαβάσματα γίνονται χωρίς μπλοκάρισμα μεταξύ τους.</p></div>
+  <div class="card"><h3>Mutex είναι καλύτερο</h3><p>Όταν οι λειτουργίες είναι μοιρασμένες 50-50, ή όταν το critical section είναι ήδη πολύ μικρό. Το RWMutex έχει ελαφρώς μεγαλύτερο overhead από το απλό Mutex, οπότε αν δεν έχεις σημαντικό όφελος από την παραλληλία των reads, το Mutex είναι απλούστερο και ταχύτερο.</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Προσοχή: Lock upgrade</span>
+  Δεν μπορείς να κάνεις «αναβάθμιση» από RLock σε Lock στην ίδια goroutine χωρίς να απελευθερώσεις πρώτα το RLock — αν το επιχειρήσεις, θα προκαλέσεις <strong>deadlock</strong>. Πρέπει πρώτα <code>RUnlock()</code>, μετά <code>Lock()</code>, αλλά προσοχή: στο μεσοδιάστημα, άλλη goroutine μπορεί να έχει αλλάξει τα δεδομένα.
+</div>
+`);
+
+        addQuiz([
+            {
+                q: "Ποια είναι η θεμελιώδης διαφορά ανάμεσα σε sync.Mutex και sync.RWMutex;",
+                options: [
+                    "Το RWMutex επιτρέπει σε πολλαπλούς readers να έχουν ταυτόχρονη πρόσβαση, ενώ το Mutex επιτρέπει μόνο μία goroutine συνολικά (είτε reader είτε writer)",
+                    "Το RWMutex είναι πάντα ταχύτερο από το Mutex ανεξαρτήτως σεναρίου χρήσης, γι' αυτό πρέπει πάντα να προτιμάται",
+                    "Το Mutex επιτρέπει μόνο διαβάσματα ενώ το RWMutex επιτρέπει μόνο εγγραφές σε κοινόχρηστα δεδομένα",
+                    "Δεν υπάρχει πρακτική διαφορά — και τα δύο λειτουργούν ακριβώς με τον ίδιο τρόπο σε όλες τις περιπτώσεις"
+                ],
+                correct: 0,
+                explain: "Το RWMutex διαχωρίζει τις λειτουργίες ανάγνωσης και εγγραφής: πολλαπλοί readers μπορούν να έχουν ταυτόχρονο RLock, αλλά μόνο ένας writer μπορεί να έχει Lock (και αποκλείει όλους τους readers). Το απλό Mutex δεν κάνει αυτόν τον διαχωρισμό — μόνο μία goroutine κάθε φορά, ανεξαρτήτως αν διαβάζει ή γράφει."
+            }
+        ]);
+
+        addFillBlank([
+            {
+                code: `var mu sync.Mutex
+mu.__lock__()
+counter++
+mu.Unlock()`,
+                blanks: [
+                    { id: "lock", answer: "Lock" }
+                ],
+                explain: "Το mu.Lock() αποκτά το αποκλειστικό κλείδωμα. Αν άλλη goroutine το έχει ήδη, η τρέχουσα μπλοκάρει εδώ."
+            },
+            {
+                code: `func update() {
+    mu.Lock()
+    defer mu.__unlock__()  // εξασφαλίζει ότι θα τρέξει στην έξοδο
+    sharedMap[key] = value
+}`,
+                blanks: [
+                    { id: "unlock", answer: "Unlock" }
+                ],
+                explain: "Το defer mu.Unlock() εγγυάται ότι το κλείδωμα θα απελευθερωθεί ακόμα και αν η συνάρτηση επιστρέψει πρόωρα ή προκληθεί panic."
+            },
+            {
+                code: `var rwMu sync.RWMutex
+
+func get(key string) string {
+    rwMu.__rlock__()
+    defer rwMu.RUnlock()
+    return cache[key]
+}`,
+                blanks: [
+                    { id: "rlock", answer: "RLock" }
+                ],
+                explain: "Το RLock() αποκτά ένα read lock· πολλές goroutines μπορούν να το κρατούν ταυτόχρονα, επιτρέποντας παράλληλα διαβάσματα χωρίς μπλοκάρισμα."
+            },
+            {
+                code: `func increment() {
+    mu.Lock()
+    __defer__ mu.Unlock()
+    counter++
+}`,
+                blanks: [
+                    { id: "defer", answer: "defer" }
+                ],
+                explain: "Η λέξη-κλειδί defer αναβάλλει την εκτέλεση της κλήσης μέχρι την έξοδο της συνάρτησης. Είναι ο ιδιωματικός τρόπος να διασφαλίσεις ότι το Unlock() θα κληθεί οπωσδήποτε."
+            }
+        ], {
+            note: "Εξάσκηση — Mutex & RWMutex"
+        });
+        addMatching([
+            // Set A:
+            [
+                { term: "sync.Mutex", def: "Τύπος για αμοιβαίο αποκλεισμό — επιτρέπει την πρόσβαση σε μία μόνο goroutine τη φορά" },
+                { term: "sync.RWMutex", def: "Τύπος κλειδώματος που επιτρέπει πολλούς ταυτόχρονους readers, αλλά μόνο έναν writer" },
+                { term: "mu.Lock()", def: "Μέθοδος που αποκτά αποκλειστικό κλείδωμα, μπλοκάροντας κάθε άλλη goroutine" },
+                { term: "mu.RLock()", def: "Μέθοδος που επιτρέπει την ταυτόχρονη πρόσβαση για ανάγνωση, μπλοκάροντας μόνο την εγγραφή" },
+                { term: "defer mu.Unlock()", def: "Εξασφαλίζει ότι το κλείδωμα θα απελευθερωθεί στην έξοδο της συνάρτησης" },
+            ],
+            // Set B:
+            [
+                { term: "Critical section", def: "Το προστατευμένο τμήμα κώδικα ανάμεσα σε Lock και Unlock" },
+                { term: "Race condition", def: "Απρόβλεπτο αποτέλεσμα λόγω ταυτόχρονης πρόσβασης χωρίς συγχρονισμό" },
+                { term: "Channel", def: "Προτιμάται όταν ένα δεδομένο «παραδίδεται» από μία goroutine σε μία άλλη" },
+                { term: "Mutex", def: "Προτιμάται όταν πολλές goroutines διαβάζουν/γράφουν το ίδιο variable ή struct" },
+                { term: "RWMutex", def: "Προτιμάται όταν έχεις συχνά διαβάσματα και σπάνιες εγγραφές" }
+            ]
+        ], {
+            note: "Αντιστοίχισε κάθε έννοια ή εργαλείο συγχρονισμού με τη σωστή περιγραφή του."
+        });
+
+        addContent(`
+<div class="eyebrow">Ενότητα 5 / 9 — Concurrency Synchronization</div>
+<h1>Channels εναντίον Mutexes — Πότε το ένα, πότε το άλλο</h1>
+<p class="lede">Αυτή είναι ίσως η πιο συχνή απορία σε concurrent Go: πότε χρησιμοποιώ channels και πότε mutexes; Το διάσημο μότο της Go δίνει την κατεύθυνση, αλλά η πράξη θέλει κρίση.</p>
+
+<h2>Το μότο της Go</h2>
+<div class="callout good">
+  <span class="tag">Rob Pike</span>
+  <em>«Do not communicate by sharing memory; instead, share memory by communicating.»</em>
+  <p style="margin-top:8px">Μην επικοινωνείς μοιράζοντας μνήμη — αντίθετα, μοιράσου μνήμη επικοινωνώντας. Αυτό σημαίνει: προτίμησε τα channels για να περνάς δεδομένα ανάμεσα σε goroutines, αντί να έχεις κοινόχρηστες μεταβλητές με locks.</p>
+</div>
+
+<h2>Channels: Πότε τα προτιμάμε</h2>
+<ul>
+  <li><strong>Μεταφορά ιδιοκτησίας (ownership transfer)</strong>: Θέλεις να «παραδώσεις» ένα δεδομένο σε άλλη goroutine — ο παραλήπτης γίνεται ο μοναδικός ιδιοκτήτης του.</li>
+  <li><strong>Συντονισμός / σηματοδοσία (coordination)</strong>: Ειδοποιήσεις, ολοκλήρωση εργασίας, σειρά εκτέλεσης.</li>
+  <li><strong>Pipelines και data streams</strong>: Στάδια επεξεργασίας που τροφοδοτούν το ένα το άλλο.</li>
+  <li><strong>Timeouts και cancellation</strong> μέσω <code>select</code> και <code>time.After</code>.</li>
+</ul>
+
+<pre><code class="lang-go">// Channels are natural for passing results back
+func fetch(url string, resultCh chan<- string) {
+    resp, _ := http.Get(url)
+    // ... extract data ...
+    resultCh <- data // ownership of data transfers to the receiver
+}
+</code></pre>
+
+<h2>Mutexes: Πότε τα προτιμάμε</h2>
+<ul>
+  <li><strong>Προστασία κοινόχρηστης κατάστασης (shared state)</strong>: Μια δομή δεδομένων (cache, map, counter) που πολλές goroutines χρειάζεται να διαβάζουν και να γράφουν.</li>
+  <li><strong>Η κατάσταση δεν «μεταφέρεται» λογικά</strong>: Δεν βγάζει νόημα να «στείλεις» μια cache σε μια goroutine — η cache ανήκει σε όλους, κάθε goroutine απλά χρειάζεται πρόσβαση.</li>
+  <li><strong>Απλότητα όταν το channel θα ήταν υπερβολή</strong>: Ένα απλό <code>mu.Lock() / defer mu.Unlock()</code> είναι συχνά πιο ευανάγνωστο από το να στήσεις ολόκληρο channel-based πρωτόκολλο για έναν απλό μετρητή.</li>
+</ul>
+
+<pre><code class="lang-go">// Mutexes are natural for protecting shared structures
+type SafeCounter struct {
+    mu    sync.Mutex
+    value int
+}
+
+func (c *SafeCounter) Inc() {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.value++
+}
+
+func (c *SafeCounter) Get() int {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    return c.value
+}
+</code></pre>
+
+<h2>Rule of Thumb: Το τεστ της ιδιοκτησίας</h2>
+<p>Αναρώτησε: <strong>ποιος «κατέχει» αυτό το δεδομένο;</strong></p>
+<div class="grid2">
+  <div class="card"><h3>Μεταφορά ιδιοκτησίας → Channel</h3><p>Αν το δεδομένο πρέπει να «παραδοθεί» από μία goroutine σε μία άλλη — και μόνο ο παραλήπτης θα το χρησιμοποιεί πλέον — το channel είναι το φυσικό εργαλείο.</p></div>
+  <div class="card"><h3>Κοινή ιδιοκτησία → Mutex</h3><p>Αν το δεδομένο ανήκει σε όλες τις goroutines ταυτόχρονα (π.χ. ένας κοινός χάρτης, ένας shared counter), το mutex είναι το κατάλληλο εργαλείο.</p></div>
+</div>
+
+<h2>Λάθος χρήσεις — σημάδια ότι πρέπει να αλλάξεις προσέγγιση</h2>
+<ul>
+  <li><strong>Mutex όπου το channel ταιριάζει</strong>: Βλέπεις goroutines να κάνουν busy-waiting ή περίπλοκο polling σε κοινόχρηστες μεταβλητές — μάλλον χρειάζεσαι ένα channel notification.</li>
+  <li><strong>Channel όπου το mutex ταιριάζει</strong>: Φτιάχνεις ένα ξεχωριστό «manager goroutine» μόνο και μόνο για να διαχειρίζεται προσβάσεις σε έναν απλό χάρτη — μάλλον ένα RWMutex είναι πιο απλό.</li>
+</ul>
+
+<div class="callout">
+  <span class="tag">Συμπέρασμα</span>
+  Η Go σχεδιάστηκε με τα channels ως τον προτιμώμενο τρόπο επικοινωνίας — και αυτή πρέπει να είναι η προεπιλεγμένη σου σκέψη. Όμως τα mutexes υπάρχουν γιατί λύνουν μια πραγματική ανάγκη: υπάρχουν σενάρια όπου το «share memory by communicating» γίνεται αδέξιο και υπερβολικά περίπλοκο. <strong>Διάλεξε το εργαλείο που κάνει τον κώδικα πιο καθαρό και την πρόθεσή σου πιο φανερή.</strong>
+</div>
+`);
+
+        addQuiz([
+            {
+                q: "Έχεις έναν in-memory cache (map) που πολλές goroutines διαβάζουν συχνά και σπάνια ενημερώνουν. Ποιο εργαλείο συγχρονισμού είναι το πιο κατάλληλο;",
+                options: [
+                    "sync.RWMutex — επιτρέπει ταυτόχρονα διαβάσματα χωρίς μπλοκάρισμα, αλλά αποκλείει τα διαβάσματα μόνο κατά τις σπάνιες εγγραφές",
+                    "Ένα buffered channel χωρητικότητας 1 που λειτουργεί ως mutex για την προστασία ολόκληρου του cache",
+                    "Κανένα εργαλείο συγχρονισμού — η Go προστατεύει αυτόματα τους χάρτες από ταυτόχρονη πρόσβαση",
+                    "Μόνο sync.Mutex — το RWMutex δεν προσφέρει κανένα πλεονέκτημα σε σχέση με το απλό Mutex σε καμία περίπτωση"
+                ],
+                correct: 0,
+                explain: "Το RWMutex είναι ιδανικό για read-heavy σενάρια: επιτρέπει σε πολλούς readers να διαβάζουν ταυτόχρονα χωρίς να μπλοκάρουν μεταξύ τους, και μπλοκάρει τους πάντες μόνο όταν ένας writer χρειάζεται αποκλειστική πρόσβαση. Για cache με πολλά reads και λίγα writes, είναι σαφώς ανώτερο από το απλό Mutex."
+            },
+            {
+                q: "Ποιο από τα παρακάτω σενάρια είναι καταλληλότερο για channels αντί για mutexes;",
+                options: [
+                    "Ένας worker που υπολογίζει ένα αποτέλεσμα και πρέπει να το παραδώσει σε μια άλλη goroutine για περαιτέρω επεξεργασία — το δεδομένο αλλάζει ιδιοκτήτη",
+                    "Ένας απλός μετρητής (counter) που πολλές goroutines χρειάζεται να αυξάνουν ταυτόχρονα κατά 1",
+                    "Μια κοινόχρηστη δομή ρυθμίσεων (configuration struct) που διαβάζεται από όλες τις goroutines αλλά σπάνια αλλάζει",
+                    "Ένα mutex που προστατεύει την πρόσβαση σε έναν κοινόχρηστο χάρτη string → int"
+                ],
+                correct: 0,
+                explain: "Όταν το δεδομένο αλλάζει ιδιοκτήτη — παράγεται από μία goroutine και παραδίδεται σε μία άλλη — το channel είναι το φυσικό εργαλείο. Το δεδομένο δεν είναι «κοινόχρηστο», απλά μεταφέρεται. Αντίθετα, ένας counter, ένα config struct ή ένας shared map είναι κοινόχρηστη κατάσταση που ανήκει σε όλους — εκεί τα mutexes ταιριάζουν καλύτερα."
+            }
+        ]);
+
+        addFillBlank([
+            {
+                code: `var mu sync.Mutex
+
+func increment() {
+    mu.__lock__()
+    defer mu.Unlock()
+    counter++
+}`,
+                blanks: [
+                    { id: "lock", answer: "Lock" }
+                ],
+                explain: "Το mu.Lock() αποκτά το κλείδωμα — αν άλλη goroutine το κρατάει ήδη, η τρέχουσα μπλοκάρει εδώ μέχρι να απελευθερωθεί."
+            },
+            {
+                code: `var rwMu sync.RWMutex
+
+// Multiple goroutines can call this concurrently without blocking each other
+func readData() string {
+    rwMu.__rlock__()
+    defer rwMu.RUnlock()
+    return sharedData
+}`,
+                blanks: [
+                    { id: "rlock", answer: "RLock" }
+                ],
+                explain: "Το RLock() αποκτά ένα read lock — πολλαπλά read locks μπορούν να συνυπάρχουν ταυτόχρονα, επιτρέποντας παράλληλα διαβάσματα."
+            }
+        ], {
+            note: "Σημείωση: τα παραπάνω εστιάζουν στις μεθόδους Lock και RLock των sync.Mutex και sync.RWMutex."
+        });
+
+        addMatching([
+            { term: "sync.Mutex", def: "Αμοιβαίος αποκλεισμός — μία goroutine τη φορά" },
+            { term: "sync.RWMutex", def: "Πολλαπλοί readers ταυτόχρονα, μόνο ένας writer" },
+            { term: "mu.Lock()", def: "Αποκτά αποκλειστικό κλείδωμα (για Mutex ή εγγραφή σε RWMutex)" },
+            { term: "mu.RLock()", def: "Αποκτά read-only κλείδωμα — πολλαπλά ταυτόχρονα" },
+            { term: "defer mu.Unlock()", def: "Εξασφαλίζει απελευθέρωση του lock στην έξοδο της συνάρτησης" },
+            { term: "Channel", def: "Προτιμάται για μεταφορά ιδιοκτησίας δεδομένων και συντονισμό" },
+            { term: "Mutex", def: "Προτιμάται για προστασία κοινόχρηστης κατάστασης (shared state)" }
+        ], {
+            note: "Αντιστοίχισε τα εργαλεία συγχρονισμού και τις έννοιες με τη σωστή περιγραφή τους."
+        });
 
         addQuiz({
             q: "Γιατί είναι σημαντικό το wg.Add(1) να καλείται πριν το go func(), και όχι μέσα στο σώμα της goroutine που θα εκτελεστεί;",

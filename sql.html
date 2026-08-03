@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="el">
+<!--
+  ZONE01 SLIDE-DECK TEMPLATE — Go & SQL Databases Complete Guide
+  Author: AVGERINOS PAVLOS (pavgerin/avgerinos8)
+-->
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go &amp; SQL Databases — Αναλυτικό Σεμινάριο</title>
+  <link rel="stylesheet" href="static/style-burgundy.css?v=20260801">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-reset">
+        <span class="desktop-text">Reset Progress</span>
+        <span class="mobile-text">Reset</span>
+      </button>
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+        <span class="desktop-text">Return</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots"></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
+  <script>
+    // ── Title Slide ───────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/icon.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Go &amp; SQL Databases<br>Πλήρης &amp; Αναλυτικός Οδηγός Backend</h1>
+  <p class="lede">Από τις θεμελιώδεις εντολές SQL και τους τύπους δεδομένων, έως τη βαθιά αρχιτεκτονική του database/sql στη Go: Connection Pools, Transactions, Prepared Statements, Handling NULLs &amp; Dynamic Queries.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+</div>
+`);
+
+    // ── Module 1: Tables, Data Types & Driver Setup ───────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Module 1 / 4 — Βάσεις Δεδομένων &amp; Schema</div>
+<h1>1. Δημιουργία Πίνακα, Τύποι Δεδομένων &amp; SQL Basics</h1>
+<p class="lede">Μια σχεσιακή βάση δεδομένων (Relational Database) οργανώνει τα δεδομένα σε πίνακες με αυστηρά ορισμένες στήλες και γραμμές.</p>
+
+<h2>1. THE SQL CONCEPT (Εξηγημένο απλά)</h2>
+<p>Φαντάσου έναν πίνακα (Table) σαν ένα ψηφιακό φύλλο υπολογισμού (Excel). Κάθε στήλη (Column) έχει ένα όνομα και έναν συγκεκριμένο <strong>τύπο δεδομένων</strong> (π.χ. αεροστεγές κουτί που χωράει ΜΟΝΟ ακέραιους αριθμούς ή ΜΟΝΟ κείμενο). Κάθε γραμμή (Row) αντιπροσωπεύει μία ξεχωριστή εγγραφή/αντικείμενο.</p>
+
+<div class="grid3">
+  <div class="card">
+    <h3>INTEGER</h3>
+    <p>Ακέραιοι αριθμοί (π.χ. <code>1</code>, <code>42</code>, <code>-100</code>). Χρησιμοποιείται για αναγνωριστικά (IDs), ηλικίες, καταμετρήσεις.</p>
+  </div>
+  <div class="card">
+    <h3>TEXT / VARCHAR</h3>
+    <p>Συμβολοσειρές/Κείμενο (π.χ. <code>"Alice"</code>, <code>"user@domain.com"</code>). Αποθηκεύει ονόματα, περιγραφές, κωδικοποιημένα αλφαριθμητικά.</p>
+  </div>
+  <div class="card">
+    <h3>REAL / BOOLEAN</h3>
+    <p>Αριθμοί κινητής υποδιαστολής (π.χ. <code>99.99</code>) ή λογικές τιμές (<code>TRUE</code> / <code>FALSE</code>) για κατάσταση ενεργοποίησης.</p>
+  </div>
+</div>
+
+<p>Η εντολή <code>CREATE TABLE</code> ορίζει τη δομή (Schema) του πίνακα:</p>
+
+<pre><code class="lang-sql">CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    age INTEGER DEFAULT 18,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Στη Go, η αλληλεπίδραση με τη βάση γίνεται μέσω του τυποποιημένου πακέτου <code>database/sql</code>. Για να εκτελέσουμε εντολές DDL (Data Definition Language) όπως η <code>CREATE TABLE</code> που δεν επιστρέφουν εγγραφές, χρησιμοποιούμε τη μέθοδο <code>Exec()</code>.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"fmt"
+	"log"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+// ── database schema management ──────────────────────────────────────────────── ⊃
+
+// createUsersTable initializes the users table schema in the database if missing.
+// It executes a DDL statement using db.Exec and handles execution errors.
+func createUsersTable(db *sql.DB) error {
+	query := \`
+	CREATE TABLE IF NOT EXISTS users(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL UNIQUE,
+      age INTEGER DEFAULT 18,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ); \`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		return fmt.Errorf("failed to create users table: %w", err)
+	}
+
+	return nil
+}</code></pre>
+
+<h2>3. LINE-BY-LINE EXPLANATION</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση SQL</h3>
+    <p><code>CREATE TABLE IF NOT EXISTS users</code>: Δημιουργεί τον πίνακα μόνο αν δεν υπάρχει ήδη στη βάση.<br>
+    <code>id INTEGER PRIMARY KEY AUTOINCREMENT</code>: Ορίζει το primary key που αυξάνεται αυτόματα σε κάθε νέα εγγραφή.<br>
+    <code>email TEXT NOT NULL UNIQUE</code>: Υποχρεωτικό πεδίο κειμένου που απαγορεύει διπλότυπες τιμές.<br>
+    <code>DEFAULT CURRENT_TIMESTAMP</code>: Αναθέτει αυτόματα την τρέχουσα ημερομηνία/ώρα κατά την εισαγωγή.</p>
+  </div>
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση Go</h3>
+    <p><code>query := \`...\`</code>: Χρήση multiline raw string literal (backticks) για καθαρή γραφή SQL.<br>
+    <code>_, err := db.Exec(query)</code>: Εκτελεί την εντολή στη βάση. Αγνοούμε το πρώτο αποτέλεσμα (sql.Result) γιατί το DDL δεν επιστρέφει IDs ή γραμμές.<br>
+    <code>fmt.Errorf("...: %w", err)</code>: Wrapping του σφάλματος διατηρώντας το αρχικό stack trace.</p>
+  </div>
+</div>
+`);
+
+    // ── Driver Setup & Connection Pool ────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Database Architecture — Driver &amp; Connection Setup</div>
+<h1>2. Εισαγωγή Driver &amp; sql.Open()</h1>
+<p class="lede">Το πακέτο <code>database/sql</code> είναι ένα αφηρημένο interface. Για να συνδεθεί με πραγματική βάση (SQLite, PostgreSQL, MySQL), απαιτεί έναν συγκεκριμένο driver.</p>
+
+<h2>1. THE SQL / DRIVER CONCEPT</h2>
+<p>Η Go χρησιμοποιεί το pattern του <strong>Blank Import</strong> (<code>_ "github.com/mattn/go-sqlite3"</code>). Όταν εισάγουμε έναν driver με <code>_</code>, εκτελείται αυτόματα η συνάρτηση <code>init()</code> του πακέτου του driver, η οποία εγγράφει (registers) τον driver στο θεμελιώδες registry του <code>database/sql</code>.</p>
+
+<div class="callout">
+  <span class="tag">ΚΡΙΣΙΜΗ ΛΕΠΤΟΜΕΡΕΙΑ:</span>
+  Η κλήση <code>sql.Open("sqlite3", "app.db")</code> <strong>ΔΕΝ δημιουργεί σύνδεση δικτύου/αρχείου αμέσως!</strong> Απλώς επικυρώνει τα ορίσματα και επιστρέφει ένα struct <code>*sql.DB</code> που αντιπροσωπεύει ένα <strong>Connection Pool</strong>.
+</div>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Για να επιβεβαιώσουμε ότι η βάση είναι πράγματι προσβάσιμη, πρέπει να καλέσουμε την <code>db.Ping()</code> ή την <code>db.PingContext(ctx)</code>.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"log"
+	"time"
+
+	_ "github.com/mattn/go-sqlite3" // Registers sqlite3 driver inside sql package
+)
+
+// ── database connection pool initialization ────────────────────────────────── ⊃
+
+// setupDatabase establishes connection handle and verifies driver readiness with Ping.
+// It configures connection limits and returns an active pool handle.
+func setupDatabase(dataSourceName string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", dataSourceName)
+	if err != nil {
+		return nil, fmt.Errorf("invalid database configuration: %w", err)
+	}
+
+	// Ping with timeout context to ensure database file/server is reachable
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
+		return nil, fmt.Errorf("database unreachable: %w", err)
+	}
+
+	return db, nil
+}</code></pre>
+
+<h2>3. LINE-BY-LINE EXPLANATION</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση</h3>
+    <p><code>_ "github.com/mattn/go-sqlite3"</code>: Εγγράφει τον driver χωρίς να εκθέτει απευθείας συναρτήσεις του στο δικό μας αρχείο.<br>
+    <code>sql.Open("sqlite3", dataSourceName)</code>: Δημιουργεί τη δομή του connection pool.<br>
+    <code>context.WithTimeout(..., 3*time.Second)</code>: Ορίζει ανώτατο όριο αναμονής 3 δευτερολέπτων για τη δοκιμή σύνδεσης.<br>
+    <code>db.PingContext(ctx)</code>: Στέλνει ένα πραγματικό σήμα/query στη βάση για να επιβεβαιώσει ότι η σύνδεση λειτουργεί.</p>
+  </div>
+  <div class="card">
+    <h3>Συχνά Λάθη</h3>
+    <p>1. Ξεχνάμε το blank import του driver, προκαλώντας panic: <code>sql: unknown driver "sqlite3"</code>.<br>
+    2. Θεωρούμε ότι η <code>sql.Open</code> θα επιστρέψει σφάλμα αν ο εξυπηρετητής βάσης είναι offline (δεν θα επιστρέψει — μόνο η <code>Ping()</code> θα το καταλάβει!).</p>
+  </div>
+</div>
+`);
+
+    // ── Quiz 1 ────────────────────────────────────────────────────────────── ⊃
+    addQuiz([
+      {
+        q: "Τι συμβαίνει αμέσως μόλις εκτελεστεί η συνάρτηση sql.Open(\"sqlite3\", \"app.db\");",
+        options: [
+          "Αρχικοποιείται η δομή *sql.DB που αντιπροσωπεύει το connection pool, χωρίς να ανοίγει απαραίτητα άμεση σύνδεση.",
+          "Ανοίγει αμέσως μια ενεργή σύνδεση δικτύου/αρχείου και κλειδώνει τη βάση δεδομένων.",
+          "Εκτελείται αυτόματα έλεγχος Ping και επιστρέφει σφάλμα αν η βάση είναι απενεργοποιημένη.",
+          "Δημιουργείται αυτόματα το αρχείο της βάσης δεδομένων και όλοι οι πίνακες του schema."
+        ],
+        correct: 0,
+        explain: "Η sql.Open() προετοιμάζει μόνο το handle του connection pool. Για πραγματική σύνδεση απαιτείται η Ping()."
+      },
+      {
+        q: "Ποιος είναι ο ρόλος του blank import (_ \"github.com / mattn / go - sqlite3\");",
+        options: [
+          "Εκτελεί την init() του πακέτου του driver ώστε να εγγραφεί στο registry του database/sql χωρίς να εισάγει αχρησιμοποίητα σύμβολα.",
+          "Εισάγει όλες τις εσωτερικές μεταβλητές του driver στο global scope του πακέτου main.",
+          "Εμποδίζει τον μεταγλωττιστή (compiler) της Go από το να κάνει optimize out τον κώδικα της SQL.",
+          "Δημιουργεί ένα αντίγραφο ασφαλείας του driver τοπικά στον κατάλογο του project."
+        ],
+        correct: 0,
+        explain: "Το blank import εκτελεί μόνο τις παρενέργειες (side effects) του πακέτου, δηλαδή την εγγραφή του driver μέσω της init()."
+      }
+    ]);
+
+    // ── Module 2: Reading Data ────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Module 2 / 4 — Reading Data</div>
+<h1>3. Ανάγνωση Δεδομένων (SELECT &amp; QueryRow)</h1>
+<p class="lede">Η ανάγνωση δεδομένων γίνεται με την εντολή <code>SELECT</code>. Όταν γνωρίζουμε ότι η βάση θα επιστρέψει το πολύ <strong>μία γραμμή</strong>, χρησιμοποιούμε την <code>db.QueryRow()</code>.</p>
+
+<h2>1. THE SQL CONCEPT (Εξηγημένο απλά)</h2>
+<p>Η εντολή <code>SELECT</code> ζητάει συγκεκριμένες στήλες από έναν πίνακα. Με το <code>WHERE</code> φιλτράρουμε τις εγγραφές ώστε να πάρουμε μόνο αυτή που ικανοποιεί τη συνθήκη (π.χ. αναζήτηση χρήστη βάσει μοναδικού ID).</p>
+
+<pre><code class="lang-sql">SELECT id, email, age, is_active FROM users WHERE id = 1;</code></pre>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Η <code>db.QueryRow()</code> εκτελεί το query και επιστρέφει ένα <code>*sql.Row</code>. Στη συνέχεια, καλούμε τη μέθοδο <code>.Scan()</code> περνώντας <strong>δείκτες (pointers)</strong> στις μεταβλητές όπου θέλουμε να αποθηκευτούν τα αποτελέσματα.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"errors"
+	"fmt"
+	"time"
+)
+
+// ── domain model definition ─────────────────────────────────────────────────── ⊃
+
+// User represents a single user record from database.
+type User struct {
+	ID        int
+	Email     string
+	Age       int
+	IsActive  bool
+	CreatedAt time.Time
+}
+
+// ── single record query implementation ──────────────────────────────────────── ⊃
+
+// fetchUserByID retrieves a single user row by ID using QueryRow and Scan.
+// Returns sql.ErrNoRows wrapped if user is not found.
+func fetchUserByID(db *sql.DB, targetID int) (*User, error) {
+	var u User
+
+	query := \`SELECT id, email, age, is_active, created_at FROM users WHERE id = $1\`
+
+	err := db.QueryRow(query, targetID).Scan(
+		&amp;u.ID,
+		&amp;u.Email,
+		&amp;u.Age,
+		&amp;u.IsActive,
+		&amp;u.CreatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("user with ID %d not found: %w", targetID, err)
+		}
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+
+	return &amp;u, nil
+}</code></pre>
+
+<h2>3. LINE-BY-LINE EXPLANATION</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση SQL &amp; Go</h3>
+    <p><code>WHERE id = $1</code>: Χρήση παραμέτρου θέση-θέση (placeholder) για προστασία από SQL Injection.<br>
+    <code>db.QueryRow(query, targetID)</code>: Στέλνει το query με την παράμετρο στη βάση.<br>
+    <code>.Scan(&amp;u.ID, &amp;u.Email, ...)</code>: Αντιγράφει τις τιμές των στηλών στις διευθύνσεις μνήμης των πεδίων του struct.<br>
+    <code>errors.Is(err, sql.ErrNoRows)</code>: Ελέγχει αν το σφάλμα οφείλεται στο ότι δεν βρέθηκε καμία εγγραφή.</p>
+  </div>
+  <div class="card">
+    <h3>Σημαντική Κανόνας της Scan()</h3>
+    <p>Η σειρά και οι τύποι των μεταβλητών στη <code>Scan()</code> πρέπει να αντιστοιχούν <strong>ΑΚΡΙΒΩΣ</strong> στη σειρά και στους τύπους των στηλών που ζητήθηκαν στο <code>SELECT</code> statement. Αν ζητήσεις 5 στήλες, πρέπει να περάσεις 5 δείκτες στη <code>Scan()</code>!</p>
+  </div>
+</div>
+`);
+
+    // ── Module 2: Multiple Rows ───────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Module 2 / 4 — Reading Data (Multiple Rows)</div>
+<h1>4. Ανάγνωση Πολλαπλών Εγγραφών (db.Query &amp; sql.Rows)</h1>
+<p class="lede">Όταν ένα query μπορεί να επιστρέψει μηδέν, μία ή εκατοντάδες γραμμές, χρησιμοποιούμε τη μέθοδο <code>db.Query()</code> σε συνδυασμό με loop προσπέλασης.</p>
+
+<h2>1. THE SQL CONCEPT (Εξηγημένο απλά)</h2>
+<p>Το <code>SELECT</code> χωρίς περιορισμό ενός μοναδικού ID επιστρέφει ένα σύνολο αποτελεσμάτων (Result Set). Φαντάσου το σαν ένα σετ από κάρτες. Διαβάζουμε μία-μία κάρτα μέχρι να φτάσουμε στο τέλος.</p>
+
+<pre><code class="lang-sql">SELECT id, email, age, is_active, created_at FROM users WHERE age >= $1 ORDER BY id DESC;</code></pre>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Η <code>db.Query()</code> επιστρέφει ένα struct <code>*sql.Rows</code>. Πρέπει να καλούμε <code>defer rows.Close()</code> αμέσως μετά τον έλεγχο σφάλματος για να αποδεσμεύεται η σύνδεση στο pool!</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// ── multiple record retrieval ───────────────────────────────────────────────── ⊃
+
+// fetchUsersByMinAge queries users with age greater or equal to minAge.
+// It iterates through sql.Rows cursor and ensures proper resource cleanup.
+func fetchUsersByMinAge(db *sql.DB, minAge int) ([]User, error) {
+	query := \`SELECT id, email, age, is_active, created_at FROM users WHERE age >= $1 ORDER BY id DESC\`
+
+	rows, err := db.Query(query, minAge)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %w", err)
+	}
+	// CRITICAL: Always defer rows.Close() to release connection back to pool!
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var u User
+		if err := rows.Scan(&amp;u.ID, &amp;u.Email, &amp;u.Age, &amp;u.IsActive, &amp;u.CreatedAt); err != nil {
+			return nil, fmt.Errorf("failed scanning row: %w", err)
+		}
+		users = append(users, u)
+	}
+
+	// ALWAYS check rows.Err() after iteration loop finishes!
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during row iteration: %w", err)
+	}
+
+	return users, nil
+}</code></pre>
+
+<h2>3. LINE-BY-LINE EXPLANATION</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση</h3>
+    <p><code>defer rows.Close()</code>: Εγγυάται ότι ο cursor θα κλείσει και η σύνδεση θα επιστραφεί στο pool όταν τελειώσει η συνάρτηση.<br>
+    <code>for rows.Next()</code>: Μετακινεί τον δείκτη (cursor) στην επόμενη γραμμή. Επιστρέφει <code>true</code> όσο υπάρχουν διαθέσιμες γραμμές.<br>
+    <code>rows.Err()</code>: Ελέγχει αν προέκυψε σφάλμα δικτύου ή διακοπή κατά τη διάρκεια του iteration (π.χ. απώλεια σύνδεσης στη μέση των δεδομένων).</p>
+  </div>
+  <div class="card">
+    <h3>Γιατί είναι απαραίτητο το rows.Err();</h3>
+    <p>Το <code>rows.Next()</code> θα επιστρέψει <code>false</code> είτε όταν διαβαστούν όλες οι γραμμές με επιτυχία, είτε όταν συμβεί ένα σφάλμα στη μέση του δικτύου! Το <code>rows.Err()</code> είναι ο μόνος τρόπος να καταλάβουμε αν το loop σταμάτησε λόγω σφάλματος.</p>
+  </div>
+</div>
+`);
+
+    // ── FillBlank 1 ───────────────────────────────────────────────────────── ⊃
+    addFillBlank([
+      {
+        code:
+          `rows, err := db.__query_func__("SELECT id, name FROM users WHERE active = $1", true)
+if err != nil {
+    return err
+}
+defer rows.__close_func__()
+
+for rows.__next_func__() {
+    var u User
+    if err := rows.__scan_func__(&amp;u.ID, &amp;u.Name); err != nil {
+        return err
+    }
+}
+
+if err := rows.__err_func__(); err != nil {
+    return err
+}`,
+        blanks: [
+          { id: "query_func", answer: "Query" },
+          { id: "close_func", answer: "Close" },
+          { id: "next_func", answer: "Next" },
+          { id: "scan_func", answer: "Scan" },
+          { id: "err_func", answer: "Err" }
+        ],
+        explain: "Χρησιμοποιούμε Query για λήψη rows, defer rows.Close() για αποδέσμευση, rows.Next() για επανάληψη, rows.Scan() για ανάγνωση και rows.Err() για τελικό έλεγχο σφαλμάτων."
+      }
+    ], { note: "Συμπλήρωσε τα κενά για την ασφαλή ανάγνωση πολλαπλών εγγραφών στη Go." });
+
+    // ── Module 3: Inserting Data & SQL Injection ──────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Module 3 / 4 — Inserting Data &amp; Security</div>
+<h1>5. Εισαγωγή Δεδομένων &amp; Ασφάλεια (SQL Injection)</h1>
+<p class="lede">Η εισαγωγή νέων εγγραφών γίνεται με την εντολή <code>INSERT INTO</code>. Η κατανόηση των <strong>Placeholders</strong> είναι η σημαντικότερη έννοια ασφαλείας στο backend development.</p>
+
+<h2>1. THE SQL CONCEPT &amp; SQL INJECTION</h2>
+<p>Όταν εισάγουμε δεδομένα που προέρχονται από χρήστες (π.χ. φόρμα εγγραφής), <strong>ΠΟΤΕ</strong> δεν συνενώνουμε strings (string concatenation). Αν συνενώσουμε strings, ένας κακόβουλος χρήστης μπορεί να εισάγει εντολές SQL που θα διαγράψουν όλη τη βάση!</p>
+
+<div class="callout">
+  <span class="tag">ΠΑΡΑΔΕΙΓΜΑ ΕΠΙΘΕΣΗΣ (SQL INJECTION):</span>
+  Αν γράψεις: <code>"SELECT * FROM users WHERE name = '" + userInput + "'"</code><br>
+  Και ο χρήστης δώσει ως input: <code>' OR '1'='1</code><br>
+  Το query γίνεται: <code>SELECT * FROM users WHERE name = '' OR '1'='1'</code> (Επιστρέφει ΟΛΟΥΣ τους χρήστες!).
+</div>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Στη Go, περνάμε τις τιμές ως ξεχωριστά ορίσματα στην <code>Exec()</code>. Η βάση δεδομένων μεταχειρίζεται τις τιμές αυστηρά ως δεδομένα και όχι ως εκτελέσιμο κώδικα SQL.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// ── record insertion implementation ────────────────────────────────────────── ⊃
+
+// createNewUser inserts a new user into the database securely using parameterized queries.
+// It returns the system-generated primary key ID of the created row.
+func createNewUser(db *sql.DB, email string, age int) (int64, error) {
+	// Placeholders: $1, $2 for PostgreSQL/SQLite or ?, ? for MySQL
+	query := \`INSERT INTO users(email, age) VALUES($1, $2)\`
+
+	result, err := db.Exec(query, email, age)
+	if err != nil {
+		return 0, fmt.Errorf("failed inserting user: %w", err)
+	}
+
+	// Retrieve the auto-generated primary key ID
+	insertedID, err := result.LastInsertId()
+	if err != nil {
+		return 0, fmt.Errorf("failed retrieving inserted ID: %w", err)
+	}
+
+	return insertedID, nil
+}</code></pre>
+
+<h2>3. LINE-BY-LINE EXPLANATION</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση</h3>
+    <p><code>VALUES ($1, $2)</code>: Ορίζει δύο ασφαλή placeholders.<br>
+    <code>db.Exec(query, email, age)</code>: Στέλνει το query και τις παραμέτρους ξεχωριστά στον driver.<br>
+    <code>result.LastInsertId()</code>: Επιστρέφει το ID της εγγραφής που μόλις δημιουργήθηκε (υποστηρίζεται σε SQLite/MySQL. Στη PostgreSQL χρησιμοποιούμε <code>RETURNING id</code> με <code>QueryRow</code>).</p>
+  </div>
+  <div class="card">
+    <h3>Διαφορές Placeholders ανά Βάση</h3>
+    <p>• <strong>PostgreSQL / SQLite:</strong> <code>$1, $2, $3</code><br>
+    • <strong>MySQL / SQLite:</strong> <code>?, ?, ?</code><br>
+    • <strong>Oracle:</strong> <code>:val1, :val2</code><br>
+    Το <code>database/sql</code> μεταβιβάζει τις παραμέτρους στον driver που κάνει το σωστό escaping.</p>
+  </div>
+</div>
+`);
+
+    // ── Module 4: Modifying & Deleting Data ───────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Module 4 / 4 — Modifying &amp; Deleting Data</div>
+<h1>6. Ενημέρωση &amp; Διαγραφή Δεδομένων (UPDATE &amp; DELETE)</h1>
+<p class="lede">Οι εντολές <code>UPDATE</code> και <code>DELETE</code> τροποποιούν ή διαγράφουν υπάρχουσες εγγραφές. Η χρήση του <code>WHERE</code> είναι υποχρεωτική για την αποφυγή καταστροφής δεδομένων.</p>
+
+<h2>1. THE SQL CONCEPT (Εξηγημένο απλά)</h2>
+<p>Το <code>UPDATE</code> αλλάζει τις τιμές συγκεκριμένων στηλών σε γραμμές που ικανοποιούν το φίλτρο. Το <code>DELETE</code> αφαιρεί ολόκληρες γραμμές. Αν ξεχάσεις το <code>WHERE</code>, η αλλαγή θα εφαρμοστεί σε <strong>ΟΛΕΣ τις εγγραφές του πίνακα!</strong></p>
+
+<pre><code class="lang-sql">-- Safe UPDATE
+UPDATE users SET age = $1, is_active = $2 WHERE id = $3;
+
+-- Safe DELETE
+DELETE FROM users WHERE id = $1;</code></pre>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Χρησιμοποιούμε την <code>db.Exec()</code> και ελέγχουμε τη μέθοδο <code>RowsAffected()</code> του αποτελέσματος για να επιβεβαιώσουμε πόσες γραμμές άλλαξαν πράγματι στη βάση.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// ── record update and deletion ──────────────────────────────────────────────── ⊃
+
+// updateUserAge updates age for a user and verifies that a record was actually affected.
+func updateUserAge(db *sql.DB, userID int, newAge int) error {
+	query := \`UPDATE users SET age = $1 WHERE id = $2\`
+
+	result, err := db.Exec(query, newAge, userID)
+	if err != nil {
+		return fmt.Errorf("failed executing update: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed checking rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no user found with ID %d to update", userID)
+	}
+
+	return nil
+}
+
+// deleteUserByID removes a user record safely by unique identifier.
+func deleteUserByID(db *sql.DB, userID int) error {
+	query := \`DELETE FROM users WHERE id = $1\`
+
+	result, err := db.Exec(query, userID)
+	if err != nil {
+		return fmt.Errorf("failed executing delete: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed checking rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no user found with ID %d to delete", userID)
+	}
+
+	return nil
+}</code></pre>
+
+<h2>3. LINE-BY-LINE EXPLANATION</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση</h3>
+    <p><code>db.Exec(query, newAge, userID)</code>: Εκτελεί την εντολή UPDATE/DELETE με ασφάλεια παραμέτρων.<br>
+    <code>result.RowsAffected()</code>: Επιστρέφει τον αριθμό των γραμμών που επηρεάστηκαν.<br>
+    <code>if rowsAffected == 0</code>: Αν επιστρέψει 0, σημαίνει ότι το SQL query εκτελέστηκε χωρίς σφάλμα συντακτικού, αλλά κανένας χρήστης δεν είχε το συγκεκριμένο ID!</p>
+  </div>
+  <div class="card">
+    <h3>Σημαντική Διαφοροποίηση</h3>
+    <p>Ένα UPDATE/DELETE που δεν βρήκε καμία εγγραφή <strong>ΔΕΝ επιστρέφει σφάλμα (err == nil)</strong> από την <code>db.Exec()</code>! Ο μόνος τρόπος να γνωρίζεις αν άλλαξε κάτι είναι η <code>RowsAffected()</code>.</p>
+  </div>
+</div>
+`);
+
+    // ── Matching 1 ────────────────────────────────────────────────────────── ⊃
+    addMatching([
+      { term: "db.Exec()", def: "Εκτελεί queries που δεν επιστρέφουν εγγραφές (INSERT, UPDATE, DELETE, DDL)." },
+      { term: "db.QueryRow()", def: "Εκτελεί SELECT query που επιστρέφει το πολύ μία γραμμή." },
+      { term: "db.Query()", def: "Εκτελεί SELECT query που επιστρέφει cursor (sql.Rows) για πολλές γραμμές." },
+      { term: "result.RowsAffected()", def: "Επιστρέφει πόσες εγγραφές τροποποιήθηκαν ή διαγράφηκαν." },
+      { term: "result.LastInsertId()", def: "Επιστρέφει το αυτόματα παραγόμενο Primary Key της νέας εγγραφής." }
+    ], { note: "Ταιρίαξε κάθε μέθοδο του database/sql με την ακριβή λειτουργία της." });
+
+    // ── Advanced: Connection Pool Architecture ────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Advanced Go — Architecture</div>
+<h1>7. Η Αρχιτεκτονική του Connection Pool</h1>
+<p class="lede">Το struct <code>sql.DB</code> στη Go ΔΕΝ είναι μία μεμονωμένη σύνδεση. Είναι ένα thread-safe <strong>Connection Pool</strong> που διαχειρίζεται αυτόματα τη δημιουργία, επαναχρησιμοποίηση και καταστροφή συνδέσεων.</p>
+
+<h2>1. Πώς λειτουργεί το Connection Pool</h2>
+<p>Όταν εκτελείς ένα query (π.χ. <code>db.Query</code>), το <code>sql.DB</code>:</p>
+
+<ol>
+  <li>Ελέγχει αν υπάρχει διαθέσιμη ελεύθερη σύνδεση (Idle Connection) στο pool.</li>
+  <li>Αν υπάρχει, τη δεσμεύει και την χρησιμοποιεί.</li>
+  <li>Αν δεν υπάρχει και δεν έχουμε φτάσει το όριο <code>MaxOpenConns</code>, δημιουργεί μια νέα σύνδεση.</li>
+  <li>Αν φτάσαμε το όριο <code>MaxOpenConns</code>, το query περιμένει (blocks) μέχρι να ελευθερωθεί μια σύνδεση από άλλο goroutine.</li>
+  <li>Όταν ολοκληρωθεί το query (ή καλεστεί το <code>rows.Close()</code>), η σύνδεση επιστρέφει στο pool για επαναχρησιμοποίηση.</li>
+</ol>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Ρύθμιση παραμέτρων παραγωγής (Production Configuration):</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"time"
+)
+
+// ── connection pool tuning ──────────────────────────────────────────────────── ⊃
+
+// configureConnectionPool sets production-grade pool parameters on sql.DB handle.
+func configureConnectionPool(db *sql.DB) {
+	// Maximum number of open connections to the database (active + idle)
+	db.SetMaxOpenConns(25)
+
+	// Maximum number of connections in the idle connection pool
+	db.SetMaxIdleConns(25)
+
+	// Maximum amount of time a connection may be reused
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	// Maximum amount of time a connection may be idle before being closed
+	db.SetConnMaxIdleTime(15 * time.Minute)
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">BEST PRACTICE:</span>
+  Συνιστάται να ρυθμίζεις <code>SetMaxIdleConns</code> ίσο με <code>SetMaxOpenConns</code>. Αν το MaxIdleConns είναι πολύ μικρό, οι συνδέσεις θα ανοιγοκλείνουν συνεχώς υπό φορτίο, προκαλώντας περιττό CPU overhead.
+</div>
+`);
+
+    // ── Advanced: Transactions ────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Advanced Go — Transactions</div>
+<h1>8. Διαχείριση Συναλλαγών (Transactions)</h1>
+<p class="lede">Ένα <strong>Transaction (Συναλλαγή)</strong> ομαδοποιεί πολλές ενέργειες SQL σε μία ατομική μονάδα. Ή θα εκτελεστούν ΟΛΕΣ με επιτυχία (Commit), ή καμία (Rollback).</p>
+
+<h2>1. THE SQL &amp; ACID CONCEPT</h2>
+<p>Φαντάσου μια μεταφορά χρημάτων από τον Λογαριασμό Α στον Λογαριασμό Β:</p>
+<ol>
+  <li>Αφαίρεση 100€ από τον Α (UPDATE).</li>
+  <li>Πρόσθεση 100€ στον Β (UPDATE).</li>
+</ol>
+<p>Αν το σύστημα καταρρεύσει ανάμεσα στο βήμα 1 και 2, τα χρήματα θα χαθούν! Με ένα Transaction, αν αποτύχει το βήμα 2, το βήμα 1 ακυρώνεται αυτόματα (Rollback).</p>
+
+<h2>2. THE GO IMPLEMENTATION</h2>
+<p>Χρησιμοποιούμε τη μέθοδο <code>db.Begin()</code> ή <code>db.BeginTx()</code> η οποία δεσμεύει <strong>μία συγκεκριμένη σύνδεση</strong> από το pool μέχρι το Commit ή το Rollback.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+)
+
+// ── database transaction implementation ────────────────────────────────────── ⊃
+
+// transferFunds executes a money transfer between accounts atomically inside a transaction.
+func transferFunds(ctx context.Context, db *sql.DB, fromID, toID int, amount float64) error {
+	tx, err := db.BeginTx(ctx, &amp;sql.TxOptions{Isolation: sql.LevelReadCommitted})
+	if err != nil {
+		return fmt.Errorf("failed initiating transaction: %w", err)
+	}
+
+	// Idiomatic Go pattern: Rollback is deferred and executed if commit hasn't occurred.
+	// If tx.Commit() succeeds first, deferred tx.Rollback() becomes a safe no-op.
+	defer tx.Rollback()
+
+	// Step 1: Deduct from sender
+	res1, err := tx.ExecContext(ctx, "UPDATE accounts SET balance = balance - $1 WHERE id = $2 AND balance >= $1", amount, fromID)
+	if err != nil {
+		return fmt.Errorf("deduction failed: %w", err)
+	}
+	if rows, _ := res1.RowsAffected(); rows == 0 {
+		return fmt.Errorf("insufficient funds or sender account not found")
+	}
+
+	// Step 2: Add to receiver
+	res2, err := tx.ExecContext(ctx, "UPDATE accounts SET balance = balance + $1 WHERE id = $2", amount, toID)
+	if err != nil {
+		return fmt.Errorf("addition failed: %w", err)
+	}
+	if rows, _ := res2.RowsAffected(); rows == 0 {
+		return fmt.Errorf("receiver account not found")
+	}
+
+	// Commit applies all statements permanently
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit failed: %w", err)
+	}
+
+	return nil
+}</code></pre>
+
+<h2>3. LINE-BY-LINE EXPLANATION</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Αναλυτική Εξήγηση</h3>
+    <p><code>db.BeginTx(ctx, opts)</code>: Δεσμεύει μία αποκλειστική σύνδεση και ξεκινάει το transaction.<br>
+    <code>defer tx.Rollback()</code>: Το απόλυτο Go idiom! Αν η συνάρτηση επιστρέψει νωρίτερα λόγω σφάλματος, το Rollback εκτελείται αυτόματα.<br>
+    <code>tx.Commit()</code>: Οριστικοποιεί τις αλλαγές στη βάση.</p>
+  </div>
+  <div class="card">
+    <h3>Γιατί είναι ασφαλές το defer tx.Rollback();</h3>
+    <p>Αν η <code>tx.Commit()</code> εκτελεστεί επιτυχώς, το transaction ολοκληρώνεται. Όταν στη συνέχεια εκτελεστεί το deferred <code>tx.Rollback()</code>, η Go γνωρίζει ότι το transaction έχει ήδη γίνει commit και επιστρέφει το <code>sql.ErrTxDone</code> το οποίο αγνοείται σιωπηρά.</p>
+  </div>
+</div>
+`);
+
+    // ── Quiz 2 ────────────────────────────────────────────────────────────── ⊃
+    addQuiz([
+      {
+        q: "Τι συμβαίνει αν χρησιμοποιήσουμε το ιδιωματικό μοτίβο defer tx.Rollback() και στη συνέχεια καλέσουμε επιτυχώς tx.Commit();",
+        options: [
+          "Το deferred tx.Rollback() εκτελείται στο τέλος της συνάρτησης, αναγνωρίζει ότι το transaction έχει ολοκληρωθεί και δεν επηρεάζει τις αλλαγές.",
+          "Το tx.Rollback() θα ακυρώσει τις αλλαγές που μόλις έγιναν commit, επαναφέροντας τη βάση στην αρχική κατάσταση.",
+          "Το πρόγραμμα Go θα καταρρεύσει αμέσως με fatal panic λόγω διπλής κλήσης τερματισμού transaction.",
+          "Η βάση δεδομένων θα κλειδώσει την εγγραφή μόνιμα μέχρι να επανεκκινηθεί ο εξυπηρετητής."
+        ],
+        correct: 0,
+        explain: "Η tx.Rollback() μετά από επιτυχές tx.Commit() επιστρέφει sql.ErrTxDone και δεν έχει καμία επίδραση στη βάση."
+      },
+      {
+        q: "Ποια είναι η διαφορά μεταξύ db.Exec() και tx.Exec() μέσα σε ένα transaction;",
+        options: [
+          "Η tx.Exec() εκτελεί την εντολή αποκλειστικά στη συγκεκριμένη σύνδεση του transaction, ενώ η db.Exec() παίρνει μια τυχαία σύνδεση εκτός transaction.",
+          "Η db.Exec() είναι πιο γρήγορη επειδή παράκαμπτει τους ελέγχους ACID της βάσης δεδομένων.",
+          "Η tx.Exec() επιτρέπει μόνο εντολές SELECT ενώ η db.Exec() επιτρέπει μόνο UPDATE.",
+          "Δεν υπάρχει καμία απολύτως διαφορά, είναι ακριβώς οι ίδιες μεθόδοι."
+        ],
+        correct: 0,
+        explain: "Μέσα σε transaction ΠΡΕΠΕΙ να καλούμε tx.Exec/Query ώστε οι εντολές να εκτελούνται στη δεσμευμένη σύνδεση του transaction."
+      }
+    ]);
+
+    // ── Advanced: Prepared Statements ─────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Advanced Go — Prepared Statements</div>
+<h1>9. Prepared Statements: Χρήση, Αποφυγή &amp; Transactions</h1>
+<p class="lede">Ένα Prepared Statement προ-μεταγλωττίζεται από τη βάση δεδομένων. Αποτελείται από 3 στάδια: <strong>Prepare</strong>, <strong>Execute</strong>, και <strong>Close</strong>.</p>
+
+<h2>1. Prepared Statements &amp; Connections</h2>
+<p>Όταν καλείς <code>db.Prepare()</code>, η Go προετοιμάζει το statement σε μία σύνδεση. Αν στη συνέχεια εκτελέσεις το statement σε άλλη σύνδεση, το <code>database/sql</code> θα το επαν-προετοιμάσει αυτόματα στην νέα σύνδεση!</p>
+
+<h2>2. Πότε να ΑΠΟΦΕΥΓΕΙΣ τα Prepared Statements</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>ΜΗΝ ΧΡΗΣΙΜΟΠΟΙΕΙΣ db.Prepare() για...</h3>
+    <p>Single-use queries! Αν εκτελείς ένα query μία μόνο φορά, η <code>db.Prepare()</code> απαιτεί <strong>2 network round-trips</strong> (1 για Prepare, 1 για Execute). Η <code>db.Exec("...", args)</code> κάνει όλη τη δουλειά σε 1 round-trip!</p>
+  </div>
+  <div class="card">
+    <h3>ΧΡΗΣΙΜΟΠΟΙΗΣΕ db.Prepare() για...</h3>
+    <p>High-throughput loops όπου εκτελείς το <strong>ίδιο ακριβώς query εκατοντάδες φορές</strong> με διαφορετικές παραμέτρους (π.χ. bulk data ingestion).</p>
+  </div>
+</div>
+
+<h2>3. Prepared Statements μέσα σε Transactions</h2>
+<p>Για να χρησιμοποιήσεις ένα ήδη προετοιμασμένο statement <code>stmt</code> μέσα σε ένα transaction <code>tx</code>, καλείς την <code>tx.Stmt(stmt)</code>:</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+)
+
+// ── prepared statement usage inside transaction ─────────────────────────────── ⊃
+
+// insertUsersPrepared demonstrates reuse of a prepared statement inside a transaction.
+func insertUsersPrepared(ctx context.Context, db *sql.DB, emails []string) error {
+	// Prepare statement globally or per batch
+	stmt, err := db.PrepareContext(ctx, "INSERT INTO users (email) VALUES ($1)")
+	if err != nil {
+		return fmt.Errorf("prepare failed: %w", err)
+	}
+	defer stmt.Close()
+
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin tx failed: %w", err)
+	}
+	defer tx.Rollback()
+
+	// Bind the prepared statement to this specific transaction connection!
+	txStmt := tx.Stmt(stmt)
+	defer txStmt.Close()
+
+	for _, email := range emails {
+		if _, err := txStmt.ExecContext(ctx, email); err != nil {
+			return fmt.Errorf("exec failed for %s: %w", email, err)
+		}
+	}
+
+	return tx.Commit()
+}</code></pre>
+`);
+
+    // ── Advanced: Handling Errors & Edge Cases ────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Advanced Go — Error Handling &amp; Context</div>
+<h1>10. Διαχείριση Σφαλμάτων &amp; Timeouts</h1>
+<p class="lede">Η σωστή διαχείριση σφαλμάτων διακρίνει τις ερασιτεχνικές εφαρμογές από τα σοβαρά production systems.</p>
+
+<h2>1. Διαφοροποίηση sql.ErrNoRows</h2>
+<p>Όταν η <code>QueryRow()</code> δεν βρει αποτελέσματα, επιστρέφει <code>sql.ErrNoRows</code>. Αυτό συχνά ΔΕΝ είναι σφάλμα συστήματος, αλλά αναμενόμενη περίπτωση (π.χ. ο χρήστης δεν υπάρχει).</p>
+
+<h2>2. Context Timeouts &amp; Cancellations</h2>
+<p>Όλες οι μέθοδοι του <code>database/sql</code> διαθέτουν παραλλαγές με <code>Context</code> (<code>QueryContext</code>, <code>ExecContext</code>, <code>PingContext</code>). Αν ένας χρήστης ακυρώσει το HTTP request, το context ακυρώνεται και η Go διακόπτει αμέσως το SQL query στη βάση!</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"fmt"
+	"time"
+)
+
+// ── contextual query execution and error handling ───────────────────────────── ⊃
+
+// fetchUserWithTimeout executes a row query enforcing a strict 2-second timeout.
+func fetchUserWithTimeout(db *sql.DB, id int) (*User, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	var u User
+	query := \`SELECT id, email, age FROM users WHERE id = $1\`
+
+	err := db.QueryRowContext(ctx, query, id).Scan(&amp;u.ID, &amp;u.Email, &amp;u.Age)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			// Domain specific handling for missing record
+			return nil, nil
+		}
+		if errors.Is(err, context.DeadlineExceeded) {
+			return nil, fmt.Errorf("database query timed out after 2s: %w", err)
+		}
+		return nil, fmt.Errorf("unexpected query error: %w", err)
+	}
+
+	return &amp;u, nil
+}</code></pre>
+`);
+
+    // ── Advanced: NULLs & Unknown Columns ─────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Advanced Go — NULLs &amp; Dynamic Queries</div>
+<h1>11. Διαχείριση NULLs &amp; Άγνωστων Στηλών</h1>
+<p class="lede">Στην SQL, μια στήλη μπορεί να περιέχει την τιμή <code>NULL</code>. Στη Go, οι απλοί τύποι (π.χ. <code>string</code>, <code>int</code>) προκαλούν σφάλμα Scan αν συναντήσουν NULL.</p>
+
+<h2>1. Working with NULLs (sql.NullString vs Pointers)</h2>
+<p>Έχουμε δύο επιλογές για πεδία που μπορεί να είναι NULL:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Επιλογή Α: sql.NullString / sql.NullInt64</h3>
+    <p>Structs του πακέτου <code>database/sql</code> με πεδία <code>String</code> και <code>Valid</code> (bool).</p>
+  </div>
+  <div class="card">
+    <h3>Επιλογή Β: Pointers (*string, *int)</h3>
+    <p>Αν η τιμή είναι NULL, ο δείκτης γίνεται <code>nil</code>. Πολύ δημοφιλές σε JSON APIs!</p>
+  </div>
+</div>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"fmt"
+)
+
+// ── handling nullable columns ───────────────────────────────────────────────── ⊃
+
+// NullableUser demonstrates reading dynamic NULL database values.
+type NullableUser struct {
+	ID        int
+	Bio       sql.NullString // Option A: NullString struct
+	MiddleName *string       // Option B: Go Pointer
+}
+
+// fetchNullableUser scans row data into nullable struct fields safely.
+func fetchNullableUser(db *sql.DB, id int) (*NullableUser, error) {
+	var u NullableUser
+	query := \`SELECT id, bio, middle_name FROM users WHERE id = $1\`
+
+	err := db.QueryRow(query, id).Scan(&amp;u.ID, &amp;u.Bio, &amp;u.MiddleName)
+	if err != nil {
+		return nil, err
+	}
+
+	// Access Option A
+	if u.Bio.Valid {
+		fmt.Println("Bio:", u.Bio.String)
+	}
+
+	// Access Option B
+	if u.MiddleName != nil {
+		fmt.Println("Middle Name:", *u.MiddleName)
+	}
+
+	return &amp;u, nil
+}</code></pre>
+
+<h2>2. Working with Unknown Columns (Dynamic Scanning)</h2>
+<p>Όταν δεν γνωρίζουμε εκ των προτέρων το schema των στηλών, χρησιμοποιούμε τις μεθόδους <code>rows.Columns()</code> και <code>interface{}</code> scanning:</p>
+
+<pre><code class="lang-go">// ── dynamic unknown column scanning ────────────────────────────────────────── ⊃
+
+// scanUnknownRows scans dynamic database rows without compile-time schema structure.
+func scanUnknownRows(rows *sql.Rows) ([]map[string]interface{}, error) {
+	cols, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	var results []map[string]interface{}
+
+	for rows.Next() {
+		// Create slices for row scanning
+		columns := make([]interface{}, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i := range columns {
+			columnPointers[i] = &amp;columns[i]
+		}
+
+		if err := rows.Scan(columnPointers...); err != nil {
+			return nil, err
+		}
+
+		rowMap := make(map[string]interface{})
+		for i, colName := range cols {
+			val := columnPointers[i].(*interface{})
+			rowMap[colName] = *val
+		}
+
+		results = append(results, rowMap)
+	}
+
+	return results, nil
+}</code></pre>
+`);
+
+    // ── Final Combined Quiz ────────────────────────────────────────────────── ⊃
+    addQuiz([
+      {
+        q: "Πώς συμπεριφέρεται η Scan() όταν προσπαθούμε να διαβάσουμε μια στήλη NULL σε μια απλή μεταβλητή τύπου string;",
+        options: [
+          "Επιστρέφει σφάλμα (error) διότι το απλό string στη Go δεν μπορεί να αναπαραστήσει την τιμή NULL.",
+          "Μετατρέπει αυτόματα την τιμή NULL σε κενό string (\"\") χωρίς κανένα σφάλμα.",
+          "Μετατρέπει την τιμή NULL στη λέξη \"NULL\" ως συμβολοσειρά.",
+          "Δημιουργεί panic και τερματίζει την εκτέλεση της εφαρμογής."
+        ],
+        correct: 0,
+        explain: "Για στήλες που επιτρέπεται να είναι NULL πρέπει να χρησιμοποιούμε sql.NullString ή δείκτη *string."
+      },
+      {
+        q: "Ποια μέθοδος μας επιτρέπει να λάβουμε τα ονόματα των στηλών ενός δυναμικού query κατά το runtime;",
+        options: [
+          "Η μέθοδος rows.Columns(), η οποία επιστρέφει []string με τα ονόματα όλων των στηλών.",
+          "Η μέθοδος db.GetTableSchema() που διαβάζει τα μεταδεδομένα της βάσης.",
+          "Η μέθοδος rows.ScanHeaders() που διαβάζει την πρώτη γραμμή του πίνακα.",
+          "Η μέθοδος sql.ListColumns() του κεντρικού πακέτου."
+        ],
+        correct: 0,
+        explain: "Η rows.Columns() επιστρέφει slice με τα ονόματα των στηλών που περιλαμβάνονται στο result set."
+      },
+      {
+        q: "Γιατί είναι προτιμότερο να χρησιμοποιούμε db.QueryContext(ctx, ...) αντί για db.Query(...);",
+        options: [
+          "Επιτρέπει την ακύρωση του query και την απελευθέρωση πόρων αν το context λήξει (timeout) ή ακυρωθεί από τον χρήστη.",
+          "Επιστρέφει τα αποτελέσματα πιο γρήγορα επειδή χρησιμοποιεί παράλληλη εκτέλεση threads.",
+          "Είναι ο μόνος τρόπος για να εκτελεστούν εντολές SELECT στη Go.",
+          "Μετατρέπει αυτόματα όλα τα σφάλματα της βάσης σε ελληνικά μηνύματα."
+        ],
+        correct: 0,
+        explain: "Οι συναρτήσεις με Context επιτρέπουν cancellation και timeouts, αποτρέποντας \"κολλημένα\" queries που καταναλώνουν πόρους."
+      }
+    ], { bg: "./images/bg.jpg", overlayAlpha: 0.6 });
+
+    // ── Consolidated Glossary ─────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
+<h1>Όλοι οι όροι Go &amp; SQL σε ένα σημείο</h1>
+<p class="lede">Γρήγορη αναφορά για όλες τις μεθόδους, τύπους και έννοιες που καλύψαμε.</p>
+
+<div class="glossary-group">
+  <h2>1. Θεμελιώδεις Μέθοδοι (Table View)</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">sql.Open()</td><td class="gt-def">Αρχικοποιεί τη δομή *sql.DB (Connection Pool handle).</td></tr>
+    <tr><td class="gt-term">db.PingContext()</td><td class="gt-def">Επαληθεύει την πραγματική διαθεσιμότητα της βάσης δεδομένων.</td></tr>
+    <tr><td class="gt-term">db.Exec()</td><td class="gt-def">Εκτελεί queries χωρίς επιστροφή γραμμών (INSERT, UPDATE, DELETE, CREATE TABLE).</td></tr>
+    <tr><td class="gt-term">db.Query()</td><td class="gt-def">Εκτελεί SELECT queries που επιστρέφουν cursor πολλαπλών εγγραφών (*sql.Rows).</td></tr>
+    <tr><td class="gt-term">db.QueryRow()</td><td class="gt-def">Εκτελεί SELECT query που επιστρέφει το πολύ μία εγγραφή (*sql.Row).</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>2. Connection Pool &amp; Transactions (Pill View)</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">SetMaxOpenConns</span><span class="gs-def">Ανώτατο όριο ενεργών συνδέσεων.</span></div>
+    <div class="gs-pill"><span class="gs-name">SetMaxIdleConns</span><span class="gs-def">Ανώτατο όριο αδρανών συνδέσεων στο pool.</span></div>
+    <div class="gs-pill"><span class="gs-name">db.BeginTx()</span><span class="gs-def">Έναρξη ατομικού transaction.</span></div>
+    <div class="gs-pill"><span class="gs-name">tx.Commit()</span><span class="gs-def">Οριστικοποίηση αλλαγών transaction.</span></div>
+    <div class="gs-pill"><span class="gs-name">tx.Rollback()</span><span class="gs-def">Ακύρωση αλλαγών transaction.</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>3. Advanced &amp; Error Handling (Column View)</h2>
+  <div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">sql.ErrNoRows</span><span class="gc-def">Σφάλμα όταν η QueryRow().Scan() δεν βρει καμία εγγραφή.</span></div>
+    <div class="gc-line"><span class="gc-term">sql.NullString</span><span class="gc-def">Struct για ασφαλή ανάγνωση NULL πεδίων κειμένου.</span></div>
+    <div class="gc-line"><span class="gc-term">rows.Columns()</span><span class="gc-def">Επιστρέφει slice με τα ονόματα των στηλών για δυναμικό scanning.</span></div>
+    <div class="gc-line"><span class="gc-term">tx.Stmt()</span><span class="gc-def">Προσαρμόζει ένα Prepared Statement στη συγκεκριμένη σύνδεση του transaction.</span></div>
+  </div>
+</div>
+`);
+
+    // ── Sources & Footer ──────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<h1>Συγχαρητήρια! Ολοκλήρωσες το πλήρες σεμινάριο Go &amp; SQL.</h1>
+<p class="lede">Είσαι πλέον έτοιμος να σχεδιάσεις και να υλοποιήσεις παραγωγικά backend συστήματα στη Go με υψηλή απόδοση, ασφάλεια και ορθότητα.</p>
+
+<div class="sources-list">
+  <a href="https://pkg.go.dev/database/sql" target="_blank" rel="noopener">Official Go database/sql Documentation</a>
+  <a href="https://go.dev/doc/tutorial/database-access" target="_blank" rel="noopener">Go Tutorial: Accessing a relational database</a>
+  <a href="https://github.com/golang/go/wiki/SQLInterface" target="_blank" rel="noopener">Go database/sql Wiki &amp; Best Practices</a>
+</div>
+
+<div id="final-score"></div>
+
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
+  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+</p>
+`);
+
+    initSlideDeck({ version: "1.0.0" });
+  </script>
+</body>
+
+</html>

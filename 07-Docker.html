@@ -1099,7 +1099,13 @@ volumes:
                 correct: 0,
                 explain: "Οι τιμές της ARG διαγράφονται μόλις ολοκληρωθεί το build image. Αν η εφαρμογή χρειάζεται μια τιμή όταν τρέχει (runtime), χρησιμοποιούμε ENV."
             }
-        ]);
+        ], {
+            label: "Final Quiz",
+            // bg: "../images/docker-bg.jpg",
+            // overlayAlpha: 0.98,
+            // backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            // backgroundRepeat: "repeat-x" // ή "repeat" / "repeat-x" / "repeat-y"
+        });
 
         // 2. Large Multi-stage Fill-in-the-Blanks (addFillBlank)
         addFillBlank([
@@ -1146,10 +1152,10 @@ __id9__ ["./myapp"]`,
         ], {
             label: "Τελικό Fill in the Blanks Test",
             note: "Συμπλήρωσε τις κατάλληλες εντολές Dockerfile που λείπουν.",
-            bg: "images/docker-bg.jpg",
-            overlayAlpha: 0.65,
-            backgroundSize: "auto",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat" // ή "repeat" / "repeat-x" / "repeat-y"
+            // bg: "../images/docker-bg.jpg",
+            // overlayAlpha: 0.98,
+            // backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            // backgroundRepeat: "repeat-x" // ή "repeat" / "repeat-x" / "repeat-y"
         });
 
         // 3. Matching Game (addMatching)
@@ -1174,10 +1180,10 @@ __id9__ ["./myapp"]`,
             ]
         ], {
             note: "Αντιστοίχισε τις 6 εντολές Dockerfile (Σετ A) και τα 6 Concepts του μαθήματος (Σετ B).",
-            bg: "images/docker-bg.jpg",
-            overlayAlpha: 0.65,
-            backgroundSize: "auto",
-            backgroundRepeat: "repeat"
+            // bg: "../images/docker-bg.jpg",
+            // overlayAlpha: 0.98,
+            // backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            // backgroundRepeat: "repeat-x" // ή "repeat" / "repeat-x" / "repeat-y"
         });
 
         // ── Sources ──────────────────────────────────────────────────────────── ⊃
