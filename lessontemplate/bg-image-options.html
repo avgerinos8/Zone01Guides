@@ -1,54 +1,97 @@
 /* ────────────────────────────────────────────────────────────────────────
-BACKGROUND IMAGE OPTIONS — works on ANY slide type:
-addContent(html, opts) / addQuiz(questions, opts) /
-addFillBlank(items, opts) / addMatching(pairs, opts)
+   BACKGROUND IMAGE OPTIONS — works on ANY slide type. The background image
+   is always position:fixed in CSS — it never scrolls or moves, no matter
+   how much the slide's own content scrolls.
 
-opts = {
-bg: "./images/example.jpg",
-// Path to the background image for THIS slide only. Omit entirely
-// (or leave opts without "bg") for a slide with no background at all.
+   ── HOW TO ADD IT PER SLIDE TYPE ──────────────────────────────────────
 
-overlayAlpha: 0.65,
-// 0 to 1 — how strong the solid dark overlay on top of the image is,
-// so text stays readable. 0 = fully transparent (no overlay, image
-// shows raw). 1 = fully solid (image completely hidden behind the
-// overlay color). Default if omitted: 0.5. Higher = more readable
-// text but less visible image; lower = more visible image but text
-// may be harder to read depending on the image.
+   addContent(html, opts)
+     addContent(`<h1>...</h1>`, { bg: "./images/example.jpg" });
 
-backgroundSize: "cover",
-// How the image is scaled to fit the slide. Options:
-// "cover" → fills the ENTIRE slide, keeps proportions,
-// CROPS whatever doesn't fit (no empty gaps).
-// "contain" → fits the WHOLE image inside the slide, keeps
-// proportions, may leave empty gaps top/bottom
-// or left/right if the aspect ratio doesn't match.
-// "100% 100%" → STRETCHES the image to exactly fill width and
-// height, ignoring proportions — can look distorted.
-// "100% auto" → fits image to the slide's WIDTH exactly, height
-// scales proportionally (may overflow vertically).
-// "auto" → natural image size, no scaling at all.
-// Default if omitted: "auto" (natural size, top-left, no scaling).
+   addQuiz(questions, opts)
+     addQuiz([
+       { q: "...", options: [...], correct: 0, explain: "..." }
+     ], { bg: "./images/example.jpg" });
 
-backgroundRepeat: "no-repeat"
-// Whether the image tiles/repeats to fill empty space. Options:
-// "no-repeat" → shows the image ONCE, no matter how small it is.
-// "repeat" → tiles the image both horizontally AND vertically
-// (like wallpaper) — useful for small patterns/
-// textures, NOT for a single photo/illustration.
-// "repeat-x" → tiles only horizontally (one row, left to right).
-// "repeat-y" → tiles only vertically (one column, top to bottom).
-// Default if omitted: "no-repeat".
-}
+   addFillBlank(items, opts)
+     addFillBlank([
+       { code: "...", blanks: [...], explain: "..." }
+     ], { bg: "./images/example.jpg", label: "...", note: "..." });
 
-Position is always fixed to top-left of the slide and does not scroll
-with the content (position: fixed in CSS).
+   addMatching(pairs, opts)
+     addMatching([
+       { term: "...", def: "..." }
+     ], { bg: "./images/example.jpg", label: "...", note: "..." });
 
-COMMON COMBINATIONS:
-- Full-bleed photo covering the whole slide:
-{ bg: "...", backgroundSize: "cover", backgroundRepeat: "no-repeat" }
-- Small repeating texture/pattern as backdrop:
-{ bg: "...", backgroundSize: "auto", backgroundRepeat: "repeat" }
-- Logo/image shown once at its natural size, top-left corner:
-{ bg: "..." } (defaults already do exactly this)
-──────────────────────────────────────────────────────────────────────── */
+   In every case, opts is the LAST argument to the function, and "bg" is
+   what turns the background image on. Omit "bg" entirely (or omit opts)
+   for a slide with no background at all — that's the default for every
+   slide type.
+
+   ── ALL OPTIONS ────────────────────────────────────────────────────────
+
+   opts = {
+     bg: "./images/example.jpg",
+     // Path to the background image for THIS slide only. Omit entirely
+     // (or leave opts without "bg") for a slide with no background at all.
+
+     overlayAlpha: 0.65,
+     // 0 to 1 — how strong the solid dark overlay on top of the image is,
+     // so text stays readable. 0 = fully transparent (no overlay, image
+     // shows raw). 1 = fully solid (image completely hidden behind the
+     // overlay color). Default if omitted: 0.5. Higher = more readable
+     // text but less visible image; lower = more visible image but text
+     // may be harder to read depending on the image.
+
+     backgroundSize: "cover",
+     // How the image is scaled to fit the slide. Options:
+     //   "cover"     → fills the ENTIRE slide, keeps proportions,
+     //                 CROPS whatever doesn't fit (no empty gaps).
+     //   "contain"   → fits the WHOLE image inside the slide, keeps
+     //                 proportions, may leave empty gaps top/bottom
+     //                 or left/right if the aspect ratio doesn't match.
+     //   "100% 100%" → STRETCHES the image to exactly fill width and
+     //                 height, ignoring proportions — can look distorted.
+     //   "100% auto" → fits image to the slide's WIDTH exactly, height
+     //                 scales proportionally (may overflow vertically).
+     //   "auto"      → natural image size, no scaling at all.
+     // Default if omitted: "auto" (natural size, no scaling).
+
+     backgroundRepeat: "no-repeat",
+     // Whether the image tiles/repeats to fill empty space. Options:
+     //   "no-repeat" → shows the image ONCE, no matter how small it is.
+     //   "repeat"    → tiles the image both horizontally AND vertically
+     //                 (like wallpaper) — useful for small patterns/
+     //                 textures, NOT for a single photo/illustration.
+     //   "repeat-x"  → tiles only horizontally (one row, left to right).
+     //   "repeat-y"  → tiles only vertically (one column, top to bottom).
+     // Default if omitted: "no-repeat".
+
+     backgroundPosition: "center center"
+     // Where the image is anchored/aligned within the slide (only matters
+     // when the image doesn't fully cover the slide, e.g. with "auto" or
+     // "contain"). Accepts any real CSS background-position value:
+     //   "top left"       → anchored to the top-left corner.
+     //   "center center"  → dead center of the slide.
+     //   "bottom right"   → anchored to the bottom-right corner.
+     //   "50% 50%"        → same as "center center", percentage form.
+     //   "top" / "bottom" / "left" / "right" → edge-anchored, centered
+     //                        on the other axis.
+     // Default if omitted: "top left".
+   }
+
+   ── COMMON COMBINATIONS ──────────────────────────────────────────────
+
+   - Full-bleed photo covering the whole slide, centered:
+       { bg: "...", backgroundSize: "cover", backgroundRepeat: "no-repeat",
+         backgroundPosition: "center center" }
+
+   - Small repeating texture/pattern as backdrop:
+       { bg: "...", backgroundSize: "auto", backgroundRepeat: "repeat" }
+
+   - Logo/image shown once at its natural size, top-left corner:
+       { bg: "..." }  (defaults already do exactly this)
+
+   - Logo/image shown once at its natural size, centered:
+       { bg: "...", backgroundPosition: "center center" }
+   ──────────────────────────────────────────────────────────────────────── */

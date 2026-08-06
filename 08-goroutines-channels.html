@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goroutines &amp; Channels — Ταυτόχρονος Προγραμματισμός σε Go</title>
-    <link rel="stylesheet" href="static/style-burgundy.css?v=20260801">
+    <link rel="stylesheet" href="static/style.css?v=20260805">
+    <link rel="stylesheet" href="static/theme-burgundy.css?v=20260805">
 </head>
 
 <body>
@@ -40,8 +41,8 @@
         </div>
     </div>
 
-    <script src="static/script.js?v=20260731"></script>
-    <script src="static/highlighter.js"></script>
+    <script src="static/script.js?v=20260805"></script>
+    <script src="static/highlighter.js?v=20260805"></script>
 
     <script>// ── 0. Τίτλος ────────────────────────────────────────────────────────────── ⊃
         addContent(`
@@ -429,7 +430,7 @@ buffered := make(chan int, 5) <span class="cm">// a buffered channel that can ho
 <div class="grid3">
   <div class="card"><h3>Send</h3><p><code>ch &lt;- value</code> — στέλνει μια τιμή μέσα στο channel.</p></div>
   <div class="card"><h3>Receive</h3><p><code>value := &lt;-ch</code> — λαμβάνει μια τιμή από το channel.</p></div>
-  <div class="card"><h3>Close</h3><p><code>close(ch)</code> — δηλώνει ότι δεν θα σταλούν άλλες τιμές. Θα το αναλύσουμε στην Ενότητα 7.</p></div>
+  <div class="card"><h3>Close</h3><p><code>close(ch)</code> — δηλώνει ότι δεν θα σταλούν άλλες τιμές. Θα το αναλύσουμε σε παρακάτω Ενότητα.</p></div>
 </div>
 
 <h2>Unbuffered vs Buffered channels — η πιο σημαντική έννοια εδώ</h2>
@@ -989,31 +990,6 @@ func (c *SafeCounter) Get() int {
 </div>
 `);
 
-        addQuiz([
-            {
-                q: "Έχεις έναν in-memory cache (map) που πολλές goroutines διαβάζουν συχνά και σπάνια ενημερώνουν. Ποιο εργαλείο συγχρονισμού είναι το πιο κατάλληλο;",
-                options: [
-                    "sync.RWMutex — επιτρέπει ταυτόχρονα διαβάσματα χωρίς μπλοκάρισμα, αλλά αποκλείει τα διαβάσματα μόνο κατά τις σπάνιες εγγραφές",
-                    "Ένα buffered channel χωρητικότητας 1 που λειτουργεί ως mutex για την προστασία ολόκληρου του cache",
-                    "Κανένα εργαλείο συγχρονισμού — η Go προστατεύει αυτόματα τους χάρτες από ταυτόχρονη πρόσβαση",
-                    "Μόνο sync.Mutex — το RWMutex δεν προσφέρει κανένα πλεονέκτημα σε σχέση με το απλό Mutex σε καμία περίπτωση"
-                ],
-                correct: 0,
-                explain: "Το RWMutex είναι ιδανικό για read-heavy σενάρια: επιτρέπει σε πολλούς readers να διαβάζουν ταυτόχρονα χωρίς να μπλοκάρουν μεταξύ τους, και μπλοκάρει τους πάντες μόνο όταν ένας writer χρειάζεται αποκλειστική πρόσβαση. Για cache με πολλά reads και λίγα writes, είναι σαφώς ανώτερο από το απλό Mutex."
-            },
-            {
-                q: "Ποιο από τα παρακάτω σενάρια είναι καταλληλότερο για channels αντί για mutexes;",
-                options: [
-                    "Ένας worker που υπολογίζει ένα αποτέλεσμα και πρέπει να το παραδώσει σε μια άλλη goroutine για περαιτέρω επεξεργασία — το δεδομένο αλλάζει ιδιοκτήτη",
-                    "Ένας απλός μετρητής (counter) που πολλές goroutines χρειάζεται να αυξάνουν ταυτόχρονα κατά 1",
-                    "Μια κοινόχρηστη δομή ρυθμίσεων (configuration struct) που διαβάζεται από όλες τις goroutines αλλά σπάνια αλλάζει",
-                    "Ένα mutex που προστατεύει την πρόσβαση σε έναν κοινόχρηστο χάρτη string → int"
-                ],
-                correct: 0,
-                explain: "Όταν το δεδομένο αλλάζει ιδιοκτήτη — παράγεται από μία goroutine και παραδίδεται σε μία άλλη — το channel είναι το φυσικό εργαλείο. Το δεδομένο δεν είναι «κοινόχρηστο», απλά μεταφέρεται. Αντίθετα, ένας counter, ένα config struct ή ένας shared map είναι κοινόχρηστη κατάσταση που ανήκει σε όλους — εκεί τα mutexes ταιριάζουν καλύτερα."
-            }
-        ]);
-
         addFillBlank([
             {
                 code: `var mu sync.Mutex
@@ -1083,7 +1059,7 @@ func readData() string {
 <p>Ένα πολύ κοινό pattern: μια συνάρτηση ξεκινάει μια goroutine που κάνει μια «βαριά» δουλειά, και επιστρέφει αμέσως ένα
 channel από το οποίο ο καλών θα μπορεί να πάρει το αποτέλεσμα <strong>όποτε</strong> είναι έτοιμο.</p>
 
-<pre><code><span class="cm">// note the return type: <-chan int, a RECEIVE-ONLY channel</span>
+<pre><code class="lang-go"><span class="cm">// note the return type: <-chan int, a RECEIVE-ONLY channel</span>
 func computeAsync(n int) <-chan int {
     resultCh := make(chan int) <span class="cm">// created as a regular, bidirectional channel...</span>
 
@@ -1117,7 +1093,7 @@ fmt.Println("result:", result)
 που της δίνει κάποιος άλλος, μπορούμε να δηλώσουμε την παράμετρο ως <strong>send-only</strong>, ώστε ο worker να μην μπορεί
 κατά λάθος να διαβάσει από εκεί (κάτι που δεν βγάζει καν νόημα λογικά, αφού ο ρόλος του είναι μόνο να παράγει).</p>
 
-<pre><code><span class="cm">// the parameter type chan<- int means: this function can only SEND into out</span>
+<pre><code class="lang-go"><span class="cm">// the parameter type chan<- int means: this function can only SEND into out</span>
 func worker(id int, out chan<- int) {
     out <- id * 100 <span class="cm">// perfectly legal — this is a send</span>
     <span class="cm">// value := <-out would NOT compile here — receiving is forbidden by the type</span>
@@ -1155,7 +1131,7 @@ compile-time contract που είδαμε παραπάνω, απλά στην α
 θα έρθει — αγνοώντας τις υπόλοιπες. Αυτό μειώνει δραστικά τον χρόνο αναμονής στη χειρότερη περίπτωση, με το κόστος της
 επανάληψης της ίδιας δουλειάς πολλές φορές.</p>
 
-<pre><code>func fetchFrom(source string, out chan<- string) {
+<pre><code class="lang-go">func fetchFrom(source string, out chan<- string) {
     <span class="cm">// simulate varying network latency per source</span>
     delay := time.Duration(rand.Intn(500)) * time.Millisecond
     time.Sleep(delay)
@@ -1178,7 +1154,7 @@ func fetchFastest(sources []string) string {
   Οι goroutines που «έχασαν» τον αγώνα δεν σταματούν αυτόματα — απλά το αποτέλεσμά τους δεν διαβάζεται ποτέ από κανέναν
   (αφού το <code>fetchFastest</code> έχει ήδη επιστρέψει). Σε πραγματικό κώδικα παραγωγής, συχνά θα ήθελες επιπλέον μηχανισμό
   ακύρωσης (π.χ. μέσω <code>context.Context</code>) ώστε οι «χαμένες» goroutines να σταματούν κιόλας τη δουλειά τους αντί να
-  τη συνεχίζουν άσκοπα — αυτό όμως ξεφεύγει από το βασικό αντικείμενο της σημερινής θεωρίας.
+  τη συνεχίζουν άσκοπα.
 </div>
 `);
 
@@ -1194,6 +1170,111 @@ func fetchFastest(sources []string) string {
             explain: "Το <-chan T είναι receive-only channel type — ο compiler απαγορεύει οποιοδήποτε send σε αυτό από την πλευρά που το έλαβε με αυτόν τον τύπο. Είναι πραγματικός, στατικά επιβαλλόμενος περιορισμός, όχι απλή σύμβαση ονοματολογίας."
         });
 
+        // ── ΕΝΟΤΗΤΑ 9 — Τελικό Quiz ──────────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ανακεφαλαίωση</div>
+<h1>Πριν το τελικό quiz</h1>
+<p class="lede">Καλύψαμε πολύ δρόμο: από το απλό keyword <code>go</code>, μέχρι buffered/unbuffered channels, το
+<code>select</code>, το <code>sync.WaitGroup</code> και <code>sync.Mutex</code>, και μια ολόκληρη «εργαλειοθήκη» από
+patterns πάνω σε channels — futures, notifications, locks, semaphores, ping-pong, encapsulated channels.</p>
+
+<h2>Ο πυρήνας που αξίζει να θυμάσαι</h2>
+<ul>
+  <li><strong>go</strong> ξεκινάει μια νέα, ανεξάρτητη ροή εκτέλεσης — δεν περιμένει, δεν εγγυάται σειρά.</li>
+  <li><strong>channel</strong> είναι ο ασφαλής τρόπος επικοινωνίας/συγχρονισμού ανάμεσα σε goroutines — προτιμώμενος τρόπος
+  στη φιλοσοφία της Go έναντι του άμεσου διαμοιρασμού μνήμης.</li>
+  <li><strong>unbuffered</strong> channel = χειραψία (και οι δύο πλευρές έτοιμες ταυτόχρονα)· <strong>buffered</strong>
+  channel = «γραμματοκιβώτιο» με χωρητικότητα.</li>
+  <li><strong>select</strong> επιτρέπει αναμονή πάνω σε πολλαπλά channels ταυτόχρονα, επιλέγοντας όποιο γίνει πρώτο έτοιμο.</li>
+  <li><strong>close()</strong> είναι πραγματικό broadcast σε όλες τις αναμένουσες goroutines — διαφορετικό από ένα απλό send.</li>
+  <li><strong>WaitGroup</strong> περιμένει την ολοκλήρωση, <strong>Mutex</strong> προστατεύει κοινόχρηστη κατάσταση.</li>
+</ul>
+
+<div class="callout good">
+  <span class="tag">Το επόμενο βήμα</span>
+  Η θεωρία μόνη της δεν αρκεί — το concurrency «μαθαίνεται» πραγματικά μόνο γράφοντας κώδικα, βλέποντας deadlocks να συμβαίνουν
+  στην πράξη, και ξεδιαλύνοντας race conditions με το <code>go run -race</code>. Αυτή η παρουσίαση σκόπιμα δεν λύνει καμία
+  άσκηση — το επόμενο βήμα είναι δικό σου: σχεδίασε τη ροή σου σε χαρτί πριν γράψεις κώδικα.
+</div>
+
+<p class="lede">Έτοιμος/η για το τελικό, συνδυαστικό quiz;</p>
+`);
+
+        addQuiz([
+            {
+                q: "[Τελικό Quiz 1/5] Ένα πρόγραμμα δηλώνει ch := make(chan int) (χωρίς δεύτερο όρισμα) και αμέσως μετά εκτελεί ch <- 10 στο main, χωρίς καμία άλλη goroutine να έχει ξεκινήσει. Τι θα συμβεί;",
+                options: [
+                    "Deadlock — το unbuffered send μπλοκάρει περιμένοντας ταυτόχρονο receiver που δεν υπάρχει, και ο runtime το ανιχνεύει",
+                    "Η τιμή 10 αποθηκεύεται προσωρινά στο channel και το πρόγραμμα συνεχίζει κανονικά χωρίς προβλήματα",
+                    "Το πρόγραμμα εκτυπώνει αυτόματα το zero value του int, αφού δεν υπάρχει κανείς να λάβει την τιμή",
+                    "Ο compiler αρνείται να μεταγλωττίσει τον κώδικα επειδή λείπει δεύτερο όρισμα στο make(chan int)"
+                ],
+                correct: 0,
+                explain: "Unbuffered channel σημαίνει ότι το send χρειάζεται ταυτόχρονο receive από άλλη goroutine. Αφού δεν υπάρχει καμία άλλη goroutine, το send μπλοκάρει για πάντα, και ο runtime ανιχνεύει ότι όλες οι goroutines (εδώ μόνο η main) είναι μπλοκαρισμένες."
+            },
+            {
+                q: "[Τελικό Quiz 2/5] Ποιο από τα παρακάτω περιγράφει σωστά τη λειτουργία του select{} με πολλαπλά cases όπου περισσότερα από ένα είναι έτοιμα ταυτόχρονα, χωρίς default;",
+                options: [
+                    "Επιλέγεται τυχαία ένα από τα έτοιμα cases προς εκτέλεση, ώστε κανένα channel να μην ευνοείται συστηματικά έναντι των άλλων",
+                    "Εκτελούνται όλα τα έτοιμα cases με τη σειρά που εμφανίζονται στον κώδικα, το ένα μετά το άλλο",
+                    "Επιλέγεται πάντα το πρώτο case στη σειρά δήλωσης, ανεξάρτητα από τα υπόλοιπα έτοιμα cases",
+                    "Το select επιστρέφει σφάλμα χρόνου εκτέλεσης όταν παραπάνω από ένα case είναι έτοιμα ταυτόχρονα"
+                ],
+                correct: 0,
+                explain: "Όταν πολλά cases είναι έτοιμα ταυτόχρονα, η Go επιλέγει ένα τυχαία — σκόπιμη σχεδιαστική επιλογή ώστε να μην υπάρχει συστηματική προτίμηση προς κάποιο συγκεκριμένο channel βάσει σειράς δήλωσης."
+            },
+            {
+                q: "[Τελικό Quiz 3/5] Ποια είναι η βασική διαφορά ανάμεσα σε ένα απλό send σε κοινό channel και σε close() του channel, όσον αφορά goroutines που περιμένουν με <-ch;",
+                options: [
+                    "Το send δίνει την τιμή σε μία μόνο αναμένουσα goroutine, ενώ το close() «ξυπνάει» ταυτόχρονα όλες τις goroutines που περιμένουν, ανεξάρτητα από τον αριθμό τους",
+                    "Και τα δύο έχουν ακριβώς την ίδια συμπεριφορά — ξυπνάνε πάντα όλες τις αναμένουσες goroutines με την ίδια τιμή",
+                    "Το close() ξυπνάει μόνο μία τυχαία goroutine, ενώ το send ξυπνάει πάντα όλες τις αναμένουσες goroutines ταυτόχρονα",
+                    "Το send λειτουργεί μόνο σε buffered channels, ενώ το close() λειτουργεί μόνο σε unbuffered channels"
+                ],
+                correct: 0,
+                explain: "Ένα send «καταναλώνεται» από μία μόνο goroutine — όποια το «αρπάξει» πρώτη. Το close() αλλάζει την ίδια την κατάσταση του channel με τρόπο ορατό σε όλους ταυτόχρονα, οπότε λειτουργεί σαν πραγματικό broadcast σε όλες τις αναμένουσες goroutines."
+            },
+            {
+                q: "[Τελικό Quiz 4/5] Γιατί το defer mu.Unlock() αμέσως μετά το mu.Lock() θεωρείται καλή πρακτική σε σχέση με sync.Mutex;",
+                options: [
+                    "Γιατί εγγυάται ότι το κλείδωμα θα απελευθερωθεί όταν η συνάρτηση επιστρέψει, ό,τι κι αν συμβεί ενδιάμεσα — πρόωρο return ή ακόμα και panic",
+                    "Γιατί το Unlock() δεν λειτουργεί καθόλου αν δεν καλείται μέσω defer, ανεξάρτητα από τη θέση του στη συνάρτηση",
+                    "Γιατί το defer κάνει το Lock() να εκτελείται ταυτόχρονα σε πολλαπλές goroutines χωρίς κίνδυνο race condition",
+                    "Γιατί χωρίς defer, το mutex κλειδώνει αυτόματα κάθε άλλη μεταβλητή στο ίδιο πακέτο, όχι μόνο την προστατευόμενη"
+                ],
+                correct: 0,
+                explain: "Το defer εξασφαλίζει εκτέλεση κατά την έξοδο της συνάρτησης ανεξάρτητα από το μονοπάτι εξόδου. Χωρίς αυτό, ένα πρόωρο return ή ένα panic θα μπορούσε να αφήσει το mutex μόνιμα κλειδωμένο, οδηγώντας σε deadlock για όποιον προσπαθήσει να το ξανακλειδώσει."
+            },
+            {
+                q: "[Τελικό Quiz 5/5] Ένας βρόχος for i := 0; i < 5; i++ { go func(){ fmt.Println(i) }() } (ΧΩΡΙΣ να περνάει το i ως όρισμα) τι προβληματική συμπεριφορά μπορεί να παρουσιάσει σε σχέση με το τι θα εκτυπωθεί;",
+                options: [
+                    "Οι goroutines μοιράζονται όλες την ίδια μεταβλητή βρόχου i μέσω closure, οπότε μπορεί να εκτυπωθούν απρόβλεπτες ή επαναλαμβανόμενες τιμές αντί των αναμενόμενων 0 έως 4",
+                    "Το πρόγραμμα αρνείται να μεταγλωττιστεί επειδή απαιτείται πάντα ρητό όρισμα σε κάθε ανώνυμη συνάρτηση που καλείται με go",
+                    "Κάθε goroutine εγγυημένα εκτυπώνει τη σωστή, μοναδική τιμή του i που είχε τη στιγμή της δικής της εκκίνησης, χωρίς κίνδυνο",
+                    "Το πρόγραμμα μπλοκάρει σε deadlock επειδή το fmt.Println δεν μπορεί να κληθεί από περισσότερες από μία goroutine ταυτόχρονα"
+                ],
+                correct: 0,
+                explain: "Χωρίς να περάσουμε το i ως παράμετρο, όλες οι ανώνυμες συναρτήσεις «βλέπουν» μέσω closure την ίδια, κοινή μεταβλητή i του βρόχου, η οποία συνεχίζει να αλλάζει καθώς προχωράει ο βρόχος — οπότε το ποια τιμή θα διαβάσει τελικά κάθε goroutine είναι απρόβλεπτο (πολύ πιθανό να δούμε πολλά 5άρια, ή οποιοδήποτε συνδυασμό)."
+            }
+        ]);
+
+
+        addContent(`
+<div class="eyebrow">Ενότητα 7 / 9 — Channels for Notification</div>
+<h1>Προχωρημένα Patterns &amp; Εμβάθυνση</h1>
+<p class="lede">Σε αυτό το σημείο, το βασικό μας ταξίδι στα channels και το concurrency θα μπορούσε να θεωρηθεί ολοκληρωμένο. Αν διαβάζετε το υλικό για πρώτη φορά, μπορείτε να σταματήσετε εδώ.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h2>🎯 Σημείο Διακλάδωσης</h2>
+    <p>Τα επόμενα concepts είναι αρκετά πιο προχωρημένα (advanced). Απαιτούν ουσιαστική εξοικείωση και την υλοποίηση βασικών concurrency projects προτού επιχειρήσετε να τα εμβαθύνετε πλήρως.</p>
+  </div>
+  <div class="card">
+    <h2>🔄 Δυνατότητα Επιστροφής</h2>
+    <p>Μπορείτε άνετα να ολοκληρώσετε τα βασικά σας projects τώρα και να επιστρέψετε σε αυτές τις ενότητες αργότερα, όταν οι ανάγκες των εφαρμογών σας το απαιτήσουν.</p>
+  </div>
+</div>
+`);
         // ── ΕΝΟΤΗΤΑ 7 — Channels for Notifications ──────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 7 / 9 — Channels for Notifications</div>
@@ -1207,7 +1288,7 @@ func fetchFastest(sources []string) string {
 <h2>1-to-1 notification</h2>
 <p>Η απλούστερη περίπτωση: μία goroutine ειδοποιεί μία, συγκεκριμένη άλλη goroutine ότι κάτι έγινε, λαμβάνοντας μια τιμή από
 ένα channel.</p>
-<pre><code>done := make(chan struct{}) <span class="cm">// empty struct — carries no data, just a signal</span>
+<pre><code class="lang-go">done := make(chan struct{}) <span class="cm">// empty struct — carries no data, just a signal</span>
 
 go func() {
     fmt.Println("worker: doing some work...")
@@ -1223,7 +1304,7 @@ fmt.Println("main: worker has finished, continuing")
 <h2>N-to-1 και 1-to-N notifications</h2>
 <p><strong>N-to-1</strong>: πολλαπλές goroutines στέλνουν ειδοποίηση στο <strong>ίδιο</strong> channel, και μία goroutine
 περιμένει να μαζέψει όλες τις ειδοποιήσεις (συνήθως με βρόχο):</p>
-<pre><code>notify := make(chan struct{})
+<pre><code class="lang-go">notify := make(chan struct{})
 
 for i := 0; i < 3; i++ {
     go func(id int) {
@@ -1250,7 +1331,7 @@ fmt.Println("all 3 workers have reported in")
 (κάτι που, όπως είδαμε, δεν φτάνει σε όλους ούτως ή άλλως), απλά κλείνουμε το channel <strong>μία</strong> φορά, και
 <strong>όλες</strong> οι goroutines που περιμένουν σε αυτό «ξυπνάνε» ταυτόχρονα.</p>
 
-<pre><code>ready := make(chan struct{})
+<pre><code class="lang-go">ready := make(chan struct{})
 
 for i := 0; i < 3; i++ {
     go func(id int) {
@@ -1274,7 +1355,7 @@ close(ready) <span class="cm">// broadcasts to ALL 3 waiting goroutines simultan
 <h2>Timer: scheduled notification</h2>
 <p>Το πακέτο <code>time</code> προσφέρει έτοιμα channels που ειδοποιούν μετά από συγκεκριμένο χρονικό διάστημα — εξαιρετικά
 χρήσιμο σε συνδυασμό με <code>select</code>, π.χ. για timeouts.</p>
-<pre><code>select {
+<pre><code class="lang-go">select {
 case result := <-resultCh:
     fmt.Println("got result:", result)
 case <-time.After(3 * time.Second):
@@ -1305,7 +1386,7 @@ case <-time.After(3 * time.Second):
 <p class="lede">Ένα buffered channel χωρητικότητας 1 μπορεί να λειτουργήσει σαν κλειδαριά (lock), εκμεταλλευόμενο ακριβώς τη
 συμπεριφορά «το send μπλοκάρει αν ο buffer είναι γεμάτος».</p>
 
-<pre><code>lock := make(chan struct{}, 1) <span class="cm">// buffer of exactly 1 — either "empty" (unlocked) or "full" (locked)</span>
+<pre><code class="lang-go">lock := make(chan struct{}, 1) <span class="cm">// buffer of exactly 1 — either "empty" (unlocked) or "full" (locked)</span>
 
 func criticalSection() {
     lock <- struct{}{} <span class="cm">// "acquire": blocks if someone else already holds it (buffer full)</span>
@@ -1329,7 +1410,7 @@ func criticalSection() {
 Ένα buffered channel χωρητικότητας N είναι φυσικό ταίρι για αυτό: κάθε «κατοχή» καταναλώνει μια θέση στον buffer, και όταν
 ο buffer γεμίσει, οι επόμενες προσπάθειες μπλοκάρουν μέχρι κάποιος να «απελευθερώσει» θέση.</p>
 
-<pre><code>sem := make(chan struct{}, 3) <span class="cm">// at most 3 concurrent "holders" allowed</span>
+<pre><code class="lang-go">sem := make(chan struct{}, 3) <span class="cm">// at most 3 concurrent "holders" allowed</span>
 
 func limitedWork(id int) {
     sem <- struct{}{}          <span class="cm">// acquire a slot — blocks if all 3 are taken</span>
@@ -1359,7 +1440,7 @@ func main() {
 <p>Δύο goroutines μπορούν να «μιλάνε» εναλλάξ χρησιμοποιώντας δύο channels — η μία στέλνει, η άλλη λαμβάνει και μετά απαντάει
 πίσω από το δεύτερο channel, και ούτω καθεξής.</p>
 
-<pre><code>func ping(pingCh chan<- string, pongCh <-chan string) {
+<pre><code class="lang-go">func ping(pingCh chan<- string, pongCh <-chan string) {
     for i := 0; i < 3; i++ {
         pingCh <- "ping"
         fmt.Println("received:", <-pongCh)
@@ -1390,7 +1471,7 @@ func main() {
 δηλαδή <code>chan (chan T)</code>. Αυτό είναι χρήσιμο σε patterns όπου κάθε «αίτημα» χρειάζεται το δικό του, ξεχωριστό
 κανάλι απάντησης (ώστε οι απαντήσεις να μην μπερδεύονται μεταξύ τους).</p>
 
-<pre><code><span class="cm">// each request carries its OWN reply channel, so responses never get mixed up</span>
+<pre><code class="lang-go"><span class="cm">// each request carries its OWN reply channel, so responses never get mixed up</span>
 type request struct {
     value int
     reply chan int
@@ -1431,7 +1512,7 @@ func main() {
 «ευγενικό, προαιρετικό» hint προς τον scheduler, σπάνια απαραίτητο στη σύγχρονη Go (ο scheduler είναι ήδη αρκετά έξυπνος
 ώστε να μοιράζει τον χρόνο σωστά μόνος του), αλλά εμφανίζεται μερικές φορές σε πολύ στενά, tight loops όπου θέλουμε ρητά να
 «δώσουμε την ευκαιρία» σε άλλες goroutines να τρέξουν.</p>
-<pre><code>for {
+<pre><code class="lang-go">for {
     if workDone {
         break
     }
@@ -1454,107 +1535,943 @@ func main() {
             explain: "Και τα δύο εκμεταλλεύονται τη συμπεριφορά «send μπλοκάρει όταν ο buffer είναι γεμάτος» — απλά με διαφορετική χωρητικότητα. Buffer 1 σημαίνει αμοιβαίο αποκλεισμό (μόνο ένας κάθε φορά), buffer N σημαίνει ότι επιτρέπονται μέχρι N ταυτόχρονοι «κάτοχοι», χρήσιμο για rate limiting."
         });
 
-        // ── ΕΝΟΤΗΤΑ 9 — Τελικό Quiz ──────────────────────────────────────────────── ⊃
+        // PATTERNS
+
         addContent(`
-<div class="eyebrow">Ενότητα 9 / 9 — Ανακεφαλαίωση</div>
-<h1>Πριν το τελικό quiz</h1>
-<p class="lede">Καλύψαμε πολύ δρόμο: από το απλό keyword <code>go</code>, μέχρι buffered/unbuffered channels, το
-<code>select</code>, το <code>sync.WaitGroup</code> και <code>sync.Mutex</code>, και μια ολόκληρη «εργαλειοθήκη» από
-patterns πάνω σε channels — futures, notifications, locks, semaphores, ping-pong, encapsulated channels.</p>
+<div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
+<h1>Πρακτικά Σενάρια &amp; Αρχιτεκτονικά Patterns</h1>
+<p class="lede">Στις επόμενες διαφάνειες θα εξετάσουμε ορισμένα θεμελιώδη αρχιτεκτονικά patterns της Go, μέσα από ρεαλιστικά και ολοκληρωμένα παραδείγματα κώδικα.</p>
 
-<h2>Ο πυρήνας που αξίζει να θυμάσαι</h2>
-<ul>
-  <li><strong>go</strong> ξεκινάει μια νέα, ανεξάρτητη ροή εκτέλεσης — δεν περιμένει, δεν εγγυάται σειρά.</li>
-  <li><strong>channel</strong> είναι ο ασφαλής τρόπος επικοινωνίας/συγχρονισμού ανάμεσα σε goroutines — προτιμώμενος τρόπος
-  στη φιλοσοφία της Go έναντι του άμεσου διαμοιρασμού μνήμης.</li>
-  <li><strong>unbuffered</strong> channel = χειραψία (και οι δύο πλευρές έτοιμες ταυτόχρονα)· <strong>buffered</strong>
-  channel = «γραμματοκιβώτιο» με χωρητικότητα.</li>
-  <li><strong>select</strong> επιτρέπει αναμονή πάνω σε πολλαπλά channels ταυτόχρονα, επιλέγοντας όποιο γίνει πρώτο έτοιμο.</li>
-  <li><strong>close()</strong> είναι πραγματικό broadcast σε όλες τις αναμένουσες goroutines — διαφορετικό από ένα απλό send.</li>
-  <li><strong>WaitGroup</strong> περιμένει την ολοκλήρωση, <strong>Mutex</strong> προστατεύει κοινόχρηστη κατάσταση.</li>
-</ul>
+<div class="grid2">
+  <div class="card">
+    <h2>🛠️ Πρακτική Εξάσκηση (VSCode)</h2>
+    <p>Σας προτείνουμε να μεταφέρετε, να εκτελέσετε και να τροποποιήσετε αυτά τα παραδείγματα στο VSCode. Η αλλαγή παραμέτρων, όπως ο αριθμός των workers ή τα delays, θα σας βοηθήσει να κατανοήσετε την πραγματική συμπεριφορά του συστήματος.</p>
+  </div>
+  <div class="card">
+    <h2>⚠️ Προαπαιτούμενα &amp; Προσέγγιση</h2>
+    <p>Τα concepts που ακολουθούν έχουν αυξημένο βαθμό δυσκολίας. Απαιτούν καλή κατανόηση των βασικών αρχών του concurrency ή πρακτική εμπειρία μέσα από 2-3 σχετικά projects. Αν βρίσκεστε στα αρχικά στάδια, διαβάστε τα παραδείγματα απλώς για να αποκτήσετε μια γενική εικόνα των δυνατοτήτων και των διαφορετικών αρχιτεκτονικών.</p>
+  </div>
+</div>
+`);
+        addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
+<h1>Pattern 1: Worker Pool (Bounded Concurrency)</h1>
+<p class="lede">Στα πραγματικά projects (π.χ. όταν φτιάχνουμε έναν web scraper ή επεξεργαζόμαστε αρχεία), δεν ξεκινάμε 10.000 goroutines για 10.000 εργασίες. Χρησιμοποιούμε ένα <strong>Worker Pool</strong> για να ελέγξουμε τη χρήση μνήμης και CPU.</p>
 
-<div class="callout good">
-  <span class="tag">Το επόμενο βήμα</span>
-  Η θεωρία μόνη της δεν αρκεί — το concurrency «μαθαίνεται» πραγματικά μόνο γράφοντας κώδικα, βλέποντας deadlocks να συμβαίνουν
-  στην πράξη, και ξεδιαλύνοντας race conditions με το <code>go run -race</code>. Αυτή η παρουσίαση σκόπιμα δεν λύνει καμία
-  άσκηση — το επόμενο βήμα είναι δικό σου: σχεδίασε τη ροή σου σε χαρτί πριν γράψεις κώδικα.
+<div class="grid2">
+  <div class="card">
+    <h2>Ο Μηχανισμός</h2>
+    <p>Ορίζουμε έναν σταθερό αριθμό από workers (π.χ. 3). Όλοι ακούνε ταυτόχρονα στο ίδιο <code>jobs</code> channel. Μόλις ένας worker τελειώσει, τραβάει αυτόματα την επόμενη εργασία.</p>
+  </div>
+  <div class="card">
+    <h2>Goroutine Leaks</h2>
+    <p>Είναι απολύτως απαραίτητο η <code>main</code> να κάνει <code>close(jobs)</code>. Αλλιώς, οι workers θα μείνουν "παγωμένοι" να περιμένουν δεδομένα για πάντα.</p>
+  </div>
 </div>
 
-<p class="lede">Έτοιμος/η για το τελικό, συνδυαστικό quiz;</p>
+<pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// ── data structures ──────────────────────────────────────────────────────── ⊃
+
+type Job struct {
+	ID    int
+	Query string
+}
+
+type Result struct {
+	JobID int
+	Data  string
+}
+
+// ── worker implementation ────────────────────────────────────────────────── ⊃
+
+// worker continuously reads jobs from the channel and simulates processing.
+// It iterates until the jobs channel is closed by the sender.
+// Once the loop terminates, it signals the WaitGroup.
+func worker(id int, jobs &lt;-chan Job, results chan&lt;- Result, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for j := range jobs {
+		fmt.Printf("Worker %d processing job %d...\\n", id, j.ID)
+		time.Sleep(500 * time.Millisecond) // Simulate work
+		results &lt;- Result{
+			JobID: j.ID,
+			Data:  fmt.Sprintf("Processed %s", j.Query),
+		}
+	}
+}
+
+// ── public entry point ───────────────────────────────────────────────────── ⊃
+
+// main orchestrates the worker pool by creating the necessary channels,
+// launching the worker goroutines, and distributing the jobs.
+// It also ensures channels are properly closed to prevent deadlocks.
+func main() {
+	numWorkers := 3
+	numJobs := 80
+
+	jobs := make(chan Job, numJobs)
+	results := make(chan Result, numJobs)
+	var wg sync.WaitGroup
+
+	// Step 1: Start the workers
+	for w := 1; w &lt;= numWorkers; w++ {
+		wg.Add(1)
+		go worker(w, jobs, results, &amp;wg)
+	}
+
+	// Step 2: Send jobs
+	for j := 1; j &lt;= numJobs; j++ {
+		jobs &lt;- Job{ID: j, Query: fmt.Sprintf("Q%d", j)}
+	}
+	close(jobs) // Crucial: Signal workers that no more jobs are coming
+
+	// Step 3: Wait for workers to finish in a background goroutine
+	go func() {
+		wg.Wait()
+		close(results) // Crucial: Close results so the main loop can terminate
+	}()
+
+	// Step 4: Collect results
+	for r := range results {
+		fmt.Printf("Result Received: Job=%d, Data=%s\\n", r.JobID, r.Data)
+	}
+}
+</code></pre>
+
+<div class="callout">
+  <p>💡 <strong>VSCode Challenge:</strong> Αντιγράψτε και τρέξτε τον παρακάτω κώδικα. Παρατηρήστε πώς 3 workers εξυπηρετούν 80 jobs. Αλλάξτε το <code>numWorkers</code> σε 20 και δείτε τη διαφορά στον χρόνο.</p>
+</div>
+
+
+<h2>Εξήγηση του Κώδικα: Worker Pool</h2>
+<p>Ας δούμε βήμα-βήμα τι κάνει ο κώδικάς μας:</p>
+
+<div class="grid3">
+  <div class="card">
+    <h3>1. Δομές Δεδομένων</h3>
+    <p>Ορίζουμε δύο structs: <code>Job</code> για τις εργασίες (με ID και Query) και <code>Result</code> για τα αποτελέσματα (με JobID και Data).</p>
+  </div>
+  <div class="card">
+    <h3>2. Ο Worker</h3>
+    <p>Η συνάρτηση <code>worker</code> διαβάζει συνεχώς από το <code>jobs</code> channel. Όταν το channel κλείσει, η <code>for range</code> τερματίζει και καλείται <code>defer wg.Done()</code>.</p>
+  </div>
+  <div class="card">
+    <h3>3. Η Main</h3>
+    <p>Δημιουργούμε τα channels, ξεκινάμε τους workers, στέλνουμε τις εργασίες, κλείνουμε το <code>jobs</code> και περιμένουμε τα αποτελέσματα.</p>
+  </div>
+</div>
+
+<div class="callout good">
+  <span class="tag">ΣΗΜΑΝΤΙΚΟ</span>
+  <p><strong>Το κλείσιμο των channels είναι κρίσιμο:</strong> Το <code>close(jobs)</code> λέει στους workers "σταματήστε να περιμένετε". Το <code>close(results)</code> λέει στην main "σταμάτα να διαβάζεις". Χωρίς αυτά, το πρόγραμμα θα κάνει deadlock.</p>
+</div>
+
+<pre><code class="lang-go">// Οπτικοποίηση της ροής δεδομένων:
+// 
+// jobs channel:  [J1] [J2] [J3] ... [J84]
+//                  ↓         ↓     ↓
+//                Worker 1  Worker 2  Worker 3
+//                  ↓         ↓     ↓
+// results:       [R1] [R2] [R3] ... [R84]
+//
+// 3 workers μοιράζονται 80 jobs. Όποιος worker τελειώσει,
+// παίρνει την επόμενη εργασία αυτόματα.
+</code></pre>
 `);
 
-        addQuiz({
-            q: "[Τελικό Quiz 1/6] Ένα πρόγραμμα δηλώνει ch := make(chan int) (χωρίς δεύτερο όρισμα) και αμέσως μετά εκτελεί ch <- 10 στο main, χωρίς καμία άλλη goroutine να έχει ξεκινήσει. Τι θα συμβεί;",
-            options: [
-                "Deadlock — το unbuffered send μπλοκάρει περιμένοντας ταυτόχρονο receiver που δεν υπάρχει, και ο runtime το ανιχνεύει",
-                "Η τιμή 10 αποθηκεύεται προσωρινά στο channel και το πρόγραμμα συνεχίζει κανονικά χωρίς προβλήματα",
-                "Το πρόγραμμα εκτυπώνει αυτόματα το zero value του int, αφού δεν υπάρχει κανείς να λάβει την τιμή",
-                "Ο compiler αρνείται να μεταγλωττίσει τον κώδικα επειδή λείπει δεύτερο όρισμα στο make(chan int)"
-            ],
-            correct: 0,
-            explain: "Unbuffered channel σημαίνει ότι το send χρειάζεται ταυτόχρονο receive από άλλη goroutine. Αφού δεν υπάρχει καμία άλλη goroutine, το send μπλοκάρει για πάντα, και ο runtime ανιχνεύει ότι όλες οι goroutines (εδώ μόνο η main) είναι μπλοκαρισμένες."
-        });
+        addFillBlank([{
+            code: `package main
 
-        addQuiz({
-            q: "[Τελικό Quiz 2/6] Ποιο από τα παρακάτω περιγράφει σωστά τη λειτουργία του select{} με πολλαπλά cases όπου περισσότερα από ένα είναι έτοιμα ταυτόχρονα, χωρίς default;",
-            options: [
-                "Επιλέγεται τυχαία ένα από τα έτοιμα cases προς εκτέλεση, ώστε κανένα channel να μην ευνοείται συστηματικά έναντι των άλλων",
-                "Εκτελούνται όλα τα έτοιμα cases με τη σειρά που εμφανίζονται στον κώδικα, το ένα μετά το άλλο",
-                "Επιλέγεται πάντα το πρώτο case στη σειρά δήλωσης, ανεξάρτητα από τα υπόλοιπα έτοιμα cases",
-                "Το select επιστρέφει σφάλμα χρόνου εκτέλεσης όταν παραπάνω από ένα case είναι έτοιμα ταυτόχρονα"
-            ],
-            correct: 0,
-            explain: "Όταν πολλά cases είναι έτοιμα ταυτόχρονα, η Go επιλέγει ένα τυχαία — σκόπιμη σχεδιαστική επιλογή ώστε να μην υπάρχει συστηματική προτίμηση προς κάποιο συγκεκριμένο channel βάσει σειράς δήλωσης."
-        });
+import (
+	"fmt"
+	"sync"
+	"time"
+)
 
-        addQuiz({
-            q: "[Τελικό Quiz 3/6] Ποια είναι η βασική διαφορά ανάμεσα σε ένα απλό send σε κοινό channel και σε close() του channel, όσον αφορά goroutines που περιμένουν με <-ch;",
-            options: [
-                "Το send δίνει την τιμή σε μία μόνο αναμένουσα goroutine, ενώ το close() «ξυπνάει» ταυτόχρονα όλες τις goroutines που περιμένουν, ανεξάρτητα από τον αριθμό τους",
-                "Και τα δύο έχουν ακριβώς την ίδια συμπεριφορά — ξυπνάνε πάντα όλες τις αναμένουσες goroutines με την ίδια τιμή",
-                "Το close() ξυπνάει μόνο μία τυχαία goroutine, ενώ το send ξυπνάει πάντα όλες τις αναμένουσες goroutines ταυτόχρονα",
-                "Το send λειτουργεί μόνο σε buffered channels, ενώ το close() λειτουργεί μόνο σε unbuffered channels"
-            ],
-            correct: 0,
-            explain: "Ένα send «καταναλώνεται» από μία μόνο goroutine — όποια το «αρπάξει» πρώτη. Το close() αλλάζει την ίδια την κατάσταση του channel με τρόπο ορατό σε όλους ταυτόχρονα, οπότε λειτουργεί σαν πραγματικό broadcast σε όλες τις αναμένουσες goroutines."
-        });
+type Job struct {
+	ID    int
+	Query string
+}
 
-        addQuiz({
-            q: "[Τελικό Quiz 4/6] Γιατί το defer mu.Unlock() αμέσως μετά το mu.Lock() θεωρείται καλή πρακτική σε σχέση με sync.Mutex;",
-            options: [
-                "Γιατί εγγυάται ότι το κλείδωμα θα απελευθερωθεί όταν η συνάρτηση επιστρέψει, ό,τι κι αν συμβεί ενδιάμεσα — πρόωρο return ή ακόμα και panic",
-                "Γιατί το Unlock() δεν λειτουργεί καθόλου αν δεν καλείται μέσω defer, ανεξάρτητα από τη θέση του στη συνάρτηση",
-                "Γιατί το defer κάνει το Lock() να εκτελείται ταυτόχρονα σε πολλαπλές goroutines χωρίς κίνδυνο race condition",
-                "Γιατί χωρίς defer, το mutex κλειδώνει αυτόματα κάθε άλλη μεταβλητή στο ίδιο πακέτο, όχι μόνο την προστατευόμενη"
-            ],
-            correct: 0,
-            explain: "Το defer εξασφαλίζει εκτέλεση κατά την έξοδο της συνάρτησης ανεξάρτητα από το μονοπάτι εξόδου. Χωρίς αυτό, ένα πρόωρο return ή ένα panic θα μπορούσε να αφήσει το mutex μόνιμα κλειδωμένο, οδηγώντας σε deadlock για όποιον προσπαθήσει να το ξανακλειδώσει."
-        });
+type Result struct {
+	JobID int
+	Data  string
+}
 
-        addQuiz({
-            q: "[Τελικό Quiz 5/6] Σε ποιο σενάριο ταιριάζει καλύτερα ένα channel-based counting semaphore (buffered channel χωρητικότητας N) αντί για sync.Mutex;",
-            options: [
-                "Όταν θέλουμε να επιτρέψουμε μέχρι N ταυτόχρονες εκτελέσεις μιας εργασίας (π.χ. rate limiting σε εξωτερικό API), όχι μόνο μία τη φορά",
-                "Όταν θέλουμε ακριβώς έναν μόνο κάτοχο τη φορά, όπως ακριβώς κάνει και το sync.Mutex, χωρίς καμία πρακτική διαφορά μεταξύ τους",
-                "Όταν θέλουμε να αποτρέψουμε εντελώς κάθε ταυτόχρονη πρόσβαση σε κοινόχρηστη μνήμη, ανεξαρτήτως αριθμού goroutines",
-                "Όταν το πρόγραμμα δεν έχει καθόλου goroutines και τρέχει αποκλειστικά σειριακά"
-            ],
-            correct: 0,
-            explain: "Ένα mutex επιτρέπει μόνο έναν κάτοχο τη φορά (buffer 1, ουσιαστικά). Ένα semaphore με buffer N > 1 επιτρέπει μέχρι N ταυτόχρονους κατόχους — ιδανικό όταν θέλουμε να περιορίσουμε, όχι να απαγορεύσουμε πλήρως, την παράλληλη πρόσβαση, π.χ. σε rate limiting σεναρίων."
-        });
+func worker(id int, jobs __chan1__ Job, results chan<- Result, wg __ptr__sync.WaitGroup) {
+	__defer__ wg.Done()
+	for j := __range__ jobs {
+		fmt.Printf("Worker %d processing job %d...\\n", id, j.ID)
+		time.Sleep(500 * time.Millisecond)
+		results __send__ Result{
+			JobID: j.ID,
+			Data:  fmt.Sprintf("Processed %s", j.Query),
+		}
+	}
+}
 
-        addQuiz({
-            q: "[Τελικό Quiz 6/6] Ένας βρόχος for i := 0; i < 5; i++ { go func(){ fmt.Println(i) }() } (ΧΩΡΙΣ να περνάει το i ως όρισμα) τι προβληματική συμπεριφορά μπορεί να παρουσιάσει σε σχέση με το τι θα εκτυπωθεί;",
-            options: [
-                "Οι goroutines μοιράζονται όλες την ίδια μεταβλητή βρόχου i μέσω closure, οπότε μπορεί να εκτυπωθούν απρόβλεπτες ή επαναλαμβανόμενες τιμές αντί των αναμενόμενων 0 έως 4",
-                "Το πρόγραμμα αρνείται να μεταγλωττιστεί επειδή απαιτείται πάντα ρητό όρισμα σε κάθε ανώνυμη συνάρτηση που καλείται με go",
-                "Κάθε goroutine εγγυημένα εκτυπώνει τη σωστή, μοναδική τιμή του i που είχε τη στιγμή της δικής της εκκίνησης, χωρίς κίνδυνο",
-                "Το πρόγραμμα μπλοκάρει σε deadlock επειδή το fmt.Println δεν μπορεί να κληθεί από περισσότερες από μία goroutine ταυτόχρονα"
+func main() {
+	numWorkers := 10
+	numJobs := 80
+
+	jobs := __make1__(chan Job, numJobs)
+	results := __make2__(chan Result, numJobs)
+	var wg __sync__.__WaitGroup__
+
+	for w := 1; w <= numWorkers; w++ {
+		wg.__add__(1)
+		go worker(w, jobs, results, __wg__)
+	}
+
+	for j := 1; j <= __numJobs__; j++ {
+		jobs __send2__ Job{ID: j, Query: fmt.Sprintf("Q%d", j)}
+	}
+	__close1__(jobs)
+
+	go __func__() {
+		wg.__wait__()
+		__close2__(results)
+	}()
+
+	for r := range results {
+		fmt.Printf("Result Received: Job=%d, Data=%s\\n", r.JobID, r.Data)
+	}
+}`,
+            blanks: [
+                { id: "chan1", answer: "<-chan" },
+                { id: "defer", answer: "defer" },
+                { id: "range", answer: "range" },
+                { id: "send", answer: "<-" },
+                { id: "add", answer: "Add" },
+                { id: "wg", answer: "&wg" },
+                { id: "send2", answer: "<-" },
+                { id: "close1", answer: "close" },
+                { id: "wait", answer: "Wait" },
+                { id: "close2", answer: "close" },
+                { id: "numJobs", answer: "numJobs" },
+                { id: "func", answer: "func" },
+                { id: "make1", answer: "make" },
+                { id: "make2", answer: "make" },
+                { id: "sync", answer: "sync" },
+                { id: "WaitGroup", answer: "WaitGroup" },
+                { id: "ptr", answer: "*" },
             ],
-            correct: 0,
-            explain: "Χωρίς να περάσουμε το i ως παράμετρο, όλες οι ανώνυμες συναρτήσεις «βλέπουν» μέσω closure την ίδια, κοινή μεταβλητή i του βρόχου, η οποία συνεχίζει να αλλάζει καθώς προχωράει ο βρόχος — οπότε το ποια τιμή θα διαβάσει τελικά κάθε goroutine είναι απρόβλεπτο (πολύ πιθανό να δούμε πολλά 5άρια, ή οποιοδήποτε συνδυασμό)."
-        });
+            explain: "Συμπληρώσαμε τα κενά στον κώδικα του Worker Pool. Κάθε worker διαβάζει από το jobs channel (<-chan Job), στέλνει αποτελέσματα (results <-), η main στέλνει εργασίες (jobs <-), και τα close() διασφαλίζουν ότι όλα τα channels κλείνουν σωστά για να αποφύγουμε deadlocks."
+        }]);
+
+        addQuiz([
+            {
+                q: "Τι συμβαίνει αν ξεχάσουμε να κάνουμε close(jobs) στο πρόγραμμα του Worker Pool;",
+                options: [
+                    "Οι workers θα συνεχίσουν να δουλεύουν κανονικά.",
+                    "Οι workers θα μείνουν να περιμένουν για πάντα και το πρόγραμμα θα κάνει deadlock.",
+                    "Το πρόγραμμα θα τερματίσει αμέσως με panic και θα εμφανίσει ένα μήνυμα σφάλματος για το ότι δεν μπορεί να κλείσει το channel.",
+                    "Η main θα κάνει panic επειδή το jobs channel είναι γεμάτο με εργασίες και δεν μπορεί να στείλει άλλες."
+                ],
+                correct: 1,
+                explain: "Χωρίς close(jobs), η for range στους workers δεν θα τερματίσει ποτέ. Οι workers θα περιμένουν άπειρα και λόγω του wg.Wait() που δεν θα επιστρέψει ποτέ, η main θα κάνει deadlock."
+            },
+            {
+                q: "Γιατί χρησιμοποιούμε buffered channels (με χωρητικότητα numJobs) στο παράδειγμά μας;",
+                options: [
+                    "Γιατί τα unbuffered channels δεν λειτουργούν με multiple goroutines και προκαλούν προβλήματα συγχρονισμού.",
+                    "Για να επιτρέψουμε στην main να στείλει όλες τις εργασίες πριν ξεκινήσουν οι workers να τις διαβάζουν.",
+                    "Γιατί τα buffered channels είναι πιο γρήγορα από τα unbuffered και βελτιώνουν την απόδοση του συστήματος.",
+                    "Για να μην χρειαστεί να κάνουμε close(jobs) και να απλοποιήσουμε τον κώδικα."
+                ],
+                correct: 1,
+                explain: "Με buffered channel, η main μπορεί να στείλει όλα τα jobs ακόμα κι αν οι workers δεν έχουν προλάβει να τα διαβάσουν. Αυτό αποτρέπει το μπλοκάρισμα της main κατά την αποστολή."
+            },
+            {
+                q: "Ποιο είναι το σωστό νόημα του 'defer wg.Done()' μέσα στη worker;",
+                options: [
+                    "Καλεί την wg.Done() αμέσως στην αρχή της συνάρτησης για να σηματοδοτήσει ότι η worker ξεκίνησε.",
+                    "Εξασφαλίζει ότι η wg.Done() θα κληθεί όταν η worker επιστρέψει, ακόμα κι αν υπάρξει panic ή early return.",
+                    "Κάνει την worker να τερματίζει πιο γρήγορα χρησιμοποιώντας τη δομή defer για καλύτερη διαχείριση μνήμης.",
+                    "Αυξάνει τον μετρητή του WaitGroup κατά 1 ώστε να ξέρουμε πόσες goroutines τρέχουν ακόμα."
+                ],
+                correct: 1,
+                explain: "Το defer εγγυάται ότι η wg.Done() θα κληθεί όταν η συνάρτηση τελειώσει. Αυτό είναι κρίσιμο για να σηματοδοτήσουμε σωστά ότι ο worker ολοκλήρωσε τη δουλειά του."
+            },
+            {
+                q: "Ποιος είναι ο ρόλος της ανώνυμης goroutine που περιέχει το wg.Wait() και το close(results);",
+                options: [
+                    "Να κάνει το πρόγραμμα πιο γρήγορο χρησιμοποιώντας παράλληλη επεξεργασία για το κλείσιμο των channels.",
+                    "Να περιμένει όλους τους workers να τελειώσουν και μετά να κλείσει το results channel, ώστε η main να σταματήσει να διαβάζει.",
+                    "Να στέλνει τα αποτελέσματα πίσω στους workers ώστε να συνεχίσουν την επεξεργασία νέων εργασιών.",
+                    "Να ξανανοίγει το jobs channel αν χρειαστεί για να στείλουμε επιπλέον εργασίες."
+                ],
+                correct: 1,
+                explain: "Αυτή η goroutine περιμένει όλους τους workers να ολοκληρώσουν (wg.Wait()) και μετά κλείνει το results channel. Αυτό επιτρέπει στην main να βγει από το for range loop όταν όλα τα results έχουν διαβαστεί."
+            }
+        ]);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
+<h1>Σκέψη: Σειρά Αποτελεσμάτων στο Worker Pool</h1>
+<p class="lede">Στο προηγούμενο παράδειγμα, τα αποτελέσματα εμφανίζονται με τη σειρά που ολοκληρώνονται οι εργασίες. Αυτό σημαίνει ότι το Job #5 μπορεί να εμφανιστεί πριν το Job #2! Ας το αλλάξουμε αυτό.</p>
+
+<div class="callout">
+  <span class="tag">💻 VSCODE CHALLENGE</span>
+  <p><strong>Πρόκληση:</strong> Τροποποιήστε τον κώδικα ώστε τα αποτελέσματα να εμφανίζονται με τη σειρά του Job ID (από 1 έως N).</p>
+  <p>Σκεφτείτε: Πώς μπορούμε να αποθηκεύσουμε τα αποτελέσματα καθώς έρχονται και να τα εμφανίσουμε μετά με τη σωστή σειρά;</p>
+</div>
+
+<details style="margin: 20px 0; padding: 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;">
+  <summary style="font-weight: bold; color: var(--accent);">👀 Δείτε τις λύσεις (κάντε κλικ)</summary>
+  
+  <h3 style="margin-top: 20px;">Λύση 1: Πίνακας Αποτελεσμάτων</h3>
+  <pre><code class="lang-go">// Στην main, αντί για άμεσο loop:
+resultsArray := make([]string, numJobs+1) // +1 γιατί ξεκινάμε από 1
+
+for r := range results {
+    resultsArray[r.JobID] = r.Data
+}
+
+// Εκτύπωση με σειρά
+for i := 1; i <= numJobs; i++ {
+    fmt.Printf("Result Received: Job=%d, Data=%s\\n", i, resultsArray[i])
+}</code></pre>
+
+  <h3>Λύση 2: Χρήση sync.Map</h3>
+  <pre><code class="lang-go">var resultsMap sync.Map
+
+for r := range results {
+    resultsMap.Store(r.JobID, r.Data)
+}
+
+// Εκτύπωση με σειρά
+for i := 1; i <= numJobs; i++ {
+    if data, ok := resultsMap.Load(i); ok {
+        fmt.Printf("Result Received: Job=%d, Data=%s\\n", i, data.(string))
+    }
+}</code></pre>
+
+  <h3>Λύση 3: Θα μπορούσες να σκεφτείς και το sorting του πίνακα</h3>
+  <pre><code class="lang-go">resultsSlice := make([]Result, 0, numJobs)
+
+for r := range results {
+    resultsSlice = append(resultsSlice, r)
+}
+
+sort.Slice(resultsSlice, func(i, j int) bool {
+    return resultsSlice[i].JobID < resultsSlice[j].JobID
+})
+
+for _, r := range resultsSlice {
+    fmt.Printf("Result Received: Job=%d, Data=%s\\n", r.JobID, r.Data)
+}</code></pre>
+</details>
+
+<div class="callout good">
+  <span class="tag">Σημαντικό:</span>
+  <p>Οι goroutines εκτελούνται με μη καθορισμένη σειρά (non-deterministic). Αυτό σημαίνει ότι <strong>δεν μπορούμε ποτέ</strong> να βασιστούμε στη σειρά εκτέλεσης για να πάρουμε τα αποτελέσματα με σειρά. Πρέπει πάντα να χρησιμοποιούμε δομές δεδομένων και συγχρονισμό.</p>
+</div>
+<h2>Το sync.Map: Thread-Safe Map για Goroutines</h2>
+<p>Όταν πολλές goroutines θέλουν να διαβάσουν και να γράψουν στο ίδιο map ταυτόχρονα, το κανονικό map <strong>δεν είναι thread-safe</strong> και θα προκαλέσει panic. Το <code>sync.Map</code> λύνει αυτό το πρόβλημα.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>🔴 Το Πρόβλημα</h3>
+    <pre><code class="lang-go">// Αυτό είναι ΕΠΙΚΙΝΔΥΝΟ!
+m := make(map[int]string)
+
+// Σε goroutine 1:
+m[1] = "result1"
+
+// Σε goroutine 2 (ταυτόχρονα):
+m[2] = "result2"
+
+// ❌ Panic: concurrent map writes!</code></pre>
+    <p>Η Go ανιχνεύει ταυτόχρονες εγγραφές και τερματίζει το πρόγραμμα με panic.</p>
+  </div>
+  <div class="card">
+    <h3>🟢 Η Λύση με sync.Map</h3>
+    <pre><code class="lang-go">// Αυτό είναι ΑΣΦΑΛΕΣ!
+var m sync.Map
+
+// Σε goroutine 1:
+m.Store(1, "result1")
+
+// Σε goroutine 2 (ταυτόχρονα):
+m.Store(2, "result2")
+
+// ✅ Κανένα panic! Το sync.Map 
+// χειρίζεται τον συγχρονισμό.</code></pre>
+    <p>Το <code>sync.Map</code> έχει built-in συγχρονισμό. Δεν χρειαζόμαστε mutex!</p>
+  </div>
+</div>
+
+<h3>Βασικές Μέθοδοι με Παραδείγματα</h3>
+
+<pre><code class="lang-go">var m sync.Map
+
+// Store: Αποθηκεύει μια τιμή με ένα κλειδί
+// Χρησιμοποιείται από workers για να γράψουν αποτελέσματα
+m.Store(1, "Processed Q1")
+m.Store(2, "Processed Q2")
+
+// Load: Διαβάζει μια τιμή με βάση το κλειδί
+// Επιστρέφει (τιμή, bool) - το bool δείχνει αν το κλειδί υπάρχει
+if val, ok := m.Load(1); ok {
+    // Προσοχή! Το val είναι interface{}
+    // Χρειαζόμαστε type assertion για να το χρησιμοποιήσουμε
+    result := val.(string) 
+    fmt.Println(result) // "Processed Q1"
+}
+
+// Delete: Διαγράφει ένα κλειδί
+m.Delete(1)
+
+// LoadOrStore: Φορτώνει την τιμή αν υπάρχει, αλλιώς την αποθηκεύει
+// Επιστρέφει (τιμή, bool) - το bool δείχνει αν φορτώθηκε (true) ή αποθηκεύτηκε (false)
+val, loaded := m.LoadOrStore(3, "Processed Q3")
+// loaded == false γιατί το 3 δεν υπήρχε
+
+// Range: Διατρέχει όλα τα ζεύγη κλειδιού-τιμής
+// ⚠️ ΔΕΝ εγγυάται σειρά! Μην το χρησιμοποιείτε για ταξινόμηση
+m.Range(func(key, value interface{}) bool {
+    // key και value είναι interface{} - χρειαζόμαστε type assertion
+    k := key.(int)
+    v := value.(string)
+    fmt.Printf("Job %d: %s\\n", k, v)
+    return true // return false για να σταματήσει η επανάληψη
+})</code></pre>
+
+<div class="callout">
+  <span class="tag">⚠️ ΠΡΟΣΟΧΗ</span>
+  <p><strong>Type Assertion:</strong> Το <code>sync.Map</code> αποθηκεύει <code>interface{}</code>. Όταν διαβάζουμε, πρέπει να κάνουμε <strong>type assertion</strong> για να μετατρέψουμε τον τύπο:</p>
+  <pre><code class="lang-go">// Σωστά: 
+val.(string)  // αν ξέρουμε ότι είναι string
+val.(int)     // αν ξέρουμε ότι είναι int
+
+// Λάθος (θα κάνει panic):
+fmt.Println(val) // το val είναι interface{}, όχι string</code></pre>
+</div>
+
+<div class="grid3">
+  <div class="card">
+    <h3>💡 Πότε να το χρησιμοποιώ;</h3>
+    <ul style="padding-left: 20px;">
+      <li>Πολλές goroutines γράφουν ταυτόχρονα</li>
+      <li>Πολλές goroutines διαβάζουν ταυτόχρονα</li>
+      <li>Τα κλειδιά φορτώνονται μία φορά και μετά διαβάζονται συχνά</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>🚫 Πότε να ΜΗΝ το χρησιμοποιώ;</h3>
+    <ul style="padding-left: 20px;">
+      <li>Μία goroutine γράφει, μία διαβάζει → χρησιμοποιώ mutex</li>
+      <li>Λίγες εγγραφές/αναγνώσεις → το mutex είναι πιο γρήγορο</li>
+      <li>Χρειάζομαι ταξινόμηση → το sync.Map <strong>δεν</strong> ταξινομεί</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>📊 Σύγκριση Απόδοσης</h3>
+    <ul style="padding-left: 20px;">
+      <li><strong>sync.Map:</strong> Καλό για πολλές αναγνώσεις, λίγες εγγραφές</li>
+      <li><strong>map + mutex:</strong> Καλό για πολλές εγγραφές</li>
+      <li><strong>map + RWMutex:</strong> Ισορροπημένη λύση</li>
+    </ul>
+  </div>
+</div>
+ 
+<div class="callout">
+  <p>💡 <strong>Σύνοψη:</strong> Για το παράδειγμά μας, η Λύση 1 (πίνακας <code class="lang-go">resultsArray[r.JobID] = r.Data</code>) είναι η πιο αποδοτική γιατί:</p>
+  <ul style="padding-left: 20px;">
+    <li>Γνωρίζουμε τον αριθμό των jobs (numJobs) → μπορούμε να δημιουργήσουμε πίνακα με ακριβές μέγεθος</li>
+    <li>Τα Job IDs είναι συνεχόμενα (1..N) → μπορούμε να χρησιμοποιήσουμε το ID ως index</li>
+    <li>Δεν χρειαζόμαστε type assertions → πιο γρήγορος κώδικας</li>
+    <li>Ο πίνακας είναι <strong>πιο αποδοτικός</strong> από το sync.Map για αυτή την περίπτωση</li>
+  </ul>
+  </ul>
+</div>
+
+<div class="callout good">
+  <span class="tag">✅ ΣΗΜΑΝΤΙΚΟ ΣΥΜΠΕΡΑΣΜΑ</span>
+  <p><strong>Δεν υπάρχει "μαγικός" τρόπος</strong> να πάρουμε τα αποτελέσματα με σειρά χωρίς αποθήκευση και ταξινόμηση. Οι goroutines εκτελούνται παράλληλα και η σειρά ολοκλήρωσης είναι μη προσδιορίσιμη. Πρέπει πάντα να σχεδιάζουμε τον κώδικά μας για να χειρίζεται αυτή την αβεβαιότητα.</p>
+</div>
+`);
+
+
+        addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
+<h1>Pattern 2: Fan-Out &amp; Fan-In (Pipelines)</h1>
+<p class="lede">Όταν θέλουμε να διαχειριστούμε μια ροή δεδομένων, στήνουμε ένα Pipeline. Το Fan-Out μοιράζει τα δεδομένα σε πολλά κανάλια για παράλληλη επεξεργασία, και το Fan-In τα ενώνει ξανά σε ένα μοναδικό κανάλι.</p>
+
+<div class="grid3">
+  <div class="card">
+    <h2>1. Generator</h2>
+    <p>Παράγει συνεχώς τιμές και τις ρίχνει στο αρχικό channel. Είναι η πηγή των δεδομένων.</p>
+  </div>
+  <div class="card">
+    <h2>2. Fan-Out</h2>
+    <p>Πολλαπλές goroutines διαβάζουν από το αρχικό channel για να σπάσουν τον φόρτο εργασίας.</p>
+  </div>
+  <div class="card">
+    <h2>3. Fan-In (Merge)</h2>
+    <p>Μία κεντρική συνάρτηση μαζεύει όλα τα ανεξάρτητα outputs και τα ρίχνει σε ένα τελικό channel.</p>
+  </div>
+</div>
+
+<pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+// ── pipeline stages ──────────────────────────────────────────────────────── ⊃
+
+// generator creates a stream of integers and sends them to a channel.
+// It acts as the first stage of the pipeline.
+func generator(nums ...int) &lt;-chan int {
+	out := make(chan int)
+	go func() {
+		for _, n := range nums {
+			out &lt;- n
+		}
+		close(out)
+	}()
+	return out
+}
+
+// process reads from the input channel, squares the number,
+// and passes it to the output channel.
+func process(in &lt;-chan int) &lt;-chan int {
+	out := make(chan int)
+	go func() {
+		for n := range in {
+			out &lt;- n * n
+		}
+		close(out)
+	}()
+	return out
+}
+
+// ── fan-in implementation ────────────────────────────────────────────────── ⊃
+
+// merge takes multiple input channels and multiplexes them onto a single output.
+// It uses a WaitGroup to ensure all inputs are exhausted before closing the output.
+func merge(cs ...&lt;-chan int) &lt;-chan int {
+	var wg sync.WaitGroup
+	out := make(chan int)
+
+	// helper function to read from a single channel
+	output := func(c &lt;-chan int) {
+		for n := range c {
+			out &lt;- n
+		}
+		wg.Done()
+	}
+
+	wg.Add(len(cs))
+	for _, c := range cs {
+		go output(c)
+	}
+
+	// background closer
+	go func() {
+		wg.Wait()
+		close(out)
+	}()
+
+	return out
+}
+
+// ── public entry point ───────────────────────────────────────────────────── ⊃
+
+// main builds the pipeline and prints the final merged output.
+func main() {
+	in := generator(2, 3, 4, 5)
+
+	// Fan-out: start two processing workers reading from 'in'
+	c1 := process(in)
+	c2 := process(in)
+
+	// Fan-in: merge the results of c1 and c2
+	for result := range merge(c1, c2) {
+		fmt.Println("Merged Output:", result)
+	}
+}
+</code></pre>
+`);
+
+        addFillBlank([{
+            code: `func simpleMerge(ch1, ch2 <-chan int) <-chan int {
+    out := make(chan int)
+    var wg sync.WaitGroup
+    wg.Add(2)
+
+    go func() {
+        defer wg.Done()
+        for v := __range__ ch1 {
+            out <- v
+        }
+    }()
+
+    go func() {
+        defer wg.Done()
+        for v := range ch2 {
+            out __send__ v
+        }
+    }()
+
+    go func() {
+        wg.__wait__()
+        __close__(out)
+    }()
+
+    return out
+}`,
+            blanks: [
+                { id: "range", answer: "range" },
+                { id: "send", answer: "<-" },
+                { id: "wait", answer: "Wait" },
+                { id: "close", answer: "close" }
+            ],
+            explain: "Για να υλοποιήσουμε σωστά το Fan-In, χρειαζόμαστε 1 goroutine ανά input channel, συν 1 goroutine στο παρασκήνιο (background) που καλεί το wg.Wait() και κλείνει το τελικό channel (out)."
+        }]);
+
+        addMatching([
+            { term: "Worker Pool", def: "Περιορισμένος αριθμός goroutines που επεξεργάζονται εργασίες από ένα κοινό channel." },
+            { term: "Goroutine Leak", def: "Κατάσταση όπου μια goroutine παραμένει ενεργή επ' αόριστον, περιμένοντας δεδομένα από ένα channel που δεν θα κλείσει ποτέ." },
+            { term: "Deadlock", def: "Κατάσταση όπου όλες οι goroutines περιμένουν η μία την άλλη και το πρόγραμμα σταματά να προχωρά." },
+            { term: "Fan-Out", def: "Πολλαπλές goroutines που διαβάζουν από το ίδιο input channel, μοιράζοντας την εργασία." }
+        ], { note: "Αντιστοιχίστε κάθε όρο με τον σωστό ορισμό του." });
+
+
+        addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
+<h1>Pattern 3: Context Cancellation (Timeouts)</h1>
+<p class="lede">Όταν μια goroutine εξαρτάται από δίκτυο (π.χ. HTTP Call), μπορεί να πάρει πολύ χρόνο. Το πακέτο <code>context</code> μάς επιτρέπει να θέσουμε ένα σκληρό όριο χρόνου (timeout) και να ακυρώσουμε την εργασία ελεγχόμενα.</p>
+
+<div class="callout">
+  <p>Στη Go, η αποφυγή των <strong>goroutine leaks</strong> όταν ένα process ακυρώνεται, επιτυγχάνεται περνώντας το <code>context.Context</code> ως πρώτο όρισμα στις συναρτήσεις και ελέγχοντας τακτικά το <code>ctx.Done()</code> μέσω μιας <code>select</code> δήλωσης.</p>
+</div>
+
+<pre><code class="lang-go">package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+// ── simulated slow operations ────────────────────────────────────────────── ⊃
+
+// slowTask simulates a time-consuming operation like a database query.
+// It uses a select statement to listen simultaneously for task completion
+// or context cancellation signals.
+func slowTask(ctx context.Context, duration time.Duration) error {
+	select {
+	case &lt;-time.After(duration):
+		fmt.Println("Task completed successfully!")
+		return nil
+	case &lt;-ctx.Done(): // Triggered if timeout happens or cancel() is called
+		fmt.Println("Task aborted due to context cancellation.")
+		return ctx.Err()
+	}
+}
+
+// ── public entry point ───────────────────────────────────────────────────── ⊃
+
+// main demonstrates how to use context.WithTimeout to enforce
+// a hard time limit on the execution of slow background tasks.
+func main() {
+	// Create a context that automatically cancels after 1 second
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel() // Always defer cancel to free resources immediately
+
+	fmt.Println("Starting task...")
+
+	// Attempt a task that takes 3 seconds (it will time out)
+	err := slowTask(ctx, 3*time.Second)
+	
+	if err != nil {
+		fmt.Printf("Error: %v\\n", err)
+	}
+}
+</code></pre>
+`);
+
+        addMatching([{
+            term: "Worker Pool",
+            def: "Αρχιτεκτονική για σταθερό αριθμό goroutines που τραβάνε δουλειά από ένα κεντρικό channel, γλυτώνοντας μνήμη."
+        }, {
+            term: "Fan-In",
+            def: "Συνένωση πολλαπλών ανεξάρτητων channels σε ένα μοναδικό κανάλι εξόδου (Multiplexing)."
+        }, {
+            term: "Context Timeout",
+            def: "Μηχανισμός που στέλνει σήμα ακύρωσης μέσω του ctx.Done() αν περάσει συγκεκριμένος χρόνος."
+        }, {
+            term: "close(channel)",
+            def: "Σηματοδοτεί στους receivers ότι δεν θα έρθουν άλλα δεδομένα, σπάζοντας το for range loop."
+        }]);
+
+        // PATTERNS 2
+
+        addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Advanced Concurrency Patterns</div>
+<h1>Pattern 4: Semaphore (Limit Concurrency)</h1>
+<p class="lede">Είδαμε και προηγουμένως τα Semaphores, αλλά τώρα θα τα δούμε σε παράδειγμα ολοκληρωμένου κώδικα.</p>
+<p>Το Worker Pool είναι εξαιρετικό, αλλά απαιτεί περισσότερο boilerplate κώδικα (setup των workers, jobs channel, results channel). Αν θέλουμε απλώς να περιορίσουμε το πόσες goroutines τρέχουν <strong>ταυτόχρονα</strong>, το pattern του Semaphore με Buffered Channel είναι η πιο κομψή λύση.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h2>Η Λογική του Token Bucket</h2>
+    <p>Φανταστείτε ένα buffered channel με μέγεθος 3. Πριν ξεκινήσει μια εργασία, βάζει ένα "κέρμα" στο κανάλι. Όταν τελειώσει, το βγάζει. Αν το κανάλι γεμίσει, η 4η εργασία μπλοκάρει (περιμένει) μέχρι να αδειάσει μια θέση.</p>
+  </div>
+  <div class="card">
+    <h2>Ιδανικό Για:</h2>
+    <p>Περιορισμό ταυτόχρονων HTTP requests σε ένα εξωτερικό API, αποφυγή εξάντλησης memory/file descriptors όταν διαβάζουμε χιλιάδες αρχεία.</p>
+  </div>
+</div>
+
+<pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// ── simulated heavy workload ─────────────────────────────────────────────── ⊃
+
+// processRecord simulates an I/O bound operation like a network call.
+// It simply sleeps for a duration and then prints a completion message.
+func processRecord(id int) {
+	fmt.Printf("Starting record %d...\\n", id)
+	time.Sleep(1 * time.Second)
+	fmt.Printf("Finished record %d\\n", id)
+}
+
+// ── public entry point ───────────────────────────────────────────────────── ⊃
+
+// main uses a buffered channel as a semaphore to limit concurrency.
+// Although we spawn 10 goroutines, only 3 will execute processRecord
+// at any given time.
+func main() {
+	var wg sync.WaitGroup
+	records := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+
+	// Create a semaphore with a capacity of 3
+	semaphore := make(chan struct{}, 3)
+
+	for _, rec := range records {
+		wg.Add(1)
+		
+		// Spawn a goroutine for every record
+		go func(recordID int) {
+			defer wg.Done()
+			
+			// Acquire a slot (blocks if 3 slots are already taken)
+			semaphore &lt;- struct{}{}
+			
+			// Do the heavy work
+			processRecord(recordID)
+			
+			// Release the slot so another goroutine can proceed
+			&lt;-semaphore
+		}(rec)
+	}
+
+	// Wait for all spawned goroutines to finish
+	wg.Wait()
+	fmt.Println("All records processed!")
+}
+</code></pre>
+`);
+
+        addQuiz([{
+            q: "Τι θα συμβεί στο παραπάνω πρόγραμμα αν αλλάξουμε το μέγεθος του semaphore channel από 3 σε 1 (δηλαδή make(chan struct{}, 1));",
+            options: [
+                "Το πρόγραμμα θα краσάρει με fatal error: deadlock.",
+                "Οι 10 goroutines θα εκτελεστούν εντελώς σειριακά, η μία μετά την άλλη (σαν να χρησιμοποιούσαμε Mutex).",
+                "Θα αγνοηθούν οι υπόλοιπες 9 εγγραφές και το πρόγραμμα θα τερματίσει αμέσως.",
+                "Ο compiler δεν θα επιτρέψει τη μεταγλώττιση (compile error) γιατί το channel size πρέπει να είναι > 1 για concurrency."
+            ],
+            correct: 1,
+            explain: "Όταν το capacity είναι 1, το buffered channel λειτουργεί ακριβώς όπως ένα Mutex Lock. Μόνο μία goroutine μπορεί να βάλει δεδομένα, άρα η εκτέλεση της processRecord γίνεται αυστηρά σειριακή (sequential) αν και γίνεται μέσα από διαφορετικές goroutines!"
+        }]);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Advanced Concurrency Patterns</div>
+<h1>Pattern 5: Rate Limiting (Time Ticker)</h1>
+<p class="lede">Δεν αρκεί πάντα να περιορίζουμε τον <em>ταυτόχρονο</em> αριθμό εργασιών. Κάποιες φορές πρέπει να ελέγχουμε τον <em>ρυθμό</em> (π.χ. "Επιτρέπονται ακριβώς 2 requests ανά δευτερόλεπτο" για να μην φάμε ban από ένα API).</p>
+
+<div class="callout good">
+  <p>💡 <strong>VSCode Note:</strong> Η Go μας δίνει το <code>time.Ticker</code>. Το Ticker στέλνει την τρέχουσα ώρα στο κανάλι του <code>ticker.C</code> ανά σταθερά χρονικά διαστήματα. Περιμένοντας (block) σε αυτό το κανάλι, επιβάλλουμε τον ρυθμό που θέλουμε.</p>
+</div>
+
+<pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+// ── public entry point ───────────────────────────────────────────────────── ⊃
+
+// main demonstrates time-based rate limiting. It uses a Ticker
+// to ensure that requests are processed no faster than one every
+// 500 milliseconds, smoothing out bursts of traffic.
+func main() {
+	// Create a slice of mock requests
+	requests := make(chan int, 5)
+	for i := 1; i &lt;= 5; i++ {
+		requests &lt;- i
+	}
+	close(requests)
+
+	// Create a Ticker that ticks every 500ms
+	limiter := time.NewTicker(500 * time.Millisecond)
+	
+	// Ensure the ticker is stopped to prevent resource leaks
+	defer limiter.Stop()
+
+	fmt.Println("Processing requests with rate limiting...")
+	startTime := time.Now()
+
+	for req := range requests {
+		// Block until the ticker sends a value
+		&lt;-limiter.C
+		
+		elapsed := time.Since(startTime).Round(time.Millisecond)
+		fmt.Printf("Processed request %d at %v\\n", req, elapsed)
+	}
+}
+</code></pre>
+`);
+
+        addFillBlank([{
+            code: `func rateLimitedAPI() {
+    // Θέλουμε ακριβώς 1 request κάθε 2 δευτερόλεπτα
+    ticker := time.__NewTicker__(2 * time.Second)
+    
+    // Πάντα κλείνουμε το ticker όταν τελειώσουμε (καλή πρακτική)
+    defer ticker.__Stop__()
+
+    for i := 1; i <= 3; i++ {
+        // Περιμένουμε το "χτύπημα" του ρολογιού για να προχωρήσουμε
+        <-ticker.__C__
+        
+        fmt.Println("Fetching API data for user", i)
+    }
+}`,
+            blanks: [
+                { id: "NewTicker", answer: "NewTicker" },
+                { id: "Stop", answer: "Stop" },
+                { id: "C", answer: "C" }
+            ],
+            explain: "Η συνάρτηση time.NewTicker επιστρέφει ένα αντικείμενο *Ticker. Το κανάλι που δέχεται τους 'χτύπους' ονομάζεται .C (από το Channel ή Clock), και πρέπει πάντα να καλούμε την .Stop() στο τέλος."
+        }]);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Advanced Concurrency Patterns</div>
+<h1>Pattern 6: Or-Done Channel</h1>
+<p class="lede">Όταν καταναλώνουμε δεδομένα από ένα channel και ταυτόχρονα έχουμε ένα <code>done</code> channel για ακύρωση, πρέπει συνεχώς να γράφουμε <code>select</code> statements στο for-loop. Το <strong>Or-Done</strong> pattern κρύβει αυτή την πολυπλοκότητα μέσα σε μια helper συνάρτηση.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h2>Το Πρόβλημα</h2>
+    <p>Αν γράψουμε απλά <code>for val := range myChan</code>, το πρόγραμμά μας μπορεί να κολλήσει για πάντα (leak) αν το myChan δεν κλείσει ποτέ, αγνοώντας το σήμα ακύρωσης.</p>
+  </div>
+  <div class="card">
+    <h2>Η Λύση (Or-Done)</h2>
+    <p>Δημιουργούμε ένα ενδιάμεσο channel που συνδυάζει τα δεδομένα <strong>ή</strong> το σήμα ακύρωσης. Έτσι η <code>main</code> μπορεί να χρησιμοποιήσει ένα καθαρό και ασφαλές <code>for range</code>.</p>
+  </div>
+</div>
+
+<pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+// ── channel abstraction ──────────────────────────────────────────────────── ⊃
+
+// orDone multiplexes a data channel and a cancellation channel.
+// It returns a receive-only channel that closes either when the data
+// channel is exhausted or when the done signal is received.
+func orDone(done &lt;-chan struct{}, c &lt;-chan int) &lt;-chan int {
+	valStream := make(chan int)
+	
+	go func() {
+		defer close(valStream)
+		for {
+			select {
+			case &lt;-done: // Cancellation triggered
+				return
+			case v, ok := &lt;-c:
+				if !ok { // Source channel closed normally
+					return
+				}
+				select {
+				case valStream &lt;- v:
+				case &lt;-done:
+					return
+				}
+			}
+		}
+	}()
+	
+	return valStream
+}
+
+// ── public entry point ───────────────────────────────────────────────────── ⊃
+
+// main demonstrates safely consuming a continuous stream of data.
+// We close the done channel after 2 seconds to abort the reading early.
+func main() {
+	done := make(chan struct{})
+	
+	// A stream that yields numbers infinitely
+	infiniteStream := make(chan int)
+	go func() {
+		for i := 1; ; i++ {
+			infiniteStream &lt;- i
+			time.Sleep(500 * time.Millisecond)
+		}
+	}()
+
+	// Stop everything after 2 seconds
+	go func() {
+		time.Sleep(2 * time.Second)
+		close(done)
+		fmt.Println("Sent done signal!")
+	}()
+
+	// Elegant and safe iteration without complex select blocks
+	for val := range orDone(done, infiniteStream) {
+		fmt.Printf("Received: %d\\n", val)
+	}
+	
+	fmt.Println("Main exited cleanly.")
+}
+</code></pre>
+`);
+
+        addMatching([{
+            term: "Semaphore Pattern",
+            def: "Χρήση ενός buffered channel για τον αυστηρό περιορισμό του αριθμού των ταυτόχρονων goroutines (π.χ. max 3)."
+        }, {
+            term: "time.Ticker",
+            def: "Μηχανισμός που επιβάλλει χρονικό ρυθμό (Rate Limiting), στέλνοντας σήμα σε σταθερά χρονικά διαστήματα."
+        }, {
+            term: "Or-Done Pattern",
+            def: "Συνάρτηση περιτυλίγματος που επιτρέπει το ασφαλές for-range διάβασμα από channel, λαμβάνοντας υπόψη ένα σήμα ακύρωσης."
+        }, {
+            term: "select statement",
+            def: "Η δομή ελέγχου στη Go που επιτρέπει σε μια goroutine να ακούει πολλά channels ταυτόχρονα."
+        }]);
 
         // ── Πηγές ────────────────────────────────────────────────────────────────── ⊃
         addContent(`
@@ -1571,7 +2488,7 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
   Το παρόν presentation δημιουργήθηκε από τον avgerinos8.
 </p>
 `);
-        initSlideDeck({ version: "1.0.1" });
+        initSlideDeck({ version: "1.0.2" });
     </script>
 </body>
 

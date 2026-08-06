@@ -14,9 +14,13 @@
       auto-highlighter exists) .glossary-table/.glossary-strip/.glossary-columns
       (mix all three for variety) .title-slide/.title-badge/.kicker-line
       (title slide only, keep the "ask an AI when stuck" callout as-is).
-      opts = { bg: "path/to/image.jpg", overlayAlpha: 0..1 (default 0.5) }
+      opts = { bg: "path/to/image.jpg", overlayAlpha: 0..1 (default 0.5),
+      backgroundSize (default "auto"), backgroundRepeat (default "no-repeat"),
+      backgroundPosition (default "top left") }
       → optional per-slide background image with a solid readability
       overlay; different slides can use different images or none at all.
+      backgroundPosition accepts real CSS values, e.g. "center center",
+      "top left", "bottom right", "50% 50%".
 
     addQuiz(question | [question,...], opts?)
       One or more MC questions on one slide.
@@ -60,7 +64,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>[TOPIC] — Θεωρητικό Υλικό</title>
-  <link rel="stylesheet" href="style.css?v=20260801">
+  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <!-- Color scheme — swap the href below to theme-cypress.css (or any other
+       theme-*.css) to change the whole site's palette. Must load AFTER
+       style.css so its :root values override the fallback defaults there. -->
+  <link rel="stylesheet" href="static/theme-burgundy.css?v=20260801">
 </head>
 
 <body>
@@ -95,8 +103,8 @@
     </div>
   </div>
 
-  <script src="script.js?v=20260801"></script>
-  <script src="highlighter.js?v=20260801"></script>
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
   <script>
     // Course content below — see instructions comment at the top of this file.
 

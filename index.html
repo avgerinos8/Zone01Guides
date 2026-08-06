@@ -163,6 +163,98 @@
             border-color: #00ffff;
             background: rgba(0, 255, 255, 0.05);
         }
+
+        .status-line {
+            white-space: normal;
+        }
+
+        .ascii-container {
+            overflow-x: hidden;
+        }
+
+        /* ——— responsive (mobile / small landscape screens) ——— */
+        @media (max-width: 700px) {
+
+            body {
+                margin: 24px auto;
+                padding: 0 12px;
+            }
+
+            .status-line {
+                font-size: 0.72rem;
+                line-height: 1.5;
+                word-break: break-word;
+            }
+
+            .ascii-art {
+                font-size: 4px;
+                line-height: 1.05;
+            }
+
+            a {
+                padding: 13px 15px;
+            }
+
+            a span:first-child {
+                font-size: 0.82rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            /* Hide lesson type */
+            .tag {
+                display: none;
+            }
+
+            .section-title {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Very small phones */
+        @media (max-width: 420px) {
+
+            .ascii-art {
+                font-size: 3px;
+            }
+
+            .status-line {
+                font-size: 0.65rem;
+            }
+
+            a {
+                padding: 11px 12px;
+            }
+
+            a span:first-child {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Small landscape devices */
+        @media (max-height: 500px) and (orientation: landscape) {
+
+            body {
+                margin: 14px auto;
+            }
+
+            .terminal-header {
+                margin-bottom: 16px;
+            }
+
+            .ascii-container {
+                margin-bottom: 16px;
+            }
+
+            .ascii-art {
+                font-size: 4px;
+            }
+
+            .tag {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -215,19 +307,19 @@
             </a>
         </li>
         <li>
-            <a href="_oldUnused/03-SQL-go-database-notes.html">
+            <a href="./_oldUnused/03-SQL-go-database-notes.html">
                 <span>&gt; ./03_SQL_go_database_notes</span>
                 <span class="tag">[DATABASE]</span>
             </a>
         </li>
         <li>
-            <a href="_oldUnused/03-SQL-go-database-notes.html">
+            <a href="./_oldUnused/03-SQL-go-database-notes.html">
                 <span>&gt; ./OLD_SQL-go-database-notes</span>
                 <span class="tag">[DATABASE]</span>
             </a>
         </li>
         <li>
-            <a href="_oldUnused/00-Docker.html">
+            <a href="./_oldUnused/00-Docker.html">
                 <span>&gt; ./OLD_Docker</span>
                 <span class="tag">[DOCKER]</span>
             </a>
