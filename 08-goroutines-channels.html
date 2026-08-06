@@ -221,9 +221,7 @@ func main() {
   περιμένεις τις goroutines σου (θα δούμε πώς με <code>sync.WaitGroup</code> και channels), ίσως το πρόγραμμα τελειώσει πριν
   προλάβουν καν να τρέξουν.
 </div>
-        `);
-        addContent(`
-<div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
+
 <h2>Anonymous functions</h2>
 <p>Μια <strong>ανώνυμη συνάρτηση</strong> (anonymous function) είναι μια συνάρτηση χωρίς όνομα, που ορίζεται «επί τόπου», εκεί
 όπου τη χρειαζόμαστε — συχνά ακριβώς εκεί όπου τη χρησιμοποιούμε μία φορά και δεν χρειάζεται ξανά αλλού στο πρόγραμμα.</p>
@@ -249,9 +247,7 @@ func(name string) {
 <p>Στη ουσία, <code>func(){...}()</code> σημαίνει: «όρισε αυτή τη συνάρτηση, και κάλεσέ την αμέσως, εδώ, τώρα». Αυτό το pattern
 λέγεται συχνά <strong>IIFE</strong> (Immediately Invoked Function Expression) — όρος που έρχεται και από άλλες γλώσσες όπως η
 JavaScript, όπου είναι πολύ κοινός.</p>
-        `);
-        addContent(`
-<div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
+
 <h2>Ο συνδυασμός: <code>go func(){...}()</code></h2>
 <p>Τώρα βάζουμε τα δύο κομμάτια μαζί. Αντί να ορίσουμε μια ξεχωριστή, ονομασμένη συνάρτηση για να τη στείλουμε με <code>go</code>,
 ορίζουμε μια ανώνυμη συνάρτηση <strong>και</strong> τη στέλνουμε να τρέξει ως goroutine, όλα σε μία γραμμή:</p>
@@ -283,9 +279,7 @@ JavaScript, όπου είναι πολύ κοινός.</p>
   Περνώντας το <code>i</code> ως <strong>παράμετρο</strong>, «παγώνουμε» την τρέχουσα τιμή του τη στιγμή που ξεκινάει η goroutine —
   κάθε goroutine παίρνει το δικό της, ανεξάρτητο αντίγραφο. Αυτό είναι μια πολύ κλασική, πολύ συχνή παγίδα για αρχάριους.
 </div>
-        `);
-        addContent(`
-<div class="eyebrow">Ενότητα 2 / 9 — Το keyword go &amp; Anonymous Functions</div>
+
 <h2>Deadlock — μια πρώτη γεύση</h2>
 <p class="lede">Πριν προχωρήσουμε στα channels, αξίζει να δούμε νωρίς τι σημαίνει <strong>deadlock</strong>, γιατί θα το ξανασυναντήσουμε συνέχεια. Είναι ένα από τα πιο συχνά λάθη σε concurrent προγράμματα, και η Go έχει έναν από τους καλύτερους τρόπους ανίχνευσής του.</p>
 
@@ -1200,7 +1194,13 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
 </div>
 
 <p class="lede">Έτοιμος/η για το τελικό, συνδυαστικό quiz;</p>
-`);
+`, {
+            bg: "../images/goroutines.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addQuiz([
             {
@@ -1258,7 +1258,14 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
                 correct: 0,
                 explain: "Χωρίς να περάσουμε το i ως παράμετρο, όλες οι ανώνυμες συναρτήσεις «βλέπουν» μέσω closure την ίδια, κοινή μεταβλητή i του βρόχου, η οποία συνεχίζει να αλλάζει καθώς προχωράει ο βρόχος — οπότε το ποια τιμή θα διαβάσει τελικά κάθε goroutine είναι απρόβλεπτο (πολύ πιθανό να δούμε πολλά 5άρια, ή οποιοδήποτε συνδυασμό)."
             }
-        ]);
+        ], {
+            label: "Final Quiz",
+            bg: "../images/goroutines.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
 
         addContent(`
@@ -1274,7 +1281,14 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
     <p>Μπορείτε άνετα να ολοκληρώσετε τα βασικά σας projects τώρα και να επιστρέψετε σε αυτές τις ενότητες αργότερα, όταν οι ανάγκες των εφαρμογών σας το απαιτήσουν.</p>
   </div>
 </div>
-`);
+`, {
+            bg: "../images/goroutines.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
+
         // ── ΕΝΟΤΗΤΑ 7 — Channels for Notifications ──────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 7 / 9 — Channels for Notifications</div>
@@ -1365,9 +1379,16 @@ case <-time.After(3 * time.Second):
 </code></pre>
 <p>Αυτό είναι το κλασικό pattern για <strong>timeout</strong>: περιμένουμε είτε το πραγματικό αποτέλεσμα, είτε —αν αργεί
 πολύ— το «ξυπνητήρι» του <code>time.After</code> να μας «σώσει» από άπειρη αναμονή.</p>
-`);
+`, {
+            bg: "../images/goroutines.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
-        addQuiz({
+
+        addQuiz([{
             q: "Τρεις goroutines περιμένουν σε ένα κοινό channel ch (τύπου chan struct{}) με <-ch. Ποια ενέργεια θα «ξυπνήσει» και τις τρεις ταυτόχρονα;",
             options: [
                 "close(ch) — το κλείσιμο του channel λειτουργεί ως broadcast, κάθε αναμένον receive επιστρέφει αμέσως ανεξάρτητα από τον αριθμό των goroutines",
@@ -1377,6 +1398,12 @@ case <-time.After(3 * time.Second):
             ],
             correct: 0,
             explain: "Ένα απλό send δίνει μία τιμή σε μία μόνο goroutine (όποια την «αρπάξει» πρώτη) — οι υπόλοιπες θα συνέχιζαν να περιμένουν. Το close(ch) όμως αλλάζει την ίδια την κατάσταση του channel, και κάθε receive πάνω του, από όσες goroutines κι αν περιμένουν, επιστρέφει αμέσως — πραγματικό broadcast."
+        }], {
+            bg: "../images/goroutines.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat-x",
+            backgroundPosition: "center center"
         });
 
         // ── ΕΝΟΤΗΤΑ 8 — Locks, Semaphores, Advanced Patterns ────────────────────── ⊃
@@ -1521,9 +1548,15 @@ func main() {
 </code></pre>
 <p>Στην πράξη, αν βρίσκεσαι να σκέφτεσαι το <code>runtime.Gosched()</code>, συνήθως αξίζει να ξανασκεφτείς αν υπάρχει καλύτερος
 σχεδιασμός με channel ή <code>sync</code> primitive — το «busy-waiting σε βρόχο» είναι σπάνια η βέλτιστη λύση.</p>
-`);
+        `, {
+            bg: "../images/goroutines.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
-        addQuiz({
+        addQuiz([{
             q: "Ποια είναι η κύρια διαφορά ανάμεσα σε ένα channel-based mutex (buffer 1) και ένα channel-based counting semaphore (buffer N > 1);",
             options: [
                 "Το mutex-channel επιτρέπει μόνο έναν «κάτοχο» τη φορά, ενώ το semaphore-channel επιτρέπει μέχρι N ταυτόχρονους «κατόχους», περιορίζοντας παράλληλη πρόσβαση χωρίς να την απαγορεύει πλήρως",
@@ -1533,6 +1566,12 @@ func main() {
             ],
             correct: 0,
             explain: "Και τα δύο εκμεταλλεύονται τη συμπεριφορά «send μπλοκάρει όταν ο buffer είναι γεμάτος» — απλά με διαφορετική χωρητικότητα. Buffer 1 σημαίνει αμοιβαίο αποκλεισμό (μόνο ένας κάθε φορά), buffer N σημαίνει ότι επιτρέπονται μέχρι N ταυτόχρονοι «κάτοχοι», χρήσιμο για rate limiting."
+        }], {
+            bg: "../images/goroutines.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat-x",
+            backgroundPosition: "center center"
         });
 
         // PATTERNS
@@ -1544,15 +1583,22 @@ func main() {
 
 <div class="grid2">
   <div class="card">
-    <h2>🛠️ Πρακτική Εξάσκηση (VSCode)</h2>
-    <p>Σας προτείνουμε να μεταφέρετε, να εκτελέσετε και να τροποποιήσετε αυτά τα παραδείγματα στο VSCode. Η αλλαγή παραμέτρων, όπως ο αριθμός των workers ή τα delays, θα σας βοηθήσει να κατανοήσετε την πραγματική συμπεριφορά του συστήματος.</p>
+    <h2>Πρακτική Εξάσκηση (VSCode)</h2>
+    <p>Σας προτείνουμε να μεταφέρετε, να εκτελέσετε και να τροποποιήσετε αυτά τα παραδείγματα στο VSCode.</p>
   </div>
   <div class="card">
-    <h2>⚠️ Προαπαιτούμενα &amp; Προσέγγιση</h2>
+    <h2>Προαπαιτούμενα &amp; Προσέγγιση</h2>
     <p>Τα concepts που ακολουθούν έχουν αυξημένο βαθμό δυσκολίας. Απαιτούν καλή κατανόηση των βασικών αρχών του concurrency ή πρακτική εμπειρία μέσα από 2-3 σχετικά projects. Αν βρίσκεστε στα αρχικά στάδια, διαβάστε τα παραδείγματα απλώς για να αποκτήσετε μια γενική εικόνα των δυνατοτήτων και των διαφορετικών αρχιτεκτονικών.</p>
   </div>
 </div>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
+
         addContent(`
 <div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
 <h1>Pattern 1: Worker Pool (Bounded Concurrency)</h1>
@@ -1683,7 +1729,13 @@ func main() {
 // 3 workers μοιράζονται 80 jobs. Όποιος worker τελειώσει,
 // παίρνει την επόμενη εργασία αυτόματα.
 </code></pre>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addFillBlank([{
             code: `package main
@@ -1763,7 +1815,14 @@ func main() {
                 { id: "ptr", answer: "*" },
             ],
             explain: "Συμπληρώσαμε τα κενά στον κώδικα του Worker Pool. Κάθε worker διαβάζει από το jobs channel (<-chan Job), στέλνει αποτελέσματα (results <-), η main στέλνει εργασίες (jobs <-), και τα close() διασφαλίζουν ότι όλα τα channels κλείνουν σωστά για να αποφύγουμε deadlocks."
-        }]);
+        }], {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
+
 
         addQuiz([
             {
@@ -1810,7 +1869,14 @@ func main() {
                 correct: 1,
                 explain: "Αυτή η goroutine περιμένει όλους τους workers να ολοκληρώσουν (wg.Wait()) και μετά κλείνει το results channel. Αυτό επιτρέπει στην main να βγει από το for range loop όταν όλα τα results έχουν διαβαστεί."
             }
-        ]);
+        ], {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
+
 
         addContent(`
 <div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
@@ -1997,7 +2063,13 @@ fmt.Println(val) // το val είναι interface{}, όχι string</code></pre>
   <span class="tag">✅ ΣΗΜΑΝΤΙΚΟ ΣΥΜΠΕΡΑΣΜΑ</span>
   <p><strong>Δεν υπάρχει "μαγικός" τρόπος</strong> να πάρουμε τα αποτελέσματα με σειρά χωρίς αποθήκευση και ταξινόμηση. Οι goroutines εκτελούνται παράλληλα και η σειρά ολοκλήρωσης είναι μη προσδιορίσιμη. Πρέπει πάντα να σχεδιάζουμε τον κώδικά μας για να χειρίζεται αυτή την αβεβαιότητα.</p>
 </div>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
 
         addContent(`
@@ -2101,7 +2173,13 @@ func main() {
 	}
 }
 </code></pre>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addFillBlank([{
             code: `func simpleMerge(ch1, ch2 <-chan int) <-chan int {
@@ -2137,14 +2215,28 @@ func main() {
                 { id: "close", answer: "close" }
             ],
             explain: "Για να υλοποιήσουμε σωστά το Fan-In, χρειαζόμαστε 1 goroutine ανά input channel, συν 1 goroutine στο παρασκήνιο (background) που καλεί το wg.Wait() και κλείνει το τελικό channel (out)."
-        }]);
+        }], {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addMatching([
             { term: "Worker Pool", def: "Περιορισμένος αριθμός goroutines που επεξεργάζονται εργασίες από ένα κοινό channel." },
             { term: "Goroutine Leak", def: "Κατάσταση όπου μια goroutine παραμένει ενεργή επ' αόριστον, περιμένοντας δεδομένα από ένα channel που δεν θα κλείσει ποτέ." },
             { term: "Deadlock", def: "Κατάσταση όπου όλες οι goroutines περιμένουν η μία την άλλη και το πρόγραμμα σταματά να προχωρά." },
             { term: "Fan-Out", def: "Πολλαπλές goroutines που διαβάζουν από το ίδιο input channel, μοιράζοντας την εργασία." }
-        ], { note: "Αντιστοιχίστε κάθε όρο με τον σωστό ορισμό του." });
+        ], {
+            note: "Αντιστοιχίστε κάθε όρο με τον σωστό ορισμό του.",
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+
+        });
 
 
         addContent(`
@@ -2199,7 +2291,13 @@ func main() {
 	}
 }
 </code></pre>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addMatching([{
             term: "Worker Pool",
@@ -2213,7 +2311,16 @@ func main() {
         }, {
             term: "close(channel)",
             def: "Σηματοδοτεί στους receivers ότι δεν θα έρθουν άλλα δεδομένα, σπάζοντας το for range loop."
-        }]);
+        }],
+            {
+
+                bg: "../images/goroutines2.jpg",
+                overlayAlpha: 0.88,
+                backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+                backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+                backgroundPosition: "center center"
+
+            });
 
         // PATTERNS 2
 
@@ -2287,7 +2394,13 @@ func main() {
 	fmt.Println("All records processed!")
 }
 </code></pre>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addQuiz([{
             q: "Τι θα συμβεί στο παραπάνω πρόγραμμα αν αλλάξουμε το μέγεθος του semaphore channel από 3 σε 1 (δηλαδή make(chan struct{}, 1));",
@@ -2299,7 +2412,13 @@ func main() {
             ],
             correct: 1,
             explain: "Όταν το capacity είναι 1, το buffered channel λειτουργεί ακριβώς όπως ένα Mutex Lock. Μόνο μία goroutine μπορεί να βάλει δεδομένα, άρα η εκτέλεση της processRecord γίνεται αυστηρά σειριακή (sequential) αν και γίνεται μέσα από διαφορετικές goroutines!"
-        }]);
+        }], {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addContent(`
 <div class="eyebrow">Ενότητα 9 / 9 — Advanced Concurrency Patterns</div>
@@ -2348,7 +2467,13 @@ func main() {
 	}
 }
 </code></pre>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addFillBlank([{
             code: `func rateLimitedAPI() {
@@ -2371,7 +2496,13 @@ func main() {
                 { id: "C", answer: "C" }
             ],
             explain: "Η συνάρτηση time.NewTicker επιστρέφει ένα αντικείμενο *Ticker. Το κανάλι που δέχεται τους 'χτύπους' ονομάζεται .C (από το Channel ή Clock), και πρέπει πάντα να καλούμε την .Stop() στο τέλος."
-        }]);
+        }], {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addContent(`
 <div class="eyebrow">Ενότητα 9 / 9 — Advanced Concurrency Patterns</div>
@@ -2457,7 +2588,13 @@ func main() {
 	fmt.Println("Main exited cleanly.")
 }
 </code></pre>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         addMatching([{
             term: "Semaphore Pattern",
@@ -2471,7 +2608,13 @@ func main() {
         }, {
             term: "select statement",
             def: "Η δομή ελέγχου στη Go που επιτρέπει σε μια goroutine να ακούει πολλά channels ταυτόχρονα."
-        }]);
+        }], {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         // ── Πηγές ────────────────────────────────────────────────────────────────── ⊃
         addContent(`
@@ -2485,9 +2628,14 @@ func main() {
 </div>
 <div id="final-score"></div>
 <p style="margin-top:48px; color:rgba(255,243,176,0.55); font-family:var(--font-mono); font-size:14px;">
-  Το παρόν presentation δημιουργήθηκε από τον avgerinos8.
 </p>
-`);
+        `, {
+            bg: "../images/goroutines2.jpg",
+            overlayAlpha: 0.88,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
         initSlideDeck({ version: "1.0.2" });
     </script>
 </body>
