@@ -996,11 +996,12 @@ func (c *SafeCounter) Get() int {
 
 func increment() {
     mu.__lock__()
-    defer mu.Unlock()
+    defer mu.__Unlock__()
     counter++
 }`,
                 blanks: [
-                    { id: "lock", answer: "Lock" }
+                    { id: "lock", answer: "Lock" },
+                    { id: "Unlock", answer: "Unlock" }
                 ],
                 explain: "Το mu.Lock() αποκτά το κλείδωμα — αν άλλη goroutine το κρατάει ήδη, η τρέχουσα μπλοκάρει εδώ μέχρι να απελευθερωθεί."
             },
@@ -1010,11 +1011,12 @@ func increment() {
 // Multiple goroutines can call this concurrently without blocking each other
 func readData() string {
     rwMu.__rlock__()
-    defer rwMu.RUnlock()
+    defer rwMu.__RUnlock__()
     return sharedData
 }`,
                 blanks: [
-                    { id: "rlock", answer: "RLock" }
+                    { id: "rlock", answer: "RLock" },
+                    { id: "RUnlock", answer: "RUnlock" }
                 ],
                 explain: "Το RLock() αποκτά ένα read lock — πολλαπλά read locks μπορούν να συνυπάρχουν ταυτόχρονα, επιτρέποντας παράλληλα διαβάσματα."
             }
