@@ -15,24 +15,28 @@
 :root {
   /* ── palette (hex, source of truth) — INDICATIVE values for this template. ⊃ */
   /* Always dark-mode: keep --tone-1/--tone-2 near-black/near-black-red so text */
-  /* stays readable; swap these 7 values (+ rgb triplets) for a different course. */
-  --tone-1: #0b120cff;
-  --tone-2: #142416ff;
-  --tone-3: #1f3a23ff;
-  --tone-4: #2d5a35ff;
-  --tone-5: #c5a059ff;
+  /* stays readable. These are FALLBACK DEFAULTS (burgundy) — the values below */
+  /* get overridden by whichever static/theme-*.css is linked AFTER this file */
+  /* in index.html (e.g. theme-cypress.css). See static/theme-burgundy.css. */
+  --tone-1: #120401ff;
+  --tone-2: #23060eff;
+  --tone-3: #3d0c14ff;
+  --tone-4: #6e1420ff;
+  --tone-5: #d97b3fff;
 
-  --tone-1-rgb: 11, 18, 12;
-  --tone-2-rgb: 20, 36, 22;
-  --tone-3-rgb: 31, 58, 35;
-  --tone-4-rgb: 45, 90, 53;
-  --tone-5-rgb: 197, 160, 89;
+  --tone-1-rgb: 18, 4, 1;
+  --tone-2-rgb: 35, 6, 14;
+  --tone-3-rgb: 61, 12, 20;
+  --tone-4-rgb: 110, 20, 32;
+  --tone-5-rgb: 217, 123, 63;
 
-  --tone-text: #f0f5f1ff;
-  --tone-text-rgb: 240, 245, 241;
+  --tone-text: #f6e9dcff;
+  --tone-text-rgb: 246, 233, 220;
 
-  --code-bg: #080d09ff;
-  --code-bg-rgb: 8, 13, 9;
+  /* dedicated code-block background — its own root token, not reused from
+         --tone-1, so code panels can be retuned independently of the page bg */
+  --code-bg: #0d1117ff;
+  --code-bg-rgb: 13, 17, 23;
 
 
   /* semantic roles — every other rule below reads ONLY these variables */
@@ -108,11 +112,19 @@ body {
 /* Optional per-slide background image (set via addContent(html, {bg})
        in index.html — see instructions comment there). --slide-bg-image is
        set inline per-slide; the overlay defaults to 50% --panel so text
-       stays readable, override with inline --slide-bg-overlay-alpha. */
+       stays readable, override with inline --slide-bg-overlay-alpha.
+       position:fixed here is safe because .slide ITSELF never has a
+       transform — the swipe-transition's animation lives on the separate
+       .slide-content wrapper (see below), not on .slide. That split is
+       what keeps the background both (a) immune to .slide's internal
+       overflow-y:auto scrolling — position:fixed always escapes a
+       scrolling ancestor — and (b) immune to the transform-vs-fixed
+       containing-block interaction that broke this before. */
 .slide.has-bg {
   --slide-bg-overlay-alpha: 0.5;
   --slide-bg-size: auto;
   --slide-bg-repeat: no-repeat;
+  --slide-bg-position: top left;
 }
 
 .slide.has-bg::before,
@@ -127,14 +139,18 @@ body {
   background-image: var(--slide-bg-image);
   background-size: var(--slide-bg-size);
   background-repeat: var(--slide-bg-repeat);
-  background-position: top left;
+  background-position: var(--slide-bg-position);
 }
 
 .slide.has-bg::after {
   background: rgba(var(--tone-1-rgb), var(--slide-bg-overlay-alpha));
 }
 
-.slide.has-bg>* {
+/* .slide-content wraps ALL of a slide's actual rendered content (created
+   in script.js). It sits above the background layers (z-index:1) and is
+   the thing that plays the swipe-entrance animation — NOT .slide itself,
+   so .slide (the scroll container + background host) never transforms. */
+.slide-content {
   position: relative;
   z-index: 1;
 }
@@ -144,10 +160,13 @@ body {
        side full-width, like a swipe. ~320ms, no bounce. */
 .slide.active {
   display: block;
+}
+
+.slide.active .slide-content {
   animation: swipeInLeft .32s cubic-bezier(.25, .8, .35, 1);
 }
 
-.slide.active.dir-prev {
+.slide.active.dir-prev .slide-content {
   animation-name: swipeInRight;
 }
 

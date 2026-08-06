@@ -60,7 +60,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Docker σημειώσεις</title>
-    <link rel="stylesheet" href="static/style-cypress.css?v=20260802">
+    <link rel="stylesheet" href="static/style.css?v=20260802">
+    <link rel="stylesheet" href="static/theme-cypress.css?v=20260802">
 </head>
 
 <body>
@@ -1027,7 +1028,13 @@ volumes:
   <div class="gc-line"><span class="gc-term">COPY --from &lt;stagename&gt;</span><span class="gc-def">Αντιγραφή από προηγούμενο στάδιο (stagename)</span></div>
   <div class="gc-line"><span class="gc-term">LABEL</span><span class="gc-def">Προσθήκη metadata key=value</span></div>
 </div>
-`);
+`, {
+            bg: "../images/docker-container.jpg",
+            overlayAlpha: 0.78,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
+        });
 
         // ── slide final review section ────────────────────────────────────────── ⊃
 
@@ -1101,10 +1108,11 @@ volumes:
             }
         ], {
             label: "Final Quiz",
-            // bg: "../images/docker-bg.jpg",
-            // overlayAlpha: 0.98,
-            // backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            // backgroundRepeat: "repeat-x" // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/docker-container.jpg",
+            overlayAlpha: 0.78,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
         });
 
         // 2. Large Multi-stage Fill-in-the-Blanks (addFillBlank)
@@ -1152,10 +1160,11 @@ __id9__ ["./myapp"]`,
         ], {
             label: "Τελικό Fill in the Blanks Test",
             note: "Συμπλήρωσε τις κατάλληλες εντολές Dockerfile που λείπουν.",
-            // bg: "../images/docker-bg.jpg",
-            // overlayAlpha: 0.98,
-            // backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            // backgroundRepeat: "repeat-x" // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/docker-container.jpg",
+            overlayAlpha: 0.78,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
         });
 
         // 3. Matching Game (addMatching)
@@ -1180,10 +1189,11 @@ __id9__ ["./myapp"]`,
             ]
         ], {
             note: "Αντιστοίχισε τις 6 εντολές Dockerfile (Σετ A) και τα 6 Concepts του μαθήματος (Σετ B).",
-            // bg: "../images/docker-bg.jpg",
-            // overlayAlpha: 0.98,
-            // backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            // backgroundRepeat: "repeat-x" // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/docker-container.jpg",
+            overlayAlpha: 0.78,
+            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
+            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundPosition: "center center"
         });
 
         // ── Sources ──────────────────────────────────────────────────────────── ⊃

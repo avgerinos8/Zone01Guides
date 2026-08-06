@@ -91,6 +91,7 @@ function applyBackground(el, opts) {
   }
   if (opts.backgroundSize) el.style.setProperty("--slide-bg-size", opts.backgroundSize);
   if (opts.backgroundRepeat) el.style.setProperty("--slide-bg-repeat", opts.backgroundRepeat);
+  if (opts.backgroundPosition) el.style.setProperty("--slide-bg-position", opts.backgroundPosition);
 }
 
 /**
@@ -741,29 +742,29 @@ function buildInteractiveHeader(el, defaultLabel, opts) {
  * @param {Object} slide - Slide data payload.
  * @param {number} idx - Index position of slide in deck.
  */
-function renderSlide(el, slide, idx) {
+function renderSlide(el, contentEl, slide, idx) {
   if (slide.type === "content") {
-    el.innerHTML = slide.html;
+    contentEl.innerHTML = slide.html;
     applyBackground(el, slide.opts);
-    decorateCodeBlocks(el);
+    decorateCodeBlocks(contentEl);
     return;
   }
 
   if (slide.type === "quiz") {
-    el.innerHTML = "";
+    contentEl.innerHTML = "";
     applyBackground(el, slide.opts);
-    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Quiz Checkpoint", slide.opts);
+    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(contentEl, "Quiz Checkpoint", slide.opts);
     const storeKeys = slide.data.map((_, qIdx) => idx + "_" + qIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
 
     function renderAllQuestions() {
-      el.querySelectorAll(".quiz-box").forEach(n => n.remove());
+      contentEl.querySelectorAll(".quiz-box").forEach(n => n.remove());
       slide.data.forEach((q, qIdx) => {
         const box = document.createElement("div");
         box.className = "quiz-box";
         box.style.marginBottom = "18px";
         renderQuestion(box, q, idx + "_" + qIdx, refresh);
-        el.appendChild(box);
+        contentEl.appendChild(box);
       });
       refresh();
     }
@@ -784,16 +785,16 @@ function renderSlide(el, slide, idx) {
   }
 
   if (slide.type === "fillblank") {
-    el.innerHTML = "";
+    contentEl.innerHTML = "";
     applyBackground(el, slide.opts);
-    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Fill in the Blank", slide.opts);
+    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(contentEl, "Fill in the Blank", slide.opts);
     const storeKeys = slide.data.map((_, itemIdx) => idx + "_fb_" + itemIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
 
     function renderAllItems() {
-      el.querySelectorAll(".fb-item").forEach(n => n.remove());
+      contentEl.querySelectorAll(".fb-item").forEach(n => n.remove());
       slide.data.forEach((item, itemIdx) => {
-        renderFillBlank(el, item, idx + "_fb_" + itemIdx, refresh);
+        renderFillBlank(contentEl, item, idx + "_fb_" + itemIdx, refresh);
       });
       refresh();
     }
@@ -813,9 +814,9 @@ function renderSlide(el, slide, idx) {
   }
 
   if (slide.type === "matching") {
-    el.innerHTML = "";
+    contentEl.innerHTML = "";
     applyBackground(el, slide.opts);
-    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(el, "Matching Pairs", slide.opts);
+    const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(contentEl, "Matching Pairs", slide.opts);
     const sets = slide.data; // array of pair-arrays, 1 or more sets per slide
     const storeKeys = sets.map((_, setIdx) => idx + "_match_" + setIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
@@ -823,10 +824,10 @@ function renderSlide(el, slide, idx) {
     let seeds = sets.map((_, setIdx) => idx * 17 + 3 + setIdx * 53);
 
     function renderAllSets() {
-      el.querySelectorAll(".matching-container").forEach(n => n.remove());
+      contentEl.querySelectorAll(".matching-container").forEach(n => n.remove());
       sets.forEach((pairs, setIdx) => {
         const label = sets.length > 1 ? `Set ${setIdx + 1} / ${sets.length}` : null;
-        renderMatching(el, pairs, seeds[setIdx], idx + "_match_" + setIdx, refresh, label);
+        renderMatching(contentEl, pairs, seeds[setIdx], idx + "_match_" + setIdx, refresh, label);
       });
       refresh();
     }
@@ -917,8 +918,11 @@ function initSlideDeck(config) {
     const el = document.createElement("div");
     el.className = "slide";
     el.dataset.index = i;
+    const contentEl = document.createElement("div");
+    contentEl.className = "slide-content";
+    el.appendChild(contentEl);
     deckEl.appendChild(el);
-    renderSlide(el, s, i);
+    renderSlide(el, contentEl, s, i);
 
     const dot = document.createElement("div");
     dot.className = "dot" + (s.type !== "content" ? " quiz-dot" : "");
