@@ -412,7 +412,7 @@ goroutine τη μαζεύει από την άλλη άκρη. Το keyword-τύ
 αρχικοποιηθεί, είναι <code>nil</code> — και ένα nil channel <strong>μπλοκάρει για πάντα</strong> σε κάθε send ή receive
 (χρήσιμο σε συγκεκριμένα, προχωρημένα patterns με <code>select</code>, αλλά επικίνδυνο αν συμβεί κατά λάθος).</p>
 
-<pre><code><span class="cm">// same "make" pattern as maps and slices</span>
+<pre><code class="lang-go"><span class="cm">// same "make" pattern as maps and slices</span>
 m := make(map[string]int)   <span class="cm">// initializes a map</span>
 s := make([]int, 0, 10)     <span class="cm">// initializes a slice</span>
 ch := make(chan int)        <span class="cm">// initializes an unbuffered channel of int</span>
@@ -438,15 +438,12 @@ buffered := make(chan int, 5) <span class="cm">// a buffered channel that can ho
   είναι ήδη γεμάτος (N τιμές μέσα). Αν υπάρχει χώρος, το send επιστρέφει αμέσως, χωρίς να χρειάζεται κάποια άλλη goroutine να
   είναι έτοιμη να λάβει <em>εκείνη τη στιγμή</em>.</li>
 </ul>
-
-        `);
-        addContent(`
         
 <h2>Το operator <code>&lt;-</code></h2>
 <p>Το <code>&lt;-</code> είναι το βέλος-κλειδί της Go για channels, και έχει <strong>δύο</strong> εντελώς διαφορετικές χρήσεις
 ανάλογα με τη θέση του:</p>
 
-<pre><code>ch <- 5        <span class="cm">// arrow AFTER the channel name: this is a SEND operation</span>
+<pre><code class="lang-go">ch <- 5        <span class="cm">// arrow AFTER the channel name: this is a SEND operation</span>
 x := <-ch      <span class="cm">// arrow BEFORE the channel name: this is a RECEIVE operation</span>
 
 <span class="cm">// the arrow can also appear inside a TYPE declaration, to restrict direction:</span>
@@ -459,7 +456,7 @@ var recvOnly <-chan int   <span class="cm">// receive-only channel type</span>
 
 <h2>Η διαφορά <code>&lt;-ch</code> και <code>:= &lt;-ch</code></h2>
 <p>Αυτό μπερδεύει πολύ κόσμο στην αρχή, αλλά είναι απλά η γνωστή λογική του <code>:=</code> της Go, εφαρμοσμένη σε ένα receive:</p>
-<pre><code><span class="cm">// receiving and DISCARDING the value — we don't care what it was, only that something arrived</span>
+<pre><code class="lang-go"><span class="cm">// receiving and DISCARDING the value — we don't care what it was, only that something arrived</span>
 <-ch
 
 <span class="cm">// receiving and STORING the value into a new variable x</span>
@@ -481,7 +478,7 @@ y = <-ch
   <li><code>cap(ch)</code> — η <strong>συνολική χωρητικότητα</strong> του buffer (ο αριθμός που δώσαμε στο <code>make</code>). Για unbuffered channel, είναι πάντα 0.</li>
   <li><code>len(ch)</code> — πόσες τιμές βρίσκονται <strong>αυτή τη στιγμή</strong> μέσα στο buffer, περιμένοντας να ληφθούν.</li>
 </ul>
-<pre><code>ch := make(chan int, 3)
+<pre><code class="lang-go">ch := make(chan int, 3)
 ch <- 1
 ch <- 2
 fmt.Println(len(ch)) <span class="cm">// 2 — two values currently buffered</span>
@@ -490,7 +487,7 @@ fmt.Println(cap(ch)) <span class="cm">// 3 — total buffer capacity, unchanged<
 
 <h2>Deadlock παράδειγμα — τώρα με channel</h2>
 <p>Τώρα που ξέρουμε τι είναι unbuffered channel, μπορούμε να δούμε το πιο κλασικό deadlock της Go:</p>
-<pre><code>func main() {
+<pre><code class="lang-go">func main() {
     ch := make(chan int) <span class="cm">// unbuffered — send needs a simultaneous receive</span>
     ch <- 42              <span class="cm">// blocks forever: nobody is receiving, and nothing else can run</span>
     fmt.Println("never reached")
@@ -502,17 +499,252 @@ fmt.Println(cap(ch)) <span class="cm">// 3 — total buffer capacity, unchanged<
 είναι η μόνη goroutine στο πρόγραμμα, ο runtime ανιχνεύει ότι απολύτως τίποτα δεν μπορεί να προχωρήσει, και τερματίζει με σφάλμα.</p>
 `);
 
-        addQuiz({
-            q: "Ποια είναι η θεμελιώδης διαφορά συμπεριφοράς ανάμεσα σε unbuffered και buffered channel κατά το send;",
-            options: [
-                "Σε unbuffered channel το send μπλοκάρει μέχρι κάποια goroutine να κάνει ταυτόχρονο receive· σε buffered channel το send μπλοκάρει μόνο αν ο buffer είναι ήδη γεμάτος",
-                "Σε unbuffered channel το send ολοκληρώνεται πάντα αμέσως χωρίς αναμονή, ενώ σε buffered channel το send περιμένει πάντα κάποιο receive",
-                "Δεν υπάρχει καμία πρακτική διαφορά — και τα δύο μπλοκάρουν πάντα μέχρι να γίνει receive, ανεξάρτητα από τη χωρητικότητα",
-                "Σε buffered channel το send αποτυγχάνει σιωπηλά αν δεν υπάρχει receiver, ενώ σε unbuffered channel προκαλεί πάντα panic αμέσως"
-            ],
-            correct: 0,
-            explain: "Το unbuffered channel απαιτεί «χειραψία» — sender και receiver πρέπει να είναι έτοιμοι ταυτόχρονα. Το buffered channel επιτρέπει στο send να «αποθέσει» την τιμή στον buffer και να προχωρήσει αμέσως, όσο υπάρχει ελεύθερος χώρος, χωρίς να χρειάζεται άμεσος receiver."
-        });
+        // ── ΕΝΟΤΗΤΑ 3.5 — VS Code Challenge ────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">VS Code Challenge — Εξάσκηση</div>
+<h1>VSCode Challenge: Brute-Force Password Cracker</h1>
+<p class="lede">Ώρα για ένα πραγματικό σενάριο! Έχουμε υποκλέψει το hash ενός 7-ψήφιου PIN (από το 0000000 έως το 9999999). Το hash αποθηκεύεται στη σταθερά <code>targetHash</code>. Για να το "σπάσουμε", πρέπει να περάσουμε κάθε πιθανό PIN μέσα από την (αργή) συνάρτηση <code>checkHash</code>. Σειριακά, αυτό παίρνει χρόνο. Θα χρησιμοποιήσεις <strong>4 goroutines</strong> για να μοιράσεις το "search space" (2.5 εκατομμύρια PINs η καθεμία) και να βρεις τον κωδικό πολύ πιο γρήγορα.</p>
+
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  <ol>
+    <li>Πάρε τον παρακάτω κώδικα και χτίσε τα TODO.</li>
+    <li>Δημιούργησε ένα channel για να λάβεις τον κωδικό όταν (και όποια) goroutine τον βρει.</li>
+    <li>Φτιάξε 4 <code>go func() { ... }()</code> (anonymous goroutines).</li>
+    <li>Κάθε goroutine θα έχει μια <code>for</code> λούπα για το δικό της εύρος (π.χ. 0 έως 2.499.999, 2.500.000 έως 4.999.999 κ.ο.κ.).</li>
+    <li>Αν η <code>checkHash(pin)</code> επιστρέψει <code>true</code>, στείλε το <code>pin</code> στο channel.</li>
+    <li>Στην <code>main</code>, περίμενε να λάβεις το αποτέλεσμα από το channel και τύπωσέ το!</li>
+  </ol>
+</div>
+
+<pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+// ── configuration ───────────────────────────────────────────────────────── ⊃
+
+// targetHash represents the unknown hashed password we want to crack.
+// In a real scenario, this hash would be extracted from a database or intercepted traffic.
+const targetHash = 1770629
+
+// ── password cracking logic ─────────────────────────────────────────────── ⊃
+
+// checkHash simulates a computationally heavy hashing function (e.g. bcrypt).
+// It applies artificial CPU load and returns true if the tested PIN matches targetHash.
+func checkHash(pin int) bool {
+    for i := 0; i < 500; i++ {
+        _ = i * pin
+    }
+
+    hash := (pin * 391) % 10000000
+
+    if hash == targetHash {
+        return true
+    }
+    return false
+}
+
+// ── public entry point ──────────────────────────────────────────────────── ⊃
+
+// main orchestrates the concurrent brute-force attack on a 7-digit PIN.
+// It distributes the search workload across goroutines and waits for the result.
+func main() {
+	fmt.Println("Starting brute-force attack...")
+	start := time.Now()
+
+	// TODO: Create a channel to receive the cracked PIN from workers
+
+	// TODO: Divide the search space (0 to 9,999,999) across 4 goroutines
+	// Pseudocode / Concept:
+	// 1. Determine the range size for each worker (10,000,000 total PINs / 4 workers)
+	// 2. Launch 4 concurrent workers to scan their allocated range
+	// 3. When a worker finds a pin where checkHash(pin) == true, send it to the channel
+
+	// Receive the discovered PIN from the channel
+	// found := ...
+
+	// Uncomment when ready:
+	// fmt.Printf("Access Granted! PIN is: %07d\\n", found)
+	// fmt.Printf("Time taken: %v\\n", time.Since(start))
+}
+</code></pre>
+
+<div class="spoiler">
+  <div class="spoiler-lock"><span>Drag to reveal → Λύση</span></div>
+  <h2>1ος Τρόπος (Απευθείας Goroutines)</h2>
+  <pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+const targetHash = 1770629
+
+func checkHash(pin int) bool {
+	for i := 0; i < 500; i++ {
+		_ = i * pin
+	}
+	return (pin*391)%10000000 == targetHash
+}
+
+func main() {
+	fmt.Println("Starting brute-force attack...")
+	start := time.Now()
+
+	foundChan := make(chan int)
+
+	go func() {
+		for pin := 0; pin < 2500000; pin++ {
+			if checkHash(pin) {
+				foundChan <- pin
+			}
+		}
+	}()
+	go func() {
+		for pin := 2500000; pin < 5000000; pin++ {
+			if checkHash(pin) {
+				foundChan <- pin
+			}
+		}
+	}()
+	go func() {
+		for pin := 5000000; pin < 7500000; pin++ {
+			if checkHash(pin) {
+				foundChan <- pin
+			}
+		}
+	}()
+	go func() {
+		for pin := 7500000; pin <= 9999999; pin++ {
+			if checkHash(pin) {
+				foundChan <- pin
+			}
+		}
+	}()
+	found := <-foundChan
+
+	fmt.Printf("Access Granted! PIN is: %07d\\n", found)
+	fmt.Printf("Time taken: %v\\n", time.Since(start))
+}</code></pre>
+
+  <h2>2ος Τρόπος (Πιο Καθαρός & DRY)</h2>
+  <p>Αντί να γράφουμε 4 φορές την ίδια goroutine με hardcoded όρια, χρησιμοποιούμε μια <code>for</code> λούπα. Υπολογίζουμε δυναμικά το εύρος (<code>startPIN</code> / <code>endPIN</code>) και το περνάμε ως ορίσματα στην anonymous goroutine, κάνοντας τον κώδικα πιο ευέλικτο και εύκολα επεκτάσιμο!</p>
+
+  <pre><code class="lang-go">package main
+
+import (
+	"fmt"
+	"time"
+)
+
+const targetHash = 1770629
+
+func checkHash(pin int) bool {
+	for i := 0; i < 500; i++ {
+		_ = i * pin
+	}
+	return (pin*391)%10000000 == targetHash
+}
+
+func main() {
+	fmt.Println("Starting brute-force attack...")
+	start := time.Now()
+
+	const numWorkers = 4
+	const maxPIN = 10000000
+	step := maxPIN / numWorkers
+
+	foundChan := make(chan int)
+
+	for i := 0; i < numWorkers; i++ {
+		startPIN := i * step
+		endPIN := (i + 1) * step
+
+		go func(start, end int) {
+			for pin := start; pin < end; pin++ {
+				if checkHash(pin) {
+					foundChan <- pin
+				}
+			}
+		}(startPIN, endPIN)
+	}
+
+	found := <-foundChan
+
+	fmt.Printf("Access Granted! PIN is: %07d\\n", found)
+	fmt.Printf("Time taken: %v\\n", time.Since(start))
+}</code></pre>
+</div>
+
+<h2>Τι μόλις έκανες</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Διαχωρισμός Χώρου (Search Space)</h3>
+    <p>Αντί να ελέγξεις 10.000.000 κωδικούς σειριακά (έναν προς έναν), χώρισες το πρόβλημα σε 4 ανεξάρτητα κομμάτια που εκτελέστηκαν <strong>παράλληλα</strong> από διαφορετικές goroutines.</p>
+  </div>
+  <div class="card">
+    <h3>"Πρώτος κερδίζει" (First-to-finish)</h3>
+    <p>Αυτή είναι μια κλασική τεχνική. Δεν σε νοιάζει πότε θα τελειώσουν <em>όλες</em> οι goroutines. Θέλεις απλά η πρώτη που θα βρει το αποτέλεσμα, να το στείλει στο channel ώστε η main να προχωρήσει.</p>
+  </div>
+  <div class="card">
+    <h3>CPU Bound Work</h3>
+    <p>Οι μαθηματικές πράξεις στην <code>checkHash</code> απασχολούν έντονα τον επεξεργαστή. Η Go αξιοποίησε τους πολλαπλούς πυρήνες του CPU σου, μειώνοντας δραματικά τον συνολικό χρόνο.</p>
+  </div>
+  <div class="card">
+    <h3>Συγχρονισμός</h3>
+    <p>Η <code>main</code> τερματίζει αμέσως μόλις λάβει το πρώτο σωστό PIN. Αν οι άλλες goroutines δεν έχουν προλάβει να τελειώσουν τη λούπα τους, απλά σταματούν αυτόματα (αφού τελειώνει το πρόγραμμα).</p>
+  </div>
+</div>
+
+<div class="callout good">
+  <span class="tag">Πειραματίσου</span>
+  <ul style="margin:8px 0 0 20px;">
+    <li><strong>Τρέξε το σειριακά:</strong> Σβήσε τις goroutines και γράψε όλη τη λούπα <code>for pin := 0; pin <= 9999999; pin++</code> μέσα στη <code>main</code> (χωρίς channels) και σύγκρινε τον χρόνο του <code>time.Since(start)</code>.</li>
+    <li><strong>Άλλαξε τον στόχο:</strong> Άλλαξε τη σταθερά <code>targetHash</code> σε <code>4824940</code> (αντιστοιχεί στο PIN <code>0012340</code>). Παρατηρείς ότι ο χρόνος επίλυσης αλλάζει δραματικά; Γιατί συμβαίνει αυτό βάσει του ποια goroutine κάνει τη δουλειά;</li>
+    <li><strong>Παίξε με τα όρια του CPU σου (Goroutine Scaling):</strong> Στη 2η λύση (DRY), άλλαξε το <code>numWorkers</code> σε <code>8</code>, <code>16</code>, <code>50</code> ή ακόμα και <code>1000</code>. Ο χρόνος συνεχίζει να μειώνεται; Ή μήπως μετά από κάποιο σημείο σταθεροποιείται (ή και αυξάνεται ελαφρώς); <em>Hint: Εξαρτάται από το πόσους φυσικούς πυρήνες (cores) έχει ο επεξεργαστής σου και το overhead που προσθέτει το context switching!</em></li>
+    <li><strong>Τι γίνεται αν δεν υπάρχει;</strong> Άλλαξε το <code>targetHash</code> σε <code>999999999</code> (τιμή που δεν μπορεί να παραχθεί). Τρέξε το πρόγραμμα με τις goroutines. Τι error σου βγάζει η Go στην κονσόλα και γιατί;</li>
+  </ul>
+</div>
+`);
+
+        addQuiz([
+            {
+                q: "Αν ο κωδικός δεν βρεθεί σε κανένα από τα 4 ranges (π.χ. αλλάξαμε το targetHash σε μια ανέφικτη τιμή), τι θα συμβεί όταν τρέξουμε το πρόγραμμα (με τον κώδικα της λύσης);",
+                options: [
+                    "Το πρόγραμμα θα τερματίσει κανονικά χωρίς να εκτυπώσει τίποτα, αμέσως μόλις τελειώσουν οι goroutines.",
+                    "Το πρόγραμμα θα «κρασάρει» (panic) με σφάλμα fatal error: all goroutines are asleep - deadlock!",
+                    "Το channel θα επιστρέψει αυτόματα την default τιμή (0) και η main θα συνεχίσει την εκτέλεση.",
+                    "Οι goroutines θα ξαναξεκινήσουν το ψάξιμο από την αρχή, δημιουργώντας μια ατέρμονη λούπα."
+                ],
+                correct: 1,
+                explain: "Εφόσον καμία goroutine δεν θα μπει στο if για να κάνει send στο channel, θα τελειώσουν τις λούπες τους και θα τερματίσουν. Ωστόσο, η main θα περιμένει για πάντα κολλημένη στο found := <-foundChan. Η Go το καταλαβαίνει αυτό (αφού δεν έμεινε άλλη ενεργή goroutine να τη «ξεκολλήσει») και πετάει deadlock panic."
+            }, {
+                q: "Γιατί στον κώδικά μας βάζουμε τις goroutines να στείλουν δεδομένα στο channel ΜΟΝΟ όταν βρουν τον κωδικό (if checkHash(pin)), αντί να στέλνουν το αποτέλεσμα κάθε προσπάθειας (π.χ. true/false);",
+                options: [
+                    "Γιατί η main() έχει ρυθμιστεί να διαβάσει ακριβώς ΕΝΑ μήνυμα για να ολοκληρωθεί. Αν στέλναμε false σε κάθε προσπάθεια, η main θα διάβαζε το πρώτο false, θα νόμιζε ότι βρήκε τον κωδικό και θα τερμάτιζε λάθος.",
+                    "Επειδή το unbuffered channel μπλοκάρει την εκτέλεση της goroutine μέχρι να υπάρξει αντίστοιχος receiver, η αποστολή αποτελέσματος σε κάθε αποτυχία θα ανάγκαζε τις goroutines να περιμένουν συνεχώς τη main, ακυρώνοντας εντελώς τα οφέλη του παραλληλισμού και προκαλώντας τεράστια καθυστέρηση λόγω context switching.",
+                    "Γιατί αν στέλναμε false σε κάθε αποτυχία, ο scheduler της Go θα έδινε όλη την προτεραιότητα στη main(), εμποδίζοντας τις υπόλοιπες goroutines να ολοκληρώσουν τη λούπα τους.",
+                    "Γιατί τα unbuffered channels καταστρέφονται αυτόματα από τον garbage collector αν δεχτούν υπερβολικά πολλές αποτυχίες σε σύντομο χρονικό διάστημα."
+                ],
+                correct: 0,
+                explain: "Το σχέδιό μας στη main είναι να κάνει μόνο μία ανάγνωση (found := <-foundChan). Ό,τι της έρθει πρώτο από το channel, θα το θεωρήσει ως τον τελικό κωδικό και θα συνεχίσει στις Print. Αν οι goroutines στέλνανε τις χιλιάδες αποτυχίες τους (false), η main θα τις διάβαζε, θα εκτύπωνε λάθος αποτέλεσμα και θα τερμάτιζε πρόωρα."
+            },
+            {
+                q: "Ποια είναι η θεμελιώδης διαφορά συμπεριφοράς ανάμεσα σε unbuffered και buffered channel κατά το send;",
+                options: [
+                    "Σε unbuffered channel το send μπλοκάρει μέχρι κάποια goroutine να κάνει ταυτόχρονο receive· σε buffered channel το send μπλοκάρει μόνο αν ο buffer είναι ήδη γεμάτος",
+                    "Σε unbuffered channel το send ολοκληρώνεται πάντα αμέσως χωρίς αναμονή, ενώ σε buffered channel το send περιμένει πάντα κάποιο receive",
+                    "Δεν υπάρχει καμία πρακτική διαφορά — και τα δύο μπλοκάρουν πάντα μέχρι να γίνει receive, ανεξάρτητα από τη χωρητικότητα",
+                    "Σε buffered channel το send αποτυγχάνει σιωπηλά αν δεν υπάρχει receiver, ενώ σε unbuffered channel προκαλεί πάντα panic αμέσως"
+                ],
+                correct: 0,
+                explain: "Το unbuffered channel απαιτεί «χειραψία» — sender και receiver πρέπει να είναι έτοιμοι ταυτόχρονα. Το buffered channel επιτρέπει στο send να «αποθέσει» την τιμή στον buffer και να προχωρήσει αμέσως, όσο υπάρχει ελεύθερος χώρος, χωρίς να χρειάζεται άμεσος receiver."
+            }
+        ]);
 
         addContent(`
 <div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3</div>
@@ -529,7 +761,11 @@ fmt.Println(cap(ch)) <span class="cm">// 3 — total buffer capacity, unchanged<
     <div class="gc-line"><span class="gc-term">make(chan T)</span><span class="gc-def">Συνάρτηση δημιουργίας (αρχικοποίησης) ενός νέου channel</span></div>
     <div class="gc-line"><span class="gc-term">cap(ch)</span><span class="gc-def">Επιστρέφει τη συνολική χωρητικότητα του buffer ενός channel</span></div>
     <div class="gc-line"><span class="gc-term">len(ch)</span><span class="gc-def">Επιστρέφει πόσες τιμές βρίσκονται αυτή τη στιγμή στον buffer ενός channel</span></div>
-    <div class="gc-line"><span class="gc-term">nil channel</span><span class="gc-def">Ένα μη-αρχικοποιημένο channel (zero value), που μπλοκάρει για πάντα σε κάθε send ή receive</span></div> </div>
+    <div class="gc-line"><span class="gc-term">nil channel</span><span class="gc-def">Ένα μη-αρχικοποιημένο channel (zero value), που μπλοκάρει για πάντα σε κάθε send ή receive</span></div>
+    <div class="gc-line"><span class="gc-term">deadlock</span><span class="gc-def">Σφάλμα (panic) όπου όλες οι goroutines είναι κολλημένες περιμένοντας (π.χ. σε channel) χωρίς καμία να μπορεί να προχωρήσει</span></div>
+    <div class="gc-line"><span class="gc-term">v, ok := &lt;-ch</span><span class="gc-def">Comma-ok ιδίωμα για έλεγχο αν η τιμή παραλήφθηκε από ανοιχτό channel (ok = true) ή αν το channel έκλεισε (ok = false)</span></div>
+    <div class="gc-line"><span class="gc-term">for range ch</span><span class="gc-def">Δομή επανάληψης που διαβάζει διαδοχικά τιμές από ένα channel μέχρι αυτό να κλείσει με close()</span></div>
+    <div class="gc-line"><span class="gc-term">goroutine leak</span><span class="gc-def">Φαινόμενο όπου μια goroutine μένει μπλοκαρισμένη για πάντα σε ένα channel, δεσμεύοντας μνήμη χωρίς να τερματίζει</span></div>
 </div>
         `);
 
@@ -548,7 +784,7 @@ fmt.Println(cap(ch)) <span class="cm">// 3 — total buffer capacity, unchanged<
 (αν πολλά είναι έτοιμα ταυτόχρονα, επιλέγει <strong>τυχαία</strong> ένα από αυτά — κάτι σκόπιμο, ώστε να μην ευνοείται
 συστηματικά κάποιο συγκεκριμένο channel).</p>
 
-<pre><code>select {
+<pre><code class="lang-go">select {
 case msg1 := <-ch1:
     fmt.Println("received from ch1:", msg1)
 case msg2 := <-ch2:
@@ -568,7 +804,7 @@ default:
 </div>
 
 <h2>Τυπική χρήση: αναμονή για το πρώτο διαθέσιμο αποτέλεσμα</h2>
-<pre><code>select {
+<pre><code class="lang-go">select {
 case result := <-fastServer:
     fmt.Println("fast server answered first:", result)
 case result := <-slowServer:
@@ -582,7 +818,7 @@ case result := <-slowServer:
 <p class="lede">Το <code>for-range</code> μπορεί να χρησιμοποιηθεί απευθείας πάνω σε ένα channel, για να λαμβάνουμε τιμές
 <strong>συνεχώς</strong>, μέχρι το channel να κλείσει.</p>
 
-<pre><code>for value := range ch {
+<pre><code class="lang-go">for value := range ch {
     fmt.Println("received:", value)
 }
 <span class="cm">// this loop keeps receiving values from ch, one per iteration,</span>
@@ -605,7 +841,7 @@ case result := <-slowServer:
 να ολοκληρωθεί — είτε επιστρέφει κανονικά, είτε λόγω panic. Οι deferred κλήσεις εκτελούνται με σειρά <strong>LIFO</strong>
 (Last In, First Out) — η τελευταία που δηλώθηκε, εκτελείται πρώτη.</p>
 
-<pre><code>func process() {
+<pre><code class="lang-go">func process() {
     fmt.Println("start")
     defer fmt.Println("deferred 1") <span class="cm">// scheduled to run when process() returns</span>
     defer fmt.Println("deferred 2") <span class="cm">// scheduled AFTER "deferred 1", so runs FIRST</span>
@@ -655,7 +891,7 @@ case result := <-slowServer:
         // ── ΕΝΟΤΗΤΑ 5 — Synchronization ──────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 5 / 9 — Concurrency Synchronization</div>
-<h1><code>sync.WaitGroup</code></h1>
+<h1>sync.WaitGroup</h1>
 <p class="lede">Είδαμε ότι το <code>main()</code> δεν περιμένει αυτόματα τις goroutines που ξεκινάει. Το <code>sync.WaitGroup</code>
 είναι το πιο βασικό, πιο συχνά χρησιμοποιούμενο εργαλείο για να λύσουμε ακριβώς αυτό το πρόβλημα: «περίμενε μέχρι όλες αυτές οι
 goroutines να τελειώσουν».</p>
