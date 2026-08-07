@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Goroutines &amp; Channels — Ταυτόχρονος Προγραμματισμός σε Go</title>
-    <link rel="stylesheet" href="static/style.css?v=20260805">
-    <link rel="stylesheet" href="static/theme-burgundy.css?v=20260805">
+    <link rel="stylesheet" href="static/style.css?v=20260807">
+    <link rel="stylesheet" href="static/theme-burgundy.css?v=20260807">
 </head>
 
 <body>
@@ -41,8 +41,8 @@
         </div>
     </div>
 
-    <script src="static/script.js?v=20260805"></script>
-    <script src="static/highlighter.js?v=20260805"></script>
+    <script src="static/script.js?v=20260807"></script>
+    <script src="static/highlighter.js?v=20260807"></script>
 
     <script>// ── 0. Τίτλος ────────────────────────────────────────────────────────────── ⊃
         addContent(`
@@ -296,7 +296,8 @@ JavaScript, όπου είναι πολύ κοινός.</p>
 
 <p>Θα δούμε ένα συγκεκριμένο παράδειγμα deadlock αφού μάθουμε τι είναι τα channels, γιατί το πιο κλασικό deadlock συμβαίνει
 ακριβώς εκεί: όταν μια goroutine περιμένει να λάβει (ή να στείλει) σε ένα channel, αλλά καμία άλλη goroutine δεν πρόκειται ποτέ
-να κάνει το αντίστοιχο send (ή receive) στο ίδιο channel.</p>`);
+να κάνει το αντίστοιχο send (ή receive) στο ίδιο channel.</p>
+`);
 
         // ── Fill in the blank — απλό, εστιασμένο στο go + anonymous functions ── ⊃
         addFillBlank([
@@ -1282,8 +1283,8 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
   </div>
 </div>
 `, {
-            bg: "../images/goroutines.jpg",
-            overlayAlpha: 0.88,
+            bg: "../images/blue.png",
+            overlayAlpha: 0.96,
             backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
             backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
             backgroundPosition: "center center"
@@ -1379,11 +1380,11 @@ case <-time.After(3 * time.Second):
 </code></pre>
 <p>Αυτό είναι το κλασικό pattern για <strong>timeout</strong>: περιμένουμε είτε το πραγματικό αποτέλεσμα, είτε —αν αργεί
 πολύ— το «ξυπνητήρι» του <code>time.After</code> να μας «σώσει» από άπειρη αναμονή.</p>
-`, {
-            bg: "../images/goroutines.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+        `, {
+            bg: "../images/blue.png",
+            overlayAlpha: 0.95,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1399,10 +1400,10 @@ case <-time.After(3 * time.Second):
             correct: 0,
             explain: "Ένα απλό send δίνει μία τιμή σε μία μόνο goroutine (όποια την «αρπάξει» πρώτη) — οι υπόλοιπες θα συνέχιζαν να περιμένουν. Το close(ch) όμως αλλάζει την ίδια την κατάσταση του channel, και κάθε receive πάνω του, από όσες goroutines κι αν περιμένουν, επιστρέφει αμέσως — πραγματικό broadcast."
         }], {
-            bg: "../images/goroutines.jpg",
-            overlayAlpha: 0.88,
+            bg: "../images/blue.png",
+            overlayAlpha: 0.94,
             backgroundSize: "auto 100%",
-            backgroundRepeat: "repeat-x",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1549,10 +1550,10 @@ func main() {
 <p>Στην πράξη, αν βρίσκεσαι να σκέφτεσαι το <code>runtime.Gosched()</code>, συνήθως αξίζει να ξανασκεφτείς αν υπάρχει καλύτερος
 σχεδιασμός με channel ή <code>sync</code> primitive — το «busy-waiting σε βρόχο» είναι σπάνια η βέλτιστη λύση.</p>
         `, {
-            bg: "../images/goroutines.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.93,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1567,10 +1568,10 @@ func main() {
             correct: 0,
             explain: "Και τα δύο εκμεταλλεύονται τη συμπεριφορά «send μπλοκάρει όταν ο buffer είναι γεμάτος» — απλά με διαφορετική χωρητικότητα. Buffer 1 σημαίνει αμοιβαίο αποκλεισμό (μόνο ένας κάθε φορά), buffer N σημαίνει ότι επιτρέπονται μέχρι N ταυτόχρονοι «κάτοχοι», χρήσιμο για rate limiting."
         }], {
-            bg: "../images/goroutines.jpg",
-            overlayAlpha: 0.88,
+            bg: "../images/blue.png",
+            overlayAlpha: 0.92,
             backgroundSize: "auto 100%",
-            backgroundRepeat: "repeat-x",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1592,10 +1593,10 @@ func main() {
   </div>
 </div>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.91,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1691,7 +1692,7 @@ func main() {
 </code></pre>
 
 <div class="callout">
-  <p>💡 <strong>VSCode Challenge:</strong> Αντιγράψτε και τρέξτε τον παρακάτω κώδικα. Παρατηρήστε πώς 3 workers εξυπηρετούν 80 jobs. Αλλάξτε το <code>numWorkers</code> σε 20 και δείτε τη διαφορά στον χρόνο.</p>
+  <p><strong>VSCode Challenge:</strong> Αντιγράψτε και τρέξτε τον παρακάτω κώδικα. Παρατηρήστε πώς 3 workers εξυπηρετούν 80 jobs. Αλλάξτε το <code>numWorkers</code> σε 20 και δείτε τη διαφορά στον χρόνο.</p>
 </div>
 
 
@@ -1730,10 +1731,10 @@ func main() {
 // παίρνει την επόμενη εργασία αυτόματα.
 </code></pre>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.90,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1816,10 +1817,10 @@ func main() {
             ],
             explain: "Συμπληρώσαμε τα κενά στον κώδικα του Worker Pool. Κάθε worker διαβάζει από το jobs channel (<-chan Job), στέλνει αποτελέσματα (results <-), η main στέλνει εργασίες (jobs <-), και τα close() διασφαλίζουν ότι όλα τα channels κλείνουν σωστά για να αποφύγουμε deadlocks."
         }], {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.89,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1870,10 +1871,10 @@ func main() {
                 explain: "Αυτή η goroutine περιμένει όλους τους workers να ολοκληρώσουν (wg.Wait()) και μετά κλείνει το results channel. Αυτό επιτρέπει στην main να βγει από το for range loop όταν όλα τα results έχουν διαβαστεί."
             }
         ], {
-            bg: "../images/goroutines2.jpg",
+            bg: "../images/blue.png",
             overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -1884,13 +1885,12 @@ func main() {
 <p class="lede">Στο προηγούμενο παράδειγμα, τα αποτελέσματα εμφανίζονται με τη σειρά που ολοκληρώνονται οι εργασίες. Αυτό σημαίνει ότι το Job #5 μπορεί να εμφανιστεί πριν το Job #2! Ας το αλλάξουμε αυτό.</p>
 
 <div class="callout">
-  <span class="tag">💻 VSCODE CHALLENGE</span>
+  <span class="tag">VSCODE CHALLENGE</span>
   <p><strong>Πρόκληση:</strong> Τροποποιήστε τον κώδικα ώστε τα αποτελέσματα να εμφανίζονται με τη σειρά του Job ID (από 1 έως N).</p>
   <p>Σκεφτείτε: Πώς μπορούμε να αποθηκεύσουμε τα αποτελέσματα καθώς έρχονται και να τα εμφανίσουμε μετά με τη σωστή σειρά;</p>
 </div>
-
-<details style="margin: 20px 0; padding: 16px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer;">
-  <summary style="font-weight: bold; color: var(--accent);">👀 Δείτε τις λύσεις (κάντε κλικ)</summary>
+<div class="spoiler">
+  <div class="spoiler-lock"><span>Drag to reveal →</span></div>
   
   <h3 style="margin-top: 20px;">Λύση 1: Πίνακας Αποτελεσμάτων</h3>
   <pre><code class="lang-go">// Στην main, αντί για άμεσο loop:
@@ -1933,7 +1933,7 @@ sort.Slice(resultsSlice, func(i, j int) bool {
 for _, r := range resultsSlice {
     fmt.Printf("Result Received: Job=%d, Data=%s\\n", r.JobID, r.Data)
 }</code></pre>
-</details>
+</div>
 
 <div class="callout good">
   <span class="tag">Σημαντικό:</span>
@@ -1944,7 +1944,7 @@ for _, r := range resultsSlice {
 
 <div class="grid2">
   <div class="card">
-    <h3>🔴 Το Πρόβλημα</h3>
+    <h3>Το Πρόβλημα</h3>
     <pre><code class="lang-go">// Αυτό είναι ΕΠΙΚΙΝΔΥΝΟ!
 m := make(map[int]string)
 
@@ -1958,7 +1958,7 @@ m[2] = "result2"
     <p>Η Go ανιχνεύει ταυτόχρονες εγγραφές και τερματίζει το πρόγραμμα με panic.</p>
   </div>
   <div class="card">
-    <h3>🟢 Η Λύση με sync.Map</h3>
+    <h3>Η Λύση με sync.Map</h3>
     <pre><code class="lang-go">// Αυτό είναι ΑΣΦΑΛΕΣ!
 var m sync.Map
 
@@ -2023,7 +2023,7 @@ fmt.Println(val) // το val είναι interface{}, όχι string</code></pre>
 
 <div class="grid3">
   <div class="card">
-    <h3>💡 Πότε να το χρησιμοποιώ;</h3>
+    <h3>Πότε να το χρησιμοποιώ;</h3>
     <ul style="padding-left: 20px;">
       <li>Πολλές goroutines γράφουν ταυτόχρονα</li>
       <li>Πολλές goroutines διαβάζουν ταυτόχρονα</li>
@@ -2031,7 +2031,7 @@ fmt.Println(val) // το val είναι interface{}, όχι string</code></pre>
     </ul>
   </div>
   <div class="card">
-    <h3>🚫 Πότε να ΜΗΝ το χρησιμοποιώ;</h3>
+    <h3>Πότε να ΜΗΝ το χρησιμοποιώ;</h3>
     <ul style="padding-left: 20px;">
       <li>Μία goroutine γράφει, μία διαβάζει → χρησιμοποιώ mutex</li>
       <li>Λίγες εγγραφές/αναγνώσεις → το mutex είναι πιο γρήγορο</li>
@@ -2039,7 +2039,7 @@ fmt.Println(val) // το val είναι interface{}, όχι string</code></pre>
     </ul>
   </div>
   <div class="card">
-    <h3>📊 Σύγκριση Απόδοσης</h3>
+    <h3>Σύγκριση Απόδοσης</h3>
     <ul style="padding-left: 20px;">
       <li><strong>sync.Map:</strong> Καλό για πολλές αναγνώσεις, λίγες εγγραφές</li>
       <li><strong>map + mutex:</strong> Καλό για πολλές εγγραφές</li>
@@ -2049,7 +2049,7 @@ fmt.Println(val) // το val είναι interface{}, όχι string</code></pre>
 </div>
  
 <div class="callout">
-  <p>💡 <strong>Σύνοψη:</strong> Για το παράδειγμά μας, η Λύση 1 (πίνακας <code class="lang-go">resultsArray[r.JobID] = r.Data</code>) είναι η πιο αποδοτική γιατί:</p>
+  <p><strong>Σύνοψη:</strong> Για το παράδειγμά μας, η Λύση 1 (πίνακας <code class="lang-go">resultsArray[r.JobID] = r.Data</code>) είναι η πιο αποδοτική γιατί:</p>
   <ul style="padding-left: 20px;">
     <li>Γνωρίζουμε τον αριθμό των jobs (numJobs) → μπορούμε να δημιουργήσουμε πίνακα με ακριβές μέγεθος</li>
     <li>Τα Job IDs είναι συνεχόμενα (1..N) → μπορούμε να χρησιμοποιήσουμε το ID ως index</li>
@@ -2060,14 +2060,14 @@ fmt.Println(val) // το val είναι interface{}, όχι string</code></pre>
 </div>
 
 <div class="callout good">
-  <span class="tag">✅ ΣΗΜΑΝΤΙΚΟ ΣΥΜΠΕΡΑΣΜΑ</span>
+  <span class="tag">ΣΗΜΑΝΤΙΚΟ ΣΥΜΠΕΡΑΣΜΑ</span>
   <p><strong>Δεν υπάρχει "μαγικός" τρόπος</strong> να πάρουμε τα αποτελέσματα με σειρά χωρίς αποθήκευση και ταξινόμηση. Οι goroutines εκτελούνται παράλληλα και η σειρά ολοκλήρωσης είναι μη προσδιορίσιμη. Πρέπει πάντα να σχεδιάζουμε τον κώδικά μας για να χειρίζεται αυτή την αβεβαιότητα.</p>
 </div>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.87,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2174,10 +2174,10 @@ func main() {
 }
 </code></pre>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.86,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2216,10 +2216,10 @@ func main() {
             ],
             explain: "Για να υλοποιήσουμε σωστά το Fan-In, χρειαζόμαστε 1 goroutine ανά input channel, συν 1 goroutine στο παρασκήνιο (background) που καλεί το wg.Wait() και κλείνει το τελικό channel (out)."
         }], {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.85,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2230,12 +2230,11 @@ func main() {
             { term: "Fan-Out", def: "Πολλαπλές goroutines που διαβάζουν από το ίδιο input channel, μοιράζοντας την εργασία." }
         ], {
             note: "Αντιστοιχίστε κάθε όρο με τον σωστό ορισμό του.",
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.85,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
-
         });
 
 
@@ -2292,10 +2291,10 @@ func main() {
 }
 </code></pre>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.84,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2313,13 +2312,11 @@ func main() {
             def: "Σηματοδοτεί στους receivers ότι δεν θα έρθουν άλλα δεδομένα, σπάζοντας το for range loop."
         }],
             {
-
-                bg: "../images/goroutines2.jpg",
-                overlayAlpha: 0.88,
-                backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-                backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+                bg: "../images/blue.png",
+                overlayAlpha: 0.84,
+                backgroundSize: "auto 100%",
+                backgroundRepeat: "repeat",
                 backgroundPosition: "center center"
-
             });
 
         // PATTERNS 2
@@ -2395,10 +2392,10 @@ func main() {
 }
 </code></pre>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.83,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2413,10 +2410,10 @@ func main() {
             correct: 1,
             explain: "Όταν το capacity είναι 1, το buffered channel λειτουργεί ακριβώς όπως ένα Mutex Lock. Μόνο μία goroutine μπορεί να βάλει δεδομένα, άρα η εκτέλεση της processRecord γίνεται αυστηρά σειριακή (sequential) αν και γίνεται μέσα από διαφορετικές goroutines!"
         }], {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.82,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2426,7 +2423,7 @@ func main() {
 <p class="lede">Δεν αρκεί πάντα να περιορίζουμε τον <em>ταυτόχρονο</em> αριθμό εργασιών. Κάποιες φορές πρέπει να ελέγχουμε τον <em>ρυθμό</em> (π.χ. "Επιτρέπονται ακριβώς 2 requests ανά δευτερόλεπτο" για να μην φάμε ban από ένα API).</p>
 
 <div class="callout good">
-  <p>💡 <strong>VSCode Note:</strong> Η Go μας δίνει το <code>time.Ticker</code>. Το Ticker στέλνει την τρέχουσα ώρα στο κανάλι του <code>ticker.C</code> ανά σταθερά χρονικά διαστήματα. Περιμένοντας (block) σε αυτό το κανάλι, επιβάλλουμε τον ρυθμό που θέλουμε.</p>
+  <p><strong>VSCode Note:</strong> Η Go μας δίνει το <code>time.Ticker</code>. Το Ticker στέλνει την τρέχουσα ώρα στο κανάλι του <code>ticker.C</code> ανά σταθερά χρονικά διαστήματα. Περιμένοντας (block) σε αυτό το κανάλι, επιβάλλουμε τον ρυθμό που θέλουμε.</p>
 </div>
 
 <pre><code class="lang-go">package main
@@ -2468,10 +2465,10 @@ func main() {
 }
 </code></pre>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.81,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2497,10 +2494,10 @@ func main() {
             ],
             explain: "Η συνάρτηση time.NewTicker επιστρέφει ένα αντικείμενο *Ticker. Το κανάλι που δέχεται τους 'χτύπους' ονομάζεται .C (από το Channel ή Clock), και πρέπει πάντα να καλούμε την .Stop() στο τέλος."
         }], {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.80,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2589,10 +2586,10 @@ func main() {
 }
 </code></pre>
         `, {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.79,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2609,10 +2606,10 @@ func main() {
             term: "select statement",
             def: "Η δομή ελέγχου στη Go που επιτρέπει σε μια goroutine να ακούει πολλά channels ταυτόχρονα."
         }], {
-            bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
-            backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
-            backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
+            bg: "../images/blue.png",
+            overlayAlpha: 0.78,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
             backgroundPosition: "center center"
         });
 
@@ -2631,7 +2628,7 @@ func main() {
 </p>
         `, {
             bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.88,
+            overlayAlpha: 0.95,
             backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
             backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
             backgroundPosition: "center center"

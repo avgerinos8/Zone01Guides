@@ -99,6 +99,7 @@ body {
   position: relative;
   width: 100%;
   height: 100%;
+  z-index: 1;
 }
 
 .slide {
@@ -107,49 +108,56 @@ body {
   display: none;
   padding: 64px 9vw 120px 9vw;
   overflow-y: auto;
+  overflow-x: hidden;
+  /* explicit overflow-x is required: per spec, if overflow-x is left at
+     its default "visible" while overflow-y is "auto", the browser
+     silently computes overflow-x as "auto" too — enabling unwanted
+     horizontal scroll/pan even when nothing visibly overflows. */
 }
 
-/* Optional per-slide background image (set via addContent(html, {bg})
-       in index.html — see instructions comment there). --slide-bg-image is
-       set inline per-slide; the overlay defaults to 50% --panel so text
-       stays readable, override with inline --slide-bg-overlay-alpha.
-       position:fixed here is safe because .slide ITSELF never has a
-       transform — the swipe-transition's animation lives on the separate
-       .slide-content wrapper (see below), not on .slide. That split is
-       what keeps the background both (a) immune to .slide's internal
-       overflow-y:auto scrolling — position:fixed always escapes a
-       scrolling ancestor — and (b) immune to the transform-vs-fixed
-       containing-block interaction that broke this before. */
-.slide.has-bg {
+/* Background image layer — a SINGLE shared element (#slide-bg-layer,
+   see index.html/script.js), NOT a per-slide pseudo-element. It lives
+   outside #deck entirely (a sibling), so it is structurally impossible
+   for it to affect any .slide's own scrolling/scrollbar — there is no
+   ancestor/descendant relationship between them at all. script.js swaps
+   its image + shows/hides it in goTo() based on the active slide's opts. */
+#slide-bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
   --slide-bg-overlay-alpha: 0.5;
   --slide-bg-size: auto;
   --slide-bg-repeat: no-repeat;
   --slide-bg-position: top left;
 }
 
-.slide.has-bg::before,
-.slide.has-bg::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
+#slide-bg-layer.active {
+  display: block;
 }
 
-.slide.has-bg::before {
+#slide-bg-layer::before,
+#slide-bg-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+#slide-bg-layer::before {
   background-image: var(--slide-bg-image);
   background-size: var(--slide-bg-size);
   background-repeat: var(--slide-bg-repeat);
   background-position: var(--slide-bg-position);
 }
 
-.slide.has-bg::after {
+#slide-bg-layer::after {
   background: rgba(var(--tone-1-rgb), var(--slide-bg-overlay-alpha));
 }
 
 /* .slide-content wraps ALL of a slide's actual rendered content (created
-   in script.js). It sits above the background layers (z-index:1) and is
-   the thing that plays the swipe-entrance animation — NOT .slide itself,
-   so .slide (the scroll container + background host) never transforms. */
+   in script.js). It's what plays the swipe-entrance animation — .slide
+   itself never transforms, it only scrolls. */
 .slide-content {
   position: relative;
   z-index: 1;
@@ -274,6 +282,49 @@ code,
 .code-wrap {
   position: relative;
   margin: 18px 0;
+}
+
+/* ── spoiler / drag-to-reveal ─────────────────────────────────────────── ⊃ */
+/* Markup: <div class="spoiler"><div class="spoiler-lock">...</div>
+   <pre><code>...</code></pre></div> — see decorateSpoilers() in script.js.
+   Deliberately requires a DRAG (not a click) to unlock. */
+.spoiler {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.spoiler-lock {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  background: repeating-linear-gradient(45deg,
+      rgba(var(--panel-rgb), 0.97),
+      rgba(var(--panel-rgb), 0.97) 12px,
+      rgba(var(--tone-1-rgb), 0.97) 12px,
+      rgba(var(--tone-1-rgb), 0.97) 24px);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: .04em;
+  color: var(--ink);
+  border: 1px solid rgba(var(--ink-rgb), 0.2);
+  border-radius: 8px;
+}
+
+.spoiler-lock span {
+  pointer-events: none;
+}
+
+.spoiler-lock.dragging {
+  cursor: grabbing;
+  box-shadow: 0 0 0 2px var(--accent) inset;
 }
 
 pre {
@@ -661,6 +712,43 @@ pre code {
   opacity: 0.9;
 }
 
+/* Wrong-answer overlay: a diagonal "teacher's red pen" strike across the
+   input, plus the correct answer floating above-right as a green overlay
+   (not touching the input's own text). --fb-strike-width controls the
+   line thickness — change it here to make the strike thicker/thinner. */
+.fb-blank-wrap {
+  position: relative;
+  display: inline-block;
+  --fb-strike-width: 2px;
+}
+
+.fb-blank-wrap.wrong::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg,
+      transparent calc(50% - var(--fb-strike-width) / 2),
+      var(--wrong) calc(50% - var(--fb-strike-width) / 2),
+      var(--wrong) calc(50% + var(--fb-strike-width) / 2),
+      transparent calc(50% + var(--fb-strike-width) / 2));
+  pointer-events: none;
+}
+
+.fb-correction {
+  position: absolute;
+  top: -0.65em;
+  right: -6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--wrong);
+  -webkit-text-stroke: 5px var(--code-bg);
+  paint-order: stroke fill;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: rotate(-6deg);
+  z-index: 1;
+}
+
 .fb-actions {
   margin-top: 14px;
   display: flex;
@@ -881,10 +969,29 @@ pre code {
   max-width: 900px;
 }
 
+/* Keep the two columns SIDE BY SIDE on small screens (never stack them —
+   stacking makes it impossible to see which left term lines up with which
+   right definition). Shrink gap/padding/font-size instead. */
 @media (max-width: 900px) {
   .matching-wrap {
-    grid-template-columns: 1fr;
     gap: 14px;
+  }
+
+  .match-btn {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .matching-wrap {
+    gap: 8px;
+  }
+
+  .match-btn {
+    font-size: 11px;
+    padding: 6px 7px;
+    border-radius: 6px;
   }
 }
 

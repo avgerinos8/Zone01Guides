@@ -763,9 +763,9 @@ docker ps -a</code></pre>
         addContent(`
 <div class="eyebrow">Ενότητα 4 / 7 — Docker Compose</div>
 <h1>Με Docker Compose</h1>
-<p class="lede">Το Docker Compose είναι εργαλείο που επιτρέπει τον ορισμό και την εκτέλεση εφαρμογών μέσω ενός απλού αρχείου ρυθμίσεων σε μορφή YAML.</p>
+<p class="lede">Το Docker Compose είναι ένας απλός τρόπος να εκτελούνται με μία μόνο εντολή, αυτόματα, οι εντολές build και run που είδαμε πριν, χρησιμοποιώντας τις παραμέτρους που έχουμε ορίσει σε ένα αρχείο YAML, του οποίου τη μορφή θα δούμε αμέσως τώρα.</p>
 
-<p>Ακόμη και σε έργα με ένα και μόνο container, λειτουργεί ως το επίσημο <strong>αρχείο ρυθμίσεων (configuration file)</strong> του deployment. Αντί να απαιτείται απομνημόνευση θυρών, ονομάτων και ρυθμίσεων ασφαλείας μέσω επαναλαμβανόμενων εντολών τερματικού, όλες οι παράμετροι καταγράφονται μία φορά στο YAML αρχείο.</p>
+<p>Ακόμη και στην περίπτωση ενός απλού container, λειτουργεί ως το επίσημο <strong>αρχείο ρυθμίσεων (configuration file)</strong> του deployment. Αντί να απαιτείται απομνημόνευση θυρών, ονομάτων και ρυθμίσεων ασφαλείας μέσω επαναλαμβανόμενων εντολών τερματικού, όλες οι παράμετροι καταγράφονται μία φορά στο YAML αρχείο.</p>
 
 <h2>Ανάλυση του docker-compose.yml</h2>
 <pre><code class="lang-yml">version: '3.8'                    // version of the Compose file format
@@ -789,26 +789,70 @@ services:
         addContent(`
 <div class="eyebrow">Ενότητα 4 / 7 — Docker Compose</div>
 <h1>Βασικές Εντολές Λειτουργίας</h1>
-<p class="lede">Η χρήση του Compose απλοποιεί τη διαχείριση του κύκλου ζωής της εφαρμογής.</p>
-
-<div class="callout good">
-  <span class="tag">Αυτόματο Δίκτυο</span>
-  Το Docker Compose δημιουργεί αυτόματα ένα ιδιωτικό δίκτυο στο οποίο εντάσσονται όλα τα services που δηλώνονται στο ίδιο YAML, επιτρέποντας άμεση επικοινωνία μεταξύ τους.
-</div>
 
 <div class="grid2">
   <div class="card">
     <h3>Εκκίνηση (Up)</h3>
     <pre><code>docker-compose up -d --build</code></pre>
-    <p>Η εντολή αυτή λειτουργεί ως "έξυπνος μεταγλωττιστής": 
+    <p>Η εντολή διαβάζει τις οδηγίες από το αρχείο docker-compose.yml.</p>
+    <p>Λειτουργεί ως "έξυπνος μεταγλωττιστής": 
     Το flag <code>--build</code> ελέγχει αν έχει αλλάξει ο κώδικας, αναδημιουργεί το image εφόσον χρειάζεται, εκκινεί το container και το <code>-d</code> το αφήνει να τρέχει στο παρασκήνιο.</p>
   </div>
   <div class="card">
     <h3>Καταστροφή (Down)</h3>
     <pre><code>docker-compose down</code></pre>
     <p>Αντίθετα με το απλό <code>stop</code>, η εντολή <code>down</code> τερματίζει τα containers και επιπλέον <strong>καθαρίζει το σύστημα</strong>: διαγράφει τα ίδια τα containers και καταστρέφει το αυτόματο δίκτυο.</p>
+    <p>Με αυτόν τον τρόπο, απελευθερώνονται άμεσα όλοι οι δεσμευμένοι πόροι, διασφαλίζοντας ότι δεν μένουν «ορφανά» δίκτυα ή ανενεργά containers που επιβαρύνουν τον υπολογιστή σας.</p>
   </div>
 </div>
+
+<p class="lede">Αν η εφαρμογή μας αποτελείται από κομμάτια που θα εκτελεστούν σε πολλαπλά containers, το Compose έχει τη δυνατότητα να τα διαχειριστεί σαν μια ενιαία οντότητα.</p>
+
+<div class="callout good">
+  <span class="tag">Αυτόματο Δίκτυο</span>
+  Το Docker Compose δημιουργεί αυτόματα ένα απομονωμένο, ιδιωτικό δίκτυο στο οποίο εντάσσονται όλα τα services που δηλώνονται στο ίδιο αρχείο YAML. Αυτό επιτρέπει την άμεση και ασφαλή επικοινωνία μεταξύ τους, χωρίς να χρειάζεται να γνωρίζετε ή να ορίζετε IP διευθύνσεις. Τα containers αναγνωρίζουν το ένα το άλλο αυτόματα, χρησιμοποιώντας απλώς το όνομα του service τους ως hostname (Service Discovery).
+</div>
+
+<h2>Δομή ενός docker-compose.yml</h2>
+<p class="lede">Το αρχείο YAML είναι ο χάρτης της εφαρμογής μας. Ας δούμε ένα κλασικό παράδειγμα με δύο containers (μια web εφαρμογή και μια βάση δεδομένων) για να καταλάβουμε τη σύνταξή του.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Το Αρχείο Ρυθμίσεων</h3>
+    <pre><code class="lang-docker">version: '3.8'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+
+  database:
+    image: "postgres:15"
+    environment:
+      POSTGRES_PASSWORD: "mysecretpassword"</code></pre>
+  </div>
+  <div class="card">
+    <h3>Ανάλυση των Ρυθμίσεων</h3>
+    <p><strong>version: '3.8'</strong><br>Ορίζει την έκδοση της σύνταξης. Ενημερώνει το Docker για το ποια χαρακτηριστικά είναι διαθέσιμα.</p>
+    <p><strong>services:</strong><br>Η καρδιά του αρχείου. Κάτω από αυτή τη λέξη δηλώνουμε (με εσοχή) όλα τα ξεχωριστά containers που θέλουμε να σηκώσουμε.</p>
+    <p><strong>frontend & database:</strong><br>Είναι τα δικά μας, προσαρμοσμένα ονόματα για τα services. Το Compose θα τα χρησιμοποιήσει και ως hostnames για να μιλάνε μεταξύ τους.</p>
+  </div>
+</div>
+
+<div class="grid2" style="margin-top: 20px;">
+  <div class="card">
+    <h3>Πώς δημιουργούνται (Build vs Image)</h3>
+    <p><strong>build: ./frontend</strong><br>Λέει στο Compose να πάει στον φάκελο <code>./frontend</code>, να βρει το τοπικό <code>Dockerfile</code> που έχουμε γράψει και να χτίσει το image από το μηδέν.</p>
+    <p><strong>image: "postgres:15"</strong><br>Εδώ δεν χτίζουμε τίποτα μόνοι μας. Λέμε στο Compose να κατεβάσει ένα έτοιμο, επίσημο image (έκδοση 15 της Postgres) απευθείας από το Docker Hub.</p>
+  </div>
+  <div class="card">
+    <h3>Επικοινωνία & Ρυθμίσεις</h3>
+    <p><strong>ports: - "3000:3000"</strong><br>Αντιστοιχίζει τη θύρα 3000 του υπολογιστή μας με τη θύρα 3000 μέσα στο container, ώστε να βλέπουμε την εφαρμογή στον browser μας.</p>
+    <p><strong>environment:</strong><br>Ορίζει μεταβλητές περιβάλλοντος μέσα στο container. Στο παράδειγμα, δίνουμε το απαραίτητο αρχικό συνθηματικό που ζητάει η Postgres για να ξεκινήσει.</p>
+  </div>
+</div>
+
 `);
 
         addMatching([
@@ -818,13 +862,16 @@ services:
                 { "term": "docker-compose down", "def": "Τερματίζει τα containers και διαγράφει το αυτόματο δίκτυο." }
             ],
             [
-                { "term": "ports: \"8080:8080\"", "def": "Αντιστοίχιση θύρας του host με τη θύρα του container (-p)." },
-                { "term": "container_name", "def": "Ορισμός προσαρμοσμένου ονόματος για το container (--name)." },
-                { "term": "restart: unless-stopped", "def": "Αυτόματη επανεκκίνηση του container εκτός αν σταματήσει ρητά (--restart)." }
+                { "term": "services:", "def": "Η ενότητα του αρχείου όπου δηλώνονται όλα τα επιμέρους containers." },
+                { "term": "build: ./frontend", "def": "Οδηγία για τη δημιουργία του image από τοπικό Dockerfile (path σε αυτό)." },
+                { "term": "image: \"postgres:15\"", "def": "Λήψη έτοιμου και επίσημου image απευθείας από το Docker Hub." },
+                { "term": "ports: - \"3000:3000\"", "def": "Αντιστοίχιση θύρας του υπολογιστή μας με τη θύρα του container." },
+                { "term": "environment:", "def": "Ορισμός μεταβλητών περιβάλλοντος (π.χ. κωδικός βάσης) μέσα στο container." }
             ]
         ], {
             "note": "Αντιστοίχισε τις βασικές έννοιες και εντολές του Docker Compose με τη λειτουργία τους."
         });
+
 
         // ── slide fill the blank compose ───────────────────────────────────────── ⊃
         addFillBlank([
@@ -835,7 +882,7 @@ services:
 __services__: // define all the containers here
   backend_api:
     build: .
-    __ports__: // map host port 80 to container port 8080
+    __ports__:
       - "80:8080"
     __restart__: unless-stopped // recovery policy if it crashes`,
                 blanks: [
