@@ -227,15 +227,20 @@ func main() {
 όπου τη χρειαζόμαστε — συχνά ακριβώς εκεί όπου τη χρησιμοποιούμε μία φορά και δεν χρειάζεται ξανά αλλού στο πρόγραμμα.</p>
 
 <pre><code class="lang-go">// a normal, named function — declared once, can be reused anywhere
-func greet(name string) {
-    fmt.Println("Hello,", name)
+func greet(username string) {
+    fmt.Println("Hello,", username)
 }
-greet("Afroman")
+func main() {
+    greet("Afroman") // we call the function
+}
+
 
 // an anonymous function — has no name, defined inline
-func(name string) {
-    fmt.Println("Hello,", name)
-}("Afroman") // the trailing () calls it immediately
+func main() {
+    func(username string) {
+        fmt.Println("Hello,", username)
+    }("Afroman") // the trailing () calls it immediately
+}
 </code></pre>
 
 <h2>Το νόημα της τελικής παρένθεσης</h2>
@@ -2117,7 +2122,7 @@ func main() {
 
         addContent(`
 <div class="eyebrow">Ενότητα 9 / 9 — Practical Concurrency Patterns</div>
-<h1>Σκέψη: Σειρά Αποτελεσμάτων στο Worker Pool</h1>
+<h1>VSCode Challenge: Σειρά Αποτελεσμάτων στο Worker Pool</h1>
 <p class="lede">Στο προηγούμενο παράδειγμα, τα αποτελέσματα εμφανίζονται με τη σειρά που ολοκληρώνονται οι εργασίες. Αυτό σημαίνει ότι το Job #5 μπορεί να εμφανιστεί πριν το Job #2! Ας το αλλάξουμε αυτό.</p>
 
 <div class="callout">
