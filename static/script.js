@@ -82,16 +82,26 @@ function shuffleSeed(arr, seed) {
  * @param {HTMLElement} el
  * @param {Object} [opts] - { bg: "path.jpg", overlayAlpha: 0..1 }.
  */
-function applyBackground(el, opts) {
-  if (!opts || !opts.bg) return;
-  el.classList.add("has-bg");
-  el.style.setProperty("--slide-bg-image", `url('${opts.bg}')`);
-  if (opts.overlayAlpha !== undefined) {
-    el.style.setProperty("--slide-bg-overlay-alpha", opts.overlayAlpha);
+/**
+ * Updates the single shared #slide-bg-layer to match the given slide's
+ * background opts (or hides it entirely if the slide has no "bg"). Called
+ * from goTo() on every navigation — NOT per-slide at render time — since
+ * the layer lives outside #deck and is reused across all slides.
+ * @param {Object} [opts] - { bg, overlayAlpha, backgroundSize, backgroundRepeat, backgroundPosition }
+ */
+function updateBackgroundLayer(opts) {
+  const layer = document.getElementById("slide-bg-layer");
+  if (!layer) return;
+  if (!opts || !opts.bg) {
+    layer.classList.remove("active");
+    return;
   }
-  if (opts.backgroundSize) el.style.setProperty("--slide-bg-size", opts.backgroundSize);
-  if (opts.backgroundRepeat) el.style.setProperty("--slide-bg-repeat", opts.backgroundRepeat);
-  if (opts.backgroundPosition) el.style.setProperty("--slide-bg-position", opts.backgroundPosition);
+  layer.classList.add("active");
+  layer.style.setProperty("--slide-bg-image", `url('${opts.bg}')`);
+  layer.style.setProperty("--slide-bg-overlay-alpha", opts.overlayAlpha !== undefined ? opts.overlayAlpha : 0.5);
+  layer.style.setProperty("--slide-bg-size", opts.backgroundSize || "auto");
+  layer.style.setProperty("--slide-bg-repeat", opts.backgroundRepeat || "no-repeat");
+  layer.style.setProperty("--slide-bg-position", opts.backgroundPosition || "top left");
 }
 
 /**
@@ -119,6 +129,71 @@ function decorateCodeBlocks(container) {
       });
     });
     wrap.appendChild(btn);
+  });
+}
+
+/**
+ * Wires up drag-to-reveal "spoiler" blocks. Markup pattern (write this by
+ * hand inside addContent()'s HTML):
+ *   <div class="spoiler">
+ *     <div class="spoiler-lock"><span>Drag to reveal →</span></div>
+ *     <pre><code>...</code></pre>
+ *   </div>
+ * Requires an actual horizontal DRAG past ~40% of the lock's width to
+ * reveal — a simple click/tap does nothing, on purpose.
+ * @param {HTMLElement} container
+ */
+function decorateSpoilers(container) {
+  container.querySelectorAll(".spoiler-lock").forEach(lock => {
+    if (lock.dataset.wired) return;
+    lock.dataset.wired = "1";
+
+    let dragging = false;
+    let startX = 0;
+    let width = 0;
+
+    function pointX(e) {
+      return e.touches ? e.touches[0].clientX : e.clientX;
+    }
+
+    function onDown(e) {
+      dragging = true;
+      startX = pointX(e);
+      width = lock.offsetWidth;
+      lock.style.transition = "none";
+      lock.classList.add("dragging");
+    }
+
+    function onMove(e) {
+      if (!dragging) return;
+      const dx = Math.max(0, pointX(e) - startX);
+      lock.style.transform = `translateX(${dx}px)`;
+    }
+
+    function onUp(e) {
+      if (!dragging) return;
+      dragging = false;
+      lock.classList.remove("dragging");
+      const dx = Math.max(0, pointX(e) - startX);
+      lock.style.transition = "transform .25s ease, opacity .25s ease";
+      if (dx > width * 0.4) {
+        lock.style.transform = `translateX(${width}px)`;
+        lock.style.opacity = "0";
+        lock.classList.add("revealed");
+        setTimeout(() => { lock.style.display = "none"; }, 250);
+      } else {
+        lock.style.transform = "translateX(0)";
+      }
+    }
+
+    lock.addEventListener("pointerdown", onDown);
+    lock.addEventListener("pointermove", onMove);
+    lock.addEventListener("pointerup", onUp);
+    lock.addEventListener("pointercancel", onUp);
+    // touch fallback for browsers without full Pointer Events support
+    lock.addEventListener("touchstart", onDown, { passive: true });
+    lock.addEventListener("touchmove", onMove, { passive: true });
+    lock.addEventListener("touchend", onUp);
   });
 }
 
@@ -381,6 +456,8 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
       codeEl.appendChild(document.createTextNode(parts[i]));
     } else {
       const blankId = parts[i];
+      const wrap = document.createElement("span");
+      wrap.className = "fb-blank-wrap";
       const inp = document.createElement("input");
       inp.type = "text";
       inp.className = "fb-blank";
@@ -399,7 +476,8 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
         savedAnswers[storeKey].inputs[blankId] = inp.value;
         persistAnswers();
       });
-      codeEl.appendChild(inp);
+      wrap.appendChild(inp);
+      codeEl.appendChild(wrap);
     }
   }
   pre.appendChild(codeEl);
@@ -410,21 +488,25 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
   // clicks reveal more, one at a time, until every blank has been revealed.
   // Disabled entirely when the exercise has only 1 blank (nothing to guess
   // which slot a reveal would go in, so hinting would just be the answer).
-  const hintsDiv = document.createElement("div");
-  hintsDiv.className = "fb-hints";
-  box.appendChild(hintsDiv);
-
+  // Button is appended BEFORE the hints container so its position never
+  // shifts as more hints accumulate below it — lets you click repeatedly
+  // without the button moving out from under the cursor.
   const totalBlanks = item.blanks.length;
   const hintBtn = document.createElement("button");
   hintBtn.className = "fb-hint-btn";
   hintBtn.type = "button";
 
+  const hintsDiv = document.createElement("div");
+  hintsDiv.className = "fb-hints";
+
   if (totalBlanks <= 1) {
     hintBtn.textContent = "[Time to Guess]";
     hintBtn.disabled = true;
     box.appendChild(hintBtn);
+    box.appendChild(hintsDiv);
   } else {
     box.appendChild(hintBtn);
+    box.appendChild(hintsDiv);
 
     function renderHints() {
       hintsDiv.innerHTML = "";
@@ -487,6 +569,19 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
       inp.classList.remove("correct", "wrong");
       inp.classList.add(ok ? "correct" : "wrong");
       inp.disabled = true;
+
+      const wrap = inp.parentElement;
+      wrap.classList.remove("wrong");
+      const oldCorrection = wrap.querySelector(".fb-correction");
+      if (oldCorrection) oldCorrection.remove();
+      if (!ok) {
+        wrap.classList.add("wrong");
+        const correction = document.createElement("span");
+        correction.className = "fb-correction";
+        correction.textContent = expected;
+        wrap.appendChild(correction);
+      }
+
       if (!ok) allCorrect = false;
     });
     const usedHint = revealedIds.size > 0;
@@ -745,14 +840,13 @@ function buildInteractiveHeader(el, defaultLabel, opts) {
 function renderSlide(el, contentEl, slide, idx) {
   if (slide.type === "content") {
     contentEl.innerHTML = slide.html;
-    applyBackground(el, slide.opts);
     decorateCodeBlocks(contentEl);
+    decorateSpoilers(contentEl);
     return;
   }
 
   if (slide.type === "quiz") {
     contentEl.innerHTML = "";
-    applyBackground(el, slide.opts);
     const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(contentEl, "Quiz Checkpoint", slide.opts);
     const storeKeys = slide.data.map((_, qIdx) => idx + "_" + qIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
@@ -786,7 +880,6 @@ function renderSlide(el, contentEl, slide, idx) {
 
   if (slide.type === "fillblank") {
     contentEl.innerHTML = "";
-    applyBackground(el, slide.opts);
     const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(contentEl, "Fill in the Blank", slide.opts);
     const storeKeys = slide.data.map((_, itemIdx) => idx + "_fb_" + itemIdx);
     const refresh = () => { refreshScoreBadge(scoreBadge, storeKeys); updateTotalScoreDisplay(); };
@@ -815,7 +908,6 @@ function renderSlide(el, contentEl, slide, idx) {
 
   if (slide.type === "matching") {
     contentEl.innerHTML = "";
-    applyBackground(el, slide.opts);
     const { resetBtn: resetQuizBtn, scoreBadge } = buildInteractiveHeader(contentEl, "Matching Pairs", slide.opts);
     const sets = slide.data; // array of pair-arrays, 1 or more sets per slide
     const storeKeys = sets.map((_, setIdx) => idx + "_match_" + setIdx);
@@ -861,6 +953,7 @@ function goTo(i) {
 
   current = i;
   persistCurrentSlide(current);
+  updateBackgroundLayer(slides[current].opts);
 
   slideEls[current].classList.toggle("dir-prev", goingBack);
   slideEls[current].classList.add("active");

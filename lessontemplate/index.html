@@ -14,6 +14,10 @@
       auto-highlighter exists) .glossary-table/.glossary-strip/.glossary-columns
       (mix all three for variety) .title-slide/.title-badge/.kicker-line
       (title slide only, keep the "ask an AI when stuck" callout as-is).
+      Drag-to-reveal spoiler (e.g. hiding a code answer until dragged open):
+        <div class="spoiler"><div class="spoiler-lock"><span>Drag to
+        reveal →</span></div><pre><code>...</code></pre></div>
+      A click/tap does nothing — only an actual drag past ~40% unlocks it.
       opts = { bg: "path/to/image.jpg", overlayAlpha: 0..1 (default 0.5),
       backgroundSize (default "auto"), backgroundRepeat (default "no-repeat"),
       backgroundPosition (default "top left") }
@@ -76,6 +80,7 @@
   <div id="progress-track">
     <div id="progress-fill"></div>
   </div>
+  <div id="slide-bg-layer"></div>
   <div id="deck"></div>
 
   <div id="nav-bar">
