@@ -1,21 +1,35 @@
 {
-  "role": "Generate the inline <script> body for the attached index.html (a Zone01 slide-deck template). Read the instructions comment at the top of index.html for the full API (addContent/addQuiz/addFillBlank/addMatching) and available CSS classes — do not assume anything beyond what that comment states.",
-  "output": "Only the sequence of add*() calls ending with initSlideDeck(). No markdown fences, no extra prose.",
-  "exact_syntax": "addContent(`...raw HTML...`); addQuiz([{q:\"...\",options:[\"a\",\"b\",\"c\",\"d\"],correct:0,explain:\"...\"}, ...]); addFillBlank([{code:\"...__id__...\",blanks:[{id:\"id\",answer:\"...\"}],explain:\"...\"}], {note:\"...\"}); addMatching([{term:\"...\",def:\"...\"}, ...], {note:\"...\"}) — use backticks exactly as shown for addContent's HTML string, real JS array/object literals for the rest.",
-  "code_blocks": "For colored code inside addContent(): <pre><code class=\"lang-go\">...</code></pre> (or lang-js / lang-html / lang-css) — highlighter.js colors it automatically, do not add manual <span> tags. Since the code sits inside HTML, escape < > & as &lt; &gt; &amp; in the code text (this applies inside addFillBlank's `code` string too, around the plain-text parts, not around the __id__ markers themselves).",
-  "html_tags": "Every addContent() HTML string MUST be built ONLY from these tags/classes (never plain unwrapped text): <h1> <h2> <h3> <p> <p class=\"lede\"> <div class=\"callout\"><span class=\"tag\">LABEL</span>...</div> <div class=\"callout good\">...</div> <div class=\"grid2\"><div class=\"card\"><h3>..</h3><p>..</p></div>...</div> <div class=\"grid3\">...same as grid2 with 3 cards...</div> <pre><code>...</code></pre> (optionally <code class=\"lang-go|lang-js|lang-html|lang-css\"> for auto color) <table class=\"glossary-table\"><tr><td class=\"gt-term\">x</td><td class=\"gt-def\">y</td></tr></table> <div class=\"glossary-strip\"><div class=\"gs-pill\"><span class=\"gs-name\">x</span><span class=\"gs-def\">y</span></div></div> <div class=\"glossary-columns\"><div class=\"gc-line\"><span class=\"gc-term\">x</span> — <span class=\"gc-def\">y</span></div></div> <div class=\"sources-list\"><a href=\"#\">text</a></div>",
-  "language": {
-    "prose_and_ui_text": "Greek",
-    "code_comments": "English"
+  "role": "Generate the inline <script> body for a Zone01 slide-deck template (index.html + static/style.css + static/script.js + static/highlighter.js). This JSON is fully self-contained — you do not need to see any other file to produce correct output.",
+  "output": "Only the sequence of add*() calls ending with initSlideDeck({version:\"X.Y.Z\"}). No markdown fences, no extra prose.",
+  "response_format": "Provide the output as an actual attached/downloadable file. Do not paste it as plain chat text. If the platform genuinely cannot attach files, wrap the ENTIRE output in five backticks on their own line before and after (````` ... `````) as a single block — never split across multiple code blocks.",
+  "required_html_scaffold": "The page this script runs in MUST contain, as siblings inside <body>: <div id=\"slide-bg-layer\"></div> immediately before <div id=\"deck\"></div>, and a <div id=\"final-score\"></div> somewhere in the deck content (typically the sources/last slide) for the aggregate score to render into. If generating a full index.html rather than just the script body, include both.",
+  "language": { "prose_and_ui_text": "Greek", "code_comments": "English" },
+  "js_api": {
+    "addContent(html, opts?)": "One slide of raw HTML.",
+    "addQuiz(question | [question,...], opts?)": "One or more MC questions stacked on one slide. question = { q, options:[4 strings], correct: index, explain }.",
+    "addFillBlank(item | [item,...], opts?)": "One or more fill-in-the-blank code exercises. item = { code (mark blanks with __id__, e.g. \"ch __send__ 42\"), blanks:[{id, answer}], explain }. Rendered UI is automatic: a Check button grades it, a Reveal-hint button (hidden/replaced with disabled '[Time to Guess]' text if the item has only 1 blank) reveals one still-empty answer per click without saying which slot it belongs to, and a wrong answer after Check shows a diagonal red strike across the input plus the correct value floating above it in green — none of this needs to be built by the content author, it's automatic from the item data.",
+    "addMatching(pairs | [set1, set2, ...], opts?)": "pairs = [{term, def}, ...] for ONE matching set. Pass an ARRAY OF ARRAYS (e.g. [set1, set2]) to stack 2-3 independent matching games on the same slide — each gets its own score and its own 'Set N / M' label automatically when there is more than one."
   },
+  "opts_object": {
+    "label": "string — overrides the default header text (quiz/fillblank/matching only).",
+    "note": "string (Greek) — short instructional note shown under the header (quiz/fillblank/matching only).",
+    "bg": "string path to an image, e.g. \"./images/example.jpg\". Works on ALL 4 functions. Omit for no background. The image is fixed (never scrolls) and shared across the whole deck via a single #slide-bg-layer element.",
+    "overlayAlpha": "number 0..1, default 0.5 — solid dark overlay strength over the bg image so text stays readable.",
+    "backgroundSize": "real CSS background-size value. \"cover\" = fills slide, crops overflow, keeps proportions. \"contain\" = fits whole image, may leave gaps, keeps proportions. \"100% 100%\" = stretches to exactly fill (distorts). \"100% auto\" = fits width exactly, height scales. \"auto\" (default) = natural size, no scaling.",
+    "backgroundRepeat": "real CSS background-repeat value: \"no-repeat\" (default) | \"repeat\" (tiles both axes, for small textures) | \"repeat-x\" | \"repeat-y\".",
+    "backgroundPosition": "real CSS background-position value, default \"top left\". e.g. \"center center\", \"bottom right\", \"50% 50%\"."
+  },
+  "html_tags_for_addContent": "Use ONLY: h1 h2 h3 p p.lede div.callout(span.tag + text) div.callout.good div.grid2>div.card(h3+p) div.grid3>div.card(h3+p) pre>code (hand-color with <span class=\"tok-kw|tok-type|tok-str|tok-com|tok-num|tok-func\"> around individual words — no runtime auto-highlighter exists in this template) table.glossary-table>tr>td.gt-term+td.gt-def div.glossary-strip>div.gs-pill>span.gs-name+span.gs-def div.glossary-columns>div.gc-line>span.gc-term+span.gc-def (mix all 3 glossary variants across categories for variety) div.sources-list>a title-slide-only: div.title-slide>div.title-badge>img + div.kicker-line + h1 + p.lede + div.callout (keep an 'ask an AI when stuck' callout on the title slide). Never output plain unwrapped text for a slide body.",
+  "spoiler_minigame": "Drag-to-reveal spoiler, embeddable inside any addContent() HTML (e.g. to hide a code answer until the learner drags it open): <div class=\"spoiler\"><div class=\"spoiler-lock\"><span>Drag to reveal →</span></div><pre><code>...</code></pre></div>. A click/tap does nothing — it only unlocks on an actual drag past ~40% of its width. Fully automatic once this markup is present, no JS setup needed by the content author.",
+  "scoring": "Every quiz question / fillblank item / matching set is scored automatically: 100 = correct, 0 = wrong, 50 = fillblank answered with at least one hint revealed (regardless of final correctness), matching = % of pairs solved so far. A small 'Score: N%' badge appears next to each slide's own 'Reset this quiz' button automatically. The aggregate deck-wide result is written into whatever element has id=\"final-score\" (see required_html_scaffold) — you must include that element once in the content, the score text itself is generated automatically, never write it yourself.",
   "structure": [
-    "1 title slide (keep the existing title-slide markup/callout as scaffolded)",
+    "1 title slide (title-slide markup as described above)",
     "theory sections, full depth, self-contained code examples",
     "interleave addQuiz() checkpoints regularly, not only at the end",
     "a short glossary addContent() may appear after any section/quiz where useful, not only once at the end",
-    "at least one addFillBlank() and one addMatching() somewhere reasonable",
-    "one final combined addQuiz() with several questions",
-    "one consolidated glossary + one sources/footer addContent() at the end (keep the 'pavgerin/avgerinos8' credit)"
+    "at least one addFillBlank() and one addMatching() somewhere reasonable; use a multi-set addMatching() where it fits (e.g. two related but distinct concept groupings)",
+    "one final combined addQuiz() with 2-3 questions",
+    "one consolidated glossary + one sources/footer addContent() at the end, containing the #final-score placeholder div and keeping the 'pavgerin/avgerinos8' credit line"
   ],
   "quiz_rules": [
     "4 options, similar length/style, no option stands out by size",
@@ -24,10 +38,10 @@
     "at least one distractor per deck ~5 words longer than the correct answer",
     "one short explanation per question after reveal"
   ],
+  "code_blocks": "For colored code inside addContent(): hand-wrap tokens in <span class=\"tok-kw|tok-type|tok-str|tok-com|tok-num|tok-func\">, no auto class-based highlighter to rely on. Since code sits inside HTML, escape < > & as &lt; &gt; &amp; in the code text — this applies inside addFillBlank's code string too, around the plain-text parts, never around the __id__ markers themselves.",
   "hard_constraints": [
     "never solve the actual exercise/assignment — theory and tools only",
     "confirm the section list with the user before generating full content, unless already confirmed"
   ],
-  "response_format": "If replying with a full file, attach/output the complete file as-is. If replying as plain chat text, wrap the ENTIRE code output in five backticks on their own line before and after (````` ... `````) so it can be copy-pasted as one block.",
   "topic": "<< FILL IN: the actual lesson topic goes here >>"
 }
