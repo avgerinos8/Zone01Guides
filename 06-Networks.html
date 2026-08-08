@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Δίκτυα, TCP/UDP &amp; Cybersecurity — Θεωρητικό Υλικό</title>
+  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <link rel="stylesheet" href="static/theme-royalblue.css?v=20260801">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-reset">
+        <span class="desktop-text">Reset Progress</span>
+        <span class="mobile-text">Reset</span>
+      </button>
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+        <span class="desktop-text">Return</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots"></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
+  <script>
+    // Course content below.
+
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/cybersecurity.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Δίκτυα Υπολογιστών, TCP/UDP &amp; Cybersecurity<br>Από το πακέτο στο firewall</h1>
+  <p class="lede">Πλήρης οδηγός για το πώς ταξιδεύουν τα δεδομένα στο δίκτυο, πώς γράφεις δικτυακό κώδικα σε Go, και πώς σκέφτεται κάποιος που ασχολείται με cybersecurity — από τη θεωρία μέχρι τα εργαλεία.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+</div>
+`);
+
+    // ── Μέρος Α: Θεμέλια δικτύων ─────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 24 — Θεμέλια Δικτύων</div>
+<h1>Πώς ταξιδεύει ένα πακέτο</h1>
+<p class="lede">Πριν μιλήσουμε για TCP, UDP ή security, πρέπει να καταλάβεις τι συμβαίνει όταν πατάς Enter σε ένα URL ή τρέχεις ένα πρόγραμμα που "μιλάει" με άλλον υπολογιστή.</p>
+
+<h2>Το μοντέλο σε στρώσεις (layers)</h2>
+<p>Το δίκτυο δεν είναι ένα ενιαίο κομμάτι λογισμικού — είναι στρώσεις (layers), η καθεμία με τη δική της δουλειά. Κάθε στρώση παίρνει τα δεδομένα από την προηγούμενη, προσθέτει τη δική της πληροφορία (header), και τα περνάει παρακάτω. Αυτό λέγεται encapsulation.</p>
+<p>Υπάρχουν δύο δημοφιλή μοντέλα: το ακαδημαϊκό OSI (7 στρώσεις) και το πρακτικό TCP/IP (4 στρώσεις), που είναι αυτό που πραγματικά χρησιμοποιείται στο internet. Θα μείνουμε στο TCP/IP γιατί είναι αυτό που θα συναντήσεις στην πράξη.</p>
+
+<div class="grid2">
+  <div class="card"><h3>Application Layer</h3><p>Εδώ ζουν τα πρωτόκολλα που καταλαβαίνει ο άνθρωπος/η εφαρμογή: HTTP, DNS, FTP. Ο κώδικάς σου συνήθως δουλεύει εδώ.</p></div>
+  <div class="card"><h3>Transport Layer</h3><p>Εδώ μπαίνουν TCP και UDP. Αποφασίζει πώς θα παραδοθούν τα δεδομένα — αξιόπιστα ή γρήγορα.</p></div>
+  <div class="card"><h3>Internet Layer</h3><p>Εδώ ζει το IP. Αποφασίζει το routing — πώς θα φτάσει ένα πακέτο από τον υπολογιστή Α στον Β μέσα από πολλά ενδιάμεσα δίκτυα.</p></div>
+  <div class="card"><h3>Link Layer</h3><p>Το φυσικό/τοπικό κομμάτι — Ethernet, Wi-Fi, MAC addresses. Πώς τα bits ταξιδεύουν στο καλώδιο ή τον αέρα.</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Γιατί μας ενδιαφέρει</span>
+  Κάθε στρώση είναι και μια πιθανή επιφάνεια επίθεσης (attack surface) — θα το ξαναδούμε στο Μέρος Δ. Προς το παρόν, κράτα ότι κάθε layer έχει το δικό του header, και ότι όταν στέλνεις ένα HTTP request, αυτό "τυλίγεται" μέσα σε TCP, μετά σε IP, μετά σε Ethernet frame.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια στρώση του TCP/IP μοντέλου είναι υπεύθυνη για το routing ενός πακέτου ανάμεσα σε διαφορετικά δίκτυα;",
+        options: [
+          "Internet Layer (IP)",
+          "Application Layer",
+          "Transport Layer",
+          "Link Layer"
+        ],
+        correct: 0,
+        explain: "Το IP στο Internet Layer είναι υπεύθυνο για τη διαδρομή (routing) ενός πακέτου από το ένα δίκτυο στο άλλο, μέχρι τον τελικό προορισμό."
+      },
+      {
+        q: "Τι σημαίνει 'encapsulation' στο δικτυακό μοντέλο;",
+        options: [
+          "Την κρυπτογράφηση όλων των δεδομένων πριν σταλούν",
+          "Το να τυλίγονται τα δεδομένα με ένα header σε κάθε στρώση καθώς κατεβαίνουν προς αποστολή",
+          "Τη συμπίεση των δεδομένων για να πιάνουν λιγότερο χώρο στο δίκτυο",
+          "Τον έλεγχο σφαλμάτων που γίνεται μόνο στο Application Layer"
+        ],
+        correct: 1,
+        explain: "Encapsulation είναι η διαδικασία όπου κάθε στρώση προσθέτει το δικό της header (και μερικές φορές trailer) γύρω από τα δεδομένα της προηγούμενης στρώσης, πριν τα στείλει παρακάτω."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 24 — Θεμέλια Δικτύων</div>
+<h1>IP Addresses &amp; Subnets</h1>
+<p class="lede">Κάθε συσκευή σε ένα δίκτυο IP χρειάζεται μια διεύθυνση — όπως κάθε σπίτι χρειάζεται μια ταχυδρομική διεύθυνση για να φτάνει το γράμμα.</p>
+
+<h2>IPv4 βασικά</h2>
+<p>Μια IPv4 διεύθυνση είναι 32 bits, γραμμένη συνήθως ως 4 δεκαδικοί αριθμοί χωρισμένοι με τελείες (π.χ. <code>192.168.1.10</code>), κάθε αριθμός από 0 έως 255 (ένα byte). Υπάρχει και το IPv6 (πολύ μεγαλύτερος χώρος διευθύνσεων, 128 bits) που σιγά-σιγά αντικαθιστά το IPv4, αλλά για τους σκοπούς αυτού του μαθήματος θα δουλέψουμε κυρίως με IPv4 γιατί είναι πιο απλό να το κατανοήσεις πρώτα.</p>
+
+<h2>Public vs Private διευθύνσεις</h2>
+<p>Όχι κάθε IP είναι προσβάσιμη από το internet. Υπάρχουν ζώνες διευθύνσεων που έχουν κρατηθεί για ιδιωτικά δίκτυα (private, δεν δρομολογούνται στο public internet) — π.χ. <code>192.168.0.0/16</code>, <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>. Ο router σου κάνει NAT (Network Address Translation) για να "μεταφράσει" τις εσωτερικές private διευθύνσεις σε μία public διεύθυνση όταν βγαίνεις στο internet.</p>
+
+<h2>Τι είναι subnet</h2>
+<p>Ένα subnet είναι ένα υποσύνολο διευθύνσεων που ανήκουν λογικά μαζί — π.χ. όλες οι συσκευές στο σπίτι σου. Το CIDR notation (<code>/24</code>, <code>/16</code> κλπ) δείχνει πόσα από τα 32 bits είναι το "network" κομμάτι και πόσα είναι διαθέσιμα για συσκευές (hosts). Ένα <code>/24</code> σημαίνει 24 bits network, 8 bits hosts — δηλαδή έως 254 χρησιμοποιήσιμες διευθύνσεις.</p>
+
+<div class="callout good">
+  <span class="tag">Πρακτικό tip</span>
+  Το <code>127.0.0.1</code> (ή <code>localhost</code>) είναι πάντα ο ίδιος ο υπολογιστής σου — το loopback address. Θα το βλέπεις συχνά όταν τρέχεις τοπικούς servers.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητες 1-2</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">encapsulation</span><span class="gc-def">τύλιγμα δεδομένων με header σε κάθε layer</span></div>
+  <div class="gc-line"><span class="gc-term">routing</span><span class="gc-def">η διαδρομή ενός πακέτου ανάμεσα σε δίκτυα</span></div>
+  <div class="gc-line"><span class="gc-term">NAT</span><span class="gc-def">μετάφραση private σε public IP διεύθυνση</span></div>
+  <div class="gc-line"><span class="gc-term">CIDR (/24)</span><span class="gc-def">συμβολισμός για το μέγεθος ενός subnet</span></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 24 — Θεμέλια Δικτύων</div>
+<h1>Ports — γιατί υπάρχουν</h1>
+<p class="lede">Μια IP διεύθυνση σου λέει *ποιος υπολογιστής*. Αλλά ένας υπολογιστής τρέχει πολλές εφαρμογές ταυτόχρονα — browser, mail client, game server. Το port σου λέει *ποια εφαρμογή πάνω σε αυτόν τον υπολογιστή*.</p>
+
+<h2>Πώς δουλεύουν</h2>
+<p>Ένα port είναι ένας αριθμός από 0 έως 65535. Ο συνδυασμός <code>IP:PORT</code> (π.χ. <code>142.250.0.1:443</code>) ονομάζεται socket address και ταυτοποιεί μοναδικά μια συγκεκριμένη σύνδεση σε μια συγκεκριμένη εφαρμογή. Όταν ο browser σου ανοίγει σύνδεση σε ένα site, χρησιμοποιεί ένα τυχαίο port στη δική σου πλευρά (source port) και συνδέεται στο γνωστό port του server (destination port, π.χ. 443 για HTTPS).</p>
+
+<h2>Κατηγορίες ports</h2>
+<div class="grid3">
+  <div class="card"><h3>Well-known (0-1023)</h3><p>Δεσμευμένα για γνωστές υπηρεσίες: 80 (HTTP), 443 (HTTPS), 22 (SSH), 53 (DNS). Χρειάζονται συνήθως δικαιώματα admin/root για να "ακούσει" μια εφαρμογή σε αυτά.</p></div>
+  <div class="card"><h3>Registered (1024-49151)</h3><p>Καταχωρημένα για συγκεκριμένες εφαρμογές αλλά όχι τόσο αυστηρά — π.χ. 3306 (MySQL), 5432 (PostgreSQL).</p></div>
+  <div class="card"><h3>Ephemeral (49152-65535)</h3><p>Προσωρινά ports που το λειτουργικό σύστημα διαλέγει αυτόματα για την πλευρά που ξεκινάει μια σύνδεση (client side).</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Γιατί έχει σημασία για cybersecurity</span>
+  Ένα "ανοιχτό" port σημαίνει ότι κάποια εφαρμογή "ακούει" (listening) εκεί, έτοιμη να δεχτεί συνδέσεις. Κάθε ανοιχτό port είναι δυνητικά ένα σημείο εισόδου — αυτή η ιδέα είναι η βάση του port scanning που θα δούμε αναλυτικά στο Μέρος ΣΤ.
+</div>
+
+<h2>Ports σε Go</h2>
+<p>Σε Go, όταν γράφεις κώδικα δικτύου, το address δίνεται πάντα ως string στη μορφή <code>"host:port"</code>:</p>
+<pre><code class="lang-go"><span class="tok-com">// listening on all interfaces, port 8080</span>
+<span class="tok-type">ln</span>, <span class="tok-type">err</span> := <span class="tok-kw">net</span>.<span class="tok-func">Listen</span>(<span class="tok-str">"tcp"</span>, <span class="tok-str">":8080"</span>)</code></pre>
+`);
+
+    addQuiz({
+      q: "Ένας server ακούει στο port 443. Τι το κάνει αυτό το port ξεχωριστό στην κατηγορία 'well-known'?",
+      options: [
+        "Ανήκει στην περιοχή 0-1023 και είναι δεσμευμένο συμβατικά για συγκεκριμένη υπηρεσία (εδώ HTTPS)",
+        "Είναι το μοναδικό port που μπορεί να χρησιμοποιήσει ένα λειτουργικό σύστημα για εξερχόμενες συνδέσεις",
+        "Επιλέγεται πάντα τυχαία από το λειτουργικό σύστημα κάθε φορά που ανοίγει μια νέα σύνδεση",
+        "Χρησιμοποιείται μόνο εσωτερικά μέσα σε private δίκτυα και ποτέ στο δημόσιο internet"
+      ],
+      correct: 0,
+      explain: "Τα well-known ports (0-1023) είναι μια συμβατική δέσμευση — το 443 συνδέεται με HTTPS, το 80 με HTTP, το 22 με SSH κ.ο.κ."
+    });
+
+    // ── Μέρος Β: TCP vs UDP ──────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 24 — TCP vs UDP</div>
+<h1>TCP: Αξιοπιστία πάνω απ' όλα</h1>
+<p class="lede">Το TCP (Transmission Control Protocol) είναι το πρωτόκολλο που εγγυάται ότι τα δεδομένα θα φτάσουν σωστά, με τη σωστή σειρά, χωρίς απώλειες — με κόστος σε ταχύτητα.</p>
+
+<h2>Το 3-way handshake</h2>
+<p>Πριν ανταλλαγεί έστω και ένα byte δεδομένων, το TCP "χτίζει" μια σύνδεση με μια συνομιλία 3 βημάτων:</p>
+
+<div class="grid3">
+  <div class="card"><h3>1. SYN</h3><p>Ο client στέλνει ένα πακέτο SYN ("θέλω να συνδεθώ") με έναν τυχαίο αρχικό sequence number.</p></div>
+  <div class="card"><h3>2. SYN-ACK</h3><p>Ο server απαντάει με SYN-ACK ("το είδα, εντάξει, να και το δικό μου sequence number").</p></div>
+  <div class="card"><h3>3. ACK</h3><p>Ο client στέλνει ACK ("το κατάλαβα") — και η σύνδεση είναι πλέον "established".</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Θα το ξαναδείς</span>
+  Αυτό το handshake είναι κρίσιμο και για το security κομμάτι — το SYN flood attack (Μέρος Ε) εκμεταλλεύεται ακριβώς αυτή τη διαδικασία.
+</div>
+
+<h2>Πώς πετυχαίνει την αξιοπιστία</h2>
+<p>Κάθε byte δεδομένων στο TCP έχει έναν sequence number. Ο παραλήπτης στέλνει acknowledgments (ACKs) για ό,τι έλαβε. Αν κάτι χαθεί στο δίκτυο, ο αποστολέας το καταλαβαίνει (δεν ήρθε ACK) και το ξαναστέλνει (retransmission). Επίσης, το TCP διατηρεί τη σειρά — ακόμα κι αν τα πακέτα φτάσουν εκτός σειράς λόγω δικτύου, το TCP layer τα ξαναβάζει στη σωστή σειρά πριν τα δώσει στην εφαρμογή.</p>
+<p>Υπάρχει επίσης flow control (ο παραλήπτης λέει στον αποστολέα "μην στέλνεις πιο γρήγορα απ' όσο μπορώ να επεξεργαστώ") και congestion control (το TCP προσαρμόζει την ταχύτητα ανάλογα με τη συμφόρηση στο δίκτυο). Όλο αυτό το "πακέτο υπηρεσιών" είναι που κάνει το TCP πιο αργό από το UDP, αλλά αξιόπιστο.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 5 / 24 — TCP vs UDP</div>
+<h1>UDP: Ταχύτητα χωρίς εγγυήσεις</h1>
+<p class="lede">Το UDP (User Datagram Protocol) είναι το ακριβώς αντίθετο φιλοσοφικά: στέλνει τα δεδομένα και δεν ασχολείται αν έφτασαν, με τη σωστή σειρά, ή καθόλου.</p>
+
+<h2>Connectionless</h2>
+<p>Δεν υπάρχει handshake. Δεν υπάρχει "established connection". Κάθε UDP datagram είναι ανεξάρτητο πακέτο — στέλνεται και ξεχνιέται (fire and forget). Δεν υπάρχουν ACKs, δεν υπάρχει retransmission, δεν υπάρχει εγγύηση σειράς.</p>
+
+<h2>Πότε προτιμάς UDP</h2>
+<div class="grid2">
+  <div class="card"><h3>Real-time εφαρμογές</h3><p>Video calls, online gaming, live streaming — εκεί ένα χαμένο πακέτο απλά προκαλεί μικρό glitch, αλλά η καθυστέρηση από retransmission θα χαλούσε την εμπειρία περισσότερο.</p></div>
+  <div class="card"><h3>DNS lookups</h3><p>Μικρά, γρήγορα requests όπου το overhead του TCP handshake δεν αξίζει τον κόπο για ένα-δύο πακέτα.</p></div>
+</div>
+
+<p>Αν η εφαρμογή σου χρειάζεται τη δική της αξιοπιστία (π.χ. custom retry logic) αλλά θέλει την ταχύτητα του UDP, μπορεί να χτίσει τη δική της λογική πάνω από το UDP — αυτό κάνουν π.χ. πολλά online games.</p>
+
+<div class="callout good">
+  <span class="tag">Κανόνας εμπειρίας</span>
+  TCP όταν η ορθότητα > ταχύτητα (file transfer, web pages, email). UDP όταν η ταχύτητα > ορθότητα (gaming, streaming, DNS).
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 24 — TCP vs UDP</div>
+<h1>Σύγκριση με κώδικα Go</h1>
+<p class="lede">Ας δούμε πώς μοιάζουν τα δύο πρωτόκολλα στην πράξη, μέσα από το πακέτο <code>net</code> της Go.</p>
+
+<h2>TCP connection (client side)</h2>
+<pre><code class="lang-go"><span class="tok-type">conn</span>, <span class="tok-type">err</span> := <span class="tok-kw">net</span>.<span class="tok-func">Dial</span>(<span class="tok-str">"tcp"</span>, <span class="tok-str">"example.com:80"</span>)
+<span class="tok-kw">if</span> err != <span class="tok-kw">nil</span> {
+    <span class="tok-kw">log</span>.<span class="tok-func">Fatal</span>(err)
+}
+<span class="tok-kw">defer</span> conn.<span class="tok-func">Close</span>() <span class="tok-com">// TCP keeps the connection open until explicitly closed</span></code></pre>
+
+<h2>UDP "connection" (client side)</h2>
+<pre><code class="lang-go"><span class="tok-type">conn</span>, <span class="tok-type">err</span> := <span class="tok-kw">net</span>.<span class="tok-func">Dial</span>(<span class="tok-str">"udp"</span>, <span class="tok-str">"example.com:53"</span>)
+<span class="tok-kw">if</span> err != <span class="tok-kw">nil</span> {
+    <span class="tok-kw">log</span>.<span class="tok-func">Fatal</span>(err)
+}
+<span class="tok-kw">defer</span> conn.<span class="tok-func">Close</span>() <span class="tok-com">// no real handshake happened here, this just sets up local state</span></code></pre>
+
+<p>Παρατήρησε: το API μοιάζει ίδιο (<code>net.Dial</code> και στις δύο περιπτώσεις), αλλά από κάτω η συμπεριφορά είναι εντελώς διαφορετική. Στο UDP, το <code>Dial</code> δεν στέλνει τίποτα στο δίκτυο — απλά "θυμάται" τοπικά τον προορισμό για επόμενες κλήσεις <code>Write</code>.</p>
+
+<h2>Headers — μέγεθος overhead</h2>
+<div class="grid2">
+  <div class="card"><h3>TCP header</h3><p>Τουλάχιστον 20 bytes — περιέχει sequence numbers, ACK numbers, flags, window size και άλλα για να υποστηρίξει την αξιοπιστία.</p></div>
+  <div class="card"><h3>UDP header</h3><p>Μόλις 8 bytes — source port, destination port, length, checksum. Ελάχιστο overhead, ελάχιστη πολυπλοκότητα.</p></div>
+</div>
+`);
+
+    addFillBlank({
+      code:
+`conn, err := net.__dial__("tcp", "example.com:80")
+if err != nil {
+    log.Fatal(err)
+}
+defer conn.__close__() // always release the connection when done`,
+      blanks: [
+        { id: "dial", answer: "Dial" },
+        { id: "close", answer: "Close" }
+      ],
+      explain: "net.Dial ανοίγει τη σύνδεση (και για TCP κάνει πραγματικό handshake, για UDP απλά ετοιμάζει τοπικό state). Το Close πρέπει πάντα να καλείται όταν τελειώσεις."
+    }, {
+      note: "Συμπλήρωσε τις λέξεις-κλειδιά του net πακέτου."
+    });
+
+    addMatching([
+      { term: "TCP", def: "Αξιόπιστο, με handshake, εγγυάται σειρά — πιο αργό" },
+      { term: "UDP", def: "Connectionless, χωρίς εγγυήσεις — πιο γρήγορο" },
+      { term: "SYN", def: "Το πρώτο βήμα του TCP handshake" },
+      { term: "Sequence number", def: "Πώς το TCP ξέρει τη σωστή σειρά των bytes" }
+    ], {
+      note: "Ταίριαξε τον όρο με τον ορισμό του."
+    });
+
+    // ── Μέρος Γ: net/http σε βάθος ───────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 7 / 24 — net/http σε βάθος</div>
+<h1>Το πακέτο net/http — Server 101</h1>
+<p class="lede">Το HTTP είναι Application Layer πρωτόκολλο που τρέχει πάνω από TCP (θυμήσου το encapsulation από την Ενότητα 1). Η Go έχει εξαιρετική built-in υποστήριξη μέσω του <code>net/http</code>, χωρίς να χρειάζεται framework για βασικά πράγματα.</p>
+
+<h2>Ο πιο απλός server</h2>
+<pre><code class="lang-go">package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+<span class="tok-com">// handler function: receives the request, writes the response</span>
+func hello(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintln(w, "Hello, network!")
+}
+
+func main() {
+    http.HandleFunc("/hello", hello)
+    http.ListenAndServe(":8080", nil) <span class="tok-com">// blocks forever, serving requests</span>
+}</code></pre>
+
+<p>Το <code>http.HandleFunc</code> καταχωρεί ένα route: όταν έρθει request στο path <code>/hello</code>, καλείται η συνάρτηση <code>hello</code>. Το <code>http.ListenAndServe</code> ξεκινάει τον TCP listener στο port 8080 και "μπλοκάρει" — τρέχει για πάντα, δεχόμενος συνδέσεις.</p>
+
+<h2>ResponseWriter &amp; Request</h2>
+<div class="grid2">
+  <div class="card"><h3>http.Request</h3><p>Περιέχει ό,τι έστειλε ο client: method (GET/POST), URL, headers, body. Το διαβάζεις, δεν το γράφεις.</p></div>
+  <div class="card"><h3>http.ResponseWriter</h3><p>Interface που χρησιμοποιείς για να γράψεις την απάντηση: status code, headers, body — με αυτή τη σειρά.</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Συχνό λάθος</span>
+  Μόλις καλέσεις κάτι που γράφει στο body (π.χ. <code>Fprintln</code>) χωρίς να έχεις ορίσει status code, η Go στέλνει αυτόματα <code>200 OK</code>. Αν θες διαφορετικό status code, πρέπει να καλέσεις <code>w.WriteHeader(code)</code> ΠΡΙΝ γράψεις οτιδήποτε στο body.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 24 — net/http σε βάθος</div>
+<h1>Routing, Status Codes &amp; Headers</h1>
+<p class="lede">Ένα HTTP response δεν είναι μόνο "δεδομένα" — είναι ένα μικρό πρωτόκολλο επικοινωνίας με τη δική του γραμματική.</p>
+
+<h2>Status codes — οι κατηγορίες</h2>
+<div class="grid3">
+  <div class="card"><h3>2xx — Επιτυχία</h3><p>200 OK, 201 Created, 204 No Content. Το request έγινε δεκτό και επεξεργάστηκε επιτυχώς.</p></div>
+  <div class="card"><h3>3xx — Redirect</h3><p>301 Moved Permanently, 302 Found, 304 Not Modified. Ο client πρέπει να κάνει κάτι άλλο (π.χ. να πάει αλλού).</p></div>
+  <div class="card"><h3>4xx / 5xx — Σφάλμα</h3><p>404 Not Found, 400 Bad Request (λάθος client) vs 500 Internal Server Error (λάθος server).</p></div>
+</div>
+
+<pre><code class="lang-go">func notFound(w http.ResponseWriter, r *http.Request) {
+    w.WriteHeader(http.StatusNotFound) <span class="tok-com">// 404 — must come before any Write</span>
+    fmt.Fprintln(w, "resource not found")
+}</code></pre>
+
+<h2>Headers — μεταδεδομένα του request/response</h2>
+<p>Τα headers δίνουν context πέρα από το raw body: τύπο περιεχομένου, μέγεθος, cookies, authentication tokens, caching οδηγίες. Στη Go διαβάζεις/γράφεις headers μέσω του <code>Header</code> field, που είναι στην ουσία ένα map.</p>
+<pre><code class="lang-go">func handler(w http.ResponseWriter, r *http.Request) {
+    <span class="tok-com">// reading a request header</span>
+    userAgent := r.Header.Get("User-Agent")
+
+    <span class="tok-com">// writing a response header — must happen before WriteHeader/Write</span>
+    w.Header().Set("Content-Type", "text/plain")
+    fmt.Fprintln(w, "your agent:", userAgent)
+}</code></pre>
+
+<h2>Routing με ServeMux</h2>
+<p>Το <code>http.HandleFunc</code> που είδαμε καταχωρεί routes σε ένα default multiplexer (ServeMux). Για μεγαλύτερα προγράμματα, καλύτερα να φτιάχνεις το δικό σου explicit:</p>
+<pre><code class="lang-go">mux := http.NewServeMux()
+mux.HandleFunc("/hello", hello)
+mux.HandleFunc("/status", statusHandler)
+http.ListenAndServe(":8080", mux) <span class="tok-com">// pass explicit mux instead of nil</span></code></pre>
+
+<div class="callout">
+  <span class="tag">Γιατί σημαίνει κάτι για security</span>
+  Λάθος status codes ή headers μπορεί να διαρρεύσουν πληροφορία — π.χ. ένα 500 error που επιστρέφει το πλήρες stack trace σε production δίνει στον επιτιθέμενο δωρεάν πληροφορία για την υποδομή σου.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια σειρά ενεργειών είναι σωστή σε ένα Go HTTP handler που θέλει να στείλει custom status code και headers;",
+        options: [
+          "Πρώτα Header().Set(), μετά WriteHeader(), και μόνο μετά γράφεις το body",
+          "Πρώτα γράφεις το body, μετά καλείς WriteHeader() για να αλλάξεις το status code",
+          "Η σειρά δεν έχει καμία σημασία, η Go τα συγχρονίζει αυτόματα στο τέλος του request",
+          "Πρώτα WriteHeader(), μετά Header().Set(), και τέλος το body"
+        ],
+        correct: 0,
+        explain: "Headers πρέπει να οριστούν πριν το WriteHeader, και το WriteHeader πριν οποιοδήποτε γράψιμο στο body — μόλις γραφτεί το πρώτο byte body, τα headers 'κλειδώνουν' αυτόματα με default status 200."
+      },
+      {
+        q: "Ένας server επιστρέφει 500 Internal Server Error με πλήρες stack trace στο body, ορατό σε κάθε χρήστη. Γιατί είναι πρόβλημα από security σκοπιά;",
+        options: [
+          "Δεν είναι πρόβλημα, το 500 είναι στάνταρ κωδικός και το περιεχόμενο δεν έχει σημασία",
+          "Διαρρέει εσωτερικές πληροφορίες υποδομής (paths, βιβλιοθήκες, δομή κώδικα) σε πιθανό επιτιθέμενο",
+          "Επιβραδύνει σημαντικά τον server επειδή τα stack traces είναι πολύ μεγάλα σε μέγεθος",
+          "Προκαλεί πάντα crash στον browser του χρήστη που το βλέπει"
+        ],
+        correct: 1,
+        explain: "Detailed error output σε production είναι κλασικό information disclosure — δίνει δωρεάν χάρτη της εσωτερικής δομής σε κάποιον που θέλει να βρει αδυναμίες."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 9 / 24 — net/http σε βάθος</div>
+<h1>HTTP Client — κάνοντας requests</h1>
+<p class="lede">Η άλλη πλευρά του net/http: πώς κάνει η Go requests προς άλλους servers.</p>
+
+<h2>Απλό GET request</h2>
+<pre><code class="lang-go">resp, err := http.Get("https://api.example.com/data")
+if err != nil {
+    log.Fatal(err)
+}
+defer resp.Body.Close() <span class="tok-com">// always close the response body to avoid leaking connections</span>
+
+body, err := io.ReadAll(resp.Body)
+fmt.Println(string(body))
+fmt.Println("status:", resp.StatusCode)</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το να ξεχάσεις <code>resp.Body.Close()</code> είναι από τα πιο συχνά bugs σε Go δικτυακό κώδικα — "κλειδώνει" connections που δεν ελευθερώνονται ποτέ (connection/resource leak), και με τον καιρό ο server σου μπορεί να μείνει από file descriptors.
+</div>
+
+<h2>Custom requests με http.Client</h2>
+<p>Το <code>http.Get</code> είναι βολικό αλλά περιορισμένο. Για custom headers, timeouts, ή άλλα methods (POST, PUT κλπ), φτιάχνεις ένα explicit <code>http.Client</code> και <code>http.Request</code>:</p>
+<pre><code class="lang-go">client := &http.Client{
+    Timeout: 5 * time.Second, <span class="tok-com">// never leave a client without a timeout</span>
+}
+
+req, err := http.NewRequest("POST", "https://api.example.com/data", body)
+req.Header.Set("Authorization", "Bearer token123")
+req.Header.Set("Content-Type", "application/json")
+
+resp, err := client.Do(req)
+defer resp.Body.Close()</code></pre>
+
+<div class="callout">
+  <span class="tag">Γιατί το Timeout είναι κρίσιμο</span>
+  Χωρίς timeout, ένα request σε server που δεν απαντάει ποτέ θα "κρεμάσει" την goroutine σου επ' αόριστον. Σε ένα service που δέχεται πολλά requests, αυτό μπορεί να εξαντλήσει resources — και είναι ακριβώς ο μηχανισμός πίσω από κάποιου είδους denial-of-service ευπάθειες σε κακογραμμένο κώδικα.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 10 / 24 — net/http σε βάθος</div>
+<h1>JSON — encoding/json</h1>
+<p class="lede">Σχεδόν κάθε σύγχρονο HTTP API ανταλλάσσει JSON. Η Go το χειρίζεται μέσω του πακέτου <code>encoding/json</code>, με στενή σύνδεση στο type system της γλώσσας.</p>
+
+<h2>Από Go struct σε JSON (Marshal)</h2>
+<pre><code class="lang-go">type User struct {
+    Name  string \`json:"name"\`
+    Email string \`json:"email"\`
+    Age   int    \`json:"age,omitempty"\` <span class="tok-com">// omit this field if zero value</span>
+}
+
+u := User{Name: "Prome", Email: "prome@example.com", Age: 20}
+data, err := json.Marshal(u)
+<span class="tok-com">// data now holds: {"name":"Prome","email":"prome@example.com","age":20}</span></code></pre>
+
+<p>Τα struct tags (<code>\`json:"name"\`</code>) καθορίζουν πώς λέγεται το field στο τελικό JSON. Χωρίς tag, η Go χρησιμοποιεί το όνομα του field όπως είναι (με κεφαλαίο πρώτο γράμμα, αφού πρέπει να είναι exported).</p>
+
+<h2>Από JSON σε Go struct (Unmarshal)</h2>
+<pre><code class="lang-go">var u User
+err := json.Unmarshal(data, &u) <span class="tok-com">// note the pointer — Unmarshal needs to write into it</span>
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println(u.Name)</code></pre>
+
+<h2>Σε ένα HTTP handler — το πλήρες pattern</h2>
+<pre><code class="lang-go">func createUser(w http.ResponseWriter, r *http.Request) {
+    var u User
+    if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        return
+    }
+
+    <span class="tok-com">// ... process the user ...</span>
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(u) <span class="tok-com">// send it back as confirmation</span>
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Γιατί έχει σημασία για security</span>
+  Ο <code>Decode</code> πάνω σε ελεγχόμενο input από χρήστη είναι σημείο όπου πρέπει πάντα να κάνεις validation μετά — ποτέ μην εμπιστεύεσαι τυφλά τα δεδομένα που έρχονται. Αν το struct σου δεν κάνει έλεγχο ορίων/τύπων μετά το Unmarshal, ανοίγεις πόρτα σε malformed ή κακόβουλα δεδομένα.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητες 7-10</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">handler</span><span class="gs-def">συνάρτηση που επεξεργάζεται ένα HTTP request</span></div>
+  <div class="gs-pill"><span class="gs-name">ServeMux</span><span class="gs-def">router που αντιστοιχεί paths σε handlers</span></div>
+  <div class="gs-pill"><span class="gs-name">status code</span><span class="gs-def">αριθμητικός κωδικός αποτελέσματος του request</span></div>
+  <div class="gs-pill"><span class="gs-name">Marshal/Unmarshal</span><span class="gs-def">μετατροπή Go struct ↔ JSON</span></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 11 / 24 — net/http σε βάθος</div>
+<h1>Middleware pattern</h1>
+<p class="lede">Πολύ συχνά θες κοινή λογική να τρέχει πριν από κάθε handler — logging, authentication, rate limiting. Το middleware pattern στη Go εκμεταλλεύεται ότι ένα handler είναι απλά μια συνάρτηση με συγκεκριμένη υπογραφή.</p>
+
+<h2>Η ιδέα: function wrapping</h2>
+<pre><code class="lang-go"><span class="tok-com">// a middleware takes a handler and returns a new, wrapped handler</span>
+func loggingMiddleware(next http.HandlerFunc) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        next(w, r) <span class="tok-com">// call the original handler</span>
+        log.Println(r.Method, r.URL.Path, time.Since(start))
+    }
+}
+
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/hello", loggingMiddleware(hello)) <span class="tok-com">// wrap it here</span>
+    http.ListenAndServe(":8080", mux)
+}</code></pre>
+
+<h2>Πολλαπλά middlewares μαζί</h2>
+<p>Μπορείς να αλυσοδέσεις (chain) πολλά middlewares — καθένα τυλίγει το προηγούμενο:</p>
+<pre><code class="lang-go">handler := loggingMiddleware(authMiddleware(hello))
+<span class="tok-com">// execution order: logging starts → auth checks → hello runs → auth returns → logging ends</span></code></pre>
+
+<div class="callout">
+  <span class="tag">Γιατί μας ενδιαφέρει για security</span>
+  Το authentication middleware είναι ένα από τα πιο κρίσιμα κομμάτια ενός API — εδώ μπαίνει ο έλεγχος "ποιος είσαι και τι δικαίωμα έχεις". Ένα λάθος εδώ (π.χ. να ξεχάσεις να τυλίξεις ένα route) σημαίνει ότι ένα προστατευμένο endpoint μένει ανοιχτό σε όλους.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 12 / 24 — net/http σε βάθος</div>
+<h1>Ανακεφαλαίωση: το πλήρες κύκλωμα</h1>
+<p class="lede">Ας δούμε όλο το ταξίδι ενός request μαζί, πριν προχωρήσουμε στο security κομμάτι.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+    "encoding/json"
+    "log"
+    "net/http"
+    "time"
+)
+
+type Ping struct {
+    Message string \`json:"message"\`
+}
+
+<span class="tok-com">// middleware: logs method, path, and duration</span>
+func withLogging(next http.HandlerFunc) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        start := time.Now()
+        next(w, r)
+        log.Println(r.Method, r.URL.Path, time.Since(start))
+    }
+}
+
+func pingHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(Ping{Message: "pong"})
+}
+
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("/ping", withLogging(pingHandler))
+    log.Fatal(http.ListenAndServe(":8080", mux))
+}</code></pre>
+
+<p>Αυτό το ένα μικρό πρόγραμμα συνδυάζει: TCP listening (κάτω από την κουκούλα του <code>ListenAndServe</code>), HTTP routing, middleware chaining, status codes, headers, και JSON encoding. Αν κατάλαβες κάθε γραμμή εδώ, έχεις γερή βάση για ό,τι ακολουθεί.</p>
+`);
+
+    addFillBlank([
+      {
+        code:
+`func middleware(next http.HandlerFunc) http.__handlertype__ {
+    return func(w http.ResponseWriter, r *http.Request) {
+        __call__(w, r) // invoke the wrapped handler
+    }
+}`,
+        blanks: [
+          { id: "handlertype", answer: "HandlerFunc" },
+          { id: "call", answer: "next" }
+        ],
+        explain: "Ένα middleware επιστρέφει http.HandlerFunc, και μέσα στη νέα συνάρτηση καλεί το αρχικό handler (next) που πήρε ως παράμετρο."
+      },
+      {
+        code:
+`var u User
+err := json.__unmarshal__(data, &u)`,
+        blanks: [
+          { id: "unmarshal", answer: "Unmarshal" }
+        ],
+        explain: "Το json.Unmarshal παίρνει τα raw bytes και έναν pointer στο struct που θα γεμίσει."
+      }
+    ], {
+      note: "Συμπλήρωσε βάσει όσων είδαμε στο net/http κεφάλαιο."
+    });
+
+    addMatching([
+      [
+        { term: "http.HandleFunc", def: "Καταχωρεί route στον default ServeMux" },
+        { term: "w.WriteHeader()", def: "Ορίζει το status code της απάντησης" },
+        { term: "resp.Body.Close()", def: "Απελευθερώνει τη σύνδεση μετά από request" }
+      ],
+      [
+        { term: "json.Marshal", def: "Go struct → JSON bytes" },
+        { term: "json.Unmarshal", def: "JSON bytes → Go struct" },
+        { term: "struct tag", def: "Καθορίζει το όνομα field στο τελικό JSON" }
+      ]
+    ], {
+      note: "Δύο ξεχωριστά σύνολα — HTTP βασικά και JSON."
+    });
+
+    // ── Μέρος Δ: Cybersecurity fundamentals ──────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 13 / 24 — Cybersecurity Fundamentals</div>
+<h1>Η νοοτροπία του attack surface</h1>
+<p class="lede">Από εδώ και πέρα αλλάζουμε λίγο οπτική γωνία. Ξέρεις πλέον πώς δουλεύουν τα δίκτυα και πώς γράφεις κώδικα πάνω τους — τώρα θα δούμε πώς σκέφτεται κάποιος που ψάχνει αδυναμίες, και πώς αμύνεσαι.</p>
+
+<h2>Τι είναι attack surface</h2>
+<p>Attack surface είναι το σύνολο όλων των σημείων από όπου κάποιος θα μπορούσε να προσπαθήσει να μπει, να διαταράξει, ή να κλέψει δεδομένα από ένα σύστημα. Κάθε ανοιχτό port, κάθε public endpoint, κάθε input field σε μια φόρμα, κάθε τρίτο πακέτο (dependency) που χρησιμοποιείς — όλα προσθέτουν στο attack surface.</p>
+
+<div class="grid3">
+  <div class="card"><h3>Network surface</h3><p>Ανοιχτά ports, εκτεθειμένες υπηρεσίες, misconfigured firewalls.</p></div>
+  <div class="card"><h3>Application surface</h3><p>Κάθε input που δέχεται ο κώδικάς σου — forms, API parameters, file uploads.</p></div>
+  <div class="card"><h3>Human surface</h3><p>Social engineering, phishing — ο άνθρωπος είναι συχνά το πιο "εύκολο" σημείο εισόδου.</p></div>
+</div>
+
+<h2>Η βασική αρχή: λιγότερο εκτεθειμένο = ασφαλέστερο</h2>
+<p>Ένας βασικός κανόνας άμυνας είναι το principle of least exposure: αν μια υπηρεσία δεν χρειάζεται να είναι προσβάσιμη από το internet, δεν πρέπει να είναι. Αν ένα port δεν χρησιμοποιείται, κλείνει. Αν ένα API endpoint δεν χρειάζεται δημόσια πρόσβαση, μπαίνει πίσω από authentication. Κάθε πράγμα που αφαιρείς από την "πρόσοψη" του συστήματός σου είναι ένα λιγότερο σημείο που κάποιος μπορεί να δοκιμάσει.</p>
+
+<div class="callout">
+  <span class="tag">Θα το ξαναδείς</span>
+  Αυτή η νοοτροπία είναι η βάση για όλο το Μέρος Ε (πώς σκέφτεται attacker/defender) — κρατάς πάντα στο μυαλό σου: "ποια είναι η επιφάνεια που εκθέτω, και γιατί;"
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 14 / 24 — Cybersecurity Fundamentals</div>
+<h1>TLS/HTTPS — τι λύνει και γιατί υπάρχει</h1>
+<p class="lede">Είδαμε ότι το HTTP τρέχει πάνω από TCP. Αλλά το απλό HTTP στέλνει τα πάντα σε καθαρό κείμενο (plaintext) — οποιοσδήποτε "βλέπει" το traffic (θυμήσου, θα δούμε πώς γίνεται αυτό στο Μέρος Ε) μπορεί να διαβάσει κωδικούς, cookies, ό,τι ανταλλάσσεται.</p>
+
+<h2>Τι είναι το TLS</h2>
+<p>Το TLS (Transport Layer Security) είναι ένα πρωτόκολλο που κάθεται ανάμεσα στο TCP και στο Application Layer (HTTP στην περίπτωσή μας), και προσφέρει τρία πράγματα:</p>
+
+<div class="grid3">
+  <div class="card"><h3>Encryption</h3><p>Τα δεδομένα κρυπτογραφούνται — ακόμα κι αν κάποιος τα υποκλέψει, βλέπει άχρηστα bytes χωρίς το κλειδί.</p></div>
+  <div class="card"><h3>Integrity</h3><p>Ο παραλήπτης μπορεί να επαληθεύσει ότι τα δεδομένα δεν αλλοιώθηκαν στη διαδρομή.</p></div>
+  <div class="card"><h3>Authentication</h3><p>Ο client επαληθεύει ότι μιλάει πραγματικά με τον server που νομίζει (μέσω certificates) — όχι με κάποιον που παριστάνει ότι είναι αυτός.</p></div>
+</div>
+
+<h2>Πολύ σύντομα: πώς δουλεύει το TLS handshake</h2>
+<p>Πριν ανταλλαγούν δεδομένα, client και server κάνουν ένα δικό τους "handshake" (πάνω από το ήδη established TCP handshake): συμφωνούν ποιον αλγόριθμο κρυπτογράφησης θα χρησιμοποιήσουν, ο server παρουσιάζει ένα certificate (ψηφιακή "ταυτότητα" υπογεγραμμένη από μια έμπιστη αρχή, Certificate Authority), και μέσω ασύμμετρης κρυπτογραφίας συμφωνούν σε ένα κοινό μυστικό κλειδί που θα χρησιμοποιηθεί για το υπόλοιπο της συνόδου (symmetric encryption, πιο γρήγορη).</p>
+
+<h2>HTTPS = HTTP + TLS</h2>
+<p>Το HTTPS δεν είναι διαφορετικό πρωτόκολλο από το HTTP — είναι το ίδιο HTTP, απλά τρέχει μέσα από ένα TLS "τούνελ". Γι' αυτό και το port είναι διαφορετικό (443 αντί για 80): σηματοδοτεί στον client ότι πρέπει πρώτα να γίνει το TLS handshake πριν αρχίσει η HTTP συνομιλία.</p>
+
+<div class="callout good">
+  <span class="tag">Στη Go</span>
+  Η αλλαγή από HTTP σε HTTPS server είναι μία γραμμή διαφορά: <code>http.ListenAndServeTLS(":443", "cert.pem", "key.pem", mux)</code> αντί για <code>ListenAndServe</code> — χρειάζεσαι απλά ένα certificate και το private key του.
+</div>
+
+<div class="callout">
+  <span class="tag">Γιατί έχει σημασία</span>
+  Χωρίς TLS, οτιδήποτε στέλνεις σε plain HTTP είναι ευάλωτο σε υποκλοπή από οποιονδήποτε βρίσκεται "ανάμεσα" σε σένα και τον server — αυτό είναι ακριβώς το MITM concept που θα δούμε αναλυτικά παρακάτω.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 15 / 24 — Cybersecurity Fundamentals</div>
+<h1>Firewalls — η πρώτη γραμμή άμυνας</h1>
+<p class="lede">Ένα firewall είναι ένα σύστημα (hardware ή software) που ελέγχει ποιο traffic επιτρέπεται να μπει ή να βγει από ένα δίκτυο ή μια συσκευή, βάσει κανόνων.</p>
+
+<h2>Βασική λογική: κανόνες allow/deny</h2>
+<p>Ένα firewall εξετάζει κάθε πακέτο και το συγκρίνει με μια λίστα κανόνων — συνήθως βάσει source/destination IP, port, και πρωτόκολλο (TCP/UDP). Αν ταιριάζει σε κανόνα "allow", περνάει. Αν ταιριάζει σε "deny" ή δεν ταιριάζει σε τίποτα (default deny policy), απορρίπτεται.</p>
+
+<div class="grid2">
+  <div class="card"><h3>Stateless firewall</h3><p>Εξετάζει κάθε πακέτο μεμονωμένα, χωρίς να θυμάται προηγούμενα πακέτα της ίδιας σύνδεσης. Πιο απλό, λιγότερο έξυπνο.</p></div>
+  <div class="card"><h3>Stateful firewall</h3><p>Θυμάται την κατάσταση μιας TCP σύνδεσης (established, μέσω του handshake που είδαμε) και επιτρέπει response traffic που ανήκει σε ήδη επιτρεπόμενη σύνδεση.</p></div>
+</div>
+
+<h2>Παράδειγμα λογικής κανόνα</h2>
+<pre><code><span class="tok-com">// pseudocode, not a real language — just showing the rule logic</span>
+<span class="tok-kw">rule</span>: allow tcp from any to 10.0.0.5 port 443
+<span class="tok-kw">rule</span>: allow tcp from any to 10.0.0.5 port 22 source 203.0.113.0/24
+<span class="tok-kw">rule</span>: deny all</code></pre>
+<p>Ο πρώτος κανόνας επιτρέπει HTTPS traffic από οπουδήποτε. Ο δεύτερος επιτρέπει SSH (port 22) μόνο από ένα συγκεκριμένο subnet (π.χ. το γραφείο). Ο τρίτος (default deny) απορρίπτει οτιδήποτε άλλο δεν ταίριαξε παραπάνω — αυτή είναι η ασφαλέστερη προσέγγιση: "κλειστό από προεπιλογή, άνοιγμα μόνο ό,τι χρειάζεται".</p>
+
+<h2>Firewall vs τι ΔΕΝ κάνει</h2>
+<div class="callout">
+  <span class="tag">Σημαντική διάκριση</span>
+  Ένα firewall ελέγχει ΠΟΙΟΣ μπορεί να συνδεθεί ΠΟΥ — δεν εξετάζει το περιεχόμενο της εφαρμογής σου για λάθη (π.χ. SQL injection σε μια φόρμα). Είναι network-level άμυνα, όχι application-level. Χρειάζεσαι και τα δύο επίπεδα.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητες 13-15</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">attack surface</td><td class="gt-def">σύνολο σημείων πιθανής εισβολής σε ένα σύστημα</td></tr>
+  <tr><td class="gt-term">TLS handshake</td><td class="gt-def">η διαπραγμάτευση κρυπτογράφησης πριν το HTTPS traffic</td></tr>
+  <tr><td class="gt-term">certificate</td><td class="gt-def">ψηφιακή "ταυτότητα" server, υπογεγραμμένη από CA</td></tr>
+  <tr><td class="gt-term">stateful firewall</td><td class="gt-def">θυμάται την κατάσταση μιας σύνδεσης, όχι μόνο μεμονωμένα πακέτα</td></tr>
+</table>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί το HTTPS χρησιμοποιεί διαφορετικό port (443) από το HTTP (80);",
+        options: [
+          "Για να σηματοδοτήσει στον client ότι πρέπει πρώτα να γίνει TLS handshake πριν την HTTP επικοινωνία",
+          "Επειδή το TLS δεν μπορεί τεχνικά να λειτουργήσει στο ίδιο port με το απλό HTTP για κανέναν λόγο",
+          "Επειδή το port 80 είναι πάντα δεσμευμένο αποκλειστικά για δοκιμαστικά (testing) περιβάλλοντα",
+          "Απλά για ιστορικούς λόγους, χωρίς κάποια τεχνική λειτουργική σημασία σήμερα"
+        ],
+        correct: 0,
+        explain: "Το διαφορετικό port είναι μια σύμβαση που επιτρέπει στον client να ξέρει εκ των προτέρων ότι πρέπει να ξεκινήσει με TLS handshake πριν στείλει το HTTP request."
+      },
+      {
+        q: "Ένα stateless firewall εξετάζει ένα μεμονωμένο πακέτο. Τι ΔΕΝ μπορεί να κάνει σε σχέση με ένα stateful firewall;",
+        options: [
+          "Δεν μπορεί να θυμηθεί ότι το πακέτο ανήκει σε μια ήδη επιτρεπόμενη, established σύνδεση",
+          "Δεν μπορεί ποτέ να μπλοκάρει κανένα είδος traffic, μόνο να το επιτρέπει",
+          "Δεν μπορεί να διαβάσει καθόλου τη destination IP διεύθυνση του πακέτου",
+          "Δεν μπορεί να λειτουργήσει σε κανένα δίκτυο που χρησιμοποιεί TCP πρωτόκολλο"
+        ],
+        correct: 0,
+        explain: "Η βασική διαφορά stateless/stateful είναι ακριβώς αυτή: το stateful θυμάται το context μιας σύνδεσης (π.χ. established TCP session), το stateless εξετάζει κάθε πακέτο μεμονωμένα."
+      }
+    ]);
+
+    // ── Μέρος Ε: Πώς σκέφτεται attacker/defender ─────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 17 / 24 — Attacker &amp; Defender Mindset</div>
+<h1>Reconnaissance — πριν από όλα, η αναγνώριση</h1>
+<p class="lede">Κάθε οργανωμένη προσπάθεια δοκιμής ασφάλειας (και κάθε πραγματική επίθεση) ξεκινάει με το ίδιο βήμα: μάθε όσο περισσότερα μπορείς για τον στόχο, πριν κάνεις οτιδήποτε άλλο. Αυτό λέγεται reconnaissance ("recon").</p>
+
+<h2>Τι ψάχνει κάποιος</h2>
+<div class="grid3">
+  <div class="card"><h3>Ανοιχτά ports</h3><p>Ποιες υπηρεσίες "ακούνε" σε έναν στόχο; Ένα ανοιχτό port 22 λέει "εδώ τρέχει SSH".</p></div>
+  <div class="card"><h3>Service banners</h3><p>Πολλές υπηρεσίες "αυτοσυστήνονται" με έκδοση λογισμικού όταν συνδεθείς — πολύτιμη πληροφορία για γνωστές αδυναμίες.</p></div>
+  <div class="card"><h3>Δημόσια πληροφορία</h3><p>DNS records, subdomains, δημόσια repos, ακόμα και LinkedIn προφίλ υπαλλήλων — passive recon χωρίς καν να αγγίξεις τον στόχο.</p></div>
+</div>
+
+<h2>Active vs Passive recon</h2>
+<p>Passive recon σημαίνει συλλογή πληροφορίας χωρίς άμεση αλληλεπίδραση με τον στόχο (π.χ. δημόσιες βάσεις δεδομένων, WHOIS records, DNS lookups). Active recon σημαίνει άμεση επαφή — π.χ. στέλνεις πακέτα στον στόχο για να δεις πώς απαντάει (αυτό είναι το port scanning που θα δούμε αναλυτικά στο Μέρος ΣΤ).</p>
+
+<div class="callout">
+  <span class="tag">Και οι δύο πλευρές το κάνουν</span>
+  Η αναγνώριση δεν είναι μόνο για επιτιθέμενους — μια ομάδα ασφάλειας κάνει το ίδιο ακριβώς recon πάνω στη δική της υποδομή περιοδικά (asset discovery), ακριβώς για να βρει τι είναι εκτεθειμένο πριν το βρει κάποιος άλλος.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 18 / 24 — Attacker &amp; Defender Mindset</div>
+<h1>Packet Sniffing — το να "βλέπεις" traffic</h1>
+<p class="lede">Packet sniffing είναι η καταγραφή/ανάγνωση πακέτων που περνάνε από ένα δίκτυο, ακόμα κι αν δεν προορίζονται για σένα. Είναι νόμιμο και απαραίτητο εργαλείο για network administrators (troubleshooting, monitoring) — αλλά μπορεί να γίνει κακή χρήση σε μη-εξουσιοδοτημένο δίκτυο.</p>
+
+<h2>Ο εξοπλισμός: κάρτα δικτύου σε promiscuous/monitor mode</h2>
+<p>Κανονικά, μια κάρτα δικτύου (NIC) επεξεργάζεται μόνο πακέτα που απευθύνονται στη δική της MAC address και τα αγνοεί όλα τα άλλα. Σε <strong>promiscuous mode</strong> (για ενσύρματα δίκτυα) ή <strong>monitor mode</strong> (για Wi-Fi), η κάρτα δέχεται και επεξεργάζεται ΟΛΑ τα πακέτα που φτάνουν φυσικά σε αυτή, ανεξάρτητα από τον προορισμό τους. Αυτό είναι το θεμέλιο πάνω στο οποίο λειτουργεί κάθε εργαλείο sniffing (θα δούμε το Wireshark αναλυτικά στο Μέρος ΣΤ).</p>
+
+<h2>Γιατί δεν είναι πάντα εύκολο: Hub vs Switch</h2>
+<div class="grid2">
+  <div class="card"><h3>Hub (παλιό)</h3><p>Στέλνει κάθε πακέτο σε ΟΛΕΣ τις θύρες — οποιοσδήποτε συνδεδεμένος βλέπει όλο το traffic. Sniffing εξαιρετικά εύκολο.</p></div>
+  <div class="card"><h3>Switch (σύγχρονο)</h3><p>Στέλνει κάθε πακέτο ΜΟΝΟ στη θύρα του πραγματικού παραλήπτη (μαθαίνει τις MAC addresses). Sniffing σε switched δίκτυο είναι πολύ πιο δύσκολο — χρειάζεται ενεργή παρέμβαση, όχι απλά "άκου".</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Γιατί σε switched δίκτυο δεν αρκεί το monitor mode</span>
+  Σε ένα σύγχρονο switched δίκτυο, ο sniffer σου βλέπει μόνο το broadcast traffic και ό,τι απευθύνεται στον ίδιο. Για να δει traffic άλλων, ο επιτιθέμενος χρειάζεται μια τεχνική που να "πείσει" το δίκτυο να του στείλει traffic που δεν του ανήκει — αυτό ακριβώς είναι το ARP spoofing που θα δούμε στην επόμενη ενότητα.
+</div>
+
+<h2>Wireless sniffing — ειδική περίπτωση</h2>
+<p>Σε ασύρματα δίκτυα, τα δεδομένα ταξιδεύουν "στον αέρα" — μια κάρτα Wi-Fi σε monitor mode μπορεί να "ακούσει" όλα τα πακέτα στην εμβέλειά της, ανεξάρτητα από switch logic, αφού δεν υπάρχει φυσικό καλώδιο που να περιορίζει ποιος "ακούει" τι. Γι' αυτό η κρυπτογράφηση σε επίπεδο Wi-Fi (WPA2/WPA3) και σε επίπεδο εφαρμογής (TLS, όπως είδαμε) είναι τόσο σημαντική.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 19 / 24 — Attacker &amp; Defender Mindset</div>
+<h1>Man-in-the-Middle (MITM) — η έννοια</h1>
+<p class="lede">MITM είναι όταν κάποιος τοποθετείται λογικά "ανάμεσα" σε δύο μέρη που επικοινωνούν, χωρίς να το γνωρίζουν, μπορώντας να διαβάσει ή/και να τροποποιήσει την επικοινωνία τους.</p>
+
+<h2>ARP Spoofing — γιατί δουλεύει</h2>
+<p>Το ARP (Address Resolution Protocol) είναι το πρωτόκολλο που "μεταφράζει" IP διευθύνσεις σε MAC addresses μέσα σε ένα τοπικό δίκτυο. Το πρόβλημα: το ARP σχεδιάστηκε χωρίς κανέναν μηχανισμό επαλήθευσης — μια συσκευή απλά δέχεται όποια ARP απάντηση λάβει, χωρίς να ελέγξει αν είναι αληθινή.</p>
+<p>Σε ARP spoofing, μια κακόβουλη συσκευή στέλνει πλαστές ARP απαντήσεις, λέγοντας ουσιαστικά στα υπόλοιπα μηχανήματα του δικτύου "η IP του router είναι στην πραγματικότητα η δική μου MAC address". Το traffic που προοριζόταν για τον router περνάει τώρα πρώτα από τη συσκευή του επιτιθέμενου, ο οποίος μπορεί να το διαβάσει (και προαιρετικά να το προωθήσει κανονικά, ώστε το θύμα να μην καταλάβει τίποτα).</p>
+
+<h2>DNS Spoofing — παρόμοια ιδέα, άλλο επίπεδο</h2>
+<p>Το DNS μεταφράζει ονόματα (π.χ. <code>example.com</code>) σε IP διευθύνσεις. Σε DNS spoofing, ο επιτιθέμενος παρεμβαίνει σε αυτή τη διαδικασία — είτε απαντώντας πιο γρήγορα από τον πραγματικό DNS server με ψεύτικη διεύθυνση, είτε παραβιάζοντας τον ίδιο τον DNS server. Το θύμα νομίζει ότι πάει στο σωστό site, αλλά η IP που πήρε οδηγεί κάπου αλλού.</p>
+
+<div class="callout">
+  <span class="tag">Γιατί το TLS/HTTPS είναι η άμυνα</span>
+  Ακόμα κι αν το ARP ή DNS spoofing πετύχει και το traffic περάσει από τον επιτιθέμενο, το TLS εξακολουθεί να προστατεύει: το certificate authentication (Ενότητα 14) σημαίνει ότι ο browser σου θα καταλάβει ότι δεν μιλάει με τον πραγματικό server — θα δεις προειδοποίηση πιστοποιητικού. Γι' αυτό ΠΟΤΕ δεν αγνοείς μια προειδοποίηση "invalid certificate".
+</div>
+
+<h2>Άμυνα σε επίπεδο δικτύου</h2>
+<div class="grid2">
+  <div class="card"><h3>Dynamic ARP Inspection</h3><p>Δυνατότητα σε managed switches που ελέγχει την εγκυρότητα ARP μηνυμάτων πριν τα προωθήσει.</p></div>
+  <div class="card"><h3>DNSSEC</h3><p>Επέκταση του DNS που προσθέτει ψηφιακές υπογραφές, ώστε οι απαντήσεις να μπορούν να επαληθευτούν ως γνήσιες.</p></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 20 / 24 — Attacker &amp; Defender Mindset</div>
+<h1>Το πλαίσιο: γιατί η άδεια έχει σημασία</h1>
+<p class="lede">Όλα όσα είδαμε (recon, sniffing, MITM concepts) είναι πραγματικές τεχνικές που χρησιμοποιούνται καθημερινά από επαγγελματίες ασφάλειας — αλλά η διαφορά ανάμεσα σε νόμιμη δοκιμή ασφάλειας και ποινικό αδίκημα είναι μία: η ρητή άδεια του ιδιοκτήτη του συστήματος.</p>
+<p>Στην πράξη αυτό σημαίνει: δοκιμάζεις μόνο σε συστήματα δικά σου, σε lab περιβάλλον που έχεις στήσει εσύ, ή με γραπτή εξουσιοδότηση (authorized penetration testing). Αν βρεις τυχαία μια αδυναμία σε σύστημα που δεν σου ανήκει, η σωστή πρακτική λέγεται responsible disclosure — ενημερώνεις τον ιδιοκτήτη ιδιωτικά, του δίνεις χρόνο να το διορθώσει, πριν οποιαδήποτε δημόσια αναφορά.</p>
+
+<div class="callout">
+  <span class="tag">Κράτα το αυτό</span>
+  Οι γνώσεις σε αυτό το μάθημα είναι εργαλεία — το πώς τις χρησιμοποιείς είναι δική σου ευθύνη, νομική και ηθική.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί το ARP spoofing λειτουργεί ως τεχνική;",
+        options: [
+          "Επειδή το πρωτόκολλο ARP δεν έχει μηχανισμό επαλήθευσης της γνησιότητας μιας απάντησης",
+          "Επειδή όλα τα σύγχρονα δίκτυα χρησιμοποιούν αποκλειστικά hubs αντί για switches",
+          "Επειδή το TLS δεν μπορεί ποτέ να ανιχνεύσει καμία μορφή παρέμβασης στο δίκτυο",
+          "Επειδή κάθε συσκευή στο δίκτυο μοιράζεται το ίδιο ακριβώς private κλειδί κρυπτογράφησης"
+        ],
+        correct: 0,
+        explain: "Το ARP σχεδιάστηκε χωρίς αυθεντικοποίηση — μια συσκευή δέχεται όποια απάντηση λάβει, πράγμα που επιτρέπει σε κάποιον να στείλει πλαστές απαντήσεις."
+      },
+      {
+        q: "Τι είναι το 'responsible disclosure';",
+        options: [
+          "Η δημόσια ανακοίνωση μιας αδυναμίας ασφαλείας αμέσως μόλις βρεθεί, χωρίς καθυστέρηση",
+          "Η ιδιωτική ενημέρωση του ιδιοκτήτη ενός συστήματος για μια αδυναμία, δίνοντάς του χρόνο να τη διορθώσει πριν δημόσια αναφορά",
+          "Η πώληση πληροφορίας για μια αδυναμία ασφαλείας στον υψηλότερο πλειοδότη",
+          "Η χρήση μιας αδυναμίας για δοκιμή χωρίς να ενημερωθεί κανείς ποτέ"
+        ],
+        correct: 1,
+        explain: "Responsible disclosure σημαίνει ιδιωτική, υπεύθυνη ενημέρωση πρώτα στον ιδιοκτήτη — αυτό προστατεύει τους χρήστες, δίνοντας χρόνο διόρθωσης πριν την αδυναμία τη μάθει κάποιος κακόβουλος."
+      }
+    ]);
+
+    // ── Μέρος ΣΤ: Εργαλεία σε βάθος ───────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 21 / 24 — Εργαλεία σε Βάθος: nmap</div>
+<h1>nmap — Network Mapper</h1>
+<p class="lede">Το nmap είναι το πιο διαδεδομένο εργαλείο port scanning — χρησιμοποιείται εξίσου από security teams (για audit της δικής τους υποδομής) και από network administrators (για inventory management).</p>
+
+<h2>Τι κάνει: η βασική ιδέα</h2>
+<p>Το nmap στέλνει ειδικά διαμορφωμένα πακέτα σε ένα εύρος ports ενός στόχου, και βάσει της απάντησης (ή απουσίας απάντησης) συμπεραίνει την κατάσταση κάθε port.</p>
+
+<div class="grid3">
+  <div class="card"><h3>open</h3><p>Μια υπηρεσία απάντησε ενεργά — κάτι "ακούει" εκεί.</p></div>
+  <div class="card"><h3>closed</h3><p>Ο host απάντησε, αλλά δεν υπάρχει υπηρεσία σε αυτό το port (π.χ. TCP RST).</p></div>
+  <div class="card"><h3>filtered</h3><p>Δεν ήρθε καμία απάντηση — πιθανότατα ένα firewall μπλοκάρει το πακέτο σιωπηλά.</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Σύνδεση με όσα ξέρεις ήδη</span>
+  Το "filtered" είναι ακριβώς το αποτέλεσμα ενός καλά ρυθμισμένου firewall (Ενότητα 15) με default-deny πολιτική — το πακέτο απλά εξαφανίζεται, χωρίς να δώσει καμία πληροφορία πίσω στον scanner.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 22 / 24 — Εργαλεία σε Βάθος: nmap</div>
+<h1>nmap — Τύποι Scan</h1>
+<p class="lede">Το nmap δεν έχει έναν μόνο τρόπο σάρωσης — διαφορετικοί τύποι scan εκμεταλλεύονται διαφορετικές λεπτομέρειες του TCP/UDP που είδαμε στο Μέρος Β.</p>
+
+<h2>TCP Connect Scan</h2>
+<p>Ολοκληρώνει το πλήρες 3-way handshake (SYN → SYN-ACK → ACK) σε κάθε port, όπως θα έκανε μια κανονική εφαρμογή. Αξιόπιστο, αλλά αφήνει πλήρες ίχνος στα logs του στόχου — κάθε πλήρης σύνδεση καταγράφεται κανονικά.</p>
+
+<h2>TCP SYN Scan ("half-open")</h2>
+<p>Στέλνει μόνο το πρώτο SYN. Αν λάβει SYN-ACK, το port είναι ανοιχτό — αλλά αντί να ολοκληρώσει το handshake με ACK, στέλνει RST (reset), "ακυρώνοντας" τη σύνδεση πριν ολοκληρωθεί. Πιο διακριτικό (πολλά συστήματα logging καταγράφουν μόνο established connections) και ελαφρώς πιο γρήγορο, αφού δεν χρειάζεται πλήρες handshake ανά port.</p>
+
+<h2>UDP Scan</h2>
+<p>Πιο δύσκολο από το TCP scanning, γιατί το UDP δεν έχει handshake ή ACKs (θυμήσου την Ενότητα 5) — απουσία απάντησης δεν σημαίνει ξεκάθαρα "closed". Το nmap συνήθως στηρίζεται σε ICMP "port unreachable" μηνύματα για να συμπεράνει ότι ένα UDP port είναι closed· αν δεν λάβει τίποτα, το χαρακτηρίζει "open|filtered" (αβέβαιο).</p>
+
+<div class="grid2">
+  <div class="card"><h3>Γιατί χρειάζεται εξουσιοδότηση</h3><p>Το scanning ενός συστήματος χωρίς άδεια μπορεί να θεωρηθεί μη εξουσιοδοτημένη πρόσβαση σε πολλές χώρες, ανεξάρτητα από την πρόθεση.</p></div>
+  <div class="card"><h3>Πρακτική εφαρμογή</h3><p>Οι ομάδες ασφάλειας τρέχουν nmap πάνω στη δική τους υποδομή τακτικά για να επιβεβαιώσουν ότι μόνο τα αναμενόμενα ports είναι ανοιχτά.</p></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 23 / 24 — Εργαλεία σε Βάθος: Wireshark</div>
+<h1>Wireshark — Ανάλυση Πακέτων</h1>
+<p class="lede">Αν το nmap απαντάει "ποια ports είναι ανοιχτά", το Wireshark απαντάει "τι ΑΚΡΙΒΩΣ περνάει από το δίκτυο, byte προς byte". Είναι το πιο διαδεδομένο εργαλείο packet capture με γραφικό περιβάλλον.</p>
+
+<h2>Πώς διαβάζεις ένα capture</h2>
+<p>Το Wireshark δείχνει κάθε πακέτο σε μια λίστα, με πληροφορίες όπως χρόνο, source/destination IP, πρωτόκολλο, και μια σύντομη περιγραφή. Κάνοντας κλικ σε ένα πακέτο, βλέπεις την πλήρη ανάλυσή του σε στρώσεις — ακριβώς το encapsulation μοντέλο της Ενότητας 1, οπτικοποιημένο: Ethernet frame → IP header → TCP/UDP header → Application data.</p>
+
+<div class="callout good">
+  <span class="tag">Γιατί είναι εκπαιδευτικά ανεκτίμητο</span>
+  Μπορείς κυριολεκτικά να δεις το 3-way handshake να συμβαίνει πακέτο-προς-πακέτο (SYN, SYN-ACK, ACK) — κάτι που έως τώρα ήταν μόνο θεωρία σε αυτό το μάθημα, εδώ γίνεται ορατό.
+</div>
+
+<h2>Display Filters — το πιο χρήσιμο κομμάτι</h2>
+<p>Ένα live capture μπορεί να έχει χιλιάδες πακέτα. Τα filters σου επιτρέπουν να εστιάσεις:</p>
+<pre><code><span class="tok-com">// show only TCP traffic on port 443</span>
+tcp.port == 443
+
+<span class="tok-com">// show only traffic to/from a specific IP</span>
+ip.addr == 192.168.1.10
+
+<span class="tok-com">// show only HTTP requests (not responses)</span>
+http.request
+
+<span class="tok-com">// combine filters</span>
+tcp.port == 80 && ip.src == 192.168.1.10</code></pre>
+
+<h2>Follow TCP Stream</h2>
+<p>Μια από τις πιο χρήσιμες λειτουργίες: επιλέγεις ένα πακέτο και ζητάς "Follow TCP Stream" — το Wireshark συγκεντρώνει όλα τα πακέτα της ίδιας σύνδεσης και σου δείχνει τη συνομιλία σαν συνεχές κείμενο, στη σειρά που στάλθηκε. Σε plain HTTP, αυτό σημαίνει ότι βλέπεις ολόκληρο το request/response σε αναγνώσιμη μορφή — που είναι ακριβώς γιατί το plain HTTP είναι επικίνδυνο χωρίς TLS (θυμήσου την Ενότητα 14).</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Σε κρυπτογραφημένο traffic (HTTPS), το Wireshark βλέπει τα headers TCP/IP κανονικά, αλλά το application data είναι κρυπτογραφημένο — δεν μπορείς να διαβάσεις το περιεχόμενο χωρίς το private key. Αυτό είναι ακριβώς η δουλειά που κάνει το TLS.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 24 / 24 — Εργαλεία σε Βάθος: tcpdump</div>
+<h1>tcpdump — Ο CLI αδερφός του Wireshark</h1>
+<p class="lede">Το tcpdump κάνει την ίδια δουλειά με το Wireshark (packet capture) αλλά από command line, χωρίς γραφικό περιβάλλον — ιδανικό για servers χωρίς GUI, scripts, ή γρήγορο έλεγχο.</p>
+
+<h2>Βασική σύνταξη</h2>
+<pre><code><span class="tok-com">// capture on a specific network interface</span>
+tcpdump -i eth0
+
+<span class="tok-com">// capture only traffic on port 80</span>
+tcpdump -i eth0 port 80
+
+<span class="tok-com">// capture traffic to/from a specific host</span>
+tcpdump -i eth0 host 192.168.1.10
+
+<span class="tok-com">// save capture to a file for later analysis in Wireshark</span>
+tcpdump -i eth0 -w capture.pcap</code></pre>
+
+<p>Το <code>.pcap</code> αρχείο που παράγει το tcpdump είναι το ίδιο format που διαβάζει το Wireshark — μια συνηθισμένη ροή εργασίας είναι: capture στο server με tcpdump (γρήγορο, χωρίς GUI overhead), μετά μεταφορά του αρχείου στον υπολογιστή σου για βαθιά ανάλυση στο Wireshark.</p>
+
+<h2>Πότε προτιμάς το ένα από το άλλο</h2>
+<div class="grid2">
+  <div class="card"><h3>tcpdump</h3><p>Remote servers, scripting/automation, γρήγορος έλεγχος, χαμηλό overhead πόρων.</p></div>
+  <div class="card"><h3>Wireshark</h3><p>Βαθιά, οπτική ανάλυση, filters με GUI, follow-stream, εκπαιδευτική διερεύνηση.</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Νόμιμη χρήση, πάντα</span>
+  Και τα δύο εργαλεία είναι απόλυτα νόμιμα και standard σε κάθε toolkit network engineer/security professional — η νομιμότητα εξαρτάται αποκλειστικά από ΠΟΥ τα τρέχεις (δικό σου δίκτυο ή με άδεια), όχι από το ίδιο το εργαλείο.
+</div>
+`);
+
+    addFillBlank([
+      {
+        code:
+`ln, err := net.__listen__("tcp", ":8080")
+if err != nil {
+    log.Fatal(err)
+}`,
+        blanks: [
+          { id: "listen", answer: "Listen" }
+        ],
+        explain: "Ανασκόπηση: το net.Listen ανοίγει έναν TCP listener σε συγκεκριμένο port."
+      }
+    ], {
+      note: "Μια τελευταία ανασκόπηση Go syntax πριν το τελικό quiz."
+    });
+
+    addMatching([
+      { term: "SYN Scan", def: "Half-open scan, στέλνει RST αντί να ολοκληρώσει το handshake" },
+      { term: "filtered (nmap)", def: "Κανένα πακέτο δεν επέστρεψε — πιθανό firewall" },
+      { term: "Follow TCP Stream", def: "Λειτουργία Wireshark που δείχνει όλη τη συνομιλία μαζί" },
+      { term: ".pcap", def: "Format αρχείου capture που διαβάζουν tcpdump και Wireshark" }
+    ], {
+      note: "Ταίριαξε τους όρους εργαλείων που μόλις είδαμε."
+    });
+
+    // Final combined quiz — 3 questions.
+    addQuiz([
+      {
+        q: "Ένας analyst βλέπει σε Wireshark ένα established TCP session, αλλά δεν μπορεί να διαβάσει το application data. Ποια είναι η πιο πιθανή εξήγηση;",
+        options: [
+          "Το traffic είναι πάνω από TLS (π.χ. HTTPS) — τα headers είναι ορατά, αλλά το payload είναι κρυπτογραφημένο",
+          "Το tcpdump έχει διαγράψει κατά λάθος το αρχείο capture πριν ολοκληρωθεί η αποθήκευση",
+          "Το UDP πρωτόκολλο εμποδίζει οποιαδήποτε ανάλυση payload σε capture εργαλεία",
+          "Ο router ανάμεσα στα δύο μηχανήματα έχει μπλοκάρει προσωρινά όλο το outbound traffic"
+        ],
+        correct: 0,
+        explain: "Το TLS κρυπτογραφεί το application layer payload· τα TCP/IP headers παραμένουν ορατά (source/dest, ports), αλλά το περιεχόμενο όχι, χωρίς το private key."
+      },
+      {
+        q: "Γιατί ένα SYN scan θεωρείται πιο 'διακριτικό' από ένα πλήρες TCP connect scan;",
+        options: [
+          "Επειδή δεν ολοκληρώνει το 3-way handshake — πολλά logging συστήματα καταγράφουν μόνο fully established συνδέσεις",
+          "Επειδή χρησιμοποιεί αποκλειστικά UDP πακέτα αντί για TCP, που είναι δυσκολότερο να ανιχνευθούν",
+          "Επειδή κρυπτογραφεί αυτόματα όλα τα πακέτα σάρωσης με TLS πριν τα στείλει",
+          "Επειδή δεν στέλνει καθόλου πακέτα στο δίκτυο, μόνο διαβάζει παθητικά υπάρχον traffic"
+        ],
+        correct: 0,
+        explain: "Το SYN scan στέλνει RST αντί να ολοκληρώσει το handshake με ACK, οπότε πολλά συστήματα που καταγράφουν μόνο established connections δεν το βλέπουν καθαρά."
+      },
+      {
+        q: "Ένας developer γράφει http.Client χωρίς Timeout. Ποιος είναι ο βασικός κίνδυνος;",
+        options: [
+          "Ένα request σε μη-ανταποκρινόμενο server μπορεί να 'κρεμάσει' τη goroutine επ' αόριστον, εξαντλώντας πόρους",
+          "Η Go αρνείται να μεταγλωττίσει (compile) οποιονδήποτε κώδικα χωρίς ρητά ορισμένο Timeout",
+          "Το JSON encoding θα αποτύχει αυτόματα σε κάθε request χωρίς Timeout ρυθμισμένο",
+          "Ο server-side θα απορρίψει αυτόματα κάθε request που δεν ορίζει client timeout"
+        ],
+        correct: 0,
+        explain: "Χωρίς Timeout, ένα stuck request μπορεί να κρατήσει τη σύνδεση/goroutine ανοιχτή για πάντα — πρόβλημα που κλιμακώνεται γρήγορα υπό φόρτο και σχετίζεται με denial-of-service λογική."
+      }
+    ], { overlayAlpha: 0.6 });
+
+    // ── Consolidated glossary ────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
+<h1>Όλοι οι όροι που είδαμε, σε ένα σημείο</h1>
+<p class="lede">Γρήγορη αναφορά — όχι νέα εξήγηση.</p>
+
+<div class="glossary-group">
+  <h2>Δίκτυα &amp; Πρωτόκολλα · στυλ: πίνακας</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">TCP</td><td class="gt-def">αξιόπιστο, με handshake, εγγυάται σειρά bytes</td></tr>
+    <tr><td class="gt-term">UDP</td><td class="gt-def">connectionless, γρήγορο, χωρίς εγγυήσεις</td></tr>
+    <tr><td class="gt-term">port</td><td class="gt-def">αναγνωριστικό εφαρμογής πάνω σε μια IP</td></tr>
+    <tr><td class="gt-term">TLS</td><td class="gt-def">κρυπτογράφηση/authentication πάνω από TCP</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>net/http σε Go · στυλ: οριζόντια λίστα</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">handler</span><span class="gs-def">συνάρτηση επεξεργασίας request</span></div>
+    <div class="gs-pill"><span class="gs-name">middleware</span><span class="gs-def">wrapping λογική γύρω από handlers</span></div>
+    <div class="gs-pill"><span class="gs-name">Marshal/Unmarshal</span><span class="gs-def">Go struct ↔ JSON</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>Cybersecurity Έννοιες · στυλ: πυκνές στήλες</h2>
+  <div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">attack surface</span><span class="gc-def">σύνολο πιθανών σημείων εισβολής</span></div>
+    <div class="gc-line"><span class="gc-term">ARP spoofing</span><span class="gc-def">πλαστές ARP απαντήσεις για MITM</span></div>
+    <div class="gc-line"><span class="gc-term">reconnaissance</span><span class="gc-def">συλλογή πληροφορίας πριν την ενέργεια</span></div>
+    <div class="gc-line"><span class="gc-term">responsible disclosure</span><span class="gc-def">ιδιωτική αναφορά αδυναμίας πριν τη δημόσια</span></div>
+    <div class="gc-line"><span class="gc-term">nmap / Wireshark / tcpdump</span><span class="gc-def">εργαλεία σάρωσης &amp; ανάλυσης πακέτων</span></div>
+  </div>
+</div>
+`);
+
+    // ── Sources ──────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+<p class="lede">Για περαιτέρω εμβάθυνση:</p>
+<div class="sources-list">
+  <a href="https://pkg.go.dev/net" target="_blank" rel="noopener">Go net package docs</a>
+  <a href="https://pkg.go.dev/net/http" target="_blank" rel="noopener">Go net/http package docs</a>
+  <a href="https://pkg.go.dev/encoding/json" target="_blank" rel="noopener">Go encoding/json package docs</a>
+  <a href="https://nmap.org/book/man.html" target="_blank" rel="noopener">nmap official manual</a>
+  <a href="https://www.wireshark.org/docs/" target="_blank" rel="noopener">Wireshark official docs</a>
+  <a href="https://www.tcpdump.org/manpages/tcpdump.1.html" target="_blank" rel="noopener">tcpdump man page</a>
+</div>
+<div id="final-score"></div>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
+  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+</p>
+`);
+
+
+    initSlideDeck({ version: "1.0.0" });
+  </script>
+</body>
+
+</html>
