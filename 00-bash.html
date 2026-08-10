@@ -49,10 +49,10 @@
 
     addContent(`
 <div class="title-slide">
-  <div class="title-badge"><img src="./icons/bash.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="title-badge"><img src="./icons/bash.png" alt="Bash icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
   <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
   <h1>Shell &amp; Bash<br>Το πρώτο σου βήμα στη γραμμή εντολών</h1>
-  <p class="lede">Πριν γράψουμε την πρώτη γραμμή κώδικα, πρέπει να μάθουμε πώς μιλάμε στον υπολογιστή απευθείας, χωρίς ποντίκι και χωρίς παράθυρα. Αυτό είναι το shell.</p>
+  <p class="lede">Το bash είναι ένα shell: ένα πρόγραμμα που δέχεται εντολές σε μορφή κειμένου και τις εκτελεί. Σε αυτόν τον οδηγό θα δεις τις βασικές του εντολές και πώς οργανώνονται σε scripts.</p>
   <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου.</div>
 </div>
 `);
@@ -67,7 +67,7 @@
 <p>Το hardware είναι το φυσικό μηχάνημα: επεξεργαστής, μνήμη, δίσκος. Το λογισμικό είναι οι οδηγίες που εκτελεί το hardware. Ανάμεσά τους βρίσκεται το Λειτουργικό Σύστημα, ένα πρόγραμμα που διαχειρίζεται τους πόρους του υπολογιστή (μνήμη, αρχεία, διεργασίες, συσκευές) και δίνει σε όλα τα υπόλοιπα προγράμματα έναν τρόπο να τους χρησιμοποιήσουν, χωρίς αυτά να χρειάζεται να μιλούν απευθείας στο hardware. Linux, macOS και Windows είναι τρία διαφορετικά λειτουργικά συστήματα, με διαφορετική φιλοσοφία αλλά κοινό σκοπό.</p>
 
 <h2>Γιατί Linux</h2>
-<p>Σε αυτόν τον οδηγό, και γενικότερα, θα δουλεύεις κυρίως με Linux. Δεν είναι τυχαία επιλογή. Το Linux είναι ανοιχτού κώδικα, δηλαδή μπορεί ο καθένας να δει και να τροποποιήσει πώς λειτουργεί, κάτι που το έχει κάνει το βασικό λειτουργικό σύστημα σε servers, σε cloud υποδομές και στα περισσότερα εργαλεία ανάπτυξης λογισμικού. Σχεδόν κάθε εταιρεία τεχνολογίας τρέχει τον κώδικά της πάνω σε Linux μηχανήματα, ακόμα κι αν οι προγραμματιστές γράφουν τον κώδικα σε Windows ή macOS. Επιπλέον, το Linux σού δίνει άμεση, χωρίς περιορισμούς πρόσβαση στο σύστημα αρχείων και στις διεργασίες, κάτι πολύ σημαντικό όταν μαθαίνεις πώς λειτουργεί πραγματικά ένας υπολογιστής.</p>
+<p>Σε αυτόν τον οδηγό θα δουλεύεις κυρίως με Linux. Δεν είναι τυχαία επιλογή. Το Linux είναι ανοιχτού κώδικα, δηλαδή μπορεί ο καθένας να δει και να τροποποιήσει πώς λειτουργεί, κάτι που το έχει κάνει το βασικό λειτουργικό σύστημα σε servers, σε cloud υποδομές και στα περισσότερα εργαλεία ανάπτυξης λογισμικού. Σχεδόν κάθε εταιρεία τεχνολογίας τρέχει τον κώδικά της πάνω σε Linux μηχανήματα, ακόμα κι αν οι προγραμματιστές γράφουν τον κώδικα σε Windows ή macOS. Επιπλέον, το Linux σού δίνει άμεση, χωρίς περιορισμούς πρόσβαση στο σύστημα αρχείων και στις διεργασίες, κάτι πολύ σημαντικό όταν μαθαίνεις πώς λειτουργεί πραγματικά ένας υπολογιστής. Γι' αυτό αξίζει να περάσεις χρόνο μέσα σε ένα Linux terminal: οι δεξιότητες που θα αποκτήσεις εδώ μεταφέρονται σχεδόν παντού στη μετέπειτα πορεία σου.</p>
 
 <h2>CLI εναντίον GUI</h2>
 <p>Υπάρχουν δύο βασικοί τρόποι να δώσεις εντολές σε ένα λειτουργικό σύστημα. Το GUI (Graphical User Interface) είναι αυτό που ήδη ξέρεις: εικονίδια, παράθυρα, κλικ με το ποντίκι. Το CLI (Command Line Interface) είναι ένα κειμενικό περιβάλλον, όπου γράφεις εντολές σε μορφή κειμένου και ο υπολογιστής σου απαντάει με κείμενο. Δεν είναι πιο δύσκολο επειδή είναι παλιότερο. Είναι πιο άμεσο, πιο γρήγορο για επαναλαμβανόμενες εργασίες, και απαραίτητο όταν δουλεύεις σε servers που δεν έχουν καν οθόνη.</p>
@@ -147,6 +147,9 @@
 <div class="grid3">
   <div class="card"><h3>bash</h3><p>Το πιο διαδεδομένο σε Linux. Default σε πολλά συστήματα, πλούσιο σε δυνατότητες scripting.</p></div>
   <div class="card"><h3>zsh</h3><p>Επέκταση του bash με περισσότερα extras. Default σε macOS από το 2019.</p></div>
+  <div class="card"><h3>fish</h3><p>Φιλικό προς νέους χρήστες, με auto-suggestions εκτός κουτιού, αλλά όχι πλήρως συμβατό με bash scripts.</p></div>
+  <div class="card"><h3>dash</h3><p>Πολύ ελαφρύ και γρήγορο. Χρησιμοποιείται συχνά για system scripts όπου η ταχύτητα μετράει.</p></div>
+  <div class="card"><h3>ksh / tcsh</h3><p>Παλαιότερα shells με ιστορική σημασία, ακόμα σε χρήση σε ορισμένα Unix συστήματα.</p></div>
   <div class="card"><h3>PowerShell / cmd</h3><p>Τα shells των Windows. Το cmd είναι το κλασικό, το PowerShell πιο σύγχρονο και object-oriented.</p></div>
 </div>
 
@@ -167,13 +170,34 @@
 
 <span class="tok-com"># Set default version to 2</span>
 <span class="tok-func">wsl</span> --set-default-version 2
-
-<span class="tok-com"># Install Ubuntu</span>
-<span class="tok-func">wsl</span> --install -d Ubuntu-22.04</span>
 </code></pre>
-<p>Μετά την εγκατάσταση, ανοίγεις το app "Ubuntu" (ή όποια διανομή επέλεξες) από το Start Menu και έχεις ένα πλήρες bash terminal. Επίσης κατέβασε το WSL extension για vscode.</p>
+<p>Μετά την εγκατάσταση, ανοίγεις το app "Ubuntu" (ή όποια διανομή επέλεξες) από το Start Menu και έχεις ένα πλήρες bash terminal.</p>
 `);
 
+    addQuiz([
+      {
+        q: "Ποιο από τα παρακάτω περιγράφει καλύτερα το WSL 2;",
+        options: [
+          "Επιτρέπει να τρέχεις πραγματικό Linux kernel μέσα στα Windows χωρίς dual-boot",
+          "Είναι ένα shell αποκλειστικά για macOS χρήστες",
+          "Είναι συνώνυμο του PowerShell με διαφορετικό όνομα",
+          "Χρειάζεται πάντα ξεχωριστό φυσικό δίσκο για να λειτουργήσει, σε αντίθεση με τα κανονικά προγράμματα Windows"
+        ],
+        correct: 0,
+        explain: "Το WSL 2 τρέχει έναν πραγματικό Linux kernel πάνω σε lightweight εικονικοποίηση, δίνοντάς σου πλήρες Linux περιβάλλον μέσα στα Windows."
+      },
+      {
+        q: "Γιατί επιλέγεται συνήθως το bash σε σχέση με άλλα shells σε ένα πρόγραμμα σαν αυτό;",
+        options: [
+          "Είναι το πιο διαδεδομένο και τεκμηριωμένο, με δεξιότητες που μεταφέρονται σχεδόν παντού",
+          "Είναι το μοναδικό shell που υποστηρίζει pipes και redirection",
+          "Είναι διαθέσιμο μόνο σε Windows μέσα από το WSL",
+          "Δεν υποστηρίζει scripting, μόνο διαδραστική χρήση"
+        ],
+        correct: 0,
+        explain: "Το bash είναι default σε πολλά συστήματα, ευρέως τεκμηριωμένο, και οι γνώσεις πάνω του μεταφέρονται σε σχεδόν κάθε Unix-like περιβάλλον."
+      }
+    ]);
 
     // ── Section 3 ────────────────────────────────────────────────────────── ⊃
     addContent(`
@@ -267,7 +291,7 @@
     addFillBlank([
       {
         code:
-          `__cmd1__            # print working directory
+`__cmd1__            # print working directory
 ls -a               # list all files, including hidden
 __cmd2__ ..          # go up one directory
 __cmd3__ -           # go to the previous directory you were in`,
@@ -280,7 +304,7 @@ __cmd3__ -           # go to the previous directory you were in`,
       },
       {
         code:
-          `mkdir -__flag__ foo/bar   # create nested directories, even if foo doesn't exist yet
+`mkdir -__flag__ foo/bar   # create nested directories, even if foo doesn't exist yet
 touch test{1..3}           # creates test1, test2, test3`,
         blanks: [
           { id: "flag", answer: "p" }
@@ -325,6 +349,156 @@ touch test{1..3}           # creates test1, test2, test3`,
   <div class="gs-pill"><span class="gs-name">cd</span><span class="gs-def">Αλλαγή φακέλου</span></div>
   <div class="gs-pill"><span class="gs-name">Brace expansion</span><span class="gs-def">{a,b} επεκτείνεται σε πολλαπλά ονόματα</span></div>
   <div class="gs-pill"><span class="gs-name">Tab Completion</span><span class="gs-def">Αυτόματη συμπλήρωση με το πλήκτρο Tab</span></div>
+</div>
+`);
+
+    // ── Section 3.5 (Git) ───────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3.5 / 9 — Git</div>
+<h1>Το εργαλείο που θυμάται κάθε αλλαγή στον κώδικά σου</h1>
+<p class="lede">Πριν προχωρήσουμε στο επόμενο κομμάτι του shell, ας δούμε ένα εργαλείο που θα χρησιμοποιείς σε κάθε project από εδώ και πέρα: το Git.</p>
+
+<h2>Τι είναι το Git</h2>
+<p>Το Git είναι ένα σύστημα ελέγχου εκδόσεων (version control system). Κρατάει ιστορικό όλων των αλλαγών που έχεις κάνει σε ένα project, ώστε να μπορείς ανά πάσα στιγμή να δεις τι άλλαξε, ποιος το άλλαξε, και να επιστρέψεις σε παλιότερη έκδοση αν κάτι πάει στραβά. Κάθε φορά που αποθηκεύεις μια ομάδα αλλαγών, δημιουργείς ένα commit, ένα στιγμιότυπο του project εκείνη τη στιγμή.</p>
+
+<h2>Γιατί το χρησιμοποιούμε</h2>
+<p>Χωρίς Git, η μόνη επιλογή για να κρατήσεις ιστορικό είναι να αντιγράφεις χειροκίνητα φακέλους με ονόματα όπως project_final, project_final_v2, project_final_REALLY_final. Το Git λύνει αυτό το πρόβλημα αυτόματα, αλλά ο πραγματικός λόγος που είναι απαραίτητο είναι η συνεργασία. Όταν δουλεύεις σε ομάδα, το Git επιτρέπει σε πολλά άτομα να δουλεύουν στο ίδιο project ταυτόχρονα, χωρίς να διαγράφει ο ένας τη δουλειά του άλλου, και δίνει έναν σαφή τρόπο να ενώσεις τη δουλειά όλων μαζί. Είναι επίσης το εργαλείο που στέκεται πίσω από πλατφόρμες όπως το GitHub, όπου φιλοξενείται σχεδόν όλος ο ανοιχτός κώδικας του κόσμου.</p>
+
+<div class="callout">
+  <span class="tag">Git εναντίον GitHub</span>
+  Το Git είναι το ίδιο το εργαλείο version control, τρέχει τοπικά στον υπολογιστή σου. Το GitHub είναι μια online υπηρεσία που φιλοξενεί Git repositories και προσθέτει εργαλεία συνεργασίας από πάνω, όπως τα pull requests που θα δούμε παρακάτω. Θα μπορούσες να χρησιμοποιείς Git χωρίς ποτέ να αγγίξεις το GitHub.
+</div>
+
+<h2>Ρύθμιση ταυτότητας</h2>
+<p>Πριν κάνεις το πρώτο σου commit οπουδήποτε, το Git χρειάζεται να ξέρει ποιος είσαι, ώστε κάθε commit να έχει συνδεδεμένο το όνομα και το email σου:</p>
+<pre><code><span class="tok-func">git</span> config --global user.name <span class="tok-str">"giteausername"</span>
+<span class="tok-func">git</span> config --global user.email <span class="tok-str">"gmail@gmail.com"</span>
+<span class="tok-func">git</span> config --global credential.helper store
+<span class="tok-com"># the last line saves your login credentials locally, so you don't retype them on every push</span>
+</code></pre>
+<p>Το <code>--global</code> σημαίνει ότι αυτή η ρύθμιση ισχύει για όλα τα repositories στον υπολογιστή σου, όχι μόνο για ένα.</p>
+
+<h2>Ξεκινώντας ένα repository</h2>
+<pre><code><span class="tok-func">git</span> init                 <span class="tok-com"># turn the current folder into a new Git repository</span>
+<span class="tok-func">git</span> clone <span class="tok-type">url</span>          <span class="tok-com"># download an existing repository from somewhere (e.g. GitHub) to your machine</span>
+</code></pre>
+
+<h2>Ο βασικός κύκλος: add, commit, push</h2>
+<p>Αυτός είναι ο κύκλος που θα επαναλαμβάνεις κάθε φορά που θέλεις να αποθηκεύσεις πρόοδο:</p>
+<pre><code><span class="tok-func">git</span> add <span class="tok-type">filename</span>       <span class="tok-com"># stage a specific file — mark it as "ready to be committed"</span>
+<span class="tok-func">git</span> add .              <span class="tok-com"># stage EVERY changed file in the current folder and below</span>
+<span class="tok-func">git</span> commit -m <span class="tok-str">"message"</span>  <span class="tok-com"># save the staged changes as a new snapshot, with a description</span>
+<span class="tok-func">git</span> push                <span class="tok-com"># upload your commits to the remote repository (e.g. GitHub)</span>
+</code></pre>
+<div class="callout good">
+  <span class="tag">Γιατί δύο βήματα (add και commit)</span>
+  Το add βάζει αλλαγές στο "staging area", ένα ενδιάμεσο σημείο πριν το commit. Αυτό σου επιτρέπει να επιλέξεις ακριβώς ποιες αλλαγές θα μπουν στο επόμενο commit, ακόμα κι αν έχεις αλλάξει πολλά αρχεία ταυτόχρονα.
+</div>
+
+<h2>Branches, εισαγωγικά</h2>
+<p>Ένα branch είναι ένα ανεξάρτητο "παράλληλο" αντίγραφο του project, όπου μπορείς να κάνεις αλλαγές χωρίς να επηρεάζεις το κύριο branch (συνήθως ονομάζεται main ή master), μέχρι να είσαι σίγουρος ότι η δουλειά σου είναι έτοιμη. Αυτό είναι ιδιαίτερα χρήσιμο σε ομαδική δουλειά: κάθε άτομο δουλεύει στο δικό του branch, χωρίς κίνδυνο να χαλάσει τη δουλειά των άλλων.</p>
+<pre><code><span class="tok-func">git</span> branch                 <span class="tok-com"># list all branches in this repository</span>
+<span class="tok-func">git</span> checkout <span class="tok-type">branch-name</span>  <span class="tok-com"># switch to an existing branch</span>
+<span class="tok-func">git</span> checkout -b <span class="tok-type">new-name</span> <span class="tok-com"># create a NEW branch and switch to it immediately</span>
+</code></pre>
+
+<h2>fetch, pull, merge, εισαγωγικά</h2>
+<p>Το <code>git fetch</code> κατεβάζει τις τελευταίες αλλαγές από το remote repository, χωρίς όμως να τις εφαρμόζει ακόμα στη δική σου δουλειά. Το <code>git pull</code> κάνει το ίδιο, αλλά τις εφαρμόζει αμέσως. Το <code>git merge</code> ενώνει τη δουλειά ενός branch μέσα σε ένα άλλο.</p>
+<pre><code><span class="tok-func">git</span> fetch    <span class="tok-com"># download the latest changes from the remote, without applying them yet</span>
+<span class="tok-func">git</span> pull     <span class="tok-com"># download AND apply the latest changes to your current branch</span>
+<span class="tok-func">git</span> merge <span class="tok-type">branch-name</span>  <span class="tok-com"># bring the changes from another branch into the one you're on</span>
+</code></pre>
+
+<h2>Pull Requests, εισαγωγικά</h2>
+<p>Ένα pull request, συχνά συντομογραφία PR, δεν είναι εντολή του Git, αλλά χαρακτηριστικό πλατφορμών όπως το GitHub. Είναι ένα αίτημα να ενωθούν οι αλλαγές από το branch σου μέσα στο κύριο branch, και συνήθως συνοδεύεται από review: οι συνεργάτες σου βλέπουν τις αλλαγές, σχολιάζουν, ζητούν διορθώσεις, και μόνο όταν όλοι συμφωνήσουν εγκρίνεται το merge. Είναι ο βασικός τρόπος με τον οποίο δουλεύουν σχεδόν όλες οι ομάδες λογισμικού σήμερα.</p>
+`);
+
+    addFillBlank([
+      {
+        code:
+`git __cmd1__ .                    # stage every changed file
+git __cmd2__ -m "first commit"    # save the staged changes as a snapshot
+git __cmd3__                      # upload the commit to the remote repository`,
+        blanks: [
+          { id: "cmd1", answer: "add" },
+          { id: "cmd2", answer: "commit" },
+          { id: "cmd3", answer: "push" }
+        ],
+        explain: "add στήνει τις αλλαγές, commit τις αποθηκεύει τοπικά με μήνυμα, push τις ανεβάζει στο remote."
+      },
+      {
+        code:
+`git config --global user.__field__ "giteausername"
+git config --global user.__field2__ "gmail@gmail.com"`,
+        blanks: [
+          { id: "field", answer: "name" },
+          { id: "field2", answer: "email" }
+        ],
+        explain: "Το user.name και το user.email συνδέονται με κάθε commit που κάνεις."
+      }
+    ], {
+      note: "Συμπλήρωσε τις εντολές ή τα ονόματα πεδίων που λείπουν."
+    });
+
+    addMatching([
+      { term: "git init", def: "Δημιουργία νέου repository στον τρέχοντα φάκελο" },
+      { term: "git clone", def: "Λήψη υπάρχοντος repository από remote πηγή" },
+      { term: "git add", def: "Στήσιμο αλλαγών προς commit" },
+      { term: "git commit", def: "Αποθήκευση σταδίου αλλαγών με μήνυμα" },
+      { term: "git push", def: "Ανέβασμα commits στο remote repository" },
+      { term: "git branch", def: "Λίστα ή δημιουργία branches" },
+      { term: "git checkout", def: "Αλλαγή σε άλλο branch" },
+      { term: "git fetch", def: "Λήψη αλλαγών χωρίς εφαρμογή τους" },
+      { term: "git pull", def: "Λήψη ΚΑΙ εφαρμογή αλλαγών από το remote" },
+      { term: "git merge", def: "Ένωση δουλειάς από ένα branch σε άλλο" }
+    ], {
+      note: "Ταίριαξε κάθε εντολή Git με τη λειτουργία της."
+    });
+
+    addQuiz([
+      {
+        q: "Γιατί χρησιμοποιείται το Git περισσότερο από όλα σε ομαδική δουλειά;",
+        options: [
+          "Επιτρέπει σε πολλά άτομα να δουλεύουν παράλληλα στο ίδιο project και δίνει σαφή τρόπο να ενωθεί η δουλειά όλων",
+          "Είναι το μοναδικό εργαλείο που μπορεί να ανοίξει αρχεία κώδικα",
+          "Αντικαθιστά εντελώς την ανάγκη για επικοινωνία μεταξύ των μελών της ομάδας",
+          "Λειτουργεί μόνο μέσα από το GitHub, ποτέ τοπικά"
+        ],
+        correct: 0,
+        explain: "Ο βασικός λόγος ύπαρξης του Git είναι η ασφαλής συνεργασία πολλών ανθρώπων στον ίδιο κώδικα ταυτόχρονα."
+      },
+      {
+        q: "Ποια η διαφορά μεταξύ git fetch και git pull;",
+        options: [
+          "Το fetch κατεβάζει αλλαγές χωρίς να τις εφαρμόζει, το pull τις κατεβάζει ΚΑΙ τις εφαρμόζει",
+          "Δεν υπάρχει καμία διαφορά, είναι συνώνυμα",
+          "Το fetch λειτουργεί μόνο σε τοπικά repositories, το pull μόνο σε remote",
+          "Το pull διαγράφει το τοπικό ιστορικό πριν κατεβάσει τις νέες αλλαγές"
+        ],
+        correct: 0,
+        explain: "Το fetch είναι πιο συντηρητικό: φέρνει τις αλλαγές αλλά αφήνει σε εσένα να αποφασίσεις πότε θα τις εφαρμόσεις."
+      },
+      {
+        q: "Τι είναι ένα pull request;",
+        options: [
+          "Μια εντολή του ίδιου του Git για να κατεβάσεις αλλαγές",
+          "Ένα αίτημα σε πλατφόρμα όπως το GitHub να ενωθούν οι αλλαγές ενός branch στο κύριο branch, συνήθως με review",
+          "Ο τρόπος με τον οποίο διαγράφεις ένα branch",
+          "Συνώνυμο του git clone"
+        ],
+        correct: 1,
+        explain: "Το pull request είναι χαρακτηριστικό πλατφορμών όπως το GitHub, όχι εντολή του ίδιου του Git, και επιτρέπει review πριν το merge."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3.5</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">commit</span><span class="gc-def">Στιγμιότυπο αλλαγών με μήνυμα</span></div>
+  <div class="gc-line"><span class="gc-term">branch</span><span class="gc-def">Ανεξάρτητη γραμμή ανάπτυξης</span></div>
+  <div class="gc-line"><span class="gc-term">remote</span><span class="gc-def">Απομακρυσμένο αντίγραφο του repository (π.χ. στο GitHub)</span></div>
+  <div class="gc-line"><span class="gc-term">Pull Request</span><span class="gc-def">Αίτημα ένωσης αλλαγών, με review</span></div>
 </div>
 `);
 
@@ -634,7 +808,7 @@ touch test{1..3}           # creates test1, test2, test3`,
     addFillBlank([
       {
         code:
-          `ls /this/path/does/not/exist
+`ls /this/path/does/not/exist
 echo "Exit code was: $__var__"`,
         blanks: [
           { id: "var", answer: "?" }
@@ -643,7 +817,7 @@ echo "Exit code was: $__var__"`,
       },
       {
         code:
-          `__cmd__ PATH="$PATH:/my/path"   # make PATH updates visible to child processes too`,
+`__cmd__ PATH="$PATH:/my/path"   # make PATH updates visible to child processes too`,
         blanks: [
           { id: "cmd", answer: "export" }
         ],
@@ -890,7 +1064,7 @@ echo "Exit code was: $__var__"`,
     addFillBlank([
       {
         code:
-          `sed -__flag__ 's/fox/bear/g' foo.txt   # overwrite foo.txt directly, instead of just printing the result`,
+`sed -__flag__ 's/fox/bear/g' foo.txt   # overwrite foo.txt directly, instead of just printing the result`,
         blanks: [
           { id: "flag", answer: "i" }
         ],
@@ -898,7 +1072,7 @@ echo "Exit code was: $__var__"`,
       },
       {
         code:
-          `jq '.items[] | __func__(.id == 100)' data.json   # keep only elements where id equals 100`,
+`jq '.items[] | __func__(.id == 100)' data.json   # keep only elements where id equals 100`,
         blanks: [
           { id: "func", answer: "select" }
         ],
@@ -1070,7 +1244,7 @@ counter=10
     addFillBlank([
       {
         code:
-          `greet() {
+`greet() {
   local world="World"
   __cmd__ "$1 $world"
 }
@@ -1082,7 +1256,7 @@ greet "Hello"   # prints "Hello World"`,
       },
       {
         code:
-          `for i in {0..10..2}
+`for i in {0..10..2}
 __kw1__
   echo "Index: $i"
 __kw2__`,
