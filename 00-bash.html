@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shell / Bash — Θεωρητικό Υλικό</title>
+  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <link rel="stylesheet" href="static/theme-sage.css?v=20260801">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-reset">
+        <span class="desktop-text">Reset Progress</span>
+        <span class="mobile-text">Reset</span>
+      </button>
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+        <span class="desktop-text">Return</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots"></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
+  <script>
+    // Course content below.
+
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/icon.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Shell &amp; Bash<br>Το πρώτο σου βήμα στη γραμμή εντολών</h1>
+  <p class="lede">Πριν γράψουμε την πρώτη γραμμή κώδικα, πρέπει να μάθουμε πώς μιλάμε στον υπολογιστή απευθείας, χωρίς ποντίκι και χωρίς παράθυρα. Αυτό είναι το shell.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου.</div>
+</div>
+`);
+
+    // ── Section 1 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 9 — Τα Βασικά</div>
+<h1>Τι κάνει πραγματικά ένας υπολογιστής</h1>
+<p class="lede">Πριν μιλήσουμε για shells και εντολές, ας ξεκαθαρίσουμε τι υπάρχει από κάτω. Όλα όσα θα δούμε στη συνέχεια είναι διαφορετικοί τρόποι να μιλήσουμε στο ίδιο πράγμα.</p>
+
+<h2>Hardware, Software και Λειτουργικό Σύστημα (OS)</h2>
+<p>Το hardware είναι το φυσικό μηχάνημα: επεξεργαστής, μνήμη, δίσκος. Το λογισμικό είναι οι οδηγίες που εκτελεί το hardware. Ανάμεσά τους βρίσκεται το Λειτουργικό Σύστημα, ένα πρόγραμμα που διαχειρίζεται τους πόρους του υπολογιστή (μνήμη, αρχεία, διεργασίες, συσκευές) και δίνει σε όλα τα υπόλοιπα προγράμματα έναν τρόπο να τους χρησιμοποιήσουν, χωρίς αυτά να χρειάζεται να μιλούν απευθείας στο hardware. Linux, macOS και Windows είναι τρία διαφορετικά λειτουργικά συστήματα, με διαφορετική φιλοσοφία αλλά κοινό σκοπό.</p>
+
+<h2>Γιατί Linux</h2>
+<p>Σε αυτόν τον οδηγό, και γενικότερα, θα δουλεύεις κυρίως με Linux. Δεν είναι τυχαία επιλογή. Το Linux είναι ανοιχτού κώδικα, δηλαδή μπορεί ο καθένας να δει και να τροποποιήσει πώς λειτουργεί, κάτι που το έχει κάνει το βασικό λειτουργικό σύστημα σε servers, σε cloud υποδομές και στα περισσότερα εργαλεία ανάπτυξης λογισμικού. Σχεδόν κάθε εταιρεία τεχνολογίας τρέχει τον κώδικά της πάνω σε Linux μηχανήματα, ακόμα κι αν οι προγραμματιστές γράφουν τον κώδικα σε Windows ή macOS. Επιπλέον, το Linux σού δίνει άμεση, χωρίς περιορισμούς πρόσβαση στο σύστημα αρχείων και στις διεργασίες, κάτι πολύ σημαντικό όταν μαθαίνεις πώς λειτουργεί πραγματικά ένας υπολογιστής.</p>
+
+<h2>CLI εναντίον GUI</h2>
+<p>Υπάρχουν δύο βασικοί τρόποι να δώσεις εντολές σε ένα λειτουργικό σύστημα. Το GUI (Graphical User Interface) είναι αυτό που ήδη ξέρεις: εικονίδια, παράθυρα, κλικ με το ποντίκι. Το CLI (Command Line Interface) είναι ένα κειμενικό περιβάλλον, όπου γράφεις εντολές σε μορφή κειμένου και ο υπολογιστής σου απαντάει με κείμενο. Δεν είναι πιο δύσκολο επειδή είναι παλιότερο. Είναι πιο άμεσο, πιο γρήγορο για επαναλαμβανόμενες εργασίες, και απαραίτητο όταν δουλεύεις σε servers που δεν έχουν καν οθόνη.</p>
+
+<div class="grid2">
+  <div class="card"><h3>GUI</h3><p>Οπτικό, διαισθητικό, καλό για εξερεύνηση. Δύσκολο να αυτοματοποιηθεί.</p></div>
+  <div class="card"><h3>CLI</h3><p>Κειμενικό, ακριβές, ιδανικό για επανάληψη και αυτοματισμό. Απαιτεί να θυμάσαι εντολές.</p></div>
+</div>
+
+<h2>Τι είναι το Shell</h2>
+<p>Το shell είναι το πρόγραμμα που σου δίνει πρόσβαση στο CLI. Διαβάζει ό,τι πληκτρολογείς, το ερμηνεύει, και ζητάει από το λειτουργικό σύστημα να το εκτελέσει. Είναι κυριολεκτικά το "κέλυφος" γύρω από τον πυρήνα του συστήματος: εσύ μιλάς στο shell, το shell μιλάει στο λειτουργικό σύστημα.</p>
+
+<h2>Τι είναι Scripting</h2>
+<p>Scripting σημαίνει να γράφεις μια ακολουθία εντολών μέσα σε ένα αρχείο, ώστε να τις εκτελείς όλες μαζί αντί να τις πληκτρολογείς μία-μία κάθε φορά. Ένα shell script είναι απλά ένα αρχείο κειμένου γεμάτο εντολές shell, που το shell διαβάζει και εκτελεί σαν πρόγραμμα. Είναι το πρώτο σκαλί πριν τον προγραμματισμό όπως τον φαντάζεσαι, αφού οι ίδιες λογικές δομές (μεταβλητές, συνθήκες, βρόχοι) εμφανίζονται παντού.</p>
+
+<div class="callout">
+  <span class="tag">Καλό να ξέρεις</span>
+  Κάθε φορά που ανοίγεις ένα "Terminal" app, αυτό που βλέπεις είναι ένα παράθυρο (terminal emulator) που σου δίνει πρόσβαση σε ένα shell. Terminal και shell δεν είναι το ίδιο πράγμα. Το terminal είναι το παράθυρο, το shell είναι το πρόγραμμα που τρέχει μέσα του.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποιος είναι ο ρόλος του Λειτουργικού Συστήματος;",
+        options: [
+          "Διαχειρίζεται τους πόρους του hardware και δίνει στα προγράμματα τρόπο να τους χρησιμοποιήσουν",
+          "Είναι το φυσικό κύκλωμα μέσα στον επεξεργαστή",
+          "Είναι μόνο το γραφικό περιβάλλον που βλέπεις στην οθόνη",
+          "Χρησιμεύει αποκλειστικά για να ανοίγει άλλα προγράμματα με διπλό κλικ"
+        ],
+        correct: 0,
+        explain: "Το λειτουργικό σύστημα στέκεται ανάμεσα στο hardware και τα προγράμματα, διαχειριζόμενο μνήμη, αρχεία, διεργασίες και συσκευές."
+      },
+      {
+        q: "Γιατί χρησιμοποιείται τόσο συχνά το Linux σε servers και υποδομές ανάπτυξης λογισμικού;",
+        options: [
+          "Επειδή είναι ανοιχτού κώδικα και δίνει άμεση πρόσβαση στο σύστημα, κάτι που το έχει καθιερώσει ως βασικό εργαλείο του κλάδου",
+          "Επειδή είναι το μοναδικό λειτουργικό σύστημα που υποστηρίζει γραφικό περιβάλλον",
+          "Επειδή απαιτεί υποχρεωτικά ειδικό υλικό που δεν διαθέτουν τα Windows και τα macOS",
+          "Επειδή δεν επιτρέπει καθόλου χρήση γραμμής εντολών, μόνο GUI"
+        ],
+        correct: 0,
+        explain: "Ο ανοιχτός κώδικας και η άμεση πρόσβαση σε σύστημα αρχείων και διεργασίες έκαναν το Linux τον κανόνα σε servers και εργαλεία ανάπτυξης."
+      },
+      {
+        q: "Ποια είναι η σχέση terminal και shell;",
+        options: [
+          "Το terminal είναι το παράθυρο, το shell είναι το πρόγραμμα που τρέχει μέσα του και ερμηνεύει εντολές",
+          "Είναι απολύτως το ίδιο πράγμα, απλώς διαφορετικά ονόματα",
+          "Το shell είναι το παράθυρο, το terminal είναι η γλώσσα προγραμματισμού που χρησιμοποιείται μέσα σε αυτό",
+          "Το terminal υπάρχει μόνο σε Windows, το shell μόνο σε Linux"
+        ],
+        correct: 0,
+        explain: "Το terminal εμφανίζει το περιβάλλον, αλλά αυτό που πραγματικά διαβάζει και εκτελεί τις εντολές σου είναι το shell."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 1</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">OS</span><span class="gc-def">Πρόγραμμα που διαχειρίζεται τους πόρους του υπολογιστή</span></div>
+  <div class="gc-line"><span class="gc-term">CLI</span><span class="gc-def">Κειμενικό περιβάλλον εντολών</span></div>
+  <div class="gc-line"><span class="gc-term">GUI</span><span class="gc-def">Γραφικό περιβάλλον με εικονίδια/κλικ</span></div>
+  <div class="gc-line"><span class="gc-term">Shell</span><span class="gc-def">Πρόγραμμα που ερμηνεύει τις εντολές σου προς το OS</span></div>
+  <div class="gc-line"><span class="gc-term">Script</span><span class="gc-def">Αρχείο με ακολουθία εντολών προς εκτέλεση</span></div>
+</div>
+`);
+
+    // ── Section 2 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 9 — Shells &amp; WSL</div>
+<h1>Ποιο shell θα χρησιμοποιήσεις</h1>
+<p class="lede">Υπάρχουν πολλά shells. Δεν χρειάζεται να τα ξέρεις όλα, αλλά είναι καλό να ξέρεις ότι υπάρχουν και τι τα ξεχωρίζει, γιατί θα τα συναντήσεις σε διαφορετικά συστήματα.</p>
+
+<h2>Δημοφιλή shells, επιγραμματικά</h2>
+<div class="grid3">
+  <div class="card"><h3>bash</h3><p>Το πιο διαδεδομένο σε Linux. Default σε πολλά συστήματα, πλούσιο σε δυνατότητες scripting.</p></div>
+  <div class="card"><h3>zsh</h3><p>Επέκταση του bash με περισσότερα extras. Default σε macOS από το 2019.</p></div>
+  <div class="card"><h3>PowerShell / cmd</h3><p>Τα shells των Windows. Το cmd είναι το κλασικό, το PowerShell πιο σύγχρονο και object-oriented.</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Γιατί bash</span>
+  Σε αυτόν τον οδηγό, όπως και στο μεγαλύτερο μέρος του κλάδου, θα δουλεύουμε με bash. Είναι το πιο κοινό, το πιο τεκμηριωμένο, και οι δεξιότητές του μεταφέρονται σχεδόν παντού.
+</div>
+
+<h2>Τι είναι το WSL 2</h2>
+<p>Αν βρίσκεσαι σε Windows, το WSL (Windows Subsystem for Linux) σου επιτρέπει να τρέχεις ένα πλήρες περιβάλλον Linux με bash μέσα στα Windows, χωρίς dual-boot ή εικονική μηχανή με την παραδοσιακή έννοια. Το WSL 2 χρησιμοποιεί έναν πραγματικό Linux kernel, για καλύτερη απόδοση και συμβατότητα σε σχέση με το WSL 1.</p>
+
+<h2>Γρήγορη ρύθμιση WSL 2</h2>
+<pre><code><span class="tok-com"># Run in PowerShell as Administrator</span>
+<span class="tok-func">wsl</span> --install
+
+<span class="tok-com"># Check installed version</span>
+<span class="tok-func">wsl</span> --list --verbose
+
+<span class="tok-com"># Set default version to 2</span>
+<span class="tok-func">wsl</span> --set-default-version 2
+
+<span class="tok-com"># Install Ubuntu</span>
+<span class="tok-func">wsl</span> --install -d Ubuntu-22.04</span>
+</code></pre>
+<p>Μετά την εγκατάσταση, ανοίγεις το app "Ubuntu" (ή όποια διανομή επέλεξες) από το Start Menu και έχεις ένα πλήρες bash terminal. Επίσης κατέβασε το WSL extension για vscode.</p>
+`);
+
+
+    // ── Section 3 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 9 — Files &amp; Directories</div>
+<h1>Πλοηγήσου στο σύστημα αρχείων</h1>
+<p class="lede">Το filesystem είναι μια δενδρική δομή φακέλων και αρχείων. Οι παρακάτω εντολές είναι αυτές που θα χρησιμοποιείς κάθε μέρα, πολλαπλές φορές την ημέρα.</p>
+
+<h2>Ποιος είσαι και πού βρίσκεσαι</h2>
+<pre><code><span class="tok-func">whoami</span>   <span class="tok-com"># print the current username</span>
+<span class="tok-func">pwd</span>      <span class="tok-com"># print working directory — πού βρίσκομαι τώρα</span>
+</code></pre>
+
+<h2>Βασικές εντολές πλοήγησης</h2>
+<pre><code><span class="tok-func">ls</span>                 <span class="tok-com"># list — τι περιέχει ο τρέχων φάκελος</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-a</span>              <span class="tok-com"># list all — δείχνει και τα κρυφά αρχεία</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-l</span>              <span class="tok-com"># list σε long form (δικαιώματα, μέγεθος, ημερομηνία)</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-l</span> <span class="tok-kw">-h</span>          <span class="tok-com"># long form με human-readable μεγέθη (π.χ. 4.0K αντί για 4096)</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-t</span>              <span class="tok-com"># ταξινόμηση κατά ημερομηνία τροποποίησης, το πιο πρόσφατο πρώτο</span>
+<span class="tok-func">cd</span> <span class="tok-type">foo</span>              <span class="tok-com"># change directory — μπες στον υποφάκελο foo</span>
+<span class="tok-func">cd</span>                  <span class="tok-com"># χωρίς όρισμα, πήγαινε στον home φάκελο</span>
+<span class="tok-func">cd</span> ~                <span class="tok-com"># πήγαινε στον home φάκελο (ρητά)</span>
+<span class="tok-func">cd</span> ..                <span class="tok-com"># πήγαινε έναν φάκελο πάνω</span>
+<span class="tok-func">cd</span> -                 <span class="tok-com"># πήγαινε στον προηγούμενο φάκελο που ήσουν</span>
+</code></pre>
+
+<h2>Λεπτομέρειες αρχείων και φακέλων</h2>
+<p>Οι εντολές <code>ls -l</code> και <code>stat</code> δίνουν διαφορετικού βάθους πληροφορία. Η <code>tree</code> δείχνει ολόκληρη τη δομή σε μορφή δέντρου, κάτι πολύ χρήσιμο όταν θέλεις να καταλάβεις γρήγορα πώς είναι οργανωμένο ένα project.</p>
+<pre><code><span class="tok-func">stat</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># μέγεθος, ημερομηνία δημιουργίας και τροποποίησης ενός αρχείου</span>
+<span class="tok-func">stat</span> <span class="tok-type">foo</span>       <span class="tok-com"># το ίδιο, αλλά για φάκελο</span>
+<span class="tok-func">tree</span>            <span class="tok-com"># δέντρο φακέλων και αρχείων</span>
+<span class="tok-func">tree</span> <span class="tok-kw">-a</span>         <span class="tok-com"># δέντρο συμπεριλαμβανομένων κρυφών αρχείων</span>
+<span class="tok-func">tree</span> <span class="tok-kw">-d</span>         <span class="tok-com"># δέντρο μόνο με φακέλους, χωρίς αρχεία</span>
+</code></pre>
+
+<h2>Δημιουργία φακέλων</h2>
+<pre><code><span class="tok-func">mkdir</span> <span class="tok-type">foo</span>                      <span class="tok-com"># create a directory</span>
+<span class="tok-func">mkdir</span> <span class="tok-type">foo bar</span>                  <span class="tok-com"># create multiple directories at once</span>
+<span class="tok-func">mkdir</span> <span class="tok-kw">-p</span> <span class="tok-type">foo/bar</span>              <span class="tok-com"># create nested directories (parents), ακόμα κι αν το foo δεν υπάρχει ακόμα</span>
+<span class="tok-func">mkdir</span> <span class="tok-kw">-p</span> <span class="tok-type">{foo,bar}/baz</span>        <span class="tok-com"># brace expansion: δημιουργεί foo/baz ΚΑΙ bar/baz</span>
+<span class="tok-func">mktemp</span> <span class="tok-kw">-d</span>                    <span class="tok-com"># create a temporary directory με μοναδικό όνομα</span>
+</code></pre>
+
+<h2>Αντιγραφή, μετακίνηση, διαγραφή</h2>
+<pre><code><span class="tok-func">cp</span> <span class="tok-kw">--recursive</span> <span class="tok-type">foo bar</span>  <span class="tok-com"># copy an entire directory (recursive, δηλαδή μαζί με το περιεχόμενό της)</span>
+<span class="tok-func">mv</span> <span class="tok-type">foo bar</span>              <span class="tok-com"># move / rename a directory or file</span>
+<span class="tok-func">rmdir</span> <span class="tok-type">foo</span>               <span class="tok-com"># delete an EMPTY directory</span>
+<span class="tok-func">rm</span> <span class="tok-kw">-r</span> <span class="tok-type">foo</span>               <span class="tok-com"># delete a directory including its contents</span>
+<span class="tok-func">rm</span> <span class="tok-kw">-r</span> <span class="tok-kw">-f</span> <span class="tok-type">foo</span>            <span class="tok-com"># same, but never prompt and ignore nonexistent files</span>
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή</span>
+  Η <code>rm</code> δεν στέλνει αρχεία σε κάδο ανακύκλωσης. Μόλις διαγραφεί κάτι, χάθηκε. Πρόσεξε ιδιαίτερα με το <code>rm -rf</code>.
+</div>
+
+<h2>Δημιουργία αρχείων</h2>
+<pre><code><span class="tok-func">touch</span> <span class="tok-type">foo.txt</span>            <span class="tok-com"># create an empty file, ή ενημέρωσε το timestamp αν υπάρχει ήδη</span>
+<span class="tok-func">touch</span> <span class="tok-type">foo.txt bar.txt</span>    <span class="tok-com"># create multiple files</span>
+<span class="tok-func">touch</span> <span class="tok-type">{foo,bar}.txt</span>      <span class="tok-com"># brace expansion — ίδιο αποτέλεσμα με την προηγούμενη γραμμή</span>
+<span class="tok-func">touch</span> <span class="tok-type">test{1..3}</span>         <span class="tok-com"># δημιουργεί test1, test2, test3</span>
+<span class="tok-func">touch</span> <span class="tok-type">test{a..c}</span>         <span class="tok-com"># δημιουργεί testa, testb, testc</span>
+</code></pre>
+
+<h2>Άνοιγμα αρχείων σε editor</h2>
+<pre><code><span class="tok-func">code</span> <span class="tok-type">foo.sh</span>    <span class="tok-com"># open a file in Visual Studio Code</span>
+<span class="tok-func">open</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># open a file with the system's default application</span>
+</code></pre>
+
+<h2>Εύρεση αρχείων και βασικές εντολές</h2>
+<pre><code><span class="tok-func">find</span> . <span class="tok-kw">-name</span> <span class="tok-str">"*.txt"</span>  <span class="tok-com"># find all .txt files starting from current dir</span>
+<span class="tok-func">locate</span> <span class="tok-type">foo.txt</span>        <span class="tok-com"># search for a filename fast, using a pre-built index</span>
+<span class="tok-func">echo</span> <span class="tok-str">"hello"</span>          <span class="tok-com"># print text to the terminal</span>
+<span class="tok-func">cat</span> <span class="tok-type">file.txt</span>          <span class="tok-com"># print a file's contents</span>
+</code></pre>
+
+<h2>Tab Completion</h2>
+<p>Πάτα Tab ενώ γράφεις ένα όνομα αρχείου, φακέλου ή εντολής, και το shell θα προσπαθήσει να το συμπληρώσει αυτόματα. Αν υπάρχουν πολλαπλές επιλογές, πάτα Tab ξανά για να τις δεις όλες. Είναι το πιο σημαντικό keyboard shortcut που θα μάθεις. Γλιτώνει χρόνο και τυπογραφικά λάθη.</p>
+
+<h2>Help Commands</h2>
+<pre><code><span class="tok-func">man</span> <span class="tok-type">ls</span>       <span class="tok-com"># manual page — πλήρης τεκμηρίωση της εντολής</span>
+<span class="tok-func">ls</span> --help    <span class="tok-com"># σύντομη βοήθεια, τα περισσότερα προγράμματα την υποστηρίζουν</span>
+<span class="tok-func">whatis</span> <span class="tok-type">ls</span>   <span class="tok-com"># μονόγραμμη περιγραφή της εντολής</span>
+</code></pre>
+
+<div class="callout good">
+  <span class="tag">Advanced παράδειγμα</span>
+  <code>ls | grep ".txt" | wc -l</code> μετράει πόσα .txt αρχεία υπάρχουν στον φάκελο. Χρησιμοποιεί ήδη τρεις εντολές συνδεδεμένες μεταξύ τους — θα δούμε ακριβώς πώς λειτουργεί αυτό στην επόμενη ενότητα.
+</div>
+`);
+
+    addFillBlank([
+      {
+        code:
+          `__cmd1__            # print working directory
+ls -a               # list all files, including hidden
+__cmd2__ ..          # go up one directory
+__cmd3__ -           # go to the previous directory you were in`,
+        blanks: [
+          { id: "cmd1", answer: "pwd" },
+          { id: "cmd2", answer: "cd" },
+          { id: "cmd3", answer: "cd" }
+        ],
+        explain: "pwd δείχνει πού βρίσκεσαι, cd .. πάει έναν φάκελο πάνω, cd - πάει στον προηγούμενο φάκελο."
+      },
+      {
+        code:
+          `mkdir -__flag__ foo/bar   # create nested directories, even if foo doesn't exist yet
+touch test{1..3}           # creates test1, test2, test3`,
+        blanks: [
+          { id: "flag", answer: "p" }
+        ],
+        explain: "Το -p (parents) στο mkdir δημιουργεί όλους τους ενδιάμεσους φακέλους που δεν υπάρχουν ακόμα."
+      }
+    ], {
+      note: "Συμπλήρωσε τις εντολές ή τα flags που λείπουν."
+    });
+
+    addQuiz([
+      {
+        q: "Τι κάνει η εντολή stat σε ένα αρχείο;",
+        options: [
+          "Δείχνει μέγεθος και ημερομηνίες δημιουργίας/τροποποίησης του αρχείου",
+          "Διαγράφει το αρχείο μόνιμα",
+          "Μετατρέπει το αρχείο σε εκτελέσιμο",
+          "Αντιγράφει το αρχείο σε άλλον φάκελο"
+        ],
+        correct: 0,
+        explain: "Η stat δίνει λεπτομερή μεταδεδομένα ενός αρχείου ή φακέλου, όπως μέγεθος και timestamps."
+      },
+      {
+        q: "Τι θα δημιουργήσει η εντολή touch test{1..3};",
+        options: [
+          "Ένα αρχείο με όνομα test{1..3}",
+          "Τρία αρχεία: test1, test2, test3",
+          "Έναν φάκελο με τρία υποαρχεία τυχαίου ονόματος",
+          "Σφάλμα, γιατί το touch δεν υποστηρίζει brace expansion"
+        ],
+        correct: 1,
+        explain: "Το brace expansion {1..3} επεκτείνεται σε 1, 2, 3, οπότε δημιουργούνται τρία ξεχωριστά αρχεία."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">pwd</span><span class="gs-def">Δείχνει τον τρέχοντα φάκελο</span></div>
+  <div class="gs-pill"><span class="gs-name">ls / tree</span><span class="gs-def">Λιστάρουν περιεχόμενα φακέλου</span></div>
+  <div class="gs-pill"><span class="gs-name">cd</span><span class="gs-def">Αλλαγή φακέλου</span></div>
+  <div class="gs-pill"><span class="gs-name">Brace expansion</span><span class="gs-def">{a,b} επεκτείνεται σε πολλαπλά ονόματα</span></div>
+  <div class="gs-pill"><span class="gs-name">Tab Completion</span><span class="gs-def">Αυτόματη συμπλήρωση με το πλήκτρο Tab</span></div>
+</div>
+`);
+
+    // ── Section 4 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 9 — Ροές &amp; Σωλήνες</div>
+<h1>stdin, stdout, stderr, και πώς τα ενώνουμε</h1>
+<p class="lede">Αυτό είναι ένα από τα πιο δυνατά χαρακτηριστικά της φιλοσοφίας του Unix: κάθε πρόγραμμα έχει τρεις ροές επικοινωνίας, και μπορούμε να τις συνδέσουμε μεταξύ τους ή με αρχεία.</p>
+
+<h2>Οι τρεις standard streams</h2>
+<div class="grid3">
+  <div class="card"><h3>stdin (0)</h3><p>Η ροή εισόδου. Από πού διαβάζει το πρόγραμμα δεδομένα (default: το πληκτρολόγιο).</p></div>
+  <div class="card"><h3>stdout (1)</h3><p>Η ροή κανονικής εξόδου. Εκεί γράφει το πρόγραμμα τα αποτελέσματά του (default: η οθόνη).</p></div>
+  <div class="card"><h3>stderr (2)</h3><p>Η ροή σφαλμάτων, ξεχωριστή από το stdout, ώστε τα λάθη να μη μπερδεύονται με τα κανονικά δεδομένα.</p></div>
+</div>
+
+<h2>Redirection εξόδου, εισόδου, σφαλμάτων</h2>
+<pre><code><span class="tok-func">echo</span> <span class="tok-str">"foo"</span> <span class="tok-kw">&gt;</span> <span class="tok-type">bar.txt</span>       <span class="tok-com"># overwrite a file with new content</span>
+<span class="tok-func">echo</span> <span class="tok-str">"foo"</span> <span class="tok-kw">&gt;&gt;</span> <span class="tok-type">bar.txt</span>      <span class="tok-com"># append content to a file instead of overwriting</span>
+
+<span class="tok-func">ls</span> <span class="tok-type">exists</span> 1<span class="tok-kw">&gt;</span> <span class="tok-type">stdout.txt</span>   <span class="tok-com"># redirect standard output to a file (1 is optional, it's the default)</span>
+<span class="tok-func">ls</span> <span class="tok-type">noexist</span> 2<span class="tok-kw">&gt;</span> <span class="tok-type">stderror.txt</span>  <span class="tok-com"># redirect standard error to a file</span>
+<span class="tok-func">ls</span> 2<span class="tok-kw">&gt;&amp;1</span> <span class="tok-kw">&gt;</span> <span class="tok-type">out.txt</span>       <span class="tok-com"># redirect both stdout and stderr into the same file</span>
+<span class="tok-func">ls</span> <span class="tok-kw">&gt;</span> /dev/null       <span class="tok-com"># discard the output entirely — /dev/null is a "black hole"</span>
+
+<span class="tok-func">sort</span> <span class="tok-kw">&lt;</span> <span class="tok-type">input.txt</span>         <span class="tok-com"># redirect a file's content into a program's stdin</span>
+<span class="tok-func">read</span> <span class="tok-type">foo</span>                <span class="tok-com"># read from stdin and store it in the variable foo</span>
+</code></pre>
+
+<h2>Pipes — σύνδεσε προγράμματα μεταξύ τους</h2>
+<p>Το σύμβολο <code>|</code> (pipe) παίρνει το stdout ενός προγράμματος και το κάνει stdin του επόμενου. Έτσι μπορείς να χτίσεις αλυσίδες εντολών, όπου η καθεμία κάνει μια απλή δουλειά, αλλά μαζί λύνουν πολύπλοκα προβλήματα.</p>
+<pre><code><span class="tok-func">ls</span> <span class="tok-kw">|</span> <span class="tok-func">wc</span> <span class="tok-kw">-l</span>
+<span class="tok-com">// list files → count how many lines (i.e. how many files/folders) came out</span>
+</code></pre>
+<div class="callout">
+  <span class="tag">Θα το ξαναδούμε</span>
+  Σε πιο σύνθετα pipes θα συναντήσεις και εντολές φιλτραρίσματος κειμένου όπως το <code>grep</code>, που δεν έχουμε δει ακόμα. Θα το αναλύσουμε αναλυτικά στην επόμενη ενότητα. Προς το παρόν, κράτα ότι κάθε τέτοια εντολή απλά διαβάζει από το stdin της και γράφει στο stdout της, όπως ακριβώς και οι εντολές που ήδη ξέρεις.
+</div>
+
+<h2>Command Substitution &amp; Process Substitution</h2>
+<p>Command substitution τρέχει μια εντολή και αντικαθιστά το αποτέλεσμά της μέσα σε άλλη εντολή, χρησιμοποιώντας <code>$(...)</code>:</p>
+<pre><code>today=<span class="tok-kw">$(</span><span class="tok-func">date</span> +%Y-%m-%d<span class="tok-kw">)</span>
+<span class="tok-func">echo</span> <span class="tok-str">"Today is $today"</span>
+</code></pre>
+<p>Process substitution είναι πιο προχωρημένο: επιτρέπει να αντιμετωπίσεις την έξοδο μιας εντολής σαν να ήταν αρχείο, χρησιμοποιώντας <code>&lt;(...)</code>. Χρήσιμο όταν μια εντολή περιμένει filename ως όρισμα, αντί για δεδομένα από pipe.</p>
+<pre><code><span class="tok-func">diff</span> <span class="tok-kw">&lt;(</span><span class="tok-func">sort</span> a.txt<span class="tok-kw">)</span> <span class="tok-kw">&lt;(</span><span class="tok-func">sort</span> b.txt<span class="tok-kw">)</span>
+<span class="tok-com">// compare the sorted output of two files without creating temp files</span>
+</code></pre>
+`);
+
+    addQuiz([
+      {
+        q: "Τι κάνει το σύμβολο | (pipe) σε μια εντολή shell;",
+        options: [
+          "Παίρνει το stdout της αριστερής εντολής και το δίνει ως stdin στη δεξιά",
+          "Διαγράφει το αρχείο που ακολουθεί",
+          "Τρέχει τις δύο εντολές παράλληλα, χωρίς καμία σχέση μεταξύ τους",
+          "Αποθηκεύει μόνιμα την έξοδο και των δύο εντολών σε log αρχείο αυτόματα"
+        ],
+        correct: 0,
+        explain: "Το pipe συνδέει την έξοδο ενός προγράμματος με την είσοδο του επόμενου, επιτρέποντας αλυσίδες εντολών."
+      },
+      {
+        q: "Ποια η διαφορά μεταξύ > και >> στο redirection;",
+        options: [
+          "Το > κάνει append, το >> γράφει από την αρχή αντικαθιστώντας τα πάντα",
+          "Το > αντικαθιστά το αρχείο, το >> προσθέτει στο τέλος του",
+          "Δεν υπάρχει καμία διαφορά, είναι εναλλάξιμα",
+          "Το > λειτουργεί μόνο με αριθμούς, το >> μόνο με κείμενο"
+        ],
+        correct: 1,
+        explain: "Το > γράφει από την αρχή (overwrite), ενώ το >> προσθέτει στο τέλος υπάρχοντος περιεχομένου (append)."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 4</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">stdin/stdout/stderr</td><td class="gt-def">Οι τρεις βασικές ροές εισόδου, εξόδου, σφαλμάτων</td></tr>
+  <tr><td class="gt-term">Redirection (&gt;, &gt;&gt;, &lt;)</td><td class="gt-def">Ανακατεύθυνση ροής προς/από αρχείο</td></tr>
+  <tr><td class="gt-term">Pipe (|)</td><td class="gt-def">Σύνδεση stdout μιας εντολής με stdin της επόμενης</td></tr>
+  <tr><td class="gt-term">Command substitution $(...)</td><td class="gt-def">Αντικατάσταση με το αποτέλεσμα μιας εντολής</td></tr>
+</table>
+`);
+
+    // ── Section 5 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 5 / 9 — Επεξεργασία Κειμένου</div>
+<h1>Τα εργαλεία που κόβουν, φιλτράρουν και μετράνε κείμενο</h1>
+<p class="lede">Η φιλοσοφία του Unix λέει ότι κάθε εργαλείο κάνει μία δουλειά καλά, και τα συνδυάζεις με pipes για να λύσεις πολύπλοκα προβλήματα. Εδώ βρίσκονται τα πιο χρησιμοποιούμενα εργαλεία επεξεργασίας κειμένου, όπως το grep που αναφέραμε στην προηγούμενη ενότητα.</p>
+
+<h2>Προβολή αρχείων</h2>
+<pre><code><span class="tok-func">cat</span> <span class="tok-type">file.txt</span>       <span class="tok-com"># print the whole file at once</span>
+<span class="tok-func">less</span> <span class="tok-type">file.txt</span>      <span class="tok-com"># page through a file (g: top, Shift+G: bottom, /foo: search for "foo")</span>
+<span class="tok-func">head</span> <span class="tok-type">file.txt</span>      <span class="tok-com"># print the first 10 lines</span>
+<span class="tok-func">tail</span> <span class="tok-type">file.txt</span>      <span class="tok-com"># print the last 10 lines</span>
+</code></pre>
+
+<h2>wc — μέτρησε γραμμές, λέξεις, χαρακτήρες</h2>
+<pre><code><span class="tok-func">wc</span> <span class="tok-type">file.txt</span>      <span class="tok-com"># lines, words, and characters, all together</span>
+<span class="tok-func">wc</span> <span class="tok-kw">-l</span> <span class="tok-type">file.txt</span>   <span class="tok-com"># only line count</span>
+<span class="tok-func">wc</span> <span class="tok-kw">-w</span> <span class="tok-type">file.txt</span>   <span class="tok-com"># only word count</span>
+<span class="tok-func">wc</span> <span class="tok-kw">-m</span> <span class="tok-type">file.txt</span>   <span class="tok-com"># only character count</span>
+</code></pre>
+
+<h2>grep — Global Regular Expression Print</h2>
+<p>Το grep ψάχνει μέσα σε κείμενο για γραμμές που ταιριάζουν με ένα pattern. Είναι από τα εργαλεία που θα χρησιμοποιείς περισσότερο από όλα, γι' αυτό αξίζει να δεις αρκετά από τα flags του:</p>
+<pre><code><span class="tok-func">grep</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar.txt</span>                 <span class="tok-com"># search for "foo" inside bar.txt</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-r</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar/</span>               <span class="tok-com"># --recursive: search inside every file in the directory</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-i</span> <span class="tok-str">'Foo'</span> <span class="tok-type">bar.txt</span>              <span class="tok-com"># --ignore-case: case insensitive search</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-l</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar/*</span>              <span class="tok-com"># --files-with-matches: show only filenames that matched</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-L</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar/*</span>              <span class="tok-com"># --files-without-match: show only filenames that DIDN'T match</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-v</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar.txt</span>              <span class="tok-com"># --invert-match: show only lines that DON'T match</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-c</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar.txt</span>              <span class="tok-com"># --count: count matching lines instead of printing them</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-n</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar.txt</span>              <span class="tok-com"># --line-number: show the line number of each match</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-x</span> <span class="tok-str">'foo'</span> <span class="tok-type">bar.txt</span>              <span class="tok-com"># --line-regexp: match only if the ENTIRE line equals the pattern</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-C</span> 1 <span class="tok-str">'foo'</span> <span class="tok-type">bar.txt</span>            <span class="tok-com"># --context: show 1 extra line above/below each match</span>
+<span class="tok-func">grep</span> <span class="tok-kw">-E</span> <span class="tok-str">'foo|bar'</span> <span class="tok-type">baz.txt</span>           <span class="tok-com"># --extended-regexp: enables the | (or) operator in patterns</span>
+</code></pre>
+<p>Το <code>egrep 'foo|bar' baz.txt</code> κάνει ακριβώς το ίδιο με το <code>grep -E</code>, απλώς είναι διαφορετικό όνομα εντολής για την ίδια λειτουργικότητα.</p>
+
+<h2>find — εύρεση αρχείων, σε βάθος</h2>
+<pre><code><span class="tok-func">find</span> /path <span class="tok-kw">-name</span> <span class="tok-type">foo.txt</span>          <span class="tok-com"># find a file by exact name</span>
+<span class="tok-func">find</span> <span class="tok-kw">-iname</span> <span class="tok-type">foo.txt</span>              <span class="tok-com"># case-insensitive search</span>
+<span class="tok-func">find</span> <span class="tok-kw">-name</span> <span class="tok-str">"*.txt"</span>              <span class="tok-com"># find all files matching a wildcard pattern</span>
+<span class="tok-func">find</span> <span class="tok-kw">-type</span> f <span class="tok-kw">-name</span> <span class="tok-type">foo.txt</span>       <span class="tok-com"># -type f: only files (not directories)</span>
+<span class="tok-func">find</span> <span class="tok-kw">-type</span> d <span class="tok-kw">-name</span> <span class="tok-type">foo</span>           <span class="tok-com"># -type d: only directories</span>
+<span class="tok-func">find</span> <span class="tok-kw">-type</span> f <span class="tok-kw">-mtime</span> +30           <span class="tok-com"># files not modified in the last 30 days</span>
+<span class="tok-func">find</span> <span class="tok-kw">-name</span> <span class="tok-type">foo.txt</span> <span class="tok-kw">-delete</span>       <span class="tok-com"># find AND delete matching files, be very careful</span>
+<span class="tok-func">find</span> <span class="tok-kw">-name</span> <span class="tok-str">"*.png"</span> <span class="tok-kw">-exec</span> <span class="tok-func">pngquant</span> {}\;  <span class="tok-com"># run a command on every matching file</span>
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Advanced παράδειγμα</span>
+  Το <code>find . -name "*.txt" -print0</code> βρίσκει αρχεία και τυπώνει τα ονόματά τους χωρισμένα με null byte αντί για αλλαγή γραμμής. Αυτό είναι σημαντικό όταν τα ονόματα των αρχείων περιέχουν κενά ή ειδικούς χαρακτήρες, γιατί εξασφαλίζει ότι το επόμενο εργαλείο στο pipe δεν θα μπερδέψει το ένα όνομα με το επόμενο. Παρόμοιο flag υπάρχει και στο grep, το <code>-Z</code> (ή <code>--null</code>): τυπώνει το όνομα αρχείου ακολουθούμενο από null byte αντί για αλλαγή γραμμής, για τον ίδιο ακριβώς λόγο.
+</div>
+
+<h2>cut — εξαγωγή στηλών από κείμενο</h2>
+<pre><code><span class="tok-func">cut</span> <span class="tok-kw">-d</span> <span class="tok-str">","</span> <span class="tok-kw">-f</span>1 <span class="tok-type">data.csv</span>     <span class="tok-com"># use "," as delimiter, extract the 1st field</span>
+<span class="tok-func">cut</span> <span class="tok-kw">-f</span>1-3 <span class="tok-type">data.csv</span>          <span class="tok-com"># extract fields 1 through 3</span>
+<span class="tok-func">cut</span> <span class="tok-kw">-d</span> <span class="tok-str">" "</span> <span class="tok-kw">-f</span> 1,2 <span class="tok-type">data.txt</span>   <span class="tok-com"># use space as delimiter, extract fields 1 and 2</span>
+<span class="tok-func">cut</span> <span class="tok-kw">-c</span> 2,5,7 <span class="tok-type">data.txt</span>        <span class="tok-com"># extract the characters at positions 2, 5, and 7 from each line</span>
+</code></pre>
+
+<h2>sort, uniq, tr</h2>
+<pre><code><span class="tok-func">sort</span> <span class="tok-type">names.txt</span>              <span class="tok-com"># sort lines alphabetically</span>
+<span class="tok-func">uniq</span>                       <span class="tok-com"># remove ADJACENT duplicate lines (usually paired with sort first)</span>
+<span class="tok-func">echo</span> <span class="tok-str">"hello"</span> <span class="tok-kw">|</span> <span class="tok-func">tr</span> <span class="tok-str">'l'</span> <span class="tok-str">'1'</span>    <span class="tok-com"># translate characters — "l" becomes "1", result: he11o</span>
+<span class="tok-func">echo</span> <span class="tok-str">"aaabbbccc"</span> <span class="tok-kw">|</span> <span class="tok-func">tr</span> <span class="tok-kw">-s</span> <span class="tok-str">'a'</span>  <span class="tok-com"># -s squeezes repeated characters, result: abbbccc</span>
+</code></pre>
+<div class="callout">
+  <span class="tag">Προσοχή</span>
+  Η <code>tr</code> δεν δέχεται απευθείας ονόματα αρχείων ως όρισμα. Λειτουργεί μόνο με ανακατεύθυνση ή pipe, π.χ. <code>tr 'a' 'b' &lt; input.txt</code>.
+</div>
+
+<h2>Wildcards, patterns για ονόματα αρχείων</h2>
+<div class="grid3">
+  <div class="card"><h3>*</h3><p>Ταιριάζει με οποιαδήποτε ακολουθία χαρακτήρων, π.χ. *.txt σημαίνει όλα τα .txt αρχεία.</p></div>
+  <div class="card"><h3>?</h3><p>Ταιριάζει με ακριβώς έναν χαρακτήρα, π.χ. file?.txt ταιριάζει με file1.txt.</p></div>
+  <div class="card"><h3>[...]</h3><p>Ταιριάζει με έναν χαρακτήρα μέσα σε ένα σύνολο, π.χ. [abc] ταιριάζει με a, b, ή c.</p></div>
+</div>
+
+<h2>curl — μίλα με το δίκτυο από τη γραμμή εντολών</h2>
+<pre><code><span class="tok-func">curl</span> <span class="tok-type">https://example.com</span>                 <span class="tok-com"># print the content at that URL</span>
+<span class="tok-func">curl</span> <span class="tok-kw">-s</span> <span class="tok-type">https://example.com</span>              <span class="tok-com"># --silent: without the progress bar</span>
+<span class="tok-func">curl</span> <span class="tok-kw">-#</span> <span class="tok-type">https://example.com</span>              <span class="tok-com"># show a simple progress bar</span>
+<span class="tok-func">curl</span> <span class="tok-type">ftp://ftp.example.com/file[1-20].jpeg</span>  <span class="tok-com"># numeric sequence — downloads file1.jpeg through file20.jpeg</span>
+</code></pre>
+
+<h2>Text Editors</h2>
+<p>Κάποια στιγμή θα χρειαστεί να επεξεργαστείς κείμενο μέσα στο terminal, χωρίς GUI. Τα πιο διαδεδομένα:</p>
+<div class="grid3">
+  <div class="card"><h3>nano</h3><p>Ο πιο φιλικός για αρχάριους. Οι εντολές φαίνονται στο κάτω μέρος της οθόνης.</p></div>
+  <div class="card"><h3>vim / vi</h3><p>Πανίσχυρος αλλά με απότομη καμπύλη εκμάθησης. Έχει "modes" (insert, normal, κλπ).</p></div>
+  <div class="card"><h3>emacs</h3><p>Εναλλακτικός στο vim, εξίσου ισχυρός, με διαφορετική φιλοσοφία χειρισμού.</p></div>
+</div>
+`);
+
+    addMatching([
+      [
+        { term: "grep", def: "Αναζήτηση κειμένου με pattern" },
+        { term: "find", def: "Αναζήτηση αρχείων στο filesystem" },
+        { term: "cut", def: "Εξαγωγή συγκεκριμένων στηλών από κείμενο" },
+        { term: "sort", def: "Ταξινόμηση γραμμών" },
+        { term: "uniq", def: "Αφαίρεση διπλότυπων διαδοχικών γραμμών" },
+        { term: "wc", def: "Μέτρηση γραμμών, λέξεων ή χαρακτήρων" }
+      ],
+      [
+        { term: "grep -r", def: "Αναζήτηση μέσα σε ολόκληρο φάκελο" },
+        { term: "grep -i", def: "Αναζήτηση χωρίς διάκριση πεζών/κεφαλαίων" },
+        { term: "grep -v", def: "Εμφάνιση μόνο γραμμών που ΔΕΝ ταιριάζουν" },
+        { term: "grep -c", def: "Μέτρηση γραμμών που ταιριάζουν" }
+      ]
+    ], {
+      note: "Ταίριαξε κάθε εντολή/flag με τη λειτουργία της. Δύο σετ: γενικά εργαλεία και grep flags."
+    });
+
+    addQuiz([
+      {
+        q: "Τι κάνει το flag -r στο grep;",
+        options: [
+          "Ψάχνει αναδρομικά μέσα σε όλα τα αρχεία ενός φακέλου",
+          "Αντιστρέφει το αποτέλεσμα της αναζήτησης",
+          "Κάνει την αναζήτηση χωρίς διάκριση πεζών/κεφαλαίων",
+          "Διαγράφει τις γραμμές που ταιριάζουν"
+        ],
+        correct: 0,
+        explain: "Το -r (--recursive) κάνει το grep να ψάξει μέσα σε όλα τα αρχεία ενός φακέλου, συμπεριλαμβανομένων των υποφακέλων."
+      },
+      {
+        q: "Ποιο εργαλείο χρησιμοποιείς για να πάρεις τη 2η στήλη από ένα αρχείο csv με κόμμα ως διαχωριστικό;",
+        options: [
+          "cut -d , -f2",
+          "grep -c 2",
+          "sort -k2",
+          "wc -f2"
+        ],
+        correct: 0,
+        explain: "Το cut -d , -f2 ορίζει το κόμμα ως delimiter και εξάγει το 2ο πεδίο κάθε γραμμής."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 5</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">grep</span><span class="gc-def">Global Regular Expression Print — αναζήτηση με pattern</span></div>
+  <div class="gc-line"><span class="gc-term">find</span><span class="gc-def">Αναζήτηση αρχείων στο filesystem</span></div>
+  <div class="gc-line"><span class="gc-term">cut</span><span class="gc-def">Εξαγωγή στηλών/χαρακτήρων από κείμενο</span></div>
+  <div class="gc-line"><span class="gc-term">curl</span><span class="gc-def">Επικοινωνία με URLs από τη γραμμή εντολών</span></div>
+</div>
+`);
+
+    // ── Section 6 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 9 — Variables, Exit Codes &amp; Permissions</div>
+<h1>Πώς το shell θυμάται πράγματα και ελέγχει αν πέτυχε</h1>
+<p class="lede">Εδώ αρχίζουμε να βλέπουμε δομές που θα ξανασυναντήσεις σε κάθε γλώσσα προγραμματισμού: μεταβλητές και έλεγχος επιτυχίας ή αποτυχίας.</p>
+
+<h2>Shell Variables εναντίον Environment Variables</h2>
+<p>Μια shell variable υπάρχει μόνο μέσα στο τρέχον shell session και χάνεται αν ανοίξεις νέο terminal. Μια environment variable είναι ορατή και σε κάθε πρόγραμμα που ξεκινάς από αυτό το shell, δηλαδή τα child processes την κληρονομούν.</p>
+<pre><code><span class="tok-type">foo</span>=123                   <span class="tok-com"># initialize a shell variable with 123</span>
+<span class="tok-func">declare</span> <span class="tok-kw">-i</span> <span class="tok-type">foo</span>=123        <span class="tok-com"># initialize an INTEGER variable</span>
+<span class="tok-func">declare</span> <span class="tok-kw">-r</span> <span class="tok-type">foo</span>=123        <span class="tok-com"># initialize a READONLY variable, can't change it afterwards</span>
+<span class="tok-func">echo</span> <span class="tok-kw">$foo</span>                 <span class="tok-com"># print the variable's value</span>
+<span class="tok-func">echo</span> <span class="tok-kw">\${foo}</span>_<span class="tok-str">'bar'</span>          <span class="tok-com"># {} clarifies where the variable name ends — prints "123bar"</span>
+<span class="tok-func">echo</span> <span class="tok-kw">\${foo:-'default'}</span>    <span class="tok-com"># print foo if it exists, otherwise print 'default'</span>
+
+<span class="tok-func">export</span> <span class="tok-type">foo</span>                <span class="tok-com"># make foo an environment variable — child processes inherit it</span>
+<span class="tok-func">unset</span> <span class="tok-type">foo</span>                 <span class="tok-com"># remove the variable completely</span>
+</code></pre>
+<pre><code><span class="tok-func">export</span> <span class="tok-type">PATH</span>=<span class="tok-str">"$PATH:/my/path"</span>   <span class="tok-com"># append a new directory to the PATH environment variable</span>
+<span class="tok-func">env</span>                          <span class="tok-com"># list all environment variables currently set</span>
+<span class="tok-func">echo</span> <span class="tok-kw">$PATH</span>                    <span class="tok-com"># print the PATH variable specifically</span>
+</code></pre>
+
+<h2>Ειδικές μεταβλητές</h2>
+<pre><code><span class="tok-kw">$0</span>        <span class="tok-com"># the name of the running script</span>
+<span class="tok-kw">$1</span>, <span class="tok-kw">$2</span> ...  <span class="tok-com"># positional arguments passed to the script</span>
+<span class="tok-kw">$#</span>        <span class="tok-com"># number of arguments passed</span>
+<span class="tok-kw">$@</span>        <span class="tok-com"># all arguments as a list</span>
+<span class="tok-kw">$?</span>        <span class="tok-com"># exit code of the last command</span>
+</code></pre>
+
+<h2>Exit Codes — $? και exit</h2>
+<p>Κάθε εντολή, όταν τελειώσει, επιστρέφει έναν exit code: το 0 σημαίνει επιτυχία, οποιοσδήποτε άλλος αριθμός από 1 έως 255 σημαίνει κάποιου είδους αποτυχία. Το ελέγχεις αμέσως μετά με <code>$?</code>.</p>
+<pre><code><span class="tok-func">ls</span> /some/folder
+<span class="tok-func">echo</span> <span class="tok-kw">$?</span>   <span class="tok-com"># prints 0 if the folder existed, non-zero otherwise</span>
+
+<span class="tok-func">exit</span> 0   <span class="tok-com"># inside a script, exit successfully</span>
+<span class="tok-func">exit</span> 1   <span class="tok-com"># inside a script, exit with a failure code</span>
+</code></pre>
+<div class="callout good">
+  <span class="tag">Γιατί μετράει</span>
+  Αυτό είναι το θεμέλιο για το πώς τα scripts παίρνουν αποφάσεις, όπως "αν η προηγούμενη εντολή απέτυχε, σταμάτα εδώ". Θα το ξαναδείς σε κάθε γλώσσα προγραμματισμού με άλλη μορφή, όπως errors ή exceptions.
+</div>
+
+<h2>File Permissions</h2>
+<p>Κάθε αρχείο έχει δικαιώματα για τρεις κατηγορίες: owner (ιδιοκτήτης), group (ομάδα), others (όλοι οι υπόλοιποι). Και τρεις τύπους δικαιωμάτων: read (r), write (w), execute (x).</p>
+<pre><code><span class="tok-func">ls</span> <span class="tok-kw">-l</span> <span class="tok-type">foo.sh</span>
+<span class="tok-com"># -rwxr-xr--  owner: rwx, group: r-x, others: r--</span>
+</code></pre>
+
+<h2>chmod — αλλαγή δικαιωμάτων</h2>
+<p>Το chmod δέχεται δύο μορφές: symbolic (γράμματα) και numeric (αριθμούς).</p>
+<pre><code><span class="tok-func">chmod</span> <span class="tok-kw">u+x</span> <span class="tok-type">foo.sh</span>       <span class="tok-com"># give the OWNER (user) execute permission</span>
+<span class="tok-func">chmod</span> <span class="tok-kw">g+x</span> <span class="tok-type">foo.sh</span>       <span class="tok-com"># give the GROUP execute permission</span>
+<span class="tok-func">chmod</span> <span class="tok-kw">u-x,g-x</span> <span class="tok-type">foo.sh</span>   <span class="tok-com"># take away execute permission from user and group</span>
+<span class="tok-func">chmod</span> <span class="tok-kw">a+x</span> <span class="tok-type">foo.sh</span>       <span class="tok-com"># give EVERYBODY (all) execute permission</span>
+<span class="tok-func">chmod</span> <span class="tok-kw">+x</span> <span class="tok-type">foo.sh</span>         <span class="tok-com"># same as a+x — shorthand for everybody</span>
+
+<span class="tok-func">chmod</span> <span class="tok-kw">+100</span> <span class="tok-type">foo.sh</span>       <span class="tok-com"># add 1 (execute) to the user's permission bits</span>
+<span class="tok-func">chmod</span> <span class="tok-kw">-100</span> <span class="tok-type">foo.sh</span>       <span class="tok-com"># subtract 1 (execute) from the user's permission bits</span>
+<span class="tok-func">chmod</span> 755 <span class="tok-type">foo.sh</span>          <span class="tok-com"># numeric form: owner=rwx(7), group=rx(5), others=rx(5)</span>
+</code></pre>
+
+<h2>Regular Expressions — μια πρώτη ματιά</h2>
+<p>Τα regex είναι patterns για ταίριασμα κειμένου, πιο ισχυρά από τα wildcards, και τα χρησιμοποιούν εργαλεία όπως το grep, το sed και το awk. Θα τα δούμε σε βάθος στην ενότητα 9, αλλά ας δούμε τα πρώτα σύμβολα:</p>
+<div class="grid3">
+  <div class="card"><h3>^ και $</h3><p>Αρχή και τέλος γραμμής αντίστοιχα.</p></div>
+  <div class="card"><h3>. και *</h3><p>Οποιοσδήποτε χαρακτήρας, και "μηδέν ή περισσότερες φορές".</p></div>
+  <div class="card"><h3>[0-9]</h3><p>Ένα ψηφίο μέσα στο εύρος 0 έως 9.</p></div>
+</div>
+`);
+
+    addFillBlank([
+      {
+        code:
+          `ls /this/path/does/not/exist
+echo "Exit code was: $__var__"`,
+        blanks: [
+          { id: "var", answer: "?" }
+        ],
+        explain: "Το $? κρατάει πάντα τον exit code της αμέσως προηγούμενης εντολής."
+      },
+      {
+        code:
+          `__cmd__ PATH="$PATH:/my/path"   # make PATH updates visible to child processes too`,
+        blanks: [
+          { id: "cmd", answer: "export" }
+        ],
+        explain: "Το export μετατρέπει μια shell variable σε environment variable, ορατή σε child processes."
+      }
+    ], {
+      note: "Συμπλήρωσε τα κενά."
+    });
+
+    addQuiz([
+      {
+        q: "Ποια η διαφορά shell variable και environment variable;",
+        options: [
+          "Η shell variable υπάρχει μόνο στο τρέχον shell, η environment variable κληρονομείται από τα child processes",
+          "Δεν υπάρχει καμία πρακτική διαφορά μεταξύ τους",
+          "Η environment variable ισχύει μόνο για root χρήστες",
+          "Η shell variable αποθηκεύεται πάντα σε αρχείο στον δίσκο, ενώ η environment variable υπάρχει μόνο στη μνήμη κατά την εκτέλεση"
+        ],
+        correct: 0,
+        explain: "Οι shell variables είναι τοπικές στο session, ενώ οι environment variables (μέσω export) μεταδίδονται σε προγράμματα που ξεκινούν από αυτό το shell."
+      },
+      {
+        q: "Τι σημαίνει exit code 0 μετά από μια εντολή;",
+        options: [
+          "Η εντολή απέτυχε πλήρως",
+          "Η εντολή ολοκληρώθηκε επιτυχώς",
+          "Η εντολή δεν εκτελέστηκε καθόλου",
+          "Δεν έχει σχέση με επιτυχία ή αποτυχία, δείχνει μόνο πόσο χρόνο πήρε η εκτέλεση"
+        ],
+        correct: 1,
+        explain: "Exit code 0 σημαίνει επιτυχία. Οποιοσδήποτε μη-μηδενικός κωδικός σημαίνει κάποιο είδος αποτυχίας."
+      },
+      {
+        q: "Τι κάνει η εντολή chmod u+x foo.sh;",
+        options: [
+          "Δίνει στον ιδιοκτήτη του αρχείου δικαίωμα εκτέλεσης",
+          "Διαγράφει το αρχείο foo.sh",
+          "Δίνει σε όλους δικαίωμα εγγραφής στο αρχείο",
+          "Μετονομάζει το αρχείο σε foo.sh.x"
+        ],
+        correct: 0,
+        explain: "Το u+x προσθέτει το execute δικαίωμα (x) στον owner (u) του αρχείου."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 6</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">$?</span><span class="gc-def">Exit code της προηγούμενης εντολής</span></div>
+  <div class="gc-line"><span class="gc-term">export</span><span class="gc-def">Κάνει μια μεταβλητή environment variable</span></div>
+  <div class="gc-line"><span class="gc-term">chmod</span><span class="gc-def">Αλλαγή δικαιωμάτων αρχείου</span></div>
+  <div class="gc-line"><span class="gc-term">declare</span><span class="gc-def">Δηλώνει μεταβλητή με συγκεκριμένο τύπο (integer, readonly)</span></div>
+</div>
+`);
+
+    // ── Section 7 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 7 / 9 — Processes, Δίκτυο &amp; Συστήματα</div>
+<h1>Τι τρέχει τώρα, και πώς μιλάει το μηχάνημά σου με τον έξω κόσμο</h1>
+<p class="lede">Πώς διαχειρίζεσαι προγράμματα που τρέχουν, πώς επικοινωνείς με άλλα μηχανήματα, και πώς παρακολουθείς την υγεία του συστήματός σου.</p>
+
+<h2>Process Management</h2>
+<pre><code><span class="tok-func">command</span> &amp;         <span class="tok-com"># run a command in the background</span>
+<span class="tok-func">jobs</span>              <span class="tok-com"># list background jobs of this shell</span>
+<span class="tok-func">fg</span> %1              <span class="tok-com"># bring job 1 to the foreground</span>
+<span class="tok-func">bg</span> %1              <span class="tok-com"># resume a stopped job in the background</span>
+<span class="tok-func">disown</span> %1          <span class="tok-com"># detach a job so it survives even if you close the terminal</span>
+<span class="tok-func">nohup</span> <span class="tok-type">command</span> &amp;   <span class="tok-com"># run a command immune to "hangup" — keeps running after logout</span>
+</code></pre>
+
+<h2>Networking, βασικά εργαλεία</h2>
+<pre><code><span class="tok-func">ping</span> <span class="tok-type">example.com</span>     <span class="tok-com"># check if a host is reachable</span>
+<span class="tok-func">wget</span> <span class="tok-type">https://example.com/file.zip</span>  <span class="tok-com"># download a file</span>
+<span class="tok-func">ssh</span> <span class="tok-type">user@remote-host</span>  <span class="tok-com"># open a secure shell session on a remote machine</span>
+<span class="tok-func">scp</span> <span class="tok-type">file.txt user@host:/path</span>  <span class="tok-com"># securely copy a file to a remote machine</span>
+<span class="tok-func">rsync</span> <span class="tok-kw">-av</span> <span class="tok-type">src/ dest/</span>  <span class="tok-com"># sync files/directories, only transferring differences</span>
+</code></pre>
+
+<h2>Παρακολούθηση συστήματος</h2>
+<pre><code><span class="tok-func">ps</span> <span class="tok-kw">aux</span>    <span class="tok-com"># list all running processes</span>
+<span class="tok-func">top</span>       <span class="tok-com"># live view of processes and resource usage</span>
+<span class="tok-func">htop</span>      <span class="tok-com"># nicer interactive version of top (not always pre-installed)</span>
+<span class="tok-func">free</span> <span class="tok-kw">-h</span>   <span class="tok-com"># show free/used memory, human-readable</span>
+<span class="tok-func">df</span> <span class="tok-kw">-h</span>     <span class="tok-com"># disk space per filesystem, human-readable</span>
+<span class="tok-func">du</span> <span class="tok-kw">-sh</span> <span class="tok-type">folder</span>  <span class="tok-com"># total disk usage of a folder</span>
+<span class="tok-func">uptime</span>    <span class="tok-com"># how long the system has been running</span>
+</code></pre>
+
+<h2>Συμπίεση αρχείων</h2>
+<pre><code><span class="tok-func">tar</span> <span class="tok-kw">-czvf</span> <span class="tok-type">archive.tar.gz folder/</span>  <span class="tok-com"># create a compressed archive</span>
+<span class="tok-func">tar</span> <span class="tok-kw">-xzvf</span> <span class="tok-type">archive.tar.gz</span>       <span class="tok-com"># extract a compressed archive</span>
+<span class="tok-func">zip</span> <span class="tok-kw">-r</span> <span class="tok-type">archive.zip folder/</span>    <span class="tok-com"># create a zip archive</span>
+<span class="tok-func">unzip</span> <span class="tok-type">archive.zip</span>            <span class="tok-com"># extract a zip archive</span>
+<span class="tok-func">gzip</span> <span class="tok-type">file.txt</span>               <span class="tok-com"># compress a single file to file.txt.gz</span>
+<span class="tok-func">gunzip</span> <span class="tok-type">file.txt.gz</span>            <span class="tok-com"># decompress it back</span>
+</code></pre>
+
+<h2>Package Management</h2>
+<p>Τα λειτουργικά συστήματα έχουν package managers για εγκατάσταση, ενημέρωση και αφαίρεση λογισμικού από τη γραμμή εντολών, αντί να κατεβάζεις installers χειροκίνητα.</p>
+<div class="grid3">
+  <div class="card"><h3>apt (Debian/Ubuntu)</h3><p><code>sudo apt install package-name</code></p></div>
+  <div class="card"><h3>brew (macOS)</h3><p><code>brew install package-name</code></p></div>
+  <div class="card"><h3>pacman (Arch)</h3><p><code>sudo pacman -S package-name</code></p></div>
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι κάνει η εντολή nohup;",
+        options: [
+          "Επιτρέπει σε ένα πρόγραμμα να συνεχίσει να τρέχει ακόμα κι αν κλείσεις το terminal",
+          "Σκοτώνει άμεσα όλες τις τρέχουσες διεργασίες",
+          "Ελέγχει τη διαθέσιμη μνήμη του συστήματος",
+          "Κάνει ping σε έναν remote host για να ελέγξει τη συνδεσιμότητα"
+        ],
+        correct: 0,
+        explain: "Το nohup κάνει μια εντολή ανθεκτική στο σήμα hangup που στέλνεται όταν κλείνεις το terminal, οπότε συνεχίζει να τρέχει."
+      },
+      {
+        q: "Ποια εντολή χρησιμοποιείς για να αντιγράψεις με ασφάλεια ένα αρχείο σε remote μηχάνημα;",
+        options: [
+          "ping",
+          "scp",
+          "top",
+          "gzip"
+        ],
+        correct: 1,
+        explain: "Το scp (secure copy) αντιγράφει αρχεία μέσω SSH σε remote μηχανήματα."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 7</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">jobs / fg / bg</span><span class="gs-def">Διαχείριση background εργασιών</span></div>
+  <div class="gs-pill"><span class="gs-name">ssh / scp</span><span class="gs-def">Ασφαλής απομακρυσμένη πρόσβαση/αντιγραφή</span></div>
+  <div class="gs-pill"><span class="gs-name">top / htop</span><span class="gs-def">Παρακολούθηση διεργασιών σε live χρόνο</span></div>
+  <div class="gs-pill"><span class="gs-name">tar / zip</span><span class="gs-def">Συμπίεση αρχείων</span></div>
+</div>
+`);
+
+    // ── Section 8 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 9 — sed, jq &amp; Παραμετροποίηση Shell</div>
+<h1>Αντικατάσταση κειμένου σε βάθος, και δουλειά με JSON</h1>
+<p class="lede">Το sed είναι το πιο ισχυρό εργαλείο αντικατάστασης κειμένου που θα συναντήσεις, και το jq είναι ο αντίστοιχος βασιλιάς για δεδομένα σε μορφή JSON. Θα κλείσουμε με το πώς μπορείς να παραμετροποιήσεις μόνιμα το ίδιο σου το shell.</p>
+
+<h2>sed — βασική αντικατάσταση</h2>
+<p>Το sed (stream editor) κάνει αναζήτηση-αντικατάσταση σε κείμενο χωρίς να χρειάζεται να ανοίξεις interactive editor. Το s σημαίνει substitute:</p>
+<pre><code><span class="tok-func">sed</span> <span class="tok-str">'s/fox/bear/g'</span> <span class="tok-type">foo.txt</span>
+<span class="tok-com">// replace every "fox" with "bear", print the result to stdout</span>
+</code></pre>
+<p>Ο χαρακτήρας <code>/</code> είναι απλώς ο πιο συνηθισμένος διαχωριστής (delimiter). Μπορείς να χρησιμοποιήσεις οποιονδήποτε άλλο χαρακτήρα, κάτι χρήσιμο όταν το ίδιο το pattern σου περιέχει <code>/</code>, όπως ένα file path:</p>
+<pre><code><span class="tok-func">sed</span> <span class="tok-str">'s|fox|bear|g'</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># using pipe as delimiter</span>
+<span class="tok-func">sed</span> <span class="tok-str">'s:fox:bear:g'</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># using colon as delimiter</span>
+<span class="tok-func">sed</span> <span class="tok-str">'s#fox#bear#g'</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># using hashtag as delimiter</span>
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Μονά ή διπλά εισαγωγικά;</span>
+  Στο 95% των περιπτώσεων χρησιμοποιούμε μονά εισαγωγικά <code>'</code>. Διπλά <code>"</code> χρησιμοποιούμε όταν το pattern περιέχει μια μεταβλητή shell, ή όταν το ίδιο το κείμενο περιέχει τον χαρακτήρα <code>'</code> (π.χ. τη λέξη don't). Με διπλά εισαγωγικά το terminal "διαβάζει" πρώτα το περιεχόμενο, πριν το στείλει στο sed — αν έχεις μεταβλητές, αυτό είναι απαραίτητο.
+</div>
+
+<h2>sed — αποθήκευση αποτελέσματος</h2>
+<pre><code><span class="tok-func">sed</span> <span class="tok-str">'s/fox/bear/g'</span> <span class="tok-type">foo.txt</span> <span class="tok-kw">&gt;</span> <span class="tok-type">bar.txt</span>   <span class="tok-com"># save the result into a NEW file</span>
+<span class="tok-func">sed</span> <span class="tok-kw">-i</span> <span class="tok-str">'s/fox/bear/g'</span> <span class="tok-type">foo.txt</span>       <span class="tok-com"># --in-place: overwrite foo.txt directly</span>
+<span class="tok-func">sed</span> <span class="tok-kw">-i</span>.bak <span class="tok-str">'s/fox/bear/g'</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># in-place, but keeps a foo.txt.bak backup first</span>
+</code></pre>
+
+<h2>sed — flags στο τέλος του pattern</h2>
+<p>Το γράμμα στο τέλος (όπως το <code>g</code> σε <code>s/fox/bear/g</code>) λέγεται flag και ορίζει πώς θα γίνει η αντικατάσταση:</p>
+<ul>
+  <li>Χωρίς flag: αντικαθιστά μόνο την πρώτη εμφάνιση σε κάθε γραμμή</li>
+  <li><code>g</code> (global): αντικαθιστά όλες τις εμφανίσεις στη γραμμή</li>
+  <li>Αριθμός, π.χ. <code>2</code>: αντικαθιστά μόνο τη συγκεκριμένη εμφάνιση (<code>sed 's/fox/bear/2' foo.txt</code> αλλάζει μόνο τη 2η)</li>
+  <li><code>i</code> (ignore case): αναζήτηση χωρίς διάκριση πεζών/κεφαλαίων, π.χ. <code>gi</code> = global + ignore case</li>
+  <li><code>p</code>: αν πετύχει η αντικατάσταση, τυπώνει τη γραμμή (συχνά μαζί με <code>-n</code>)</li>
+  <li><code>w file.txt</code>: γράφει το αποτέλεσμα σε νέο αρχείο</li>
+</ul>
+<pre><code><span class="tok-func">sed</span> <span class="tok-kw">-n</span> <span class="tok-str">'s/apple/orange/p'</span> <span class="tok-type">file.txt</span>
+<span class="tok-com">// -n means "stay silent", p at the end means "print only if a substitution happened"</span>
+<span class="tok-com">// together: print ONLY the lines that actually changed</span>
+</code></pre>
+
+<h2>sed — άλλες εντολές, όχι μόνο s (substitute)</h2>
+<pre><code><span class="tok-func">sed</span> <span class="tok-str">'/fox/d'</span> <span class="tok-type">foo.txt</span>              <span class="tok-com"># delete every line containing "fox"</span>
+<span class="tok-func">sed</span> <span class="tok-str">'3d'</span> <span class="tok-type">foo.txt</span>                  <span class="tok-com"># delete only line 3</span>
+<span class="tok-func">sed</span> <span class="tok-str">'/^$/d'</span> <span class="tok-type">foo.txt</span>               <span class="tok-com"># delete all empty lines</span>
+<span class="tok-func">sed</span> <span class="tok-str">'/fox/i NewText'</span> <span class="tok-type">foo.txt</span>      <span class="tok-com"># insert a new line BEFORE every line containing "fox"</span>
+<span class="tok-func">sed</span> <span class="tok-str">'/fox/a NewText'</span> <span class="tok-type">foo.txt</span>      <span class="tok-com"># append a new line AFTER every line containing "fox"</span>
+<span class="tok-func">sed</span> <span class="tok-str">'/fox/c This is replaced'</span> <span class="tok-type">foo.txt</span>  <span class="tok-com"># change: replace the entire matching line</span>
+<span class="tok-func">sed</span> <span class="tok-str">'y/abc/ABC/'</span> <span class="tok-type">foo.txt</span>          <span class="tok-com"># transform character-by-character, like tr</span>
+</code></pre>
+<pre><code><span class="tok-func">sed</span> <span class="tok-kw">-e</span> <span class="tok-str">'s/apple/orange/'</span> <span class="tok-kw">-e</span> <span class="tok-str">'s/cat/dog/'</span> <span class="tok-type">file.txt</span>
+<span class="tok-com">// -e lets you chain multiple sed expressions in one call</span>
+</code></pre>
+
+<div class="callout good">
+  <span class="tag">Advanced παράδειγμα</span>
+  <code>find . -name "*.txt" -print0 | xargs -0 grep -lZ "palio" | xargs -0 sed -i 's/palio/neo/g'</code><br>
+  Βρίσκει όλα τα .txt αρχεία, φιλτράρει αυτά που περιέχουν τη λέξη "palio", και τα αλλάζει σε "neo" απευθείας μέσα στα αρχεία. Η χρήση null bytes (<code>-print0</code>, <code>-Z</code>, <code>-0</code>) σε όλη την αλυσίδα εξασφαλίζει ότι θα λειτουργήσει σωστά ακόμα κι αν κάποιο filename έχει κενά.
+</div>
+
+<h2>jq — το sed για δεδομένα JSON</h2>
+<p>Το jq δεν είναι builtin εργαλείο του bash, είναι ξεχωριστό πρόγραμμα που εγκαθίσταται μέσω package manager, αλλά είναι απαραίτητο όταν δουλεύεις με APIs. Σου επιτρέπει να φιλτράρεις, να μετασχηματίζεις και να διαβάζεις JSON δεδομένα από τη γραμμή εντολών.</p>
+<pre><code><span class="tok-func">jq</span> <span class="tok-str">'.'</span> <span class="tok-type">data.json</span>            <span class="tok-com"># pretty-print the whole JSON file</span>
+<span class="tok-func">jq</span> <span class="tok-str">'.foo'</span> <span class="tok-type">data.json</span>         <span class="tok-com"># extract the value of key "foo" from the root object</span>
+<span class="tok-func">jq</span> <span class="tok-str">'.user.profile.id'</span> <span class="tok-type">data.json</span>  <span class="tok-com"># access nested fields</span>
+<span class="tok-func">jq</span> <span class="tok-kw">-r</span> <span class="tok-str">'.foo'</span> <span class="tok-type">data.json</span>      <span class="tok-com"># --raw-output: no surrounding quotes, good for shell variables</span>
+</code></pre>
+<pre><code><span class="tok-func">jq</span> <span class="tok-str">'.items[0]'</span> <span class="tok-type">data.json</span>       <span class="tok-com"># get the FIRST element of an array</span>
+<span class="tok-func">jq</span> <span class="tok-str">'.items[]'</span> <span class="tok-type">data.json</span>        <span class="tok-com"># iterate over an array, one output per element</span>
+<span class="tok-func">jq</span> <span class="tok-str">'.items[].name'</span> <span class="tok-type">data.json</span>   <span class="tok-com"># extract the "name" field from every array element</span>
+<span class="tok-func">jq</span> <span class="tok-str">'keys'</span> <span class="tok-type">data.json</span>           <span class="tok-com"># all available keys of an object</span>
+<span class="tok-func">jq</span> <span class="tok-str">'length'</span> <span class="tok-type">data.json</span>         <span class="tok-com"># number of elements in an array or characters in a string</span>
+</code></pre>
+
+<h2>jq — φιλτράρισμα &amp; μετασχηματισμός</h2>
+<pre><code><span class="tok-func">jq</span> <span class="tok-str">'.[] | select(.id == 100)'</span> <span class="tok-type">data.json</span>
+<span class="tok-com">// keep only array elements where id equals 100</span>
+
+<span class="tok-func">jq</span> <span class="tok-str">'map(.price * 1.25)'</span> <span class="tok-type">data.json</span>
+<span class="tok-com">// apply a calculation (e.g. 25% tax) to every element of an array</span>
+</code></pre>
+
+<h2>jq — αλυσίδα φίλτρων με |</h2>
+<p>Ακριβώς όπως στο shell, το pipe μέσα σε ένα jq expression περνάει το αποτέλεσμα του αριστερού φίλτρου ως είσοδο στο δεξί:</p>
+<pre><code>user_id=<span class="tok-kw">$(</span><span class="tok-func">curl</span> <span class="tok-kw">-s</span> <span class="tok-str">"https://api.example.com/user"</span> <span class="tok-kw">|</span> <span class="tok-func">jq</span> <span class="tok-kw">-r</span> <span class="tok-str">'.id'</span><span class="tok-kw">)</span>
+<span class="tok-com">// fetch JSON from an API, extract the "id" field, save it into a shell variable</span>
+</code></pre>
+
+<h2>Παραμετροποίηση του shell — .bashrc</h2>
+<p>Το αρχείο <code>~/.bashrc</code> τρέχει αυτόματα κάθε φορά που ανοίγεις νέο bash terminal, οπότε είναι το μέρος όπου ορίζεις μόνιμες ρυθμίσεις, aliases, και ακόμα και δικές σου function εντολές:</p>
+<pre><code><span class="tok-com"># Always run ls after cd</span>
+<span class="tok-func">function</span> cd {
+  builtin cd <span class="tok-str">"$@"</span> &amp;&amp; ls
+}
+</code></pre>
+<p>Το <code>builtin cd</code> καλεί την πραγματική, ενσωματωμένη εντολή cd, αποφεύγοντας το να καλέσει η function τον εαυτό της ξανά και ξανά.</p>
+`);
+
+    addFillBlank([
+      {
+        code:
+          `sed -__flag__ 's/fox/bear/g' foo.txt   # overwrite foo.txt directly, instead of just printing the result`,
+        blanks: [
+          { id: "flag", answer: "i" }
+        ],
+        explain: "Το -i (in-place) κάνει το sed να αντικαταστήσει το περιεχόμενο του ίδιου του αρχείου."
+      },
+      {
+        code:
+          `jq '.items[] | __func__(.id == 100)' data.json   # keep only elements where id equals 100`,
+        blanks: [
+          { id: "func", answer: "select" }
+        ],
+        explain: "Το select() είναι το φίλτρο του jq που κρατάει μόνο τα στοιχεία που ικανοποιούν μια συνθήκη."
+      }
+    ], {
+      note: "Συμπλήρωσε το κενό σε κάθε παράδειγμα."
+    });
+
+    addMatching([
+      { term: "sed -i", def: "Αντικατάσταση απευθείας μέσα στο αρχείο" },
+      { term: "sed 's/a/b/g'", def: "Αντικατάσταση όλων των εμφανίσεων σε κάθε γραμμή" },
+      { term: "sed '/x/d'", def: "Διαγραφή γραμμών που περιέχουν x" },
+      { term: "jq '.[]'", def: "Επανάληψη πάνω σε στοιχεία ενός array" },
+      { term: "jq -r", def: "Έξοδος χωρίς εισαγωγικά γύρω από τα strings" },
+      { term: "jq 'select(...)'", def: "Φιλτράρισμα στοιχείων βάσει συνθήκης" }
+    ], {
+      note: "Ταίριαξε κάθε εντολή/flag με τη λειτουργία της."
+    });
+
+    addQuiz([
+      {
+        q: "Τι κάνει το flag -i στο sed;",
+        options: [
+          "Αντικαθιστά το περιεχόμενο απευθείας μέσα στο αρχείο, αντί να τυπώνει το αποτέλεσμα",
+          "Κάνει την αναζήτηση χωρίς διάκριση πεζών/κεφαλαίων",
+          "Διαγράφει το αρχείο μετά την αντικατάσταση",
+          "Δείχνει μόνο τις γραμμές που θα άλλαζαν, χωρίς να τις αλλάξει"
+        ],
+        correct: 0,
+        explain: "Το -i (in-place) κάνει την αλλαγή να γραφτεί κατευθείαν στο ίδιο αρχείο."
+      },
+      {
+        q: "Ποιο jq expression εξάγει τη λίστα με όλα τα ονόματα μέσα σε ένα array στοιχείων;",
+        options: [
+          "jq '.items[].name'",
+          "jq '.items.name[]'",
+          "jq 'name.items[]'",
+          "jq '[items].name'"
+        ],
+        correct: 0,
+        explain: "Το .items[] κάνει iterate πάνω στο array, και το .name παίρνει το πεδίο name από κάθε στοιχείο."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">sed</span><span class="gc-def">Stream editor — αναζήτηση/αντικατάσταση κειμένου</span></div>
+  <div class="gc-line"><span class="gc-term">jq</span><span class="gc-def">Επεξεργασία και φιλτράρισμα δεδομένων JSON</span></div>
+  <div class="gc-line"><span class="gc-term">.bashrc</span><span class="gc-def">Αρχείο ρυθμίσεων που τρέχει σε κάθε νέο bash terminal</span></div>
+</div>
+`);
+
+    // ── Section 9 ────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 9 / 9 — Bash Scripts &amp; Regular Expressions</div>
+<h1>Γράψε το πρώτο σου πραγματικό script</h1>
+<p class="lede">Μέχρι τώρα έγραφες εντολές μία-μία. Εδώ βλέπουμε πώς οργανώνονται μέσα σε ένα αρχείο script, με λογική δομή: μεταβλητές, συνθήκες, βρόχους, functions. Οι ίδιες ακριβώς έννοιες θα τις ξαναδείς αμέσως μετά, σε πραγματική γλώσσα προγραμματισμού.</p>
+
+<h2>Το shebang</h2>
+<p>Κάθε bash script ξεκινάει συνήθως με μια ειδική πρώτη γραμμή, το shebang, που λέει στο λειτουργικό σύστημα ποιο πρόγραμμα πρέπει να χρησιμοποιήσει για να ερμηνεύσει το αρχείο:</p>
+<pre><code><span class="tok-com">#!/bin/bash</span>
+<span class="tok-com"># This line tells the OS to use bash as the interpreter for this file</span>
+</code></pre>
+<p>Για να τρέξεις ένα script, πρέπει πρώτα να του δώσεις δικαίωμα εκτέλεσης, και μετά να το καλέσεις:</p>
+<pre><code><span class="tok-func">chmod</span> +x <span class="tok-type">yourscript.sh</span>
+<span class="tok-func">bash</span> <span class="tok-type">yourscript.sh</span>     <span class="tok-com"># or, if it has execute permission and a shebang:</span>
+./<span class="tok-type">yourscript.sh</span>
+</code></pre>
+
+<h2>Functions</h2>
+<p>Μια function ομαδοποιεί εντολές κάτω από ένα όνομα, ώστε να τις καλείς ξανά και ξανά χωρίς επανάληψη κώδικα:</p>
+<pre><code><span class="tok-func">greet</span>() {
+  <span class="tok-func">local</span> world=<span class="tok-str">"World"</span>
+  <span class="tok-func">echo</span> <span class="tok-str">"$1 $world"</span>
+}
+
+<span class="tok-func">greet</span> <span class="tok-str">"Hello"</span>              <span class="tok-com"># call the function, "Hello" becomes $1 inside it</span>
+greeting=<span class="tok-kw">$(</span><span class="tok-func">greet</span> <span class="tok-str">"Hello"</span><span class="tok-kw">)</span>  <span class="tok-com"># capture what the function echoes into a variable</span>
+</code></pre>
+<p>Το <code>local</code> δηλώνει μια μεταβλητή που υπάρχει μόνο μέσα στη function, χωρίς να "μολύνει" το υπόλοιπο script.</p>
+
+<h2>If Statements</h2>
+<pre><code><span class="tok-kw">if</span> [[ <span class="tok-kw">$foo</span> = <span class="tok-str">'bar'</span> ]]; <span class="tok-kw">then</span>
+  <span class="tok-func">echo</span> <span class="tok-str">'one'</span>
+<span class="tok-kw">elif</span> [[ <span class="tok-kw">$foo</span> = <span class="tok-str">'bar'</span> ]] <span class="tok-kw">||</span> [[ <span class="tok-kw">$foo</span> = <span class="tok-str">'baz'</span> ]]; <span class="tok-kw">then</span>
+  <span class="tok-func">echo</span> <span class="tok-str">'two'</span>
+<span class="tok-kw">elif</span> [[ <span class="tok-kw">$foo</span> = <span class="tok-str">'ban'</span> ]] <span class="tok-kw">&amp;&amp;</span> [[ <span class="tok-kw">$USER</span> = <span class="tok-str">'bat'</span> ]]; <span class="tok-kw">then</span>
+  <span class="tok-func">echo</span> <span class="tok-str">'three'</span>
+<span class="tok-kw">else</span>
+  <span class="tok-func">echo</span> <span class="tok-str">'four'</span>
+<span class="tok-kw">fi</span>
+</code></pre>
+<p>Το <code>||</code> σημαίνει "ή" (OR), το <code>&amp;&amp;</code> σημαίνει "και" (AND). Κάθε if statement κλείνει με <code>fi</code> (το if ανάποδα).</p>
+
+<h2>Inline If Statement</h2>
+<p>Για απλές περιπτώσεις υπάρχει και μια συντομευμένη μορφή, χρήσιμη μέσα σε μία γραμμή:</p>
+<pre><code>[[ <span class="tok-kw">$USER</span> = <span class="tok-str">'rehan'</span> ]] <span class="tok-kw">&amp;&amp;</span> <span class="tok-func">echo</span> <span class="tok-str">'yes'</span> <span class="tok-kw">||</span> <span class="tok-func">echo</span> <span class="tok-str">'no'</span>
+<span class="tok-com">// if the condition is true, run the first echo, otherwise run the second</span>
+</code></pre>
+
+<h2>While Loops</h2>
+<pre><code><span class="tok-func">declare</span> <span class="tok-kw">-i</span> counter
+counter=10
+<span class="tok-kw">while</span> [ <span class="tok-kw">$counter</span> -gt 2 ]; <span class="tok-kw">do</span>
+  <span class="tok-func">echo</span> <span class="tok-str">"The counter is $counter"</span>
+  counter=<span class="tok-kw">$((</span>counter-1<span class="tok-kw">))</span>
+<span class="tok-kw">done</span>
+</code></pre>
+<p>Ο βρόχος συνεχίζει όσο η συνθήκη μέσα στα <code>[ ]</code> είναι αληθής. Το <code>-gt</code> σημαίνει "μεγαλύτερο από" (greater than).</p>
+
+<h2>For Loops</h2>
+<pre><code><span class="tok-kw">for</span> i <span class="tok-kw">in</span> {0..10..2}
+<span class="tok-kw">do</span>
+  <span class="tok-func">echo</span> <span class="tok-str">"Index: $i"</span>
+<span class="tok-kw">done</span>
+<span class="tok-com">// iterates 0, 2, 4, 6, 8, 10 — start..end..step</span>
+
+<span class="tok-kw">for</span> filename <span class="tok-kw">in</span> file1 file2 file3
+<span class="tok-kw">do</span>
+  <span class="tok-func">echo</span> <span class="tok-str">"Content: "</span> &gt;&gt; <span class="tok-kw">$filename</span>
+<span class="tok-kw">done</span>
+<span class="tok-com">// iterates over a fixed list of names</span>
+
+<span class="tok-kw">for</span> filename <span class="tok-kw">in</span> *;
+<span class="tok-kw">do</span>
+  <span class="tok-func">echo</span> <span class="tok-str">"Content: "</span> &gt;&gt; <span class="tok-kw">$filename</span>
+<span class="tok-kw">done</span>
+<span class="tok-com">// iterates over every file in the current directory</span>
+</code></pre>
+
+<h2>Case Statements</h2>
+<p>Το case είναι μια πιο καθαρή εναλλακτική στα πολλαπλά elif, όταν συγκρίνεις μια μεταβλητή με πολλές πιθανές τιμές:</p>
+<pre><code><span class="tok-func">echo</span> <span class="tok-str">"What's the weather like tomorrow?"</span>
+<span class="tok-func">read</span> weather
+
+<span class="tok-kw">case</span> <span class="tok-kw">$weather</span> <span class="tok-kw">in</span>
+  sunny | warm ) <span class="tok-func">echo</span> <span class="tok-str">"Nice weather: "</span> <span class="tok-kw">$weather</span>
+  ;;
+  cloudy | cool ) <span class="tok-func">echo</span> <span class="tok-str">"Not bad weather: "</span> <span class="tok-kw">$weather</span>
+  ;;
+  rainy | cold ) <span class="tok-func">echo</span> <span class="tok-str">"Terrible weather: "</span> <span class="tok-kw">$weather</span>
+  ;;
+  * ) <span class="tok-func">echo</span> <span class="tok-str">"Don't understand"</span>
+  ;;
+<span class="tok-kw">esac</span>
+</code></pre>
+<p>Το <code>|</code> μέσα στο case σημαίνει "ή" ανάμεσα σε τιμές, το <code>;;</code> κλείνει κάθε επιλογή, και το <code>*</code> είναι η προεπιλεγμένη περίπτωση αν καμία δεν ταιριάξει.</p>
+
+<h2>Regular Expressions, τα σύμβολα</h2>
+<p>Τώρα που είδαμε if statements, τα regex αποκτούν περισσότερο νόημα, αφού συχνά χρησιμοποιούνται μέσα σε συνθήκες για να ελέγξεις αν ένα string ταιριάζει με ένα pattern.</p>
+<table class="glossary-table">
+  <tr><td class="gt-term">\\</td><td class="gt-def">Escape τον επόμενο χαρακτήρα, π.χ. \\^ ταιριάζει με το ίδιο το σύμβολο ^, όχι με "αρχή γραμμής"</td></tr>
+  <tr><td class="gt-term">^</td><td class="gt-def">Αρχή γραμμής</td></tr>
+  <tr><td class="gt-term">$</td><td class="gt-def">Τέλος γραμμής</td></tr>
+  <tr><td class="gt-term">[ ]</td><td class="gt-def">Ταιριάζει με οποιονδήποτε χαρακτήρα μέσα στις αγκύλες, π.χ. [abc] = a ή b ή c</td></tr>
+  <tr><td class="gt-term">-</td><td class="gt-def">Εύρος μέσα σε αγκύλες, π.χ. [0-9] = ψηφία από 0 έως 9</td></tr>
+  <tr><td class="gt-term">[^ ]</td><td class="gt-def">Ταιριάζει με οτιδήποτε ΕΚΤΟΣ από τους χαρακτήρες μέσα στις αγκύλες</td></tr>
+  <tr><td class="gt-term">.</td><td class="gt-def">Οποιοσδήποτε ένας χαρακτήρας</td></tr>
+  <tr><td class="gt-term">*</td><td class="gt-def">Μηδέν ή περισσότερες φορές του προηγούμενου χαρακτήρα</td></tr>
+  <tr><td class="gt-term">\\d</td><td class="gt-def">Οποιοδήποτε ένα ψηφίο</td></tr>
+  <tr><td class="gt-term">\\D</td><td class="gt-def">Οτιδήποτε ΔΕΝ είναι ψηφίο</td></tr>
+  <tr><td class="gt-term">\\w</td><td class="gt-def">Οποιοσδήποτε αλφαριθμητικός χαρακτήρας</td></tr>
+</table>
+`);
+
+    addFillBlank([
+      {
+        code:
+          `greet() {
+  local world="World"
+  __cmd__ "$1 $world"
+}
+greet "Hello"   # prints "Hello World"`,
+        blanks: [
+          { id: "cmd", answer: "echo" }
+        ],
+        explain: "Το echo τυπώνει κείμενο, εδώ τη συνένωση του πρώτου ορίσματος με τη μεταβλητή world."
+      },
+      {
+        code:
+          `for i in {0..10..2}
+__kw1__
+  echo "Index: $i"
+__kw2__`,
+        blanks: [
+          { id: "kw1", answer: "do" },
+          { id: "kw2", answer: "done" }
+        ],
+        explain: "Κάθε for loop στο bash ανοίγει με do και κλείνει με done."
+      }
+    ], {
+      note: "Συμπλήρωσε τις λέξεις-κλειδιά ή εντολές που λείπουν."
+    });
+
+    addMatching([
+      { term: "if / fi", def: "Ανοίγει και κλείνει μια συνθήκη" },
+      { term: "for / done", def: "Ανοίγει και κλείνει έναν for loop" },
+      { term: "case / esac", def: "Ανοίγει και κλείνει ένα case statement" },
+      { term: "local", def: "Δηλώνει μεταβλητή τοπική σε μια function" },
+      { term: "&&", def: "Λογικό ΚΑΙ ανάμεσα σε συνθήκες" },
+      { term: "||", def: "Λογικό Ή ανάμεσα σε συνθήκες" }
+    ], {
+      note: "Ταίριαξε κάθε λέξη-κλειδί ή σύμβολο με τη λειτουργία της."
+    });
+
+    // Final combined quiz — 8 questions covering the whole deck.
+    addQuiz([
+      {
+        q: "Ποια εντολή δείχνει τα περιεχόμενα του τρέχοντος φακέλου;",
+        options: [
+          "pwd",
+          "ls",
+          "cd",
+          "cat"
+        ],
+        correct: 1,
+        explain: "Η ls (list) εμφανίζει τα περιεχόμενα ενός φακέλου."
+      },
+      {
+        q: "Ποιο σύμβολο κάνει append σε ένα αρχείο, χωρίς να διαγράφει το προηγούμενο περιεχόμενο;",
+        options: [
+          ">",
+          ">>",
+          "|",
+          "<"
+        ],
+        correct: 1,
+        explain: "Το >> προσθέτει στο τέλος υπάρχοντος περιεχομένου, ενώ το > το αντικαθιστά πλήρως."
+      },
+      {
+        q: "Ποιο flag στο grep κάνει αναζήτηση μέσα σε ολόκληρο φάκελο, αναδρομικά;",
+        options: [
+          "-i",
+          "-v",
+          "-r",
+          "-c"
+        ],
+        correct: 2,
+        explain: "Το -r (recursive) ψάχνει μέσα σε κάθε αρχείο ενός φακέλου, συμπεριλαμβανομένων των υποφακέλων."
+      },
+      {
+        q: "Τι δηλώνει το wildcard * σε ένα pattern αρχείου όπως *.go;",
+        options: [
+          "Ακριβώς έναν χαρακτήρα",
+          "Οποιαδήποτε ακολουθία χαρακτήρων, ακόμα και μηδενικού μήκους",
+          "Μόνο αριθμητικούς χαρακτήρες",
+          "Έναν χαρακτήρα μέσα σε συγκεκριμένο σύνολο"
+        ],
+        correct: 1,
+        explain: "Το * ταιριάζει με οποιαδήποτε ακολουθία χαρακτήρων, ακόμα και κενή."
+      },
+      {
+        q: "Ποιο δικαίωμα χρειάζεται ένα script για να τρέξει απευθείας σαν πρόγραμμα, π.χ. ./script.sh;",
+        options: [
+          "read (r)",
+          "write (w)",
+          "execute (x)",
+          "Δεν χρειάζεται κανένα ειδικό δικαίωμα, αρκεί να υπάρχει το αρχείο στον δίσκο"
+        ],
+        correct: 2,
+        explain: "Το execute (x) δικαίωμα επιτρέπει να τρέξει ένα αρχείο σαν πρόγραμμα."
+      },
+      {
+        q: "Ποια εντολή δείχνει live τις τρέχουσες διεργασίες και τη χρήση πόρων του συστήματος;",
+        options: [
+          "top",
+          "cat",
+          "mkdir",
+          "grep"
+        ],
+        correct: 0,
+        explain: "Η top δίνει live εικόνα των διεργασιών και της χρήσης CPU/μνήμης."
+      },
+      {
+        q: "Στο sed, τι κάνει το flag -i;",
+        options: [
+          "Αντικαθιστά κατευθείαν μέσα στο αρχείο, αντί να τυπώνει το αποτέλεσμα",
+          "Αγνοεί πεζά/κεφαλαία στην αναζήτηση",
+          "Εμφανίζει τον αριθμό γραμμής κάθε αλλαγής",
+          "Διαγράφει όλες τις κενές γραμμές αυτόματα"
+        ],
+        correct: 0,
+        explain: "Το -i (in-place) γράφει την αλλαγή απευθείας μέσα στο αρχείο."
+      },
+      {
+        q: "Ποια λέξη-κλειδί κλείνει ένα case statement στο bash;",
+        options: [
+          "fi",
+          "done",
+          "esac",
+          "end"
+        ],
+        correct: 2,
+        explain: "Το case ανοίγει με case και κλείνει με esac (case ανάποδα), όπως το if με fi."
+      }
+    ]);
+
+    // ── Final cheatsheet glossary ───────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Συγκεντρωτικό Cheatsheet</div>
+<h1>Όλες οι εντολές, σε ένα σημείο</h1>
+<p class="lede">Γρήγορη αναφορά, όχι νέα εξήγηση. Αν ξεχάσεις κάτι, γύρνα εδώ.</p>
+
+<div class="glossary-group">
+  <h2>Πλοήγηση &amp; πληροφορίες</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">whoami</td><td class="gt-def">Τρέχον username</td></tr>
+    <tr><td class="gt-term">pwd</td><td class="gt-def">Τρέχων φάκελος</td></tr>
+    <tr><td class="gt-term">ls / ls -a / ls -l / ls -lh / ls -t</td><td class="gt-def">Λίστα περιεχομένων (all / long / human-readable / by time)</td></tr>
+    <tr><td class="gt-term">cd foo / cd / cd ~ / cd ..  / cd -</td><td class="gt-def">Αλλαγή φακέλου (sub-dir / home / home / up / previous)</td></tr>
+    <tr><td class="gt-term">stat foo</td><td class="gt-def">Μέγεθος, δημιουργία, τροποποίηση αρχείου/φακέλου</td></tr>
+    <tr><td class="gt-term">tree / tree -a / tree -d</td><td class="gt-def">Δέντρο φακέλων (all / dirs only)</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Δημιουργία, αντιγραφή, διαγραφή</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">mkdir foo / mkdir -p foo/bar / mkdir -p {foo,bar}/baz</td><td class="gt-def">Δημιουργία φακέλου (nested / πολλαπλά nested)</td></tr>
+    <tr><td class="gt-term">mktemp -d</td><td class="gt-def">Προσωρινός φάκελος με μοναδικό όνομα</td></tr>
+    <tr><td class="gt-term">touch foo.txt / touch {foo,bar}.txt / touch test{1..3}</td><td class="gt-def">Δημιουργία αρχείου(ων), brace expansion</td></tr>
+    <tr><td class="gt-term">cp --recursive foo bar</td><td class="gt-def">Αντιγραφή φακέλου</td></tr>
+    <tr><td class="gt-term">mv foo bar</td><td class="gt-def">Μετακίνηση/μετονομασία</td></tr>
+    <tr><td class="gt-term">rmdir foo</td><td class="gt-def">Διαγραφή άδειου φακέλου</td></tr>
+    <tr><td class="gt-term">rm -r foo / rm -rf foo</td><td class="gt-def">Διαγραφή φακέλου με περιεχόμενο (force, χωρίς prompt)</td></tr>
+    <tr><td class="gt-term">code foo.sh / open foo.txt</td><td class="gt-def">Άνοιγμα σε VS Code / default εφαρμογή</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>stdin, stdout, stderr, redirection</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">echo "foo" &gt; bar.txt / &gt;&gt; bar.txt</td><td class="gt-def">Overwrite / append σε αρχείο</td></tr>
+    <tr><td class="gt-term">cmd 1&gt; out.txt / cmd 2&gt; err.txt</td><td class="gt-def">Redirect stdout / stderr ξεχωριστά</td></tr>
+    <tr><td class="gt-term">cmd 2&gt;&amp;1 &gt; all.txt</td><td class="gt-def">Redirect stdout ΚΑΙ stderr μαζί</td></tr>
+    <tr><td class="gt-term">cmd &gt; /dev/null</td><td class="gt-def">Απόρριψη εξόδου</td></tr>
+    <tr><td class="gt-term">sort &lt; input.txt</td><td class="gt-def">Redirect αρχείου ως stdin</td></tr>
+    <tr><td class="gt-term">read foo</td><td class="gt-def">Ανάγνωση από stdin σε μεταβλητή</td></tr>
+    <tr><td class="gt-term">cmd1 | cmd2</td><td class="gt-def">Pipe: stdout του cmd1 γίνεται stdin του cmd2</td></tr>
+    <tr><td class="gt-term">$(cmd)</td><td class="gt-def">Command substitution</td></tr>
+    <tr><td class="gt-term">&lt;(cmd)</td><td class="gt-def">Process substitution</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Ανάγνωση &amp; μέτρηση κειμένου</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">cat / less / head / tail</td><td class="gt-def">Πλήρες αρχείο / paginated / πρώτες 10 / τελευταίες 10 γραμμές</td></tr>
+    <tr><td class="gt-term">wc / wc -l / wc -w / wc -m</td><td class="gt-def">Γραμμές+λέξεις+χαρακτήρες / μόνο γραμμές / λέξεις / χαρακτήρες</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>grep — Global Regular Expression Print</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">grep 'foo' bar.txt</td><td class="gt-def">Αναζήτηση pattern σε αρχείο</td></tr>
+    <tr><td class="gt-term">-r / -R</td><td class="gt-def">Recursive / recursive + follow symlinks</td></tr>
+    <tr><td class="gt-term">-l / -L</td><td class="gt-def">Μόνο filenames που ταιριάζουν / που ΔΕΝ ταιριάζουν</td></tr>
+    <tr><td class="gt-term">-i / -x</td><td class="gt-def">Ignore case / match ολόκληρη τη γραμμή</td></tr>
+    <tr><td class="gt-term">-v / -c / -n</td><td class="gt-def">Invert match / μέτρηση / line numbers</td></tr>
+    <tr><td class="gt-term">-C 1</td><td class="gt-def">N γραμμές context γύρω από κάθε match</td></tr>
+    <tr><td class="gt-term">-E 'foo|bar' (ή egrep)</td><td class="gt-def">Extended regex, επιτρέπει το |</td></tr>
+    <tr><td class="gt-term">-Z / --null</td><td class="gt-def">Filenames χωρισμένα με null byte</td></tr>
+    <tr><td class="gt-term">--colour</td><td class="gt-def">Χρωματιστή έξοδος</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>find &amp; locate</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">find /path -name foo.txt</td><td class="gt-def">Εύρεση με ακριβές όνομα</td></tr>
+    <tr><td class="gt-term">find -iname foo.txt</td><td class="gt-def">Case-insensitive εύρεση</td></tr>
+    <tr><td class="gt-term">find -name "*.txt"</td><td class="gt-def">Εύρεση με wildcard</td></tr>
+    <tr><td class="gt-term">find -type f / -type d / -type l</td><td class="gt-def">Μόνο αρχεία / φάκελοι / symbolic links</td></tr>
+    <tr><td class="gt-term">find -mtime +30</td><td class="gt-def">Μη τροποποιημένα τις τελευταίες 30 μέρες</td></tr>
+    <tr><td class="gt-term">find -delete</td><td class="gt-def">Διαγραφή αποτελεσμάτων</td></tr>
+    <tr><td class="gt-term">find -exec cmd {} \\;</td><td class="gt-def">Εκτέλεση εντολής σε κάθε αποτέλεσμα</td></tr>
+    <tr><td class="gt-term">find -print0</td><td class="gt-def">Αποτελέσματα χωρισμένα με null byte</td></tr>
+    <tr><td class="gt-term">locate foo.txt</td><td class="gt-def">Γρήγορη εύρεση μέσω pre-built index</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>cut, tr, sort, uniq</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">cut -d "," -f1</td><td class="gt-def">Delimiter c, εξαγωγή πεδίου 1</td></tr>
+    <tr><td class="gt-term">cut -f&lt;n&gt; / -f&lt;n-m&gt;</td><td class="gt-def">Πεδίο n / πεδία n έως m</td></tr>
+    <tr><td class="gt-term">cut -c 2,5,7</td><td class="gt-def">Χαρακτήρες σε συγκεκριμένες θέσεις</td></tr>
+    <tr><td class="gt-term">tr 'l' '1'</td><td class="gt-def">Αντικατάσταση χαρακτήρα προς χαρακτήρα</td></tr>
+    <tr><td class="gt-term">tr -s 'a'</td><td class="gt-def">Συμπίεση διαδοχικών επαναλήψεων</td></tr>
+    <tr><td class="gt-term">sort / uniq</td><td class="gt-def">Ταξινόμηση / αφαίρεση διαδοχικών διπλότυπων</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>curl</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">curl https://example.com</td><td class="gt-def">Εκτύπωση περιεχομένου URL</td></tr>
+    <tr><td class="gt-term">curl -s / curl -#</td><td class="gt-def">Silent (χωρίς progress bar) / απλό progress bar</td></tr>
+    <tr><td class="gt-term">curl ftp://.../file[1-20].jpeg</td><td class="gt-def">Αριθμητική ακολουθία URLs</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>sed — stream editor</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">sed 's/fox/bear/g'</td><td class="gt-def">Αντικατάσταση όλων των εμφανίσεων (g = global)</td></tr>
+    <tr><td class="gt-term">Delimiters: / | : #</td><td class="gt-def">Εναλλακτικοί διαχωριστές αντί για /</td></tr>
+    <tr><td class="gt-term">-i / -i.bak</td><td class="gt-def">In-place αλλαγή / με backup</td></tr>
+    <tr><td class="gt-term">-e</td><td class="gt-def">Πολλαπλά expressions σε μία κλήση</td></tr>
+    <tr><td class="gt-term">-n ... p</td><td class="gt-def">Silent mode + print μόνο τις γραμμές που άλλαξαν</td></tr>
+    <tr><td class="gt-term">-f script.sed</td><td class="gt-def">Οδηγίες αλλαγών από αρχείο</td></tr>
+    <tr><td class="gt-term">-z</td><td class="gt-def">Διαχωρισμός με null byte αντί για newline</td></tr>
+    <tr><td class="gt-term">'/fox/d'</td><td class="gt-def">Διαγραφή γραμμών με "fox"</td></tr>
+    <tr><td class="gt-term">'3d' / '/^$/d'</td><td class="gt-def">Διαγραφή γραμμής 3 / κενών γραμμών</td></tr>
+    <tr><td class="gt-term">'/fox/i text' / '/fox/a text'</td><td class="gt-def">Insert πριν / append μετά τη γραμμή</td></tr>
+    <tr><td class="gt-term">'/fox/c text'</td><td class="gt-def">Change: αντικατάσταση ολόκληρης γραμμής</td></tr>
+    <tr><td class="gt-term">'y/abc/ABC/'</td><td class="gt-def">Transform χαρακτήρα προς χαρακτήρα</td></tr>
+    <tr><td class="gt-term">Flags: κενό / g / 2 / i / p / w file</td><td class="gt-def">1η φορά / όλες / συγκεκριμένη / ignore case / print / write σε αρχείο</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>jq — JSON processing</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">jq '.'</td><td class="gt-def">Pretty-print ολόκληρου JSON</td></tr>
+    <tr><td class="gt-term">jq '.foo' / jq '.["foo"]'</td><td class="gt-def">Τιμή του key foo (2ο για ειδικούς χαρακτήρες)</td></tr>
+    <tr><td class="gt-term">jq '.user.profile.id'</td><td class="gt-def">Nested πεδία</td></tr>
+    <tr><td class="gt-term">jq -r / --raw-output</td><td class="gt-def">Χωρίς εισαγωγικά γύρω από strings</td></tr>
+    <tr><td class="gt-term">jq '.items[0]' / '.items[]' / '.items[].name'</td><td class="gt-def">1ο στοιχείο / όλα / συγκεκριμένο πεδίο όλων</td></tr>
+    <tr><td class="gt-term">jq -c / -s / -S</td><td class="gt-def">Compact / slurp πολλαπλών JSON / sort keys</td></tr>
+    <tr><td class="gt-term">jq 'keys' / 'length'</td><td class="gt-def">Λίστα keys / αριθμός στοιχείων</td></tr>
+    <tr><td class="gt-term">jq '.[] | select(.id==100)'</td><td class="gt-def">Φιλτράρισμα με συνθήκη</td></tr>
+    <tr><td class="gt-term">jq 'map(.price * 1.25)'</td><td class="gt-def">Μετασχηματισμός κάθε στοιχείου</td></tr>
+    <tr><td class="gt-term">jq '.optional // "N/A"'</td><td class="gt-def">Default τιμή αν null/missing</td></tr>
+    <tr><td class="gt-term">jq 'try .id catch "error"'</td><td class="gt-def">Αποφυγή crash σε αποτυχία πρόσβασης</td></tr>
+    <tr><td class="gt-term">jq '.tags | join(", ")'</td><td class="gt-def">Ένωση array σε string</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>File Permissions</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">ls -l</td><td class="gt-def">Εμφάνιση δικαιωμάτων αρχείου</td></tr>
+    <tr><td class="gt-term">chmod u+x / g+x / a+x / +x</td><td class="gt-def">Execute σε owner / group / όλοι / όλοι (shorthand)</td></tr>
+    <tr><td class="gt-term">chmod u-x,g-x</td><td class="gt-def">Αφαίρεση execute από owner+group</td></tr>
+    <tr><td class="gt-term">chmod +100 / -100</td><td class="gt-def">Προσθήκη/αφαίρεση execute bit αριθμητικά</td></tr>
+    <tr><td class="gt-term">chmod 755</td><td class="gt-def">owner=rwx, group=rx, others=rx</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Process Management, Networking, System Admin</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">cmd & / jobs / fg / bg / disown</td><td class="gt-def">Background εκτέλεση και διαχείριση</td></tr>
+    <tr><td class="gt-term">nohup cmd &</td><td class="gt-def">Επιβίωση μετά από logout</td></tr>
+    <tr><td class="gt-term">ping / wget / ssh / scp / rsync</td><td class="gt-def">Δικτυακά εργαλεία</td></tr>
+    <tr><td class="gt-term">ps aux / top / htop</td><td class="gt-def">Λίστα / live παρακολούθηση διεργασιών</td></tr>
+    <tr><td class="gt-term">free -h / df -h / du -sh / uptime</td><td class="gt-def">Μνήμη / δίσκος / χρήση φακέλου / χρόνος λειτουργίας</td></tr>
+    <tr><td class="gt-term">tar -czvf / -xzvf / zip / unzip / gzip / gunzip</td><td class="gt-def">Συμπίεση/αποσυμπίεση αρχείων</td></tr>
+    <tr><td class="gt-term">apt / brew / pacman</td><td class="gt-def">Package managers (Debian / macOS / Arch)</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Variables &amp; Exit Codes</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">foo=123 / declare -i / declare -r</td><td class="gt-def">Shell variable / integer / readonly</td></tr>
+    <tr><td class="gt-term">$foo / \${foo} / \${foo:-'default'}</td><td class="gt-def">Χρήση / σαφή όρια ονόματος / default τιμή</td></tr>
+    <tr><td class="gt-term">export / unset</td><td class="gt-def">Environment variable / αφαίρεση μεταβλητής</td></tr>
+    <tr><td class="gt-term">env</td><td class="gt-def">Λίστα environment variables</td></tr>
+    <tr><td class="gt-term">$0 / $1.. / $# / $@ / $?</td><td class="gt-def">Script name / ορίσματα / πλήθος / όλα / exit code</td></tr>
+    <tr><td class="gt-term">exit 0 / exit 1</td><td class="gt-def">Επιτυχής / ανεπιτυχής τερματισμός</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Bash Scripting Δομές</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">#!/bin/bash</td><td class="gt-def">Shebang, ορίζει τον interpreter</td></tr>
+    <tr><td class="gt-term">name() { ... } / local</td><td class="gt-def">Ορισμός function / τοπική μεταβλητή</td></tr>
+    <tr><td class="gt-term">if / elif / else / fi</td><td class="gt-def">Συνθήκες</td></tr>
+    <tr><td class="gt-term">[[ ]] && ... || ...</td><td class="gt-def">Inline συνθήκη</td></tr>
+    <tr><td class="gt-term">while [ ]; do ... done</td><td class="gt-def">Βρόχος όσο ισχύει συνθήκη</td></tr>
+    <tr><td class="gt-term">for x in ...; do ... done</td><td class="gt-def">Βρόχος πάνω σε λίστα/εύρος</td></tr>
+    <tr><td class="gt-term">case $x in ... esac</td><td class="gt-def">Πολλαπλή σύγκριση τιμών</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Regular Expressions</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">\\ / ^ / $</td><td class="gt-def">Escape / αρχή γραμμής / τέλος γραμμής</td></tr>
+    <tr><td class="gt-term">[ ] / - / [^ ]</td><td class="gt-def">Σύνολο χαρακτήρων / εύρος / άρνηση συνόλου</td></tr>
+    <tr><td class="gt-term">. / *</td><td class="gt-def">Οποιοσδήποτε χαρακτήρας / μηδέν ή περισσότερες φορές</td></tr>
+    <tr><td class="gt-term">\\d / \\D / \\w</td><td class="gt-def">Ψηφίο / μη-ψηφίο / αλφαριθμητικός χαρακτήρας</td></tr>
+  </table>
+</div>
+`);
+
+    // ── Sources ──────────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+<p class="lede">Για περαιτέρω εμβάθυνση:</p>
+<div class="sources-list">
+  <a href="https://www.gnu.org/software/bash/manual/bash.html" target="_blank" rel="noopener">GNU Bash Manual</a>
+  <a href="https://explainshell.com/" target="_blank" rel="noopener">explainshell.com — ανάλυση εντολών γραμμή προς γραμμή</a>
+  <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank" rel="noopener">Επίσημος οδηγός εγκατάστασης WSL</a>
+  <a href="https://github.com/RehanSaeed/Bash-Cheat-Sheet" target="_blank" rel="noopener">Bash Cheat Sheet (RehanSaeed)</a>
+  <a href="https://jqlang.org/manual/" target="_blank" rel="noopener">Επίσημο manual του jq</a>
+</div>
+<div id="final-score"></div>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
+  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+</p>
+`);
+
+
+    initSlideDeck({ version: "2.0.0" });
+  </script>
+</body>
+
+</html>
