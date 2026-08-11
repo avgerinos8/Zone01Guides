@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go — Μέρος 1 — Θεωρητικό Υλικό</title>
+  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <link rel="stylesheet" href="static/theme-go-one.css?v=20260801">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-reset">
+        <span class="desktop-text">Reset Progress</span>
+        <span class="mobile-text">Reset</span>
+      </button>
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+        <span class="desktop-text">Return</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots"></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
+  <script>
+    // Course content below.
+
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/go-one.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Go — Μέρος 1<br>Από το πρώτο πρόγραμμα ως τα Slices &amp; Maps</h1>
+  <p class="lede">Ένας πλήρης θεωρητικός οδηγός στα θεμέλια της Go: setup, τύποι, έλεγχος ροής, συναρτήσεις, δείκτες και συλλογές δεδομένων.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
+<h1>Φιλοσοφία της Go &amp; Πρώτα Βήματα</h1>
+<p class="lede">Πριν γράψουμε έστω και μία γραμμή κώδικα, αξίζει να καταλάβουμε γιατί η Go μοιάζει όπως μοιάζει — οι επιλογές σχεδίασής της δεν είναι τυχαίες.</p>
+
+<h2>Γιατί δημιουργήθηκε η Go</h2>
+<p>Η Go δημιουργήθηκε στη Google το 2007 (δημόσια το 2009) από τους Robert Griesemer, Rob Pike και Ken Thompson, με στόχο να λύσει συγκεκριμένα προβλήματα που αντιμετώπιζαν μεγάλες ομάδες μηχανικών: αργές μεταγλωττίσεις σε τεράστια codebases, δυσκολία διαχείρισης dependencies, και γλώσσες που είτε ήταν πολύ αργές (interpreted) είτε πολύ πολύπλοκες (C++ με τα πολλαπλά paradigms της). Η Go στοχεύει σε τρεις βασικούς πυλώνες: <strong>απλότητα</strong> (μικρό σύνολο κανόνων, ένας "σωστός" τρόπος να κάνεις κάτι), <strong>ταχύτητα</strong> (compiled γλώσσα, γρήγορη μεταγλώττιση, γρήγορη εκτέλεση) και <strong>συντηρησιμότητα</strong> (κώδικας που διαβάζεται εύκολα από άλλους, ακόμα και σε ομάδες εκατοντάδων προγραμματιστών).</p>
+<p>Αυτό αντικατοπτρίζεται στη ρητή απόφαση να λείπουν χαρακτηριστικά που άλλες γλώσσες θεωρούν δεδομένα: δεν υπάρχει κλασική κληρονομικότητα (inheritance) σε classes, δεν υπάρχουν generics στις πρώτες εκδόσεις (προστέθηκαν αργότερα, στη 1.18), δεν υπάρχουν exceptions με try/catch. Αντί γι' αυτά, η Go προτιμά ρητά, απλά patterns — κάτι που θα το βλέπεις συνέχεια σε αυτόν τον οδηγό.</p>
+
+<div class="grid3">
+  <div class="card"><h3>Απλότητα</h3><p>Μικρή γραμματική, ένας τρόπος να γράψεις κάτι — λιγότερες αποφάσεις στυλ, λιγότερες διαφωνίες σε code review.</p></div>
+  <div class="card"><h3>Ταχύτητα</h3><p>Compiled σε native machine code, χωρίς εικονική μηχανή. Η μεταγλώττιση είναι αισθητά γρήγορη ακόμα και σε μεγάλα projects.</p></div>
+  <div class="card"><h3>Συντηρησιμότητα</h3><p>Ενσωματωμένο εργαλείο μορφοποίησης (<code>go fmt</code>), σαφή error messages, και σύμβαση πάνω από ρύθμιση.</p></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
+<h2>Εγκατάσταση &amp; Setup</h2>
+<p>Για να γράψεις και να τρέξεις Go κώδικα χρειάζεσαι το <strong>Go Toolchain</strong> (το επίσημο SDK), το οποίο περιλαμβάνει τον compiler, τα βασικά εργαλεία γραμμής εντολών, και τη standard library. Κατεβάζεται από το <code>go.dev/dl</code> και είναι διαθέσιμο για Windows, macOS και Linux.</p>
+<p>Ο editor δεν είναι μέρος του toolchain, αλλά η επιλογή του κάνει μεγάλη διαφορά στην εμπειρία σου. Το <strong>VS Code</strong> με την επίσημη επέκταση "Go" (της Google) προσφέρει auto-complete, inline error checking, αυτόματη μορφοποίηση στο save, και ενσωματωμένο debugger — είναι η πιο διαδεδομένη επιλογή για αρχάριους. Το <strong>GoLand</strong> (JetBrains) είναι μια πλήρης IDE αφιερωμένη αποκλειστικά στη Go, με πιο βαθιά static analysis, αλλά είναι επί πληρωμή (με δωρεάν άδεια για φοιτητές).</p>
+
+<div class="callout">
+  <span class="tag">Δύο μεταβλητές περιβάλλοντος που θα συναντήσεις</span>
+  <strong>GOROOT</strong>: πού είναι εγκατεστημένο το ίδιο το Go toolchain (compiler, standard library). Συνήθως δεν χρειάζεται να το αγγίξεις — το ρυθμίζει ο installer. <strong>GOPATH</strong>: ιστορικά, πού αποθηκεύονταν όλα τα Go projects και τα downloaded packages ενός χρήστη. Από τη Go 1.11 και μετά, με τα <em>Go Modules</em>, ο ρόλος του GOPATH μειώθηκε δραστικά — τα σημερινά projects ζουν όπου θέλεις, με ένα αρχείο <code>go.mod</code> να ορίζει τα dependencies τοπικά.</p>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
+<h2>Το Πρώτο Πρόγραμμα — Ανατομία του main.go</h2>
+<p>Κάθε εκτελέσιμο Go πρόγραμμα ξεκινά από ένα πολύ συγκεκριμένο μοτίβο. Δες το πιο απλό δυνατό παράδειγμα:</p>
+
+<pre><code><span class="tok-com">// declares which package this file belongs to</span>
+<span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-com">// the entry point: execution starts here</span>
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Hello, Zone01!"</span>)
+}
+</code></pre>
+
+<p>Κάθε αρχείο Go ξεκινά με μια δήλωση <code>package</code>. Το <code>package main</code> έχει ειδική σημασία: λέει στον compiler "αυτό δεν είναι απλά βιβλιοθήκη, θέλω από αυτό να παραχθεί εκτελέσιμο αρχείο". Μέσα σε ένα πρόγραμμα-πακέτο <code>main</code>, πρέπει να υπάρχει ακριβώς μία συνάρτηση <code>func main()</code> χωρίς παραμέτρους και χωρίς return value — αυτή είναι το σημείο εκκίνησης (entry point). Όταν τρέξεις το πρόγραμμα, η εκτέλεση ξεκινά από την πρώτη γραμμή μέσα στη <code>main()</code> και προχωρά γραμμικά, εκτός αν συναντήσει κλήσεις άλλων συναρτήσεων.</p>
+<p>Η γραμμή <code>import "fmt"</code> φέρνει διαθέσιμο το πακέτο <code>fmt</code> (format) της standard library, που περιέχει συναρτήσεις για είσοδο/έξοδο κειμένου. Η <code>fmt.Println(...)</code> τυπώνει το όρισμά της στο terminal, ακολουθούμενο από νέα γραμμή.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή</span>
+  Αν δηλώσεις ένα package/import που δεν χρησιμοποιείς πουθενά, η Go αρνείται να μεταγλωττίσει το πρόγραμμα. Αυτό δεν είναι bug — είναι σκόπιμη σχεδιαστική επιλογή ώστε να μη μαζεύεται "νεκρός" κώδικας.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
+<h2>Το Go CLI — Οι τρεις βασικές εντολές</h2>
+<p>Το toolchain έρχεται με μια ενιαία εντολή <code>go</code>, η οποία διακλαδίζεται σε υποεντολές. Οι τρεις πιο συχνές στην καθημερινή δουλειά είναι αυτές:</p>
+
+<div class="grid3">
+  <div class="card"><h3><code>go run</code></h3><p>Μεταγλωττίζει το πρόγραμμα σε προσωρινό εκτελέσιμο, το τρέχει αμέσως, και το πετάει. Ιδανικό για γρήγορο testing κατά την ανάπτυξη — δεν αφήνει πίσω αρχείο.</p></div>
+  <div class="card"><h3><code>go build</code></h3><p>Μεταγλωττίζει το πρόγραμμα σε ένα μόνιμο εκτελέσιμο αρχείο στον τρέχοντα φάκελο, χωρίς να το τρέξει. Αυτό είναι το αρχείο που θα διένειμες σε παραγωγή.</p></div>
+  <div class="card"><h3><code>go fmt</code></h3><p>Ξαναγράφει αυτόματα τον κώδικά σου ώστε να ακολουθεί την επίσημη μορφοποίηση της Go (εσοχές, κενά, στοίχιση). Αίρει κάθε συζήτηση περί στυλ.</p></div>
+</div>
+
+<p>Μια πρακτική συνήθεια: κατά την ανάπτυξη χρησιμοποιείς σχεδόν αποκλειστικά <code>go run main.go</code>, και μόνο όταν το πρόγραμμα είναι έτοιμο για διανομή τρέχεις <code>go build</code> για να πάρεις το τελικό binary.</p>
+`);
+
+    addQuiz([
+      {
+        q: "Ποιος είναι ο ρόλος της δήλωσης 'package main' σε ένα αρχείο Go;",
+        options: [
+          "Λέει στον compiler ότι από αυτό το πακέτο πρέπει να παραχθεί εκτελέσιμο αρχείο, με entry point τη func main()",
+          "Ορίζει το όνομα του φακέλου μέσα στον οποίο πρέπει να αποθηκευτεί το αρχείο",
+          "Ενεργοποιεί τον αυτόματο formatter go fmt για όλο το αρχείο κατά την αποθήκευση",
+          "Δηλώνει ότι το αρχείο δεν έχει καμία εξάρτηση από άλλα πακέτα της standard library"
+        ],
+        correct: 0,
+        explain: "Το 'package main' είναι ειδική σύμβαση: μόνο πακέτα με αυτό το όνομα μπορούν να παραχθούν σε εκτελέσιμο, και απαιτούν ακριβώς μία func main() ως σημείο εκκίνησης."
+      },
+      {
+        q: "Ποια είναι η βασική διαφορά ανάμεσα στο 'go run' και το 'go build';",
+        options: [
+          "Το go build δουλεύει μόνο σε Linux, ενώ το go run είναι cross-platform",
+          "Το go run μεταγλωττίζει και τρέχει αμέσως χωρίς να αφήσει μόνιμο αρχείο, ενώ το go build παράγει μόνιμο εκτελέσιμο χωρίς να το τρέξει",
+          "Το go run χρειάζεται GOPATH ενώ το go build λειτουργεί μόνο με Go Modules",
+          "Δεν υπάρχει πρακτική διαφορά, είναι δύο ονόματα για την ίδια ακριβώς λειτουργία"
+        ],
+        correct: 1,
+        explain: "go run = μεταγλώττιση + άμεση εκτέλεση, χωρίς μόνιμο binary. go build = μόνο μεταγλώττιση, παράγει το εκτελέσιμο αρχείο για διανομή."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 1</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Toolchain</span><span class="gs-def">το σύνολο εργαλείων (compiler, stdlib, CLI) του Go SDK</span></div>
+  <div class="gs-pill"><span class="gs-name">GOROOT</span><span class="gs-def">πού είναι εγκατεστημένο το ίδιο το Go</span></div>
+  <div class="gs-pill"><span class="gs-name">GOPATH</span><span class="gs-def">ιστορική τοποθεσία Go projects, σήμερα δευτερεύουσα</span></div>
+  <div class="gs-pill"><span class="gs-name">Entry point</span><span class="gs-def">η func main() — εκεί ξεκινά η εκτέλεση</span></div>
+</div>
+`);
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<h1>Δήλωση Μεταβλητών</h1>
+<p class="lede">Η Go είναι μια statically typed γλώσσα: κάθε μεταβλητή έχει έναν συγκεκριμένο τύπο που καθορίζεται κατά τη μεταγλώττιση, όχι κατά την εκτέλεση.</p>
+
+<h2>Πλήρης σύνταξη με var</h2>
+<p>Ο πιο ρητός τρόπος να δηλώσεις μια μεταβλητή είναι με τη λέξη-κλειδί <code>var</code>, ακολουθούμενη από το όνομα και τον τύπο:</p>
+<pre><code><span class="tok-kw">var</span> age <span class="tok-type">int</span>
+<span class="tok-kw">var</span> name <span class="tok-type">string</span> = <span class="tok-str">"Prome"</span>
+</code></pre>
+<p>Αν δεν δώσεις αρχική τιμή, η μεταβλητή δεν μένει "άδεια" ή "undefined" όπως σε άλλες γλώσσες — παίρνει αυτόματα τη <strong>zero value</strong> του τύπου της: <code>0</code> για αριθμητικούς τύπους, <code>""</code> (κενό string) για strings, <code>false</code> για booleans, <code>nil</code> για pointers/slices/maps κ.ά. Αυτό εξαλείφει μια ολόκληρη κατηγορία σφαλμάτων που υπάρχει σε γλώσσες όπου μια μη αρχικοποιημένη μεταβλητή περιέχει "σκουπίδια" μνήμης.</p>
+
+<h2>Σύντομη δήλωση με :=</h2>
+<p>Μέσα σε συναρτήσεις (όχι στο package-level), μπορείς να χρησιμοποιήσεις τον τελεστή <code>:=</code> για να δηλώσεις <em>και</em> να αρχικοποιήσεις μια μεταβλητή σε ένα βήμα, χωρίς να γράψεις ρητά τον τύπο — ο compiler τον συμπεραίνει (type inference) από την τιμή:</p>
+<pre><code>age <span class="tok-kw">:=</span> <span class="tok-num">25</span> <span class="tok-com">// inferred as int</span>
+name <span class="tok-kw">:=</span> <span class="tok-str">"Prome"</span> <span class="tok-com">// inferred as string</span>
+</code></pre>
+<p>Το <code>:=</code> είναι το πιο συχνά χρησιμοποιούμενο μοτίβο μέσα σε function bodies, ακριβώς επειδή είναι πιο σύντομο. Το <code>var</code> παραμένει απαραίτητο όταν θες μόνο τη zero value χωρίς αρχικοποίηση, όταν δηλώνεις σε package-level (εκτός συνάρτησης, όπου το <code>:=</code> δεν επιτρέπεται καθόλου), ή όταν θες να δηλώσεις ρητά διαφορετικό τύπο από αυτόν που θα συμπέρανε αυτόματα ο compiler.</p>
+
+<h2>Πολλαπλές μεταβλητές</h2>
+<p>Η Go επιτρέπει συμπτυγμένη δήλωση πολλών μεταβλητών σε μία γραμμή, ή ομαδοποιημένη δήλωση με block <code>var (...)</code> όταν θες να οργανώσεις πολλές σχετικές δηλώσεις μαζί:</p>
+<pre><code>x, y <span class="tok-kw">:=</span> <span class="tok-num">10</span>, <span class="tok-num">20</span>
+
+<span class="tok-kw">var</span> (
+    width  <span class="tok-type">int</span>    = <span class="tok-num">100</span>
+    height <span class="tok-type">int</span>    = <span class="tok-num">50</span>
+    active <span class="tok-type">bool</span>   = <span class="tok-kw">true</span>
+)
+</code></pre>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<h2>Βασικοί Τύποι Δεδομένων</h2>
+
+<h3>Ακέραιοι αριθμοί</h3>
+<p>Η Go προσφέρει μια οικογένεια ακέραιων τύπων με ρητό μέγεθος σε bits: <code>int8</code>, <code>int16</code>, <code>int32</code>, <code>int64</code> (προσημασμένοι· signed), και τα αντίστοιχα <code>uint8</code>, <code>uint16</code>, <code>uint32</code>, <code>uint64</code> (μη προσημασμένοι· unsigned, μόνο θετικές τιμές). Ο τύπος <code>int</code> χωρίς αριθμό είναι ο "προεπιλεγμένος" — το μέγεθός του (32 ή 64 bit) εξαρτάται από την αρχιτεκτονική του συστήματος, αλλά σε πρακτικά όλα τα σύγχρονα συστήματα είναι 64-bit. Στην καθημερινή δουλειά χρησιμοποιείς σχεδόν πάντα απλά <code>int</code>, εκτός αν έχεις συγκεκριμένο λόγο (π.χ. εξοικονόμηση μνήμης σε τεράστιους πίνακες, ή interop με external format).</p>
+
+<h3>Αριθμοί κινητής υποδιαστολής</h3>
+<p>Για δεκαδικούς αριθμούς υπάρχουν οι τύποι <code>float32</code> και <code>float64</code>, ακολουθώντας το πρότυπο IEEE 754. Το <code>float64</code> είναι η προεπιλογή στην πράξη, αφού προσφέρει μεγαλύτερη ακρίβεια με αμελητέο κόστος στα περισσότερα σύγχρονα συστήματα.</p>
+
+<h3>Λογικοί τύποι</h3>
+<p>Ο τύπος <code>bool</code> έχει μόνο δύο δυνατές τιμές: <code>true</code> ή <code>false</code>. Σε αντίθεση με γλώσσες όπως η C, δεν υπάρχει αυτόματη μετατροπή από αριθμούς σε bool (το <code>0</code> δεν είναι "false").</p>
+
+<h3>Συμβολοσειρές</h3>
+<p>Ο τύπος <code>string</code> αναπαριστά ακολουθίες bytes κωδικοποιημένες σε UTF-8. Ένα κρίσιμο χαρακτηριστικό: τα strings στη Go είναι <strong>immutable</strong> (αμετάβλητα) — δεν μπορείς να αλλάξεις έναν χαρακτήρα μέσα σε ένα υπάρχον string. Κάθε "τροποποίηση" στην πραγματικότητα δημιουργεί ένα νέο string στη μνήμη.</p>
+
+<h3>Χαρακτήρες και Runes</h3>
+<p>Η Go δεν έχει ξεχωριστό τύπο "char" όπως η C. Αντ' αυτού, ένας μεμονωμένος χαρακτήρας Unicode αναπαρίσταται με τον τύπο <code>rune</code>, που στην πραγματικότητα είναι ένα alias για <code>int32</code> — αρκετά bits ώστε να χωρέσει οποιοδήποτε Unicode code point, όχι μόνο τους απλούς ASCII χαρακτήρες.</p>
+
+<div class="callout">
+  <span class="tag">Γιατί rune και όχι byte;</span>
+  Επειδή η UTF-8 κωδικοποιεί κάποιους χαρακτήρες (π.χ. ελληνικά, emoji) σε περισσότερα από 1 byte, ένα μεμονωμένο <code>byte</code> (alias για <code>uint8</code>) δεν αρκεί πάντα για να αναπαραστήσει έναν χαρακτήρα. Το <code>rune</code> λύνει αυτό το πρόβλημα.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — VSCode Challenge</div>
+<h1>Περίμετρος Τετραγώνου</h1>
+<p class="lede">Γράψε ένα πρόγραμμα που υπολογίζει την περίμετρο ενός τετραγώνου, χρησιμοποιώντας ό,τι μόλις είδες: δήλωση μεταβλητών, βασικούς τύπους, και <code>fmt.Println</code>.</p>
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  Δήλωσε μια μεταβλητή για το μήκος της πλευράς, υπολόγισε την περίμετρο (πλευρά × 4), και τύπωσέ την. Δοκίμασε και με <code>var</code> και με <code>:=</code> για να δεις τη διαφορά στη σύνταξη.
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    <span class="tok-kw">var</span> side <span class="tok-type">float64</span> = <span class="tok-num">4.5</span>
+
+    perimeter <span class="tok-kw">:=</span> side * <span class="tok-num">4</span>
+
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Perimeter:"</span>, perimeter)
+}
+</code></pre></div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<h2>Μετατροπές Τύπων (Type Casting)</h2>
+<p>Η Go είναι αυστηρή ως προς τους τύπους (strict type safety): δεν κάνει ποτέ αυτόματη, "σιωπηλή" μετατροπή ανάμεσα σε διαφορετικούς αριθμητικούς τύπους — ακόμα κι αν φαίνονται "συμβατοί" σε πρώτη ματιά, όπως το <code>int</code> με το <code>float64</code>. Αν προσπαθήσεις να προσθέσεις απευθείας έναν <code>int</code> με έναν <code>float64</code>, ο compiler θα αρνηθεί να μεταγλωττίσει το πρόγραμμα με σφάλμα τύπου (type mismatch).</p>
+<p>Για να το κάνεις αυτό να δουλέψει, χρειάζεται <strong>ρητή μετατύπωση</strong> (explicit conversion) — γράφεις τον επιθυμητό τύπο σαν να ήταν συνάρτηση:</p>
+<pre><code>x <span class="tok-kw">:=</span> <span class="tok-num">42</span>       <span class="tok-com">// int</span>
+y <span class="tok-kw">:=</span> <span class="tok-num">3.14</span>     <span class="tok-com">// float64</span>
+
+<span class="tok-com">// x + y would NOT compile: mismatched types int and float64</span>
+result <span class="tok-kw">:=</span> <span class="tok-type">float64</span>(x) + y <span class="tok-com">// explicit conversion fixes it</span>
+</code></pre>
+<p>Αυτή η αυστηρότητα μπορεί αρχικά να φαίνεται ενοχλητική έρχεσαι από γλώσσες με πιο "χαλαρή" συμπεριφορά, αλλά αποτρέπει μια ολόκληρη κατηγορία bugs που προκύπτουν από απρόσμενη απώλεια ακρίβειας (π.χ. όταν ένας float "κόβεται" σιωπηλά σε int χωρίς η γλώσσα να σε προειδοποιήσει).</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<h2>Σταθερές (Constants)</h2>
+<p>Οι σταθερές δηλώνονται με τη λέξη-κλειδί <code>const</code> και η τιμή τους ορίζεται κατά τη μεταγλώττιση — δεν μπορούν να αλλάξουν κατά την εκτέλεση, και ο compiler θα αρνηθεί οποιαδήποτε προσπάθεια επανεκχώρησης.</p>
+<pre><code><span class="tok-kw">const</span> Pi = <span class="tok-num">3.14159</span>
+<span class="tok-kw">const</span> MaxUsers <span class="tok-type">int</span> = <span class="tok-num">100</span>
+</code></pre>
+
+<h3>Typed vs Untyped constants</h3>
+<p>Μια σταθερά μπορεί να είναι <strong>typed</strong> (με ρητό τύπο, όπως το <code>MaxUsers</code> παραπάνω) ή <strong>untyped</strong> (χωρίς ρητό τύπο, όπως το <code>Pi</code>). Οι untyped σταθερές είναι ιδιαίτερα ευέλικτες: παίρνουν τον "σωστό" τύπο ανάλογα με το context στο οποίο χρησιμοποιούνται, χωρίς να χρειάζεται ρητή μετατροπή. Π.χ. το ίδιο <code>Pi</code> μπορεί να χρησιμοποιηθεί άνετα τόσο σε έκφραση με <code>float32</code> όσο και με <code>float64</code>, κάτι που δεν θα ίσχυε αν ήταν typed ως <code>float64</code> εξαρχής.</p>
+`);
+
+    addQuiz([
+      {
+        q: "Τι τιμή παίρνει μια μεταβλητή τύπου int που δηλώθηκε με var χωρίς αρχικοποίηση;",
+        options: [
+          "Την τιμή 0, δηλαδή τη zero value του τύπου int",
+          "Μια τυχαία τιμή μνήμης, όπως σε γλώσσες χαμηλού επιπέδου χωρίς zero values",
+          "Την τιμή nil, όπως και σε pointers, slices και maps",
+          "Ο compiler αρνείται να μεταγλωττίσει μέχρι να δοθεί ρητή αρχική τιμή"
+        ],
+        correct: 0,
+        explain: "Κάθε τύπος στη Go έχει μια καθορισμένη zero value: 0 για αριθμητικούς τύπους, εξαλείφοντας το πρόβλημα των 'σκουπιδιών' μνήμης άλλων γλωσσών."
+      },
+      {
+        q: "Γιατί το x + y δεν μεταγλωττίζεται όταν x είναι int και y είναι float64;",
+        options: [
+          "Επειδή η Go δεν διαθέτει καθόλου τελεστή πρόσθεσης για αριθμούς κινητής υποδιαστολής",
+          "Επειδή το y πρέπει πάντα να δηλώνεται πριν το x σε αριθμητικές εκφράσεις",
+          "Επειδή η Go δεν κάνει σιωπηλές μετατροπές ανάμεσα σε διαφορετικούς αριθμητικούς τύπους — απαιτείται ρητή μετατροπή όπως float64(x)",
+          "Επειδή το + λειτουργεί μόνο ανάμεσα σε μεταβλητές που δηλώθηκαν με το ίδιο keyword, είτε var είτε :="
+        ],
+        correct: 2,
+        explain: "Η strict type safety της Go σημαίνει ότι ακόμα και 'συγγενικοί' αριθμητικοί τύποι δεν αναμιγνύονται αυτόματα σε εκφράσεις· χρειάζεται explicit conversion."
+      },
+      {
+        q: "Ποια είναι η πρακτική διαφορά ανάμεσα σε μια typed και μια untyped σταθερά;",
+        options: [
+          "Οι untyped σταθερές δεν μπορούν να χρησιμοποιηθούν σε αριθμητικές πράξεις καθόλου",
+          "Οι typed σταθερές είναι πιο γρήγορες κατά την εκτέλεση, ενώ οι untyped πιο αργές",
+          "Δεν υπάρχει καμία πρακτική διαφορά, είναι απλώς θέμα στυλ γραφής χωρίς επίδραση στη μεταγλώττιση",
+          "Οι untyped σταθερές προσαρμόζονται ευέλικτα στον τύπο που απαιτεί το context χρήσης τους, ενώ οι typed έχουν δεσμευτεί σε έναν συγκεκριμένο τύπο"
+        ],
+        correct: 3,
+        explain: "Μια untyped σταθερά σαν το Pi μπορεί να χρησιμοποιηθεί άνετα και ως float32 και ως float64 ανάλογα με το context, χωρίς ρητή μετατροπή — μια typed σταθερά όχι."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — VSCode Challenge</div>
+<h1>Type Casting σε πράξη</h1>
+<p class="lede">Δημιούργησε ένα αρχείο <code>main.go</code> που δηλώνει έναν ακέραιο <code>x = 42</code> και ένα float <code>y = 3.14</code>. Προσπάθησε πρώτα να τα προσθέσεις απευθείας (<code>x + y</code>) για να δεις το compiler error, και μετά διόρθωσέ το με ρητή μετατροπή τύπου.</p>
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  Γράψε πρώτα το λάθος κομμάτι και σχολίασέ το (comment out) αφού δεις το error message στο terminal — έτσι θα καταλάβεις ακριβώς τι λέει ο compiler. Μετά ξεσχολίασε τη διορθωμένη εκδοχή με το float64(x).
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    x <span class="tok-kw">:=</span> <span class="tok-num">42</span>
+    y <span class="tok-kw">:=</span> <span class="tok-num">3.14</span>
+
+    <span class="tok-com">// result := x + y // compile error: mismatched types int and float64</span>
+
+    result <span class="tok-kw">:=</span> <span class="tok-type">float64</span>(x) + y
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Result:"</span>, result)
+}
+</code></pre></div>
+`);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">Zero value</span><span class="gc-def">η προεπιλεγμένη τιμή ενός τύπου χωρίς αρχικοποίηση</span></div>
+  <div class="gc-line"><span class="gc-term">Type inference</span><span class="gc-def">ο compiler συμπεραίνει τον τύπο από την τιμή, με :=</span></div>
+  <div class="gc-line"><span class="gc-term">Immutable string</span><span class="gc-def">δεν αλλάζει επιτόπου· κάθε τροποποίηση δημιουργεί νέο string</span></div>
+  <div class="gc-line"><span class="gc-term">rune</span><span class="gc-def">alias για int32, αναπαριστά έναν Unicode χαρακτήρα</span></div>
+  <div class="gc-line"><span class="gc-term">Explicit conversion</span><span class="gc-def">ρητή μετατροπή τύπου, π.χ. float64(x)</span></div>
+  <div class="gc-line"><span class="gc-term">Untyped constant</span><span class="gc-def">σταθερά που προσαρμόζεται στον τύπο του context</span></div>
+</div>
+`);
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Τελεστές &amp; Εκφράσεις</div>
+<h1>Expressions vs Statements</h1>
+<p class="lede">Αυτή η διάκριση φαίνεται ακαδημαϊκή, αλλά εξηγεί μερικές από τις πιο μπερδεμένες συμπεριφορές της Go — γιατί δεν μπορείς να γράψεις <code>y = x++</code> ή <code>if (x = 5)</code>.</p>
+
+<h2>Τι είναι Expression</h2>
+<p>Ένα <strong>Expression</strong> (Έκφραση) είναι οτιδήποτε <em>παράγει/επιστρέφει μια τιμή</em> που μπορεί να χρησιμοποιηθεί περαιτέρω — να ανατεθεί σε μεταβλητή, να περαστεί σε συνάρτηση, να συγκριθεί. Παραδείγματα: <code>5 + 3</code> (παράγει 8), <code>x &gt; 10</code> (παράγει true/false), <code>myFunc()</code> αν επιστρέφει τιμή.</p>
+
+<h2>Τι είναι Statement</h2>
+<p>Ένα <strong>Statement</strong> (Εντολή) είναι μια μονάδα εκτέλεσης που κάνει κάτι, αλλά δεν παράγει από μόνη της μια τιμή που να μπορεί να χρησιμοποιηθεί κάπου αλλού. Παραδείγματα: <code>var x int</code> (δηλώνει, δεν "επιστρέφει" τιμή), ένα ολόκληρο <code>if {...}</code> block, ένα <code>for {...}</code> loop.</p>
+
+<div class="callout">
+  <span class="tag">Γιατί έχει σημασία</span>
+  Στη Go, η ανάθεση (<code>x = 5</code>) και η αύξηση (<code>x++</code>) είναι <strong>statements</strong>, όχι expressions — σε αντίθεση με τη C, όπου <code>x = 5</code> είναι expression που παράγει την τιμή 5. Αυτό είναι σκόπιμη σχεδιαστική επιλογή: αποτρέπει ένα από τα πιο συχνά bugs στη C, το τυπογραφικό λάθος <code>if (x = 5)</code> αντί για <code>if (x == 5)</code>, το οποίο σε C μεταγλωττίζεται κανονικά (κάνει ανάθεση, όχι σύγκριση) αλλά στη Go απλά δεν μεταγλωττίζεται καθόλου, αφού μια ανάθεση δεν παράγει τιμή που να μπορεί να αξιολογηθεί μέσα σε if.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Τελεστές &amp; Εκφράσεις</div>
+<h2>Κατηγορίες Τελεστών</h2>
+
+<div class="grid2">
+  <div class="card"><h3>Αριθμητικοί</h3><p><code>+</code> <code>-</code> <code>*</code> <code>/</code> <code>%</code> (modulo — υπόλοιπο διαίρεσης)</p></div>
+  <div class="card"><h3>Σύγκρισης / Σχεσιακοί</h3><p><code>==</code> <code>!=</code> <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code> — παράγουν πάντα bool</p></div>
+  <div class="card"><h3>Λογικοί</h3><p><code>&amp;&amp;</code> (AND) <code>||</code> (OR) <code>!</code> (NOT) — λειτουργούν πάνω σε bool τιμές</p></div>
+  <div class="card"><h3>Bitwise</h3><p><code>&amp;</code> <code>|</code> <code>^</code> <code>&amp;^</code> <code>&lt;&lt;</code> <code>&gt;&gt;</code> — λειτουργούν στα δυαδικά bits ακεραίων</p></div>
+  <div class="card"><h3>Εκχώρησης</h3><p><code>=</code> <code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code> κ.ά. — συνδυάζουν πράξη και ανάθεση</p></div>
+</div>
+
+<p>Το <code>&amp;^</code> (AND NOT / bit clear) αξίζει ξεχωριστή αναφορά επειδή είναι μοναδικό στη Go: το <code>a &amp;^ b</code> "σβήνει" (μηδενίζει) στο <code>a</code> ακριβώς τα bits που είναι 1 στο <code>b</code>, κρατώντας τα υπόλοιπα ως έχουν.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Τελεστές &amp; Εκφράσεις</div>
+<h2>Σειρά Εκτέλεσης &amp; Προτεραιότητα</h2>
+<p>Όπως στα μαθηματικά, οι τελεστές στη Go έχουν <strong>προτεραιότητα</strong> (precedence): ο πολλαπλασιασμός εκτελείται πριν την πρόσθεση, οι συγκρίσεις πριν τους λογικούς τελεστές, κ.ο.κ. Όταν η σειρά δεν είναι προφανής — ή απλά όταν θες να είσαι ρητός για ευανάγνωστο κώδικα — χρησιμοποιείς παρενθέσεις <code>()</code> για να ορίσεις ρητά τη σειρά αξιολόγησης.</p>
+
+<h2>Short-circuit evaluation</h2>
+<p>Στους λογικούς τελεστές <code>&amp;&amp;</code> και <code>||</code>, η Go εγγυάται ότι <strong>το αριστερό μέρος αξιολογείται πριν το δεξί</strong>, και με έναν σημαντικό κανόνα: αν το αριστερό μέρος αρκεί από μόνο του για να καθορίσει το τελικό αποτέλεσμα, το δεξί μέρος <em>δεν αξιολογείται καθόλου</em>. Αυτό λέγεται short-circuit evaluation.</p>
+<pre><code><span class="tok-com">// in A() || B(): if A() is true, B() never executes —</span>
+<span class="tok-com">// the result is already known to be true</span>
+<span class="tok-kw">if</span> A() || B() {
+    <span class="tok-com">// ...</span>
+}
+
+<span class="tok-com">// in A() && B(): if A() is false, B() never executes —</span>
+<span class="tok-com">// the result is already known to be false</span>
+<span class="tok-kw">if</span> A() && B() {
+    <span class="tok-com">// ...</span>
+}
+</code></pre>
+<p>Αυτό δεν είναι απλά μια βελτιστοποίηση απόδοσης (performance) — συχνά είναι κρίσιμο για σωστή λειτουργία, π.χ. στο μοτίβο <code>if x != nil &amp;&amp; x.Value &gt; 0</code>, όπου το δεύτερο κομμάτι θα προκαλούσε crash αν το <code>x</code> ήταν <code>nil</code> και εκτελούνταν. Το short-circuit εξασφαλίζει ότι δεν φτάνουμε ποτέ εκεί όταν το πρώτο κομμάτι είναι ήδη false.</p>
+
+<div class="callout">
+  <span class="tag">Παγίδα: ακαθόριστη σειρά σε ορίσματα συναρτήσεων</span>
+  Σε αντίθεση με το <code>&amp;&amp;</code>/<code>||</code>, όταν καλείς μια συνάρτηση με πολλαπλά ορίσματα που είναι οι ίδιες κλήσεις συναρτήσεων — π.χ. <code>f(g(), h())</code> — η σειρά με την οποία θα εκτελεστούν οι <code>g()</code> και <code>h()</code> <strong>δεν είναι εγγυημένη</strong> από τη γλώσσα. Αν το <code>g()</code> και το <code>h()</code> έχουν side effects (π.χ. τυπώνουν κάτι, τροποποιούν global state) που εξαρτώνται από τη σειρά, ο κώδικας γίνεται απρόβλεπτος. Απόφυγέ το γράφοντας τις κλήσεις σε ξεχωριστές γραμμές με ρητή σειρά.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια είναι η βασική διαφορά ανάμεσα στο = (assignment), == (comparison) και := (short declaration) στη Go;",
+        options: [
+          "Το = αναθέτει τιμή σε υπάρχουσα μεταβλητή, το == συγκρίνει δύο τιμές παράγοντας bool, και το := δηλώνει και αρχικοποιεί ταυτόχρονα νέα μεταβλητή",
+          "Το = και το := κάνουν ακριβώς το ίδιο πράγμα, ενώ το == χρησιμοποιείται μόνο για strings",
+          "Το == χρησιμοποιείται μόνο μέσα σε loops, ενώ το = και το := χρησιμοποιούνται μόνο σε if statements",
+          "Δεν υπάρχει πρακτική διαφορά ανάμεσα στα τρία — είναι απλώς εναλλακτικοί συμβολισμοί για την ίδια λειτουργία ανάθεσης"
+        ],
+        correct: 0,
+        explain: "= αναθέτει, == συγκρίνει και παράγει bool, := δηλώνει νέα μεταβλητή με type inference. Το να τα μπερδέψεις είναι από τα πιο συχνά λάθη αρχαρίων."
+      },
+      {
+        q: "Γιατί το if (x = 5) ακυρώνεται αμέσως από τον compiler της Go;",
+        options: [
+          "Επειδή το if δεν δέχεται καθόλου παρενθέσεις γύρω από τη συνθήκη του στη Go",
+          "Επειδή το x πρέπει πάντα να είναι τύπου bool μέσα σε if, ανεξαρτήτως τελεστή",
+          "Επειδή η ανάθεση (x = 5) είναι statement και όχι expression στη Go, άρα δεν παράγει τιμή που να μπορεί να αξιολογηθεί ως συνθήκη του if",
+          "Επειδή λείπει το ερωτηματικό στο τέλος της γραμμής πριν το κλείσιμο του if"
+        ],
+        correct: 2,
+        explain: "Ακριβώς επειδή η ανάθεση είναι statement (δεν παράγει τιμή), δεν μπορεί να χρησιμοποιηθεί ως συνθήκη — κάτι που στη C θα μεταγλωττιζόταν σιωπηλά ως bug."
+      },
+      {
+        q: "Γιατί απαγορεύεται η γραφή y = x++ στη Go;",
+        options: [
+          "Επειδή ο τελεστής ++ δεν υπάρχει καθόλου στη γραμματική της Go",
+          "Επειδή το x++ είναι statement, όχι expression — δεν παράγει τιμή που να μπορεί να ανατεθεί σε άλλη μεταβλητή, σε αντίθεση με τη C",
+          "Επειδή το y πρέπει να δηλωθεί με := και όχι με απλό =, σε κάθε ανάθεση που περιλαμβάνει ++",
+          "Επειδή το ++ μπορεί να χρησιμοποιηθεί μόνο μέσα σε for loops, ποτέ σε ανεξάρτητη γραμμή κώδικα"
+        ],
+        correct: 1,
+        explain: "Το x++ στη Go είναι αυτόνομο statement, ακριβώς όπως το x = 5 — δεν παράγει τιμή, άρα δεν μπορεί να βρεθεί στη δεξιά πλευρά μιας ανάθεσης."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — VSCode Challenge</div>
+<h1>Απόδειξη Short-circuit Evaluation</h1>
+<p class="lede">Γράψε ένα πρόγραμμα που αποδεικνύει στην πράξη το short-circuit evaluation. Φτιάξε δύο συναρτήσεις <code>checkA() bool</code> (τυπώνει "Executed A" και επιστρέφει true) και <code>checkB() bool</code> (τυπώνει "Executed B" και επιστρέφει true). Κάλεσε <code>checkA() || checkB()</code> σε μια if και επιβεβαίωσε στο terminal ότι η checkB δεν εκτελέστηκε ποτέ.</p>
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  Θυμήσου: αφού η checkA() είναι ήδη true, το || δεν χρειάζεται να αξιολογήσει τη δεξιά πλευρά — αν δεις "Executed B" στο terminal, κάτι δεν πήγε όπως αναμενόταν.
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">checkA</span>() <span class="tok-type">bool</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Executed A"</span>)
+    <span class="tok-kw">return</span> <span class="tok-kw">true</span>
+}
+
+<span class="tok-kw">func</span> <span class="tok-func">checkB</span>() <span class="tok-type">bool</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Executed B"</span>)
+    <span class="tok-kw">return</span> <span class="tok-kw">true</span>
+}
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    <span class="tok-kw">if</span> checkA() || checkB() {
+        fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Condition is true"</span>)
+    }
+    <span class="tok-com">// Output will only show "Executed A" — checkB never runs</span>
+    <span class="tok-com">// because checkA() alone already made the || result true.</span>
+}
+</code></pre></div>
+`);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">Expression</td><td class="gt-def">παράγει τιμή που μπορεί να χρησιμοποιηθεί περαιτέρω</td></tr>
+  <tr><td class="gt-term">Statement</td><td class="gt-def">εκτελεί ενέργεια, δεν παράγει επαναχρησιμοποιήσιμη τιμή</td></tr>
+  <tr><td class="gt-term">Short-circuit evaluation</td><td class="gt-def">η δεξιά πλευρά &amp;&amp;/|| παραλείπεται όταν το αποτέλεσμα είναι ήδη γνωστό</td></tr>
+  <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι τελεστές σε μια έκφραση</td></tr>
+</table>
+`);
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
+<h1>Συνθήκες if / else if / else</h1>
+<p class="lede">Η βασική δομή απόφασης στη Go μοιάζει με άλλες γλώσσες, αλλά έχει μερικές ιδιαιτερότητες που αξίζει να ξέρεις εξαρχής.</p>
+
+<h2>Βασική σύνταξη</h2>
+<p>Σε αντίθεση με πολλές γλώσσες, οι παρενθέσεις γύρω από τη συνθήκη <strong>δεν</strong> χρησιμοποιούνται στη Go — αλλά τα άγκιστρα <code>{}</code> είναι <strong>υποχρεωτικά</strong>, ακόμα κι όταν το σώμα έχει μία μόνο εντολή.</p>
+<pre><code>age <span class="tok-kw">:=</span> <span class="tok-num">20</span>
+
+<span class="tok-kw">if</span> age >= <span class="tok-num">18</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"adult"</span>)
+} <span class="tok-kw">else</span> <span class="tok-kw">if</span> age >= <span class="tok-num">13</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"teenager"</span>)
+} <span class="tok-kw">else</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"child"</span>)
+}
+</code></pre>
+
+<h2>If με αρχική πρόταση (short statement)</h2>
+<p>Ένα πολύ χαρακτηριστικό μοτίβο της Go: μπορείς να εκτελέσεις ένα μικρό statement <em>πριν</em> τη συνθήκη, μέσα στην ίδια γραμμή του if, χωρισμένο με άνω-κάτω τελεία:</p>
+<pre><code><span class="tok-kw">if</span> err <span class="tok-kw">:=</span> doSomething(); err != <span class="tok-kw">nil</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"error:"</span>, err)
+}
+</code></pre>
+<p>Η μεταβλητή <code>err</code> που δηλώνεται εκεί υπάρχει <em>μόνο</em> μέσα στο scope του if (και του αντίστοιχου else, αν υπάρχει) — εξαφανίζεται αμέσως μετά. Αυτό το μοτίβο είναι πανταχού παρόν στη Go, ειδικά για error handling, γιατί κρατάει το scope της βοηθητικής μεταβλητής όσο ακριβώς χρειάζεται, χωρίς να "μολύνει" το ευρύτερο scope της συνάρτησης.</p>
+
+<div class="callout">
+  <span class="tag">Early returns / Guard clauses</span>
+  Καλή πρακτική στη Go: αντί να φωλιάζεις (nest) πολλαπλά if-else, προτίμα "guard clauses" — έλεγξε τις μη έγκυρες περιπτώσεις πρώτα και κάνε <code>return</code> άμεσα, αφήνοντας το "κύριο μονοπάτι" του κώδικα χωρίς επιπλέον εσοχές.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
+<h1>Μεγαλύτερος από τους δύο (παράδειγμα)</h1>
+<p class="lede">Ένα απλό, ανεξάρτητο παράδειγμα (όχι το VSCode Challenge της ενότητας) που δείχνει το if με guard-clause στυλ σε πράξη — δέχεται δύο αριθμούς και εμφανίζει τον μεγαλύτερο.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να δεις το παράδειγμα →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">larger</span>(a, b <span class="tok-type">int</span>) <span class="tok-type">int</span> {
+    <span class="tok-kw">if</span> a > b {
+        <span class="tok-kw">return</span> a
+    }
+    <span class="tok-kw">return</span> b
+}
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-func">larger</span>(<span class="tok-num">7</span>, <span class="tok-num">12</span>)) <span class="tok-com">// prints 12</span>
+}
+</code></pre></div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
+<h2>Πολλαπλή Επιλογή με switch</h2>
+<p>Η <code>switch</code> στη Go χρησιμοποιείται όταν έχεις πολλές πιθανές τιμές να συγκρίνεις. Έχει μια σημαντική διαφορά από γλώσσες όπως η C/Java: κάθε <code>case</code> έχει <strong>αυτόματο break</strong> — δεν "πέφτει" (fall through) στο επόμενο case εκτός αν το ζητήσεις ρητά με τη λέξη <code>fallthrough</code>. Αυτό εξαλείφει ένα από τα πιο συχνά bugs σε άλλες γλώσσες: το ξεχασμένο break.</p>
+<pre><code><span class="tok-kw">switch</span> day {
+<span class="tok-kw">case</span> <span class="tok-num">1</span>, <span class="tok-num">2</span>, <span class="tok-num">3</span>, <span class="tok-num">4</span>, <span class="tok-num">5</span>:
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"weekday"</span>)
+<span class="tok-kw">case</span> <span class="tok-num">6</span>, <span class="tok-num">7</span>:
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"weekend"</span>)
+<span class="tok-kw">default</span>:
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"invalid day"</span>)
+}
+</code></pre>
+<p>Παρατήρησε το <code>case 1, 2, 3, 4, 5:</code> — μπορείς να ομαδοποιήσεις πολλαπλές τιμές στο ίδιο case χωρισμένες με κόμμα, χωρίς να χρειάζεται επανάληψη κώδικα. Το <code>default</code> εκτελείται όταν καμία από τις παραπάνω τιμές δεν ταιριάζει — είναι προαιρετικό, αλλά καλή πρακτική να το συμπεριλαμβάνεις για απρόβλεπτες τιμές.</p>
+
+<h2>Tagless switch</h2>
+<p>Αν παραλείψεις την τιμή μετά το <code>switch</code>, παίρνεις μια εναλλακτική μορφή που λειτουργεί σαν μια πιο καθαρή αλυσίδα από if-else — κάθε case περιέχει τη δική του πλήρη συνθήκη:</p>
+<pre><code><span class="tok-kw">switch</span> {
+<span class="tok-kw">case</span> score >= <span class="tok-num">90</span>:
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"A"</span>)
+<span class="tok-kw">case</span> score >= <span class="tok-num">75</span>:
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"B"</span>)
+<span class="tok-kw">default</span>:
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"C or below"</span>)
+}
+</code></pre>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
+<h2>Παγίδες και χρήσιμα πράγματα για τα if</h2>
+
+<h3>Η παγίδα του Shadowing</h3>
+<p>Το <code>:=</code> δηλώνει <strong>νέα</strong> μεταβλητή. Αν μέσα σε ένα block (π.χ. ένα if) χρησιμοποιήσεις <code>:=</code> με ένα όνομα που υπάρχει ήδη σε εξωτερικό scope, δεν κάνεις ανάθεση στην υπάρχουσα — δημιουργείς μια <strong>νέα</strong> μεταβλητή που "σκιάζει" (shadows) την παλιά μόνο μέσα σε αυτό το block. Έξω από το block, η αρχική μεταβλητή παραμένει ανεπηρέαστη.</p>
+<pre><code>err <span class="tok-kw">:=</span> doA()
+<span class="tok-kw">if</span> cond {
+    err <span class="tok-kw">:=</span> doB() <span class="tok-com">// BUG: shadows outer err with a NEW variable</span>
+    fmt.<span class="tok-func">Println</span>(err) <span class="tok-com">// this is the inner err</span>
+}
+fmt.<span class="tok-func">Println</span>(err) <span class="tok-com">// this is still the ORIGINAL err from doA(), unchanged</span>
+</code></pre>
+<p>Η λύση: όταν θες να αναθέσεις σε <em>υπάρχουσα</em> μεταβλητή αντί να δηλώσεις καινούρια, χρησιμοποίησε απλό <code>=</code> αντί για <code>:=</code>.</p>
+
+<h3>Ξεχασμένη αρχικοποίηση</h3>
+<p>Επειδή η Go δίνει zero values αυτόματα, είναι εύκολο να ξεχάσεις να αρχικοποιήσεις μια μεταβλητή σε μια τιμή που περίμενες — το πρόγραμμα μεταγλωττίζεται κανονικά (καμία προειδοποίηση), αλλά η λογική είναι λάθος επειδή η μεταβλητή έμεινε στη zero value της αντί για την τιμή που "νόμιζες" ότι είχε δοθεί.</p>
+`);
+
+    addQuiz([
+      {
+        q: "Τι κάνει αυτόματα κάθε case μέσα σε ένα switch της Go, σε αντίθεση με γλώσσες όπως η C;",
+        options: [
+          "Κάνει αυτόματο break — δεν συνεχίζει στο επόμενο case, εκτός αν χρησιμοποιηθεί ρητά η λέξη fallthrough",
+          "Εκτελεί πάντα και το επόμενο case αυτόματα, όπως ακριβώς η C χωρίς break",
+          "Απαιτεί υποχρεωτικά ρητό break σε κάθε case, αλλιώς δεν μεταγλωττίζεται",
+          "Αγνοεί τελείως τη λέξη default, ακόμα κι αν υπάρχει στο τέλος του switch"
+        ],
+        correct: 0,
+        explain: "Σε αντίθεση με τη C, κάθε case στη Go σταματά αυτόματα μετά την εκτέλεσή του, εκτός αν γραφτεί ρητά fallthrough."
+      },
+      {
+        q: "Τι συμβαίνει όταν χρησιμοποιείς err := μέσα σε ένα if block, ενώ υπάρχει ήδη ένα err στο εξωτερικό scope;",
+        options: [
+          "Ο compiler αρνείται να μεταγλωττίσει, θεωρώντας το duplicate declaration σε όλες τις περιπτώσεις",
+          "Δημιουργείται μια νέα μεταβλητή err που σκιάζει (shadows) την εξωτερική μόνο μέσα στο block — η εξωτερική παραμένει ανεπηρέαστη",
+          "Γίνεται αυτόματα ανάθεση στην υπάρχουσα εξωτερική err, ακριβώς όπως θα έκανε το απλό =",
+          "Η τιμή του εξωτερικού err μηδενίζεται αμέσως μόλις μπούμε μέσα στο if block"
+        ],
+        correct: 1,
+        explain: "Αυτό είναι το shadowing bug: το := μέσα στο νέο block δημιουργεί ξεχωριστή μεταβλητή· η αλλαγή δεν διαπερνά προς τα έξω. Λύση: χρησιμοποίησε = αν θες ανάθεση στην υπάρχουσα."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 4</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Guard clause</span><span class="gs-def">έλεγχος μη έγκυρων περιπτώσεων με άμεσο return στην αρχή</span></div>
+  <div class="gs-pill"><span class="gs-name">Short statement</span><span class="gs-def">εντολή πριν τη συνθήκη if, με scope μόνο μέσα στο if</span></div>
+  <div class="gs-pill"><span class="gs-name">fallthrough</span><span class="gs-def">ρητή λέξη για να συνεχίσει η εκτέλεση στο επόμενο case</span></div>
+  <div class="gs-pill"><span class="gs-name">Tagless switch</span><span class="gs-def">switch χωρίς τιμή, με πλήρη συνθήκη σε κάθε case</span></div>
+  <div class="gs-pill"><span class="gs-name">Shadowing</span><span class="gs-def">νέα μεταβλητή που κρύβει άλλη με το ίδιο όνομα σε εσωτερικό scope</span></div>
+</div>
+`);
+    addContent(`
+<div class="eyebrow">Ενότητα 5 / 8 — Επαναλήψεις &amp; Loops</div>
+<h1>Η for — Η μοναδική λούπα της Go</h1>
+<p class="lede">Πολλές γλώσσες έχουν ξεχωριστές λέξεις-κλειδιά for/while/do-while. Η Go κράτησε μόνο τη for, και της έδωσε αρκετή ευελιξία ώστε να καλύπτει όλες τις περιπτώσεις.</p>
+
+<h2>Standard for loop</h2>
+<p>Η πλήρης μορφή έχει τρία μέρη: αρχικοποίηση, συνθήκη, βήμα — ακριβώς όπως σε C/Java, αλλά και εδώ χωρίς παρενθέσεις γύρω τους:</p>
+<pre><code><span class="tok-kw">for</span> i <span class="tok-kw">:=</span> <span class="tok-num">0</span>; i < <span class="tok-num">5</span>; i++ {
+    fmt.<span class="tok-func">Println</span>(i)
+}
+</code></pre>
+
+<h2>for μόνο με συνθήκη</h2>
+<p>Αν παραλείψεις την αρχικοποίηση και το βήμα, η <code>for</code> συμπεριφέρεται ακριβώς σαν το <code>while</code> άλλων γλωσσών — απλά ελέγχει τη συνθήκη πριν από κάθε επανάληψη:</p>
+<pre><code>count <span class="tok-kw">:=</span> <span class="tok-num">0</span>
+<span class="tok-kw">for</span> count < <span class="tok-num">3</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"counting:"</span>, count)
+    count++
+}
+</code></pre>
+
+<h2>Ατέρμων λούπα</h2>
+<p>Χωρίς καθόλου συνθήκη, η <code>for {}</code> τρέχει επ' αόριστον — χρήσιμο σε server loops, event loops, ή οτιδήποτε πρέπει να τρέχει "για πάντα" μέχρι ρητή διακοπή από μέσα:</p>
+<pre><code><span class="tok-kw">for</span> {
+    <span class="tok-com">// runs forever unless a break or return stops it</span>
+}
+</code></pre>
+
+<h2>break και continue</h2>
+<p>Το <code>break</code> σταματά εντελώς το πλησιέστερο loop. Το <code>continue</code> παραλείπει την υπόλοιπη τρέχουσα επανάληψη και προχωρά κατευθείαν στην επόμενη.</p>
+
+<h2>Labels για εξωτερικά loops</h2>
+<p>Όταν έχεις φωλιασμένα (nested) loops και θες να διακόψεις το <em>εξωτερικό</em> loop από μέσα από το εσωτερικό, ένα απλό <code>break</code> δεν αρκεί — θα σταματήσει μόνο το εσωτερικό. Η Go λύνει αυτό με <strong>labels</strong>:</p>
+<pre><code>outer:
+    <span class="tok-kw">for</span> i <span class="tok-kw">:=</span> <span class="tok-num">0</span>; i < <span class="tok-num">3</span>; i++ {
+        <span class="tok-kw">for</span> j <span class="tok-kw">:=</span> <span class="tok-num">0</span>; j < <span class="tok-num">3</span>; j++ {
+            <span class="tok-kw">if</span> j == <span class="tok-num">1</span> {
+                <span class="tok-kw">break</span> outer <span class="tok-com">// breaks the OUTER loop, not just the inner one</span>
+            }
+            fmt.<span class="tok-func">Println</span>(i, j)
+        }
+    }
+</code></pre>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 5 / 8 — VSCode Challenge</div>
+<h1>FizzBuzz</h1>
+<p class="lede">Γράψε το κλασικό παιχνίδι "FizzBuzz" για τους αριθμούς 1 έως 20, χρησιμοποιώντας μία <code>for</code> loop και μία tagless <code>switch</code>. Τύπωσε "Fizz" για πολλαπλάσια του 3, "Buzz" για πολλαπλάσια του 5, "FizzBuzz" για πολλαπλάσια και των δύο, ή τον ίδιο τον αριθμό.</p>
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  Θυμήσου τη σειρά ελέγχου: πρέπει να ελέγξεις πρώτα τη διπλή περίπτωση (πολλαπλάσιο και των δύο) πριν τις μεμονωμένες — αλλιώς το FizzBuzz δεν θα εμφανιστεί ποτέ. Ο τελεστής <code>%</code> (modulo) σου δίνει το υπόλοιπο διαίρεσης.
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    <span class="tok-kw">for</span> i <span class="tok-kw">:=</span> <span class="tok-num">1</span>; i <= <span class="tok-num">20</span>; i++ {
+        <span class="tok-kw">switch</span> {
+        <span class="tok-kw">case</span> i%<span class="tok-num">15</span> == <span class="tok-num">0</span>:
+            fmt.<span class="tok-func">Println</span>(<span class="tok-str">"FizzBuzz"</span>)
+        <span class="tok-kw">case</span> i%<span class="tok-num">3</span> == <span class="tok-num">0</span>:
+            fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Fizz"</span>)
+        <span class="tok-kw">case</span> i%<span class="tok-num">5</span> == <span class="tok-num">0</span>:
+            fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Buzz"</span>)
+        <span class="tok-kw">default</span>:
+            fmt.<span class="tok-func">Println</span>(i)
+        }
+    }
+}
+</code></pre></div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 5 / 8 — Έλεγχος Ροής</div>
+<h2>Παγίδες και χρήσιμα πράγματα για τα loops</h2>
+<p>Το πιο συχνό λάθος αρχαρίων με τη <code>for</code> είναι η ακούσια ατέρμων λούπα — συνήθως επειδή η συνθήκη τερματισμού ξεχάστηκε να ενημερωθεί, ή το βήμα (<code>i++</code>) λείπει κατά λάθος:</p>
+<pre><code><span class="tok-com">// BUG: i never changes, condition stays true forever</span>
+<span class="tok-kw">for</span> i <span class="tok-kw">:=</span> <span class="tok-num">0</span>; i < <span class="tok-num">10</span>; {
+    fmt.<span class="tok-func">Println</span>(i)
+    <span class="tok-com">// missing i++ here</span>
+}
+</code></pre>
+<p>Ένα δεύτερο συχνό λάθος είναι η σύγχυση ανάμεσα σε <code>&lt;</code> και <code>&lt;=</code> στη συνθήκη — π.χ. γράφοντας <code>i &lt; 10</code> ενώ ήθελες να συμπεριλάβεις και το 10 (off-by-one error).</p>
+<div class="callout">
+  <span class="tag">Σημείωση</span>
+  Σε αυτό το σημείο δεν έχουμε δει ακόμα arrays/slices — η διάσχιση συλλογών με <code>for range</code> έρχεται στην Ενότητα 8. Προς το παρόν, οι λούπες σου δουλεύουν πάνω σε αριθμούς και συνθήκες, όχι πάνω σε συλλογές δεδομένων.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Πώς συμπεριφέρεται η for όταν παραλείπεις την αρχικοποίηση και το βήμα, κρατώντας μόνο τη συνθήκη;",
+        options: [
+          "Δεν μεταγλωττίζεται — η Go απαιτεί πάντα και τα τρία μέρη μαζί σε κάθε for",
+          "Συμπεριφέρεται σαν το while άλλων γλωσσών, ελέγχοντας τη συνθήκη πριν από κάθε επανάληψη",
+          "Εκτελείται ακριβώς μία φορά, ανεξάρτητα από την τιμή της συνθήκης",
+          "Μετατρέπεται αυτόματα σε ατέρμων λούπα, αγνοώντας τελείως τη συνθήκη"
+        ],
+        correct: 1,
+        explain: "Η μονή-συνθήκη μορφή της for είναι λειτουργικά ισοδύναμη με το while άλλων γλωσσών — ελέγχει τη συνθήκη πριν από κάθε πέρασμα."
+      },
+      {
+        q: "Γιατί χρειάζεται label στο break, όταν θέλεις να διακόψεις το εξωτερικό loop από μέσα σε φωλιασμένο (nested) εσωτερικό loop;",
+        options: [
+          "Επειδή χωρίς label, το break σταματά μόνο το πλησιέστερο (εσωτερικό) loop, όχι το εξωτερικό",
+          "Επειδή η Go δεν επιτρέπει καθόλου break μέσα σε φωλιασμένα loops χωρίς ρητό label",
+          "Επειδή το break χωρίς label προκαλεί πάντα compile error σε οποιοδήποτε nested loop",
+          "Επειδή τα labels είναι υποχρεωτικά σε κάθε for loop της Go, ανεξαρτήτως nesting"
+        ],
+        correct: 0,
+        explain: "Ένα απλό break σταματά μόνο το loop στο οποίο βρίσκεται άμεσα. Για να 'σπάσεις' έναν εξωτερικό βρόχο από μέσα, χρειάζεσαι ρητό label πάνω από το outer loop."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 5</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">break</span><span class="gc-def">διακόπτει εντελώς το τρέχον loop</span></div>
+  <div class="gc-line"><span class="gc-term">continue</span><span class="gc-def">παραλείπει την υπόλοιπη επανάληψη, προχωρά στην επόμενη</span></div>
+  <div class="gc-line"><span class="gc-term">Label</span><span class="gc-def">ονομασία loop ώστε break/continue να το στοχεύσουν ρητά</span></div>
+  <div class="gc-line"><span class="gc-term">Off-by-one error</span><span class="gc-def">λάθος όριο σε συνθήκη, π.χ. &lt; αντί για &lt;=</span></div>
+</div>
+`);
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Συναρτήσεις &amp; Scope</div>
+<h1>Ανατομία μιας Συνάρτησης</h1>
+<p class="lede">Οι συναρτήσεις είναι το βασικό μπλοκ οργάνωσης κώδικα στη Go — μαθαίνοντας πώς ορίζονται σωστά, ανοίγεις τον δρόμο για πιο σύνθετα προγράμματα.</p>
+
+<h2>Ορισμός και κλήση</h2>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">greet</span>(name <span class="tok-type">string</span>) {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Hello,"</span>, name)
+}
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    <span class="tok-func">greet</span>(<span class="tok-str">"Prome"</span>) <span class="tok-com">// calling the function above</span>
+}
+</code></pre>
+
+<h2>Παράμετροι και συμπτυγμένοι τύποι</h2>
+<p>Όταν πολλαπλές διαδοχικές παράμετροι έχουν τον <em>ίδιο</em> τύπο, μπορείς να παραλείψεις τον τύπο σε όλες εκτός από την τελευταία — η Go τον εφαρμόζει αναδρομικά προς τα πίσω:</p>
+<pre><code><span class="tok-com">// instead of: func add(x int, y int) int</span>
+<span class="tok-kw">func</span> <span class="tok-func">add</span>(x, y <span class="tok-type">int</span>) <span class="tok-type">int</span> {
+    <span class="tok-kw">return</span> x + y
+}
+</code></pre>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Συναρτήσεις &amp; Scope</div>
+<h2>Τιμές Επιστροφής</h2>
+
+<h3>Μία τιμή</h3>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">square</span>(n <span class="tok-type">int</span>) <span class="tok-type">int</span> {
+    <span class="tok-kw">return</span> n * n
+}
+</code></pre>
+
+<h3>Πολλαπλές τιμές επιστροφής</h3>
+<p>Μια από τις πιο χαρακτηριστικές δυνατότητες της Go: μια συνάρτηση μπορεί να επιστρέψει <strong>περισσότερες από μία</strong> τιμές ταυτόχρονα, χωρίς wrapper αντικείμενα ή tuples. Αυτό χρησιμοποιείται πανταχού παρόν στο μοτίβο "αποτέλεσμα + error":</p>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">divmod</span>(a, b <span class="tok-type">int</span>) (<span class="tok-type">int</span>, <span class="tok-type">int</span>) {
+    <span class="tok-kw">return</span> a / b, a % b
+}
+
+quotient, remainder <span class="tok-kw">:=</span> <span class="tok-func">divmod</span>(<span class="tok-num">17</span>, <span class="tok-num">5</span>)
+</code></pre>
+
+<h3>Ονοματισμένες τιμές επιστροφής (Named returns)</h3>
+<p>Μπορείς να δώσεις ονόματα στις τιμές επιστροφής μέσα στην ίδια τη δήλωση της συνάρτησης. Αυτά τα ονόματα συμπεριφέρονται σαν κανονικές τοπικές μεταβλητές, αρχικοποιημένες στη zero value τους, και ένα "γυμνό" <code>return</code> (naked return) χωρίς τιμές επιστρέφει αυτόματα τις τρέχουσες τιμές τους:</p>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">divmod</span>(a, b <span class="tok-type">int</span>) (q, r <span class="tok-type">int</span>) {
+    q = a / b
+    r = a % b
+    <span class="tok-kw">return</span> <span class="tok-com">// naked return: sends back q and r automatically</span>
+}
+</code></pre>
+<div class="callout">
+  <span class="tag">Προσοχή με τα naked returns</span>
+  Σε μεγάλες συναρτήσεις, τα naked returns μπορούν να κάνουν τον κώδικα πιο δυσανάγνωστο — δεν είναι πάντα προφανές τι ακριβώς επιστρέφεται με μια ματιά. Πολλές ομάδες τα αποφεύγουν σε συναρτήσεις με πάνω από λίγες γραμμές.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Συναρτήσεις &amp; Scope</div>
+<h2>Μεταβλητός Αριθμός Παραμέτρων (Variadic)</h2>
+<p>Μερικές φορές δεν ξέρεις εκ των προτέρων πόσα ορίσματα θα δοθούν — π.χ. η ίδια η <code>fmt.Println</code> δέχεται όσα ορίσματα θες. Αυτό επιτυγχάνεται με τη σύνταξη <code>...τύπος</code>, η οποία μέσα στη συνάρτηση συμπεριφέρεται σαν slice:</p>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">sum</span>(nums ...<span class="tok-type">int</span>) <span class="tok-type">int</span> {
+    total <span class="tok-kw">:=</span> <span class="tok-num">0</span>
+    <span class="tok-kw">for</span> _, n <span class="tok-kw">:=</span> <span class="tok-kw">range</span> nums {
+        total += n
+    }
+    <span class="tok-kw">return</span> total
+}
+
+<span class="tok-func">sum</span>(<span class="tok-num">1</span>, <span class="tok-num">2</span>, <span class="tok-num">3</span>)       <span class="tok-com">// works with any number of arguments</span>
+<span class="tok-func">sum</span>(<span class="tok-num">5</span>, <span class="tok-num">10</span>)         <span class="tok-com">// or none at all</span>
+</code></pre>
+<p>Η variadic παράμετρος πρέπει να είναι πάντα η <strong>τελευταία</strong> στη λίστα παραμέτρων μιας συνάρτησης — δεν μπορούν να ακολουθήσουν άλλες παράμετροι μετά από αυτήν.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Συναρτήσεις &amp; Scope</div>
+<h2>Εμβέλεια (Scope) &amp; Διάρκεια Ζωής Μεταβλητών</h2>
+
+<h3>Τοπικές vs Καθολικές μεταβλητές</h3>
+<p>Μια μεταβλητή δηλωμένη <em>μέσα</em> σε μια συνάρτηση είναι <strong>local</strong> (τοπική) — υπάρχει μόνο εκεί, και "εξαφανίζεται" όταν η συνάρτηση επιστρέψει. Μια μεταβλητή δηλωμένη <em>εκτός</em> κάθε συνάρτησης, στο επίπεδο του πακέτου, είναι <strong>package-level / global</strong> — προσβάσιμη από όλο το πακέτο.</p>
+
+<h3>Block scope</h3>
+<p>Κάθε ζεύγος αγκίστρων <code>{}</code> (if, for, ή ακόμα και ένα "γυμνό" block) δημιουργεί το δικό του scope. Μια μεταβλητή δηλωμένη μέσα σε ένα block δεν είναι ορατή έξω από αυτό — αυτό είναι ακριβώς το μηχανισμό πίσω από το shadowing που είδαμε στην Ενότητα 4.</p>
+
+<h3>Exported vs Unexported identifiers</h3>
+<p>Η Go δεν έχει λέξεις-κλειδιά <code>public</code>/<code>private</code> όπως άλλες γλώσσες. Αντ' αυτού, χρησιμοποιεί μια απλή σύμβαση βασισμένη στο <strong>πρώτο γράμμα</strong> του ονόματος: αν ξεκινά με κεφαλαίο (π.χ. <code>DoSomething</code>), το identifier είναι <strong>exported</strong> — ορατό και από άλλα πακέτα. Αν ξεκινά με πεζό (π.χ. <code>doSomething</code>), είναι <strong>unexported</strong> — ορατό μόνο μέσα στο ίδιο πακέτο.</p>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">PublicHelper</span>() {}  <span class="tok-com">// exported: visible from other packages</span>
+<span class="tok-kw">func</span> <span class="tok-func">privateHelper</span>() {} <span class="tok-com">// unexported: package-internal only</span>
+</code></pre>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Γλωσσάρι Χρωμάτων Συντακτικού</div>
+<h1>Τι σημαίνει κάθε χρώμα στον κώδικα</h1>
+<p class="lede">Σε όλο αυτόν τον οδηγό, ο κώδικας είναι χρωματισμένος με συνέπεια. Δες τι αντιπροσωπεύει κάθε κατηγορία:</p>
+
+<div class="glossary-group">
+  <h2>Κατηγορίες συντακτικού χρωματισμού</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">Keywords</td><td class="gt-def">λέξεις-κλειδιά της γλώσσας, π.χ. func, if, for, var, return</td></tr>
+    <tr><td class="gt-term">Types</td><td class="gt-def">ονόματα τύπων, π.χ. int, string, bool, float64</td></tr>
+    <tr><td class="gt-term">Functions</td><td class="gt-def">ονόματα συναρτήσεων κατά τον ορισμό ή την κλήση τους</td></tr>
+    <tr><td class="gt-term">Strings</td><td class="gt-def">κυριολεκτικές τιμές string, μέσα σε εισαγωγικά</td></tr>
+    <tr><td class="gt-term">Numbers</td><td class="gt-def">αριθμητικές κυριολεξίες, π.χ. 42, 3.14</td></tr>
+    <tr><td class="gt-term">Comments</td><td class="gt-def">σχόλια κώδικα, αγνοούνται εντελώς κατά τη μεταγλώττιση</td></tr>
+  </table>
+</div>
+<p>Οι κανονικές μεταβλητές και τα πακέτα (π.χ. <code>fmt</code>) παραμένουν χωρίς ειδικό χρωματισμό, ώστε οι πιο "σημαντικές" κατηγορίες (keywords, types, functions) να ξεχωρίζουν οπτικά με την πρώτη ματιά.</p>
+`);
+
+    addQuiz([
+      {
+        q: "Τι επιστρέφει ένα 'naked return' μέσα σε συνάρτηση με named return values;",
+        options: [
+          "Πάντα τη zero value του τύπου επιστροφής, ανεξάρτητα από τις τρέχουσες τιμές των named returns",
+          "Προκαλεί πάντα compile error, αφού η Go απαιτεί ρητή τιμή σε κάθε return",
+          "Τις τρέχουσες τιμές των ονοματισμένων μεταβλητών επιστροφής, όπως έχουν διαμορφωθεί μέχρι εκείνο το σημείο",
+          "Μόνο την πρώτη από τις ονοματισμένες τιμές επιστροφής, αγνοώντας τις υπόλοιπες"
+        ],
+        correct: 2,
+        explain: "Τα named returns συμπεριφέρονται σαν κανονικές τοπικές μεταβλητές· ένα γυμνό return στέλνει πίσω ό,τι τιμές έχουν εκείνη τη στιγμή."
+      },
+      {
+        q: "Πώς ξεχωρίζει η Go ένα exported από ένα unexported identifier, χωρίς λέξεις public/private;",
+        options: [
+          "Με ειδικό annotation πάνω από τη δήλωση της συνάρτησης ή μεταβλητής",
+          "Με βάση το αν το identifier δηλώθηκε με var ή με :=",
+          "Με βάση το πρώτο γράμμα του ονόματος: κεφαλαίο σημαίνει exported, πεζό σημαίνει unexported",
+          "Με βάση το αν βρίσκεται μέσα σε func main() ή όχι"
+        ],
+        correct: 2,
+        explain: "Η σύμβαση της Go είναι απλή: Κεφαλαίο αρχικό γράμμα = ορατό από άλλα πακέτα (exported). Πεζό = ορατό μόνο εντός του ίδιου πακέτου."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — VSCode Challenge</div>
+<h1>Ασφαλής Διαίρεση</h1>
+<p class="lede">Δημιούργησε μια συνάρτηση <code>divide(a, b float64) (float64, bool)</code> που επιστρέφει το αποτέλεσμα της διαίρεσης και true, ή 0 και false αν το b είναι 0 (αποφυγή διαίρεσης με το μηδέν). Κάλεσέ την στη main χρησιμοποιώντας το μοτίβο if με short statement: <code>if res, ok := divide(10, 2); ok { ... }</code>.</p>
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  Το δεύτερο return value (bool) λειτουργεί σαν "σημαία επιτυχίας" — ένα πολύ συχνό μοτίβο στη Go, ίδιο πνεύμα με το val, ok := m[key] που θα δεις στους Maps (Ενότητα 8).
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">divide</span>(a, b <span class="tok-type">float64</span>) (<span class="tok-type">float64</span>, <span class="tok-type">bool</span>) {
+    <span class="tok-kw">if</span> b == <span class="tok-num">0</span> {
+        <span class="tok-kw">return</span> <span class="tok-num">0</span>, <span class="tok-kw">false</span>
+    }
+    <span class="tok-kw">return</span> a / b, <span class="tok-kw">true</span>
+}
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    <span class="tok-kw">if</span> res, ok <span class="tok-kw">:=</span> <span class="tok-func">divide</span>(<span class="tok-num">10</span>, <span class="tok-num">2</span>); ok {
+        fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Result:"</span>, res)
+    } <span class="tok-kw">else</span> {
+        fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Cannot divide by zero"</span>)
+    }
+}
+</code></pre></div>
+`);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 6</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">Multiple return values</span><span class="gc-def">συνάρτηση που επιστρέφει πάνω από μία τιμή</span></div>
+  <div class="gc-line"><span class="gc-term">Named return</span><span class="gc-def">τιμή επιστροφής με όνομα, σαν τοπική μεταβλητή</span></div>
+  <div class="gc-line"><span class="gc-term">Naked return</span><span class="gc-def">return χωρίς ρητές τιμές, επιστρέφει τα named returns</span></div>
+  <div class="gc-line"><span class="gc-term">Variadic</span><span class="gc-def">παράμετρος που δέχεται μεταβλητό πλήθος ορισμάτων (...T)</span></div>
+  <div class="gc-line"><span class="gc-term">Exported</span><span class="gc-def">identifier με κεφαλαίο αρχικό, ορατό από άλλα packages</span></div>
+</div>
+`);
+    addContent(`
+<div class="eyebrow">Ενότητα 7 / 8 — Δείκτες &amp; Μνήμη</div>
+<h1>Εισαγωγή στους Δείκτες</h1>
+<p class="lede">Οι δείκτες είναι συχνά το σημείο όπου νέοι προγραμματιστές δυσκολεύονται περισσότερο — αλλά η ιδέα πίσω τους είναι στην πραγματικότητα απλή.</p>
+
+<h2>Διεύθυνση μνήμης vs δείκτης</h2>
+<p>Κάθε μεταβλητή στο πρόγραμμά σου ζει κάπου στη μνήμη του υπολογιστή, σε μια συγκεκριμένη <strong>διεύθυνση</strong>. Ένας <strong>δείκτης</strong> (pointer) είναι απλά μια μεταβλητή που δεν αποθηκεύει μια "κανονική" τιμή (όπως έναν αριθμό ή string) — αποθηκεύει τη <em>διεύθυνση</em> μιας άλλης μεταβλητής.</p>
+
+<h2>Ο τελεστής & (Address-of)</h2>
+<p>Το <code>&amp;</code> μπροστά από μια μεταβλητή σου δίνει τη διεύθυνσή της στη μνήμη — δηλαδή έναν δείκτη προς αυτήν:</p>
+<pre><code>x <span class="tok-kw">:=</span> <span class="tok-num">42</span>
+p <span class="tok-kw">:=</span> &x <span class="tok-com">// p is a pointer holding the memory address of x</span>
+fmt.<span class="tok-func">Println</span>(p) <span class="tok-com">// prints something like 0xc0000140a0</span>
+</code></pre>
+
+<h2>Ο τελεστής * (Dereference)</h2>
+<p>Έχοντας έναν δείκτη, το <code>*</code> μπροστά του σου δίνει πρόσβαση στην <em>πραγματική τιμή</em> που βρίσκεται σε εκείνη τη διεύθυνση — αυτό λέγεται dereferencing:</p>
+<pre><code>x <span class="tok-kw">:=</span> <span class="tok-num">42</span>
+p <span class="tok-kw">:=</span> &x
+fmt.<span class="tok-func">Println</span>(*p) <span class="tok-com">// prints 42 — the value x holds</span>
+
+*p = <span class="tok-num">100</span> <span class="tok-com">// writes through the pointer, changing x itself</span>
+fmt.<span class="tok-func">Println</span>(x) <span class="tok-com">// prints 100</span>
+</code></pre>
+
+<h2>Η μηδενική τιμή nil</h2>
+<p>Ένας δείκτης που δεν δείχνει πουθενά έχει τη zero value <code>nil</code>. Η προσπάθεια να κάνεις dereference έναν <code>nil</code> δείκτη (δηλαδή <code>*p</code> όταν το p είναι nil) προκαλεί panic κατά την εκτέλεση — ένα από τα πιο συχνά runtime σφάλματα σε προγράμματα Go.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 7 / 8 — Δείκτες &amp; Μνήμη</div>
+<h2>Πέρασμα Παραμέτρων: By Value vs By Reference</h2>
+<p>Στη Go, <strong>τα πάντα περνούν με τιμή</strong> (pass by value) όταν καλείς μια συνάρτηση — ακόμα και δείκτες. Αυτό σημαίνει ότι όταν περνάς μια μεταβλητή σε μια συνάρτηση, η συνάρτηση παίρνει ένα <em>αντίγραφο</em> της τιμής, όχι την ίδια τη μεταβλητή. Αλλαγές στο αντίγραφο μέσα στη συνάρτηση δεν επηρεάζουν το πρωτότυπο έξω από αυτήν.</p>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">tryToChange</span>(n <span class="tok-type">int</span>) {
+    n = <span class="tok-num">999</span> <span class="tok-com">// only changes the local copy</span>
+}
+
+x <span class="tok-kw">:=</span> <span class="tok-num">5</span>
+<span class="tok-func">tryToChange</span>(x)
+fmt.<span class="tok-func">Println</span>(x) <span class="tok-com">// still prints 5 — x itself was never touched</span>
+</code></pre>
+
+<h2>Τροποποίηση μέσω δεικτών</h2>
+<p>Για να τροποποιήσεις πραγματικά μια μεταβλητή "από μέσα" σε μια συνάρτηση, περνάς έναν <strong>δείκτη</strong> προς αυτήν — έτσι η συνάρτηση παίρνει μεν ένα αντίγραφο, αλλά το αντίγραφο είναι της <em>διεύθυνσης</em>, οπότε το dereferencing μέσα στη συνάρτηση αγγίζει την ίδια, πρωτότυπη μεταβλητή:</p>
+<pre><code><span class="tok-kw">func</span> <span class="tok-func">reallyChange</span>(n *<span class="tok-type">int</span>) {
+    *n = <span class="tok-num">999</span> <span class="tok-com">// dereferences and writes through, reaching the original</span>
+}
+
+x <span class="tok-kw">:=</span> <span class="tok-num">5</span>
+<span class="tok-func">reallyChange</span>(&x)
+fmt.<span class="tok-func">Println</span>(x) <span class="tok-com">// prints 999 — x was actually modified</span>
+</code></pre>
+
+<h2>Πότε να χρησιμοποιείς δείκτες</h2>
+<div class="grid2">
+  <div class="card"><h3>Χρησιμοποίησε δείκτη όταν</h3><p>Θες η συνάρτηση να τροποποιήσει την αρχική μεταβλητή, ή όταν η τιμή είναι "βαριά" (μεγάλη δομή) και θες να αποφύγεις το κόστος αντιγραφής της σε κάθε κλήση.</p></div>
+  <div class="card"><h3>Απόφυγε τον δείκτη όταν</h3><p>Η τιμή είναι μικρή (όπως ένα int ή bool) και δεν χρειάζεται τροποποίηση — το αντίγραφο είναι φθηνό και ο κώδικας παραμένει πιο απλός χωρίς dereferencing.</p></div>
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι σημαίνει η φράση 'στη Go όλα περνούν με τιμή' (pass by value), ακόμα και για δείκτες;",
+        options: [
+          "Ότι κάθε συνάρτηση παίρνει πάντα ένα αντίγραφο της τιμής που περνιέται — στην περίπτωση δείκτη, αντίγραφο της ίδιας της διεύθυνσης",
+          "Ότι οι δείκτες δεν μπορούν ποτέ να χρησιμοποιηθούν ως παράμετροι συναρτήσεων στη Go",
+          "Ότι κάθε μεταβλητή που περνιέται σε συνάρτηση μηδενίζεται αυτόματα μόλις η συνάρτηση επιστρέψει",
+          "Ότι μόνο οι αριθμητικοί τύποι (int, float64) περνούν με τιμή, ενώ strings και δείκτες περνούν πάντα με αναφορά"
+        ],
+        correct: 0,
+        explain: "Ακόμα κι ένας δείκτης, όταν περνιέται ως παράμετρος, περνά ως αντίγραφο της διεύθυνσης που κρατά — αλλά επειδή δείχνει στην ίδια αρχική τιμή, το dereferencing μέσα στη συνάρτηση την επηρεάζει πραγματικά."
+      },
+      {
+        q: "Γιατί το tryToChange(x) στο παράδειγμα ΔΕΝ αλλάζει την τιμή του x στην main, ενώ το reallyChange(&x) το κάνει;",
+        options: [
+          "Επειδή το tryToChange είναι μικρότερη συνάρτηση από το reallyChange σε αριθμό γραμμών κώδικα",
+          "Επειδή το x πρέπει πάντα να δηλώνεται με var για να μπορεί να τροποποιηθεί εντός συνάρτησης",
+          "Επειδή το tryToChange δέχεται αντίγραφο της τιμής int (τροποποιεί μόνο το τοπικό αντίγραφο), ενώ το reallyChange δέχεται δείκτη και κάνει dereference για να γράψει στην αρχική διεύθυνση",
+          "Επειδή η Go επιτρέπει τροποποίηση μεταβλητών μόνο μέσα στην ίδια τη func main()"
+        ],
+        correct: 2,
+        explain: "Η διαφορά είναι ακριβώς αυτή: χωρίς δείκτη, η συνάρτηση δουλεύει πάνω σε ένα τοπικό αντίγραφο· με δείκτη, το *n = ... γράφει κατευθείαν στη διεύθυνση του αρχικού x."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 7 / 8 — VSCode Challenge</div>
+<h1>Μηδενισμός By Value vs By Pointer</h1>
+<p class="lede">Γράψε μια συνάρτηση <code>zeroValue(val int)</code> που προσπαθεί να μηδενίσει μια μεταβλητή (by value) και μια συνάρτηση <code>zeroPointer(val *int)</code> που τη μηδενίζει πραγματικά μέσω δείκτη. Τύπωσε τη διεύθυνση μνήμης (<code>&amp;x</code>) και την τιμή της μεταβλητής στη main πριν και μετά από κάθε κλήση.</p>
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  Η διεύθυνση του x στην main δεν θα αλλάξει ποτέ — αυτό που αλλάζει (ή δεν αλλάζει) είναι η <em>τιμή</em> που περιέχει. Παρατήρησε τη διαφορά στα prints πριν/μετά από κάθε κλήση.
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">zeroValue</span>(val <span class="tok-type">int</span>) {
+    val = <span class="tok-num">0</span> <span class="tok-com">// only changes the local copy</span>
+}
+
+<span class="tok-kw">func</span> <span class="tok-func">zeroPointer</span>(val *<span class="tok-type">int</span>) {
+    *val = <span class="tok-num">0</span> <span class="tok-com">// writes through to the original variable</span>
+}
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    x <span class="tok-kw">:=</span> <span class="tok-num">10</span>
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"before zeroValue:"</span>, &x, x)
+    <span class="tok-func">zeroValue</span>(x)
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"after zeroValue: "</span>, &x, x) <span class="tok-com">// x unchanged</span>
+
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"before zeroPointer:"</span>, &x, x)
+    <span class="tok-func">zeroPointer</span>(&x)
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"after zeroPointer: "</span>, &x, x) <span class="tok-com">// x is now 0</span>
+}
+</code></pre></div>
+`);
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 7</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Pointer</span><span class="gs-def">μεταβλητή που κρατά διεύθυνση μνήμης άλλης μεταβλητής</span></div>
+  <div class="gs-pill"><span class="gs-name">&amp; (address-of)</span><span class="gs-def">δίνει τη διεύθυνση μιας μεταβλητής</span></div>
+  <div class="gs-pill"><span class="gs-name">* (dereference)</span><span class="gs-def">δίνει/γράφει την τιμή στην οποία δείχνει ο pointer</span></div>
+  <div class="gs-pill"><span class="gs-name">nil pointer</span><span class="gs-def">δείκτης που δεν δείχνει πουθενά· dereference του προκαλεί panic</span></div>
+  <div class="gs-pill"><span class="gs-name">Pass by value</span><span class="gs-def">η συνάρτηση παίρνει αντίγραφο, όχι το πρωτότυπο</span></div>
+</div>
+`);
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
+<h1>Πίνακες (Arrays)</h1>
+<p class="lede">Η Go ξεκινά με το πιο "ωμό" εργαλείο συλλογής δεδομένων: τον πίνακα σταθερού μεγέθους. Θα δούμε αμέσως γιατί στην πράξη χρησιμοποιούμε σχεδόν πάντα κάτι πιο ευέλικτο.</p>
+
+<h2>Δήλωση και αρχικοποίηση</h2>
+<p>Ένα array στη Go έχει <strong>σταθερό μέγεθος</strong>, ορισμένο κατά τη δήλωσή του και αμετάβλητο για πάντα — το μέγεθος είναι μέρος του ίδιου του τύπου:</p>
+<pre><code><span class="tok-kw">var</span> nums [<span class="tok-num">5</span>]<span class="tok-type">int</span> <span class="tok-com">// array of exactly 5 ints, all zero-valued</span>
+letters <span class="tok-kw">:=</span> [<span class="tok-num">3</span>]<span class="tok-type">string</span>{<span class="tok-str">"a"</span>, <span class="tok-str">"b"</span>, <span class="tok-str">"c"</span>}
+</code></pre>
+
+<h2>Προσπέλαση και τροποποίηση</h2>
+<pre><code>nums[<span class="tok-num">0</span>] = <span class="tok-num">10</span> <span class="tok-com">// indexing starts at 0</span>
+fmt.<span class="tok-func">Println</span>(nums[<span class="tok-num">0</span>])
+</code></pre>
+
+<h2>Περιορισμοί</h2>
+<p>Επειδή το μέγεθος είναι μέρος του τύπου, ένα <code>[3]int</code> και ένα <code>[5]int</code> είναι <strong>διαφορετικοί τύποι</strong> — δεν μπορείς να αναθέσεις το ένα στο άλλο, ούτε να περάσεις array οποιουδήποτε μεγέθους σε συνάρτηση που περιμένει συγκεκριμένο μέγεθος. Αυτή η ακαμψία είναι ο κύριος λόγος που τα arrays χρησιμοποιούνται σπάνια απευθείας στην καθημερινή Go — στη θέση τους χρησιμοποιούμε σχεδόν πάντα <strong>slices</strong>.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
+<h1>Slices (Δυναμικοί Πίνακες)</h1>
+<p class="lede">Το slice είναι η πραγματικά χρησιμοποιούμενη δομή για λίστες στη Go — ευέλικτο σε μέγεθος, χτισμένο πάνω από ένα array.</p>
+
+<h2>Τι είναι, και πώς διαφέρει από array</h2>
+<p>Ένα slice <strong>δεν</strong> έχει σταθερό μέγεθος — μπορεί να μεγαλώσει δυναμικά. Στην πραγματικότητα, ένα slice είναι μια "θέα" (view) πάνω σε ένα υποκείμενο array, όχι δεδομένα από μόνο του.</p>
+
+<h2>Ανατομία ενός Slice</h2>
+<div class="grid3">
+  <div class="card"><h3>Pointer</h3><p>Δείχνει στο πρώτο στοιχείο του υποκείμενου array που "βλέπει" το slice.</p></div>
+  <div class="card"><h3>Length (len)</h3><p>Πόσα στοιχεία περιέχει αυτή τη στιγμή το slice.</p></div>
+  <div class="card"><h3>Capacity (cap)</h3><p>Πόσα στοιχεία θα χωρούσαν συνολικά πριν χρειαστεί νέο, μεγαλύτερο υποκείμενο array.</p></div>
+</div>
+
+<h2>Δημιουργία Slices</h2>
+<pre><code>a <span class="tok-kw">:=</span> []<span class="tok-type">int</span>{<span class="tok-num">1</span>, <span class="tok-num">2</span>, <span class="tok-num">3</span>}     <span class="tok-com">// slice literal</span>
+b <span class="tok-kw">:=</span> <span class="tok-func">make</span>([]<span class="tok-type">int</span>, <span class="tok-num">5</span>)     <span class="tok-com">// make: length 5, all zero-valued</span>
+c <span class="tok-kw">:=</span> a[<span class="tok-num">0</span>:<span class="tok-num">2</span>]           <span class="tok-com">// slicing an existing array/slice: elements at index 0,1</span>
+</code></pre>
+
+<h2>append και επανεκχώρηση</h2>
+<p>Η <code>append</code> προσθέτει στοιχεία στο τέλος ενός slice. Αν η υπάρχουσα capacity δεν αρκεί, η Go δημιουργεί αυτόματα ένα <strong>νέο, μεγαλύτερο</strong> υποκείμενο array στο παρασκήνιο, αντιγράφει τα παλιά στοιχεία, και επιστρέφει slice που δείχνει στο νέο array:</p>
+<pre><code>nums <span class="tok-kw">:=</span> []<span class="tok-type">int</span>{<span class="tok-num">1</span>, <span class="tok-num">2</span>}
+nums = <span class="tok-func">append</span>(nums, <span class="tok-num">3</span>) <span class="tok-com">// always reassign — append may return a NEW slice</span>
+</code></pre>
+<div class="callout">
+  <span class="tag">Γιατί πάντα nums = append(nums, ...)</span>
+  Επειδή η append ενδέχεται να χρειαστεί να δημιουργήσει νέο υποκείμενο array, το επιστρεφόμενο slice μπορεί να δείχνει αλλού από το αρχικό. Αν δεν ξανααναθέσεις την τιμή, το πρόγραμμά σου μπορεί να συνεχίσει να χρησιμοποιεί το "παλιό" slice χωρίς το νέο στοιχείο.
+</div>
+
+<h2>copy</h2>
+<p>Η <code>copy(dst, src)</code> αντιγράφει στοιχεία από ένα slice σε ένα άλλο, χωρίς να μοιράζονται το ίδιο υποκείμενο array μετά — χρήσιμο όταν θες πραγματικά ανεξάρτητο αντίγραφο.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
+<h2>Προσπέλαση Συλλογών</h2>
+
+<h3>Με απλή for</h3>
+<pre><code><span class="tok-kw">for</span> i <span class="tok-kw">:=</span> <span class="tok-num">0</span>; i < <span class="tok-func">len</span>(nums); i++ {
+    fmt.<span class="tok-func">Println</span>(nums[i])
+}
+</code></pre>
+
+<h3>Με range (index + value)</h3>
+<pre><code><span class="tok-kw">for</span> i, v <span class="tok-kw">:=</span> <span class="tok-kw">range</span> nums {
+    fmt.<span class="tok-func">Println</span>(i, v) <span class="tok-com">// i = index, v = value at that index</span>
+}
+</code></pre>
+
+<h3>Σύγκριση των δύο προσεγγίσεων</h3>
+<div class="grid2">
+  <div class="card"><h3>Απλή for</h3><p>Πιο ρητή, σου δίνει πλήρη έλεγχο του index (π.χ. αν θες να πηδήξεις στοιχεία ή να πας ανάποδα). Πιο "φλύαρη" σε απλές διασχίσεις.</p></div>
+  <div class="card"><h3>for range</h3><p>Πιο σύντομη και ιδιωματική (idiomatic) για την απλή περίπτωση "πέρνα από όλα τα στοιχεία". Λιγότερο ευέλικτη για μη-γραμμικές διασχίσεις.</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Προσοχή: panic σε out-of-range πρόσβαση</span>
+  Η πρόσβαση σε index εκτός ορίων (π.χ. <code>nums[10]</code> όταν το slice έχει μόνο 5 στοιχεία) προκαλεί <strong>panic</strong> κατά την εκτέλεση — το πρόγραμμα τερματίζεται απότομα αν δεν έχει γίνει recover. Αυτό συμβαίνει συχνά σε loops όπου η συνθήκη τερματισμού είναι λάθος (π.χ. <code>i &lt;= len(nums)</code> αντί για <code>i &lt; len(nums)</code>).
+</div>
+
+<h3>Παράλειψη μεταβλητών με _</h3>
+<p>Αν σε ένα <code>for range</code> δεν χρειάζεσαι το index ή την τιμή, χρησιμοποιείς τον blank identifier <code>_</code> για να το αγνοήσεις ρητά — απαραίτητο γιατί η Go δεν επιτρέπει αδήλωτες, "άχρηστες" τοπικές μεταβλητές:</p>
+<pre><code><span class="tok-kw">for</span> _, v <span class="tok-kw">:=</span> <span class="tok-kw">range</span> nums {
+    fmt.<span class="tok-func">Println</span>(v) <span class="tok-com">// only care about the value, ignore the index</span>
+}
+</code></pre>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί πρέπει σχεδόν πάντα να ξανααναθέτεις το αποτέλεσμα της append, δηλαδή nums = append(nums, x);",
+        options: [
+          "Επειδή η append τροποποιεί πάντα το slice επιτόπου και το return value χρησιμεύει μόνο για logging",
+          "Επειδή η append ενδέχεται να δημιουργήσει νέο υποκείμενο array όταν δεν αρκεί η capacity, οπότε το επιστρεφόμενο slice μπορεί να διαφέρει από το αρχικό",
+          "Επειδή χωρίς επανεκχώρηση, η Go αρνείται να μεταγλωττίσει τον κώδικα με compile error",
+          "Επειδή η append λειτουργεί μόνο μέσα σε for range loops, ποτέ ως ανεξάρτητη κλήση"
+        ],
+        correct: 1,
+        explain: "Η append μπορεί να χρειαστεί μεγαλύτερο υποκείμενο array — τότε το slice που επιστρέφει δείχνει σε νέα μνήμη, γι' αυτό πρέπει πάντα να ξανααναθέτεις το αποτέλεσμα."
+      },
+      {
+        q: "Ποια είναι η βασική διαφορά ανάμεσα σε array και slice στη Go;",
+        options: [
+          "Το array μπορεί να περιέχει μόνο αριθμητικούς τύπους, ενώ το slice οποιονδήποτε τύπο δεδομένων",
+          "Το array έχει σταθερό μέγεθος που είναι μέρος του τύπου του, ενώ το slice είναι δυναμικού μεγέθους 'θέα' πάνω σε υποκείμενο array",
+          "Το slice δεν υποστηρίζει καθόλου πρόσβαση μέσω index, μόνο το array",
+          "Δεν υπάρχει καμία λειτουργική διαφορά, το slice είναι απλώς συνώνυμο ονόματος για array"
+        ],
+        correct: 1,
+        explain: "Το array έχει σταθερό, δεσμευμένο μέγεθος στον τύπο του (π.χ. [5]int). Το slice είναι ευέλικτο, χτισμένο πάνω από ένα array, με pointer/length/capacity."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
+<h1>Χάρτες (Maps)</h1>
+<p class="lede">Ο map είναι η δομή key/value pairs της Go — ό,τι σε άλλες γλώσσες λέγεται dictionary ή hash map.</p>
+
+<h2>Δήλωση και αρχικοποίηση</h2>
+<pre><code>ages <span class="tok-kw">:=</span> <span class="tok-func">make</span>(<span class="tok-kw">map</span>[<span class="tok-type">string</span>]<span class="tok-type">int</span>)  <span class="tok-com">// empty map, ready to use</span>
+
+scores <span class="tok-kw">:=</span> <span class="tok-kw">map</span>[<span class="tok-type">string</span>]<span class="tok-type">int</span>{     <span class="tok-com">// map literal with initial values</span>
+    <span class="tok-str">"Alice"</span>: <span class="tok-num">90</span>,
+    <span class="tok-str">"Bob"</span>:   <span class="tok-num">85</span>,
+}
+</code></pre>
+
+<h2>Προσθήκη, ενημέρωση, διαγραφή</h2>
+<pre><code>ages[<span class="tok-str">"Prome"</span>] = <span class="tok-num">20</span>       <span class="tok-com">// add or update — same syntax either way</span>
+<span class="tok-func">delete</span>(ages, <span class="tok-str">"Prome"</span>)  <span class="tok-com">// remove a key entirely</span>
+</code></pre>
+
+<h2>Έλεγχος ύπαρξης κλειδιού</h2>
+<p>Το πιο σημαντικό μοτίβο με maps: πώς ξεχωρίζεις "το κλειδί υπάρχει με τιμή 0" από "το κλειδί δεν υπάρχει καθόλου" (αφού και τα δύο θα έδιναν 0 αν έκανες απλά <code>ages["X"]</code>). Η λύση είναι το δεύτερο, προαιρετικό return value:</p>
+<pre><code>value, ok <span class="tok-kw">:=</span> ages[<span class="tok-str">"Prome"</span>]
+<span class="tok-kw">if</span> ok {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"found:"</span>, value)
+} <span class="tok-kw">else</span> {
+    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"key does not exist"</span>)
+}
+</code></pre>
+
+<h2>Διάσχιση με for range</h2>
+<pre><code><span class="tok-kw">for</span> key, value <span class="tok-kw">:=</span> <span class="tok-kw">range</span> scores {
+    fmt.<span class="tok-func">Println</span>(key, value)
+}
+</code></pre>
+<div class="callout">
+  <span class="tag">Προσοχή: μη εγγυημένη σειρά</span>
+  Η Go <strong>δεν</strong> εγγυάται καμία συγκεκριμένη σειρά όταν διασχίζεις έναν map με <code>for range</code> — κάθε εκτέλεση μπορεί να δώσει διαφορετική σειρά. Αν χρειάζεσαι σταθερή σειρά, πρέπει να εξάγεις τα κλειδιά σε slice και να τα ταξινομήσεις ρητά.
+</div>
+`);
+
+    addFillBlank([
+      {
+        code:
+          `m := __make__(map[string]int)
+m["apple"] = 3
+
+value, ok := m[__key__]
+if ok {
+    fmt.Println("found:", value)
+}
+
+__delete__(m, "apple") // remove the key entirely`,
+        blanks: [
+          { id: "make", answer: "make" },
+          { id: "key", answer: "\"apple\"" },
+          { id: "delete", answer: "delete" }
+        ],
+        explain: "make δημιουργεί κενό map έτοιμο για χρήση, η αναζήτηση με comma-ok pattern δίνει τιμή+ύπαρξη, και η delete αφαιρεί ένα κλειδί."
+      },
+      {
+        code:
+          `nums := []int{1, 2, 3}
+nums = __append__(nums, 4) // reassignment matters here
+
+for i, v := __range__ nums {
+    fmt.Println(i, v)
+}`,
+        blanks: [
+          { id: "append", answer: "append" },
+          { id: "range", answer: "range" }
+        ],
+        explain: "append προσθέτει στοιχείο (πιθανόν με νέο underlying array), και range δίνει index+value σε κάθε επανάληψη."
+      }
+    ], {
+      note: "Συμπλήρωσε τα κενά με βάση όσα είδαμε για slices και maps."
+    });
+
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
+<h1>Μετρητής Συχνότητας Λέξεων</h1>
+<p class="lede">Δημιούργησε έναν map που μετράει τη συχνότητα εμφανίσεων λέξεων σε ένα slice από strings: <code>words := []string{"apple", "orange", "pear", "orange", "apple", "apple", "pear", "pear", "apple"}</code>. Διάσχισε το slice με loop και στη συνέχεια τύπωσε τα αποτελέσματα του map.</p>
+<div class="callout">
+  <span class="tag">Οδηγίες</span>
+  Για κάθε λέξη στο slice, αύξησε κατά 1 τον μετρητή της στον map. Θυμήσου: αν το κλειδί δεν υπάρχει ακόμα, η zero value του int (δηλαδή 0) σου επιτρέπει να κάνεις απευθείας <code>m[word]++</code> χωρίς προηγούμενο έλεγχο.
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+
+<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
+
+<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
+    words <span class="tok-kw">:=</span> []<span class="tok-type">string</span>{<span class="tok-str">"apple"</span>, <span class="tok-str">"orange"</span>, <span class="tok-str">"pear"</span>, <span class="tok-str">"orange"</span>, <span class="tok-str">"apple"</span>, <span class="tok-str">"apple"</span>, <span class="tok-str">"pear"</span>, <span class="tok-str">"pear"</span>, <span class="tok-str">"apple"</span>}
+
+    counts <span class="tok-kw">:=</span> <span class="tok-func">make</span>(<span class="tok-kw">map</span>[<span class="tok-type">string</span>]<span class="tok-type">int</span>)
+    <span class="tok-kw">for</span> _, w <span class="tok-kw">:=</span> <span class="tok-kw">range</span> words {
+        counts[w]++ <span class="tok-com">// zero value lets this work even for a brand-new key</span>
+    }
+
+    <span class="tok-kw">for</span> word, count <span class="tok-kw">:=</span> <span class="tok-kw">range</span> counts {
+        fmt.<span class="tok-func">Println</span>(word, <span class="tok-str">":"</span>, count)
+    }
+}
+</code></pre></div>
+`);
+
+    addMatching([
+      [
+        { term: "Array", def: "σταθερό μέγεθος, μέρος του ίδιου του τύπου" },
+        { term: "Slice", def: "δυναμικό μέγεθος, θέα πάνω σε υποκείμενο array" },
+        { term: "Map", def: "δομή key/value pairs χωρίς εγγυημένη σειρά" },
+        { term: "Capacity", def: "πόσα στοιχεία χωρούν πριν χρειαστεί νέο array" }
+      ],
+      [
+        { term: "append", def: "προσθέτει στοιχείο στο τέλος ενός slice" },
+        { term: "make", def: "δημιουργεί έτοιμο προς χρήση slice ή map" },
+        { term: "delete", def: "αφαιρεί ένα κλειδί από map" },
+        { term: "comma-ok pattern", def: "value, ok := m[key] για έλεγχο ύπαρξης κλειδιού" }
+      ]
+    ], {
+      label: "Ταίριαξε τους όρους — Δύο σετ",
+      note: "Πρώτο σετ: δομές δεδομένων. Δεύτερο σετ: λειτουργίες πάνω σε αυτές."
+    });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">len / cap</span><span class="gc-def">μήκος και χωρητικότητα ενός slice</span></div>
+  <div class="gc-line"><span class="gc-term">Blank identifier _</span><span class="gc-def">αγνοεί ρητά μια τιμή που δεν χρειάζεσαι</span></div>
+  <div class="gc-line"><span class="gc-term">Comma-ok pattern</span><span class="gc-def">value, ok := m[key] — ελέγχει ύπαρξη κλειδιού</span></div>
+  <div class="gc-line"><span class="gc-term">Panic</span><span class="gc-def">απότομος τερματισμός εκτέλεσης, π.χ. σε out-of-range πρόσβαση</span></div>
+</div>
+`);
+
+    // Final combined quiz — 7 questions covering the whole Part 1.
+    addQuiz([
+      {
+        q: "Ποια από τις παρακάτω δηλώσεις είναι έγκυρη μόνο μέσα σε συνάρτηση, όχι σε package-level;",
+        options: [
+          "var age int",
+          "const Pi = 3.14159",
+          "age := 25",
+          "var name string = \"Prome\""
+        ],
+        correct: 2,
+        explain: "Το := (short declaration) λειτουργεί μόνο μέσα σε function bodies· στο package-level χρειάζεται πάντα var ή const."
+      },
+      {
+        q: "Γιατί η Go απαιτεί ρητή μετατροπή τύπου (π.χ. float64(x)) αντί να κάνει αυτόματη μετατροπή ανάμεσα σε int και float64;",
+        options: [
+          "Επειδή η αυτόματη μετατροπή θα επιβράδυνε σημαντικά τη μεταγλώττιση σε μεγάλα projects",
+          "Επειδή η strict type safety αποτρέπει απρόσμενη απώλεια ακρίβειας και σιωπηλά bugs που θα περνούσαν απαρατήρητα",
+          "Επειδή οι δύο τύποι δεν μπορούν ποτέ να συνυπάρξουν στην ίδια συνάρτηση, ανεξαρτήτως μετατροπής",
+          "Επειδή μόνο ο τύπος int υποστηρίζει αριθμητικές πράξεις απευθείας στη Go"
+        ],
+        correct: 1,
+        explain: "Η ρητή μετατροπή είναι σχεδιαστική επιλογή για ασφάλεια τύπων — καμία σιωπηλή, απρόβλεπτη μετατροπή δεν συμβαίνει ποτέ αυτόματα."
+      },
+      {
+        q: "Σε ποια περίπτωση η δεξιά πλευρά ενός && ή || ΔΕΝ θα εκτελεστεί καθόλου (short-circuit);",
+        options: [
+          "Όταν η αριστερή πλευρά είναι ήδη αρκετή για να καθορίσει το τελικό αποτέλεσμα της έκφρασης",
+          "Μόνο όταν και οι δύο πλευρές είναι κλήσεις της ίδιας ακριβώς συνάρτησης",
+          "Ποτέ — η Go αξιολογεί πάντα και τις δύο πλευρές σε κάθε λογική έκφραση",
+          "Μόνο μέσα σε tagless switch statements, ποτέ σε απλά if"
+        ],
+        correct: 0,
+        explain: "Short-circuit: σε A() || B(), αν το A() είναι ήδη true, το αποτέλεσμα είναι γνωστό και το B() παραλείπεται εντελώς — και αντίστροφα για && με false."
+      },
+      {
+        q: "Ποιο πρόβλημα λύνει το if με short statement (π.χ. if err := doX(); err != nil { ... });",
+        options: [
+          "Επιτρέπει τη χρήση περισσότερων από μία συνθηκών ταυτόχρονα μέσα στο ίδιο if",
+          "Κρατά το scope μιας βοηθητικής μεταβλητής (όπως το err) περιορισμένο μόνο μέσα στο if/else, χωρίς να διαρρέει στο ευρύτερο scope",
+          "Επιταχύνει τη μεταγλώττιση αφαιρώντας την ανάγκη για ξεχωριστή δήλωση μεταβλητής",
+          "Αντικαθιστά εντελώς την ανάγκη χρήσης του τελεστή =="
+        ],
+        correct: 1,
+        explain: "Το μοτίβο αυτό είναι πανταχού παρόν στη Go ακριβώς επειδή περιορίζει τη διάρκεια ζωής βοηθητικών μεταβλητών (π.χ. error handling) μόνο εκεί που χρειάζεται."
+      },
+      {
+        q: "Ποια είναι η συνέπεια του ότι όλες οι παράμετροι συναρτήσεων στη Go περνούν 'by value';",
+        options: [
+          "Ότι καμία συνάρτηση δεν μπορεί ποτέ να τροποποιήσει δεδομένα εκτός του δικού της scope, ούτε με δείκτες",
+          "Ότι για να τροποποιήσεις πραγματικά μια εξωτερική μεταβλητή μέσα από συνάρτηση, χρειάζεται να περάσεις δείκτη προς αυτήν, όχι την ίδια την τιμή",
+          "Ότι όλες οι παράμετροι πρέπει υποχρεωτικά να δηλώνονται ως pointer τύποι στη λίστα παραμέτρων",
+          "Ότι η Go αντιγράφει αυτόματα ολόκληρο το πρόγραμμα σε κάθε κλήση συνάρτησης"
+        ],
+        correct: 1,
+        explain: "Επειδή μια απλή τιμή περνά ως αντίγραφο, μόνο ένας δείκτης (που κι αυτός περνά ως αντίγραφο, αλλά της διεύθυνσης) επιτρέπει πραγματική τροποποίηση της αρχικής μεταβλητής."
+      },
+      {
+        q: "Γιατί το nums = append(nums, x) γράφεται πάντα με επανεκχώρηση, αντί απλά append(nums, x);",
+        options: [
+          "Επειδή η append δεν επιστρέφει καμία τιμή στη Go, οπότε η επανεκχώρηση δεν έχει καμία πρακτική επίδραση",
+          "Επειδή αν η capacity δεν αρκεί, η append δημιουργεί νέο υποκείμενο array και το slice πρέπει να ενημερωθεί ώστε να δείχνει εκεί",
+          "Επειδή χωρίς επανεκχώρηση ο compiler αρνείται εντελώς να μεταγλωττίσει το πρόγραμμα",
+          "Επειδή η append λειτουργεί μόνο πάνω σε arrays σταθερού μεγέθους, ποτέ σε slices"
+        ],
+        correct: 1,
+        explain: "Η πιθανή δημιουργία νέου underlying array σημαίνει ότι το παλιό slice μπορεί να μείνει 'πίσω' — μόνο η επανεκχώρηση εγγυάται ότι έχεις πάντα το ενημερωμένο slice."
+      },
+      {
+        q: "Τι επιτρέπει το comma-ok pattern (value, ok := m[key]) να ξεχωρίσεις σε ένα map;",
+        options: [
+          "Αν το map έχει συνολικά περισσότερα από ένα κλειδιά καταχωρημένα",
+          "Αν η τιμή είναι θετικός ή αρνητικός αριθμός",
+          "Αν το κλειδί υπάρχει πραγματικά στον map, σε αντίθεση με μια τιμή που απλά έτυχε να είναι η zero value 0",
+          "Αν το map δηλώθηκε με make ή με map literal syntax"
+        ],
+        correct: 2,
+        explain: "Χωρίς το δεύτερο return value (ok), δεν θα μπορούσες να ξεχωρίσεις 'κλειδί απόν' από 'κλειδί παρόν με τιμή 0' — και τα δύο θα έδιναν την ίδια τιμή."
+      }
+    ], { bg: "./images/go-part1-final-quiz-bg.jpg", overlayAlpha: 0.6 });
+
+    addContent(`
+<div class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
+<h1>Όλοι οι όροι που είδαμε, σε ένα σημείο</h1>
+<p class="lede">Γρήγορη αναφορά — όχι νέα εξήγηση.</p>
+
+<div class="glossary-group">
+  <h2>Θεμέλια &amp; Τύποι · στυλ: πίνακας</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">Zero value</td><td class="gt-def">προεπιλεγμένη τιμή τύπου χωρίς αρχικοποίηση</td></tr>
+    <tr><td class="gt-term">Type inference</td><td class="gt-def">συμπερασμός τύπου με :=, χωρίς ρητή δήλωση</td></tr>
+    <tr><td class="gt-term">Explicit conversion</td><td class="gt-def">ρητή μετατροπή τύπου, π.χ. float64(x)</td></tr>
+    <tr><td class="gt-term">Untyped constant</td><td class="gt-def">σταθερά που προσαρμόζεται στον τύπο του context</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Ροή &amp; Εκφράσεις · στυλ: οριζόντια λίστα</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">Expression</span><span class="gs-def">παράγει τιμή</span></div>
+    <div class="gs-pill"><span class="gs-name">Statement</span><span class="gs-def">εκτελεί ενέργεια</span></div>
+    <div class="gs-pill"><span class="gs-name">Short-circuit</span><span class="gs-def">παράλειψη δεξιάς πλευράς σε &amp;&amp;/||</span></div>
+    <div class="gs-pill"><span class="gs-name">Shadowing</span><span class="gs-def">νέα μεταβλητή κρύβει παλιά σε εσωτερικό scope</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>Συναρτήσεις, Δείκτες &amp; Συλλογές · στυλ: πυκνές στήλες</h2>
+  <div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">Named/naked return</span><span class="gc-def">ονοματισμένη τιμή επιστροφής + γυμνό return</span></div>
+    <div class="gc-line"><span class="gc-term">Variadic</span><span class="gc-def">μεταβλητό πλήθος ορισμάτων, ...T</span></div>
+    <div class="gc-line"><span class="gc-term">Exported</span><span class="gc-def">κεφαλαίο αρχικό = ορατό από άλλα packages</span></div>
+    <div class="gc-line"><span class="gc-term">Pointer (&amp; / *)</span><span class="gc-def">διεύθυνση μνήμης / πρόσβαση στην τιμή της</span></div>
+    <div class="gc-line"><span class="gc-term">Slice vs Array</span><span class="gc-def">δυναμικό vs σταθερό μέγεθος</span></div>
+    <div class="gc-line"><span class="gc-term">Comma-ok pattern</span><span class="gc-def">value, ok := m[key]</span></div>
+  </div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+<p class="lede">Για περαιτέρω εμβάθυνση:</p>
+<div class="sources-list">
+  <a href="https://go.dev/tour/" target="_blank" rel="noopener">A Tour of Go — go.dev</a>
+  <a href="https://go.dev/doc/effective_go" target="_blank" rel="noopener">Effective Go — go.dev</a>
+  <a href="https://go.dev/doc/" target="_blank" rel="noopener">Go Documentation — go.dev</a>
+</div>
+<div id="final-score"></div>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
+  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+</p>
+`);
+
+    initSlideDeck({version: "1.0.0"});
+  </script>
+</body>
+
+</html>

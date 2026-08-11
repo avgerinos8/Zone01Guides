@@ -284,22 +284,11 @@
 
     <!-- ΚΥΡΙΑ ΛΙΣΤΑ ΜΑΘΗΜΑΤΩΝ (αντικαθίσταται) -->
     <ul class="module-list" id="mainModuleList">
-        <li>
-            <a href="./00-bash.html">
-                <span>&gt; ./00_Shell_Bash</span>
-                <span class="tag">[BASH]</span>
-            </a>
-        </li>
+
         <li>
             <a href="06-Docker.html">
                 <span>&gt; ./06_dockerize</span>
                 <span class="tag">[DOCKER]</span>
-            </a>
-        </li>
-        <li>
-            <a href="07-Networks.html">
-                <span>&gt; ./07_network_cybersecurity</span>
-                <span class="tag">[GO] + [NETWORK]</span>
             </a>
         </li>
         <li>
@@ -310,19 +299,30 @@
         </li>
     </ul>
 
-    <!-- ΠΑΛΙΑ ΜΑΘΗΜΑΤΑ (κρυφά, θα εμφανιστούν με το κλικ) -->
+    <!-- SECRET MENU -->
     <ul class="module-list old-lesson" id="oldModuleList" style="display: none;">
-
         <li>
-            <a href="01-go_networking_theory.html">
+            <a href="./00-bash.html">
+                <span>&gt; ./00_Shell_Bash</span>
+                <span class="tag">[BASH]</span>
+            </a>
+        </li>
+        <li>
+            <a href="./01-go-01.html">
+                <span>&gt; ./01_go_part_1</span>
+                <span class="tag">[GO]</span>
+            </a>
+        </li>
+        <li>
+            <a href="./01-go_networking_theory.html">
                 <span>&gt; ./01_go_networking_theory</span>
                 <span class="tag">[NETWORKING] + [CONCURRENCY]</span>
             </a>
         </li>
         <li>
-            <a href="07-Networks.html">
+            <a href="./07-Networks.html">
                 <span>&gt; ./07_network_cybersecurity</span>
-                <span class="tag">[GO]</span> <span class="tag">[NET]</span>
+                <span class="tag">[GO] + [NETWORK]</span>
             </a>
         </li>
     </ul>
@@ -347,7 +347,7 @@
                     // εμφάνιση παλιών μαθημάτων
                     mainList.style.display = 'none';
                     oldList.style.display = '';
-                    sectionTitle.textContent = 'SECRET OLD LESSONS (legacy)';
+                    sectionTitle.textContent = 'SECRET MENU. NEW GUIDES UNDER DEVELOPMENT';
                     isOld = true;
                 }
             }
