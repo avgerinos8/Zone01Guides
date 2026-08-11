@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shell / Bash — Θεωρητικό Υλικό</title>
   <link rel="stylesheet" href="static/style.css?v=20260801">
-  <link rel="stylesheet" href="static/theme-sage.css?v=20260801">
+  <link rel="stylesheet" href="static/theme-bash.css?v=20260811">
 </head>
 
 <body>
@@ -291,7 +291,7 @@
     addFillBlank([
       {
         code:
-`__cmd1__            # print working directory
+          `__cmd1__            # print working directory
 ls -a               # list all files, including hidden
 __cmd2__ ..          # go up one directory
 __cmd3__ -           # go to the previous directory you were in`,
@@ -304,7 +304,7 @@ __cmd3__ -           # go to the previous directory you were in`,
       },
       {
         code:
-`mkdir -__flag__ foo/bar   # create nested directories, even if foo doesn't exist yet
+          `mkdir -__flag__ foo/bar   # create nested directories, even if foo doesn't exist yet
 touch test{1..3}           # creates test1, test2, test3`,
         blanks: [
           { id: "flag", answer: "p" }
@@ -416,7 +416,7 @@ touch test{1..3}           # creates test1, test2, test3`,
     addFillBlank([
       {
         code:
-`git __cmd1__ .                    # stage every changed file
+          `git __cmd1__ .                    # stage every changed file
 git __cmd2__ -m "first commit"    # save the staged changes as a snapshot
 git __cmd3__                      # upload the commit to the remote repository`,
         blanks: [
@@ -428,7 +428,7 @@ git __cmd3__                      # upload the commit to the remote repository`,
       },
       {
         code:
-`git config --global user.__field__ "giteausername"
+          `git config --global user.__field__ "giteausername"
 git config --global user.__field2__ "gmail@gmail.com"`,
         blanks: [
           { id: "field", answer: "name" },
@@ -808,7 +808,7 @@ git config --global user.__field2__ "gmail@gmail.com"`,
     addFillBlank([
       {
         code:
-`ls /this/path/does/not/exist
+          `ls /this/path/does/not/exist
 echo "Exit code was: $__var__"`,
         blanks: [
           { id: "var", answer: "?" }
@@ -817,7 +817,7 @@ echo "Exit code was: $__var__"`,
       },
       {
         code:
-`__cmd__ PATH="$PATH:/my/path"   # make PATH updates visible to child processes too`,
+          `__cmd__ PATH="$PATH:/my/path"   # make PATH updates visible to child processes too`,
         blanks: [
           { id: "cmd", answer: "export" }
         ],
@@ -1064,7 +1064,7 @@ echo "Exit code was: $__var__"`,
     addFillBlank([
       {
         code:
-`sed -__flag__ 's/fox/bear/g' foo.txt   # overwrite foo.txt directly, instead of just printing the result`,
+          `sed -__flag__ 's/fox/bear/g' foo.txt   # overwrite foo.txt directly, instead of just printing the result`,
         blanks: [
           { id: "flag", answer: "i" }
         ],
@@ -1072,7 +1072,7 @@ echo "Exit code was: $__var__"`,
       },
       {
         code:
-`jq '.items[] | __func__(.id == 100)' data.json   # keep only elements where id equals 100`,
+          `jq '.items[] | __func__(.id == 100)' data.json   # keep only elements where id equals 100`,
         blanks: [
           { id: "func", answer: "select" }
         ],
@@ -1244,7 +1244,7 @@ counter=10
     addFillBlank([
       {
         code:
-`greet() {
+          `greet() {
   local world="World"
   __cmd__ "$1 $world"
 }
@@ -1256,7 +1256,7 @@ greet "Hello"   # prints "Hello World"`,
       },
       {
         code:
-`for i in {0..10..2}
+          `for i in {0..10..2}
 __kw1__
   echo "Index: $i"
 __kw2__`,
