@@ -3672,12 +3672,11 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
 
         addContent(`
 <div class="eyebrow">Ενότητα 6 / 8 — VSCode Challenge</div>
+
 <h1>Ασφαλής Διαίρεση</h1>
-<p class="lede">Δημιούργησε μια function <code>divide(a, b float64) (float64, bool)</code> που επιστρέφει το αποτέλεσμα της διαίρεσης και true, ή 0 και false αν το b είναι 0 (ώστε να αποφευχθεί η απαγορευμένη διαίρεση με το μηδέν). Κάλεσέ την στη main χρησιμοποιώντας το μοτίβο if με short statement: <code>if res, ok := divide(10, 2); ok { ... }</code>.</p>
-<div class="callout">
-  <span class="tag">Οδηγίες</span>
-  Το δεύτερο return value (τύπου bool) λειτουργεί σαν "σημαία επιτυχίας" (success flag) — ένα εξαιρετικά συχνό μοτίβο στη Go, το ίδιο ακριβώς πνεύμα με το <code>value, ok := m[key]</code> που θα δεις αναλυτικά στους Maps, στην Ενότητα 8.
-</div>
+
+<p class="lede">Δημιούργησε μια function <code>divide(a, b float64) (float64, bool)</code> που επιστρέφει το αποτέλεσμα της διαίρεσης και μια bool σχετικά με το αν μπορεί να γίνει η διαίρεση (δεν γίνεται διαίρεση με το μηδέν).</p>
+
 
 <div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
 
@@ -3697,7 +3696,13 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
         fmt.<span class="tok-func">Println</span>(<span class="tok-str">"Cannot divide by zero"</span>)
     }
 }
-</code></pre></div>
+</code></pre>
+
+<div class="callout">
+    <span class="tag">NOTE</span>
+    Η παραπάνω λύση χρησιμοποιεί το μοτίβο <em>comma ok</em> <strong>if με short statement</strong> (το είδαμε στην Ενότητα 4 — If με short statement). Το δεύτερο return value (τύπου bool) λειτουργεί σαν "σημαία επιτυχίας" (success flag) — ένα εξαιρετικά συχνό μοτίβο στη Go. Προφανώς είναι οκ αν δεν το έγραψες με αυτό τον τρόπο!
+</div>
+</div>
 `);
 
         addContent(`
@@ -3716,137 +3721,487 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
 `);
         addContent(`
 <div class="eyebrow">Ενότητα 7 / 8 — Pointers &amp; Μνήμη</div>
+
 <h1>Εισαγωγή στους Pointers</h1>
-<p class="lede">Οι δείκτες (pointers) είναι συχνά το σημείο όπου όσοι μαθαίνουν προγραμματισμό δυσκολεύονται περισσότερο — όχι επειδή η ίδια η ιδέα είναι δύσκολη, αλλά επειδή είναι μια καινούρια έννοια που δεν έχει άμεσο αντίστοιχο στην καθημερινή ζωή. Ας το χτίσουμε βήμα-βήμα, ξεκινώντας από αυτά που ήδη ξέρεις.</p>
+
+<p class="lede">
+    Οι δείκτες (pointers) είναι συχνά το σημείο όπου όσοι μαθαίνουν προγραμματισμό δυσκολεύονται περισσότερο — όχι επειδή η ίδια η ιδέα είναι δύσκολη, αλλά επειδή είναι μια καινούρια έννοια που δεν έχει άμεσο αντίστοιχο στην καθημερινή ζωή. Ας το χτίσουμε βήμα-βήμα, ξεκινώντας από αυτά που ήδη ξέρεις.
+</p>
 
 <h2>Υπενθύμιση: η μνήμη ως σειρά "κουτακιών" με διευθύνσεις</h2>
-<p>Θυμήσου από την Ενότητα 2: κάθε μεταβλητή στο πρόγραμμά σου ζει, στην πραγματικότητα, κάπου μέσα στη μνήμη (RAM) του υπολογιστή, σε μια συγκεκριμένη, μοναδική <strong>διεύθυνση</strong> (address) — σαν έναν αριθμό δωματίου σε ένα τεράστιο ξενοδοχείο. Όταν γράφεις <code>age := 25</code>, ο compiler δεσμεύει ένα "δωμάτιο" στη μνήμη, γράφει εκεί την τιμή 25, και θυμάται ότι, από εδώ και πέρα, το όνομα <code>age</code> αναφέρεται σε εκείνο ακριβώς το δωμάτιο.</p>
+
+<p>
+    Θυμήσου από την Ενότητα 2: κάθε μεταβλητή στο πρόγραμμά σου ζει, στην πραγματικότητα, κάπου μέσα στη μνήμη (RAM) του υπολογιστή, σε μια συγκεκριμένη, μοναδική <strong>διεύθυνση</strong> (address) — σαν έναν αριθμό θυρίδας σε ένα τεράστιο θησαυροφυλάκιο. Όταν γράφεις <code>age := 25</code>, ο compiler δεσμεύει ένα "ντουλαπάκι" στη μνήμη, γράφει εκεί την τιμή 25, και θυμάται ότι, από εδώ και πέρα, το όνομα <code>age</code> αναφέρεται σε εκείνο ακριβώς το ντουλάπι.
+</p>
 
 <h2>Τι είναι, λοιπόν, ένας δείκτης</h2>
-<p>Ένας <strong>δείκτης</strong> (pointer) είναι μια μεταβλητή που δεν αποθηκεύει μια "κανονική" τιμή, όπως έναν αριθμό ή ένα κείμενο — αντ' αυτού, αποθηκεύει τη <em>διεύθυνση</em> μιας άλλης μεταβλητής. Με άλλα λόγια, δεν κρατά το ίδιο το περιεχόμενο ενός "δωματίου" της μνήμης, αλλά τον <em>αριθμό</em> εκείνου του δωματίου — έναν τρόπο να "δείξεις" προς μια συγκεκριμένη τοποθεσία στη μνήμη.</p>
+
+<p>
+    Ένας <strong>δείκτης</strong> (pointer) είναι μια μεταβλητή που δεν αποθηκεύει μια "κανονική" τιμή, όπως έναν αριθμό ή ένα κείμενο — αντ' αυτού, αποθηκεύει τη <em>διεύθυνση</em> μιας άλλης μεταβλητής. Με άλλα λόγια, δεν κρατά το ίδιο το περιεχόμενο ενός "ντουλαπιού" της μνήμης, αλλά τον <em>αριθμό</em> εκείνου του ντουλαπιού — έναν τρόπο να "δείξεις" προς μια συγκεκριμένη τοποθεσία στη μνήμη.
+</p>
 
 <div class="callout">
-  <span class="tag">Μια αναλογία: το χαρτάκι με τη διεύθυνση</span>
-  Φαντάσου ξανά το ξενοδοχείο με τα ντουλάπια από την Ενότητα 2. Μια κανονική μεταβλητή είναι το ίδιο το ντουλάπι, με το περιεχόμενό του μέσα — π.χ. ένα ντουλάπι με ετικέτα "ηλικία" που περιέχει τον αριθμό 25. Ένας δείκτης, αντίθετα, είναι σαν ένα ξεχωριστό χαρτάκι πάνω στο οποίο δεν είναι γραμμένος ο αριθμός 25, αλλά ο αριθμός σειράς του ντουλαπιού "ηλικία" (π.χ. "Ντουλάπι Νο. 4.482.991"). Κρατώντας αυτό το χαρτάκι, μπορείς να πας στο ακριβές ντουλάπι, να δεις τι περιέχει, ή ακόμα και να αλλάξεις το περιεχόμενό του — χωρίς να χρειάζεται να έχεις ονομάσει το ίδιο το ντουλάπι "ηλικία" εκεί που βρίσκεσαι.
+    <span class="tag">Μια αναλογία: το χαρτάκι με τη διεύθυνση</span>
+    <p>
+        Φαντάσου ξανά το θησαυροφυλάκιο με τις θυρίδες από την Ενότητα 2. Μια κανονική μεταβλητή είναι η ίδια η θυρίδα, με το περιεχόμενό της μέσα — π.χ. μια θυρίδα με ετικέτα "ηλικία" που περιέχει τον αριθμό 25. Ένας δείκτης, αντίθετα, είναι σαν ένα ξεχωριστό χαρτάκι πάνω στο οποίο δεν είναι γραμμένος ο αριθμός 25, αλλά ο αριθμός της θυρίδας "ηλικία" (π.χ. "Θυρίδα Νο. 4.482.991"). Κρατώντας αυτό το χαρτάκι, μπορείς να πας στην ακριβή θυρίδα, να δεις τι περιέχει, ή ακόμα και να αλλάξεις το περιεχόμενό της — χωρίς να χρειάζεται να έχεις ονομάσει την ίδια τη θυρίδα "ηλικία" εκεί που βρίσκεσαι.
+    </p>
 </div>
+
+<h2>Εισαγωγή στον τελεστή &amp; (Address-of)</h2>
+
+<p>
+    Πριν δούμε πώς δημιουργούμε μεταβλητές-δείκτες, ας κατανοήσουμε τον τελεστή <code>&amp;</code>. Ο τελεστής <code>&amp;</code> τοποθετείται μπροστά από οποιαδήποτε μεταβλητή για να ζητήσει από τη Go τη διεύθυνση μνήμης όπου βρίσκεται αποθηκευμένη. 
+    Σκέψου τον <code>&amp;</code> ως την ερώτηση: <em>"Σε ποιο σημείο της RAM ζει αυτή η μεταβλητή;"</em>.
+</p>
+
+<h3>Παράδειγμα 1: Άμεση εκτύπωση διεύθυνσης μνήμης</h3>
+
+<p>
+    Στο πρώτο παράδειγμα, χρησιμοποιούμε τον <code>&amp;</code> απευθείας μέσα στην <code>fmt.Println</code>. Παρατήρησε ότι δεν αποθηκεύουμε τη διεύθυνση σε κάποια μεταβλητή ακόμα, απλά ζητάμε να την εμφανίσουμε.
+</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    city := "Athens"
+    
+    // Εκτυπώνει την τιμή της μεταβλητής: Athens
+    fmt.Println("Value:", city) 
+    
+    // Ο τελεστής & επιστρέφει τη διεύθυνση μνήμης (π.χ. 0xc000010040)
+    fmt.Println("Memory Address:", &city) 
+}
+</code></pre>
+
+<h3>Παράδειγμα 2: Ανάθεση της διεύθυνσης σε μεταβλητή δείκτη</h3>
+
+<p>
+    Όταν παίρνουμε τη διεύθυνση μιας μεταβλητής τύπου <code>int</code> με το <code>&amp;score</code>, το αποτέλεσμα έχει τύπο <code>*int</code> (δείκτης σε integer). Αυτή τη διεύθυνση μπορούμε να την αποθηκεύσουμε σε μια νέα μεταβλητή.
+</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    score := 100
+    
+    // Η μεταβλητή ptr αποθηκεύει τη διεύθυνση της score (τύπος *int)
+    ptr := &score 
+    
+    fmt.Println("Score value:", score) // 100
+    fmt.Println("Pointer ptr holds address:", ptr) // π.χ. 0xc000014088
+    fmt.Println("Address of score itself:", &score) // 0xc000014088 (ίδια με το ptr)
+}
+</code></pre>
 
 <h2>Ο τελεστής &amp; (Address-of operator)</h2>
-<p>Πώς παίρνεις, στην πράξη, τη διεύθυνση μιας μεταβλητής; Με το σύμβολο <code>&amp;</code> ("address-of", δηλαδή "η διεύθυνση του..."), τοποθετημένο ακριβώς μπροστά από το όνομα μιας μεταβλητής:</p>
-<pre><code>x <span class="tok-kw">:=</span> <span class="tok-num">42</span>
-p <span class="tok-kw">:=</span> &x <span class="tok-com">// p is now a pointer, holding the memory address of x</span>
-fmt.<span class="tok-func">Println</span>(p) <span class="tok-com">// prints something like 0xc0000140a0 — a raw memory address</span>
+
+<p>
+    Πώς παίρνεις, στην πράξη, τη διεύθυνση μιας μεταβλητής; Με το σύμβολο <code>&amp;</code> ("address-of", δηλαδή "η διεύθυνση του..."), τοποθετημένο ακριβώς μπροστά από το όνομα μιας μεταβλητής:
+</p>
+
+<pre><code class="lang-go">x := 42
+p := &x // p is now a pointer, holding the memory address of x
+fmt.Println(p)  // prints something like 0xc0000140a0 — a raw memory address
 </code></pre>
-<p>Στη δεύτερη γραμμή, το <code>&amp;x</code> δεν "παίρνει" την τιμή 42 — παίρνει τη διεύθυνση στη μνήμη όπου βρίσκεται αποθηκευμένο το 42, και αυτή η διεύθυνση αποθηκεύεται στη νέα μεταβλητή <code>p</code>. Αν τυπώσεις το <code>p</code>, δεν θα δεις το 42 — θα δεις έναν παράξενα εμφανιζόμενο αριθμό σε δεκαεξαδική μορφή (κάτι σαν <code>0xc0000140a0</code>), που είναι η ίδια η διεύθυνση μνήμης, όχι το περιεχόμενο εκεί.</p>
+
+<p>
+    Στη δεύτερη γραμμή, το <code>&amp;x</code> δεν "παίρνει" την τιμή 42 — παίρνει τη διεύθυνση στη μνήμη όπου βρίσκεται αποθηκευμένο το 42, και αυτή η διεύθυνση αποθηκεύεται στη νέα μεταβλητή <code>p</code>. Αν τυπώσεις το <code>p</code>, δεν θα δεις το 42 — θα δεις έναν παράξενα εμφανιζόμενο αριθμό σε δεκαεξαδική μορφή (κάτι σαν <code>0xc0000140a0</code>), που είναι η ίδια η διεύθυνση μνήμης, όχι το περιεχόμενο εκεί.
+</p>
+
+<h3>Παραδείγματα: τι τυπώνει το fmt.Println</h3>
+
+<pre><code class="lang-go">x := 5
+p := &x
+
+fmt.Println(x)  // 5 (η τιμή)
+fmt.Println(&x) // 0xc0000140a0 (η διεύθυνση της x)
+fmt.Println(p)  // 0xc0000140a0 (η διεύθυνση που κρατάει ο pointer p — ίδια με &x)
+fmt.Println(*p) // 5 (η τιμή στη διεύθυνση που κρατάει ο p — ίδια με x)
+</code></pre>
 
 <h2>Ο τελεστής * (Dereference operator)</h2>
-<p>Έχοντας πλέον έναν δείκτη, πώς "ακολουθείς" αυτόν τον δείκτη για να φτάσεις στην πραγματική τιμή στην οποία δείχνει; Με το σύμβολο <code>*</code> ("dereference", δηλαδή "η τιμή στην οποία δείχνει..."), τοποθετημένο μπροστά από τον δείκτη:</p>
-<pre><code>x <span class="tok-kw">:=</span> <span class="tok-num">42</span>
-p <span class="tok-kw">:=</span> &x
-fmt.<span class="tok-func">Println</span>(*p) <span class="tok-com">// prints 42 — the actual value stored at the address p holds</span>
 
-*p = <span class="tok-num">100</span> <span class="tok-com">// writes through the pointer, changing x itself in memory</span>
-fmt.<span class="tok-func">Println</span>(x) <span class="tok-com">// prints 100 — x really did change, even though we never wrote "x = 100"</span>
+<p>
+    Έχοντας πλέον έναν δείκτη, πώς "ακολουθείς" αυτόν τον δείκτη για να φτάσεις στην πραγματική τιμή στην οποία δείχνει; Με το σύμβολο <code>*</code> ("dereference", δηλαδή "η τιμή στην οποία δείχνει..."), τοποθετημένο μπροστά από τον δείκτη:
+</p>
+
+<pre><code class="lang-go">x := 42
+p := &x
+fmt.Println(*p) // prints 42 — the actual value stored at the address p holds
+
+*p = 100        // writes through the pointer, changing x itself in memory
+fmt.Println(x)  // prints 100 — x really did change, even though we never wrote "x = 100"
 </code></pre>
-<p>Η τελευταία γραμμή είναι το πιο σημαντικό σημείο σε όλη αυτή την ενότητα: γράφοντας <code>*p = 100</code>, δεν αλλάζουμε τον ίδιο τον δείκτη <code>p</code> (δεν αλλάζουμε τη διεύθυνση στην οποία δείχνει) — αλλάζουμε την τιμή <em>στο σημείο της μνήμης όπου δείχνει</em>, δηλαδή αλλάζουμε το ίδιο το <code>x</code>, μέσω μιας "παρακαμπτήριας διαδρομής". Γι' αυτό, όταν τυπώνουμε ξανά το <code>x</code> απευθείας, βλέπουμε την καινούρια τιμή 100, παρόλο που ποτέ δεν γράψαμε ρητά <code>x = 100</code>.</p>
+
+<p>
+    Η τελευταία γραμμή είναι το πιο σημαντικό σημείο σε όλη αυτή την ενότητα: γράφοντας <code>*p = 100</code>, δεν αλλάζουμε τον ίδιο τον δείκτη <code>p</code> (δεν αλλάζουμε τη διεύθυνση στην οποία δείχνει) — αλλάζουμε την τιμή <em>στο σημείο της μνήμης όπου δείχνει</em>, δηλαδή αλλάζουμε το ίδιο το <code>x</code>, μέσω μιας "παρακαμπτήριας διαδρομής". Γι' αυτό, όταν τυπώνουμε ξανά το <code>x</code> απευθείας, βλέπουμε την καινούρια τιμή 100, παρόλο που ποτέ δεν γράψαμε ρητά <code>x = 100</code>.
+</p>
 
 <h2>Η μηδενική τιμή nil</h2>
-<p>Θυμήσου από την Ενότητα 2 ότι κάθε τύπος έχει μια zero value. Για τους pointers, η zero value είναι <code>nil</code> — μια ειδική τιμή που σημαίνει "αυτός ο δείκτης δεν δείχνει πουθενά, δεν κρατά καμία έγκυρη διεύθυνση μνήμης". Η προσπάθεια να κάνεις dereference έναν δείκτη που είναι <code>nil</code> (δηλαδή να γράψεις <code>*p</code> τη στιγμή που το <code>p</code> είναι <code>nil</code>) προκαλεί ένα <strong>panic</strong> κατά την εκτέλεση — ένα απότομο, ελεγχόμενο "κράσιμο" του προγράμματος, αφού η γλώσσα δεν έχει καμία πραγματική διεύθυνση να ακολουθήσει. Αυτό είναι, στην πράξη, ένα από τα πιο συχνά runtime σφάλματα (σφάλματα κατά την εκτέλεση, όχι κατά τη μεταγλώττιση) σε προγράμματα Go, ειδικά σε αρχάριους.</p>
-`);
 
-        addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Pointers &amp; Μνήμη</div>
-<h1>Πέρασμα Παραμέτρων: By Value vs By Reference</h1>
-<p class="lede">Τώρα που καταλαβαίνεις τι είναι ένας δείκτης, μπορούμε να εξηγήσουμε μια από τις πιο σημαντικές —και αρχικά μπερδεμένες— συμπεριφορές της Go όσον αφορά τις functions.</p>
+<p>
+    Θυμήσου από την Ενότητα 2 ότι κάθε τύπος έχει μια zero value. Για τους pointers, η zero value είναι <code>nil</code> — μια ειδική τιμή που σημαίνει "αυτός ο δείκτης δεν δείχνει πουθενά, δεν κρατά καμία έγκυρη διεύθυνση μνήμης". Η προσπάθεια να κάνεις dereference έναν δείκτη που είναι <code>nil</code> (δηλαδή να γράψεις <code>*p</code> τη στιγμή που το <code>p</code> είναι <code>nil</code>) προκαλεί ένα <strong>panic</strong> κατά την εκτέλεση — ένα απότομο, ελεγχόμενο "κράσιμο" του προγράμματος, αφού η γλώσσα δεν έχει καμία πραγματική διεύθυνση να ακολουθήσει. Αυτό είναι, στην πράξη, ένα από τα πιο συχνά runtime σφάλματα (σφάλματα κατά την εκτέλεση, όχι κατά τη μεταγλώττιση) σε προγράμματα Go, ειδικά σε αρχάριους.
+</p>
 
-<h2>Πώς η Go περνάει τα πάντα "by value"</h2>
-<p>Στη Go, <strong>τα πάντα περνούν με τιμή</strong> (pass by value) όταν καλείς μια function — και ναι, αυτό ισχύει ακόμα και για τους ίδιους τους pointers, όπως θα δούμε αμέσως παρακάτω. Αυτό σημαίνει το εξής: όταν περνάς μια μεταβλητή ως όρισμα σε μια function, η function δεν παίρνει την ίδια τη μεταβλητή — παίρνει ένα ξεχωριστό <em>αντίγραφο</em> της τιμής της, αποθηκευμένο σε νέα, ανεξάρτητη θέση μνήμης. Οποιαδήποτε αλλαγή γίνει σε αυτό το αντίγραφο, μέσα στη function, δεν επηρεάζει καθόλου το πρωτότυπο έξω από αυτήν.</p>
-<pre><code><span class="tok-kw">func</span> <span class="tok-func">tryToChange</span>(n <span class="tok-type">int</span>) {
-    n = <span class="tok-num">999</span> <span class="tok-com">// this only changes the LOCAL COPY of n, inside this function</span>
-}
-
-x <span class="tok-kw">:=</span> <span class="tok-num">5</span>
-<span class="tok-func">tryToChange</span>(x)
-fmt.<span class="tok-func">Println</span>(x) <span class="tok-com">// still prints 5 — the original x was never touched at all</span>
+<pre><code class="lang-go">var p *int      // p είναι nil (zero value για pointers)
+fmt.Println(p)  // &lt;nil&gt;
+// fmt.Println(*p) // PANIC: dereference nil pointer — το πρόγραμμα crashάρει!
 </code></pre>
-<p>Στο παράδειγμα παραπάνω, όταν καλούμε <code>tryToChange(x)</code>, η function παίρνει ένα αντίγραφο της τιμής 5 και το αποθηκεύει στη δική της, τοπική μεταβλητή <code>n</code> (θυμήσου το scope από την Ενότητα 6 — η <code>n</code> εδώ είναι εντελώς ξεχωριστή, τοπική μεταβλητή, όχι το ίδιο "κουτάκι μνήμης" με το <code>x</code>). Όταν μέσα στη function γράφουμε <code>n = 999</code>, αλλάζουμε μόνο αυτό το τοπικό αντίγραφο — το πρωτότυπο <code>x</code>, πίσω στη <code>main</code>, παραμένει απείραχτο.</p>
 
-<h2>Τροποποίηση μέσω δεικτών</h2>
-<p>Για να τροποποιήσεις πραγματικά μια εξωτερική μεταβλητή "από μέσα" σε μια function, χρειάζεται να περάσεις σε αυτήν, αντί για την ίδια την τιμή, έναν <strong>δείκτη</strong> προς αυτή τη μεταβλητή. Έτσι, η function εξακολουθεί να παίρνει ένα "αντίγραφο" (θυμήσου, όλα περνούν by value στη Go) — αλλά αυτή τη φορά, το αντίγραφο είναι της ίδιας της <em>διεύθυνσης</em>, όχι της τιμής. Κάνοντας dereference αυτόν τον δείκτη μέσα στη function (με <code>*</code>), φτάνεις στην ίδια, πρωτότυπη θέση μνήμης — άρα οποιαδήποτε αλλαγή κάνεις εκεί, επηρεάζει πραγματικά την αρχική μεταβλητή:</p>
-<pre><code><span class="tok-kw">func</span> <span class="tok-func">reallyChange</span>(n *<span class="tok-type">int</span>) {
-    *n = <span class="tok-num">999</span> <span class="tok-com">// dereferences the pointer, writing through to the ORIGINAL x</span>
-}
+<h2>Pointer to pointer to pointer...</h2>
 
-x <span class="tok-kw">:=</span> <span class="tok-num">5</span>
-<span class="tok-func">reallyChange</span>(&x)
-fmt.<span class="tok-func">Println</span>(x) <span class="tok-com">// prints 999 — x was genuinely, actually modified this time</span>
+<p>
+    Επειδή ένας pointer είναι, τελικά, μια μεταβλητή που κρατά μια διεύθυνση, μπορείς να έχεις <strong>δείκτη σε δείκτη</strong> (pointer to pointer), και δείκτη σε δείκτη σε δείκτη, και ούτω καθεξής. Οι διευθύνσεις που αποθηκεύουν είναι απλά διευθύνσεις άλλων μεταβλητών — και αυτές οι μεταβλητές μπορεί να είναι και οι ίδιες pointers.
+</p>
+
+<pre><code class="lang-go">x := 42
+p := &x      // p είναι *int (δείχνει στο x)
+q := &p      // q είναι **int (δείχνει στο p)
+r := &q      // r είναι ***int (δείχνει στο q)
+
+fmt.Println(x)   // 42
+fmt.Println(*p)  // 42
+fmt.Println(**q) // 42 (δύο dereferences: πάμε στο p, μετά στο x)
+fmt.Println(***r) // 42 (τρία dereferences)
+
+// Αλλάζουμε την τιμή του x μέσω τριών επιπέδων δεικτών:
+***r = 100
+fmt.Println(x) // 100
 </code></pre>
-<p>Η παράμετρος εδώ δηλώνεται ως <code>n *int</code> — δηλαδή "μια παράμετρος n, τύπου pointer-προς-int". Όταν καλούμε <code>reallyChange(&amp;x)</code>, δεν περνάμε το 5 απευθείας· περνάμε τη <em>διεύθυνση</em> του <code>x</code>. Μέσα στη function, <code>*n = 999</code> σημαίνει "πήγαινε στη διεύθυνση που κρατά το n, και γράψε εκεί την τιμή 999" — και αφού αυτή η διεύθυνση είναι ακριβώς εκεί που βρίσκεται το <code>x</code> στη <code>main</code>, το <code>x</code> πράγματι αλλάζει.</p>
 
-<h2>Πότε να χρησιμοποιείς pointers, και πότε όχι</h2>
-<div class="grid2">
-  <div class="card"><h3>Χρησιμοποίησε δείκτη όταν</h3><p>Θες η function να τροποποιήσει πραγματικά την αρχική, εξωτερική μεταβλητή. Ή όταν η τιμή που περνάς είναι "βαριά" (μια μεγάλη δομή δεδομένων) και θες να αποφύγεις το κόστος αντιγραφής ολόκληρης της δομής σε κάθε κλήση function.</p></div>
-  <div class="card"><h3>Απόφυγε τον δείκτη όταν</h3><p>Η τιμή είναι μικρή (όπως ένα int ή bool) και δεν χρειάζεται καμία τροποποίηση από τη function — το αντίγραφο είναι πρακτικά "δωρεάν" σε κόστος, και ο κώδικας παραμένει πιο απλός και ευανάγνωστος χωρίς την επιπλέον πολυπλοκότητα του dereferencing.</p></div>
-</div>
-`);
+<p>
+    <strong>Πώς το διαβάζεις:</strong>
+</p>
 
-        addQuiz([
-            {
-                q: "Τι σημαίνει η φράση 'στη Go όλα περνούν με τιμή' (pass by value), ακόμα και όταν το όρισμα είναι δείκτης;",
-                options: [
-                    "Ότι κάθε function παίρνει πάντα ένα αντίγραφο της τιμής που περνιέται — στην περίπτωση δείκτη, αντίγραφο της ίδιας της διεύθυνσης μνήμης",
-                    "Ότι οι pointers δεν μπορούν ποτέ να χρησιμοποιηθούν ως παράμετροι συναρτήσεων στη Go",
-                    "Ότι κάθε μεταβλητή που περνιέται σε μια function μηδενίζεται αυτόματα μόλις η function επιστρέψει",
-                    "Ότι μόνο οι αριθμητικοί τύποι (int, float64) περνούν με τιμή, ενώ τα strings και οι pointers περνούν πάντα με αναφορά"
-                ],
-                correct: 0,
-                explain: "Ακόμα κι ένας δείκτης, όταν περνιέται ως παράμετρος, περνά ως αντίγραφο της διεύθυνσης που κρατά — αλλά επειδή αυτό το αντίγραφο δείχνει στην ίδια, πρωτότυπη θέση μνήμης, το dereferencing μέσα στη function επηρεάζει πραγματικά την αρχική τιμή."
-            },
-            {
-                q: "Γιατί το tryToChange(x) στο παράδειγμα ΔΕΝ αλλάζει την τιμή του x στην main, ενώ το reallyChange(&x) το αλλάζει πραγματικά;",
-                options: [
-                    "Επειδή η function tryToChange έχει λιγότερες γραμμές κώδικα από τη reallyChange",
-                    "Επειδή το x πρέπει πάντα να δηλώνεται με var, αντί για :=, για να μπορεί ποτέ να τροποποιηθεί εντός function",
-                    "Επειδή η tryToChange δέχεται ένα απλό αντίγραφο της τιμής int (άρα τροποποιεί μόνο το τοπικό της αντίγραφο), ενώ η reallyChange δέχεται δείκτη και κάνει dereference για να γράψει απευθείας στην αρχική διεύθυνση μνήμης",
-                    "Επειδή η Go επιτρέπει την τροποποίηση εξωτερικών μεταβλητών μόνο μέσα στην ίδια τη function main()"
-                ],
-                correct: 2,
-                explain: "Η διαφορά είναι ακριβώς αυτή: χωρίς δείκτη, η function δουλεύει πάνω σε ένα εντελώς ξεχωριστό, τοπικό αντίγραφο. Με δείκτη, το *n = ... γράφει κατευθείαν στη διεύθυνση μνήμης όπου βρίσκεται το αρχικό x, επηρεάζοντάς το πραγματικά."
-            }
-        ]);
+<ul>
+    <li><code>***r</code> — πάρε το r, πήγαινε στη διεύθυνση που δείχνει (q), πήγαινε στη διεύθυνση που δείχνει εκείνο (p), πήγαινε στη διεύθυνση που δείχνει εκείνο (x), και δες/άλλαξε την τιμή.</li>
+</ul>
 
-        addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — VSCode Challenge</div>
-<h1>Μηδενισμός By Value vs By Pointer</h1>
-<p class="lede">Γράψε μια function <code>zeroValue(val int)</code> που προσπαθεί να μηδενίσει μια μεταβλητή (by value) και μια function <code>zeroPointer(val *int)</code> που τη μηδενίζει πραγματικά μέσω δείκτη. Τύπωσε τη διεύθυνση μνήμης (<code>&amp;x</code>) και την τιμή της μεταβλητής στη main, πριν και μετά από κάθε κλήση.</p>
+<p>
+    Στην πράξη, δεύτερου επιπέδου pointers (και πάνω) σπάνια χρειάζονται σε κανονικό κώδικα Go — αλλά είναι διασκεδαστικό να καταλάβεις πώς δουλεύουν, και χρήσιμο για να εμπεδώσεις ότι οι pointers είναι απλά αριθμοί που κρατούν διευθύνσεις.
+</p>
+
 <div class="callout">
-  <span class="tag">Οδηγίες</span>
-  Η διεύθυνση του x στη main δεν θα αλλάξει ποτέ σε όλο το πρόγραμμα — αυτό που αλλάζει (ή δεν αλλάζει, ανάλογα με την περίπτωση) είναι η <em>τιμή</em> που περιέχεται σε εκείνη τη διεύθυνση. Παρατήρησε προσεκτικά τη διαφορά στα prints πριν και μετά από κάθε κλήση, για να δεις με τα ίδια σου τα μάτια τη διαφορά που κάνει ο δείκτης.
+    <span class="tag">Terminology</span>
+    
+    <table class="glossary-table">
+        <thead>
+            <tr>
+                <th>Σύμβολο / Γραφή</th>
+                <th>Όρος (English)</th>
+                <th>Όρος (Ελληνικά)</th>
+                <th>Πώς το διαβάζουμε / Ερμηνεία</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>&amp;x</code></td>
+                <td><strong>Address-of operator</strong></td>
+                <td>Τελεστής διεύθυνσης</td>
+                <td><em>"Address of x"</em> — Η διεύθυνση μνήμης της μεταβλητής x.</td>
+            </tr>
+            <tr>
+                <td><code>*p</code> (ως πράξη)</td>
+                <td><strong>Dereference operator</strong> / Indirection</td>
+                <td>Τελεστής αποστασιοποίησης / Dereference</td>
+                <td><em>"Value at p"</em> — Η τιμή που βρίσκεται στη διεύθυνση που δείχνει ο p.</td>
+            </tr>
+            <tr>
+                <td><code>*int</code></td>
+                <td><strong>Pointer to int</strong></td>
+                <td>Δείκτης σε ακέραιο</td>
+                <td>Ο τύπος δεδομένων μιας μεταβλητής που αποθηκεύει διεύθυνση ενός <code>int</code>.</td>
+            </tr>
+            <tr>
+                <td><code>*string</code></td>
+                <td><strong>Pointer to string</strong></td>
+                <td>Δείκτης σε string</td>
+                <td>Ο τύπος δεδομένων μιας μεταβλητής που αποθηκεύει διεύθυνση ενός <code>string</code>.</td>
+            </tr>
+            <tr>
+                <td><code>**int</code></td>
+                <td><strong>Pointer to pointer to int</strong></td>
+                <td>Δείκτης σε δείκτη ακεραίου</td>
+                <td>Δείκτης που δείχνει σε έναν άλλον δείκτη, ο οποίος με τη σειρά του δείχνει σε <code>int</code>.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+`);
+
+        addContent(`
+<h1>Πέρασμα Παραμέτρων: Value, Reference, και Address</h1>
+
+<p class="lede">
+    Τώρα που καταλαβαίνεις τι είναι ένας pointer, ήρθε η ώρα να δούμε πώς περνάμε δεδομένα σε functions και τι ακριβώς συμβαίνει με τις τιμές τους.
+</p>
+
+<h2>Τρεις διαφορετικοί τρόποι</h2>
+
+<p>
+    Όταν καλείς μια function και της περνάς μια μεταβλητή, υπάρχουν τρεις βασικές κατηγορίες ως προς το τι συμβαίνει με την τιμή:
+</p>
+
+<h3>1. Pass by Value — το αντίγραφο</h3>
+
+<p>
+    Σε αυτή την περίπτωση, η function παίρνει ένα <strong>αντίγραφο</strong> της τιμής. Ό,τι κι αν κάνεις μέσα στη function, η αρχική μεταβλητή <strong>δεν αλλάζει</strong>. Αυτό συμβαίνει με τους απλούς τύπους:
+</p>
+
+<ul>
+    <li><code>int</code>, <code>float64</code>, <code>bool</code>, <code>rune</code></li>
+</ul>
+
+<p>
+    Για παράδειγμα, ας δούμε τι συμβαίνει όταν περνάμε ένα <code>int</code>:
+</p>
+
+<pre><code class="lang-go">func changeInt(n int) {
+    n = 999 // αλλάζει μόνο το τοπικό αντίγραφο
+}
+
+func main() {
+    x := 5
+    changeInt(x)
+    fmt.Println(x) // 5 — η αρχική τιμή ΔΕΝ άλλαξε!
+}
+</code></pre>
+
+<p>
+    Εδώ, η <code>changeInt</code> παίρνει ένα αντίγραφο της τιμής 5. Όταν αλλάζουμε το <code>n</code> σε 999, αλλάζουμε μόνο αυτό το αντίγραφο. Το <code>x</code> στη <code>main</code> παραμένει 5.
+</p>
+
+<p>
+    Ένας τρόπος να αλλάξει όντως η τιμή θα ήταν να την επιστρέφουμε και να την εκχωρούμε εκ νέου:
+</p>
+
+<pre><code class="lang-go">func changeInt(n int) int {
+    n = 999 // αλλάζει μόνο το τοπικό αντίγραφο
+    return n
+}
+
+func main() {
+    x := 5
+    x = changeInt(x)
+    fmt.Println(x) // 999 — η αρχική τιμή άλλαξε επειδή η function επιστρεφει την τιμή!
+}
+</code></pre>
+
+<h3>2. Pass by Address (με pointer)</h3>
+
+<p>
+    Εδώ περνάς στη function όχι την τιμή, αλλά τη <strong>διεύθυνσή</strong> της (με το <code>&amp;</code>). Η function παίρνει έναν pointer και μπορεί να αλλάξει την <strong>αρχική</strong> μεταβλητή, γιατί δουλεύει κατευθείαν πάνω στη μνήμη της:
+</p>
+
+<pre><code class="lang-go">func reallyChange(n *int) {
+    *n = 999 // αλλάζει την ΑΡΧΙΚΗ τιμή
+}
+
+func main() {
+    x := 5
+    reallyChange(&x)
+    fmt.Println(x) // 999 — Η αρχική τιμή ΑΛΛΑΞΕ!
+}
+</code></pre>
+
+<p>
+    Αυτός είναι ο <strong>μόνος τρόπος</strong> να τροποποιήσεις πραγματικά μια μεταβλητή από μέσα σε μια function, χωρίς να χρησιμοποιήσεις <code>return</code>.
+    Το ίδιο μπορούμε να κάνουμε και με strings:
+</p>
+
+<pre><code class="lang-go">func reallyChangeString(s *string) {
+    *s = "new" // αλλάζει την ΑΡΧΙΚΗ string
+}
+
+func main() {
+    msg := "old"
+    reallyChangeString(&msg)
+    fmt.Println(msg) // "new" — Η αρχική τιμή ΑΛΛΑΞΕ!
+}
+</code></pre>
+
+<h3>3. Pass by Reference (στην πράξη) — το αντίγραφο που δείχνει</h3>
+
+<p>
+    Σε αντίθεση με το pass by value, όταν περνάς σύνθετους τύπους — όπως <code>slice</code>, <code>map</code>,
+    <code>array</code> και <code>struct</code> — η Go δεν δημιουργεί αντίγραφο ολόκληρης της τιμής, αλλά ένα αντίγραφο
+    της <strong>διεύθυνσης</strong> όπου βρίσκονται τα πραγματικά δεδομένα. Αυτό πρακτικά σημαίνει ότι η συμπεριφορά
+    μοιάζει με <strong>pass by reference</strong>: αν αλλάξεις το περιεχόμενο μέσα στη function, η αλλαγή φαίνεται και
+    στην αρχική μεταβλητή (πχ πίνακα) έξω από αυτήν. Τα <code>string</code> είναι εξαίρεση — είναι όπως έχουμε πει immutable (αμετάβλητα).
+    Θα δούμε πώς δουλεύουν οι σύνθετοι τύποι αναλυτικά σε επόμενο κεφάλαιο.
+</p>
+
+<h2>Πίνακας σύνοψης</h2>
+
+<table style="width:100%; border-collapse:collapse; margin:16px 0;">
+    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
+        <th style="text-align:left; padding:8px;">Τρόπος</th>
+        <th style="text-align:left; padding:8px;">Τύποι</th>
+        <th style="text-align:left; padding:8px;">Αλλάζει η αρχική τιμή;</th>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>By Value</strong></td>
+        <td style="padding:8px;"><code>int</code>, <code>float64</code>, <code>bool</code>, <code>rune</code></td>
+        <td style="padding:8px;">❌ Όχι</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>By Reference (πρακτικά)</strong></td>
+        <td style="padding:8px;"><code>string</code>, <code>slice</code>, <code>map</code>, <code>array</code></td>
+        <td style="padding:8px;">⚠️ Ανάλογα με τον τύπο και την πράξη (τα strings ειναι immutable)</td>
+    </tr>
+    <tr>
+        <td style="padding:8px;"><strong>By Address (pointer)</strong></td>
+        <td style="padding:8px;">οποιοσδήποτε τύπος με <code>&amp;</code> και <code>*</code></td>
+        <td style="padding:8px;">✅ Ναι</td>
+    </tr>
+</table>
+
+<h2>Πότε να χρησιμοποιείς ποιον τρόπο</h2>
+
+<div class="grid2">
+    <div class="card">
+        <h3>Χρησιμοποίησε By Value όταν</h3>
+        <p>
+            Η τιμή είναι μικρή (π.χ. ένα <code>int</code> ή <code>bool</code>) και <strong>δεν θες</strong> να αλλάξει η αρχική μεταβλητή. Ο κώδικας είναι πιο απλός και ασφαλής.
+        </p>
+    </div>
+    <div class="card">
+        <h3>Χρησιμοποίησε By Address (pointer) όταν</h3>
+        <p>
+            Θες η function να τροποποιήσει <strong>πραγματικά</strong> την αρχική μεταβλητή. Είναι ο μόνος σίγουρος τρόπος να το κάνεις, ανεξάρτητα από τον τύπο.
+        </p>
+    </div>
 </div>
 
-<div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
+<h3>Το κλασσικό παράδειγμα του πυρηνικού πολέμου</h3>
 
-<span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
-
-<span class="tok-kw">func</span> <span class="tok-func">zeroValue</span>(val <span class="tok-type">int</span>) {
-    val = <span class="tok-num">0</span> <span class="tok-com">// only changes the local copy, has no effect outside</span>
+<pre><code class="lang-go">func AvoidNuclearWar(redSwitch bool) {
+    redSwitch = false // αλλάζει μόνο το τοπικό αντίγραφο
 }
 
-<span class="tok-kw">func</span> <span class="tok-func">zeroPointer</span>(val *<span class="tok-type">int</span>) {
-    *val = <span class="tok-num">0</span> <span class="tok-com">// writes through to the original variable's memory address</span>
+func ActuallySaveTheWorld(redSwitch *bool) {
+    *redSwitch = false // αλλάζει την ΠΡΑΓΜΑΤΙΚΗ τιμή
 }
 
-<span class="tok-kw">func</span> <span class="tok-func">main</span>() {
-    x <span class="tok-kw">:=</span> <span class="tok-num">10</span>
-    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"before zeroValue:"</span>, &x, x)
-    <span class="tok-func">zeroValue</span>(x)
-    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"after zeroValue: "</span>, &x, x) <span class="tok-com">// x unchanged</span>
+func main() {
+    redSwitch := true
 
-    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"before zeroPointer:"</span>, &x, x)
-    <span class="tok-func">zeroPointer</span>(&x)
-    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"after zeroPointer: "</span>, &x, x) <span class="tok-com">// x is now 0</span>
+        // Pass By Value
+    AvoidNuclearWar(redSwitch)
+
+    if redSwitch {
+        pentagon.BlowUpTheWorld() // 💥 BOOM! Η τιμή δεν άλλαξε!
+    } else {
+        fmt.Println("🕊️ World saved?") // No, the function only changed a copy!
+    }
+        // Pass by Address
+    ActuallySaveTheWorld(&redSwitch)
+
+    if redSwitch {
+        pentagon.BlowUpTheWorld() // 💥 BOOM!
+    } else {
+        fmt.Println("🕊️ World saved! The pointer actually changed the real variable!")
+    }
 }
-</code></pre></div>
-`);
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Σημαντικό: η μνήμη</span>
+    <p>
+        Όταν περνάς με τιμή (by value), αντιγράφεις ολόκληρο το αντικείμενο. Για μεγάλες δομές (π.χ. έναν μεγάλο πίνακα ή μια struct με πολλά πεδία), αυτό μπορεί να είναι ακριβό σε μνήμη και χρόνο. Με το pass by address (pointer), περνάς μόνο μια διεύθυνση (συνήθως 8 bytes) — όσο μεγάλη κι αν είναι η δομή, το κόστος παραμένει σταθερό και ελάχιστο. Γι' αυτό οι pointers χρησιμοποιούνται συχνά ακόμα κι όταν δεν χρειάζεται τροποποίηση, απλά για να αποφεύγονται περιττές αντιγραφές.
+    </p>
+</div>
+
+<h2>VS Code Challenge</h2>
+
+<p>
+    Άνοιξε το VS Code, δημιούργησε ένα αρχείο <code>main.go</code> και προσπάθησε να λύσεις την παρακάτω άσκηση πριν δεις τη λύση!
+</p>
+
+<div class="callout">
+    <span class="tag">Στόχος Άσκησης</span>
+    <p>
+        1. Στην main, δημιούργησε μια μεταβλητή <code>health := 80</code>.<br>
+        2. Φτιάξε μια συνάρτηση <code>takeDamage</code> που να μειώνει το <code>health</code> απευθείας στη μνήμη.<br>
+        3. Κάλεσέ την και επιβεβαίωσε ότι η αρχική μεταβλητή άλλαξε!
+    </p>
+    <div class="spoiler" style="margin-top:8px; max-height:50px; overflow:hidden;">
+        <div class="spoiler-lock" style="padding:4px 12px;"><span> HINT →</span></div>
+        <p style="padding:6px 12px; margin:0;">Θα πρέπει να περάσουμε το <code>health</code> ως pointer στην function. Δηλαδή: <code>func takeDamage(hp *int, damage int)</code></p>
+    </div>
+</div>
+
+<div class="spoiler">
+    <div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div>
+    <pre><code class="lang-go">package main
+
+import "fmt"
+
+// ── helper functions ───────────────────────────────────────────────────────── ⊃
+
+// takeDamage modifies the original integer value in memory through a pointer.
+func takeDamage(hp *int, damage int) {
+    *hp = *hp - damage // Dereference to access and modify the value
+}
+
+// ── main entry point ───────────────────────────────────────────────────────── ⊃
+
+func main() {
+    health := 80
+    fmt.Println("Initial Health:", health) // 80
+
+    // Pass the memory address using the & operator
+    takeDamage(&health, 25)
+
+    fmt.Println("Health after damage:", health) // 55
+}
+</code></pre>
+</div>
+
+<h2>Ανακεφαλαίωση: Η θέση του * — τύπος vs dereference</h2>
+
+<p>
+    Το σύμβολο <code>*</code> στη Go έχει <strong>τρεις</strong> διαφορετικές χρήσεις, ανάλογα με το πού βρίσκεται:
+</p>
+
+<ul>
+    <li>
+        Στον <strong>τύπο</strong> (<code>var p *int</code>): σημαίνει "αυτό είναι ένας δείκτης που κρατά διεύθυνση ενός <code>int</code>". Εδώ το <code>*</code> είναι μέρος της δήλωσης του τύπου.
+    </li>
+    <li>
+        <strong>Μπροστά από μια μεταβλητή pointer</strong> (<code>*p = 100</code>): σημαίνει "πήγαινε στη διεύθυνση που κρατάει το <code>p</code>, και δες/άλλαξε την τιμή εκεί". Αυτό λέγεται <strong>dereference</strong>.
+    </li>
+    <li>
+        <strong>Σε μια έκφραση</strong> (<code>2 * 3</code>): σημαίνει πολλαπλασιασμός — απλή αριθμητική πράξη.
+    </li>
+</ul>
+
+<p>
+    <strong>Η διαφορά είναι κρίσιμη:</strong>
+</p>
+
+<pre><code class="lang-go">var x int = 42
+var p *int = &x   // το * στον τύπο: p είναι pointer to int
+
+fmt.Println(p)    // τυπώνει τη διεύθυνση (π.χ. 0xc0000140a0)
+fmt.Println(*p)   // το * μπροστά από το p: dereference — τυπώνει την τιμή (42)
+
+*p = 100          // το * μπροστά από το p: dereference — αλλάζει την τιμή του x
+fmt.Println(x)    // 100
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Παρατήρησε τη διαφορά</span>
+    <p>
+        Όταν γράφεις <code>*int</code> (με τον αστερίσκο δίπλα στον τύπο), δηλώνεις ότι η μεταβλητή είναι pointer.
+        Όταν γράφεις <code>*p</code> (με τον αστερίσκο μπροστά από το όνομα μιας μεταβλητής pointer), <strong>κάνεις dereference</strong> — πας στη διεύθυνση που κρατάει και βλέπεις/αλλάζεις την τιμή εκεί.
+    </p>
+</div>`);
+
 
         addContent(`
 <div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 7</div>
