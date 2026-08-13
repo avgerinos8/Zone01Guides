@@ -1,0 +1,46 @@
+{
+  "function": "addQuiz(questionOrArray, opts?)",
+  "purpose": "One or more multiple-choice questions stacked on a single slide.",
+  "first_arg": {
+    "accepts": "a single question object, OR an array of question objects (stacked on one slide, each scored independently)",
+    "question_object_shape": {
+      "q": "REQUIRED string. The question text. Always rendered as PLAIN TEXT (textContent) — HTML tags typed here show up as literal text, they do NOT render. No allowHTML flag exists for this field.",
+      "code": "OPTIONAL string. A separate code block rendered in its own <pre><code> BELOW the question text (q) and ABOVE the options. Plain-text semantics like inside a normal <pre>: write < > & freely, nothing is HTML-parsed here either — this is not a way to inject arbitrary HTML, only to show a code snippet.",
+      "lang": "OPTIONAL string, only meaningful if `code` is also set. One of: go | js | html | css | bash | docker | yml | json | generic. Auto-colors the `code` block using the same tokenizer/colors as a manual class=\"lang-go\" block. `generic` only grays out line comments (works for languages without a dedicated tokenizer). Omitting `lang` while `code` is set renders the code block uncolored (plain monospace).",
+      "options": "REQUIRED array of exactly 4 strings. Rendered as PLAIN TEXT (textContent) — same as `q`, no HTML parsing, no allowHTML flag.",
+      "correct": "REQUIRED integer, 0-based index into `options` for the right answer.",
+      "explain": "REQUIRED string. Shown after the learner answers. Rendered as INNERHTML (real HTML, always — this one field IS HTML-capable by default, unlike q/options/code). Safe to use <br>, <strong>, etc. here; if it contains raw text with < > & that is NOT meant to be a tag, escape it yourself."
+    },
+    "array_form_example": "addQuiz([question1, question2, question3], opts?) — each gets its own independent scoring/reset within the same slide."
+  },
+  "opts_object": {
+    "label": "string. Overrides the default slide header text (default header text is \"Quiz Checkpoint\").",
+    "note": "string, Greek. Short instructional line shown under the header.",
+    "bg": "string, image path. Sets a fixed full-slide background image for this slide via the shared #slide-bg-layer. Omit for no background.",
+    "overlayAlpha": "number 0..1, default 0.5. Dark overlay strength over `bg`, for text legibility.",
+    "backgroundSize": "CSS background-size value: \"cover\" (fill+crop) | \"contain\" (fit, may letterbox) | \"100% 100%\" (stretch/distort) | \"100% auto\" (fit width, height scales) | \"auto\" (default, natural size).",
+    "backgroundRepeat": "CSS background-repeat value: \"no-repeat\" (default) | \"repeat\" | \"repeat-x\" | \"repeat-y\".",
+    "backgroundPosition": "CSS background-position value, default \"top left\", e.g. \"center center\"."
+  },
+  "what_does_NOT_exist_here": [
+    "There is no opts.allowHTML for addQuiz — q and options[] can never contain real HTML, only explain can (and explain is always HTML, unconditionally).",
+    "There is no way to put a code block INSIDE q or inside an option string — the only code-block mechanism for quiz is the separate top-level `code`/`lang` fields on the question object, rendered in a fixed position between q and options."
+  ],
+  "scoring": "Fully automatic. 100 if selected option index === correct, 0 otherwise. A 'Score: N%' badge appears next to the slide's Reset button. Never write score text yourself.",
+  "minimal_example": {
+    "js": "addQuiz({ q: \"Ποια είναι η σωστή δήλωση μεταβλητής στη Go;\", options: [\"var x int = 5\", \"int x = 5\", \"x: int = 5\", \"declare x as int = 5\"], correct: 0, explain: \"Η Go χρησιμοποιεί var όνομα τύπος = τιμή.\" })"
+  },
+  "example_with_code_block": {
+    "js": "addQuiz({ q: \"Τι θα τυπώσει το παρακάτω πρόγραμμα;\", code: \"func main() {\\n  fmt.Println(\\\"hello\\\")\\n}\", lang: \"go\", options: [\"hello\", \"Hello\", \"error: undefined fmt\", \"τίποτα, το πρόγραμμα κολλάει\"], correct: 0, explain: \"Η <code>fmt.Println</code> τυπώνει το string ακριβώς όπως δόθηκε.\" })"
+  },
+  "example_array_form_with_opts": {
+    "js": "addQuiz([q1, q2, q3], { label: \"Έλεγχος Κατανόησης\", note: \"Διάλεξε τη σωστή απάντηση για κάθε ερώτηση.\", bg: \"./images/quiz-bg.jpg\", overlayAlpha: 0.6 })"
+  },
+  "writing_rules": [
+    "4 options, similar length/style — no option should stand out by size or level of detail",
+    "correct-answer position (the index) should vary across questions in a deck, not always the same slot",
+    "distractors should be plausible/related misconceptions, never eliminable by 'obviously silly' reasoning",
+    "include at least one distractor per deck that's deliberately ~5 words longer than the correct answer",
+    "explain should be one short sentence/paragraph shown after the answer is revealed"
+  ]
+}

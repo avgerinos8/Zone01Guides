@@ -1,0 +1,70 @@
+{
+  "function": "addContent(html, opts?)",
+  "purpose": "One theory/title/glossary/sources slide from a raw HTML string. This is the only add* function whose first argument is a plain HTML string, not an object/array — write it as a JS template literal (backticks).",
+  "opts_object": {
+    "note": "addContent does NOT support label/note/allowHTML (those are quiz/fillblank/matching-only headers/toggles — addContent has no auto-generated header at all, you write ALL of the slide's visible content yourself in `html`).",
+    "bg": "string, image path. Same shared #slide-bg-layer mechanism as every other add* function — see slide-background.json for the full opts (bg/overlayAlpha/backgroundSize/backgroundRepeat/backgroundPosition), all of which work here too."
+  },
+  "whitelisted_tags_and_structures": {
+    "h1 / h2 / h3": "Section headings. Use h1 only inside a title-slide (see title_slide below); h2/h3 for normal section/sub-section headers within a content slide.",
+    "p": "Plain paragraph.",
+    "p.lede": "A larger/emphasized intro paragraph, typically the first paragraph under a heading.",
+    "div.callout > span.tag + text": "A highlighted warning/notice box. span.tag is a small uppercase label line inside it (e.g. 'ΠΡΟΣΟΧΗ'), followed by the actual text/HTML content. Default coloring is a 'warning' red-ish left border.",
+    "div.callout.good": "Same as div.callout, but green/positive-toned instead of red — use for 'this is the right approach' type notices, not just warnings.",
+    "div.grid2 > div.card(h3+p)": "A 2-column responsive grid of cards, each card containing an h3 title and a p body. Collapses to a single column on small screens automatically.",
+    "div.grid3 > div.card(h3+p)": "Same as grid2 but 3 columns. Also collapses on small screens automatically.",
+    "pre > code": "A code block. By default renders in plain monospace with NO color — see code_coloring below for the two ways to add syntax colors.",
+    "table.glossary-table > tr > td.gt-term + td.gt-def": "Glossary variant 1: classic two-column table rows, one term|definition pair per row. See glossary_variants below.",
+    "div.glossary-strip > div.gs-pill > span.gs-name + span.gs-def": "Glossary variant 2: a row of rounded pill cards. See glossary_variants below.",
+    "div.glossary-columns > div.gc-line > span.gc-term + span.gc-def": "Glossary variant 3: a compact vertical list, one 'term — definition' line per row. See glossary_variants below.",
+    "div.sources-list > a": "A list of source/reference links, one <a> per line. Typically placed on the deck's final slide.",
+    "div.spoiler": "Drag-to-reveal hidden content block (e.g. a model-answer code snippet). See spoiler_minigame below — full markup, not summarized here."
+  },
+  "glossary_variants": {
+    "when_to_use_which": "Mix all 3 across a lesson/deck for visual variety — the generator instructions explicitly ask for this. There's no strict rule for which topic gets which variant; strip and columns are more compact for many short terms, table reads more formally for fewer/longer definitions.",
+    "variant_1_table": {
+      "markup": "<table class=\"glossary-table\">\n  <tr><td class=\"gt-term\">Package</td><td class=\"gt-def\">Τρόπος ομαδοποίησης σχετικού κώδικα Go.</td></tr>\n  <tr><td class=\"gt-term\">Compiler</td><td class=\"gt-def\">Μεταφράζει τον πηγαίο κώδικα σε machine code πριν την εκτέλεση.</td></tr>\n</table>",
+      "note": "One <tr> per term. Do not add a <thead>/header row — none of the CSS expects one."
+    },
+    "variant_2_strip": {
+      "markup": "<div class=\"glossary-strip\">\n  <div class=\"gs-pill\"><span class=\"gs-name\">Package</span><span class=\"gs-def\">Τρόπος ομαδοποίησης σχετικού κώδικα Go.</span></div>\n  <div class=\"gs-pill\"><span class=\"gs-name\">Compiler</span><span class=\"gs-def\">Μεταφράζει τον πηγαίο κώδικα σε machine code πριν την εκτέλεση.</span></div>\n</div>",
+      "layout_behavior": "Pills wrap onto new lines when the row runs out of horizontal width — the strip itself never gets a horizontal scrollbar, any number of pills is safe to add. Only an individual .gs-name that is a single unbroken token wider than the pill itself (rare — a long identifier with no spaces) gets its own local horizontal scroll, isolated to that one line."
+    },
+    "variant_3_columns": {
+      "markup": "<div class=\"glossary-columns\">\n  <div class=\"gc-line\"><span class=\"gc-term\">Package</span><span class=\"gc-def\">Τρόπος ομαδοποίησης σχετικού κώδικα Go.</span></div>\n  <div class=\"gc-line\"><span class=\"gc-term\">Compiler</span><span class=\"gc-def\">Μεταφράζει τον πηγαίο κώδικα σε machine code πριν την εκτέλεση.</span></div>\n</div>"
+    }
+  },
+  "code_coloring_two_methods": {
+    "method_1_manual_tok_spans": {
+      "when": "Use inside addContent() — this is the ONLY coloring method available here, there is no auto/class-based highlighter path for addContent's pre>code (that shortcut only exists for addFillBlank's item.lang).",
+      "how": "Hand-wrap individual words/tokens in <span class=\"tok-kw\">, <span class=\"tok-type\">, <span class=\"tok-str\">, <span class=\"tok-com\">, <span class=\"tok-num\">, <span class=\"tok-func\">.",
+      "example": "<pre><code><span class=\"tok-kw\">func</span> <span class=\"tok-func\">main</span>() {\n  <span class=\"tok-kw\">var</span> x <span class=\"tok-type\">int</span> = <span class=\"tok-num\">42</span>\n  <span class=\"tok-com\">// prints x</span>\n  fmt.<span class=\"tok-func\">Println</span>(<span class=\"tok-str\">\"hello\"</span>)\n}</code></pre>",
+      "escaping": "Escape < > & as &lt; &gt; &amp; anywhere in the raw code text that is not one of your own tok-* spans — this sits inside real HTML, unescaped angle brackets get silently swallowed as unknown tags before anyone ever sees them as code."
+    },
+    "method_2_auto_lang_class": {
+      "when": "This works INSIDE addContent() too (highlighter.js's MutationObserver watches the whole page, not just fillblank output) — put class=\"lang-go\" (or js/html/css/bash/docker/yml/json/generic) directly on the <code> element and it colors itself automatically at runtime, using the exact same tok-* colors as method 1.",
+      "how": "<pre><code class=\"lang-go\">func main() {\n  var x int = 42\n  // prints x\n  fmt.Println(\"hello\")\n}</code></pre>",
+      "languages": "go | js | html | css | bash | docker | yml | json | generic. `generic` only grays out line comments (#, //, --, ;) for languages without a dedicated tokenizer above.",
+      "escaping": "Same rule as method 1 — escape < > & as &lt; &gt; &amp; in the raw text (this is the TEXT the highlighter reads via textContent before recoloring it, so it must already be valid/escaped HTML text going in).",
+      "bash_placeholder_gotcha": "For lang-bash specifically, a placeholder like <container-name> must be written as &lt;container-name&gt; in the source HTML — otherwise the browser silently eats it as an unknown tag before the highlighter ever runs, and it disappears entirely. The highlighter then colors escaped placeholder segments distinctly once they survive as real text.",
+      "which_to_prefer": "Method 2 (class=\"lang-*\") is less typing and preferred by default for whole code blocks. Fall back to method 1 (manual tok-* spans) only for cases the tokenizer doesn't handle well, or to selectively color just a few specific words rather than a whole block."
+    }
+  },
+  "spoiler_minigame": {
+    "purpose": "A drag-to-reveal block, typically hiding a model-answer code snippet the learner should attempt themselves first.",
+    "markup": "<div class=\"spoiler\">\n  <div class=\"spoiler-lock\"><span>Drag to reveal →</span></div>\n  <pre><code>...hidden content, plain or with tok-*/lang-* coloring as usual...</code></pre>\n</div>",
+    "behavior": "Diagonal-striped locked look. Unlocks ONLY on an actual drag past ~40% of the block's width — a plain click/tap does nothing. Works with both mouse (Pointer Events) and touch. Fully automatic (decorateSpoilers() wires it up), no extra JS needed from the content author.",
+    "known_limitation": "Reveal state is NOT persisted to localStorage — a revealed spoiler resets back to locked on page reload. This is a known/accepted limitation, not a bug to work around."
+  },
+  "title_slide": {
+    "when": "Exactly one, as the FIRST slide of a lesson deck. Never use elsewhere.",
+    "markup": "<div class=\"title-slide\">\n  <div class=\"title-badge\"><img src=\"...\" alt=\"...\"></div>\n  <div class=\"kicker-line\">ΕΝΟΤΗΤΑ 7</div>\n  <h1>Docker Βασικά</h1>\n  <p class=\"lede\">Σύντομη εισαγωγική περιγραφή του τι θα καλυφθεί.</p>\n  <div class=\"callout\"><span class=\"tag\">tip</span>Ρώτα ένα AI όποτε κολλήσεις — δεν χρειάζεται να τα ξέρεις όλα από μνήμης.</div>\n</div>",
+    "title_badge_fallback": "If no image is available/desired, .title-badge .fallback is a text-based fallback style (large accent-colored text) that can be used instead of an <img> inside .title-badge — check an existing real lesson file for the exact fallback markup shape before using it, since it's a secondary/rarer path.",
+    "convention": "Keep an 'ask an AI when stuck' callout on the title slide — this is a deliberate house convention across all lessons, not optional per-deck decoration."
+  },
+  "rules": [
+    "Never output plain unwrapped text directly in a slide body — everything must be inside one of the whitelisted tags/structures above.",
+    "Escape < > & as &lt; &gt; &amp; inside any raw code text (both coloring methods, and inside spoiler code) — this is HTML, not a text file.",
+    "Prose is Greek; code comments inside code blocks are English (project-wide language convention, not addContent-specific)."
+  ]
+}

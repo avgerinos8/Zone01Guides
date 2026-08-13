@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go — Μέρος 1 — Θεωρητικό Υλικό</title>
-    <link rel="stylesheet" href="static/style.css?v=20260801">
-    <link rel="stylesheet" href="static/theme-go-one.css?v=20260801">
+    <title>Go — Μέρος 1</title>
+    <link rel="stylesheet" href="static/style.css?v=20260809">
+    <link rel="stylesheet" href="static/theme-go-one.css?v=20260809">
 </head>
 
 <body>
@@ -42,8 +42,8 @@
         </div>
     </div>
 
-    <script src="static/script.js?v=20260801"></script>
-    <script src="static/highlighter.js?v=20260801"></script>
+    <script src="static/script.js?v=20260812"></script>
+    <script src="static/highlighter.js?v=20260812"></script>
     <script>
         // Course content below.
 
@@ -783,7 +783,8 @@ func main() {
                     { id: "31", answer: "31" },
                     { id: "equal", answer: "=" }
                 ],
-                explain: "Στην πρώτη γραμμή, η `:=` δηλώνει και αρχικοποιεί. Στη δεύτερη, το `var` δηλώνει χωρίς αρχική τιμή (zero value). Στην τρίτη, το `=` αλλάζει την τιμή μιας υπάρχουσας μεταβλητής."
+                explain: "Στην πρώτη γραμμή, η `:=` δηλώνει και αρχικοποιεί. Στη δεύτερη, το `var` δηλώνει χωρίς αρχική τιμή (zero value). Στην τρίτη, το `=` αλλάζει την τιμή μιας υπάρχουσας μεταβλητής.",
+                lang: "go"
             },
             {
                 code: `package main
@@ -809,7 +810,8 @@ func main() {
                     { id: "width", answer: "width" },
                     { id: "init", answer: ":=" },
                 ],
-                explain: "Με `var` δηλώνεις πολλές μεταβλητές του ίδιου τύπου σε μία γραμμή. Το `:=` δηλώνει και αρχικοποιεί, και εδώ υπολογίζει την τιμή από τα `width` και `height`."
+                explain: "Με `var` δηλώνεις πολλές μεταβλητές του ίδιου τύπου σε μία γραμμή. Το `:=` δηλώνει και αρχικοποιεί, και εδώ υπολογίζει την τιμή από τα `width` και `height`.",
+                lang: "go"
             }
         ], {
             note: "Συμπλήρωσε τα κενά με τη σωστή λέξη, operator ή όνομα μεταβλητής."
@@ -1558,7 +1560,6 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
     <li><strong>Compound statements</strong> — ένα μπλοκ από statements μέσα σε αγκύλες <code>{ ... }</code></li>
 </ul>
 
-</ul>
 <br>
 <h1>Κατηγορίες Τελεστών</h1>
 <p class="lede">Ένας <strong>τελεστής</strong> (operator) είναι ένα σύμβολο που εκτελεί μια συγκεκριμένη πράξη πάνω σε μία ή περισσότερες τιμές (που λέγονται operands). Η Go διαθέτει αρκετές κατηγορίες τελεστών, καθεμιά με τον δικό της σκοπό.</p>
@@ -1592,8 +1593,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
   <tr><td class="gt-term">Operator / Operand</td><td class="gt-def">τελεστής (σύμβολο πράξης) και operand (η τιμή πάνω στην οποία εφαρμόζεται)</td></tr>
   <tr><td class="gt-term">Expression</td><td class="gt-def">παράγει τιμή που μπορεί να χρησιμοποιηθεί περαιτέρω</td></tr>
   <tr><td class="gt-term">Statement</td><td class="gt-def">εκτελεί ενέργεια, δεν παράγει επαναχρησιμοποιήσιμη τιμή</td></tr>
-<tr><td class="gt-term">Expression Statement</td><td class="gt-def">μια έκφραση που στέκεται μόνη της ως εντολή — η τιμή της πετιέται, αλλά εκτελείται το side effect της</td></tr>
-  <tr><td class="gt-term">Short-circuit evaluation</td><td class="gt-def">η δεξιά πλευρά &amp;&amp;/|| παραλείπεται όταν το αποτέλεσμα είναι ήδη γνωστό</td></tr>
+  <tr><td class="gt-term">Expression Statement</td><td class="gt-def">μια έκφραση που στέκεται μόνη της ως εντολή — η τιμή της πετιέται, αλλά εκτελείται το side effect της</td></tr>
   <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι τελεστές σε μια έκφραση</td></tr>
 </table>
 `);
@@ -2020,6 +2020,7 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
 <p>Η Go ελέγχει τα cases με τη σειρά από πάνω προς τα κάτω, και εκτελεί το πρώτο του οποίου η συνθήκη είναι true — ακριβώς όπως μια αλυσίδα <code>if</code>/<code>else if</code>/<code>else</code>, αλλά με πιο συμπυκνωμένη, οπτικά καθαρή σύνταξη όταν έχεις πολλές διαδοχικές συνθήκες πάνω στην ίδια μεταβλητή.</p>
 `);
 
+
         addQuiz([
             {
                 q: "Ποια είναι η σωστή σύνταξη για ένα if στη Go;",
@@ -2033,7 +2034,18 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
                 explain: "Στη Go, οι παρενθέσεις γύρω από τη συνθήκη ΔΕΝ χρησιμοποιούνται. Τα άγκιστρα { } είναι υποχρεωτικά."
             },
             {
-                q: "Τι θα τυπώσει ο παρακάτω κώδικας;<br><br>score := 75<br>if score >= 90 {<br>    fmt.Println(\"A\")<br>} else if score >= 75 {<br>    fmt.Println(\"B\")<br>} else if score >= 50 {<br>    fmt.Println(\"C\")<br>} else {<br>    fmt.Println(\"F\")<br>}",
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `score := 75
+if score >= 90 {
+    fmt.Println("A")
+} else if score >= 75 {
+    fmt.Println("B")
+} else if score >= 50 {
+    fmt.Println("C")
+} else {
+    fmt.Println("F")
+}`,
+                lang: "go",
                 options: [
                     "A",
                     "B",
@@ -2055,7 +2067,17 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
                 explain: "Στη Go, η switch δεν έχει παρενθέσεις. Η σύνταξη είναι: switch έκφραση { case τιμή: ... }"
             },
             {
-                q: "Τι θα τυπώσει ο παρακάτω κώδικας;<br><br>day := 3<br>switch day {<br>case 1, 2, 3, 4, 5:<br>    fmt.Println(\"weekday\")<br>case 6, 7:<br>    fmt.Println(\"weekend\")<br>default:<br>    fmt.Println(\"invalid\")<br>}",
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `day := 3
+switch day {
+case 1, 2, 3, 4, 5:
+    fmt.Println("weekday")
+case 6, 7:
+    fmt.Println("weekend")
+default:
+    fmt.Println("invalid")
+}`,
+                lang: "go",
                 options: [
                     "weekday",
                     "weekend",
@@ -2088,7 +2110,14 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
                 explain: "Ο && (AND) απαιτεί όλες οι συνθήκες να είναι true. Το || (OR) θέλει τουλάχιστον μία."
             },
             {
-                q: "Τι θα τυπώσει ο παρακάτω κώδικας;<br><br>x := 10<br>if x = 5 {<br>    fmt.Println(\"five\")<br>} else {<br>    fmt.Println(\"not five\")<br>}",
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `x := 10
+if x = 5 {
+    fmt.Println("five")
+} else {
+    fmt.Println("not five")
+}`,
+                lang: "go",
                 options: [
                     "five",
                     "not five",
@@ -2110,7 +2139,16 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
                 explain: "Η tagless switch γράφεται switch { case συνθήκη: ... }"
             },
             {
-                q: "Τι θα τυπώσει ο παρακάτω κώδικας;<br><br>score := 20<br>if score >= 13 {<br>    fmt.Println(\"teenager\")<br>} else if score >= 18 {<br>    fmt.Println(\"adult\")<br>} else {<br>    fmt.Println(\"child\")<br>}",
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `score := 20
+if score >= 13 {
+    fmt.Println("teenager")
+} else if score >= 18 {
+    fmt.Println("adult")
+} else {
+    fmt.Println("child")
+}`,
+                lang: "go",
                 options: [
                     "teenager",
                     "adult",
@@ -2118,48 +2156,48 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
                     "Δεν μεταγλωττίζεται"
                 ],
                 correct: 0,
-                explain: "Το score είναι 20, που είναι >= 13, άρα μπαίνει στο πρώτο if. Το else if score >= 18 δεν ελέγχεται ποτέ."
+                explain: "Το score είναι 20, που είναι >= 13, άρα μπαίνει στο πρώτο if. Το else if score >= 18 δεν ελέγχεται ποτέ — είναι λάθος σειρά!"
             },
             {
                 q: "Στο if με short statement, πού υπάρχει η μεταβλητή που δηλώνεται;",
                 options: [
                     "Σε όλο το πρόγραμμα",
                     "Μόνο μέσα στο μπλοκ του if",
-                    "Σε όλη τη function",
-                    "Μέχρι το τέλος του αρχείου"
                 ],
                 correct: 1,
-                explain: "Η μεταβλητή υπάρχει μόνο στο μπλοκ του if ((και στο else (αν υπάρχει))). Μετά το } εξαφανίζεται."
+                alsoCorrect: [0],
+                explain: "Η μεταβλητή υπάρχει μόνο στο μπλοκ του if (και στο else, αν υπάρχει). Μετά το } εξαφανίζεται."
             }
-        ]);
+        ], {
+            label: "Έλεγχος Κατανόησης",
+            note: "Διάλεξε τη σωστή απάντηση για κάθε ερώτηση."
+        });
+
 
         addMatching([
             [
-                { term: "if", def: "Εκτελεί μπλοκ μόνο αν η συνθήκη είναι true" },
-                { term: "else", def: "Εκτελείται όταν η συνθήκη του if είναι false" },
-                { term: "else if", def: "Ελέγχει επιπλέον συνθήκη όταν το προηγούμενο if ήταν false" },
-                { term: "switch", def: "Συγκρίνει μια τιμή με πολλαπλά case χρησιμοποιώντας ισότητα" },
-                { term: "tagless switch", def: "Switch χωρίς έκφραση — κάθε case έχει τη δική του συνθήκη" },
-                { term: "default", def: "Εκτελείται όταν κανένα case δεν ταιριάζει" }
+                { term: "if", def: "Εκτελεί block μόνο αν η συνθήκη είναι true" },
+                { term: "else if", def: "Ελέγχει επιπλέον συνθήκη, μόνο αν η προηγούμενη ήταν false" },
+                { term: "else", def: "Εκτελείται όταν καμία από τις προηγούμενες συνθήκες δεν ίσχυσε" },
+                { term: "switch", def: "Συγκρίνει μια τιμή με πολλαπλά case, χρησιμοποιώντας ισότητα" },
+                { term: "tagless switch", def: "Κάθε case έχει τη δική του ανεξάρτητη συνθήκη" },
+                { term: "default", def: "Εκτελείται όταν κανένα case δεν ταιριάζει με την τιμή ελέγχου" }
             ],
             [
-                { term: "if", def: "if x > 5 { ... }" },
-                { term: "else", def: "else { ... }" },
-                { term: "else if", def: "else if x > 10 { ... }" },
-                { term: "switch", def: "switch day { case 1: ... }" },
-                { term: "tagless switch", def: "switch { case x > 5: ... }" },
-                { term: "default", def: "default: fmt.Println(\"unknown\")" }
+                { term: "Shadowing", def: "Νέα μεταβλητή με := κρύβει άλλη με το ίδιο όνομα σε εσωτερικό scope" },
+                { term: "Short statement", def: "if err := doX(); err != nil — η μεταβλητή err ζει μόνο μέσα στο if/else" },
+                { term: "Block scope", def: "Κάθε ζεύγος { } δημιουργεί το δικό του, ξεχωριστό scope" },
+                { term: "Comma-ok pattern", def: "value, ok := m[\"key\"] — το δεύτερο return value δείχνει αν το κλειδί υπάρχει στον map" }
             ],
             [
-                { term: "if", def: "Μπορεί να έχει μία μόνο συνθήκη" },
-                { term: "else", def: "Προαιρετικό" },
-                { term: "else if", def: "Μπορεί να έχει πολλά" },
-                { term: "switch", def: "Συγκρίνει μόνο με ισότητα (==)" },
-                { term: "tagless switch", def: "Μπορεί να έχει οποιαδήποτε συνθήκη" },
-                { term: "default", def: "Είναι προαιρετικό" }
+                { term: "&&", def: "Επιστρέφει true μόνο αν όλες οι συνθήκες είναι true" },
+                { term: "||", def: "Επιστρέφει true αν τουλάχιστον μία συνθήκη είναι true" },
+                { term: "!", def: "Αντιστρέφει μια λογική τιμή: true → false, false → true" },
+                { term: "!=", def: "Συγκρίνει αν δύο τιμές είναι διαφορετικές" },
+                { term: "<=", def: "Ελέγχει αν η τιμή είναι μικρότερη ή ίση από μια άλλη" }
             ]
         ], {
-            note: "Αντιστοίχισε τον όρο με τον ορισμό που του ταιριάζει."
+            label: "Ταίριαξε τους όρους — Τέσσερα σετ"
         });
 
 
@@ -2168,9 +2206,7 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-strip">
   <div class="gs-pill"><span class="gs-name">Control flow</span><span class="gs-def">δομές που αλλάζουν τη γραμμική πορεία εκτέλεσης ενός προγράμματος</span></div>
-  <div class="gs-pill"><span class="gs-name">Guard clause</span><span class="gs-def">έλεγχος μη έγκυρων περιπτώσεων με άμεσο return στην αρχή μιας function</span></div>
   <div class="gs-pill"><span class="gs-name">Short statement</span><span class="gs-def">εντολή πριν τη συνθήκη if, με scope περιορισμένο μόνο μέσα στο if</span></div>
-  <div class="gs-pill"><span class="gs-name">fallthrough</span><span class="gs-def">ρητή λέξη-κλειδί που κάνει τη switch να συνεχίσει στο επόμενο case</span></div>
   <div class="gs-pill"><span class="gs-name">Tagless switch</span><span class="gs-def">switch χωρίς τιμή ελέγχου, με πλήρη ανεξάρτητη συνθήκη σε κάθε case</span></div>
   <div class="gs-pill"><span class="gs-name">Shadowing</span><span class="gs-def">νέα μεταβλητή που κρύβει άλλη με το ίδιο όνομα σε εσωτερικό scope</span></div>
 </div>
@@ -2841,7 +2877,13 @@ fmt.Println(sum, count) // 6, 2
 <div class="eyebrow">Ενότητα 5 / 8 — VSCode Challenge</div>
 
 <h1>FizzBuzz</h1>
-<p class="lede"> Γράψε το κλασικό παιχνίδι "FizzBuzz" χρησιμοποιώντας <code>for</code> loop για τους αριθμούς από το <strong>1 έως το 100</strong> <li>Αν ο αριθμός είναι πολλαπλάσιο του <strong>3</strong> → τύπωσε <code>"Fizz"</code></li> <li>Αν ο αριθμός είναι πολλαπλάσιο του <strong>5</strong> → τύπωσε <code>"Buzz"</code></li> <li>Αν ο αριθμός είναι πολλαπλάσιο <strong>και του 3 και του 5</strong> → τύπωσε <code>"FizzBuzz"</code></li> <li>Αν δεν ισχύει τίποτα από τα παραπάνω → τύπωσε τον ίδιο τον αριθμό</li> </ul>
+<p class="lede">Γράψε το κλασικό παιχνίδι "FizzBuzz" χρησιμοποιώντας <code>for</code> loop για τους αριθμούς από το <strong>1 έως το 100</strong>:</p>
+<ul>
+    <li>Αν ο αριθμός είναι πολλαπλάσιο του <strong>3</strong> → τύπωσε <code>"Fizz"</code></li>
+    <li>Αν ο αριθμός είναι πολλαπλάσιο του <strong>5</strong> → τύπωσε <code>"Buzz"</code></li>
+    <li>Αν ο αριθμός είναι πολλαπλάσιο <strong>και του 3 και του 5</strong> → τύπωσε <code>"FizzBuzz"</code></li>
+    <li>Αν δεν ισχύει τίποτα από τα παραπάνω → τύπωσε τον ίδιο τον αριθμό</li>
+</ul>
 
 <div class="callout">
     <span class="tag">HINT</span>
@@ -3581,17 +3623,6 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                 explain: "Μια μεταβλητή που δηλώνεται μέσα σε ένα if block (ή σε οποιοδήποτε block) είναι ορατή μόνο μέσα σε αυτό το block και στα υπο-block του (π.χ. το else). Μετά το } παύει να υπάρχει."
             },
             {
-                q: "Τι κάνει το naked return σε μια function με named return values;",
-                options: [
-                    "Επιστρέφει τις τρέχουσες τιμές των named return μεταβλητών",
-                    "Δεν επιστρέφει τίποτα",
-                    "Επιστρέφει μόνο την πρώτη named return μεταβλητή",
-                    "Προκαλεί σφάλμα μεταγλώττισης"
-                ],
-                correct: 0,
-                explain: "Το naked return (return χωρίς τιμές) σε συνάρτηση με named return values επιστρέφει αυτόματα τις τρέχουσες τιμές των named return μεταβλητών."
-            },
-            {
                 q: "Ποια είναι η διαφορά ανάμεσα σε package-level (global) και local μεταβλητή;",
                 options: [
                     "Η package-level (global) είναι ορατή από όλες τις functions του package, η local μόνο μέσα στο block της",
@@ -3603,15 +3634,16 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                 explain: "Οι package-level μεταβλητές είναι ορατές από όλες τις functions μέσα στο ίδιο package. Οι local μεταβλητές είναι ορατές μόνο μέσα στο block που δηλώνονται."
             },
             {
-                q: "Ποιο είναι το σωστό τρόπο να γράψουμε το docstring για μια function με side effect;",
+                q: "Τι είναι ένα docstring comment στη Go;",
                 options: [
-                    "// This function calculates the sum of two numbers and prints the result to the console before returning it",
-                    "// This function adds two numbers and returns the result",
-                    "// This function returns the sum of two numbers with an optional console output",
-                    "// This function adds numbers and maybe prints something"
+                    "Σχόλιο πάνω από function που περιγράφει τι κάνει — το βλέπεις σαν tooltip στο VS Code",
+                    "Σχόλιο που προηγείται της function και περιγράφει τις παραμέτρους και την τιμή επιστροφής της",
+                    "Σχόλιο μέσα στη function που εξηγεί κάθε γραμμή κώδικα ξεχωριστά",
+                    "Σχόλιο που μπαίνει στο τέλος της function για να αναφέρει τον δημιουργό της",
                 ],
                 correct: 0,
-                explain: "Το docstring πρέπει να είναι σαφές και πλήρες — να αναφέρει τόσο την τιμή επιστροφής όσο και το side effect (εκτύπωση), ώστε ο χρήστης να γνωρίζει ακριβώς τι κάνει η function."
+                alsoCorrect: [1],
+                explain: "Έχουμε 2 σωστές απαντήσεις! Το docstring είναι το σχόλιο ακριβώς πάνω από μια function. Περιγράφει τι κάνει, τις παραμέτρους και την τιμή επιστροφής. Στο VS Code εμφανίζεται ως tooltip όταν κρατάς το ποντίκι πάνω από το όνομά της."
             },
             {
                 q: "Τι συμβαίνει όταν μια function καλεί μια άλλη function;",
@@ -3644,7 +3676,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                     "fmt.Println(sum(5, 3))"
                 ],
                 correct: 0,
-                explain: "Αν δεν χρησιμοποιήσεις την τιμή που επιστρέφεται (π.χ. με την κλήση sum(5, 3) μόνη της), η Go θα την αγνοήσει. Αυτό είναι απολύτως επιτρεπτό και συνηθισμένο όταν μας ενδιαφέρει μόνο το side effect της functionς."
+                explain: "Αν δεν χρησιμοποιήσεις την τιμή που επιστρέφεται (π.χ. με την κλήση sum(5, 3) μόνη της), η Go δεν κάνει τίποτα με την τιμή, απλά την πετάει. Αυτό είναι απολύτως επιτρεπτό και συνηθισμένο όταν μας ενδιαφέρει μόνο το side effect της function.<br>Θυμίζω, όταν δεν χρησιμοποιείται μια μεταβλητή, ο compiler της go θα μας δώσει σφάλμα. Εδώ δεν ισχύει κάτι τέτοιο."
             },
             {
                 q: "Τι επιστρέφει ένα 'naked return' μέσα σε μια function με named return values;",
@@ -3724,9 +3756,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
 
 <h1>Εισαγωγή στους Pointers</h1>
 
-<p class="lede">
-    Οι δείκτες (pointers) είναι συχνά το σημείο όπου όσοι μαθαίνουν προγραμματισμό δυσκολεύονται περισσότερο — όχι επειδή η ίδια η ιδέα είναι δύσκολη, αλλά επειδή είναι μια καινούρια έννοια που δεν έχει άμεσο αντίστοιχο στην καθημερινή ζωή. Ας το χτίσουμε βήμα-βήμα, ξεκινώντας από αυτά που ήδη ξέρεις.
-</p>
+<p class="lede"> Οι δείκτες (pointers) φοβίζουν πολλούς νέους προγραμματιστές. Αλλά μόλις καταλάβεις ότι είναι απλά μια μεταβλητή που κρατάει μια διεύθυνση μνήμης, όλα γίνονται πιο απλά. Ας το δούμε βήμα-βήμα. </p>
 
 <h2>Υπενθύμιση: η μνήμη ως σειρά "κουτακιών" με διευθύνσεις</h2>
 
@@ -4045,12 +4075,12 @@ func main() {
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>By Value</strong></td>
-        <td style="padding:8px;"><code>int</code>, <code>float64</code>, <code>bool</code>, <code>rune</code></td>
+        <td style="padding:8px;"><code>int</code>, <code>float64</code>, <code>bool</code>, <code>rune</code>, <code>array</code></td>
         <td style="padding:8px;">❌ Όχι</td>
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>By Reference (πρακτικά)</strong></td>
-        <td style="padding:8px;"><code>string</code>, <code>slice</code>, <code>map</code>, <code>array</code></td>
+        <td style="padding:8px;"><code>string</code>, <code>slice</code>, <code>map</code></td>
         <td style="padding:8px;">⚠️ Ανάλογα με τον τύπο και την πράξη (τα strings ειναι immutable)</td>
     </tr>
     <tr>
@@ -4215,104 +4245,862 @@ fmt.Println(x)    // 100
   <div class="gs-pill"><span class="gs-name">Pass by value</span><span class="gs-def">η function παίρνει πάντα αντίγραφο, ποτέ το ίδιο το πρωτότυπο</span></div>
 </div>
 `);
+
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
-<h1>Τι Σημαίνει "Συλλογή Δεδομένων"</h1>
-<p class="lede">Μέχρι τώρα, κάθε μεταβλητή που είδαμε κρατούσε <em>μία</em> μεμονωμένη τιμή — έναν αριθμό, ένα string, ένα bool. Στην πράξη, πολύ συχνά χρειάζεσαι να αποθηκεύσεις <em>πολλές</em> σχετικές τιμές μαζί, οργανωμένες κάτω από ένα ενιαίο όνομα — π.χ. μια λίστα με ονόματα, ή τους βαθμούς όλων των μαθητών μιας τάξης. Αυτό ακριβώς προσφέρουν οι <strong>συλλογές δεδομένων</strong> (data collections/structures), και σε αυτή την τελευταία ενότητα του Μέρους 1 θα δούμε τις τρεις βασικές που προσφέρει η Go: arrays, slices, και maps.</p>
+<div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
+
+<h1>Data Structures</h1>
+
+<p class="lede">
+    Μέχρι τώρα, κάθε μεταβλητή που είδαμε κρατούσε <em>μία</em> μεμονωμένη τιμή — έναν αριθμό, ένα string, ένα bool. Στην πράξη, πολύ συχνά χρειάζεσαι να αποθηκεύσεις <em>πολλές</em> σχετικές τιμές μαζί, οργανωμένες κάτω από ένα ενιαίο όνομα — π.χ. μια λίστα με ονόματα, ή τους βαθμούς όλων των μαθητών μιας τάξης. Αυτό ακριβώς προσφέρουν οι <strong>data structures</strong>, και σε αυτή την τελευταία ενότητα του Μέρους 1 θα δούμε τις τρεις βασικές που προσφέρει η Go: arrays, slices, και maps.
+</p>
 
 <h1>Πίνακες (Arrays)</h1>
-<p class="lede">Η Go ξεκινά με το πιο "ωμό", βασικό εργαλείο συλλογής δεδομένων: τον πίνακα σταθερού μεγέθους. Θα δούμε αμέσως γιατί, στην πράξη, οι έμπειροι προγραμματιστές Go χρησιμοποιούν σχεδόν πάντα κάτι πιο ευέλικτο αντ' αυτού.</p>
+
+<p class="lede">
+    Θα ξεκινήσουμε με το πιο βασικό data structure, που είναι ο πίνακας σταθερού μεγέθους. Θα δούμε αμέσως γιατί, στην πράξη, οι προγραμματιστές της Go χρησιμοποιούν σχεδόν πάντα κάτι πιο ευέλικτο αντ' αυτού.
+</p>
 
 <h2>Δήλωση και αρχικοποίηση</h2>
-<p>Ένα <strong>array</strong> (πίνακας) στη Go έχει <strong>σταθερό μέγεθος</strong>, ορισμένο κατά τη στιγμή της δήλωσής του και αμετάβλητο για πάντα, καθ' όλη τη διάρκεια ζωής του — δεν μπορείς ποτέ να το "μεγαλώσεις" ή να το "μικρύνεις" αργότερα. Το μέγεθος είναι μάλιστα μέρος του ίδιου του τύπου του array:</p>
-<pre><code><span class="tok-kw">var</span> nums [<span class="tok-num">5</span>]<span class="tok-type">int</span> <span class="tok-com">// an array of EXACTLY 5 ints, each initialized to the zero value 0</span>
-letters <span class="tok-kw">:=</span> [<span class="tok-num">3</span>]<span class="tok-type">string</span>{<span class="tok-str">"a"</span>, <span class="tok-str">"b"</span>, <span class="tok-str">"c"</span>}
+
+<p>
+    Ένα <strong>array</strong> (πίνακας) στη Go έχει <strong>σταθερό μέγεθος</strong>, ορισμένο κατά τη στιγμή της δήλωσής του και αμετάβλητο για πάντα, καθ' όλη τη διάρκεια ζωής του — δεν μπορείς ποτέ να το "μεγαλώσεις" ή να το "μικρύνεις" αργότερα. Το μέγεθος είναι μάλιστα μέρος του ίδιου του τύπου του array:
+</p>
+
+<pre><code class="lang-go">var nums [5]int // an array of EXACTLY 5 ints, each initialized to the zero value 0
+letters := [3]string{"a", "b", "c"}
 </code></pre>
-<p>Στην πρώτη γραμμή, το <code>[5]int</code> σημαίνει "πίνακας από ακριβώς 5 στοιχεία, το καθένα τύπου int" — αφού δεν δώσαμε αρχικές τιμές, κάθε ένα από τα 5 στοιχεία παίρνει αυτόματα τη zero value του <code>int</code>, δηλαδή 0.</p>
+
+<p>
+    Στην πρώτη γραμμή, το <code>[5]int</code> σημαίνει "πίνακας από ακριβώς 5 στοιχεία, το καθένα τύπου int" — αφού δεν δώσαμε αρχικές τιμές, κάθε ένα από τα 5 στοιχεία παίρνει αυτόματα τη zero value του <code>int</code>, δηλαδή 0.
+</p>
 
 <h2>Προσπέλαση και τροποποίηση στοιχείων</h2>
-<p>Κάθε στοιχείο μέσα σε ένα array έχει μια θέση, γνωστή ως <strong>index</strong> (δείκτης θέσης — προσοχή, διαφορετική έννοια από τον "δείκτη/pointer" της Ενότητας 7, παρόλο που η ελληνική λέξη μοιάζει). Το index ξεκινά πάντα από το <code>0</code>, όχι από το 1 — το πρώτο στοιχείο ενός array βρίσκεται στη θέση <code>0</code>, το δεύτερο στη θέση <code>1</code>, κ.ο.κ.:</p>
-<pre><code>nums[<span class="tok-num">0</span>] = <span class="tok-num">10</span> <span class="tok-com">// sets the FIRST element (index 0) to 10</span>
-fmt.<span class="tok-func">Println</span>(nums[<span class="tok-num">0</span>]) <span class="tok-com">// reads back the value at index 0, prints 10</span>
+
+<p>
+    Κάθε στοιχείο μέσα σε ένα array έχει μια θέση, γνωστή ως <strong>index</strong> (θέση). Το index ξεκινά πάντα από το <code>0</code>, όχι από το 1 — το πρώτο στοιχείο ενός array βρίσκεται στη θέση <code>0</code>, το δεύτερο στη θέση <code>1</code>, και ούτω καθεξής:
+</p>
+
+<pre><code class="lang-go">nums[0] = 10 // sets the FIRST element (index 0) to 10
+fmt.Println(nums[0]) // reads back the value at index 0, prints 10
 </code></pre>
 
 <h2>Οι περιορισμοί των Arrays</h2>
-<p>Επειδή το μέγεθος είναι μέρος του ίδιου του τύπου ενός array, ένα <code>[3]int</code> και ένα <code>[5]int</code> θεωρούνται από τον compiler <strong>εντελώς διαφορετικοί τύποι</strong> — δεν μπορείς να αναθέσεις το ένα στο άλλο, ούτε να περάσεις σε μια function που περιμένει συγκεκριμένο μέγεθος array ένα array διαφορετικού μεγέθους. Αυτή η ακαμψία (δηλαδή η έλλειψη ευελιξίας) είναι ο κύριος λόγος για τον οποίο τα arrays χρησιμοποιούνται σπάνια απευθείας στην καθημερινή δουλειά με Go· στη θέση τους, οι προγραμματιστές χρησιμοποιούν σχεδόν πάντα <strong>slices</strong>, τα οποία θα δούμε αμέσως παρακάτω.</p>
-`);
 
-        addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
+<p>
+    Επειδή το μέγεθος είναι μέρος του ίδιου του τύπου ενός array, ένα <code>[3]int</code> και ένα <code>[5]int</code> θεωρούνται από τον compiler <strong>εντελώς διαφορετικοί τύποι</strong> — δεν μπορείς να αναθέσεις το ένα στο άλλο, ούτε να περάσεις σε μια function που περιμένει συγκεκριμένο μέγεθος array ένα array διαφορετικού μεγέθους. Αυτή η ακαμψία είναι ο κύριος λόγος για τον οποίο τα arrays χρησιμοποιούνται σπάνια απευθείας στην καθημερινή δουλειά με Go· στη θέση τους, οι προγραμματιστές χρησιμοποιούν σχεδόν πάντα <strong>slices</strong>, τα οποία θα δούμε αμέσως παρακάτω.
+</p>
+
+<br>
+
 <h1>Slices (Δυναμικοί Πίνακες)</h1>
-<p class="lede">Το slice είναι η δομή δεδομένων που πραγματικά χρησιμοποιείς όταν θες μια "λίστα" στη Go — ευέλικτο σε μέγεθος, χτισμένο εσωτερικά πάνω από ένα array, αλλά χωρίς τους περιορισμούς του.</p>
+
+<p class="lede">
+    Το slice είναι η δομή δεδομένων που πραγματικά χρησιμοποιείς όταν θες μια "λίστα" στη Go — ευέλικτο σε μέγεθος, χτισμένο εσωτερικά πάνω από ένα array, αλλά χωρίς τους περιορισμούς του.
+</p>
 
 <h2>Τι είναι ένα Slice, και πώς διαφέρει από ένα Array</h2>
-<p>Ένα <strong>slice</strong>, σε αντίθεση με ένα array, <strong>δεν</strong> έχει σταθερό, προκαθορισμένο μέγεθος — μπορεί να "μεγαλώσει" δυναμικά κατά την εκτέλεση του προγράμματος, ανάλογα με τις ανάγκες σου. Τεχνικά, ένα slice δεν είναι μια αυτόνομη δομή δεδομένων από μόνο του — είναι μια "θέα" (view), δηλαδή ένα παράθυρο πρόσβασης πάνω σε ένα υποκείμενο (underlying) array που υπάρχει "από κάτω", κρυμμένο. Αυτή η υποκείμενη δομή είναι κάτι που, ως χρήστης του slice, συνήθως δεν χρειάζεται να διαχειριστείς απευθείας — η Go το κάνει αυτόματα για λογαριασμό σου.</p>
+
+<p>
+    Ένα <strong>slice</strong>, σε αντίθεση με ένα array, <strong>δεν</strong> έχει σταθερό, προκαθορισμένο μέγεθος — μπορεί να "μεγαλώσει" δυναμικά κατά την εκτέλεση του προγράμματος, ανάλογα με τις ανάγκες σου. Τεχνικά, ένα slice δεν είναι μια αυτόνομη δομή δεδομένων από μόνο του — είναι μια "θέα" (view), δηλαδή ένα παράθυρο πρόσβασης πάνω σε ένα υποκείμενο (underlying) array που υπάρχει "από κάτω", κρυμμένο. Αυτή η υποκείμενη δομή είναι κάτι που, ως χρήστης του slice, συνήθως δεν χρειάζεται να διαχειριστείς απευθείας — η Go το κάνει αυτόματα για λογαριασμό σου.
+</p>
 
 <h2>Ανατομία ενός Slice — τρία εσωτερικά κομμάτια</h2>
-<p>Εσωτερικά, ένα slice αποτελείται πάντα από τρία κομμάτια πληροφορίας:</p>
+
+<p>
+    Εσωτερικά, ένα slice αποτελείται πάντα από τρία κομμάτια πληροφορίας:
+</p>
+
 <div class="grid3">
-  <div class="card"><h3>Pointer</h3><p>Ένας δείκτης (θυμήσου την Ενότητα 7) που δείχνει στο πρώτο στοιχείο του υποκείμενου array που "βλέπει" αυτό το slice.</p></div>
-  <div class="card"><h3>Length (len)</h3><p>Πόσα στοιχεία περιέχει το slice <em>αυτή τη στιγμή</em> — αυτό δηλαδή που βλέπεις όταν το διασχίζεις ή το τυπώνεις.</p></div>
-  <div class="card"><h3>Capacity (cap)</h3><p>Πόσα στοιχεία θα χωρούσαν <em>συνολικά</em> στο υποκείμενο array, πριν χρειαστεί η Go να δημιουργήσει ένα εντελώς νέο, μεγαλύτερο array στο παρασκήνιο.</p></div>
+    <div class="card">
+        <h3>Pointer</h3>
+        <p>Ένας pointer (θυμήσου την Ενότητα 7) που δείχνει στο πρώτο στοιχείο του υποκείμενου array που "βλέπει" αυτό το slice.</p>
+    </div>
+    <div class="card">
+        <h3>Length (len)</h3>
+        <p>Πόσα στοιχεία περιέχει το slice <em>αυτή τη στιγμή</em> — αυτό δηλαδή που βλέπεις όταν το διασχίζεις ή το τυπώνεις.</p>
+    </div>
+    <div class="card">
+        <h3>Capacity (cap)</h3>
+        <p>Πόσα στοιχεία θα χωρούσαν <em>συνολικά</em> στο υποκείμενο array, πριν χρειαστεί η Go να δημιουργήσει ένα εντελώς νέο, μεγαλύτερο array στο παρασκήνιο.</p>
+    </div>
 </div>
 
-<h2>Τρόποι δημιουργίας Slices</h2>
-<pre><code>a <span class="tok-kw">:=</span> []<span class="tok-type">int</span>{<span class="tok-num">1</span>, <span class="tok-num">2</span>, <span class="tok-num">3</span>}     <span class="tok-com">// slice literal: creates a slice directly with these 3 values</span>
-b <span class="tok-kw">:=</span> <span class="tok-func">make</span>([]<span class="tok-type">int</span>, <span class="tok-num">5</span>)     <span class="tok-com">// make: creates a slice of length 5, all elements zero-valued</span>
-c <span class="tok-kw">:=</span> a[<span class="tok-num">0</span>:<span class="tok-num">2</span>]           <span class="tok-com">// slicing: a new slice view over elements at index 0 and 1 of a</span>
-</code></pre>
-<p>Η ενσωματωμένη function <code>make</code> είναι ένας ειδικός τρόπος να δημιουργήσεις άδεια, αλλά έτοιμα προς χρήση, slices (και maps, όπως θα δούμε παρακάτω). Η σύνταξη <code>a[0:2]</code> λέγεται <strong>slicing</strong> — παίρνει ένα υπάρχον slice (ή array) και δημιουργεί ένα νέο slice που "βλέπει" μόνο ένα υποσύνολο των στοιχείων του, από τη θέση 0 (συμπεριλαμβανομένης) μέχρι τη θέση 2 (μη συμπεριλαμβανομένης) — δηλαδή τα στοιχεία στις θέσεις 0 και 1.</p>
+<h2>Οι πέντε τρόποι δημιουργίας Slices</h2>
 
-<h2>Προσθήκη στοιχείων με την append, και το γιατί της επανεκχώρησης</h2>
-<p>Η ενσωματωμένη function <code>append</code> προσθέτει ένα ή περισσότερα στοιχεία στο <em>τέλος</em> ενός υπάρχοντος slice. Αν η τρέχουσα capacity του slice δεν αρκεί για να χωρέσει το νέο στοιχείο, η Go αναλαμβάνει αυτόματα να δημιουργήσει, στο παρασκήνιο, ένα <strong>νέο, μεγαλύτερο</strong> υποκείμενο array, να αντιγράψει εκεί όλα τα παλιά στοιχεία, και να επιστρέψει ένα νέο slice που δείχνει σε αυτό το νέο array:</p>
-<pre><code>nums <span class="tok-kw">:=</span> []<span class="tok-type">int</span>{<span class="tok-num">1</span>, <span class="tok-num">2</span>}
-nums = <span class="tok-func">append</span>(nums, <span class="tok-num">3</span>) <span class="tok-com">// ALWAYS reassign — append may return a completely NEW slice</span>
+<p>
+    Θα δούμε πέντε τρόπους να δημιουργήσεις ένα slice στη Go, ο καθένας με τη δική του περίπτωση χρήσης:
+</p>
+
+<table style="width:100%; border-collapse:collapse; margin:16px 0;">
+    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
+        <th style="text-align:left; padding:8px;">Τρόπος</th>
+        <th style="text-align:left; padding:8px;">Σύνταξη</th>
+        <th style="text-align:left; padding:8px;">Πότε να το χρησιμοποιήσεις</th>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>Slice Literal</strong></td>
+        <td style="padding:8px;"><code>s := []int{1, 2, 3}</code></td>
+        <td style="padding:8px;">Γρήγορη αρχικοποίηση με γνωστές τιμές</td>
+    </tr>
+<tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+    <td style="padding:8px;"><strong>make</strong></td>
+    <td style="padding:8px;"><code>s := make([]int, len)</code></td>
+    <td style="padding:8px;">Προ-δέσμευση μνήμης με συγκεκριμένο length μόνο (τα στοιχεία συμπληρώνονται με zero values)</td>
+</tr>
+<tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+    <td style="padding:8px;"><strong>make</strong></td>
+    <td style="padding:8px;"><code>s := make([]int, len, cap)</code></td>
+    <td style="padding:8px;">Προ-δέσμευση μνήμης τόσο για length όσο και για capacity — η capacity κρατάει έτοιμο χώρο για μελλοντικά append, χωρίς να δεσμεύει ξανά μνήμη κάθε φορά</td>
+</tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>From Array</strong></td>
+        <td style="padding:8px;"><code>s := arr[start:end]</code></td>
+        <td style="padding:8px;">Δουλεύεις με ένα τμήμα ενός υπάρχοντος array</td>
+    </tr>
+    <tr>
+        <td style="padding:8px;"><strong>Nil Slice</strong></td>
+        <td style="padding:8px;"><code>var s []int</code></td>
+        <td style="padding:8px;">Αρχικοποίηση ενός άδειου slice (χωρίς δέσμευση μνήμης)</td>
+    </tr>
+</table>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    // Slice literal
+    literal := []int{10, 20, 30}
+    fmt.Println("Literal slice:", literal)
+
+    // Using make
+    made := make([]int, 2, 5)
+    made[0], made[1] = 1, 2
+    fmt.Println("Made slice:", made, "Len:", len(made), "Cap:", cap(made))
+
+    // From array
+    array := [5]int{100, 200, 300, 400, 500}
+    fromArray := array[1:4]
+    fmt.Println("From array:", fromArray)
+
+    // Nil slice
+    var nilSlice []int
+    fmt.Println("Nil slice:", nilSlice, "Is nil?", nilSlice == nil)
+}
+
+// Output:
+// Literal slice: [10 20 30]
+// Made slice: [1 2] Len: 2 Cap: 5
+// From array: [200 300 400]
+// Nil slice: [] Is nil? true
 </code></pre>
+
+<h2>Η σύνταξη slicing: s[start:end]</h2>
+
+<p>
+    Μπορείς να δημιουργήσεις ένα νέο slice από ένα υπάρχον slice ή array χρησιμοποιώντας τη σύνταξη <code>s[start:end]</code>. Αυτό δημιουργεί ένα νέο slice που "βλέπει" τα στοιχεία από το <code>start</code> (συμπεριλαμβανομένου) μέχρι το <code>end</code> (μη συμπεριλαμβανομένου):
+</p>
+
+<pre><code class="lang-go">nums := []int{10, 20, 30, 40, 50}
+sub := nums[1:4] // [20, 30, 40] — indices 1, 2, 3
+</code></pre>
+
+<p>
+    Αν παραλείψεις το <code>start</code>, ξεκινά από την αρχή (0): <code>nums[:3]</code> → <code>[10, 20, 30]</code>.<br>
+    Αν παραλείψεις το <code>end</code>, φτάνει μέχρι το τέλος: <code>nums[2:]</code> → <code>[30, 40, 50]</code>.
+</p>
+
+<h2>Προσθήκη στοιχείων με την append</h2>
+
+<p>
+    Η ενσωματωμένη function <code>append</code> προσθέτει ένα ή περισσότερα στοιχεία στο <em>τέλος</em> ενός υπάρχοντος slice. Αν η τρέχουσα capacity του slice δεν αρκεί για να χωρέσει το νέο στοιχείο, η Go αναλαμβάνει αυτόματα να δημιουργήσει, στο παρασκήνιο, ένα <strong>νέο, μεγαλύτερο</strong> υποκείμενο array, να αντιγράψει εκεί όλα τα παλιά στοιχεία, και να επιστρέψει ένα νέο slice που δείχνει σε αυτό το νέο array:
+</p>
+
+<pre><code class="lang-go">nums := []int{1, 2}
+nums = append(nums, 3) // ALWAYS reassign — append may return a completely NEW slice
+</code></pre>
+
 <div class="callout">
-  <span class="tag">Γιατί πάντα nums = append(nums, ...)</span>
-  Επειδή η <code>append</code> ενδέχεται να χρειαστεί να δημιουργήσει ένα νέο υποκείμενο array (όταν η παλιά capacity δεν αρκεί πια), το slice που σου επιστρέφει μπορεί να "δείχνει" αλλού από ό,τι έδειχνε το αρχικό slice πριν την κλήση. Αν δεν ξανααναθέσεις την επιστρεφόμενη τιμή στη μεταβλητή σου (όπως στο παράδειγμα, <code>nums = append(...)</code>), το πρόγραμμά σου θα μπορούσε να συνεχίσει να χρησιμοποιεί το "παλιό" slice, το οποίο δεν περιέχει το νέο στοιχείο που μόλις πρόσθεσες — ένα ύπουλο bug που εμφανίζεται μόνο περιστασιακά, ανάλογα με το πότε ακριβώς χρειάστηκε νέο υποκείμενο array.
+    <span class="tag">Γιατί πάντα nums = append(nums, ...)</span>
+    <p>
+        Επειδή η <code>append</code> ενδέχεται να χρειαστεί να δημιουργήσει ένα νέο υποκείμενο array (όταν η παλιά capacity δεν αρκεί πια), το slice που σου επιστρέφει μπορεί να "δείχνει" αλλού από ό,τι έδειχνε το αρχικό slice πριν την κλήση. Αν δεν εκχωρήσεις ξανά την επιστρεφόμενη τιμή στη μεταβλητή σου (όπως στο παράδειγμα, <code>nums = append(...)</code>), το πρόγραμμά σου θα μπορούσε να συνεχίσει να χρησιμοποιεί το "παλιό" slice.
+    </p>
 </div>
+
+<p>
+    Η <code>append</code> παίρνει ως πρώτο όρισμα το υπάρχον slice και ως δεύτερο όρισμα (και επόμενα, αν χρειαστεί) το στοιχείο που θέλουμε να προσθέσουμε. Το δεύτερο όρισμα είναι <strong>ένα μεμονωμένο στοιχείο</strong>, όχι slice. Για παράδειγμα:
+</p>
+
+<pre><code class="lang-go">nums := []int{1, 2}
+nums = append(nums, 3)    // προσθέτει ένα στοιχείο: 3
+nums = append(nums, 4, 5) // προσθέτει δύο στοιχεία: 4 και 5
+</code></pre>
+
+<p>
+    Αν όμως έχουμε ένα slice και θέλουμε να προσθέσουμε <strong>όλα</strong> τα στοιχεία του σε ένα άλλο slice, δεν μπορούμε να το κάνουμε απευθείας, γιατί η <code>append</code> περιμένει μεμονωμένα στοιχεία (ή πολλά, αλλά όχι slice). Η λύση είναι η σύνταξη <code>...</code> (τρεις τελείες), η οποία "ξεδιπλώνει" (unpack) το slice σε μεμονωμένα στοιχεία:
+</p>
+
+<pre><code class="lang-go">more := []int{6, 7, 8}
+nums = append(nums, more...) // προσθέτει τα 6, 7, 8 — σαν να γράψαμε append(nums, 6, 7, 8)
+</code></pre>
+
+<p>
+    Οι τρεις τελείες λένε στη Go: "πάρε αυτό το slice και μεταχειρίσου το σαν να ήταν ξεχωριστά ορίσματα, το ένα μετά το άλλο". Εναλλακτικά, μπορείς να το κάνεις και με ένα loop, προσθέτοντας ένα-ένα τα στοιχεία, αλλά η σύνταξη <code>...</code> είναι πιο συνοπτική.
+</p>
 
 <h2>Αντιγραφή Slices με την copy</h2>
-<p>Η ενσωματωμένη function <code>copy(dst, src)</code> αντιγράφει στοιχεία από ένα slice (<code>src</code> — source, πηγή) σε ένα άλλο (<code>dst</code> — destination, προορισμός), δημιουργώντας ένα πραγματικά ανεξάρτητο αντίγραφο — τα δύο slices δεν θα μοιράζονται πλέον το ίδιο υποκείμενο array μετά την αντιγραφή, οπότε αλλαγές στο ένα δεν θα επηρεάζουν το άλλο.</p>
-`);
 
-        addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
-<h1>Προσπέλαση Συλλογών — Διάσχιση με Loops</h1>
-<p class="lede">Έχοντας μια συλλογή δεδομένων, το πιο συνηθισμένο πράγμα που θα χρειαστεί να κάνεις είναι να "περάσεις" από κάθε στοιχείο της, ένα προς ένα — αυτό λέγεται <strong>διάσχιση</strong> (traversal ή iteration). Η Go σου προσφέρει δύο τρόπους.</p>
+<p>
+    Η ενσωματωμένη function <code>copy(dst, src)</code> αντιγράφει στοιχεία από ένα slice (<code>src</code> — source, πηγή) σε ένα άλλο (<code>dst</code> — destination, προορισμός), δημιουργώντας ένα πραγματικά ανεξάρτητο αντίγραφο — τα δύο slices δεν θα μοιράζονται πλέον το ίδιο υποκείμενο array μετά την αντιγραφή, οπότε αλλαγές στο ένα δεν θα επηρεάζουν το άλλο.
+</p>
+
+<br>
+
+<h1>Iterating σε Slices</h1>
+
+<p class="lede">
+    Έχοντας μια συλλογή δεδομένων, το πιο συνηθισμένο πράγμα που θα χρειαστεί να κάνεις είναι να "περάσεις" από κάθε στοιχείο της, ένα προς ένα — αυτό λέγεται traversal ή <strong>iteration</strong>. Η Go σου προσφέρει δύο τρόπους.
+</p>
 
 <h2>Με απλή for</h2>
-<p>Μπορείς να χρησιμοποιήσεις την κλασική μορφή της <code>for</code> που είδαμε στην Ενότητα 5, χρησιμοποιώντας έναν μετρητή που ξεκινά από 0 και φτάνει μέχρι το μήκος (length) της συλλογής, χρησιμοποιώντας την ενσωματωμένη function <code>len()</code> που επιστρέφει το τρέχον μήκος ενός slice ή array:</p>
-<pre><code><span class="tok-kw">for</span> i <span class="tok-kw">:=</span> <span class="tok-num">0</span>; i < <span class="tok-func">len</span>(nums); i++ {
-    fmt.<span class="tok-func">Println</span>(nums[i])
+
+<p>
+    Μπορείς να χρησιμοποιήσεις την κλασική μορφή της <code>for</code> που είδαμε στην Ενότητα 5, χρησιμοποιώντας έναν μετρητή που ξεκινά από 0 και φτάνει μέχρι το μήκος (length) της συλλογής, χρησιμοποιώντας την ενσωματωμένη function <code>len()</code> που επιστρέφει το τρέχον μήκος ενός slice ή array:
+</p>
+
+<pre><code class="lang-go">for i := 0; i < len(nums); i++ {
+    fmt.Println(nums[i])
 }
 </code></pre>
 
 <h2>Με range (index + value)</h2>
-<p>Η Go προσφέρει επίσης μια πιο σύντομη, πιο ιδιωματική μορφή, χρησιμοποιώντας τη λέξη-κλειδί <code>range</code> μέσα στην <code>for</code>. Σε κάθε επανάληψη, σου δίνει αυτόματα <em>και</em> το index <em>και</em> την τιμή του στοιχείου σε εκείνη τη θέση, χωρίς να χρειάζεται να τα υπολογίσεις χειροκίνητα:</p>
-<pre><code><span class="tok-kw">for</span> i, v <span class="tok-kw">:=</span> <span class="tok-kw">range</span> nums {
-    fmt.<span class="tok-func">Println</span>(i, v) <span class="tok-com">// i = the index (position), v = the value at that index</span>
+
+<p>
+    Η Go προσφέρει επίσης μια πιο σύντομη, χρησιμοποιώντας τη λέξη-κλειδί <code>range</code> μέσα στην <code>for</code>. Σε κάθε επανάληψη, σου δίνει αυτόματα <em>και</em> το index <em>και</em> την τιμή του στοιχείου σε εκείνη τη θέση, χωρίς να χρειάζεται να τα υπολογίσεις χειροκίνητα:
+</p>
+
+<pre><code class="lang-go">for i, v := range nums {
+    fmt.Println(i, v) // i = the index (position), v = the value at that index
 }
 </code></pre>
 
 <h2>Σύγκριση των δύο προσεγγίσεων</h2>
+
 <div class="grid2">
-  <div class="card"><h3>Απλή for</h3><p>Πιο ρητή και "φλύαρη" (μεγαλύτερος όγκος κώδικα), αλλά σου δίνει πλήρη έλεγχο πάνω στο index — π.χ. αν θέλεις να παραλείψεις ορισμένα στοιχεία, να διασχίσεις ανάποδα, ή να προχωρήσεις με βήμα διαφορετικό από 1.</p></div>
-  <div class="card"><h3>for range</h3><p>Πιο σύντομη και το πιο συνηθισμένο, "ιδιωματικό" (idiomatic) μοτίβο στη Go για την απλή περίπτωση "πέρνα από όλα τα στοιχεία διαδοχικά, με τη φυσική τους σειρά". Λιγότερο κατάλληλη για μη-γραμμικές, πιο σύνθετες διασχίσεις.</p></div>
+    <div class="card">
+        <h3>Απλή for</h3>
+        <p>Πιο ρητή και "φλύαρη" (μεγαλύτερος όγκος κώδικα), αλλά σου δίνει πλήρη έλεγχο πάνω στο index — π.χ. αν θέλεις να παραλείψεις ορισμένα στοιχεία, να διασχίσεις ανάποδα, ή να προχωρήσεις με βήμα διαφορετικό από 1.</p>
+    </div>
+    <div class="card">
+        <h3>for range</h3>
+        <p>Πιο σύντομο και συνηθισμένο μοτίβο στη Go για την απλή περίπτωση "πέρνα από όλα τα στοιχεία διαδοχικά, με τη φυσική τους σειρά".</p>
+    </div>
 </div>
 
 <div class="callout">
-  <span class="tag">Προσοχή: panic σε πρόσβαση εκτός ορίων</span>
-  Η προσπάθεια πρόσβασης σε ένα index εκτός των έγκυρων ορίων μιας συλλογής (π.χ. <code>nums[10]</code>, όταν το slice έχει μόνο 5 στοιχεία, δηλαδή έγκυρα index από 0 έως 4) προκαλεί <strong>panic</strong> κατά την εκτέλεση — το πρόγραμμα τερματίζεται απότομα, εκτός αν υπάρχει ειδικός χειρισμός ανάκτησης (recover, μια έννοια πιο προχωρημένη από όσα καλύπτει αυτό το Μέρος 1). Αυτό συμβαίνει αρκετά συχνά σε loops όπου η συνθήκη τερματισμού είναι λανθασμένη — π.χ. αν γράψεις κατά λάθος <code>i &lt;= len(nums)</code> αντί για το σωστό <code>i &lt; len(nums)</code>, θα προσπαθήσεις να διαβάσεις ένα στοιχείο μία θέση παραπάνω από όσα πραγματικά υπάρχουν.
+    <span class="tag">Προσοχή: panic σε πρόσβαση εκτός ορίων</span>
+    <p>
+        Η προσπάθεια πρόσβασης σε ένα index εκτός των έγκυρων ορίων μιας συλλογής (π.χ. <code>nums[10]</code>, όταν το slice έχει μόνο 5 στοιχεία, δηλαδή έγκυρα index από 0 έως 4) προκαλεί <strong>panic</strong> κατά την εκτέλεση — το πρόγραμμα τερματίζεται απότομα, εκτός αν υπάρχει ειδικός χειρισμός ανάκτησης (recover, μια έννοια πιο προχωρημένη από όσα καλύπτει αυτό το Μέρος 1). Αυτό συμβαίνει αρκετά συχνά σε loops όπου η συνθήκη τερματισμού είναι λανθασμένη — π.χ. αν γράψεις κατά λάθος <code>i &lt;= len(nums)</code> αντί για το σωστό <code>i &lt; len(nums)</code>, θα προσπαθήσεις να διαβάσεις ένα στοιχείο μία θέση παραπάνω από όσα πραγματικά υπάρχουν.
+    </p>
 </div>
 
 <h2>Παράλειψη μεταβλητών με τον τελεστή _ (Blank identifier)</h2>
-<p>Αν σε ένα <code>for range</code> δεν σε ενδιαφέρει καθόλου το index, ή δεν σε ενδιαφέρει καθόλου η τιμή, η Go σού δίνει έναν τρόπο να το δηλώσεις ρητά αγνοώντας το: τον <strong>blank identifier</strong> <code>_</code> (κάτω παύλα). Αυτό είναι απαραίτητο επειδή, όπως θυμάσαι από την Ενότητα 1, η Go αρνείται να μεταγλωττίσει κώδικα με δηλωμένες αλλά ποτέ χρησιμοποιημένες τοπικές μεταβλητές — το <code>_</code> λέει ρητά στον compiler "ξέρω ότι υπάρχει αυτή η τιμή εδώ, αλλά σκόπιμα δεν με ενδιαφέρει, μην με προειδοποιείς γι' αυτήν":</p>
-<pre><code><span class="tok-kw">for</span> _, v <span class="tok-kw">:=</span> <span class="tok-kw">range</span> nums {
-    fmt.<span class="tok-func">Println</span>(v) <span class="tok-com">// we only care about the value here, so we discard the index with _</span>
+
+<p>
+    Αν σε ένα <code>for range</code> δεν σε ενδιαφέρει καθόλου το index, ή δεν σε ενδιαφέρει καθόλου η τιμή, η Go σού δίνει έναν τρόπο να το δηλώσεις ρητά αγνοώντας το: τον <strong>blank identifier</strong> <code>_</code> (κάτω παύλα). Αυτό είναι απαραίτητο επειδή, όπως θυμάσαι από την Ενότητα 1, η Go αρνείται να μεταγλωττίσει κώδικα με δηλωμένες αλλά ποτέ χρησιμοποιημένες τοπικές μεταβλητές — το <code>_</code> λέει ρητά στον compiler "ξέρω ότι υπάρχει αυτή η τιμή εδώ, αλλά σκόπιμα δεν με ενδιαφέρει, μην με προειδοποιείς γι' αυτήν":
+</p>
+
+<pre><code class="lang-go">for _, v := range nums {
+    fmt.Println(v) // we only care about the value here, so we discard the index with _
 }
 </code></pre>
+
+<h2>Ένα ακόμα παράδειγμα: for range σε slice</h2>
+
+<p>
+    Ας το ξαναδούμε.<br>Στο <code>for i, v := range κάτι</code>, η <strong>πρώτη</strong>
+    τιμή (<code>i</code>) είναι πάντα η <strong>θέση</strong> (index), και η <strong>δεύτερη</strong> τιμή (<code>v</code>)
+    είναι πάντα η <strong>τιμή</strong> (value) του στοιχείου σε εκείνη τη θέση — σε αυτή τη σειρά, πάντα.
+</p>
+
+<pre><code class="lang-go">fruits := []string{"apple", "banana", "cherry"}
+
+for i, v := range fruits {
+    fmt.Println(i, v)
+}
+// 0 apple
+// 1 banana
+// 2 cherry
+</code></pre>
+
+<h2>Το for range δουλεύει και σε strings</h2>
+
+<p>
+    Κάτι που ίσως δεν περίμενες: το <code>range</code> δουλεύει και πάνω σε <code>string</code>. Αυτό συμβαίνει επειδή ένα
+    string στη Go συμπεριφέρεται, στην πράξη, σαν μια ακολουθία από <code>rune</code> (θυμήσου την Ενότητα 2) — και το
+    <code>range</code> σε ένα string σου δίνει, ακριβώς όπως σε ένα slice, τη θέση και την τιμή κάθε χαρακτήρα, έναν προς
+    έναν.
+</p>
+
+<p>Ας ελέγξουμε αν μια λέξη περιέχει το γράμμα <code>e</code>:</p>
+
+<pre><code class="lang-go">word := "elephant"
+
+for _, letter := range word {
+    if letter == 'e' {
+        fmt.Println("found an e!")
+    }
+}
+// found an e!
+// found an e!
+</code></pre>
+
+<p>
+    Το <code>_</code> εδώ αγνοεί τη θέση — μας ενδιαφέρει μόνο αν κάθε χαρακτήρας <code>ch</code> είναι το γράμμα
+    <code>'e'</code> (σε single quotes, γιατί συγκρίνουμε με έναν μεμονωμένο χαρακτήρα, όχι με string).
+</p>
+
+
+<p>
+    Σκέψου. Πώς θα έγραφες τον παραπάνω κώδικα ώστε αντί να τυπώνει "found an e!" κάθε φορά, να
+    <strong>μετράει</strong> πόσα <code>e</code> υπάρχουν συνολικά στη λέξη, και να τυπώνει μόνο το τελικό πλήθος στο τέλος;
+</p>
+
+<div class="spoiler">
+    <div class="spoiler-lock"><span>Σύρε για να δεις τη λύση →</span></div>
+    <pre><code class="lang-go">word := "elephant"
+count := 0
+
+for _, letter := range word {
+    if letter == 'e' {
+        count++
+    }
+}
+
+fmt.Println("total E:", count)
+// total E: 2
+</code></pre>
+</div>
+
+
+<h2>Το ίδιο, χωρίς range</h2>
+
+<p>Μπορούμε να γράψουμε ακριβώς την ίδια λογική με απλή <code>for</code>, χρησιμοποιώντας index και <code>len()</code>:</p>
+
+<pre><code class="lang-go">word := "elephant"
+
+for i := 0; i < len(word); i++ {
+    if word[i] == 'e' {
+        fmt.Println("found an e!")
+    }
+}
+// found an e!
+// found an e!
+</code></pre>
+
+<p>Ίδιο αποτέλεσμα, απλά πιο "φλύαρος" τρόπος να το πετύχεις — ακριβώς όπως είδαμε στη σύγκριση για τα slices παραπάνω.</p>
+
+<h2>Ξαναγυρνάμε στο range με το e — αυτή τη φορά κρατάμε τη θέση</h2>
+
+<p>
+    Πριν αγνοήσαμε τη θέση με <code>_</code>. Ας δούμε τι κερδίζουμε αν την κρατήσουμε: μπορούμε να τυπώσουμε
+    <strong>ακριβώς πού</strong> βρίσκεται κάθε <code>e</code> μέσα στη λέξη.
+</p>
+
+<pre><code class="lang-go">word := "elephant"
+
+for i, letter := range word {
+    if letter == 'e' {
+        fmt.Println("e found at position", i)
+    }
+}
+// e found at position 0
+// e found at position 2
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Ανακεφαλαίωση</span>
+    Ένα string είναι, στην πράξη, ένας πίνακας από μεμονωμένα runes (γράμματα) — γι' αυτό το <code>range</code> λειτουργεί
+    πάνω του με τον ίδιο ακριβώς τρόπο όπως σε ένα slice: πρώτη τιμή η θέση, δεύτερη τιμή το ίδιο το στοιχείο. Ό,τι ξέρεις
+    ήδη για το <code>for range</code> σε slices, ισχύει αυτούσιο και σε strings.
+</div>
+`);
+
+        addQuiz([
+            {
+                q: "Τι από τα παρακάτω περιγράφει σωστά ένα array στη Go;",
+                options: [
+                    "Σταθερού μεγέθους δομή, όπου το μέγεθος είναι μέρος του ίδιου του τύπου",
+                    "Δυναμικού μεγέθους δομή, που μπορεί να μεγαλώσει ή να μικρύνει ελεύθερα κατά την εκτέλεση του προγράμματος",
+                    "Ένας pointer προς ένα slice, χωρίς δικό του μέγεθος ή δική του χωρητικότητα",
+                    "Δομή key/value pairs, χωρίς εγγυημένη σειρά πρόσβασης"
+                ],
+                correct: 0,
+                explain: "Το array έχει σταθερό μέγεθος δηλωμένο μέσα στον τύπο του, π.χ. [5]int — τα [3]int και [5]int είναι διαφορετικοί τύποι."
+            },
+            {
+                q: "Ποια είναι η σωστή δήλωση slice literal με τρεις τιμές;",
+                options: [
+                    "nums := [ ]int {1, 2, 3}",
+                    "nums := make( [ ]int, 1, 2, 3)",
+                    "nums := [3]int {1, 2, 3}",
+                    "nums := int[ ] {1, 2, 3}"
+                ],
+                correct: 0,
+                explain: "Το []int{...} χωρίς αριθμό μέσα στις αγκύλες είναι slice literal. Το [3]int{...} με αριθμό είναι array. Η make([]int, 1, 2, 3) δεν είναι σωστή σύνταξη — η make δέχεται δύο ή τρία ορίσματα: τον τύπο, το length, και προαιρετικά το capacity. Δεν δέχεται literal values."
+            },
+            {
+                q: "Τι θα επιστρέψει η make( [ ]int, 2, 5);",
+                options: [
+                    "Ένα slice με length 2",
+                    "Ένα slice με length 5",
+                    "Ένα άδειο slice, χωρίς κανένα στοιχείο μέσα του",
+                    "Ένα array σταθερού μεγέθους 5 που αυτή τη στιγμή έχει μόνο 2 στοιχεία"
+                ],
+                correct: 0,
+                explain: "Η make( [ ]T, len, cap) δημιουργεί slice με το δοσμένο length (γεμάτο zero values) και το δοσμένο capacity."
+            },
+            {
+                q: "Έχεις nums := [ ]int{10, 20, 30, 40, 50}. Ποια σύνταξη δίνει τα στοιχεία στις θέσεις 1, 2, 3;",
+                options: [
+                    "nums[1:4]",
+                    "nums[1:3]",
+                    "nums(1, 4)",
+                    "nums[:4]"
+                ],
+                correct: 0,
+                explain: "Το start (1) είναι inclusive, το end (4) exclusive — άρα [1:4] δίνει τα index 1, 2, 3."
+            },
+            {
+                q: "Έχεις a := [ ]int{1,2} και b := [ ]int{3,4}. Ποια γραμμή προσθέτει όλα τα στοιχεία του b στο τέλος του a;",
+                options: [
+                    "a = append(a, b...)",
+                    "a = append(a, b)",
+                    "a = append(a..., b)",
+                    "a = copy(a, b)"
+                ],
+                correct: 0,
+                explain: "Οι τρεις τελείες 'ξεδιπλώνουν' το b σε μεμονωμένα ορίσματα. Χωρίς αυτές, η append(a, b) δεν μεταγλωττίζεται."
+            },
+            {
+                q: "Ποια είναι η βασική διαφορά ανάμεσα στην append και την copy;",
+                options: [
+                    "Η append προσθέτει στοιχεία, πιθανόν δημιουργώντας νέο underlying array, ενώ η copy αντιγράφει τιμές σε ένα ήδη υπάρχον, ανεξάρτητο slice",
+                    "Η append τροποποιεί πάντα το slice επιτόπου, ενώ η copy δημιουργεί πάντα εντελώς νέο array στη μνήμη",
+                    "Δεν υπάρχει καμία πρακτική διαφορά, είναι συνώνυμα",
+                    "Η copy λειτουργεί μόνο πάνω σε arrays, ποτέ σε slices"
+                ],
+                correct: 0,
+                explain: "append: προσθέτει/μεγαλώνει, ίσως με νέο underlying array. copy: αντιγράφει σε προϋπάρχον slice, πραγματικά ανεξάρτητο αντίγραφο."
+            },
+            {
+                q: "Τι δείχνει η capacity ενός slice, σε αντίθεση με το length;",
+                options: [
+                    "Πόσα στοιχεία θα χωρούσαν συνολικά στο underlying array, πριν χρειαστεί νέο, μεγαλύτερο array",
+                    "Πόσα στοιχεία έχει το slice αυτή τη στιγμή, δηλαδή όσα βλέπεις όταν το τυπώνεις ή το διασχίζεις",
+                    "Τον αριθμό των keys που υπάρχουν καταχωρημένα σε ένα map",
+                    "Το μέγιστο αριθμό slices που επιτρέπεται να έχει ένα πρόγραμμα"
+                ],
+                correct: 0,
+                explain: "length = πόσα στοιχεία 'βλέπεις' τώρα. capacity = πόσα θα χωρούσαν συνολικά πριν η append χρειαστεί νέο array."
+            },
+            {
+                q: "Τι επιστρέφει η range σε ένα slice, με τη σειρά, σε κάθε επανάληψη;",
+                options: [
+                    "Πρώτα το index, μετά την τιμή του στοιχείου",
+                    "Μόνο την τιμή του στοιχείου· αυτή είναι η διαφορά με την παραδοσιακή for loop, που σου δίνει μέσω του i και την πληροφορία για τη θέση του",
+                    "Πρώτα την τιμή, μετά το index του στοιχείου",
+                    "Μόνο το index, χωρίς την τιμή"
+                ],
+                correct: 0,
+                explain: "Στο for i, v := range nums, η πρώτη τιμή είναι πάντα το index, η δεύτερη η τιμή του στοιχείου."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `nums := []int{10, 20, 30}
+for i, v := range nums {
+    if i == 1 {
+        fmt.Println(v)
+    }
+}`,
+                lang: "go",
+                options: [
+                    "20",
+                    "30",
+                    "10",
+                    "1"
+                ],
+                correct: 0,
+                explain: "Στο index 1 βρίσκεται η τιμή 20 (index 0 → 10, index 1 → 20, index 2 → 30)."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `nums := []int{5, 10, 15, 20, 25}
+sum := 0
+for _, v := range nums[1:4] {
+    sum += v
+}
+fmt.Println(sum)`,
+                lang: "go",
+                options: [
+                    "45",
+                    "50",
+                    "70",
+                    "30"
+                ],
+                correct: 0,
+                explain: "nums[1:4] δίνει τα στοιχεία 10, 15, 20 (index 1, 2, 3). Το άθροισμά τους είναι 45."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `nums := []int{5, 10, 15, 20, 25}
+sum := 0
+for _, v := range nums[1:] {
+    sum = 0
+    sum += v
+}
+fmt.Println(sum)`,
+                lang: "go",
+                options: [
+                    "25",
+                    "60",
+                    "70",
+                    "45"
+                ],
+                correct: 0,
+                explain: "Το nums[1:] είναι το slice [10, 15, 20, 25]. Όμως ο κώδικας δεν κάνει αυτό που ίσως θα έπρεπε. Σε κάθε επανάληψη, το sum μηδενίζεται (sum = 0) και μετά προστίθεται το v. Άρα σε κάθε βήμα το sum γίνεται ακριβώς η τρέχουσα τιμή του v. Στην τελευταία επανάληψη, v = 25, άρα sum = 25."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `nums := []int{2, 4, 6, 7, 8}
+for i, v := range nums {
+    if v%2 != 0 {
+        fmt.Println(i)
+        break
+    }
+}`,
+                lang: "go",
+                options: [
+                    "3",
+                    "7",
+                    "4",
+                    "0"
+                ],
+                correct: 0,
+                explain: "Ο πρώτος περιττός αριθμός του slice είναι το 7, στη θέση (index) 3. Το break σταματά τη λούπα αμέσως μόλις τυπωθεί."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `words := []string{"go", "is", "fun"}
+count := 0
+for _, w := range words {
+    for _, letter := range w {
+        if letter == 'o' || ch == 'u' {
+            count++
+        }
+    }
+}
+fmt.Println(count)`,
+                lang: "go",
+                options: [
+                    "2",
+                    "3",
+                    "10",
+                    "0"
+                ],
+                correct: 0,
+                explain: "Η εξωτερική for διασχίζει κάθε λέξη, η εσωτερική κάθε γράμμα της. Μόνο το 'o' στο go και το 'u' στο fun ταιριάζουν — σύνολο 2."
+            },
+            {
+                q: "Γιατί χρειάζεται το _ στο for _, v := range nums;",
+                options: [
+                    "Για να αγνοήσεις ρητά το index, αφού δηλωμένη αλλά αχρησιμοποίητη μεταβλητή θα προκαλούσε compile error",
+                    "Για να δηλώσεις ρητά ότι το slice nums είναι άδειο και δεν περιέχει κανένα στοιχείο",
+                    "Επειδή η Go απαιτεί πάντα δύο μεταβλητές σε κάθε range",
+                    "Για να διπλασιάσεις την ταχύτητα εκτέλεσης της επανάληψης"
+                ],
+                correct: 0,
+                explain: "Το _ λέει ρητά στον compiler 'ξέρω ότι υπάρχει, αλλά σκόπιμα δεν με ενδιαφέρει' — χωρίς αυτό, μια αχρησιμοποίητη μεταβλητή θα ήταν compile error."
+            },
+            {
+                q: "Γιατί δουλεύει το for range πάνω σε ένα string, σχεδόν όπως σε ένα slice;",
+                options: [
+                    "Επειδή ένα string στη Go συμπεριφέρεται ουσιαστικά σαν ακολουθία από runes, και το range δίνει θέση+τιμή όπως και σε slice",
+                    "Επειδή κάθε string μετατρέπεται αυτόματα σε ξεχωριστό slice πριν την εκτέλεση, με επιπλέον κόστος απόδοσης",
+                    "Επειδή η Go αποθηκεύει τα strings εσωτερικά ως slices ακέραιων αριθμών και κάθε φορά που τρέχει το range, δημιουργείται ένα νέο slice από τα bytes του string, που σημαίνει πως η range λειτουργεί πάνω σε ένα προσωρινό, άρα η αρχική μεταβλητή μένει ανεπηρέαστη",
+                    "Επειδή κάθε string είναι στην πραγματικότητα ένας κρυμμένος map[int]rune"
+                ],
+                correct: 0,
+                explain: "Ένα string είναι ουσιαστικά μια ακολουθία από runes — γι' αυτό το range του δίνει θέση+τιμή, ίδια λογική με slice."
+            },
+            {
+                q: "Τι θα συμβεί όταν τρέξει ο παρακάτω κώδικας;",
+                code: `nums := []int{1, 2, 3}
+fmt.Println(nums[3])`,
+                lang: "go",
+                options: [
+                    "Το πρόγραμμα θα κάνει panic κατά την εκτέλεση",
+                    "Θα τυπώσει 0, τη zero value του int, αφού το index είναι έξω από τα όρια",
+                    "Δεν θα μεταγλωττιστεί καθόλου",
+                    "Θα τυπώσει nil, αφού η θέση είναι εκτός ορίων, δηλαδή nil"
+                ],
+                correct: 0,
+                explain: "Το nums έχει έγκυρα index 0, 1, 2 (length 3). Το index 3 είναι εκτός ορίων — panic κατά το runtime, όχι compile error."
+            },
+            {
+                q: "Πότε προτιμάς την απλή for (με μετρητή) αντί για for range σε ένα slice;",
+                options: [
+                    "Όταν θες να διασχίσεις ανάποδα, ή να παραλείψεις στοιχεία με συγκεκριμένο βήμα",
+                    "Στην πραγματικότητα, ποτέ — η range είναι πάντα ανώτερη επιλογή και ένα από τα μεγάλα πλεονεκτήματα της γλώσσας go",
+                    "Μόνο όταν το slice είναι εντελώς άδειο",
+                    "Όταν θες μόνο τις τιμές των στοιχείων, όχι τα index τους"
+                ],
+                correct: 0,
+                explain: "Η απλή for σου δίνει πλήρη έλεγχο πάνω στο index — χρήσιμη όταν η φυσική, διαδοχική σειρά της range δεν σου κάνει."
+            }
+        ]);
+
+        addFillBlank([
+            {
+                code: `__decl1__ scores __decl2__
+
+scores[0] = 100
+fmt.Println(scores__idx__)`,
+                blanks: [
+                    { id: "decl1", answer: "var" },
+                    { id: "decl2", answer: "[3]int" },
+                    { id: "idx", answer: "[0]" }
+                ],
+                explain: "var scores [3]int δηλώνει πίνακα 3 στοιχείων. Η πρόσβαση γίνεται με scores[0], scores[1], scores[2].",
+                lang: "go"
+            },
+            {
+                code: `nums __init__ __literal__{1, 2, 3}
+
+more __init2__ make(__type__, 0, 5)`,
+                blanks: [
+                    { id: "init", answer: ":=" },
+                    { id: "literal", answer: "[]int" },
+                    { id: "init2", answer: ":=" },
+                    { id: "type", answer: "[]int" }
+                ],
+                explain: "[]int{...} είναι slice literal. Η make([]int, 0, 5) φτιάχνει slice με length 0 και capacity 5.",
+                lang: "go"
+            },
+            {
+                code: `nums := []int{1, 2}
+nums __eq__ __append__(nums, 3)
+
+a := []int{1, 2}
+b := []int{3, 4}
+a = append(a, b__dots__)`,
+                blanks: [
+                    { id: "eq", answer: "=" },
+                    { id: "append", answer: "append" },
+                    { id: "dots", answer: "..." }
+                ],
+                explain: "Πρέπει πάντα να ξανααναθέτεις το αποτέλεσμα της append. Οι τρεις τελείες ξεδιπλώνουν ένα slice σε μεμονωμένα ορίσματα.",
+                lang: "go"
+            },
+            {
+                code: `nums := []int{10, 20, 30, 40, 50}
+sub __init__ nums__slice__
+
+first := nums__first__
+rest := nums__rest__`,
+                blanks: [
+                    { id: "init", answer: ":=" },
+                    { id: "slice", answer: "[1:4]" },
+                    { id: "first", answer: "[:3]" },
+                    { id: "rest", answer: "[2:]" }
+                ],
+                explain: "[1:4] δίνει index 1,2,3. Παραλείποντας το start ξεκινάς από το 0. Παραλείποντας το end φτάνεις μέχρι το τέλος.",
+                lang: "go"
+            },
+            {
+                code: `fruits := []string{"apple", "banana"}
+for i, v __kw__ __rng__ fruits {
+    fmt.Println(i, v)
+}
+
+for __blank__, v := range fruits {
+    fmt.Println(v)
+}`,
+                blanks: [
+                    { id: "kw", answer: ":=" },
+                    { id: "rng", answer: "range" },
+                    { id: "blank", answer: "_" }
+                ],
+                explain: "Το := δηλώνει τις μεταβλητές μέσα στο for. Το _ αγνοεί ρητά το index όταν δεν σε ενδιαφέρει.",
+                lang: "go"
+            },
+            {
+                code: `word := "elephant"
+count := 0
+
+for _, ch := range word {
+    __cond1__ ch __cond2__ 'e' {
+        count__inc__
+    }
+}
+
+fmt.Println(count)`,
+                blanks: [
+                    { id: "cond1", answer: "if" },
+                    { id: "cond2", answer: "==" },
+                    { id: "inc", answer: "++" }
+                ],
+                explain: "Το range σε string δίνει θέση+rune. Συγκρίνουμε με 'e' (single quotes) αφού είναι μεμονωμένος χαρακτήρας.",
+                lang: "go"
+            }
+        ], {
+            note: "Συμπλήρωσε τα κενά με βάση όσα είδαμε για arrays, slices και iteration."
+        });
+
+        addMatching([
+            [
+                { term: "make", def: "Δημιουργεί slice έτοιμο προς χρήση, με δοσμένο length (και προαιρετικά capacity)" },
+                { term: "append", def: "Προσθέτει στοιχεία στο τέλος ενός slice" },
+                { term: "copy", def: "Αντιγράφει στοιχεία σε ένα ήδη υπάρχον, ανεξάρτητο slice" },
+                { term: "<code>len()</code>", def: "Επιστρέφει το τρέχον μήκος ενός slice ή array" },
+                { term: "<code>cap()</code>", def: "Επιστρέφει τη συνολική χωρητικότητα ενός slice" }
+            ],
+            [
+                { term: "Array", def: "Σταθερό μέγεθος, μέρος του ίδιου του τύπου του" },
+                { term: "Slice", def: "Δυναμικό μέγεθος — μια 'θέα' πάνω σε ένα underlying array" },
+                { term: "Blank identifier <code>_</code>", def: "Αγνοεί ρητά μια τιμή, χωρίς compile error για αχρησιμοποίητη μεταβλητή" },
+                { term: "Πρόσβαση εκτός ορίων", def: "Προκαλεί panic κατά την εκτέλεση, όχι compile error" },
+                { term: "range σε string", def: "Δίνει θέση+τιμή κάθε rune — ίδια λογική με slice" }
+            ]
+        ], {
+            label: "Ταίριαξε τους όρους — Δύο σετ",
+            note: "Πρώτο σετ: built-in λειτουργίες πάνω σε slices. Δεύτερο σετ: έννοιες γύρω από arrays, slices και iteration.",
+            allowHTML: true
+        });
+
+        addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
+
+<h1>Φιλτράρισμα Ζυγών Αριθμών</h1>
+
+<p class="lede">Γράψε ένα πρόγραμμα που παίρνει μια λίστα ακεραίων και φτιάχνει μια νέα, περιέχοντας μόνο τους ζυγούς, με την ίδια σειρά που εμφανίζονται.</p>
+
+<div class="callout">
+    <span class="tag">HINT 1</span>
+    Ο τελεστής <code>%</code> σου λέει αν ένας αριθμός είναι ζυγός: <code>n % 2 == 0</code>
+</div>
+
+<div class="callout">
+    <span class="tag">HINT 2</span>
+    Ξεκίνα με ένα άδειο slice (<code>var result []int</code>) και χρησιμοποίησε <code>range</code> για να διασχίσεις το αρχικό slice.
+</div>
+
+<div class="spoiler">
+    <div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div>
+    <pre><code class="lang-go">package main
+
+import "fmt"
+
+func evens(nums []int) []int {
+    var result []int
+    for _, n := range nums {
+        if n%2 == 0 {
+            result = append(result, n)
+        }
+    }
+    return result
+}
+
+func main() {
+    nums := []int{1, 2, 3, 4, 5, 6}
+    fmt.Println(evens(nums))
+}
+// [2 4 6]
+</code></pre>
+</div>
+`);
+
+        addContent(`
+
+<h1>Maps</h1>
+
+<p class="lede">
+    Το τελευταίο data structure σε αυτόν τον οδηγό: ο map, η δομή "κλειδί/τιμή" (key/value) της Go — αντίστοιχο με ό,τι σε άλλες γλώσσες ονομάζεται dictionary ή hash map.
+</p>
+
+<h2>Τι είναι ένας Map</h2>
+
+<p>
+    Σε ένα slice ή array, προσπελαύνεις τα στοιχεία μέσω ενός αριθμητικού index (0, 1, 2, ...). Σε έναν <strong>map</strong>, αντ' αυτού, κάθε τιμή συνδέεται με ένα δικό της, μοναδικό <strong>κλειδί</strong> (key) — που μπορεί να είναι, για παράδειγμα, ένα string, αντί για έναν απλό αύξοντα αριθμό. Αυτό είναι εξαιρετικά χρήσιμο όταν θες να "ψάχνεις" γρήγορα δεδομένα με βάση κάτι πιο νοηματικό από μια αριθμημένη θέση — π.χ. να αποθηκεύσεις την ηλικία ενός ατόμου, με το όνομά του ως κλειδί αναζήτησης.
+</p>
+
+<div class="callout">
+    <span class="tag">Μια αναλογία: ο τηλεφωνικός κατάλογος</span>
+    <p>
+        Σκέψου έναν τηλεφωνικό κατάλογο. Για να βρεις τον αριθμό κάποιου, δεν ξεκινάς από τη σελίδα 1 και διαβάζεις όλα τα ονόματα ένα-ένα μέχρι να τον βρεις — χρησιμοποιείς το όνομα ως <strong>κλειδί</strong> (key) για να πας κατευθείαν στον αριθμό του (την <strong>τιμή</strong>, value). Ο map λειτουργεί ακριβώς έτσι: αντί να ψάχνεις με αριθμητικό index, ψάχνεις με ένα κλειδί που εσύ επιλέγεις.
+    </p>
+</div>
+
+<h2>Δήλωση και αρχικοποίηση</h2>
+
+<pre><code class="lang-go">ages := make(map[string]int)  // an empty map, ready to use: keys are strings, values are ints
+
+scores := map[string]int{     // map literal, with initial key/value pairs already filled in
+    "first":  90,
+    "second": 85,
+}
+</code></pre>
+
+<p>
+    Η σύνταξη <code>map[string]int</code> σημαίνει "map όπου τα κλειδιά είναι τύπου string, και οι τιμές είναι τύπου int". Όπως και με τα slices, η <code>make</code> δημιουργεί έναν κενό, αλλά έτοιμο προς χρήση map.
+</p>
+
+<h2>Προσθήκη, ενημέρωση, και διαγραφή στοιχείων</h2>
+
+<pre><code class="lang-go">ages["someone"] = 20       // adds a new entry, OR updates an existing one — same syntax either way
+delete(ages, "someone")    // removes a key (and its value) entirely from the map
+</code></pre>
+
+<p>
+    Η σύνταξη είναι ίδια είτε προσθέτεις ένα εντελώς νέο κλειδί, είτε ενημερώνεις την τιμή ενός κλειδιού που υπάρχει ήδη — η Go το χειρίζεται αυτόματα, χωρίς να χρειάζεται να ελέγξεις ρητά ποιο από τα δύο συμβαίνει.
+</p>
+
+<h2>Έλεγχος ύπαρξης κλειδιού — το πρόβλημα και η λύση του</h2>
+
+<p>
+    Εδώ προκύπτει ένα ενδιαφέρον πρόβλημα: πώς ξεχωρίζεις την περίπτωση "αυτό το κλειδί υπάρχει στον map, και η τιμή του τυχαίνει να είναι 0" από την περίπτωση "αυτό το κλειδί δεν υπάρχει καθόλου στον map"; Αν έγραφες απλά <code>ages["someone"]</code> για ένα κλειδί που δεν υπάρχει, η Go θα σου επέστρεφε τη zero value του τύπου της τιμής (δηλαδή 0 για int) — ακριβώς την ίδια τιμή που θα έπαιρνες αν το κλειδί υπήρχε πραγματικά με τιμή 0. Χωρίς επιπλέον πληροφορία, δεν θα μπορούσες να ξεχωρίσεις τις δύο περιπτώσεις.
+</p>
+
+<p>
+    Η λύση της Go είναι ένα δεύτερο, προαιρετικό return value κατά την αναζήτηση σε map, γνωστό ως το <strong>comma-ok pattern</strong>:
+</p>
+
+<pre><code class="lang-go">value, ok := ages["someone"]
+if ok {
+    fmt.Println("found:", value)
+} else {
+    fmt.Println("key does not exist")
+}
+</code></pre>
+
+<p>
+    Το δεύτερο return value, εδώ ονομασμένο <code>ok</code>, είναι τύπου <code>bool</code>: <code>true</code> αν το κλειδί όντως υπάρχει στον map, <code>false</code> αν δεν υπάρχει. Αυτό σου δίνει ρητή, ξεκάθαρη πληροφορία, χωρίς αμφισημία.
+</p>
+
+<h2>Iteration με for range</h2>
+
+<pre><code class="lang-go">for key, value := range scores {
+    fmt.Println(key, value)
+}
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Προσοχή: μη εγγυημένη σειρά</span>
+    <p>
+        Σε αντίθεση με τα slices και τα arrays, όπου η <code>range</code> σου δίνει πάντα τα στοιχεία με τη φυσική, αριθμητική τους σειρά (index 0, μετά 1, μετά 2, ...), η Go <strong>δεν εγγυάται καμία συγκεκριμένη σειρά</strong> όταν διασχίζεις έναν map με <code>for range</code>. Κάθε φορά που τρέχεις το ίδιο πρόγραμμα, η σειρά με την οποία εμφανίζονται τα key/value ζεύγη μπορεί να είναι διαφορετική. Αν χρειάζεσαι σταθερή, προβλέψιμη σειρά (π.χ. αλφαβητική), πρέπει πρώτα να εξάγεις όλα τα κλειδιά σε ένα ξεχωριστό slice, και μετά να τα ταξινομήσεις μόνος σου, πριν τα διατρέξεις.
+    </p>
+</div>
 `);
 
         addQuiz([
@@ -4340,57 +5128,9 @@ nums = <span class="tok-func">append</span>(nums, <span class="tok-num">3</span>
             }
         ]);
 
-        addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Συλλογές Δεδομένων</div>
-<h1>Maps</h1>
-<p class="lede">Ο τελευταίος τύπος συλλογής δεδομένων σε αυτόν τον οδηγό: ο map, η δομή "κλειδί/τιμή" (key/value) της Go — αντίστοιχο με ό,τι σε άλλες γλώσσες ονομάζεται dictionary ή hash map.</p>
-
-<h2>Τι είναι ένας Map</h2>
-<p>Σε ένα slice ή array, προσπελαύνεις τα στοιχεία μέσω ενός αριθμητικού index (0, 1, 2, ...). Σε έναν <strong>map</strong>, αντ' αυτού, κάθε τιμή συνδέεται με ένα δικό της, μοναδικό <strong>κλειδί</strong> (key) — που μπορεί να είναι, για παράδειγμα, ένα string, αντί για έναν απλό αύξοντα αριθμό. Αυτό είναι εξαιρετικά χρήσιμο όταν θες να "ψάχνεις" γρήγορα δεδομένα με βάση κάτι πιο νοηματικό από μια αριθμημένη θέση — π.χ. να αποθηκεύσεις την ηλικία ενός ατόμου, με το όνομά του ως κλειδί αναζήτησης.</p>
-
-<h2>Δήλωση και αρχικοποίηση</h2>
-<pre><code>ages <span class="tok-kw">:=</span> <span class="tok-func">make</span>(<span class="tok-kw">map</span>[<span class="tok-type">string</span>]<span class="tok-type">int</span>)  <span class="tok-com">// an empty map, ready to use: keys are strings, values are ints</span>
-
-scores <span class="tok-kw">:=</span> <span class="tok-kw">map</span>[<span class="tok-type">string</span>]<span class="tok-type">int</span>{     <span class="tok-com">// map literal, with initial key/value pairs already filled in</span>
-    <span class="tok-str">"first"</span>:  <span class="tok-num">90</span>,
-    <span class="tok-str">"second"</span>: <span class="tok-num">85</span>,
-}
-</code></pre>
-<p>Η σύνταξη <code>map[string]int</code> σημαίνει "map όπου τα κλειδιά είναι τύπου string, και οι τιμές είναι τύπου int". Όπως και με τα slices, η <code>make</code> δημιουργεί έναν κενό, αλλά έτοιμο προς χρήση map.</p>
-
-<h2>Προσθήκη, ενημέρωση, και διαγραφή στοιχείων</h2>
-<pre><code>ages[<span class="tok-str">"someone"</span>] = <span class="tok-num">20</span>       <span class="tok-com">// adds a new entry, OR updates an existing one — same syntax either way</span>
-<span class="tok-func">delete</span>(ages, <span class="tok-str">"someone"</span>)  <span class="tok-com">// removes a key (and its value) entirely from the map</span>
-</code></pre>
-<p>Η σύνταξη είναι ίδια είτε προσθέτεις ένα εντελώς νέο κλειδί, είτε ενημερώνεις την τιμή ενός κλειδιού που υπάρχει ήδη — η Go το χειρίζεται αυτόματα, χωρίς να χρειάζεται να ελέγξεις ρητά ποιο από τα δύο συμβαίνει.</p>
-
-<h2>Έλεγχος ύπαρξης κλειδιού — το πρόβλημα και η λύση του</h2>
-<p>Εδώ προκύπτει ένα ενδιαφέρον πρόβλημα: πώς ξεχωρίζεις την περίπτωση "αυτό το κλειδί υπάρχει στον map, και η τιμή του τυχαίνει να είναι 0" από την περίπτωση "αυτό το κλειδί δεν υπάρχει καθόλου στον map"; Αν έγραφες απλά <code>ages["someone"]</code> για ένα κλειδί που δεν υπάρχει, η Go θα σου επέστρεφε τη zero value του τύπου της τιμής (δηλαδή 0 για int) — ακριβώς την ίδια τιμή που θα έπαιρνες αν το κλειδί υπήρχε πραγματικά με τιμή 0. Χωρίς επιπλέον πληροφορία, δεν θα μπορούσες να ξεχωρίσεις τις δύο περιπτώσεις.</p>
-<p>Η λύση της Go είναι ένα δεύτερο, προαιρετικό return value κατά την αναζήτηση σε map, γνωστό ως το <strong>comma-ok pattern</strong>:</p>
-<pre><code>value, ok <span class="tok-kw">:=</span> ages[<span class="tok-str">"someone"</span>]
-<span class="tok-kw">if</span> ok {
-    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"found:"</span>, value)
-} <span class="tok-kw">else</span> {
-    fmt.<span class="tok-func">Println</span>(<span class="tok-str">"key does not exist"</span>)
-}
-</code></pre>
-<p>Το δεύτερο return value, εδώ ονομασμένο <code>ok</code>, είναι τύπου <code>bool</code>: <code>true</code> αν το κλειδί όντως υπάρχει στον map, <code>false</code> αν δεν υπάρχει. Αυτό σου δίνει ρητή, ξεκάθαρη πληροφορία, χωρίς αμφισημία.</p>
-
-<h2>Διάσχιση με for range</h2>
-<pre><code><span class="tok-kw">for</span> key, value <span class="tok-kw">:=</span> <span class="tok-kw">range</span> scores {
-    fmt.<span class="tok-func">Println</span>(key, value)
-}
-</code></pre>
-<div class="callout">
-  <span class="tag">Προσοχή: μη εγγυημένη σειρά διάσχισης</span>
-  Σε αντίθεση με τα slices και τα arrays, όπου η <code>range</code> σου δίνει πάντα τα στοιχεία με τη φυσική, αριθμητική τους σειρά (index 0, μετά 1, μετά 2, ...), η Go <strong>δεν εγγυάται καμία συγκεκριμένη σειρά</strong> όταν διασχίζεις έναν map με <code>for range</code>. Κάθε φορά που τρέχεις το ίδιο πρόγραμμα, η σειρά με την οποία εμφανίζονται τα key/value ζεύγη μπορεί να είναι διαφορετική. Αν χρειάζεσαι σταθερή, προβλέψιμη σειρά (π.χ. αλφαβητική), πρέπει πρώτα να εξάγεις όλα τα κλειδιά σε ένα ξεχωριστό slice, και μετά να τα ταξινομήσεις ρητά μόνος σου, πριν τα διασχίσεις.
-</div>
-`);
-
         addFillBlank([
             {
-                code:
-                    `m := __make__(map[string]int)
+                code: `m := __make__(map[string]int)
 m["apple"] = 3
 
 value, ok := m[__key__]
@@ -4407,8 +5147,7 @@ __delete__(m, "apple") // remove the key entirely`,
                 explain: "make δημιουργεί κενό, έτοιμο προς χρήση map, η αναζήτηση με comma-ok pattern δίνει τιμή+πληροφορία ύπαρξης, και η delete αφαιρεί ένα κλειδί εντελώς."
             },
             {
-                code:
-                    `nums := []int{1, 2, 3}
+                code: `nums := []int{1, 2, 3}
 nums = __append__(nums, 4) // reassignment matters here
 
 for i, v := __range__ nums {
@@ -4418,7 +5157,7 @@ for i, v := __range__ nums {
                     { id: "append", answer: "append" },
                     { id: "range", answer: "range" }
                 ],
-                explain: "append προσθέτει ένα στοιχείο (ενδεχομένως δημιουργώντας νέο υποκείμενο array), και το range δίνει index+value σε κάθε επανάληψη της διάσχισης."
+                explain: "append προσθέτει ένα στοιχείο (ενδεχομένως δημιουργώντας νέο υποκείμενο array), και το range δίνει index+value σε κάθε επανάληψη του iteration."
             }
         ], {
             note: "Συμπλήρωσε τα κενά με βάση όσα είδαμε για slices και maps σε αυτή την ενότητα."
@@ -4456,7 +5195,7 @@ for i, v := __range__ nums {
             [
                 { term: "Array", def: "σταθερό μέγεθος, μέρος του ίδιου του τύπου του" },
                 { term: "Slice", def: "δυναμικό μέγεθος, θέα πάνω σε ένα υποκείμενο array" },
-                { term: "Map", def: "δομή κλειδί/τιμή, χωρίς εγγυημένη σειρά διάσχισης" },
+                { term: "Map", def: "δομή κλειδί/τιμή, χωρίς εγγυημένη σειρά iteration" },
                 { term: "Capacity", def: "πόσα στοιχεία χωρούν πριν χρειαστεί νέο υποκείμενο array" }
             ],
             [
@@ -4564,42 +5303,114 @@ for i, v := __range__ nums {
         ], { bg: "./images/go-part1-final-quiz-bg.jpg", overlayAlpha: 0.6 });
 
         addContent(`
-<div class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
-<h1>Όλοι οι Όροι που Είδαμε, σε Ένα Σημείο</h1>
-<p class="lede">Γρήγορη αναφορά για επανάληψη — όχι νέα εξήγηση, απλά μια συγκεντρωτική υπενθύμιση όλων όσων καλύψαμε σε αυτό το Μέρος 1.</p>
+<div class="eyebrow">Συγκεντρωτικό Λεξιλόγιο</div>
+<h1>Ό,τι Έμαθες, Ενότητα προς Ενότητα</h1>
+<p class="lede">Απλή λίστα — keyword ή σύμβολο, και τι σημαίνει. Για γρήγορη ανάκληση, όχι νέα εξήγηση.</p>
 
 <div class="glossary-group">
-  <h2>Θεμέλια, Μεταβλητές &amp; Τύποι · στυλ: πίνακας</h2>
-  <table class="glossary-table">
-    <tr><td class="gt-term">Compiler</td><td class="gt-def">μεταφράζει ολόκληρο τον πηγαίο κώδικα σε machine code, μία φορά, πριν την εκτέλεση</td></tr>
-    <tr><td class="gt-term">Variable</td><td class="gt-def">ονομασμένο κομμάτι μνήμης όπου αποθηκεύεται μια τιμή</td></tr>
-    <tr><td class="gt-term">Zero value</td><td class="gt-def">προεπιλεγμένη τιμή ενός τύπου, χωρίς ρητή αρχικοποίηση</td></tr>
-    <tr><td class="gt-term">Type inference</td><td class="gt-def">type inference με :=, χωρίς να δηλώσουμε ρητά τον τύπο</td></tr>
-    <tr><td class="gt-term">Explicit conversion</td><td class="gt-def">ρητή μετατροπή τύπου, π.χ. float64(x)</td></tr>
-    <tr><td class="gt-term">Untyped constant</td><td class="gt-def">σταθερά που προσαρμόζεται στον τύπο του context χρήσης της</td></tr>
-  </table>
-</div>
-
-<div class="glossary-group">
-  <h2>Έλεγχος Ροής &amp; Εκφράσεις · στυλ: οριζόντια λίστα</h2>
-  <div class="glossary-strip">
-    <div class="gs-pill"><span class="gs-name">Expression</span><span class="gs-def">παράγει τιμή</span></div>
-    <div class="gs-pill"><span class="gs-name">Statement</span><span class="gs-def">εκτελεί ενέργεια</span></div>
-    <div class="gs-pill"><span class="gs-name">Short-circuit</span><span class="gs-def">παράλειψη δεξιάς πλευράς σε &amp;&amp;/||</span></div>
-    <div class="gs-pill"><span class="gs-name">Shadowing</span><span class="gs-def">νέα μεταβλητή κρύβει παλιά σε εσωτερικό scope</span></div>
-    <div class="gs-pill"><span class="gs-name">fallthrough</span><span class="gs-def">ρητή συνέχεια switch στο επόμενο case</span></div>
+  <h2>Ενότητα 1 — Εισαγωγή &amp; Περιβάλλον</h2>
+  <div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">package</span><span class="gc-def">δηλώνει σε ποιο πακέτο ανήκει το αρχείο</span></div>
+    <div class="gc-line"><span class="gc-term">package main</span><span class="gc-def">ειδικό όνομα — παράγει εκτελέσιμο πρόγραμμα</span></div>
+    <div class="gc-line"><span class="gc-term">import</span><span class="gc-def">φέρνει διαθέσιμο κώδικα άλλου πακέτου</span></div>
+    <div class="gc-line"><span class="gc-term">func</span><span class="gc-def">keyword για ορισμό συνάρτησης</span></div>
+    <div class="gc-line"><span class="gc-term">func main()</span><span class="gc-def">το entry point του προγράμματος</span></div>
+    <div class="gc-line"><span class="gc-term">go run</span><span class="gc-def">compile + άμεση εκτέλεση, χωρίς μόνιμο αρχείο</span></div>
+    <div class="gc-line"><span class="gc-term">go build</span><span class="gc-def">compile σε μόνιμο εκτελέσιμο αρχείο</span></div>
+    <div class="gc-line"><span class="gc-term">go fmt</span><span class="gc-def">αυτόματη μορφοποίηση κώδικα</span></div>
+    <div class="gc-line"><span class="gc-term">//</span><span class="gc-def">σχόλιο μίας γραμμής</span></div>
+    <div class="gc-line"><span class="gc-term">/* */</span><span class="gc-def">σχόλιο πολλών γραμμών</span></div>
   </div>
 </div>
 
 <div class="glossary-group">
-  <h2>Functions, Pointers &amp; Συλλογές · στυλ: πυκνές στήλες</h2>
+  <h2>Ενότητα 2 — Μεταβλητές &amp; Τύποι</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">var</td><td class="gt-def">keyword για δήλωση μεταβλητής</td></tr>
+    <tr><td class="gt-term">:=</td><td class="gt-def">δήλωση + αρχικοποίηση μαζί</td></tr>
+    <tr><td class="gt-term">=</td><td class="gt-def">ανάθεση τιμής σε ήδη υπάρχουσα μεταβλητή</td></tr>
+    <tr><td class="gt-term">int</td><td class="gt-def">ακέραιος αριθμός</td></tr>
+    <tr><td class="gt-term">float64</td><td class="gt-def">δεκαδικός αριθμός</td></tr>
+    <tr><td class="gt-term">string</td><td class="gt-def">κείμενο</td></tr>
+    <tr><td class="gt-term">bool</td><td class="gt-def">true ή false</td></tr>
+    <tr><td class="gt-term">rune</td><td class="gt-def">ένας Unicode χαρακτήρας (alias για int32)</td></tr>
+    <tr><td class="gt-term">const</td><td class="gt-def">σταθερά — τιμή που δεν αλλάζει ποτέ</td></tr>
+    <tr><td class="gt-term">zero value</td><td class="gt-def">προεπιλεγμένη τιμή χωρίς αρχικοποίηση (0, "", false, nil)</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Ενότητα 3 — Τελεστές &amp; Εκφράσεις</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">+  -  *  /  %</span><span class="gs-def">αριθμητικοί τελεστές</span></div>
+    <div class="gs-pill"><span class="gs-name">==  !=  &lt;  &gt;  &lt;=  &gt;=</span><span class="gs-def">τελεστές σύγκρισης</span></div>
+    <div class="gs-pill"><span class="gs-name">&amp;&amp;  ||  !</span><span class="gs-def">λογικοί τελεστές — AND, OR, NOT</span></div>
+    <div class="gs-pill"><span class="gs-name">&amp;  |  ^  &amp;^  &lt;&lt;  &gt;&gt;</span><span class="gs-def">bitwise τελεστές</span></div>
+    <div class="gs-pill"><span class="gs-name">+=  -=  *=  /=</span><span class="gs-def">τελεστές εκχώρησης με πράξη</span></div>
+    <div class="gs-pill"><span class="gs-name">expression</span><span class="gs-def">κάτι που παράγει τιμή</span></div>
+    <div class="gs-pill"><span class="gs-name">statement</span><span class="gs-def">κάτι που εκτελεί ενέργεια, χωρίς τιμή</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>Ενότητα 4 — Έλεγχος Ροής</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">if / else if / else</td><td class="gt-def">δομή απόφασης βάσει συνθήκης</td></tr>
+    <tr><td class="gt-term">switch</td><td class="gt-def">πολλαπλή επιλογή, αυτόματο break σε κάθε case</td></tr>
+    <tr><td class="gt-term">case</td><td class="gt-def">μία περίπτωση μέσα σε switch</td></tr>
+    <tr><td class="gt-term">default</td><td class="gt-def">η περίπτωση όταν κανένα case δεν ταιριάζει</td></tr>
+    <tr><td class="gt-term">tagless switch</td><td class="gt-def">switch χωρίς έκφραση ελέγχου</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Ενότητα 5 — Loops</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">for</span><span class="gs-def">η μοναδική λούπα της Go</span></div>
+    <div class="gs-pill"><span class="gs-name">i := 0</span><span class="gs-def">αρχικοποίηση — εκτελείται μία φορά, στην αρχή</span></div>
+    <div class="gs-pill"><span class="gs-name">i &lt; n</span><span class="gs-def">συνθήκη — ελέγχεται πριν από κάθε επανάληψη</span></div>
+    <div class="gs-pill"><span class="gs-name">i++</span><span class="gs-def">βήμα — εκτελείται στο τέλος κάθε επανάληψης</span></div>
+    <div class="gs-pill"><span class="gs-name">break</span><span class="gs-def">σταματά εντελώς το loop</span></div>
+    <div class="gs-pill"><span class="gs-name">continue</span><span class="gs-def">πάει κατευθείαν στην επόμενη επανάληψη</span></div>
+    <div class="gs-pill"><span class="gs-name">label</span><span class="gs-def">όνομα πάνω από loop, για break/continue από αλλού</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>Ενότητα 6 — Functions &amp; Scope</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">return</span><span class="gs-def">επιστρέφει τιμή/τιμές, τερματίζει τη συνάρτηση</span></div>
+    <div class="gs-pill"><span class="gs-name">...T</span><span class="gs-def">variadic παράμετρος — μεταβλητό πλήθος ορισμάτων</span></div>
+    <div class="gs-pill"><span class="gs-name">named return</span><span class="gs-def">ονοματισμένη τιμή επιστροφής</span></div>
+    <div class="gs-pill"><span class="gs-name">naked return</span><span class="gs-def">return χωρίς ρητές τιμές</span></div>
+    <div class="gs-pill"><span class="gs-name">Exported / unexported</span><span class="gs-def">Κεφαλαίο = ορατό αλλού, πεζό = μόνο στο ίδιο package</span></div>
+  </div>
+</div>
+
+<div class= "glossary-group" >
+  <h2>Ενότητα 7 — Pointers &amp; Μνήμη</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">&amp;</span><span class="gs-def">η διεύθυνση μιας μεταβλητής</span></div>
+    <div class="gs-pill"><span class="gs-name">*</span><span class="gs-def">η τιμή στην οποία δείχνει ένας pointer</span></div>
+    <div class="gs-pill"><span class="gs-name">pointer</span><span class="gs-def">μεταβλητή που κρατά διεύθυνση μνήμης</span></div>
+    <div class="gs-pill"><span class="gs-name">*int</span><span class="gs-def">(τύπος) pointer προς int</span></div>
+    <div class="gs-pill"><span class="gs-name">*variable</span><span class="gs-def">dereferencing — πρόσβαση στην τιμή μέσω του pointer</span></div>
+    <div class="gs-pill"><span class="gs-name">nil</span><span class="gs-def">δείκτης που δεν δείχνει πουθενά</span></div>
+  </div>
+</div >
+
+<div class="glossary-group">
+  <h2>Ενότητα 8 — Arrays &amp; Slices &amp; Maps</h2>
   <div class="glossary-columns">
-    <div class="gc-line"><span class="gc-term">Named/naked return</span><span class="gc-def">ονοματισμένη τιμή επιστροφής + γυμνό return</span></div>
-    <div class="gc-line"><span class="gc-term">Variadic</span><span class="gc-def">μεταβλητό πλήθος ορισμάτων, ...T</span></div>
-    <div class="gc-line"><span class="gc-term">Exported</span><span class="gc-def">κεφαλαίο αρχικό γράμμα = ορατό από άλλα packages</span></div>
-    <div class="gc-line"><span class="gc-term">Pointer (&amp; / *)</span><span class="gc-def">διεύθυνση μνήμης / πρόσβαση στην τιμή της</span></div>
-    <div class="gc-line"><span class="gc-term">Slice vs Array</span><span class="gc-def">δυναμικό μέγεθος vs σταθερό μέγεθος</span></div>
-    <div class="gc-line"><span class="gc-term">Comma-ok pattern</span><span class="gc-def">value, ok := m[key]</span></div>
+    <div class="gc-line"><span class="gc-term">array</span><span class="gc-def">συλλογή σταθερού μεγέθους</span></div>
+    <div class="gc-line"><span class="gc-term">slice</span><span class="gc-def">συλλογή δυναμικού μεγέθους</span></div>
+    <div class="gc-line"><span class="gc-term">make</span><span class="gc-def">δημιουργεί slice/map έτοιμο προς χρήση</span></div>
+    <div class="gc-line"><span class="gc-term">append</span><span class="gc-def">προσθέτει στοιχείο σε slice</span></div>
+    <div class="gc-line"><span class="gc-term">len / cap</span><span class="gc-def">μήκος / χωρητικότητα ενός slice</span></div>
+    <div class="gc-line"><span class="gc-term">map</span><span class="gc-def">δομή key/value</span></div>
+    <div class="gc-line"><span class="gc-term">delete</span><span class="gc-def">αφαιρεί κλειδί από map</span></div>
+    <div class="gc-line"><span class="gc-term">range</span><span class="gc-def">διάσχιση slice, array, ή map</span></div>
+    <div class="gc-line"><span class="gc-term">_</span><span class="gc-def">blank identifier — αγνοεί μια τιμή</span></div>
   </div>
 </div>
 `);

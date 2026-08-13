@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="el">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Δίκτυα, TCP/UDP &amp; Cybersecurity — Θεωρητικό Υλικό</title>
+  <title>Δίκτυα, TCP/UDP &amp; Cybersecurity</title>
   <link rel="stylesheet" href="static/style.css?v=20260801">
   <link rel="stylesheet" href="static/theme-royalblue.css?v=20260801">
 </head>
@@ -250,7 +251,7 @@
 
     addFillBlank({
       code:
-`conn, err := net.__dial__("tcp", "example.com:80")
+        `conn, err := net.__dial__("tcp", "example.com:80")
 if err != nil {
     log.Fatal(err)
 }
@@ -552,7 +553,7 @@ func main() {
     addFillBlank([
       {
         code:
-`func middleware(next http.HandlerFunc) http.__handlertype__ {
+          `func middleware(next http.HandlerFunc) http.__handlertype__ {
     return func(w http.ResponseWriter, r *http.Request) {
         __call__(w, r) // invoke the wrapped handler
     }
@@ -565,7 +566,7 @@ func main() {
       },
       {
         code:
-`var u User
+          `var u User
 err := json.__unmarshal__(data, &u)`,
         blanks: [
           { id: "unmarshal", answer: "Unmarshal" }
@@ -927,7 +928,7 @@ tcpdump -i eth0 -w capture.pcap</code></pre>
     addFillBlank([
       {
         code:
-`ln, err := net.__listen__("tcp", ":8080")
+          `ln, err := net.__listen__("tcp", ":8080")
 if err != nil {
     log.Fatal(err)
 }`,
