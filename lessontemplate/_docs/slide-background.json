@@ -1,0 +1,24 @@
+{
+  "applies_to": "The SAME background opts work identically on ALL 4 slide-creating functions: addContent(html, opts), addQuiz(q, opts), addFillBlank(item, opts), addMatching(pairs, opts). Pass them in the shared `opts` object, alongside label/note/allowHTML (whichever of those apply to that function — see quiz.json/matching.json/fillinthegaps.json/content.json).",
+  "mechanism": "There is a SINGLE shared <div id=\"slide-bg-layer\"> element in the page (a sibling of #deck, position:fixed, never scrolls or transforms). updateBackgroundLayer() re-targets this ONE element every time the active slide changes (called from goTo()), reading that slide's opts. Slides with no `bg` in their opts simply hide the layer while active. This design exists specifically to avoid two earlier broken approaches (per-slide fixed pseudo-elements broke scroll during the swipe-transition transform; per-slide absolute pseudo-elements scrolled away with content instead of staying pinned) — never re-introduce a per-slide background element, always go through opts.bg on the shared layer.",
+  "opts_fields": {
+    "bg": "string, a path to an image (e.g. \"./images/goroutines.jpg\"). REQUIRED to activate a background at all — every other field below is ignored if `bg` is omitted. The image is pinned/fixed for the duration this slide is active; it does not scroll or pan with slide content.",
+    "overlayAlpha": "number 0..1, default 0.5. A solid dark overlay drawn over the background image, purely for text legibility on top of it. 0 = no overlay (raw image), 1 = fully opaque (image invisible). Tune down for a subtle background, up for a busy/bright image behind lots of text.",
+    "backgroundSize": "real CSS background-size value. \"cover\" = fills the whole slide, cropping overflow, keeps proportions (most common choice for photos). \"contain\" = fits the entire image inside the slide, may leave empty gaps, keeps proportions. \"100% 100%\" = stretches to exactly fill both dimensions, WILL distort non-matching aspect ratios. \"100% auto\" = fits width exactly, height scales proportionally (good for wide banner-shaped images). \"auto\" (default if omitted) = natural image size, no scaling at all — can leave most of the slide with no image showing for a small source image.",
+    "backgroundRepeat": "real CSS background-repeat value. \"no-repeat\" (default) = shows the image once. \"repeat\" = tiles in both directions — use only with small seamless texture images, not photos. \"repeat-x\" / \"repeat-y\" = tiles along one axis only.",
+    "backgroundPosition": "real CSS background-position value, default \"top left\". Common values: \"center center\", \"top center\", \"bottom right\", or percentages like \"50% 50%\". Controls which part of the image is anchored/visible when backgroundSize leaves extra space or crops."
+  },
+  "minimal_example": {
+    "js": "addContent(`<h2>Goroutines</h2><p class=\"lede\">...</p>`, { bg: \"./images/gopher-bg.jpg\" })",
+    "note": "overlayAlpha/backgroundSize/backgroundRepeat/backgroundPosition all fall back to their defaults (0.5, auto, no-repeat, top left) when omitted."
+  },
+  "full_example": {
+    "js": "addQuiz(questionObj, {\n  bg: \"./images/channels-diagram.png\",\n  overlayAlpha: 0.35,\n  backgroundSize: \"contain\",\n  backgroundRepeat: \"no-repeat\",\n  backgroundPosition: \"center center\"\n})",
+    "note": "Lower overlayAlpha here because \"contain\" + a diagram image likely wants the image itself to stay legible/detailed, not darkened as heavily as a photo backdrop would need."
+  },
+  "common_mistakes": [
+    "Setting overlayAlpha/backgroundSize/etc without setting `bg` — they do nothing on their own, `bg` is the switch that turns the whole feature on for that slide.",
+    "Using \"100% 100%\" on a photo with a very different aspect ratio than the slide — this distorts/stretches the image; prefer \"cover\" for photos unless stretching is specifically wanted.",
+    "Forgetting that the background is a SHARED single element — if slide N has a bg and slide N+1 doesn't set one, it correctly disappears going forward; you never need to manually 'clear' a previous slide's background."
+  ]
+}

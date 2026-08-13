@@ -1,0 +1,40 @@
+{
+  "function": "addFillBlank(itemOrArray, opts?)",
+  "purpose": "One or more fill-in-the-blank code exercises on a single slide. Learner types answers into inline <input> fields embedded in a code block. Check/hint/wrong-answer UI is fully automatic — never build any of it by hand.",
+  "first_arg": {
+    "accepts": "a single item object, OR an array of item objects (stacked on one slide, each with its own Check/hint/score, sharing the slide's single Reset button)",
+    "item_object_shape": {
+      "code": "REQUIRED string. The code template. Mark each blank with __id__ (double underscore, an alphanumeric id, double underscore — e.g. \"ch __send__ 42\"). The surrounding static text is plain code text (NOT HTML — no need to escape < > & here even though the underlying code sits inside a <pre><code>, escaping is handled internally); write real Go/JS/etc syntax as-is, including bare < and > and &.",
+      "blanks": "REQUIRED array of { id, answer }. Every __id__ used in `code` needs a matching entry here with the same id (string) and the expected `answer` (string). Answer comparison is case-insensitive and trims surrounding whitespace, but is otherwise exact-match (no partial credit, no regex).",
+      "explain": "REQUIRED string. Shown after Check is pressed. Rendered as INNERHTML (real HTML, unconditionally) — <br>, <strong>, <pre><code>, etc. all work here directly, no opt-in flag needed. Escape < > & yourself for anything not meant to be a tag.",
+      "lang": "OPTIONAL string. One of: go | js | html | css | bash | docker | yml | json | generic. When set, the STATIC (non-blank) parts of `code` are auto-colored with the same tokenizer/colors as a manual class=\"lang-go\" block. The <input> elements for the blanks themselves are never colored/affected — they stay plain form inputs regardless of `lang`. Omitting `lang` renders the whole code block in plain, uncolored monospace (the original/default look)."
+    },
+    "array_form_example": "addFillBlank([item1, item2], opts?) — both items appear stacked on one slide."
+  },
+  "opts_object": {
+    "label": "string. Overrides the default slide header text (default is \"Fill in the Blank\").",
+    "note": "string, Greek. Short instructional line under the header.",
+    "bg": "string, image path — same shared #slide-bg-layer background mechanism as every other add* function.",
+    "overlayAlpha": "number 0..1, default 0.5.",
+    "backgroundSize": "cover | contain | \"100% 100%\" | \"100% auto\" | auto(default).",
+    "backgroundRepeat": "no-repeat(default) | repeat | repeat-x | repeat-y.",
+    "backgroundPosition": "CSS background-position value, default \"top left\"."
+  },
+  "no_allowHTML_here": "addFillBlank has no opts.allowHTML — it doesn't need one. `code` is plain text by nature (it's code, not prose), and `explain` is already unconditionally HTML. The only opt-in toggle for this function is the per-item `lang` field described above.",
+  "automatic_ui_behavior": {
+    "input_sizing": "Each blank <input> auto-grows/shrinks its width to fit typed content (minimum ~4 characters wide).",
+    "hint_button": "Labeled 'Reveal hint (N/total)'. Each click reveals ONE random still-empty blank's correct answer as plain text below the code (never says which specific blank it belongs to — the learner has to match it themselves). Once every blank is revealed, the button becomes disabled and reads 'Everything Shown'. If the item has only 1 blank total, the button is replaced by a disabled '[Time to Guess]' label instead (revealing the only blank would just be handing over the answer).",
+    "check_button": "Grades every blank at once (case-insensitive, trimmed exact match). Correct blanks get a green outline; wrong ones get a red diagonal strike through the input plus the correct answer floating above it in green. After Check, all inputs and the hint button become disabled — one attempt per item (Reset clears it for a retry).",
+    "hint_button_position": "Always rendered ABOVE the growing list of revealed hints, so its position never shifts as you click it repeatedly."
+  },
+  "scoring": "Automatic. 100 if fully correct with zero hints used. 50 if fully correct but at least one hint was revealed (regardless of how many). 0 if any blank is wrong. A 'Score: N%' badge appears next to the slide's Reset button.",
+  "minimal_example_no_lang": {
+    "js": "addFillBlank({\n  code: \"x __op__ 5\",\n  blanks: [{ id: \"op\", answer: \":=\" }],\n  explain: \"Το := δηλώνει ΚΑΙ αρχικοποιεί μια νέα μεταβλητή σε ένα βήμα.\"\n})"
+  },
+  "example_with_lang_coloring": {
+    "js": "addFillBlank({\n  code: \"func main() {\\n  ch := make(chan int)\\n  go func() { ch __send__ 42 }()\\n  v := __recv__ ch\\n  fmt.Println(v)\\n}\",\n  blanks: [\n    { id: \"send\", answer: \"<-\" },\n    { id: \"recv\", answer: \"<-\" }\n  ],\n  explain: \"Το <- στέλνει σε ένα channel όταν είναι στα δεξιά, και λαμβάνει όταν είναι στα αριστερά μιας ανάθεσης.\",\n  lang: \"go\"\n})"
+  },
+  "example_array_form_with_opts": {
+    "js": "addFillBlank(\n  [item1, item2],\n  { label: \"Άσκηση: Channels\", note: \"Συμπλήρωσε τα κενά.\" }\n)"
+  }
+}

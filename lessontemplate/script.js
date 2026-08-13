@@ -353,17 +353,49 @@ function renderQuestion(box, q, storeKey, onScored) {
   qDiv.textContent = q.q;
   box.appendChild(qDiv);
 
+  // Optional code block after the question text (opt-in via q.code, with
+  // an optional q.lang for automatic syntax coloring — same language ids
+  // as the fill-blank item.lang / lang-* highlighter classes, e.g. "go").
+  // Whitespace/newlines in q.code behave exactly like inside a <pre>: no
+  // HTML is parsed, so authors can freely write < > & without escaping.
+  // Omitting q.code changes nothing — every existing question without it
+  // renders exactly as before.
+  if (q.code) {
+    const pre = document.createElement("pre");
+    pre.className = "quiz-code-block";
+    const codeEl = document.createElement("code");
+    if (q.lang && window.Zone01Highlight) {
+      codeEl.classList.add("lang-" + q.lang);
+      codeEl.innerHTML = window.Zone01Highlight(q.lang, q.code);
+      codeEl.dataset.highlighted = "1"; // pre-highlighted, skip the MutationObserver re-pass
+    } else {
+      codeEl.textContent = q.code;
+    }
+    pre.appendChild(codeEl);
+    box.appendChild(pre);
+  }
+
   const optsDiv = document.createElement("div");
   optsDiv.className = "quiz-options";
 
   const explainDiv = document.createElement("div");
   explainDiv.className = "quiz-explain";
 
+  // Optional multi-correct support (opt-in via q.alsoCorrect): an array of
+  // EXTRA 0-based option indices that also count as correct, alongside the
+  // required q.correct. The UI stays single-click (learner picks exactly
+  // one option, as always) — this only widens which single pick counts as
+  // right. Every existing question without q.alsoCorrect behaves exactly
+  // as before: isCorrect(i) reduces to the original `i === q.correct`.
+  function isCorrect(i) {
+    return i === q.correct || (Array.isArray(q.alsoCorrect) && q.alsoCorrect.includes(i));
+  }
+
   function handleSelection(selectedIndex, clickedBtn) {
     const allBtns = optsDiv.querySelectorAll(".quiz-opt");
     allBtns.forEach(b => b.classList.add("disabled"));
 
-    if (selectedIndex === q.correct) {
+    if (isCorrect(selectedIndex)) {
       if (clickedBtn) clickedBtn.classList.add("correct");
       explainDiv.innerHTML = "<strong>CORRECT!</strong><br>" + q.explain;
     } else {
@@ -372,8 +404,8 @@ function renderQuestion(box, q, storeKey, onScored) {
     }
 
     allBtns.forEach((b, i2) => {
-      if (order[i2] === q.correct) b.classList.add("correct");
-      if (!clickedBtn && order[i2] === selectedIndex && selectedIndex !== q.correct) {
+      if (isCorrect(order[i2])) b.classList.add("correct");
+      if (!clickedBtn && order[i2] === selectedIndex && !isCorrect(selectedIndex)) {
         b.classList.add("wrong");
       }
     });
@@ -387,7 +419,7 @@ function renderQuestion(box, q, storeKey, onScored) {
 
     explainDiv.classList.add("show");
 
-    savedScores[storeKey] = selectedIndex === q.correct ? 100 : 0;
+    savedScores[storeKey] = isCorrect(selectedIndex) ? 100 : 0;
     persistScores();
     if (onScored) onScored();
   }
@@ -450,10 +482,33 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
     inp.style.width = Math.max(4, inp.value.length + 2) + "ch";
   }
 
+  // Optional syntax coloring (v2, opt-in via item.lang, e.g. "go"/"js"/
+  // "generic"): only static text segments between blanks are colored, via
+  // highlighter.js's exported window.Zone01Highlight(lang, text). The blank
+  // <input> elements themselves are never touched by this — unlike putting
+  // a class="lang-*" directly on <code> (which would wipe them out, since
+  // the highlighter normally rewrites a code element's whole innerHTML from
+  // its textContent). When item.lang is omitted, this is a no-op and the
+  // exact original text-node behavior below runs unchanged.
+  if (item.lang && window.Zone01Highlight) {
+    codeEl.classList.add("lang-" + item.lang, "fb-code-colored");
+    // Pre-mark as highlighted so highlighter.js's MutationObserver (which
+    // would otherwise see this class-"lang-*" <code> get inserted and try
+    // to rewrite its whole innerHTML from textContent) skips it entirely —
+    // that rewrite would wipe out the live <input> blanks built below.
+    codeEl.dataset.highlighted = "1";
+  }
+
   const parts = item.code.split(/__([a-zA-Z0-9]+)__/g);
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 0) {
-      codeEl.appendChild(document.createTextNode(parts[i]));
+      if (item.lang && window.Zone01Highlight) {
+        const span = document.createElement("span");
+        span.innerHTML = window.Zone01Highlight(item.lang, parts[i]);
+        codeEl.appendChild(span);
+      } else {
+        codeEl.appendChild(document.createTextNode(parts[i]));
+      }
     } else {
       const blankId = parts[i];
       const wrap = document.createElement("span");
@@ -640,7 +695,7 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
  * @param {Function} [onScored] - Called after this set's score is (re)written.
  * @param {string} [setLabel] - Optional small heading above this set (used when multiple sets share a slide).
  */
-function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel) {
+function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel, allowHTML) {
   const container = document.createElement("div");
   container.className = "matching-container";
 
@@ -686,7 +741,9 @@ function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel) {
     termBox.className = "match-btn matched";
     termBox.style.flex = "1";
     termBox.style.margin = "0";
-    termBox.textContent = pairs[pairIndex].term;
+    // v2, opt-in via opts.allowHTML on addMatching(): default (falsy) keeps
+    // the original textContent path, unchanged for existing lessons.
+    if (allowHTML) termBox.innerHTML = pairs[pairIndex].term; else termBox.textContent = pairs[pairIndex].term;
 
     const line = document.createElement("div");
     line.style.flex = "0 0 60px";
@@ -710,7 +767,7 @@ function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel) {
     defBox.className = "match-btn matched";
     defBox.style.flex = "1";
     defBox.style.margin = "0";
-    defBox.textContent = pairs[pairIndex].def;
+    if (allowHTML) defBox.innerHTML = pairs[pairIndex].def; else defBox.textContent = pairs[pairIndex].def;
 
     row.appendChild(termBox);
     row.appendChild(line);
@@ -763,7 +820,7 @@ function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel) {
     if (matchedPairs.has(pairIndex)) return;
     const btn = document.createElement("button");
     btn.className = "match-btn";
-    btn.textContent = pairs[pairIndex].term;
+    if (allowHTML) btn.innerHTML = pairs[pairIndex].term; else btn.textContent = pairs[pairIndex].term;
     btn.addEventListener("click", () => onPick(btn, "L", pairIndex));
     leftCol.appendChild(btn);
   });
@@ -772,7 +829,7 @@ function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel) {
     if (matchedPairs.has(pairIndex)) return;
     const btn = document.createElement("button");
     btn.className = "match-btn";
-    btn.textContent = pairs[pairIndex].def;
+    if (allowHTML) btn.innerHTML = pairs[pairIndex].def; else btn.textContent = pairs[pairIndex].def;
     btn.addEventListener("click", () => onPick(btn, "R", pairIndex));
     rightCol.appendChild(btn);
   });
@@ -919,7 +976,7 @@ function renderSlide(el, contentEl, slide, idx) {
       contentEl.querySelectorAll(".matching-container").forEach(n => n.remove());
       sets.forEach((pairs, setIdx) => {
         const label = sets.length > 1 ? `Set ${setIdx + 1} / ${sets.length}` : null;
-        renderMatching(contentEl, pairs, seeds[setIdx], idx + "_match_" + setIdx, refresh, label);
+        renderMatching(contentEl, pairs, seeds[setIdx], idx + "_match_" + setIdx, refresh, label, slide.opts && slide.opts.allowHTML);
       });
       refresh();
     }

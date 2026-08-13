@@ -1,0 +1,36 @@
+{
+  "function": "addMatching(setsOrPairs, opts?)",
+  "purpose": "A drag-free click-to-match game: click a term, click its matching definition. Supports 1-3 independent sets stacked on one slide.",
+  "first_arg": {
+    "single_set_form": "an array of pair objects: [{term,def}, {term,def}, ...] — renders as ONE matching set on the slide.",
+    "multi_set_form": "an array of arrays of pair objects: [set1, set2] or [set1, set2, set3] (2-3 sets max is the intended use) — each set is scored and reset INDEPENDENTLY, and automatically gets a 'Set N / M' label above it when there's more than one set.",
+    "pair_object_shape": {
+      "term": "REQUIRED string. Left-column entry. Plain text (textContent) by default — see opts.allowHTML below to change this.",
+      "def": "REQUIRED string. Right-column entry, matched against its `term`. Same plain-text-by-default rule as `term`."
+    }
+  },
+  "opts_object": {
+    "label": "string. Overrides the default slide header text (default is \"Matching Pairs\").",
+    "note": "string, Greek. Short instructional line under the header.",
+    "bg": "string, image path — same shared #slide-bg-layer background mechanism as every other add* function.",
+    "overlayAlpha": "number 0..1, default 0.5.",
+    "backgroundSize": "cover | contain | \"100% 100%\" | \"100% auto\" | auto(default) — same CSS background-size semantics as addQuiz/addContent.",
+    "backgroundRepeat": "no-repeat(default) | repeat | repeat-x | repeat-y.",
+    "backgroundPosition": "CSS background-position value, default \"top left\".",
+    "allowHTML": "boolean, default false. THE ONLY add* opts field that changes term/def from plain text to real HTML. When true, every term AND every def in EVERY set on this addMatching() call is rendered with innerHTML instead of textContent. Use this ONLY when you need a <br> line break or a <pre><code class=\"lang-...\">...</code></pre> snippet inside a term or a definition. When true, you must escape < > & yourself for any text that is not meant to be an actual HTML tag (it now parses as markup). This flag applies to the WHOLE call — you cannot set it per-set or per-pair, only per addMatching() call."
+  },
+  "no_per_item_lang_shortcut": "Unlike addFillBlank's item.lang, there is no dedicated `lang` field for matching pairs. If you need colored code inside a term/def, set opts.allowHTML:true and hand-wrap tokens yourself with <span class=\"tok-kw|tok-type|tok-str|tok-com|tok-num|tok-func\"> inside the term/def string, or embed a full <pre><code class=\"lang-go\">...</code></pre> block (the page's normal MutationObserver-driven highlighter.js will pick up class=\"lang-*\" on any <code> element automatically, including ones inserted this way).",
+  "scoring": "Automatic, per set: score = percentage of that set's pairs currently matched. A 'Score: N%' badge appears per slide (aggregating across all sets shown), next to the slide's Reset button. Never write score text yourself.",
+  "layout_note": "On screens ≤900px the two columns stay SIDE BY SIDE (never stack vertically) — gap/font-size/padding shrink progressively instead, with an extra tier at ≤480px. This is automatic, nothing to configure.",
+  "minimal_example_single_set": {
+    "js": "addMatching([\n  { term: \"var\", def: \"δηλώνει μια νέα μεταβλητή\" },\n  { term: \"func\", def: \"δηλώνει μια συνάρτηση\" },\n  { term: \"package\", def: \"ομαδοποιεί σχετικό κώδικα Go\" }\n])"
+  },
+  "example_multi_set_with_opts": {
+    "js": "addMatching(\n  [setKeywords, setTypes],\n  { label: \"Λεξιλόγιο Go\", note: \"Ταίριαξε τον όρο με τον ορισμό του.\" }\n)",
+    "note": "setKeywords and setTypes are each an array of {term,def} pairs — this renders TWO independent matching games on one slide, labeled 'Set 1 / 2' and 'Set 2 / 2' automatically."
+  },
+  "example_with_allowHTML": {
+    "js": "addMatching(\n  [{ term: \"ch <- v\", def: \"στέλνει την τιμή <strong>v</strong> στο channel<br><em>(blocking αν δεν υπάρχει receiver)</em>\" }],\n  { allowHTML: true }\n)",
+    "note": "Without allowHTML:true, the <strong>/<br>/<em> tags above would appear as literal visible text instead of rendering."
+  }
+}

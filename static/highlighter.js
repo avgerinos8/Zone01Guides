@@ -280,6 +280,22 @@
     root.querySelectorAll && root.querySelectorAll('code[class*="lang-"]').forEach(highlightElement);
   }
 
+  // ── external API (v2, additive) ─────────────────────────────────────── ⊃
+  // Exposes the same per-language tokenizers used for class="lang-*" <code>
+  // elements, callable directly on a raw string. Added so other engine code
+  // (e.g. script.js's fill-in-the-blank renderer) can highlight a plain text
+  // segment on demand, WITHOUT touching a live DOM subtree — the normal
+  // class="lang-*" + MutationObserver path below is completely unaffected
+  // and still works exactly as before for every other use.
+  //   window.Zone01Highlight(lang, rawText) -> HTML string (already escaped)
+  //   lang is given WITHOUT the "lang-" prefix, e.g. "go", "js", "generic".
+  //   Returns the original text HTML-escaped, unhighlighted, if lang is
+  //   unknown — never throws.
+  window.Zone01Highlight = function (lang, rawText) {
+    const fn = LANG_MAP["lang-" + lang];
+    return fn ? fn(rawText) : escapeHtml(rawText);
+  };
+
   document.addEventListener("DOMContentLoaded", () => scan(document.body));
 
   // Slides in this template are built dynamically (script.js sets innerHTML
