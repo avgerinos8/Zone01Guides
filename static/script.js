@@ -227,6 +227,7 @@ function checkCourseVersion(courseVersion) {
     localStorage.removeItem(prefix + "current_slide");
     localStorage.removeItem(prefix + "answers");
     localStorage.removeItem(prefix + "scores");
+    localStorage.removeItem(prefix + "notified_100"); // allow re-notification on the new version
     localStorage.setItem(versionKey, courseVersion);
   }
 
@@ -325,15 +326,72 @@ function computeTotalScore() {
  */
 function updateTotalScoreDisplay() {
   const el = document.getElementById("final-score");
-  if (!el) return;
   const { percent, answered, total } = computeTotalScore();
-  if (answered === 0) {
-    el.textContent = "Κάνε το μάθημα και εδώ θα γράφεται η τελική σου βαθμολογία!";
-  } else if (answered < total) {
-    el.textContent = "Αποτέλεσμα μέχρι στιγμής (Score %): " + percent + "%";
-  } else {
-    el.textContent = "Συγχαρητήρια! Ολοκλήρωσες το μάθημα με τελικό αποτέλεσμα (Score %): " + percent + "%";
+  if (el) {
+    if (answered === 0) {
+      el.textContent = "Κάνε το μάθημα και εδώ θα γράφεται η τελική σου βαθμολογία!";
+    } else if (answered < total) {
+      el.textContent = "Αποτέλεσμα μέχρι στιγμής (Score %): " + percent + "%";
+    } else {
+      el.textContent = "Συγχαρητήρια! Ολοκλήρωσες το μάθημα με τελικό αποτέλεσμα (Score %): " + percent + "%";
+    }
   }
+  maybeNotifyCompletion(percent, answered, total);
+}
+
+// ── completion notification (opt-in, no-backend email via Apps Script) ──── ⊃
+/**
+ * When the course is configured with a notifyUrl (via initSlideDeck's opts)
+ * and the deck reaches 100% for the FIRST time on this browser, sends a
+ * one-shot POST with the score + a per-slide breakdown to that URL — meant
+ * to point at a Google Apps Script Web App that logs it to a Sheet and
+ * emails the course author. No-op entirely if notifyUrl was never set.
+ * Guards against re-sending on every reload via a dedicated localStorage
+ * flag (separate from savedScores, so clearing progress doesn't silently
+ * re-trigger a duplicate email either — see performHardReset()).
+ * @param {number} percent
+ * @param {number} answered
+ * @param {number} total
+ */
+function maybeNotifyCompletion(percent, answered, total) {
+  if (!notifyUrl) return;
+  if (answered === 0 || answered < total || percent < 100) return;
+
+  const prefix = getStoragePrefix();
+  const notifiedKey = prefix + "notified_100";
+  if (localStorage.getItem(notifiedKey)) return; // already sent for this course+browser
+  localStorage.setItem(notifiedKey, "1");
+
+  const breakdown = [];
+  slides.forEach((s, idx) => {
+    if (s.type === "quiz" || s.type === "fillblank" || s.type === "matching") {
+      const label = (s.opts && s.opts.label) || (s.type === "quiz" ? "Quiz Checkpoint" : s.type === "fillblank" ? "Fill in the Blank" : "Matching Pairs");
+      const keyPrefix = idx + (s.type === "quiz" ? "_" : s.type === "fillblank" ? "_fb_" : "_match_");
+      s.data.forEach((_, subIdx) => {
+        const key = keyPrefix + subIdx;
+        if (key in savedScores) {
+          breakdown.push({ label: "Slide " + (idx + 1) + " — " + label, score: savedScores[key] });
+        }
+      });
+    }
+  });
+
+  fetch(notifyUrl, {
+    method: "POST",
+    mode: "no-cors", // Apps Script Web Apps don't return CORS headers; fire-and-forget
+    headers: { "Content-Type": "text/plain" }, // text/plain avoids a CORS preflight
+    body: JSON.stringify({
+      course: document.title || window.location.pathname,
+      score: percent,
+      studentName: (window.STUDENT_NAME || ""), // optional, see index.html comment
+      details: { breakdown }
+    })
+  }).catch(() => {
+    // Best-effort only — a failed notification should never break the
+    // student's experience of the course. Un-set the flag so it retries
+    // next time they revisit this page after reaching 100%.
+    localStorage.removeItem(notifiedKey);
+  });
 }
 
 // ── multiple-choice question renderer ───────────────────────────────────── ⊃
@@ -993,8 +1051,245 @@ function renderSlide(el, contentEl, slide, idx) {
   }
 }
 
-let deckEl, dotsEl, counterEl, fillEl, prevBtn, nextBtn, resetBtn;
+/**
+ * Reads a short (eyebrow, title) preview pair for a dot's tooltip out of
+ * an already-rendered slide's DOM. Works uniformly across slide types:
+ * content slides use their real .eyebrow/h1 (or .kicker-line for the
+ * title-slide layout); quiz/fillblank/matching slides get their header
+ * built dynamically by buildInteractiveHeader(), so this reads that
+ * generated .eyebrow label and falls back to a short type-specific title
+ * since those slides have no real <h1>.
+ * @param {HTMLElement} contentEl - The rendered .slide-content element.
+ * @param {string} type - slide.type ("content" | "quiz" | "fillblank" | "matching").
+ * @returns {{eyebrow: string, title: string}}
+ */
+/**
+ * Builds the tooltip content for one dot. Returns either a two-line
+ * {eyebrow, title} pair (content slides only, excluding VSCode Challenge)
+ * or a single short {label} (first/last slide, and every interactive
+ * slide type — quiz/fillblank/matching/VSCode Challenge — since those
+ * don't have a real heading worth showing two lines for).
+ * @param {HTMLElement} contentEl - The rendered .slide-content element.
+ * @param {string} type - slide.type ("content" | "quiz" | "fillblank" | "matching").
+ * @param {number} idx - This slide's index in the deck.
+ * @param {number} total - Total slide count in the deck.
+ * @param {boolean} isFinalQuiz - True for the LAST quiz-type slide in the deck.
+ * @returns {{eyebrow?: string, title?: string, label?: string}}
+ */
+/**
+ * Builds the tooltip content for one dot, plus a CSS class hint used to
+ * style "special" dots (interactive types + VSCode Challenge + Glossary)
+ * at 50% opacity — see wiring in initSlideDeck() and the .dot-dim rule in
+ * style.css. Returns either a two-line {eyebrow, title} pair (plain
+ * content slides only) or a single short {label} (first/last slide, and
+ * every interactive/special slide type).
+ * @param {HTMLElement} contentEl - The rendered .slide-content element.
+ * @param {string} type - slide.type ("content" | "quiz" | "fillblank" | "matching").
+ * @param {number} idx - This slide's index in the deck.
+ * @param {number} total - Total slide count in the deck.
+ * @param {boolean} isFinalQuiz - True for the LAST quiz-type slide in the deck.
+ * @returns {{eyebrow?: string, title?: string, label?: string, dim?: boolean}}
+ */
+function getDotPreviewText(contentEl, type, idx, total, isFinalQuiz) {
+  if (idx === 0) return { label: "START" };
+  if (idx === total - 1) return { label: "END" };
+
+  if (type === "quiz") return { label: isFinalQuiz ? "FINAL QUIZ" : "QUIZ", dim: true };
+  if (type === "fillblank") return { label: "FILLBLANK", dim: true };
+  if (type === "matching") return { label: "MATCHINGPAIRS", dim: true };
+
+  // type === "content" from here on
+  const eyebrowEl = contentEl.querySelector(".eyebrow, .kicker-line");
+  const eyebrow = eyebrowEl ? eyebrowEl.textContent.trim() : "";
+
+  if (/vscode challenge/i.test(eyebrow)) return { label: "VSCODECHALLENGE", dim: true };
+  if (/γλωσσάρι|λεξιλόγιο/i.test(eyebrow)) return { label: "GLOSSARY", dim: true };
+
+  const h1 = contentEl.querySelector("h1, h2");
+  const title = h1 ? h1.textContent.trim() : "";
+  return { eyebrow, title };
+}
+
+let deckEl, dotsEl, dotsTrackEl, counterEl, fillEl, prevBtn, nextBtn, resetBtn;
 let slideEls, dotEls;
+let notifyUrl = null; // set via initSlideDeck({ notifyUrl: "..." }); null = feature off
+
+// ── shared floating dot tooltip ─────────────────────────────────────────── ⊃
+// A SINGLE tooltip element lives on document.body (outside #dots entirely),
+// so it is never clipped by #dots's overflow:hidden (needed for the
+// windowed dot scroller). Positioned with position:fixed + getBoundingClientRect()
+// on hover, rather than CSS-only positioning relative to the dot.
+let dotTooltipEl = null;
+
+/**
+ * Lazily creates (once) and returns the single shared tooltip element.
+ * @returns {HTMLElement}
+ */
+function ensureDotTooltipEl() {
+  if (dotTooltipEl) return dotTooltipEl;
+  dotTooltipEl = document.createElement("div");
+  dotTooltipEl.className = "dot-tooltip";
+  dotTooltipEl.innerHTML = '<div class="dt-eyebrow"></div><div class="dt-title"></div>';
+  document.body.appendChild(dotTooltipEl);
+  return dotTooltipEl;
+}
+
+/**
+ * Fills and positions the shared tooltip above the given dot, then makes
+ * it visible. Reads eyebrow/title from the dot's own data-* attributes
+ * (set once at dot-creation time in initSlideDeck).
+ * @param {HTMLElement} dot
+ */
+function showDotTooltip(dot) {
+  const tip = ensureDotTooltipEl();
+  const eyebrow = dot.dataset.tipEyebrow || "";
+  const title = dot.dataset.tipTitle || "";
+  const label = dot.dataset.tipLabel || "";
+
+  const ebEl = tip.querySelector(".dt-eyebrow");
+  const titleEl = tip.querySelector(".dt-title");
+
+  if (label) {
+    // Single-line mode: START/END/QUIZ/FINAL QUIZ/FILLBLANK/MATCHINGPAIRS/
+    // VSCODECHALLENGE. Reuses the title line's slot, styled distinctly.
+    ebEl.style.display = "none";
+    titleEl.textContent = label;
+    titleEl.style.display = "";
+    titleEl.classList.add("dt-label");
+  } else {
+    ebEl.textContent = eyebrow;
+    ebEl.style.display = eyebrow ? "" : "none";
+    titleEl.textContent = title;
+    titleEl.style.display = title ? "" : "none";
+    titleEl.classList.remove("dt-label");
+  }
+
+  // Measure the dot's real on-screen position (position:fixed, viewport
+  // coordinates) — this works correctly even though the dot sits inside
+  // a scrolled/transformed, clipped ancestor.
+  const rect = dot.getBoundingClientRect();
+  tip.style.visibility = "hidden";
+  tip.style.opacity = "0";
+  tip.classList.add("visible");
+  const tipRect = tip.getBoundingClientRect();
+
+  let left = rect.left + rect.width / 2 - tipRect.width / 2;
+  const margin = 8;
+  left = Math.max(margin, Math.min(window.innerWidth - tipRect.width - margin, left));
+  const top = rect.top - tipRect.height - 10;
+
+  tip.style.left = `${left}px`;
+  tip.style.top = `${top}px`;
+  tip.style.visibility = "";
+  tip.style.opacity = "";
+}
+
+/** Hides the shared dot tooltip. */
+function hideDotTooltip() {
+  if (dotTooltipEl) dotTooltipEl.classList.remove("visible");
+}
+
+// ── dots windowed scroll (viewport + sliding track + hover arrows) ─────── ⊃
+let dotsScrollX = 0; // current translateX applied to #dots-track, in px (<= 0)
+let dotsRAF = null;  // active requestAnimationFrame id while an arrow is hovered
+
+/**
+ * Clamps and applies the given track offset, then toggles the
+ * can-scroll-left/right classes on #dots so the arrow gradients only show
+ * when there is actually more track hidden on that side.
+ * @param {number} x - Desired translateX in px.
+ */
+function setDotsScroll(x) {
+  if (!dotsEl || !dotsTrackEl) return;
+  const viewport = dotsEl.clientWidth;
+  const trackWidth = dotsTrackEl.scrollWidth;
+
+  if (trackWidth <= viewport) {
+    // Everything fits: center the whole track in the viewport, no
+    // scrolling possible, no leftover empty space on either side.
+    dotsScrollX = (viewport - trackWidth) / 2;
+    dotsTrackEl.style.transform = `translateX(${dotsScrollX}px)`;
+    dotsEl.classList.remove("can-scroll-left", "can-scroll-right");
+    return;
+  }
+
+  const minX = viewport - trackWidth; // most-negative allowed offset (track's right edge meets viewport's right edge exactly, zero leftover space)
+  dotsScrollX = Math.max(minX, Math.min(0, x));
+  dotsTrackEl.style.transform = `translateX(${dotsScrollX}px)`;
+  dotsEl.classList.toggle("can-scroll-left", dotsScrollX < 0);
+  dotsEl.classList.toggle("can-scroll-right", dotsScrollX > minX);
+}
+
+/**
+ * Re-centers the dots track so the dot at the given slide index sits in
+ * the middle of the visible viewport (clamped at either end so we never
+ * scroll past the first/last dot). Called on every goTo() and on resize.
+ *
+ * For the FIRST and LAST slide specifically, this requests the exact
+ * viewport-edge offset directly (0 / viewport-trackWidth) rather than a
+ * computed "center" that setDotsScroll() would clamp to the same value
+ * anyway — avoids the boundary dot ever reading as a fraction of a pixel
+ * short (and therefore visually clipped) due to subpixel rounding in the
+ * offsetLeft/clientWidth math.
+ * @param {number} idx - Slide index whose dot should be centered.
+ */
+function centerDotsOn(idx) {
+  if (!dotsEl || !dotsTrackEl || !dotEls || !dotEls[idx]) return;
+
+  if (idx === 0) {
+    setDotsScroll(0);
+    return;
+  }
+  if (idx === dotEls.length - 1) {
+    setDotsScroll(dotsEl.clientWidth - dotsTrackEl.scrollWidth);
+    return;
+  }
+
+  const viewport = dotsEl.clientWidth;
+  const dot = dotEls[idx];
+  // dot.offsetLeft is relative to #dots-track (its offsetParent), since
+  // #dots-track is position:absolute and dots have no other positioned
+  // ancestor in between.
+  const dotCenter = dot.offsetLeft + dot.offsetWidth / 2;
+  setDotsScroll(viewport / 2 - dotCenter);
+}
+
+/**
+ * Starts a slow, constant-speed auto-scroll of the dots track while the
+ * mouse hovers an arrow zone. Stops automatically at either scroll bound.
+ * @param {number} direction - -1 to scroll left (reveal earlier dots), +1 for right.
+ */
+function startDotsAutoScroll(direction) {
+  stopDotsAutoScroll();
+  const speed = 1.4; // px per frame ≈ slow, steady crawl
+  function step() {
+    setDotsScroll(dotsScrollX - direction * speed);
+    dotsRAF = requestAnimationFrame(step);
+  }
+  dotsRAF = requestAnimationFrame(step);
+}
+
+/** Stops any active dots auto-scroll loop started by startDotsAutoScroll(). */
+function stopDotsAutoScroll() {
+  if (dotsRAF !== null) {
+    cancelAnimationFrame(dotsRAF);
+    dotsRAF = null;
+  }
+}
+
+/** Wires the hover-to-scroll behavior on the two arrow zones. Call once at init. */
+function wireDotsArrows() {
+  const leftArrow = document.getElementById("dots-arrow-left");
+  const rightArrow = document.getElementById("dots-arrow-right");
+  if (!leftArrow || !rightArrow) return;
+
+  leftArrow.addEventListener("mouseenter", () => startDotsAutoScroll(-1));
+  leftArrow.addEventListener("mouseleave", stopDotsAutoScroll);
+  rightArrow.addEventListener("mouseenter", () => startDotsAutoScroll(1));
+  rightArrow.addEventListener("mouseleave", stopDotsAutoScroll);
+
+  window.addEventListener("resize", () => centerDotsOn(current));
+}
 
 // ── deck initialization and navigation ─────────────────────────────────── ⊃
 /**
@@ -1016,6 +1311,7 @@ function goTo(i) {
   slideEls[current].classList.add("active");
   dotEls[current].classList.add("active");
   slideEls[current].scrollTop = 0;
+  centerDotsOn(current); // re-center the windowed dots track on the new active dot
 
   counterEl.textContent = (current + 1) + " / " + slides.length;
   fillEl.style.width = (((current + 1) / slides.length) * 100) + "%";
@@ -1032,6 +1328,7 @@ function performHardReset() {
   localStorage.removeItem(prefix + "current_slide");
   localStorage.removeItem(prefix + "answers");
   localStorage.removeItem(prefix + "scores");
+  localStorage.removeItem(prefix + "notified_100"); // allow re-notification after a fresh 100%
   localStorage.setItem(prefix + "version", activeCourseVersion);
   window.location.reload();
 }
@@ -1044,11 +1341,13 @@ function performHardReset() {
 function initSlideDeck(config) {
   const opts = config || {};
   const courseVersion = opts.version || "1.0.0";
+  notifyUrl = opts.notifyUrl || null; // optional — see maybeNotifyCompletion()
 
   checkCourseVersion(courseVersion);
 
   deckEl = document.getElementById("deck");
   dotsEl = document.getElementById("dots");
+  dotsTrackEl = document.getElementById("dots-track");
   counterEl = document.getElementById("slide-counter");
   fillEl = document.getElementById("progress-fill");
   prevBtn = document.getElementById("btn-prev");
@@ -1064,6 +1363,12 @@ function initSlideDeck(config) {
     }
   });
 
+  // The final cumulative quiz is simply the LAST quiz-type slide in the
+  // deck — every course has exactly one, always placed after all
+  // per-section quizzes, right before the closing glossary/sources slide.
+  let lastQuizIdx = -1;
+  slides.forEach((s, i) => { if (s.type === "quiz") lastQuizIdx = i; });
+
   slides.forEach((s, i) => {
     const el = document.createElement("div");
     el.className = "slide";
@@ -1075,9 +1380,19 @@ function initSlideDeck(config) {
     renderSlide(el, contentEl, s, i);
 
     const dot = document.createElement("div");
-    dot.className = "dot" + (s.type !== "content" ? " quiz-dot" : "");
     dot.addEventListener("click", () => goTo(i));
-    dotsEl.appendChild(dot);
+
+    const preview = getDotPreviewText(contentEl, s.type, i, slides.length, i === lastQuizIdx);
+    dot.className = "dot"
+      + (s.type !== "content" ? " quiz-dot" : "")
+      + (preview.dim ? " dot-dim" : "");
+    dot.dataset.tipEyebrow = preview.eyebrow || "";
+    dot.dataset.tipTitle = preview.title || "";
+    dot.dataset.tipLabel = preview.label || "";
+    dot.addEventListener("mouseenter", () => showDotTooltip(dot));
+    dot.addEventListener("mouseleave", hideDotTooltip);
+
+    dotsTrackEl.appendChild(dot);
   });
 
   slideEls = Array.from(document.querySelectorAll(".slide"));
@@ -1098,7 +1413,18 @@ function initSlideDeck(config) {
     if (e.key === "ArrowLeft") goTo(current - 1);
   });
 
+  wireDotsArrows();
+
   if (current >= slides.length) current = 0;
   goTo(current);
+  // On first load, #dots/#dots-track may not have a finalized layout yet
+  // at this exact synchronous point (no paint has happened yet) —
+  // clientWidth/scrollWidth can read 0 or stale here, which throws the
+  // windowed dot scroller off until the next manual navigation forces a
+  // recompute. Re-run the centering once after the next paint, plus one
+  // more delayed pass as a safety net for slower initial layouts (e.g. a
+  // background tab becoming visible), to guarantee correct measurements.
+  requestAnimationFrame(() => centerDotsOn(current));
+  setTimeout(() => centerDotsOn(current), 300);
   updateTotalScoreDisplay();
 }

@@ -32,7 +32,12 @@
                 <span class="mobile-text">←</span>
             </button>
         </div>
-        <div id="dots"></div>
+        <div id="dots">
+            <div class="dots-arrow dots-arrow-left" id="dots-arrow-left"><span class="dots-arrow-triangle"></span></div>
+            <div id="dots-track"></div>
+            <div class="dots-arrow dots-arrow-right" id="dots-arrow-right"><span class="dots-arrow-triangle"></span>
+            </div>
+        </div>
         <div style="display:flex; align-items:center; gap:16px;">
             <span id="slide-counter"></span>
             <button class="nav-btn" id="btn-next">
@@ -1527,7 +1532,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 3 / 8 — Τελεστές &amp; Εκφράσεις</div>
+<div class="eyebrow">Ενότητα 3 / 8 — Operators &amp; Εκφράσεις</div>
 <h1>Expressions vs Statements</h1>
 <p class="lede">Αυτή η διάκριση είναι θεμελιώδης για να καταλάβεις πώς δουλεύει μια γλώσσα προγραμματισμού: τι παράγει τιμή και τι κάνει μια ενέργεια.</p>
 
@@ -1574,7 +1579,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 </ul>
 
 <br>
-<h1>Κατηγορίες Τελεστών</h1>
+<h1>Κατηγορίες operators</h1>
 <p class="lede">Ένας <strong>τελεστής</strong> (operator) είναι ένα σύμβολο που εκτελεί μια συγκεκριμένη πράξη πάνω σε μία ή περισσότερες τιμές (που λέγονται operands). Η Go διαθέτει αρκετές κατηγορίες τελεστών, καθεμιά με τον δικό της σκοπό.</p>
 
 <div class="grid2">
@@ -1585,7 +1590,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
   <div class="card"><h3>Εκχώρησης</h3><p><code>=</code> (απλή ανάθεση) <code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code> κ.ά. — συνδυάζουν μια πράξη με ανάθεση σε ένα βήμα, π.χ. <code>x += 5</code> ισοδυναμεί με <code>x = x + 5</code></p></div>
 </div>
 <br>
-<h1>Σειρά Εκτέλεσης &amp; Προτεραιότητα Τελεστών</h1>
+<h1>Σειρά Εκτέλεσης &amp; Προτεραιότητα operators</h1>
 
 <p class="lede">
     Όταν μια έκφραση περιέχει πολλαπλούς τελεστές, η σειρά υπολογισμού καθορίζεται από
@@ -1607,7 +1612,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
   <tr><td class="gt-term">Expression</td><td class="gt-def">παράγει τιμή που μπορεί να χρησιμοποιηθεί περαιτέρω</td></tr>
   <tr><td class="gt-term">Statement</td><td class="gt-def">εκτελεί ενέργεια, δεν παράγει επαναχρησιμοποιήσιμη τιμή</td></tr>
   <tr><td class="gt-term">Expression Statement</td><td class="gt-def">μια έκφραση που στέκεται μόνη της ως εντολή — η τιμή της πετιέται, αλλά εκτελείται το side effect της</td></tr>
-  <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι τελεστές σε μια έκφραση</td></tr>
+  <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι operators σε μια έκφραση</td></tr>
 </table>
 `);
 
@@ -1799,7 +1804,7 @@ if x = 0 { // ΣΦΑΛΜΑ: δεν μεταγλωττίζεται!
 
 <h2>Λογικοί Τελεστές &amp;&amp;, || και !</h2>
 
-<p>Μπορείς να συνδυάσεις πολλές συνθήκες με λογικούς τελεστές:</p>
+<p>Μπορείς να συνδυάσεις πολλές συνθήκες με λογικούς operators:</p>
 
 <div class="glossary-strip">
     <div class="gs-pill">
@@ -3327,14 +3332,14 @@ for count < 3 {
 
 import "fmt"
 
-func sayHello() {
-    fmt.Println("Hello from sayHello!")
-}
-
 func main() {
     fmt.Println("Starting main")
     sayHello() // εδώ καλούμε τη function
     fmt.Println("Back to main")
+}
+
+func sayHello() {
+    fmt.Println("Hello from sayHello!")
 }
 </code></pre>
 
@@ -3350,6 +3355,17 @@ Back to main
 <p>
     Η <code>main()</code> ξεκινά, τυπώνει "Starting main", μετά καλεί τη <code>sayHello()</code> — η εκτέλεση πηδάει στη <code>sayHello()</code>, τυπώνει το μήνυμά της, και μετά επιστρέφει στη <code>main()</code>, η οποία συνεχίζει από εκεί που σταμάτησε.
 </p>
+
+<div class="callout">
+    <span class="tag">Ο όρος: helper function</span>
+    <p>
+        Η <code>sayHello()</code> στο παράδειγμα παραπάνω λέγεται <strong>helper function</strong> (βοηθητική
+        function) — μια function που δεν είναι το entry point του προγράμματος, αλλά υπάρχει για να την καλεί μια
+        άλλη function (συνήθως η <code>main()</code>), κάνοντας ένα συγκεκριμένο, μικρότερο κομμάτι δουλειάς. Θα
+        συναντάς συνέχεια αυτόν τον όρο σε όλον αυτόν τον οδηγό — κάθε φορά που η <code>main()</code> καλεί μία ή
+        περισσότερες functions για να οργανώσει τη λογική της, αυτές οι functions είναι τα helpers της.
+    </p>
+</div>
 
 <h2>Πώς ορίζουμε μια function</h2>
 
@@ -3519,19 +3535,19 @@ func add(x, y int) { // συμπτυγμένη γραφή
         Για παράδειγμα, φαντάσου μια function που υπολογίζει το άθροισμα δύο αριθμών <strong>και</strong> τυπώνει κάτι
         στην οθόνη:
     </p>
-    <pre><code class="lang-go">func addWithPrint(a, b int) int {
-    result := a + b
-    fmt.Println("Adding", a, "+", b, "=", result) // side effect: εκτύπωση
-    return result
-}
-
-func main() {
+    <pre><code class="lang-go">func main() {
     // Αγνοούμε την τιμή επιστροφής, μας ενδιαφέρει μόνο το side effect (η εκτύπωση):
     addWithPrint(5, 3)
 
     // Κρατάμε την τιμή, αλλά η εκτύπωση (side effect) γίνεται αναγκαστικά:
     sum := addWithPrint(10, 20)
     fmt.Println("Sum is", sum)
+}
+
+func addWithPrint(a, b int) int {
+    result := a + b
+    fmt.Println("Adding", a, "+", b, "=", result) // side effect: εκτύπωση
+    return result
 }</code></pre>
 <p> Όπως είδαμε, το <strong>abstraction</strong> είναι ακριβώς αυτό: όταν καλείς μια function, δεν χρειάζεται να ξέρεις τι κάνει εσωτερικά, επομένως <strong>δεν μπορείς να γνωρίζεις</strong> ποια side effects μπορεί να έχει. Γι' αυτό ακριβώς το <strong>docstring</strong> (το // σχόλιο ακριβώς πάνω από τη function) είναι τόσο σημαντικό — εκεί γράφονται τυχόν σημαντικά side effects, ώστε όποιος χρησιμοποιεί τη function να ξέρει τι να περιμένει. Στο VS Code, όταν κάνεις hover πάνω από το όνομα μιας function που καλείς, εμφανίζεται το docstring comment — ακριβώς γι' αυτό είναι χρήσιμο να το γράφουμε σωστά και πλήρως. </p>
     <p>
@@ -3600,15 +3616,15 @@ func main() {
 
 <h2>Παράδειγμα: Function που επιστρέφει το μεγαλύτερο από δύο αριθμούς</h2>
 
-<pre><code class="lang-go">func max(a, b int) int {
+<pre><code class="lang-go">func main() {
+    fmt.Println(max(10, 20)) // 20
+}
+
+func max(a, b int) int {
     if a > b {
         return a
     }
     return b
-}
-
-func main() {
-    fmt.Println(max(10, 20)) // 20
 }
 </code></pre>
 
@@ -3638,6 +3654,14 @@ func main() {
 
 import "fmt"
 
+func main() {
+    greet()
+    showMenu()
+    takeOrder()
+    serve()
+    sayGoodbye()
+}
+
 func greet() {
     fmt.Println("Καλημέρα!")
 }
@@ -3656,14 +3680,6 @@ func serve() {
 
 func sayGoodbye() {
     fmt.Println("Καλή σας όρεξη!")
-}
-
-func main() {
-    greet()
-    showMenu()
-    takeOrder()
-    serve()
-    sayGoodbye()
 }
 </code></pre>
 
@@ -3696,18 +3712,6 @@ func main() {
 
 import "fmt"
 
-func applyDiscount(price int) int {
-    return price - 10
-}
-
-func addTax(price int) int {
-    return price + 5
-}
-
-func roundToNearestFive(price int) int {
-    return (price / 5) * 5
-}
-
 func main() {
     price := 97
 
@@ -3719,6 +3723,18 @@ func main() {
 
     price = roundToNearestFive(price)
     fmt.Println("Τελική τιμή:", price) // 90
+}
+
+func applyDiscount(price int) int {
+    return price - 10
+}
+
+func addTax(price int) int {
+    return price + 5
+}
+
+func roundToNearestFive(price int) int {
+    return (price / 5) * 5
 }
 </code></pre>
 
@@ -3799,14 +3815,14 @@ fmt.Println(finalPrice) // 90
     ή να τη χρησιμοποιήσει.
 </p>
 
-<pre><code class="lang-go">func calculateTotal() {
-    total := 150 // η total υπάρχει ΜΟΝΟ μέσα στην calculateTotal
-    fmt.Println(total)
-}
-
-func main() {
+<pre><code class="lang-go">func main() {
     calculateTotal()
     fmt.Println(total) // ΣΦΑΛΜΑ: undefined: total
+}
+
+func calculateTotal() {
+    total := 150 // η total υπάρχει ΜΟΝΟ μέσα στην calculateTotal
+    fmt.Println(total)
 }
 </code></pre>
 
@@ -3849,15 +3865,15 @@ func main() {
     Μια τοπική μεταβλητή <strong>δημιουργείται</strong> όταν η εκτέλεση φτάσει στη δήλωσή της, και <strong>καταστρέφεται</strong> όταν το block της τελειώσει. Αυτό σημαίνει ότι κάθε φορά που καλείται μια function, οι τοπικές της μεταβλητές δημιουργούνται από την αρχή.
 </p>
 
-<pre><code class="lang-go">func greet() {
-    msg := "Hello" // δημιουργείται κάθε φορά που καλείται η greet
-    fmt.Println(msg)
-} // η msg καταστρέφεται εδώ
-
-func main() {
+<pre><code class="lang-go">func main() {
     greet() // δημιουργεί msg (τοπική εντός της greet), τυπώνει, καταστρέφει
     greet() // δημιουργεί νέα μεταβλητή msg, τυπώνει, καταστρέφει
 }
+
+func greet() {
+    msg := "Hello" // δημιουργείται κάθε φορά που καλείται η greet
+    fmt.Println(msg)
+} // η msg καταστρέφεται εδώ
 </code></pre>
 
 <p>
@@ -3874,14 +3890,14 @@ import "fmt"
 
 var globalCounter int = 0 // package-level μεταβλητή
 
-func increment() {
-    globalCounter++
-}
-
 func main() {
     fmt.Println(globalCounter) // 0
     increment()
     fmt.Println(globalCounter) // 1
+}
+
+func increment() {
+    globalCounter++
 }
 </code></pre>
 
@@ -3936,14 +3952,9 @@ func main() {
 }
 </code></pre>
 
-<p> <em>ΠΡΟΣΟΧΗ:</em> Το ίδιο ακριβώς συμβαίνει και με τις παραμέτρους συναρτήσεων. Μια παράμετρος είναι μια τοπική μεταβλητή μέσα στη function — ακόμα κι αν έχει το ίδιο όνομα με μια μεταβλητή έξω από αυτήν, είναι εντελώς διαφορετική:
+<p> <em>ΠΡΟΣΟΧΗ:</em> Το ίδιο ακριβώς συμβαίνει και με τις παραμέτρους συναρτήσεων. Μια παράμετρος είναι μια τοπική μεταβλητή μέσα στη function — ακόμα κι αν έχει το ίδιο όνομα με μια μεταβλητή έξω από αυτήν, είναι εντελώς διαφορετική:</p>
 
-<pre><code class="lang-go">func AvoidNuclearWar(redSwitch bool) {
-    redSwitch = false // αλλάζει την ΤΟΠΙΚΗ redSwitch (την παράμετρο)
-    fmt.Println("inside:", redSwitch) // false (η τοπική άλλαξε)
-}
-
-func main() {
+<pre><code class="lang-go">func main() {
     var redSwitch bool = true
     AvoidNuclearWar(redSwitch)
 
@@ -3954,6 +3965,11 @@ func main() {
     } else {
         fmt.Println("🕊️ World saved!")
     }
+}
+
+func AvoidNuclearWar(redSwitch bool) {
+    redSwitch = false // αλλάζει την ΤΟΠΙΚΗ redSwitch (την παράμετρο)
+    fmt.Println("inside:", redSwitch) // false (η τοπική άλλαξε)
 }
 </code></pre>
 
@@ -4486,14 +4502,14 @@ fmt.Println(x) // 100
     Για παράδειγμα, ας δούμε τι συμβαίνει όταν περνάμε ένα <code>int</code>:
 </p>
 
-<pre><code class="lang-go">func changeInt(n int) {
-    n = 999 // αλλάζει μόνο το τοπικό αντίγραφο
-}
-
-func main() {
+<pre><code class="lang-go">func main() {
     x := 5
     changeInt(x)
     fmt.Println(x) // 5 — η αρχική τιμή ΔΕΝ άλλαξε!
+}
+
+func changeInt(n int) {
+    n = 999 // αλλάζει μόνο το τοπικό αντίγραφο
 }
 </code></pre>
 
@@ -4505,15 +4521,15 @@ func main() {
     Ένας τρόπος να αλλάξει όντως η τιμή θα ήταν να την επιστρέφουμε και να την εκχωρούμε εκ νέου:
 </p>
 
-<pre><code class="lang-go">func changeInt(n int) int {
-    n = 999 // αλλάζει μόνο το τοπικό αντίγραφο
-    return n
-}
-
-func main() {
+<pre><code class="lang-go">func main() {
     x := 5
     x = changeInt(x)
     fmt.Println(x) // 999 — η αρχική τιμή άλλαξε επειδή η function επιστρεφει την τιμή!
+}
+
+func changeInt(n int) int {
+    n = 999 // αλλάζει μόνο το τοπικό αντίγραφο
+    return n
 }
 </code></pre>
 
@@ -4523,14 +4539,14 @@ func main() {
     Εδώ περνάς στη function όχι την τιμή, αλλά τη <strong>διεύθυνσή</strong> της (με το <code>&amp;</code>). Η function παίρνει έναν pointer και μπορεί να αλλάξει την <strong>αρχική</strong> μεταβλητή, γιατί δουλεύει κατευθείαν πάνω στη μνήμη της:
 </p>
 
-<pre><code class="lang-go">func reallyChange(n *int) {
-    *n = 999 // αλλάζει την ΑΡΧΙΚΗ τιμή
-}
-
-func main() {
+<pre><code class="lang-go">func main() {
     x := 5
     reallyChange(&x)
     fmt.Println(x) // 999 — Η αρχική τιμή ΑΛΛΑΞΕ!
+}
+
+func reallyChange(n *int) {
+    *n = 999 // αλλάζει την ΑΡΧΙΚΗ τιμή
 }
 </code></pre>
 
@@ -4539,14 +4555,14 @@ func main() {
     Το ίδιο μπορούμε να κάνουμε και με strings:
 </p>
 
-<pre><code class="lang-go">func reallyChangeString(s *string) {
-    *s = "new" // αλλάζει την ΑΡΧΙΚΗ string
-}
-
-func main() {
+<pre><code class="lang-go">func main() {
     msg := "old"
     reallyChangeString(&msg)
     fmt.Println(msg) // "new" — Η αρχική τιμή ΑΛΛΑΞΕ!
+}
+
+func reallyChangeString(s *string) {
+    *s = "new" // αλλάζει την ΑΡΧΙΚΗ string
 }
 </code></pre>
 
@@ -4605,15 +4621,7 @@ func main() {
 
 <h3>Το κλασσικό παράδειγμα του πυρηνικού πολέμου</h3>
 
-<pre><code class="lang-go">func AvoidNuclearWar(redSwitch bool) {
-    redSwitch = false // αλλάζει μόνο το τοπικό αντίγραφο
-}
-
-func ActuallySaveTheWorld(redSwitch *bool) {
-    *redSwitch = false // αλλάζει την ΠΡΑΓΜΑΤΙΚΗ τιμή
-}
-
-func main() {
+<pre><code class="lang-go">func main() {
     redSwitch := true
 
         // Pass By Value
@@ -4632,6 +4640,14 @@ func main() {
     } else {
         fmt.Println("🕊️ World saved! The pointer actually changed the real variable!")
     }
+}
+
+func AvoidNuclearWar(redSwitch bool) {
+    redSwitch = false // αλλάζει μόνο το τοπικό αντίγραφο
+}
+
+func ActuallySaveTheWorld(redSwitch *bool) {
+    *redSwitch = false // αλλάζει την ΠΡΑΓΜΑΤΙΚΗ τιμή
 }
 </code></pre>
 
@@ -4667,13 +4683,6 @@ func main() {
 
 import "fmt"
 
-// ── helper functions ───────────────────────────────────────────────────────── ⊃
-
-// takeDamage modifies the original integer value in memory through a pointer.
-func takeDamage(hp *int, damage int) {
-    *hp = *hp - damage // Dereference to access and modify the value
-}
-
 // ── main entry point ───────────────────────────────────────────────────────── ⊃
 
 func main() {
@@ -4684,6 +4693,13 @@ func main() {
     takeDamage(&health, 25)
 
     fmt.Println("Health after damage:", health) // 55
+}
+
+// ── helper functions ───────────────────────────────────────────────────────── ⊃
+
+// takeDamage modifies the original integer value in memory through a pointer.
+func takeDamage(hp *int, damage int) {
+    *hp = *hp - damage // Dereference to access and modify the value
 }
 </code></pre>
 </div>
@@ -5729,6 +5745,11 @@ fmt.Println(count)`,
 
 import "fmt"
 
+func main() {
+    nums := []int{1, 2, 3, 4, 5, 6}
+    fmt.Println(evens(nums))
+}
+
 func evens(nums []int) []int {
     var result []int
     for _, n := range nums {
@@ -5737,11 +5758,6 @@ func evens(nums []int) []int {
         }
     }
     return result
-}
-
-func main() {
-    nums := []int{1, 2, 3, 4, 5, 6}
-    fmt.Println(evens(nums))
 }
 // [2 4 6]
 </code></pre>
@@ -6304,6 +6320,18 @@ for __i__, row := range matrix {
 
 import "fmt"
 
+func main() {
+    matrix := [][]int{
+        {1, 12, 13, 14, 15, 16},
+        {21, 8, 23, 24, 25, 26},
+        {3, 32, 15, 34, 35, 36},
+        {41, 4, 43, 22, 45, 46},
+        {51, 52, 5, 54, 29, 56},
+        {61, 62, 63, 6, 65, 36},
+    }
+    fmt.Println(diagonalSum(matrix))
+}
+
 func diagonalSum(matrix [][]int) int {
     sum := 0
     for i, row := range matrix {
@@ -6315,18 +6343,6 @@ func diagonalSum(matrix [][]int) int {
     }
     return sum
 }
-
-func main() {
-    matrix := [][]int{
-        {1, 12, 13, 14, 15, 16},
-        {21, 8, 23, 24, 25, 26},
-        {3, 32, 15, 34, 35, 36},
-        {41, 4, 43, 22, 45, 46},
-        {51, 52, 5, 54, 29, 56},
-        {61, 62, 63, 6, 65, 36},
-    }
-    fmt.Println(diagonalSum(matrix))
-}
 // 111  (1 + 8 + 15 + 22 + 29 + 36)
 </code></pre>
 
@@ -6335,14 +6351,6 @@ func main() {
 
 import "fmt"
 
-func diagonalSum(matrix [][]int) int {
-    sum := 0
-    for i := range matrix {
-        sum += matrix[i][i]
-    }
-    return sum
-}
-
 func main() {
     matrix := [][]int{
         {1, 12, 13, 14, 15, 16},
@@ -6353,6 +6361,14 @@ func main() {
         {61, 62, 63, 6, 65, 36},
     }
     fmt.Println(diagonalSum(matrix))
+}
+
+func diagonalSum(matrix [][]int) int {
+    sum := 0
+    for i := range matrix {
+        sum += matrix[i][i]
+    }
+    return sum
 }
 // 111  (1 + 8 + 15 + 22 + 29 + 36)
 </code></pre>
@@ -7111,7 +7127,7 @@ __del__(m, "a")`,
 </div>
 
 <div class="glossary-group">
-  <h2>Ενότητα 3 — Τελεστές &amp; Εκφράσεις</h2>
+  <h2>Ενότητα 3 — Operators &amp; Εκφράσεις</h2>
   <div class="glossary-strip">
     <div class="gs-pill"><span class="gs-name">+  -  *  /  %</span><span class="gs-def">αριθμητικοί τελεστές</span></div>
     <div class="gs-pill"><span class="gs-name">==  !=  &lt;  &gt;  &lt;=  &gt;=</span><span class="gs-def">τελεστές σύγκρισης</span></div>

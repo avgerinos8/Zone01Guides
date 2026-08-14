@@ -50,6 +50,12 @@
   --danger: var(--tone-4);
   --danger-rgb: var(--tone-4-rgb);
 
+  /* dedicated h1 title color — ADDITIVE token, defaults to --ink so decks
+     that don't set it look exactly as before. A theme-*.css can override
+     just this one variable to give the big slide titles their own color
+     without touching --ink (which is used everywhere else as body text). */
+  --h1-color: var(--ink);
+
   /* correct/wrong stay green/red on purpose — outside the 5-tone palette */
   --correct: rgb(0, 224, 67);
   --correct-rgb: 0, 224, 67;
@@ -213,7 +219,7 @@ h1 {
   font-size: clamp(30px, 4vw, 54px);
   line-height: 1.08;
   margin: 0 0 22px 0;
-  color: var(--ink);
+  color: var(--h1-color);
 }
 
 h2 {
@@ -1132,13 +1138,32 @@ pre code {
 }
 
 /* ── navigation dots container ───────────────────────────────────────────── ⊃ */
+/* #dots is now a fixed-height CLIPPED VIEWPORT (never wraps to multiple
+   rows, no matter how many slides exist). #dots-track is the actual flex
+   row of dots and is free to be wider than the viewport — it gets slid
+   left/right via transform (see dots-scroll logic in script.js). The two
+   .dots-arrow zones sit on top and only appear when there is actually
+   more track hidden on that side (see .can-scroll-left/right). */
 #dots {
-  display: flex;
-  gap: clamp(0px, 0.25vw, 2px);
-  flex-wrap: wrap;
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 26px;
   margin-left: 20px;
   margin-right: 20px;
-  justify-content: center;
+  overflow: hidden;
+}
+
+#dots-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(0px, 0.25vw, 2px);
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* actual left offset is set inline via JS transform once measured */
+  will-change: transform;
 }
 
 .dot {
@@ -1147,12 +1172,19 @@ pre code {
   border-radius: 50%;
   background: rgba(var(--ink-rgb), 0.25);
   cursor: pointer;
+  flex: 0 0 auto;
+  position: relative;
 }
 
+/* Active dot is ALWAYS a solid --accent (tone-5), regardless of slide
+   type — intentionally NOT overridden by .quiz-dot or .dot-dim below, so
+   every active dot (plain content, quiz, glossary, vscode challenge...)
+   matches the same solid accent color. */
 .dot.active {
   background: var(--accent);
   width: 22px;
   border-radius: 5px;
+  opacity: 1;
 }
 
 
@@ -1160,9 +1192,120 @@ pre code {
   background: rgba(var(--danger-rgb), 0.55);
 }
 
-.dot.quiz-dot.active {
-  background: var(--danger);
+/* Special dots (interactive types, VSCode Challenge, Glossary — see the
+   `dim` flag returned by getDotPreviewText()) render at 50% opacity
+   ONLY while inactive. Uses the opacity property rather than touching
+   any root/theme color variable, so it composes correctly with both the
+   plain --ink dots and the --danger-tinted .quiz-dot ones. The .active
+   rule above always wins once a dim dot becomes the current slide. */
+.dot.dot-dim:not(.active) {
+  opacity: 0.5;
 }
+
+/* ── dots hover-scroll arrow zones ───────────────────────────────────────── ⊃ */
+.dots-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 34px;
+  display: none; /* shown only via .can-scroll-left / .can-scroll-right on #dots */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  background: linear-gradient(90deg, var(--bg) 0%, rgba(var(--tone-1-rgb), 0) 100%);
+  user-select: none;
+}
+
+.dots-arrow.dots-arrow-left {
+  left: 0;
+}
+
+.dots-arrow.dots-arrow-right {
+  right: 0;
+  background: linear-gradient(270deg, var(--bg) 0%, rgba(var(--tone-1-rgb), 0) 100%);
+}
+
+#dots.can-scroll-left .dots-arrow-left,
+#dots.can-scroll-right .dots-arrow-right {
+  display: flex;
+}
+
+/* Solid isosceles triangle, same size/color language as .dot (20px scale,
+   same rgba(--ink-rgb) fill, same --accent on hover) — built with the
+   classic CSS border trick so it needs no image/SVG asset. */
+.dots-arrow-triangle {
+  width: 0;
+  height: 0;
+  border-top: 9px solid transparent;
+  border-bottom: 9px solid transparent;
+}
+
+.dots-arrow-left .dots-arrow-triangle {
+  border-right: 12px solid rgba(var(--ink-rgb), 0.55);
+}
+
+.dots-arrow-right .dots-arrow-triangle {
+  border-left: 12px solid rgba(var(--ink-rgb), 0.55);
+}
+
+.dots-arrow-right:hover .dots-arrow-triangle {
+  border-left-color: var(--accent);
+}
+
+.dots-arrow-left:hover .dots-arrow-triangle {
+  border-right-color: var(--accent);
+}
+
+/* ── dot tooltip ──────────────────────────────────────────────────────────── ⊃ */
+/* A SINGLE shared instance lives on <body>, positioned via JS with
+   position:fixed + getBoundingClientRect() (see showDotTooltip() in
+   script.js) — NOT nested inside #dots, so #dots's overflow:hidden
+   (required for the windowed dot scroller) never clips it. Visibility is
+   toggled via the .visible class from JS, not :hover, since the element
+   is shared and moved between different dots. */
+.dot-tooltip {
+  position: fixed;
+  background: var(--panel);
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  border-radius: 7px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease;
+  z-index: 500;
+}
+
+/* Both tooltip lines intentionally share the same font-size (12px, from
+   .dot-tooltip) — only color/letter-spacing differ so the eyebrow reads
+   as a label above the title, not as a smaller sub-caption. */
+.dot-tooltip .dt-eyebrow {
+  color: var(--accent);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Single-line label mode (START/END/QUIZ/FINAL QUIZ/FILLBLANK/
+   MATCHINGPAIRS/VSCODECHALLENGE) — reuses .dt-title's slot but styled to
+   stand out as a short tag rather than a slide title. */
+.dot-tooltip .dt-title.dt-label {
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.dot-tooltip.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
 
 #slide-counter {
   font-family: var(--font-mono);
@@ -1198,10 +1341,13 @@ li {
 /* ── compact navigation bar for screens under 720px ──────────────────────── ⊃ */
 @media (max-width: 720px) {
 
-  /* Hide dots and slide counter entirely on small screens */
-  #dots {
-    display: none !important;
-  }
+  /* Dots now show on small screens too — the windowed/scrollable dot
+     track (see #dots overflow:hidden + #dots-track transform sliding,
+     the hover-scroll arrows, and the shared tooltip) already handles any
+     number of slides without wrapping or overflowing, so there is no
+     longer a reason to hide them here. #slide-counter remains visible
+     alongside them (no separate rule hid it before, so nothing changes
+     there). */
 
   /* Swap long desktop labels with short mobile labels */
   .desktop-text {
@@ -1223,6 +1369,13 @@ li {
 
   .nav-group {
     gap: 6px;
+  }
+
+  /* Tighten #dots side margins on small screens — the desktop 20px each
+     side eats too much space next to the already-compact nav buttons. */
+  #dots {
+    margin-left: 8px;
+    margin-right: 8px;
   }
 
   /* Reduce button padding and font size for compact fitting */
