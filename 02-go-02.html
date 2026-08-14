@@ -1,0 +1,3141 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Go — Μέρος 2: Αλγοριθμική Σκέψη</title>
+  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <link rel="stylesheet" href="static/theme-go-two.css?v=20260801">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-reset">
+        <span class="desktop-text">Reset Progress</span>
+        <span class="mobile-text">Reset</span>
+      </button>
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+        <span class="desktop-text">Return</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots"></div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
+  <script>
+    // Course content below.
+
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/go_two.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Go — Μέρος 2<br>Οργάνωση Κώδικα & Αλγοριθμική Σκέψη</h1>
+  <p class="lede">Στο πρώτο μέρος μάθαμε τη γλώσσα: μεταβλητές, loops, functions, pointers, δομές δεδομένων. Σε αυτό το μέρος μαθαίνουμε πώς να οργανώνουμε κώδικα σε πραγματικά projects, και κυρίως πώς να <em>σκεφτόμαστε</em> σαν προγραμματιστές — μοτίβα λύσης προβλημάτων, αλγόριθμοι αναζήτησης και ταξινόμησης, αναδρομή, και οι θεμελιώδεις τεχνικές πίσω από σχεδόν κάθε δύσκολο πρόβλημα προγραμματισμού.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+</div>
+`);
+
+    // ── Section 1.1 — Go Modules ─────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
+<h1>Go Modules</h1>
+<p class="lede">Μέχρι τώρα γράφαμε κώδικα σε ένα μόνο αρχείο. Αλλά τι γίνεται όταν το project μεγαλώνει, ή όταν θέλουμε να χρησιμοποιήσουμε κώδικα που έγραψε κάποιος άλλος; Χρειαζόμαστε έναν τρόπο να ορίσουμε "αυτό εδώ είναι ένα ξεχωριστό project" και να διαχειριστούμε τι εξαρτάται από τι. Αυτός ο τρόπος στη Go λέγεται <strong>module</strong>.</p>
+
+<h2>Τι είναι ένα module</h2>
+<p>Ένα module είναι απλά μια συλλογή από Go packages που ζουν μαζί σε έναν φάκελο (και τους υποφακέλους του) και εκδίδονται/διαχειρίζονται μαζί ως μία μονάδα. Κάθε φορά που ξεκινάς ένα καινούριο, ανεξάρτητο project σε Go, το πρώτο πράγμα που κάνεις είναι να το "δηλώσεις" ως module. Αυτό δεν είναι απλά τυπικότητα — χωρίς αυτό το βήμα, ο compiler δεν ξέρει πώς να ονομάσει το project σου ώστε άλλος κώδικας (δικός σου ή τρίτου) να μπορεί να το εισάγει (import) αργότερα.</p>
+
+<h2>Δημιουργία module με <code>go mod init</code></h2>
+<p>Η εντολή που δηλώνει έναν φάκελο ως module τρέχει στο terminal, μέσα στον φάκελο του project:</p>
+
+<pre><code class="lang-go">go mod init example.com/myproject</code></pre>
+
+<p>Το <code>example.com/myproject</code> εδώ είναι το <strong>module path</strong> — ένα μοναδικό όνομα για το project σου. Σε πραγματικά, δημόσια projects συνήθως είναι το path ενός repository (π.χ. <code>github.com/username/projectname</code>), γιατί έτσι είναι εγγυημένα μοναδικό παγκοσμίως και ταυτόχρονα λέει στους άλλους πού να βρουν τον πηγαίο κώδικα. Για ασκήσεις/μάθηση, ένα απλό όνομα όπως <code>learngo</code> είναι απόλυτα αποδεκτό.</p>
+
+<div class="callout">
+  <span class="tag">Σημαντικό</span>
+  Το <code>go mod init</code> τρέχει ΜΙΑ φορά, στην αρχή του project. Δεν το ξανατρέχεις κάθε φορά που προσθέτεις αρχεία ή packages — μόνο όταν φτιάχνεις το project από την αρχή.
+</div>
+
+<h2>Το αρχείο <code>go.mod</code></h2>
+<p>Η εντολή <code>go mod init</code> δημιουργεί ένα αρχείο με όνομα <code>go.mod</code> στη ρίζα του project. Αυτό το αρχείο είναι η "ταυτότητα" του module — περιέχει το όνομά του, την έκδοση της Go που χρησιμοποιείται, και (καθώς προσθέτεις εξωτερικές βιβλιοθήκες) τη λίστα των εξαρτήσεών του.</p>
+
+<pre><code class="lang-go">module example.com/myproject
+
+go 1.22
+</code></pre>
+
+<p>Ένα φρέσκο module, χωρίς καμία εξωτερική εξάρτηση ακόμα, έχει μόνο αυτές τις δύο γραμμές. Καθώς το project μεγαλώνει και εισάγεις κώδικα από άλλους (τρίτα packages), το <code>go.mod</code> ενημερώνεται αυτόματα και προσθέτει μία γραμμή <code>require</code> για κάθε εξάρτηση, μαζί με τη συγκεκριμένη έκδοσή της.</p>
+
+<h2>Το αρχείο <code>go.sum</code></h2>
+<p>Δίπλα στο <code>go.mod</code>, όταν υπάρχουν εξωτερικές εξαρτήσεις, εμφανίζεται και ένα δεύτερο αρχείο: το <code>go.sum</code>. Ενώ το <code>go.mod</code> λέει <em>ποιες</em> εξαρτήσεις χρειάζεσαι και σε ποια έκδοση, το <code>go.sum</code> κρατάει ένα κρυπτογραφικό "αποτύπωμα" (checksum/hash) του ακριβούς περιεχομένου κάθε εξάρτησης. Ο σκοπός του είναι ασφάλεια: αν κάποιος αλλάξει κρυφά το περιεχόμενο μιας βιβλιοθήκης που ήδη χρησιμοποιείς (π.χ. σε επίθεση τύπου supply-chain), το checksum δεν θα ταιριάζει πια, και η Go θα αρνηθεί να χτίσει το project σου, προειδοποιώντας σε.</p>
+
+<div class="callout good">
+  <span class="tag">Καλή πρακτική</span>
+  Και τα δύο αρχεία, <code>go.mod</code> ΚΑΙ <code>go.sum</code>, πρέπει να μπαίνουν σε version control (π.χ. Git). Δεν είναι προσωρινά ή "παραγόμενα" αρχεία που αγνοούνται — είναι μέρος του project.
+</div>
+
+<h2>Διαχείριση εξωτερικών εξαρτήσεων</h2>
+<p>Όταν θέλεις να χρησιμοποιήσεις μια βιβλιοθήκη τρίτου στο project σου, απλά την εισάγεις (<code>import</code>) στον κώδικά σου και μετά τρέχεις:</p>
+
+<pre><code class="lang-go">go mod tidy</code></pre>
+
+<p>Η εντολή αυτή κάνει δύο πράγματα ταυτόχρονα: κατεβάζει (και καταγράφει στο <code>go.mod</code>/<code>go.sum</code>) οποιαδήποτε εξάρτηση χρησιμοποιείς στον κώδικα αλλά δεν είναι ακόμα καταγεγραμμένη, και ταυτόχρονα αφαιρεί από το <code>go.mod</code> ό,τι είχε καταγραφεί παλιότερα αλλά πια δεν χρησιμοποιείται πουθενά στον κώδικα. Είναι καλή συνήθεια να την τρέχεις τακτικά, ειδικά πριν από ένα commit.</p>
+`);
+
+    addQuiz([
+      {
+        q: "Ποιος είναι ο σκοπός της εντολής go mod init;",
+        options: [
+          "Δηλώνει έναν φάκελο ως Go module και δημιουργεί το αρχείο go.mod",
+          "Κατεβάζει όλες τις εξωτερικές εξαρτήσεις που χρησιμοποιεί ο κώδικας",
+          "Τρέχει το πρόγραμμα και εμφανίζει τυχόν σφάλματα μεταγλώττισης",
+          "Διαγράφει τα παλιά αρχεία go.mod και go.sum και ξεκινάει από την αρχή"
+        ],
+        correct: 0,
+        explain: "Το go mod init τρέχει μία φορά, στην αρχή ενός project, και δημιουργεί το go.mod με το όνομα του module και την έκδοση της Go."
+      },
+      {
+        q: "Ποια είναι η διαφορά ανάμεσα στο go.mod και το go.sum;",
+        options: [
+          "Το go.mod λέει ποιες εξαρτήσεις και σε ποια έκδοση χρειάζεται το project, το go.sum κρατάει checksums για επαλήθευση ακεραιότητας",
+          "Το go.mod είναι μόνο για δημόσια projects, το go.sum μόνο για ιδιωτικά",
+          "Δεν υπάρχει ουσιαστική διαφορά, είναι δύο αντίγραφα του ίδιου περιεχομένου για ασφάλεια",
+          "Το go.sum περιέχει τον πηγαίο κώδικα των εξαρτήσεων, το go.mod μόνο τα ονόματά τους"
+        ],
+        correct: 0,
+        explain: "go.mod = ποιες εξαρτήσεις/ποια έκδοση. go.sum = κρυπτογραφικό αποτύπωμα κάθε εξάρτησης, ώστε να ανιχνεύεται τυχόν αλλοίωση του περιεχομένου της."
+      },
+      {
+        q: "Τι κάνει η εντολή go mod tidy;",
+        options: [
+          "Μορφοποιεί (format) τον πηγαίο κώδικα του project σύμφωνα με το επίσημο στυλ της Go",
+          "Προσθέτει στο go.mod τις εξαρτήσεις που λείπουν και αφαιρεί όσες δεν χρησιμοποιούνται πια πουθενά στον κώδικα",
+          "Δημιουργεί ένα καινούριο, κενό module στον τρέχοντα φάκελο",
+          "Ελέγχει αν υπάρχουν νεότερες εκδόσεις της ίδιας της γλώσσας Go διαθέσιμες για εγκατάσταση"
+        ],
+        correct: 1,
+        explain: "go mod tidy συγχρονίζει το go.mod/go.sum με ό,τι πραγματικά εισάγεται (import) στον κώδικα — προσθέτει ό,τι λείπει, αφαιρεί ό,τι είναι αχρησιμοποίητο."
+      }
+    ]);
+
+    // ── Section 1.2 — Packages ───────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
+<h1>Packages (Πακέτα)</h1>
+<p class="lede">Ένα module μπορεί να περιέχει πολλά packages. Ένα package είναι η μονάδα οργάνωσης κώδικα μέσα σε ένα module — μια ομάδα από αρχεία <code>.go</code> που μοιράζονται τον ίδιο σκοπό και "βλέπουν" το ένα τα identifiers του άλλου χωρίς να χρειάζεται import μεταξύ τους.</p>
+
+<h2>Ορισμός package στην αρχή του αρχείου</h2>
+<p>Κάθε αρχείο <code>.go</code> ξεκινά υποχρεωτικά με μία δήλωση <code>package</code>, που λέει σε ποιο package ανήκει αυτό το αρχείο. Όλα τα αρχεία μέσα στον ίδιο φάκελο πρέπει να δηλώνουν το ίδιο package name.</p>
+
+<pre><code class="lang-go">package main
+
+// everything below belongs to package "main"
+func main() {
+    // ...
+}</code></pre>
+
+<p>Το <code>package main</code> είναι ειδικό: δηλώνει ότι αυτό το package παράγει ένα εκτελέσιμο πρόγραμμα (όχι μια βιβλιοθήκη), και πρέπει να περιέχει μια function <code>main()</code> — αυτή είναι το σημείο εκκίνησης όταν τρέχεις το πρόγραμμα. Ένα module μπορεί να έχει το πολύ ένα package main ανά εκτελέσιμο που παράγει, αλλά μπορεί να έχει όσα άλλα (non-main) packages χρειάζεται για να οργανώσει τη λογική του.</p>
+
+<h2>Εισαγωγή packages (<code>import</code>) και alias</h2>
+<p>Για να χρησιμοποιήσεις κώδικα από άλλο package (είτε δικό σου, είτε της standard library, είτε τρίτου), το εισάγεις με <code>import</code> στην κορυφή του αρχείου, αμέσως μετά τη δήλωση package:</p>
+
+<pre><code class="lang-go">package main
+
+import (
+    "fmt"
+    "math"
+)
+
+func main() {
+    fmt.Println(math.Sqrt(16)) // 4
+}</code></pre>
+
+<p>Μετά το import, αναφέρεσαι σε ό,τι εξάγει εκείνο το package βάζοντας μπροστά το όνομά του και τελεία, π.χ. <code>math.Sqrt(...)</code>. Αν το όνομα ενός package είναι μακρύ, ασαφές, ή συγκρούεται με άλλο import που ήδη χρησιμοποιείς, μπορείς να του δώσεις ένα δικό σου, τοπικό όνομα (<strong>alias</strong>) στο import:</p>
+
+<pre><code class="lang-go">import (
+    m "math" // alias: "m" instead of "math"
+)
+
+func main() {
+    fmt.Println(m.Sqrt(16)) // same package, shorter name
+}</code></pre>
+
+<h2>Φτιάχνοντας το δικό μας package</h2>
+<p>Ας δούμε ένα πλήρες, μικρό παράδειγμα από την αρχή: πώς φτιάχνουμε ένα δικό μας package, τι μπαίνει μέσα του, και πώς το χρησιμοποιούμε από αλλού. Ας υποθέσουμε ότι έχουμε ένα module με όνομα <code>learngo</code>, και θέλουμε ένα ξεχωριστό package με βοηθητικές functions πάνω σε αριθμούς.</p>
+
+<p><strong>Βήμα 1:</strong> Φτιάχνουμε έναν υποφάκελο με το όνομα του package — εδώ <code>mathutil/</code> — και μέσα του ένα αρχείο <code>.go</code>:</p>
+
+<pre><code>learngo/
+├── go.mod
+├── main.go
+└── mathutil/
+    └── mathutil.go</code></pre>
+
+<p><strong>Βήμα 2:</strong> Μέσα στο <code>mathutil.go</code>, η πρώτη γραμμή δηλώνει το package name (ίδιο με το όνομα του φακέλου, από σύμβαση), και μετά ορίζουμε ό,τι functions θέλουμε να εξάγουμε — με κεφαλαίο πρώτο γράμμα, ώστε να είναι ορατές έξω από το package:</p>
+
+<pre><code class="lang-go">package mathutil
+
+// Sum adds every int in a slice and returns the total.
+func Sum(numbers []int) int {
+    total := 0
+    for _, n := range numbers { // iteration over the slice
+        total += n
+    }
+    return total
+}
+
+// Max returns the largest int in a slice.
+// Assumes the slice is not empty.
+func Max(numbers []int) int {
+    largest := numbers[0]
+    for _, n := range numbers {
+        if n > largest {
+            largest = n
+        }
+    }
+    return largest
+}</code></pre>
+
+<p><strong>Βήμα 3:</strong> Από το <code>main.go</code>, κάνουμε import το package χρησιμοποιώντας το module path (<code>learngo</code>) συν το όνομα του υποφακέλου (<code>mathutil</code>), και καλούμε τις exported functions του με το πρόθεμα <code>mathutil.</code>:</p>
+
+<pre><code class="lang-go">package main
+
+import (
+    "fmt"
+    "learngo/mathutil" // module path "learngo" + subfolder "mathutil"
+)
+
+func main() {
+    values := []int{4, 9, 2, 7} // a slice of int
+
+    fmt.Println(mathutil.Sum(values)) // 22
+    fmt.Println(mathutil.Max(values)) // 9
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι μόλις έγινε</span>
+  Το <code>main</code> δεν ξέρει (και δεν χρειάζεται να ξέρει) ΠΩΣ υλοποιούνται οι <code>Sum</code> και <code>Max</code> — απλά τις καλεί μέσω του ονόματος package. Αυτό είναι το ίδιο το νόημα της οργάνωσης σε packages: διαχωρισμός του "τι κάνει κάτι" (το exported API) από το "πώς το κάνει" (η εσωτερική υλοποίηση).
+</div>
+
+<p>Αν το <code>mathutil.go</code> είχε επιπλέον μια βοηθητική function με πεζό πρώτο γράμμα (π.χ. <code>func clamp(n int) int</code>), αυτή θα ήταν χρησιμοποιήσιμη μόνο μέσα στο ίδιο το package <code>mathutil</code> — το <code>main.go</code> δεν θα μπορούσε καν να τη δει, πόσο μάλλον να την καλέσει.</p>
+
+<h2>Ορατότητα και Προσβασιμότητα: Exported vs Unexported</h2>
+<p>Η Go δεν έχει keywords όπως <code>public</code> ή <code>private</code> για να ελέγξει ποιος βλέπει τι — αντί αυτού, χρησιμοποιεί έναν πολύ απλό κανόνα βασισμένο στο <strong>πρώτο γράμμα</strong> του ονόματος:</p>
+
+<div class="grid2">
+  <div class="card"><h3>Κεφαλαίο πρώτο γράμμα → Exported</h3><p>Το identifier (function, variable, type, κ.λπ.) είναι ορατό και χρησιμοποιήσιμο από ΑΛΛΑ packages που το εισάγουν. Π.χ. <code>func Calculate()</code>, <code>var MaxRetries</code>.</p></div>
+  <div class="card"><h3>Πεζό πρώτο γράμμα → Unexported</h3><p>Το identifier είναι ορατό ΜΟΝΟ μέσα στο ίδιο package. Άλλα packages που το εισάγουν δεν μπορούν καν να το δουν, πόσο μάλλον να το χρησιμοποιήσουν. Π.χ. <code>func calculate()</code>, <code>var maxRetries</code>.</p></div>
+</div>
+
+<p>Αυτό ισχύει για functions, variables, constants, types — οτιδήποτε δηλώνεται σε επίπεδο package. Είναι ο βασικός μηχανισμός της Go για το τι θεωρείται "δημόσιο API" ενός package (αυτό που θέλεις να χρησιμοποιούν άλλοι) και τι είναι εσωτερική λεπτομέρεια υλοποίησης που δεν αφορά κανέναν έξω από το package.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το κεφαλαίο/πεζό γράμμα δεν είναι απλά σύμβαση στυλ — είναι το ίδιο το μηχανισμό ελέγχου προσβασιμότητας της γλώσσας. Αν ξεχάσεις να κάνεις κεφαλαίο το πρώτο γράμμα μιας function που θες να χρησιμοποιήσει άλλο package, θα πάρεις σφάλμα μεταγλώττισης σε εκείνο το άλλο package, όχι εδώ.
+</div>
+
+<h2>Η ειδική συνάρτηση αρχικοποίησης <code>init()</code></h2>
+<p>Κάθε package μπορεί προαιρετικά να ορίσει μία ή περισσότερες functions με το ειδικό όνομα <code>init()</code>. Αυτές οι functions δεν καλούνται από εσένα ρητά — η Go τις τρέχει <strong>αυτόματα</strong>, μία φορά, πριν εκτελεστεί η <code>main()</code>, αφού πρώτα έχουν αρχικοποιηθεί όλες οι package-level μεταβλητές. Χρησιμοποιείται για setup που πρέπει να τρέξει πριν ξεκινήσει οτιδήποτε άλλο (π.χ. έλεγχος ρυθμίσεων, προετοιμασία δεδομένων).</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func init() {
+    fmt.Println("this runs first, automatically")
+}
+
+func main() {
+    fmt.Println("this runs second")
+}</code></pre>
+
+<p>Η <code>init()</code> δεν παίρνει ορίσματα και δεν επιστρέφει τίποτα. Δεν τη χρειάζεσαι συχνά σε αρχικά προγράμματα — αλλά είναι σημαντικό να αναγνωρίζεις το πρότυπο όταν το συναντήσεις σε κώδικα άλλων.</p>
+`);
+
+    // ── Mini-glossary — §1.1-1.2 ─────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — §1.1 &amp; §1.2</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">module</span><span class="gc-def">συλλογή packages που διαχειρίζονται μαζί ως μία μονάδα</span></div>
+  <div class="gc-line"><span class="gc-term">go.mod</span><span class="gc-def">αρχείο ταυτότητας module: όνομα, έκδοση Go, εξαρτήσεις</span></div>
+  <div class="gc-line"><span class="gc-term">go.sum</span><span class="gc-def">checksums εξαρτήσεων για ανίχνευση αλλοίωσης</span></div>
+  <div class="gc-line"><span class="gc-term">package</span><span class="gc-def">μονάδα οργάνωσης κώδικα μέσα σε module</span></div>
+  <div class="gc-line"><span class="gc-term">exported</span><span class="gc-def">identifier με κεφαλαίο πρώτο γράμμα — ορατό εκτός package</span></div>
+  <div class="gc-line"><span class="gc-term">unexported</span><span class="gc-def">identifier με πεζό πρώτο γράμμα — ορατό μόνο εντός package</span></div>
+  <div class="gc-line"><span class="gc-term">init()</span><span class="gc-def">τρέχει αυτόματα πριν τη main(), χωρίς να την καλείς εσύ</span></div>
+</div>
+`);
+
+    // ── Fill-in-the-blank — building a custom package ────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// file: mathutil/mathutil.go
+__pkgkw__ mathutil
+
+// Avg returns the average of every int in a slice.
+// Assumes the slice is not empty.
+func Avg(numbers __sliceint__) __int__ {
+    total := 0
+    for _, n := range numbers {
+        total += n
+    }
+    return total / len(numbers)
+}`,
+      blanks: [
+        { id: "pkgkw", answer: "package" },
+        { id: "sliceint", answer: "[]int" },
+        { id: "int", answer: "int" }
+      ],
+      explain: "Κάθε αρχείο .go ξεκινάει με το keyword \"package\" ακολουθούμενο από το όνομα του package. Και επειδή θέλουμε να καλείται η function από άλλα packages (π.χ. το main), το όνομά της πρέπει να ξεκινάει με κεφαλαίο γράμμα — εδώ \"Avg\", όχι \"avg\"."
+    }, {
+      note: "Συμπλήρωσε τα κενά ώστε το mathutil να εξάγει σωστά μια νέα function Avg."
+    });
+
+    // ── Section 1.3 — Project Structure & Organization ──────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
+<h1>Δομή και Οργάνωση Go Projects</h1>
+<p class="lede">Ένα module δεν χρειάζεται να έχει όλο τον κώδικά του σε έναν φάκελο. Καθώς ένα project μεγαλώνει, το χωρίζουμε σε πολλά packages — καθένα σε δικό του υποφάκελο — ώστε κάθε κομμάτι της λογικής να έχει τον δικό του χώρο, το δικό του όνομα, και σαφή όρια με τα υπόλοιπα.</p>
+
+<h2>Οργάνωση κώδικα σε υποπακέτα (sub-packages)</h2>
+<p>Ένα "sub-package" δεν είναι κάτι ειδικό συντακτικά — είναι απλά ένας υποφάκελος μέσα στο module, με δικά του αρχεία <code>.go</code> που δηλώνουν το δικό τους <code>package</code> name (συνήθως ίδιο με το όνομα του φακέλου, από σύμβαση, όχι υποχρέωση). Έτσι ένα project μπορεί να μοιάζει έτσι:</p>
+
+<pre><code>myproject/
+├── go.mod
+├── main.go          <span class="cm">// package main</span>
+└── shapes/
+    └── shapes.go     <span class="cm">// package shapes</span></code></pre>
+
+<p>Εδώ το <code>myproject</code> είναι ένα module με δύο packages: το <code>main</code> στη ρίζα, και το <code>shapes</code> στον υποφάκελο <code>shapes/</code>. Κάθε φάκελος = ένα package. Δεν μπορείς να έχεις δύο διαφορετικά packages στον ίδιο φάκελο, ούτε το ίδιο package χωρισμένο σε δύο διαφορετικούς φακέλους.</p>
+
+<h2>Σωστή εισαγωγή υποπακέτων</h2>
+<p>Για να χρησιμοποιήσεις ένα sub-package από άλλο σημείο του ίδιου module, το import path είναι το module path (από το <code>go.mod</code>) ακολουθούμενο από τη διαδρομή του υποφακέλου:</p>
+
+<pre><code class="lang-go"><span class="cm">// go.mod: module myproject</span>
+package main
+
+import (
+    "fmt"
+    "myproject/shapes" // module path + subfolder path
+)
+
+func main() {
+    fmt.Println(shapes.Area(4, 5))
+}</code></pre>
+
+<p>Πρόσεξε: το import path χρησιμοποιεί το <strong>module path</strong>, όχι κάποιο relative path τύπου <code>"./shapes"</code> — αυτού του είδους τα relative imports δεν υπάρχουν στη Go. Το module path είναι πάντα το σημείο αναφοράς, ό,τι κι αν λέει το <code>go.mod</code> στη ρίζα του project.</p>
+
+<h2>Αποφυγή κυκλικών εξαρτήσεων (Circular Dependencies)</h2>
+<p>Η Go απαγορεύει ρητά τις <strong>κυκλικές εξαρτήσεις</strong>: αν το package A κάνει import το package B, τότε το B δεν επιτρέπεται να κάνει import (άμεσα ή έμμεσα, μέσω κάποιου τρίτου package) το A. Αν προσπαθήσεις, ο compiler αρνείται να χτίσει το project και σου δείχνει ολόκληρο τον κύκλο εξάρτησης.</p>
+
+<div class="grid2">
+  <div class="card"><h3>Γιατί απαγορεύεται</h3><p>Αν επιτρεπόταν, ο compiler δεν θα ήξερε με ποια σειρά να μεταγλωττίσει τα packages — το A χρειάζεται το B έτοιμο, αλλά και το B χρειάζεται το A έτοιμο. Είναι λογικό αδιέξοδο, όχι απλά τεχνικός περιορισμός.</p></div>
+  <div class="card"><h3>Πώς αποφεύγεται</h3><p>Συνήθως λύνεται είτε συγχωνεύοντας τα δύο packages σε ένα, είτε εξάγοντας το κοινό κομμάτι που χρειάζονται και τα δύο σε ένα τρίτο, ανεξάρτητο package που δεν εξαρτάται από κανέναν από τους δύο.</p></div>
+</div>
+
+<h2>Standard Project Layout — awareness</h2>
+<p>Σε μεγάλα, πραγματικά (real-world) Go repositories θα συναντήσεις συχνά μια οικογένεια συμβάσεων για το πώς ονομάζονται οι φάκελοι ενός project. Δεν είναι κανόνας της ίδιας της γλώσσας — είναι σύμβαση της κοινότητας — αλλά είναι πολύ διαδεδομένη, οπότε αξίζει να την αναγνωρίζεις όταν την βλέπεις:</p>
+
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">/cmd</span><span class="gs-def">τα entry points — ένας υποφάκελος ανά εκτελέσιμο πρόγραμμα (package main) που παράγει το project</span></div>
+  <div class="gs-pill"><span class="gs-name">/pkg</span><span class="gs-def">κώδικας-βιβλιοθήκη που προορίζεται να είναι χρησιμοποιήσιμος και από άλλα, εξωτερικά projects</span></div>
+  <div class="gs-pill"><span class="gs-name">/internal</span><span class="gs-def">κώδικας που ο ίδιος ο compiler της Go εμποδίζει να εισαχθεί από οποιοδήποτε project έξω από αυτό — εσωτερική λεπτομέρεια, εγγυημένα</span></div>
+</div>
+
+<p class="lede">Αυτό είναι απλά για αναγνώριση προς το παρόν — για μικρά projects και ασκήσεις, ένα απλό, επίπεδο layout (όπως το παράδειγμα με το <code>shapes/</code> παραπάνω) είναι απόλυτα αρκετό. Δεν χρειάζεται να ακολουθείς αυτή τη σύμβαση για να γράφεις σωστή Go.</p>
+`);
+
+    addQuiz([
+      {
+        q: "Πώς κάνεις import ένα sub-package του ίδιου module στη Go;",
+        options: [
+          "Με το module path ακολουθούμενο από τη διαδρομή του υποφακέλου, π.χ. \"myproject/shapes\"",
+          "Με σχετικό (relative) path ξεκινώντας από τελεία, π.χ. \"./shapes\"",
+          "Δεν χρειάζεται import — τα sub-packages του ίδιου module είναι πάντα αυτόματα ορατά",
+          "Με το απόλυτο (absolute) filesystem path του φακέλου στον δίσκο, π.χ. \"/home/user/myproject/shapes\""
+        ],
+        correct: 0,
+        explain: "Η Go δεν έχει relative imports· το import path είναι πάντα το module path (από το go.mod) συν το υποφάκελο."
+      },
+      {
+        q: "Γιατί απαγορεύει η Go τις κυκλικές εξαρτήσεις μεταξύ packages;",
+        options: [
+          "Γιατί ο compiler δεν μπορεί να αποφασίσει με ποια σειρά να μεταγλωττίσει δύο packages που το καθένα χρειάζεται το άλλο έτοιμο πρώτο",
+          "Γιατί καταναλώνουν υπερβολικά πολλή μνήμη κατά την εκτέλεση του προγράμματος",
+          "Γιατί δημιουργούν συγκρούσεις ονομάτων (naming collisions) ανάμεσα στα δύο packages",
+          "Δεν τις απαγορεύει αυστηρά — απλά προειδοποιεί με ένα warning και συνεχίζει το build"
+        ],
+        correct: 0,
+        explain: "Είναι λογικό αδιέξοδο μεταγλώττισης: το Α χρειάζεται έτοιμο το Β, το Β χρειάζεται έτοιμο το Α — δεν υπάρχει έγκυρη σειρά."
+      }
+    ]);
+
+    // ── Matching — §1 concepts, two distinct sets ────────────────────────── ⊃
+    addMatching([
+      [
+        { term: "go.mod", def: "λέει ποιες εξαρτήσεις και σε ποια έκδοση χρειάζεται το module" },
+        { term: "go.sum", def: "κρατάει checksums για να ανιχνεύεται τυχόν αλλοίωση εξαρτήσεων" },
+        { term: "go mod init", def: "δηλώνει έναν φάκελο ως module, μία φορά, στην αρχή" },
+        { term: "go mod tidy", def: "συγχρονίζει το go.mod με ό,τι πραγματικά εισάγεται στον κώδικα" }
+      ],
+      [
+        { term: "/cmd", def: "ένας υποφάκελος ανά εκτελέσιμο πρόγραμμα (package main)" },
+        { term: "/pkg", def: "κώδικας-βιβλιοθήκη χρησιμοποιήσιμος και από άλλα projects" },
+        { term: "/internal", def: "κώδικας που ο compiler εμποδίζει να εισαχθεί απ' έξω" },
+        { term: "κυκλική εξάρτηση", def: "το Α χρειάζεται το Β, το Β χρειάζεται το Α — απαγορεύεται" }
+      ]
+    ], {
+      note: "Δύο ξεχωριστά σετ: το πρώτο για go.mod/go.sum/εντολές, το δεύτερο για δομή/layout project."
+    });
+
+    // ── VSCode Challenge — closes out §1 ─────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 1</div>
+<h1>Φτιάξε το δικό σου πρώτο multi-package project</h1>
+<p class="lede">Χρόνος να το κάνεις πράξη, με τα ίδια σου τα χέρια, στο terminal και στο VSCode.</p>
+
+<h2>Η αποστολή</h2>
+<p>Φτιάξε ένα καινούριο, κενό φάκελο και μέσα του ένα Go module. Μέσα στο module, δημιούργησε ένα sub-package με όνομα <code>shapes</code>, και μέσα του μια exported function που δέχεται δύο <code>int</code> (πλάτος και ύψος) και επιστρέφει το εμβαδόν τους. Μετά, από ένα <code>main.go</code> στη ρίζα, κάνε import το <code>shapes</code> και τύπωσε το αποτέλεσμα μιας κλήσης της function σου.</p>
+
+<div class="callout">
+  <span class="tag">HINT 1</span>
+  Θυμήσου: κάθε φάκελος = ένα package. Το import path για ένα sub-package είναι το module path (όπως γράφτηκε στο go.mod) συν το όνομα του υποφακέλου — όχι κάποιο relative path με τελεία.
+</div>
+
+<div class="callout">
+  <span class="tag">HINT 2</span>
+  Η function σου πρέπει να είναι ορατή από το <code>main</code>, άρα κάτι πρέπει να ισχύει για το πρώτο γράμμα του ονόματός της. Ποιο κανόνα είδαμε γι' αυτό;</div>
+
+<h2>Λύση</h2>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go"><span class="cm">// go.mod: module learngo</span>
+
+<span class="cm">// file: shapes/shapes.go</span>
+package shapes
+
+<span class="tok-com">// Area returns the area of a rectangle given its width and height.</span>
+func Area(width int, height int) int {
+    return width * height
+}
+
+<span class="cm">// file: main.go</span>
+package main
+
+import (
+    "fmt"
+    "learngo/shapes"
+)
+
+func main() {
+    fmt.Println(shapes.Area(4, 5)) // 20
+}</code></pre></div>
+`);
+
+    // ── Section 2.1 — os.Args ────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
+<h1>Ορίσματα Γραμμής Εντολών (os.Args)</h1>
+<p class="lede">Μέχρι τώρα, κάθε πρόγραμμά μας έπαιρνε δεδομένα μέσω hardcoded τιμών στον κώδικα ή input από το πληκτρολόγιο κατά την εκτέλεση. Υπάρχει όμως κι ένας τρίτος τρόπος: να δώσεις δεδομένα στο πρόγραμμα τη στιγμή που το ξεκινάς, μέσα από το ίδιο το terminal. Αυτά λέγονται <strong>ορίσματα γραμμής εντολών</strong> (command-line arguments), και είναι θεμελιώδη για κάθε εργαλείο που τρέχει από terminal — από το <code>ls</code> μέχρι το <code>git</code>.</p>
+
+<h2>Τι είναι το os.Args</h2>
+<p>Η standard library της Go εκθέτει τα ορίσματα γραμμής εντολών μέσα από ένα package με όνομα <code>os</code> ("operating system"), και συγκεκριμένα μέσα από μια μεταβλητή τύπου <code>[]string</code> (slice από strings) ονόματι <code>Args</code>. Κάθε "λέξη" που δίνεις μετά το όνομα του εκτελέσιμου, χωρισμένη από κενά, γίνεται ένα στοιχείο (element) αυτού του slice.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    fmt.Println(os.Args)
+}</code></pre>
+
+<p>Αν τρέξεις το παραπάνω πρόγραμμα από terminal ως:</p>
+
+<pre><code>go run main.go hello world 123</code></pre>
+
+<p>Το αποτέλεσμα θα είναι:</p>
+
+<pre><code>[main hello world 123]</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το <code>os.Args[0]</code> ΔΕΝ είναι το πρώτο πραγματικό όρισμα — είναι το όνομα/διαδρομή του ίδιου του εκτελέσιμου προγράμματος. Αυτό ισχύει πάντα, σε κάθε γλώσσα προγραμματισμού που ακολουθεί αυτή τη σύμβαση, όχι μόνο στη Go. Τα πραγματικά ορίσματα που έδωσε ο χρήστης ξεκινούν από το index 1.
+</div>
+
+<h2>Διάσχιση και επεξεργασία των ορισμάτων: os.Args[1:]</h2>
+<p>Επειδή το index 0 δεν είναι ποτέ χρήσιμο όρισμα, σχεδόν πάντα δουλεύουμε με το slice <code>os.Args[1:]</code> — δηλαδή, "όλα τα στοιχεία από το index 1 και μετά" (θυμήσου το slicing από το Μέρος 1). Αυτό μας δίνει μόνο τα ορίσματα που έδωσε ο χρήστης, χωρίς το όνομα του προγράμματος να μπλέκεται στη μέση.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    userArgs := os.Args[1:] // real arguments only, program name excluded
+
+    if len(userArgs) == 0 {
+        fmt.Println("no arguments given")
+        return
+    }
+
+    for i, arg := range userArgs { // iteration over the slice
+        fmt.Println(i, "→", arg)
+    }
+}</code></pre>
+
+<p>Ένα σημαντικό σημείο εδώ: κάθε στοιχείο του <code>os.Args</code> είναι πάντα <code>string</code> — ακόμα κι αν ο χρήστης έδωσε κάτι που "μοιάζει" με αριθμό, όπως το <code>123</code> στο προηγούμενο παράδειγμα. Αν το πρόγραμμά σου χρειάζεται έναν πραγματικό αριθμό (<code>int</code>) από ένα όρισμα, πρέπει να το μετατρέψεις εσύ ρητά — κάτι που δεν καλύπτουμε ακόμα σε αυτό το guide, αφού απαιτεί error handling (θα το δούμε σε επόμενο guide).</p>
+
+<div class="grid2">
+  <div class="card"><h3>Πότε χρησιμοποιείς os.Args</h3><p>Για απλά, γρήγορα εργαλεία με λίγα, σταθερής θέσης ορίσματα — π.χ. "δώσε μου ένα filename ως πρώτο όρισμα".</p></div>
+  <div class="card"><h3>Πότε ΔΕΝ αρκεί</h3><p>Όταν θέλεις named options με <code>--</code> μπροστά (π.χ. <code>--verbose</code>, <code>--output=file.txt</code>), προαιρετικά ορίσματα, ή default τιμές. Εκεί χρειάζεσαι κάτι πιο ισχυρό — το βλέπουμε αμέσως μετά.</p></div>
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι περιέχει το os.Args[0] όταν τρέχεις ένα πρόγραμμα Go από το terminal;",
+        options: [
+          "Το όνομα ή τη διαδρομή του ίδιου του εκτελέσιμου προγράμματος, όχι κάποιο όρισμα του χρήστη",
+          "Το πρώτο πραγματικό όρισμα που έδωσε ο χρήστης μετά το όνομα του προγράμματος",
+          "Πάντα την κενή συμβολοσειρά, ανεξάρτητα από το πώς κλήθηκε το πρόγραμμα",
+          "Τον αριθμό συνολικών ορισμάτων που δόθηκαν κατά την εκτέλεση του προγράμματος"
+        ],
+        correct: 0,
+        explain: "os.Args[0] είναι πάντα το όνομα/path του εκτελέσιμου — τα πραγματικά ορίσματα του χρήστη ξεκινούν από το index 1, άρα χρησιμοποιούμε σχεδόν πάντα os.Args[1:]."
+      },
+      {
+        q: "Τι τύπο δεδομένων έχει κάθε στοιχείο του os.Args, ακόμα κι αν ο χρήστης έδωσε έναν αριθμό;",
+        options: [
+          "string πάντα — χρειάζεται ρητή μετατροπή αν θέλεις το ισοδύναμο int",
+          "int αν το όρισμα μοιάζει με αριθμό, αλλιώς string",
+          "interface{} — η Go αποφασίζει αυτόματα τον σωστό τύπο ανά περίπτωση",
+          "Εξαρτάται από το λειτουργικό σύστημα (Windows δίνει string, Linux/macOS δίνουν int)"
+        ],
+        correct: 0,
+        explain: "Κάθε στοιχείο του os.Args είναι string, ό,τι κι αν έγραψε ο χρήστης — η Go δεν κάνει καμία αυτόματη μετατροπή τύπου εδώ."
+      }
+    ]);
+
+    // ── Section 2.2 — the flag package ───────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
+<h1>Ειδικές Εντολές με Παύλα: το package flag</h1>
+<p class="lede">Σίγουρα έχεις δει προγράμματα του terminal να παίρνουν ορίσματα με παύλα μπροστά, όπως <code>ls -l</code>, ή <code>git commit --message "κείμενο"</code>. Αυτά λέγονται <strong>flags</strong> (ή "options"/"switches"), και είναι διαφορετικά από τα απλά, θεσιακά ορίσματα του <code>os.Args</code>: έχουν όνομα, μπορεί να έχουν default τιμή, και δεν εξαρτώνται από τη σειρά που τα γράφεις.</p>
+
+<h2>Γιατί όχι απλά os.Args για αυτό</h2>
+<p>Θα μπορούσες, θεωρητικά, να διασχίσεις εσύ το <code>os.Args</code> με το χέρι, ψάχνοντας για strings που ξεκινούν με <code>-</code> ή <code>--</code>. Αλλά αυτό γρήγορα γίνεται δύσκολο να διαβαστεί και επιρρεπές σε λάθη: τι γίνεται αν το flag δεν δοθεί καθόλου; Τι default τιμή παίρνει; Τι γίνεται αν δοθεί σε διαφορετική σειρά από τα υπόλοιπα; Το package <code>flag</code> της standard library λύνει ακριβώς αυτό το πρόβλημα, με έτοιμο, δοκιμασμένο κώδικα.</p>
+
+<h2>Ορισμός και ανάγνωση ενός flag</h2>
+<p>Η πιο απλή μορφή είναι το <code>flag.String(name, defaultValue, usageText)</code> (υπάρχουν αντίστοιχα και για <code>Int</code>, <code>Bool</code>, κ.λπ.) — ορίζει ένα flag με το δοσμένο όνομα, και επιστρέφει έναν <strong>pointer</strong> προς την τιμή του (θυμήσου τους pointers από το Μέρος 1). Μετά τον ορισμό όλων των flags, καλείς <code>flag.Parse()</code> ΜΙΑ φορά, η οποία διαβάζει το πραγματικό <code>os.Args</code> και γεμίζει τις τιμές πίσω από αυτούς τους pointers.</p>
+
+<pre><code class="lang-go">package main
+
+import (
+    "flag"
+    "fmt"
+)
+
+func main() {
+    name := flag.String("name", "world", "the name to greet")
+    flag.Parse() // must be called after all flags are defined, before they're read
+
+    fmt.Println("hello,", *name) // dereference the pointer to get the value
+}</code></pre>
+
+<p>Τρέχοντας αυτό ως <code>go run main.go -name=Prome</code> τυπώνει <code>hello, Prome</code>· τρέχοντάς το χωρίς κανένα flag τυπώνει <code>hello, world</code> — η default τιμή χρησιμοποιείται αυτόματα. Πρόσεξε το <code>*name</code>: το <code>flag.String</code> επιστρέφει <code>*string</code> (pointer σε string), οπότε χρειάζεται dereference (<code>*</code>) για να πάρεις την πραγματική τιμή.</p>
+
+<div class="callout">
+  <span class="tag">Σημαντικό</span>
+  Το <code>flag.Parse()</code> πρέπει να καλείται ΑΦΟΥ έχεις ορίσει όλα τα flags σου με <code>flag.String</code>/<code>flag.Int</code>/κ.λπ., αλλά ΠΡΙΝ διαβάσεις οποιαδήποτε τιμή τους. Αν διαβάσεις μια τιμή πριν το Parse(), θα πάρεις πάντα την (κενή) αρχική τιμή, όχι αυτή που έδωσε ο χρήστης.
+</div>
+
+<h2>Πολλαπλά flags και διαφορετικοί τύποι</h2>
+<pre><code class="lang-go">package main
+
+import (
+    "flag"
+    "fmt"
+)
+
+func main() {
+    name := flag.String("name", "world", "the name to greet")
+    times := flag.Int("times", 1, "how many times to repeat the greeting")
+    loud := flag.Bool("loud", false, "shout the greeting in capital letters")
+
+    flag.Parse()
+
+    for i := 0; i < *times; i++ {
+        greeting := "hello, " + *name
+        fmt.Println(greeting)
+    }
+    fmt.Println("loud mode:", *loud)
+}</code></pre>
+
+<p>Τρέχοντας <code>go run main.go -name=Ana -times=3 -loud</code> ορίζει και τα τρία flags — πρόσεξε ότι το <code>-loud</code> (τύπου <code>Bool</code>) δεν χρειάζεται τιμή μετά του· η απλή του παρουσία σημαίνει <code>true</code>. Η σειρά με την οποία γράφεις τα flags στο terminal δεν έχει σημασία — μπορείς να γράψεις <code>-loud -times=3 -name=Ana</code> και θα δουλέψει ακριβώς το ίδιο.</p>
+
+<h2>Ανίχνευση flags: πώς ξεχωρίζουν από τα κανονικά ορίσματα</h2>
+<p>Το πρόγραμμα ξέρει ότι κάτι είναι flag επειδή ξεκινάει με μία ή δύο παύλες (<code>-name</code> ή <code>--name</code> — το package <code>flag</code> δέχεται και τα δύο ισοδύναμα) ΚΑΙ ταιριάζει με κάποιο όνομα flag που έχεις ορίσει με <code>flag.String</code>/<code>flag.Int</code>/<code>flag.Bool</code>. Οτιδήποτε στο <code>os.Args</code> δεν ταιριάζει με γνωστό flag name θεωρείται κανονικό, θεσιακό όρισμα — αυτά είναι διαθέσιμα μετά το <code>flag.Parse()</code> μέσω του <code>flag.Args()</code> (το ισοδύναμο του <code>os.Args[1:]</code>, αλλά χωρίς τα flags που ήδη αναγνωρίστηκαν).</p>
+
+<div class="callout good">
+  <span class="tag">Καλή πρακτική</span>
+  Δίνε πάντα ένα σαφές, σύντομο <code>usage</code> κείμενο (το τρίτο όρισμα του <code>flag.String</code>/<code>flag.Int</code>/κ.λπ.) — αυτό εμφανίζεται αυτόματα αν ο χρήστης τρέξει το πρόγραμμα με <code>-h</code> ή <code>--help</code>, ή αν δώσει ένα flag που δεν αναγνωρίζεται. Είναι δωρεάν τεκμηρίωση.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι επιστρέφει η κλήση flag.String(\"name\", \"world\", \"the name to greet\")?",
+        options: [
+          "Έναν pointer τύπου *string, ο οποίος θα δείχνει στην τιμή του flag μετά το flag.Parse()",
+          "Απευθείας την τιμή του flag ως string, έτοιμη προς χρήση χωρίς dereference",
+          "Ένα boolean που δηλώνει αν το flag δόθηκε ή όχι από τον χρήστη",
+          "Ένα slice από strings με όλα τα ορίσματα που ταιριάζουν με αυτό το όνομα flag"
+        ],
+        correct: 0,
+        explain: "flag.String (όπως και flag.Int, flag.Bool) επιστρέφει pointer· χρειάζεται dereference (*name) για να πάρεις την πραγματική τιμή, και μόνο μετά την κλήση flag.Parse() η τιμή αυτή είναι έγκυρη."
+      },
+      {
+        q: "Πότε πρέπει να καλείται το flag.Parse() σε σχέση με τον ορισμό των flags;",
+        options: [
+          "Αφού έχουν οριστεί όλα τα flags, αλλά πριν διαβαστεί οποιαδήποτε τιμή τους",
+          "Πριν οριστεί κανένα flag, ώστε να ετοιμάσει εκ των προτέρων το σύστημα ανάγνωσης ορισμάτων",
+          "Δεν έχει σημασία η σειρά — το flag.Parse() μπορεί να κληθεί οποτεδήποτε μέσα στη main",
+          "Μόνο μία φορά στο τέλος του προγράμματος, αφού έχει ήδη χρησιμοποιηθεί η τιμή κάθε flag"
+        ],
+        correct: 0,
+        explain: "Η σειρά έχει σημασία: πρώτα ορίζεις όλα τα flags (flag.String/Int/Bool), μετά καλείς flag.Parse() μία φορά, και μόνο ΤΟΤΕ οι τιμές πίσω από τους pointers είναι σωστές."
+      },
+      {
+        q: "Στο terminal, τι δηλώνει η απλή παρουσία ενός Bool flag όπως το -loud, χωρίς καμία τιμή μετά του;",
+        options: [
+          "true — η παρουσία του flag από μόνη της αρκεί, δεν χρειάζεται =true ή κάποια τιμή",
+          "Πρόγραμμα σφάλμα (compile error), αφού κάθε flag πρέπει υποχρεωτικά να έχει τιμή μετά του",
+          "false — χρειάζεται ρητό -loud=true για να γίνει true, αλλιώς θεωρείται ψευδές αν και δόθηκε",
+          "Εξαρτάται από τη σειρά που γράφτηκε το flag σε σχέση με τα υπόλοιπα ορίσματα"
+        ],
+        correct: 0,
+        explain: "Τα Bool flags είναι ειδική περίπτωση: απλή παρουσία τους στο terminal (χωρίς =value) αρκεί για να γίνουν true."
+      }
+    ]);
+
+    // ── Mini-glossary — §2 ───────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">os.Args</td><td class="gt-def">slice από strings με όλα τα ορίσματα εκκίνησης, index 0 = όνομα προγράμματος</td></tr>
+  <tr><td class="gt-term">os.Args[1:]</td><td class="gt-def">τα πραγματικά ορίσματα του χρήστη, χωρίς το όνομα του προγράμματος</td></tr>
+  <tr><td class="gt-term">flag</td><td class="gt-def">named όρισμα με παύλα μπροστά, π.χ. -name=value ή -loud</td></tr>
+  <tr><td class="gt-term">flag.Parse()</td><td class="gt-def">διαβάζει το os.Args και γεμίζει τις τιμές των ορισμένων flags</td></tr>
+  <tr><td class="gt-term">flag.Args()</td><td class="gt-def">τα θεσιακά ορίσματα που απομένουν μετά την αφαίρεση των flags</td></tr>
+</table>
+`);
+
+    // ── Fill-in-the-blank — building a small CLI with flags ─────────────── ⊃
+    addFillBlank({
+      code:
+        `package main
+
+import (
+    "flag"
+    "fmt"
+)
+
+func main() {
+    city := flag.__method__("city", "Athens", "the city to display")
+    temp := flag.Int("temp", 20, "the temperature in Celsius")
+
+    flag.__call__()
+
+    fmt.Println(__deref1__city, "is", __deref2__temp, "degrees")
+}`,
+      blanks: [
+        { id: "method", answer: "String" },
+        { id: "call", answer: "Parse" },
+        { id: "deref1", answer: "*" },
+        { id: "deref2", answer: "*" }
+      ],
+      explain: "flag.String ορίζει το flag \"city\" (τύπου *string), flag.Parse() διαβάζει το os.Args, και το * μπροστά από city/temp κάνει dereference των pointers ώστε να πάρουμε τις πραγματικές τιμές."
+    }, {
+      note: "Συμπλήρωσε τα κενά ώστε το πρόγραμμα να δέχεται -city και -temp ως flags."
+    });
+
+    // ── Matching — §2 concepts ────────────────────────────────────────────── ⊃
+    addMatching([
+      { term: "os.Args[0]", def: "το όνομα ή η διαδρομή του εκτελέσιμου προγράμματος" },
+      { term: "flag.String / flag.Int / flag.Bool", def: "ορίζουν ένα flag και επιστρέφουν pointer στην τιμή του" },
+      { term: "*name", def: "dereference — παίρνει την πραγματική τιμή πίσω από τον pointer" },
+      { term: "flag.Args()", def: "τα θεσιακά ορίσματα που έμειναν μετά την αφαίρεση των γνωστών flags" }
+    ], {
+      note: "Ταίριαξε κάθε όρο με τη σωστή περιγραφή του."
+    });
+
+
+    // ── VSCode Challenge — closes out §2 ─────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 2</div>
+<h1>Φτιάξε το δικό σου εργαλείο γραμμής εντολών</h1>
+<p class="lede">Ένα ακόμα hands-on challenge, αυτή τη φορά πάνω σε ορίσματα και flags.</p>
+
+<h2>Η αποστολή</h2>
+<p>Γράψε ένα πρόγραμμα που ορίζει δύο flags: ένα <code>-word</code> (string, default τιμή της επιλογής σου) και ένα <code>-count</code> (int, default 1). Το πρόγραμμα πρέπει να τυπώνει τη λέξη τόσες φορές όσες λέει το <code>-count</code>, μία ανά γραμμή. Επιπλέον, χρησιμοποίησε και το <code>os.Args</code> απευθείας (όχι μέσω flag) για να τυπώσεις πρώτα το όνομα του ίδιου του εκτελέσιμου προγράμματος.</p>
+
+<div class="callout">
+  <span class="tag">HINT 1</span>
+  Θυμήσου ότι το flag.Int επιστρέφει pointer — θα χρειαστείς dereference για να το χρησιμοποιήσεις μέσα σε συνθήκη λούπας.
+</div>
+
+<div class="callout">
+  <span class="tag">HINT 2</span>
+  Το όνομα του εκτελέσιμου προγράμματος βρίσκεται πάντα στην ίδια, συγκεκριμένη θέση του os.Args — ανεξάρτητα από τα flags που όρισες.
+</div>
+
+<h2>Λύση</h2>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">package main
+
+import (
+    "flag"
+    "fmt"
+    "os"
+)
+
+func main() {
+    word := flag.String("word", "hello", "the word to repeat")
+    count := flag.Int("count", 1, "how many times to repeat the word")
+    flag.Parse()
+
+    fmt.Println("program name:", os.Args[0])
+
+    for i := 0; i < *count; i++ {
+        fmt.Println(*word)
+    }
+}</code></pre></div>
+`);
+
+
+    // ══════════════════════════════════════════════════════════════════════
+    // SECTION 3 — Θεμελιώδη Λογικά & Δομικά Μοτίβα Κώδικα (v2, χειρόγραφη ροή)
+    // ══════════════════════════════════════════════════════════════════════
+
+    addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
+<h1>Γιατί χρειαζόμαστε "patterns"</h1>
+<p>Μέχρι τώρα έμαθες τα "γράμματα" της Go: syntax, τύπους, functions, packages. Αυτή η ενότητα είναι διαφορετική — δεν μαθαίνεις νέα syntax, μαθαίνεις <strong>τρόπους σκέψης</strong>. Κάθε δύσκολο πρόβλημα προγραμματισμού, όσο περίπλοκο κι αν φαίνεται, συνήθως λύνεται συνδυάζοντας 2-3 από ένα μικρό σύνολο επαναλαμβανόμενων μοτίβων (patterns). Μόλις τα αναγνωρίζεις, το "δεν ξέρω από πού να ξεκινήσω" γίνεται "α, αυτό είναι sliding window + accumulator".</p>
+
+<h1>Result Variable — accumulator</h1>
+<p>Το πρώτο και πιο βασικό pattern απ' όλα: μια μεταβλητή που θα κρατήσει μια τιμή που θέλουμε να "μετρήσουμε" ή να καταγράφουμε καθώς τρέχει μια loop. Τη δηλώνουμε <strong>έξω</strong> από τη loop — μία φορά — και μέσα στη loop απλά την ενημερώνουμε, ξανά και ξανά, μέχρι να τελειώσει η επανάληψη.</p>
+
+<p><strong>Παράδειγμα 1:</strong> μέτρα πόσα στοιχεία έχει ένας πίνακας.</p>
+
+<pre><code class="lang-go">func main() {
+    x := []int{43, 52, 12, 5, 6, 9, 1, 2, 3, 4}
+    length := CountElements(x)
+    fmt.Println(length)
+}
+
+func CountElements(x []int) int {
+    var count int   // the result variable — declared once, outside the loop
+    for i := range x {
+        count++      // updated on every iteration
+    }
+    return count
+}</code></pre>
+
+<p>Ευτυχώς, όπως ξέρουμε ήδη, δεν χρειάζεται να γράφουμε μόνοι μας κάτι σαν το <code>CountElements</code> — για κάθε slice, το <code>len(x)</code> μας δίνει ακριβώς αυτό, έτοιμο. Αλλά το ενδιαφέρον εδώ δεν είναι το αποτέλεσμα· είναι <em>πώς</em> δουλεύει από μέσα: ο "μετρητής" μας αυξανόταν κατά ένα, σε κάθε πέρασμα της <code>for</code>.</p>
+
+<p><strong>Παράδειγμα 2:</strong> η πραγματική αξία του pattern φαίνεται όταν ο μετρητής δεν αυξάνεται <em>πάντα</em>, αλλά μόνο όταν ισχύει κάτι συγκεκριμένο. Π.χ. πόσες φορές εμφανίζεται ένας μονός αριθμός σε ένα slice:</p>
+
+<pre><code class="lang-go">func CountOdd(numbers []int) int {
+    var count int
+    for _, n := range numbers {
+        if n%2 != 0 {
+            count++ // only bump the counter when the condition holds
+        }
+    }
+    return count
+}</code></pre>
+
+<p>Ή πόσες φορές εμφανίζεται ένας συγκεκριμένος χαρακτήρας μέσα σε ένα string:</p>
+
+<pre><code class="lang-go">func CountRune(input string, target rune) int {
+    var count int
+    for _, letter := range input {
+        if letter == target {
+            count++
+        }
+    }
+    return count
+}</code></pre>
+
+<p>Πρόσεξε — και στα δύο, η δομή είναι <em>ακριβώς η ίδια</em>: μεταβλητή έξω από τη loop, ένας έλεγχος μέσα, <code>count++</code> όποτε ο έλεγχος περνάει. Μόνο η συνθήκη αλλάζει.</p>
+
+<h2>Το result δεν χρειάζεται να αυξάνεται κατά 1 κάθε φορά</h2>
+<p>Δοκίμασε τώρα κάτι λίγο διαφορετικό: αντί για μετρητή, ένα άθροισμα — κάθε φορά, αντί να προσθέτεις 1, προσθέτεις τον ίδιο τον αριθμό:</p>
+
+<pre><code class="lang-go">func SumPositive(numbers []int) int {
+    var sum int // still a result variable — just a different starting point
+    for _, n := range numbers {
+        if n > 0 {
+            sum += n // add the number itself, not just +1
+        }
+    }
+    return sum
+}</code></pre>
+
+<h2>Στο result "χτίζουμε" μια φράση</h2>
+<p>Ακριβώς όπως αυξάνουμε ένα <code>count</code> τύπου <code>int</code>, μπορούμε να "χτίζουμε" και μια μεταβλητή τύπου <code>string</code> — κάθε φορά που κάτι ισχύει, προσθέτουμε κομμάτι κειμένου πάνω σε ό,τι έχουμε ήδη:</p>
+
+<pre><code class="lang-go">func main() {
+    words := []string{"go", "is", "really", "fun", "today"}
+    fmt.Println(LongWords(words)) // prints: really today
+}
+
+// LongWords builds a single string containing every word longer than 3 letters.
+func LongWords(words []string) string {
+    var result string
+    for _, w := range words {
+        if len(w) > 3 {
+            result += w + " " // add this word, plus a space to separate it from the next
+        }
+    }
+    return result
+}
+</code></pre>
+
+<div class="callout"><span class="tag">Ορισμός</span>Το pattern που μόλις είδες, ξανά και ξανά, λέγεται <strong>accumulator</strong>. Η ιδέα είναι πάντα η ίδια: μια μεταβλητή που ξεκινά από μια "ουδέτερη" αρχική τιμή <em>έξω</em> από τη λούπα (<code>0</code> για μέτρημα/άθροισμα, κενό string για κείμενο, <code>nil</code>/κενό slice για λίστα), και <em>μέσα</em> στη λούπα απλά "μαζεύει" κάτι πάνω σε ό,τι ήδη έχει — <code>count++</code>, <code>sum += n</code>, <code>result += w</code>, <code>append(result, x)</code>. Ό,τι κι αν αλλάζει (τύπος δεδομένων, συνθήκη, τελεστής), ο σκελετός παραμένει ο ίδιος.</div>
+
+<p>Σε μια result variable μπορούμε να βάζουμε <em>πολλά</em> πράγματα, όχι μόνο ένα. Π.χ. τις θέσεις (indices) που εμφανίζεται το γράμμα <code>e</code> μέσα σε ένα string — εδώ η result variable είναι ένα <code>[]int</code>, κι αντί για <code>+=</code> χρησιμοποιούμε <code>append</code>:</p>
+
+<pre><code class="lang-go">func PositionsOfE(input string) []int {
+    var positions []int // a slice can be a result variable too
+    for i, letter := range input {
+        if letter == 'e' {
+            positions = append(positions, i)
+        }
+    }
+    return positions
+}</code></pre>
+
+<p>Πάμε τώρα ένα βήμα πιο κάτω με την ίδια ιδέα: πόσα γράμματα έχει η κάθε λέξη μιας φράσης;</p>
+
+<pre><code class="lang-go">// WordLengths returns the length of every word in the input.
+// Assumes words are separated by exactly one space.
+func WordLengths(input string) []int {
+    var result []int
+    count := 0
+    for _, letter := range input {
+        if letter == ' ' {
+            result = append(result, count) // word ended, save its length
+            count = 0                       // reset for the next word
+        } else {
+            count++
+        }
+    }
+    result = append(result, count) // don't forget the last word — no trailing space after it
+    return result
+}
+// WordLengths("go is fun") → [2 2 3]</code></pre>
+
+<h2>Όταν η Result Variable δεν αρκεί: το πρόβλημα</h2>
+<p>Το <code>WordLengths</code> παραπάνω δουλεύει — αλλά μόνο υπό μία σιωπηρή προϋπόθεση: ότι ανάμεσα στις λέξεις υπάρχει <em>ακριβώς ένα</em> κενό. Τι θα συμβεί αν δοκιμάσουμε μια φράση με <strong>πολλά συνεχόμενα κενά</strong>;</p>
+
+<pre><code class="lang-go">WordLengths("hello   world") // three spaces between the words</code></pre>
+
+<p>Ας το τρέξουμε νοερά, χαρακτήρα-χαρακτήρα, όπως θα το έκανε η Go:</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">h e l l o</td><td class="gt-def">count ανεβαίνει σε 5</td></tr>
+<tr><td class="gt-term">κενό #1</td><td class="gt-def">append(5), count = 0</td></tr>
+<tr><td class="gt-term">κενό #2</td><td class="gt-def">το count ήταν ήδη 0 → append(<strong>0</strong>), count = 0</td></tr>
+<tr><td class="gt-term">κενό #3</td><td class="gt-def">το ίδιο ξανά → append(<strong>0</strong>), count = 0</td></tr>
+<tr><td class="gt-term">w o r l d</td><td class="gt-def">count ανεβαίνει σε 5</td></tr>
+<tr><td class="gt-term">τέλος</td><td class="gt-def">append(5)</td></tr>
+</table>
+
+<p>Αποτέλεσμα: <code>[5 0 0 5]</code> — αντί για το σωστό <code>[5 5]</code>. Κάθε επιπλέον κενό δημιουργεί ένα ψεύτικο μηδενικό "word" μέσα στη λίστα μας. Το πρόβλημα δεν είναι το <code>count</code> — είναι ότι ο κώδικας δεν ξέρει να ξεχωρίσει "μόλις τελείωσα μια πραγματική λέξη" από "βρίσκομαι ήδη ανάμεσα σε λέξεις και βλέπω ένα ακόμα κενό".</p>
+
+<div class="callout"><span class="tag">Το πρόβλημα</span>Χρειαζόμαστε κάτι που να θυμάται: "βρίσκομαι <em>μέσα</em> σε λέξη αυτή τη στιγμή, ή όχι;" — και να κάνει <code>append</code> μόνο στην πρώτη περίπτωση.</div>
+
+<h1>Flag / Boolean Switch</h1>
+<p>Η λύση: μια δεύτερη μεταβλητή, τύπου <code>bool</code>, που απλά καταγράφει μια κατάσταση — <strong>true</strong> ή <strong>false</strong> — και ελέγχεται πριν από κάθε ενέργεια. Αυτό λέγεται <strong>flag</strong> ή <strong>boolean switch</strong>.</p>
+
+<pre><code class="lang-go">func WordLengths(input string) []int {
+    var result []int
+    count := 0
+    inWord := false // the flag — "am I currently inside a word?"
+
+    for _, letter := range input {
+        if letter == ' ' {
+            if inWord {           // only save a word if we were actually in one
+                result = append(result, count)
+                count = 0
+                inWord = false
+            }
+            // if we weren't in a word, this space is just noise — do nothing
+        } else {
+            count++
+            inWord = true
+        }
+    }
+    if inWord { // catch the last word too, if the string doesn't end in a space
+        result = append(result, count)
+    }
+    return result
+}
+// WordLengths("hello   world") → [5 5]  ✓</code></pre>
+
+<div class="callout good"><span class="tag">Τι άλλαξε</span>Το <code>inWord</code> δεν αποθηκεύει δεδομένα — αποθηκεύει <em>κατάσταση</em>. Ελέγχεται ΠΡΙΝ κάνουμε append, ώστε ένα κενό που ακολουθεί άλλο κενό να μην παράγει ψεύτικο μηδενικό.</div>
+
+<h2>Πότε το αναγνωρίζεις</h2>
+<p>Κάθε φορά που μέσα σε μια loop θέλεις να αλλάξεις τη συμπεριφορά σου ανάλογα με το αν έχει ήδη συμβεί κάτι — όχι ανάλογα με την τρέχουσα τιμή, αλλά ανάλογα με το <em>ιστορικό</em> μέχρι εκείνο το σημείο — μάλλον χρειάζεσαι ένα boolean switch.</p>
+
+<p>Άλλο παράδειγμα: τύπωσε μια λίστα αριθμών χωρισμένους με κόμμα <code>fmt.Print(", ", n)</code>, χωρίς περιττό κόμμα πριν από τον πρώτο:</p>
+
+<pre><code class="lang-go">func PrintCommaSeparated(numbers []int) {
+    firstRun := true // flag: is this the very first number?
+    for _, n := range numbers {
+        if firstRun {
+            fmt.Print(n)
+            firstRun = false
+        } else {
+            fmt.Print(", ", n)
+        }
+    }
+}
+// PrintCommaSeparated([]int{1,2,3}) → 1, 2, 3   (no leading comma)</code></pre>
+
+<p>Θα μπορούσαμε βέβαια να το γράψουμε πιο απλά με <code>if index == 0 { ... } else { ... }</code>, αφού εδώ ξέρουμε πάντα ποιο είναι το πρώτο στοιχείο. Το κάναμε λίγο πιο σύνθετο επίτηδες, για να εξασκηθείς στη λογική "θυμάμαι αν συνέβη ήδη κάτι" — μια λογική που δεν βασίζεται πάντα σε index, και θα τη χρειαστείς σε περιπτώσεις όπου το index δεν είναι διαθέσιμο ή δεν αρκεί.</p>
+<br>
+<h1>Break, Continue, Early Return</h1>
+<p>Ένα pattern που μοιάζει πολύ με το flag — μερικές φορές αντί να <em>θυμόμαστε</em> κατάσταση, απλά <strong>σταματάμε</strong> ή <strong>παραλείπουμε</strong> τη στιγμή που δεν χρειάζεται να συνεχίσουμε. Τρεις παραλλαγές της ίδιας ιδέας:</p>
+
+<p><strong>break</strong> — βρήκα αυτό που χρειαζόμουν, δεν έχει νόημα να συνεχίσω τη loop:</p>
+
+<pre><code class="lang-go">func Contains(numbers []int, target int) bool {
+    found := false
+    for _, n := range numbers {
+        if n == target {
+            found = true
+            break // no reason to keep scanning — we already have the answer
+        }
+    }
+    return found
+}</code></pre>
+
+<p><strong>continue</strong> — αυτό το πέρασμα της loop δεν με ενδιαφέρει, πάμε κατευθείαν στο επόμενο, χωρίς να τρέξει ο υπόλοιπος κώδικας του σώματος:</p>
+
+<pre><code class="lang-go">func PrintCommaSeparatedV2(numbers []int) {
+    firstRun := true
+    for _, n := range numbers {
+        if firstRun {
+            firstRun = false
+            fmt.Print(n)
+            continue // skip the comma-printing below, just for this one iteration
+        }
+        fmt.Print(", ", n)
+    }
+}</code></pre>
+
+<p>Ίδιο αποτέλεσμα με πριν, αλλά διαφορετική οργάνωση: το <code>continue</code> "προστατεύει" τον κώδικα από κάτω, ώστε να τρέξει μόνο όταν πραγματικά χρειάζεται.</p>
+
+<p><strong>early return</strong> — τερματίζει όλη τη function αμέσως, όχι μόνο ένα πέρασμα της loop. Π.χ. μια function που μετράει πόσα <code>e</code> υπάρχουν σε ένα string:</p>
+
+<pre><code class="lang-go">func CountE(input string) int {
+    if len(input) == 0 {
+        return 0 // empty input can never contain an 'e' — no point even entering the loop
+    }
+    var count int
+    for _, letter := range input {
+        if letter == 'e' {
+            count++
+        }
+    }
+    return count
+}</code></pre>
+
+<p>Το <code>if len(input) == 0 { return 0 }</code> εδώ δεν είναι απλά "προαιρετική βελτιστοποίηση" — δηλώνει ρητά μια περίπτωση που ξέρουμε την απάντηση εκ των προτέρων, χωρίς να χρειάζεται καν να μπούμε στη λούπα.</p>
+<br>
+<h1>Sentinel Value</h1>
+<p>Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "κάτι πήγε στραβά" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong> ("τιμή φρουρού").</p>
+
+<p>Πρόβλημα: άθροισε τους αριθμούς μέσα σε ένα string, χωρισμένους με κενό — π.χ. <code>"3 15 7"</code> → <code>25</code>. Δεν έχουμε δει ακόμα το πακέτο <code>strconv</code> της standard library που κάνει ακριβώς αυτή τη μετατροπή string→int, οπότε θα γράψουμε τη δική μας απλή βοηθητική function, <code>Atoi</code> — και, για τους σκοπούς αυτού του παραδείγματος, θα υποθέσουμε ότι δεν εμφανίζονται αρνητικοί αριθμοί:</p>
+
+<pre><code class="lang-go">// Atoi converts a string of digits to an int.
+// Assumes no negative numbers and no leading/trailing spaces in "s".
+func Atoi(s string) int {
+    var result int
+    for _, letter := range s {
+        digit := int(letter - '0') // '0'-'9' are consecutive in ASCII, so this maps '7' → 7
+        result = result*10 + digit
+    }
+    return result
+}
+
+func SumNumbers(input string) int {
+    var sum int
+    numStr := ""
+    for _, letter := range input {
+        if letter == ' ' {
+            sum += Atoi(numStr)
+            numStr = ""
+        } else {
+            numStr += string(letter)
+        }
+    }
+    sum += Atoi(numStr) // don't forget the last number
+    return sum
+}
+// SumNumbers("3 15 7") → 25</code></pre>
+
+<p>Τι γίνεται όμως αν κάπου στη φράση υπάρχει ένα γράμμα αντί για αριθμό — π.χ. <code>"3 x 7"</code>; Το <code>Atoi("x")</code> θα υπολογίσει κάποιο παράλογο νούμερο από το ASCII του <code>'x'</code>, χωρίς κανένα σήμα ότι κάτι πήγε στραβά. Χρειαζόμαστε τρόπο να το ανιχνεύσουμε <em>και</em> να ενημερώσουμε τον καλούντα.</p>
+
+<pre><code class="lang-go">func SumNumbers(input string) int {
+    var sum int
+    numStr := ""
+    for _, letter := range input {
+        if letter == ' ' {
+            sum += Atoi(numStr)
+            numStr = ""
+        } else if letter >= '0' && letter <= '9' {
+            numStr += string(letter)
+        } else {
+            return -1 // sentinel value: "something went wrong, this isn't a real sum"
+        }
+    }
+    sum += Atoi(numStr)
+    return sum
+}</code></pre>
+
+<p>Αν βρούμε γράμμα στη φράση αντί για αριθμό, έστω και σε ένα σημείο, κάνουμε early return το <strong>-1</strong> — και έχουμε κάνει μόνοι μας, σιωπηρά, την παραδοχή ότι το -1 σημαίνει "σφάλμα".</p>
+
+<div class="callout"><span class="tag">Προσοχή</span>Αν όμως η άσκηση επέτρεπε <em>αρνητικούς</em> αριθμούς μέσα στη φράση (π.χ. <code>"3 -5 7"</code>), το -1 δεν θα μπορούσε πια να είναι sentinel value — θα μπορούσε να είναι και πραγματικό, έγκυρο αποτέλεσμα του αθροίσματος.</div>
+
+<p>Γενικότερα: σαν sentinel value βάζουμε μόνο τιμές που ξέρουμε με σιγουριά ότι δεν μπορούν να εμφανιστούν ως κανονικό αποτέλεσμα. Υπάρχουν όμως πολλές περιπτώσεις όπου αυτό απλά δεν γίνεται — δεν υπάρχει "ασφαλής" ειδική τιμή. Το sentinel value ως τεχνική έρχεται ιστορικά από γλώσσες που δεν μπορούσαν να επιστρέψουν πολλαπλές τιμές από μία function. Στη Go, δεν έχουμε αυτόν τον περιορισμό — μπορούμε απλά:</p>
+
+<pre><code class="lang-go">// ok reports whether the input was successfully parsed as a valid sum.
+func SumNumbers(input string) (sum int, ok bool) {
+    numStr := ""
+    for _, letter := range input {
+        if letter == ' ' {
+            sum += Atoi(numStr)
+            numStr = ""
+        } else if letter >= '0' && letter <= '9' {
+            numStr += string(letter)
+        } else {
+            return 0, false // no need to pick a "fake" number — just say it failed
+        }
+    }
+    sum += Atoi(numStr)
+    return sum, true
+}
+
+func main() {
+    total, ok := SumNumbers("3 15 7")
+    fmt.Println(total, ok) // 25 true
+
+    total, ok = SumNumbers("3 x 7")
+    fmt.Println(total, ok) // 0 false
+}</code></pre>
+
+<div class="callout good"><span class="tag">Τι άλλαξε</span>Αντί να "κρύβουμε" το σφάλμα μέσα στην ίδια τιμή που θα μπορούσε να είναι και σωστό αποτέλεσμα, το δηλώνουμε ρητά με ένα δεύτερο <code>bool</code>. Δεν χρειάζεται πια να μαντέψουμε ποια τιμή είναι "ασφαλής" ως sentinel — λειτουργεί ακόμα κι όταν <em>κάθε</em> δυνατή τιμή int θα μπορούσε να είναι έγκυρο αποτέλεσμα.</div>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί ο κώδικας WordLengths (χωρίς flag) δίνει [5 0 0 5] αντί για [5 5] στην είσοδο \"hello   world\" (τρία κενά);",
+        options: [
+          "Κάθε επιπλέον κενό βρίσκει το count ήδη μηδενισμένο από το προηγούμενο κενό, και κάνει append ένα ψεύτικο μηδενικό \"word\"",
+          "Η Go μετράει τα κενά ως γράμματα της λέξης, προσθέτοντάς τα στο count αντί να τα αγνοεί",
+          "Το append() σε slice της Go επιτρέπει το πολύ μία κλήση ανά loop, οπότε τα επιπλέον κενά αγνοούνται σιωπηρά",
+          "Δεν υπάρχει πραγματικό πρόβλημα — το [5 0 0 5] είναι το σωστό, αναμενόμενο αποτέλεσμα για τρία κενά"
+        ],
+        correct: 0,
+        explain: "Κάθε κενό που βρίσκει count == 0 (γιατί το προηγούμενο κενό μόλις το μηδένισε) κάνει append(0) — ένα ψεύτικο word μήκους 0 για κάθε επιπλέον κενό."
+      },
+      {
+        q: "Στο fixed WordLengths, τι ρόλο παίζει ακριβώς η μεταβλητή inWord;",
+        options: [
+          "Αποθηκεύει κατάσταση (\"βρίσκομαι μέσα σε λέξη τώρα;\"), ελεγχόμενη ΠΡΙΝ από το append, ώστε ένα κενό μετά από άλλο κενό να μην παράγει ψεύτικο μηδενικό",
+          "Μετράει πόσα γράμματα έχει η τρέχουσα λέξη, αντικαθιστώντας πλήρως τον ρόλο του count",
+          "Είναι απλά ένα εναλλακτικό όνομα για το ίδιο slice αποτελεσμάτων, χωρίς πρόσθετη λειτουργία",
+          "Ελέγχει αν το string έχει φτάσει στο τέλος του, αντικαθιστώντας τη συνθήκη της λούπας for"
+        ],
+        correct: 0,
+        explain: "Το inWord είναι flag/boolean switch — καταγράφει κατάσταση (μέσα σε λέξη ή όχι), όχι δεδομένα. Ελέγχεται πριν κάνουμε append, φιλτράροντας τα \"ψεύτικα\" κενά."
+      },
+      {
+        q: "Ποια είναι η βασική διαφορά ανάμεσα σε continue και early return μέσα σε μια loop;",
+        options: [
+          "Το continue παραλείπει μόνο το τρέχον πέρασμα της λούπας και συνεχίζει στο επόμενο, ενώ το return τερματίζει ολόκληρη τη function αμέσως",
+          "Δεν υπάρχει καμία ουσιαστική διαφορά — τα δύο keywords είναι πλήρως εναλλάξιμα σε κάθε περίπτωση χρήσης",
+          "Το continue τερματίζει ολόκληρη τη function, ενώ το return παραλείπει μόνο το τρέχον πέρασμα της λούπας",
+          "Το continue λειτουργεί μόνο μέσα σε λούπες for-range, ενώ το return λειτουργεί μόνο μέσα σε λούπες for με μετρητή"
+        ],
+        correct: 0,
+        explain: "continue = \"παρέλειψε αυτό το πέρασμα, πήγαινε στο επόμενο\" (η loop συνεχίζει). return = \"σταμάτα τα πάντα, βγες από τη function\" (η loop δεν ξανατρέχει καθόλου)."
+      },
+      {
+        q: "Γιατί το -1 δεν θα μπορούσε πλέον να χρησιμεύσει ως sentinel value στο SumNumbers, αν η φράση επέτρεπε αρνητικούς αριθμούς;",
+        options: [
+          "Γιατί το -1 θα μπορούσε τότε να είναι και πραγματικό, έγκυρο αποτέλεσμα ενός αθροίσματος (π.χ. \"3 -4\"), άρα δεν θα ξεχώριζε από σφάλμα",
+          "Γιατί η Go απαγορεύει συντακτικά την επιστροφή αρνητικών ακεραίων από οποιαδήποτε function τύπου int",
+          "Γιατί το Atoi() θα προκαλούσε πάντα runtime panic όταν συναντούσε το σύμβολο μείον στην είσοδο",
+          "Δεν θα υπήρχε κανένα πρόβλημα — το -1 παραμένει έγκυρο sentinel ανεξάρτητα από το αν επιτρέπονται αρνητικοί αριθμοί"
+        ],
+        correct: 0,
+        explain: "Η προϋπόθεση ενός sentinel value είναι να είναι ΑΔΥΝΑΤΟ να εμφανιστεί ως πραγματικό αποτέλεσμα. Αν επιτρέπονται αρνητικοί αριθμοί, το -1 θα μπορούσε να είναι ένα κανονικό, σωστό άθροισμα."
+      },
+      {
+        q: "Ποιο είναι το πλεονέκτημα της εκδοχής SumNumbers που επιστρέφει (sum int, ok bool) σε σχέση με αυτήν που επιστρέφει sentinel -1;",
+        options: [
+          "Δουλεύει ακόμα κι όταν ΚΑΘΕ δυνατή τιμή int θα μπορούσε να είναι έγκυρο αποτέλεσμα — δεν χρειάζεται να βρεθεί κάποια \"ασφαλής\" ειδική τιμή",
+          "Είναι πάντα ταχύτερη σε εκτέλεση, αφού η Go βελτιστοποιεί ειδικά τις functions με πολλαπλές τιμές επιστροφής",
+          "Καταργεί εντελώς την ανάγκη ελέγχου σφαλμάτων μέσα στο σώμα της function SumNumbers",
+          "Επιτρέπει στη function να επιστρέφει περισσότερα από δύο αποτελέσματα ταυτόχρονα, κάτι αδύνατο με sentinel values"
+        ],
+        correct: 0,
+        explain: "Το δεύτερο bool δηλώνει επιτυχία/αποτυχία ανεξάρτητα από την τιμή sum — δεν χρειάζεται πια να \"θυσιάσουμε\" κάποια πιθανή τιμή ως ειδικό σήμα σφάλματος."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Result Variable + Boolean Switch ──────────────── ⊃
+    addFillBlank({
+      code:
+        `func WordLengths(input string) []int {
+    var result []int
+    count := 0
+    __flagname__ := false // "am I currently inside a word?"
+
+    for _, letter := range input {
+        if letter == ' ' {
+            if __flagname__ {
+                result = append(result, count)
+                count = 0
+                __flagname__ = __resetval__
+            }
+        } else {
+            count__incr__
+            __flagname__ = __setval__
+        }
+    }
+    if __flagname__ {
+        result = append(result, count)
+    }
+    return result
+}`,
+      blanks: [
+        { id: "flagname", answer: "inWord" },
+        { id: "resetval", answer: "false" },
+        { id: "incr", answer: "++" },
+        { id: "setval", answer: "true" }
+      ],
+      explain: "Το flag inWord ξεκινά false, γίνεται true μόλις μπούμε σε γράμμα, και ξαναγίνεται false μόλις κλείσουμε μια λέξη — ελέγχεται πριν από κάθε append ώστε τα διπλά κενά να μην προκαλούν ψεύτικα μηδενικά."
+    }, {
+      note: "Συμπλήρωσε το boolean switch ώστε το WordLengths να αντέχει πολλαπλά συνεχόμενα κενά."
+    });
+
+    // ── Fill-in-the-blank: Sentinel → multi-return ───────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// ok reports whether the input was successfully parsed.
+func SumNumbers(input string) (sum int, __okname__ bool) {
+    numStr := ""
+    for _, letter := range input {
+        if letter == ' ' {
+            sum += Atoi(numStr)
+            numStr = ""
+        } else if letter >= '0' && letter <= '9' {
+            numStr += string(letter)
+        } else {
+            return __zeroval__, __failval__
+        }
+    }
+    sum += Atoi(numStr)
+    return sum, __successval__
+}`,
+      blanks: [
+        { id: "okname", answer: "ok" },
+        { id: "zeroval", answer: "0" },
+        { id: "failval", answer: "false" },
+        { id: "successval", answer: "true" }
+      ],
+      explain: "Αντί για sentinel -1, το δεύτερο bool (ok) δηλώνει ρητά επιτυχία/αποτυχία. Σε σφάλμα επιστρέφουμε (0, false) — η τιμή 0 δεν έχει πια σημασία ως \"σωστό αποτέλεσμα\", αφού το ok=false το ακυρώνει."
+    }, {
+      note: "Συμπλήρωσε τη μετάβαση από sentinel value σε multi-return (sum, ok)."
+    });
+
+    // ── Matching — Result Variable / Boolean Switch / Sentinel concepts ──── ⊃
+    addMatching([
+      [
+        { term: "Result Variable", def: "μεταβλητή δηλωμένη έξω από τη loop, ενημερώνεται σε κάθε πέρασμα" },
+        { term: "count++", def: "αύξηση μετρητή όταν ισχύει μια συνθήκη μέσα στη loop" },
+        { term: "sum += n", def: "accumulator που αθροίζει τιμές αντί να μετράει πλήθος" },
+        { term: "append(result, x)", def: "result variable τύπου slice — μαζεύει πολλαπλά αποτελέσματα" }
+      ],
+      [
+        { term: "flag / boolean switch", def: "μεταβλητή bool που θυμάται αν κάτι έχει ήδη συμβεί" },
+        { term: "break", def: "τερματίζει αμέσως ολόκληρη τη λούπα" },
+        { term: "continue", def: "παραλείπει το τρέχον πέρασμα, η λούπα συνεχίζει κανονικά" },
+        { term: "early return", def: "τερματίζει αμέσως ολόκληρη τη function, όχι μόνο τη λούπα" },
+        { term: "sentinel value", def: "ειδική τιμή (π.χ. -1) που δηλώνει σφάλμα, αδύνατη ως πραγματικό αποτέλεσμα" },
+        { term: "(value, ok bool)", def: "εναλλακτικό στο sentinel value — δουλεύει ακόμα κι όταν καμία τιμή δεν είναι ασφαλής ως sentinel" }
+      ]
+    ], {
+      note: "Δύο σετ: πρώτα τα result-variable concepts, μετά τα flag/exit/sentinel concepts."
+    });
+
+    // ══════════════════════════════════════════════════════════════════════
+    // SECTION 3 — Θεμελιώδη Λογικά & Δομικά Μοτίβα Κώδικα
+    // ══════════════════════════════════════════════════════════════════════
+
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/go_two.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Ενότητα 3 / 8</div>
+  <h1>Θεμελιώδη Λογικά &amp; Δομικά Μοτίβα Κώδικα<br>Πώς σκέφτεται ένας προγραμματιστής</h1>
+  <p class="lede">Μέχρι τώρα έμαθες τα "γράμματα" της Go: syntax, τύπους, functions, packages. Αυτή η ενότητα είναι διαφορετική — δεν μαθαίνεις νέα syntax, μαθαίνεις <strong>τρόπους σκέψης</strong>. Κάθε δύσκολο πρόβλημα προγραμματισμού, όσο περίπλοκο κι αν φαίνεται, συνήθως λύνεται συνδυάζοντας 2-3 από ένα μικρό σύνολο επαναλαμβανόμενων μοτίβων (patterns). Μόλις τα αναγνωρίζεις, το "δεν ξέρω από πού να ξεκινήσω" γίνεται "α, αυτό είναι sliding window + accumulator".</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Αυτή είναι η πιο σημαντική ενότητα του Μέρους 2. Πάρε τον χρόνο σου — κάθε pattern χρειάζεται να το δεις να λύνει πρόβλημα, όχι μόνο να διαβάσεις τον ορισμό του. Γράψε τον κώδικα ο ίδιος, μην τον διαβάζεις μόνο.</div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Θεμελιώδη Μοτίβα</div>
+<h1>Γιατί χρειαζόμαστε "patterns"</h1>
+<p class="lede">Ένα pattern δεν είναι κάτι μαγικό ή ειδική λέξη-κλειδί της Go. Είναι απλά ένα <strong>ξαναχρησιμοποιήσιμο σχήμα σκέψης</strong> — μια δομή κώδικα που εμφανίζεται ξανά και ξανά, σε τελείως διαφορετικά προβλήματα, επειδή λύνει τον ίδιο υποκείμενο τύπο δυσκολίας.</p>
+
+<h2>Ένα παράδειγμα πριν προχωρήσουμε</h2>
+<p>Σκέψου δύο εντελώς διαφορετικά προβλήματα: "βρες αν υπάρχει τουλάχιστον ένας αρνητικός αριθμός σε μια λίστα" και "βρες αν δύο λέξεις είναι ανάγραμμα (anagram) η μία της άλλης". Φαίνονται άσχετα. Αλλά και τα δύο, στο βάθος τους, χρησιμοποιούν το ίδιο ακριβώς σχήμα: μια μεταβλητή boolean που ξεκινάει false και γίνεται true μόλις βρεθεί κάτι, με πρόωρη έξοδο από τη λούπα μόλις αυτό συμβεί. Αυτό είναι το πρώτο pattern που θα δούμε.</p>
+
+<div class="grid3">
+  <div class="card"><h3>Δεν είναι Go-specific</h3><p>Τα patterns αυτής της ενότητας υπάρχουν σε ΚΑΘΕ γλώσσα προγραμματισμού — Python, JavaScript, C, Java. Η syntax αλλάζει, η ιδέα όχι.</p></div>
+  <div class="card"><h3>Συνδυάζονται</h3><p>Σπάνια ένα πρόβλημα λύνεται με ΕΝΑ pattern. Συχνά θα δεις 2-3 από αυτά μαζί μέσα στην ίδια function.</p></div>
+  <div class="card"><h3>Το "γιατί" > το "τι"</h3><p>Ο στόχος δεν είναι να τα απομνημονεύσεις. Είναι να αναγνωρίζεις ΠΟΤΕ ταιριάζει το καθένα σε ένα καινούριο πρόβλημα που δεν έχεις ξαναδεί.</p></div>
+</div>
+`);
+
+    // ── Pattern 1: Flag / Bool Switch ────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 1 / 9</div>
+<h1>Σημαία / Διακόπτης (Flag / Bool Switch)</h1>
+<p class="lede">Το πιο βασικό από όλα τα patterns: χρησιμοποιούμε μια μεταβλητή τύπου <code>bool</code> για να "θυμόμαστε" αν κάτι έχει ήδη συμβεί κατά τη διάρκεια μιας λούπας — και συχνά το χρησιμοποιούμε για να σταματήσουμε τη λούπα νωρίτερα (early break), μόλις δεν χρειάζεται να συνεχίσουμε.</p>
+
+<h2>Το πρόβλημα, χωρίς το pattern</h2>
+<p>Ας πούμε ότι θέλουμε να ελέγξουμε αν ένα slice από <code>int</code> περιέχει τουλάχιστον έναν αρνητικό αριθμό. Μια πρώτη, αφελής προσπάθεια θα μπορούσε να μοιάζει έτσι:</p>
+
+<pre><code class="lang-go">func hasNegativeSlow(numbers []int) bool {
+    count := 0
+    for _, n := range numbers {
+        if n < 0 {
+            count++ // we keep counting even after we already know the answer
+        }
+    }
+    return count > 0
+}</code></pre>
+
+<p>Αυτό δουλεύει, αλλά έχει ένα πρόβλημα: ακόμα κι αν βρούμε τον αρνητικό αριθμό στο ΠΡΩΤΟ στοιχείο ενός slice με 10.000 στοιχεία, η λούπα συνεχίζει να διασχίζει και τα υπόλοιπα 9.999 — τελείως άσκοπα, αφού η απάντηση έχει ήδη αποφασιστεί.</p>
+
+<h2>Με το pattern</h2>
+<pre><code class="lang-go">func hasNegative(numbers []int) bool {
+    found := false // the "flag" — starts false, the neutral/unknown state
+    for _, n := range numbers {
+        if n < 0 {
+            found = true
+            break // early exit — no reason to keep looking
+        }
+    }
+    return found
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Η μεταβλητή <code>found</code> είναι το "flag": μια boolean μεταβλητή που ξεκινάει στην ουδέτερη/αρνητική κατάσταση (<code>false</code>) και "ανάβει" (<code>true</code>) μόλις συμβεί αυτό που ψάχνουμε. Το <code>break</code> είναι εξίσου σημαντικό με το flag — σταματάει τη λούπα ΤΗ ΣΤΙΓΜΗ που η απάντηση είναι γνωστή, γλιτώνοντας άσκοπη δουλειά.
+</div>
+
+<h2>Πότε το αναγνωρίζεις</h2>
+<p>Κάθε φορά που η ερώτηση του προβλήματος είναι τύπου "υπάρχει...;", "βρέθηκε...;", "είναι έγκυρο...;" πάνω σε μια συλλογή, και η απάντηση χρειάζεται μόνο ΝΑΙ/ΟΧΙ (όχι ΠΟΣΑ, ΠΟΥ, ή ΠΟΙΟ) — το flag/bool switch με early break είναι συνήθως η σωστή επιλογή.</p>
+`);
+
+    addQuiz({
+      q: "Γιατί είναι σημαντικό το break στο παράδειγμα hasNegative, και όχι μόνο το flag found;",
+      options: [
+        "Χωρίς break, η λούπα συνεχίζει να διασχίζει το υπόλοιπο slice άσκοπα, αφού η απάντηση έχει ήδη αποφασιστεί",
+        "Το break είναι υποχρεωτικό συντακτικά σε κάθε λούπα for της Go, ανεξάρτητα από τη λογική του προγράμματος",
+        "Χωρίς break, η τιμή του found θα παρέμενε πάντα false ό,τι κι αν βρεθεί μέσα στη λούπα",
+        "Το break αλλάζει τον τύπο της μεταβλητής found από bool σε int για να μετρήσει τα ευρήματα"
+      ],
+      correct: 0,
+      explain: "Το flag θυμάται ΤΙ βρέθηκε, το break σταματάει ΠΟΤΕ σταματάμε να ψάχνουμε. Χωρίς το break, ο κώδικας θα έδινε σωστή απάντηση αλλά θα σπαταλούσε χρόνο διασχίζοντας δεδομένα που δεν χρειάζεται πια να δει."
+    });
+
+    // ── Fill-in-the-blank: Flag/Bool Switch ──────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// containsZero reports whether the slice has at least one 0.
+func containsZero(numbers []int) bool {
+    __flagvar__ := false
+    for _, n := range numbers {
+        if n == 0 {
+            __flagvar__ = __setval__
+            __exitkw__
+        }
+    }
+    return __flagvar__
+}`,
+      blanks: [
+        { id: "flagvar", answer: "found" },
+        { id: "setval", answer: "true" },
+        { id: "exitkw", answer: "break" }
+      ],
+      explain: "Το flag ξεκινά false, γίνεται true μόλις βρεθεί το ζητούμενο, και το break σταματάει αμέσως τη λούπα — δεν χρειάζεται να συνεχίσει να ψάχνει αφού η απάντηση είναι ήδη γνωστή."
+    }, {
+      note: "Συμπλήρωσε το flag/bool switch pattern ώστε η function να σταματάει μόλις βρει το πρώτο 0."
+    });
+
+    // ── Pattern 2: Sentinel Value ─────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 2 / 9</div>
+<h1>Τιμή Φρουρού (Sentinel Value)</h1>
+<p class="lede">Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "δεν βρήκα τίποτα" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong> ("τιμή φρουρού").</p>
+
+<h2>Το πρόβλημα, χωρίς το pattern</h2>
+<p>Θέλουμε μια function που βρίσκει το index του πρώτου αρνητικού αριθμού σε ένα slice. Τι επιστρέφει αν ΔΕΝ υπάρχει κανένας αρνητικός; Μια αδέξια λύση θα ήταν να επιστρέψουμε δύο τιμές — τη θέση ΚΑΙ ένα bool — αλλά ακόμα δεν έχουμε δει multiple return values με αυτή τη λεπτομέρεια, οπότε ας δούμε πρώτα γιατί το sentinel value λύνει το ίδιο πρόβλημα με ΕΝΑ μόνο <code>int</code>.</p>
+
+<pre><code class="lang-go">// Ambiguous: what does 0 mean here? First index? Or "not found"?
+func firstNegativeBad(numbers []int) int {
+    for i, n := range numbers {
+        if n < 0 {
+            return i
+        }
+    }
+    return 0 // BUG: 0 is also a valid index!
+}</code></pre>
+
+<p>Το πρόβλημα εδώ είναι σοβαρό: αν το slice είναι <code>{-5, 1, 2}</code>, η function επιστρέφει σωστά <code>0</code> (ο αρνητικός είναι στη θέση 0). Αλλά αν το slice είναι <code>{1, 2, 3}</code> (κανένας αρνητικός), η function ΕΠΙΣΗΣ επιστρέφει <code>0</code> — και ο καλών δεν έχει κανέναν τρόπο να ξεχωρίσει τις δύο περιπτώσεις.</p>
+
+<h2>Με το pattern</h2>
+<pre><code class="lang-go">// -1 can never be a valid index, so it safely means "not found".
+func firstNegative(numbers []int) int {
+    for i, n := range numbers {
+        if n < 0 {
+            return i
+        }
+    }
+    return -1 // sentinel value: unambiguous "not found"
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Το <code>-1</code> είναι μια τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό index (τα indices ξεκινούν πάντα από 0 και είναι πάντα μη-αρνητικά). Επιλέγοντας μια τιμή έξω από το εύρος των έγκυρων αποτελεσμάτων, ο καλών μπορεί με ασφάλεια να ελέγξει <code>if result == -1</code> για να ξέρει αν κάτι βρέθηκε.
+</div>
+
+<h2>Άλλα κοινά sentinel values</h2>
+<div class="grid3">
+  <div class="card"><h3>-1</h3><p>Το πιο κοινό sentinel για "index δεν βρέθηκε" — ισχύει επειδή τα indices είναι πάντα ≥ 0.</p></div>
+  <div class="card"><h3>Κενό string ""</h3><p>Συχνό sentinel όταν η function κανονικά επιστρέφει string, και το "τίποτα" αντιπροσωπεύεται από κενό.</p></div>
+  <div class="card"><h3>math.MaxInt / math.MinInt</h3><p>Χρησιμοποιείται σαν αρχική τιμή "άπειρο" σε extremum patterns (θα το δούμε αμέσως μετά).</p></div>
+</div>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το sentinel value πρέπει να είναι ΕΓΓΥΗΜΕΝΑ αδύνατο να εμφανιστεί ως πραγματικό αποτέλεσμα. Αν χρησιμοποιούσες <code>0</code> ως sentinel για "δεν βρέθηκε άθροισμα" σε ένα πρόβλημα όπου το 0 είναι έγκυρο άθροισμα, θα ξαναδημιουργούσες το ίδιο bug που μόλις είδαμε.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί είναι κακή επιλογή το 0 ως sentinel value για \"index δεν βρέθηκε\" σε μια function αναζήτησης;",
+        options: [
+          "Επειδή το 0 είναι ήδη ένα έγκυρο, πραγματικό index — δεν μπορεί ο καλών να ξεχωρίσει \"βρέθηκε στη θέση 0\" από \"δεν βρέθηκε\"",
+          "Επειδή η Go απαγορεύει συντακτικά την επιστροφή της τιμής 0 από οποιαδήποτε function τύπου int",
+          "Επειδή το 0 προκαλεί πάντα runtime panic όταν χρησιμοποιείται ως τιμή επιστροφής σε λούπα for",
+          "Δεν είναι κακή επιλογή — το 0 λειτουργεί εξίσου καλά με το -1 σε κάθε περίπτωση αναζήτησης index"
+        ],
+        correct: 0,
+        explain: "Ένα sentinel value πρέπει να είναι αδύνατο να εμφανιστεί ως πραγματικό, έγκυρο αποτέλεσμα. Το 0 ΕΙΝΑΙ έγκυρο index, οπότε δημιουργεί ασάφεια· το -1 δεν είναι ποτέ έγκυρο index, άρα δουλεύει ασφαλώς."
+      },
+      {
+        q: "Ποιο από τα παρακάτω είναι σωστός ορισμός του τι κάνει μια τιμή κατάλληλη ως sentinel value;",
+        options: [
+          "Πρέπει να είναι εγγυημένα εκτός του εύρους των έγκυρων, πραγματικών αποτελεσμάτων που θα μπορούσε να επιστρέψει η function",
+          "Πρέπει να είναι πάντα η μεγαλύτερη δυνατή τιμή που μπορεί να αναπαρασταθεί από τον τύπο δεδομένων int",
+          "Πρέπει να είναι πάντα η αρνητική τιμή -1, ανεξάρτητα από το είδος του προβλήματος που λύνει η function",
+          "Πρέπει να είναι μια τιμή που εμφανίζεται συχνά μέσα στα πραγματικά δεδομένα εισόδου της function"
+        ],
+        correct: 0,
+        explain: "Το μοναδικό απαραίτητο χαρακτηριστικό είναι: αδύνατο να συγχέεται με πραγματικό αποτέλεσμα. Το -1 είναι απλά ένα κοινό παράδειγμα για indices, όχι κανόνας — κάθε πρόβλημα μπορεί να χρειάζεται διαφορετικό sentinel."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Sentinel Value ────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// findFirstEven returns the index of the first even number,
+// or __sentinel__ if the slice contains no even numbers.
+func findFirstEven(numbers []int) int {
+    for i, n := range numbers {
+        if n%2 == __zerocheck__ {
+            return i
+        }
+    }
+    return __sentinel__
+}`,
+      blanks: [
+        { id: "sentinel", answer: "-1" },
+        { id: "zerocheck", answer: "0" }
+      ],
+      explain: "Το -1 λειτουργεί ως sentinel γιατί δεν είναι ποτέ έγκυρο index. Το n%2 == 0 είναι ο έλεγχος \"είναι άρτιος\" — υπόλοιπο 0 στη διαίρεση με το 2."
+    }, {
+      note: "Συμπλήρωσε ώστε η function να επιστρέφει με ασφάλεια \"δεν βρέθηκε\"."
+    });
+
+    // ── Pattern 3: Accumulator ────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 3 / 9</div>
+<h1>Συσσωρευτής (Accumulator Pattern)</h1>
+<p class="lede">Το πιο "καθημερινό" από όλα τα patterns: μια μεταβλητή που "μαζεύει" ένα αποτέλεσμα καθώς διασχίζουμε μια συλλογή — άθροισμα, γινόμενο, συνένωση strings, μετρητής. Το κλειδί εδώ δεν είναι η λούπα αυτή καθαυτή, αλλά η <strong>σωστή αρχικοποίηση</strong> του accumulator, βασισμένη στο ουδέτερο στοιχείο της πράξης.</p>
+
+<h2>Το πρόβλημα, χωρίς σωστή αρχικοποίηση</h2>
+<p>Ας πούμε ότι θέλουμε το γινόμενο (product) όλων των αριθμών σε ένα slice. Μια εύκολη παγίδα:</p>
+
+<pre><code class="lang-go">// BUG: wrong neutral element for multiplication
+func productBad(numbers []int) int {
+    total := 0 // starting at 0 is correct for SUM, not for PRODUCT
+    for _, n := range numbers {
+        total *= n
+    }
+    return total // always 0, no matter what's in the slice!
+}</code></pre>
+
+<p>Επειδή οτιδήποτε επί 0 κάνει 0, το <code>total</code> παραμένει 0 σε κάθε βήμα, ανεξάρτητα από τα δεδομένα. Το bug δεν είναι στη λούπα — είναι στην αρχική τιμή.</p>
+
+<h2>Με το pattern (σωστή αρχικοποίηση)</h2>
+<pre><code class="lang-go">// Sum: neutral element for addition is 0
+func sum(numbers []int) int {
+    total := 0 // 0 + anything = anything, so this is safe
+    for _, n := range numbers {
+        total += n
+    }
+    return total
+}
+
+// Product: neutral element for multiplication is 1
+func product(numbers []int) int {
+    total := 1 // 1 * anything = anything, so this is safe
+    for _, n := range numbers {
+        total *= n
+    }
+    return total
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Ο κανόνας</span>
+  Η αρχική τιμή ενός accumulator πρέπει να είναι το <strong>ουδέτερο στοιχείο</strong> (identity element) της πράξης: 0 για πρόσθεση/αφαίρεση/συνένωση, 1 για πολλαπλασιασμό. Το ουδέτερο στοιχείο είναι, εξ ορισμού, η τιμή που δεν αλλάζει τίποτα όταν συνδυαστεί με οποιαδήποτε άλλη.
+</div>
+
+<h2>Accumulator με strings</h2>
+<p>Το ίδιο ακριβώς pattern δουλεύει με strings — το ουδέτερο στοιχείο της συνένωσης (concatenation) είναι το κενό string:</p>
+
+<pre><code class="lang-go">func joinWithDashes(words []string) string {
+    result := "" // empty string is the neutral element for concatenation
+    for i, w := range words {
+        if i > 0 {
+            result += "-"
+        }
+        result += w
+    }
+    return result
+}</code></pre>
+
+<h2>Accumulator ως μετρητής (counter)</h2>
+<p>Μια ειδική, πολύ κοινή περίπτωση accumulator: μετράμε πόσα στοιχεία ικανοποιούν κάποια συνθήκη — εδώ το ουδέτερο στοιχείο είναι πάντα 0, αφού μετράμε πλήθος:</p>
+
+<pre><code class="lang-go">func countPositive(numbers []int) int {
+    count := 0 // neutral for counting
+    for _, n := range numbers {
+        if n > 0 {
+            count++
+        }
+    }
+    return count
+}</code></pre>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί το total := 0 προκαλεί bug σε μια function που υπολογίζει το γινόμενο (product) όλων των στοιχείων ενός slice;",
+        options: [
+          "Επειδή οτιδήποτε πολλαπλασιαστεί με 0 δίνει 0, άρα το αποτέλεσμα θα είναι πάντα 0 ανεξάρτητα από τα δεδομένα",
+          "Επειδή η Go δεν επιτρέπει την αρχικοποίηση μεταβλητών τύπου int στην τιμή 0 πριν από μια λούπα for",
+          "Επειδή το 0 προκαλεί πάντα διαίρεση με το μηδέν κατά τη διάρκεια του πολλαπλασιασμού μέσα στη λούπα",
+          "Δεν προκαλεί κανένα πρόβλημα — το 0 είναι πάντα η σωστή αρχική τιμή για κάθε accumulator ανεξαρτήτως πράξης"
+        ],
+        correct: 0,
+        explain: "Το 0 είναι το ουδέτερο στοιχείο της πρόσθεσης, όχι του πολλαπλασιασμού. Πολλαπλασιάζοντας με 0 σε κάθε βήμα, το αποτέλεσμα κολλάει μόνιμα στο 0."
+      },
+      {
+        q: "Ποια είναι η σωστή αρχική τιμή ενός accumulator που υπολογίζει το γινόμενο αριθμών, και γιατί;",
+        options: [
+          "1 — γιατί είναι το ουδέτερο στοιχείο του πολλαπλασιασμού, δηλαδή 1 επί οποιονδήποτε αριθμό δίνει τον ίδιο αριθμό",
+          "0 — γιατί είναι πάντα η ασφαλέστερη αρχική τιμή για κάθε accumulator, ανεξάρτητα από την πράξη",
+          "-1 — γιατί λειτουργεί ως sentinel value που δηλώνει ότι ο υπολογισμός δεν έχει ξεκινήσει ακόμα",
+          "Το πρώτο στοιχείο του slice — πρέπει πάντα να διαβάζεται πρώτα ξεχωριστά πριν ξεκινήσει η λούπα"
+        ],
+        correct: 0,
+        explain: "1 είναι το ουδέτερο στοιχείο του πολλαπλασιασμού: 1 × n = n για κάθε n. Ξεκινώντας από εκεί, το πρώτο πραγματικό στοιχείο του slice πολλαπλασιάζεται σωστά χωρίς να αλλοιώνει το αποτέλεσμα."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Accumulator ───────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// concatAll joins every string in the slice, with no separator.
+func concatAll(words []string) string {
+    result := __neutral1__ // neutral element for concatenation
+    for _, w := range words {
+        result __op__= w
+    }
+    return result
+}
+
+// countNegative counts how many numbers in the slice are negative.
+func countNegative(numbers []int) int {
+    __countvar__ := __neutral2__ // neutral element for counting
+    for _, n := range numbers {
+        if n < 0 {
+            __countvar__++
+        }
+    }
+    return __countvar__
+}`,
+      blanks: [
+        { id: "neutral1", answer: "\"\"" },
+        { id: "op", answer: "+" },
+        { id: "countvar", answer: "count" },
+        { id: "neutral2", answer: "0" }
+      ],
+      explain: "Το κενό string \"\" είναι ουδέτερο για συνένωση, το 0 είναι ουδέτερο για καταμέτρηση — και τα δύο accumulators ξεκινούν από το σωστό, αντίστοιχο ουδέτερο στοιχείο."
+    }, {
+      note: "Συμπλήρωσε ώστε και οι δύο accumulators να ξεκινούν από το σωστό ουδέτερο στοιχείο."
+    });
+
+    // ── Pattern 4: Extremum (Min/Max Finding) ────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 4 / 9</div>
+<h1>Εκτρέμα / Ελάχιστο-Μέγιστο (Extremum Pattern)</h1>
+<p class="lede">Εύρεση της μεγαλύτερης ή μικρότερης τιμής σε μια συλλογή. Απλό στη διατύπωση, αλλά έχει μια λεπτομέρεια αρχικοποίησης που μπερδεύει σχεδόν κάθε αρχάριο: <strong>με τι αρχικοποιείς τη μεταβλητή που κρατάει το "μέχρι τώρα μέγιστο"</strong>;</p>
+
+<h2>Το πρόβλημα, με λάθος αρχικοποίηση</h2>
+<pre><code class="lang-go">// BUG: what if every number in the slice is negative?
+func maxBad(numbers []int) int {
+    max := 0 // looks reasonable... but is it?
+    for _, n := range numbers {
+        if n > max {
+            max = n
+        }
+    }
+    return max
+}</code></pre>
+
+<p>Δοκίμασε αυτό με το slice <code>{-8, -3, -20}</code>. Το σωστό μέγιστο είναι <code>-3</code> — αλλά η function επιστρέφει <code>0</code>, αφού κανένα στοιχείο δεν είναι ποτέ μεγαλύτερο από την αρχική τιμή <code>0</code>. Το <code>0</code> "κρύφτηκε" σαν λανθασμένη απάντηση χωρίς να προκαλέσει κανένα ορατό σφάλμα — το χειρότερο είδος bug.</p>
+
+<h2>Λύση Α: αρχικοποίηση με το πρώτο στοιχείο</h2>
+<pre><code class="lang-go">func maxOf(numbers []int) int {
+    max := numbers[0] // start from a real element of the slice itself
+    for _, n := range numbers[1:] { // skip index 0, already used above
+        if n > max {
+            max = n
+        }
+    }
+    return max
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Αυτή η προσέγγιση κάνει panic (crash) αν το slice είναι κενό — το <code>numbers[0]</code> δεν υπάρχει. Πάντα να ελέγχεις <code>len(numbers) == 0</code> πριν, αν υπάρχει έστω και μικρή πιθανότητα κενού slice.
+</div>
+
+<h2>Λύση Β: αρχικοποίηση με math.MinInt / math.MaxInt</h2>
+<p>Η standard library της Go παρέχει το package <code>math</code> με σταθερές που αντιπροσωπεύουν τη μικρότερη/μεγαλύτερη δυνατή τιμή ενός <code>int</code>. Χρησιμοποιώντας τες, ξεκινάς από μια τιμή που ΣΙΓΟΥΡΑ θα αντικατασταθεί από το πρώτο πραγματικό στοιχείο:</p>
+
+<pre><code class="lang-go">import "math"
+
+func maxOfSafe(numbers []int) int {
+    max := math.MinInt // guaranteed smaller than any real int
+    for _, n := range numbers {
+        if n > max {
+            max = n
+        }
+    }
+    return max
+}</code></pre>
+
+<div class="grid2">
+  <div class="card"><h3>numbers[0] ως αρχική τιμή</h3><p>Πιο διαισθητικό, αλλά χρειάζεται ρητό έλεγχο για κενό slice πριν το χρησιμοποιήσεις.</p></div>
+  <div class="card"><h3>math.MinInt / MaxInt ως αρχική τιμή</h3><p>Πιο "ασφαλές" σε πρώτη ματιά, αλλά ένα κενό slice επιστρέφει το MinInt σαν να ήταν πραγματική απάντηση — εξίσου χρειάζεται έλεγχο.</p></div>
+</div>
+
+<p class="lede">Και οι δύο προσεγγίσεις χρειάζονται σκέψη για το κενό slice — δεν υπάρχει "δωρεάν" λύση. Η επιλογή είναι συχνά θέμα στυλ: το <code>numbers[0]</code> είναι πιο σαφές ότι "ξεκινάμε από πραγματικά δεδομένα", ενώ το <code>math.MinInt</code> αποφεύγει το slicing.</p>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί το max := 0 είναι επικίνδυνη αρχικοποίηση για εύρεση μεγίστου σε ένα slice από int;",
+        options: [
+          "Αν όλα τα στοιχεία του slice είναι αρνητικά, κανένα δεν θα ξεπεράσει ποτέ το 0, οπότε η function επιστρέφει λανθασμένα το 0 ως αποτέλεσμα",
+          "Επειδή η Go δεν επιτρέπει τη σύγκριση αρνητικών αριθμών με τον τελεστή > μέσα σε λούπες for",
+          "Επειδή το 0 προκαλεί πάντα runtime panic όταν χρησιμοποιείται ως αρχική τιμή σε accumulator μέσα σε λούπα",
+          "Δεν υπάρχει πρόβλημα — το 0 είναι πάντα ασφαλής αρχική τιμή για εύρεση μεγίστου, ανεξάρτητα από τα δεδομένα"
+        ],
+        correct: 0,
+        explain: "Αν όλα τα στοιχεία είναι αρνητικά (π.χ. {-8,-3,-20}), κανένα δεν είναι > 0, οπότε το max παραμένει λανθασμένα στο 0 — μια τιμή που δεν υπήρχε καν στο slice."
+      },
+      {
+        q: "Ποιο ρίσκο μοιράζονται και οι δύο προσεγγίσεις αρχικοποίησης (numbers[0] και math.MinInt) στο extremum pattern;",
+        options: [
+          "Και οι δύο χρειάζονται προσοχή στην περίπτωση κενού slice — το numbers[0] κάνει panic, το math.MinInt επιστρέφει ψευδή απάντηση χωρίς σφάλμα",
+          "Και οι δύο λειτουργούν λανθασμένα όταν το slice περιέχει μόνο θετικούς αριθμούς μεγαλύτερους του 100",
+          "Καμία διαφορά — και οι δύο προσεγγίσεις είναι πλήρως ασφαλείς σε κάθε δυνατή περίπτωση εισόδου",
+          "Και οι δύο απαιτούν το slice να είναι ήδη ταξινομημένο (sorted) πριν κληθεί η function εύρεσης μεγίστου"
+        ],
+        correct: 0,
+        explain: "Ένα κενό slice είναι το κοινό \"τυφλό σημείο\" και των δύο προσεγγίσεων — καμία δεν είναι αυτόματα ασφαλής χωρίς ρητό έλεγχο του len()."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Extremum ──────────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// minOf returns the smallest number in a non-empty slice.
+func minOf(numbers []int) int {
+    min := numbers[__firstidx__] // start from a real element
+    for _, n := range numbers[__skipidx__:] {
+        if n __cmp__ min {
+            min = n
+        }
+    }
+    return min
+}`,
+      blanks: [
+        { id: "firstidx", answer: "0" },
+        { id: "skipidx", answer: "1" },
+        { id: "cmp", answer: "<" }
+      ],
+      explain: "Ξεκινάμε από numbers[0] (πραγματικό στοιχείο), διασχίζουμε από το index 1 και μετά (το 0 ήδη χρησιμοποιήθηκε), και συγκρίνουμε με < αφού ψάχνουμε το ελάχιστο."
+    }, {
+      note: "Συμπλήρωσε το extremum pattern ώστε να βρίσκει σωστά το ελάχιστο."
+    });
+
+    // ── Pattern 5: State Toggle ───────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 5 / 9</div>
+<h1>Εναλλάκτης Κατάστασης (State Toggle / Alternating Pattern)</h1>
+<p class="lede">Χρειάζεσαι εναλλαγή ανάμεσα σε δύο καταστάσεις — παίκτης Α/Β, ζυγό/μονό, ναι/όχι — σε κάθε βήμα μιας λούπας. Το pattern είναι εκπληκτικά απλό μόλις το δεις μία φορά, αλλά αρχάριοι συχνά το ξαναγράφουν με πολύ πιο περίπλοκο τρόπο.</p>
+
+<h2>Το πρόβλημα, χωρίς το pattern</h2>
+<p>Ας πούμε ότι θέλουμε να τυπώσουμε "Παίκτης 1", "Παίκτης 2", "Παίκτης 1", "Παίκτης 2"... για 6 γύρους ενός παιχνιδιού. Μια αδέξια προσέγγιση:</p>
+
+<pre><code class="lang-go">func printTurnsBad(rounds int) {
+    for i := 0; i < rounds; i++ {
+        if i%2 == 0 {
+            fmt.Println("Player 1")
+        } else {
+            fmt.Println("Player 2")
+        }
+    }
+}</code></pre>
+
+<p>Αυτό δουλεύει, αλλά υπολογίζει το <code>i%2</code> από την αρχή σε κάθε iteration — δεν "θυμάται" ποιανού είναι η σειρά, το ξανα-υπολογίζει κάθε φορά από το index. Λειτουργεί, αλλά δεν εκφράζει καθαρά την ιδέα "εναλλαγή".</p>
+
+<h2>Με το pattern: boolean toggle</h2>
+<pre><code class="lang-go">func printTurns(rounds int) {
+    isPlayerOne := true // starting state
+    for i := 0; i < rounds; i++ {
+        if isPlayerOne {
+            fmt.Println("Player 1")
+        } else {
+            fmt.Println("Player 2")
+        }
+        isPlayerOne = !isPlayerOne // flip the state for next iteration
+    }
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Η μεταβλητή <code>isPlayerOne</code> ΕΙΝΑΙ η κατάσταση — δεν την υπολογίζουμε ξανά από το index, απλά την "αναποδογυρίζουμε" (<code>!isPlayerOne</code>) σε κάθε βήμα. Αυτό εκφράζει με μεγαλύτερη σαφήνεια την πρόθεση "εναλλαγή" και δουλεύει το ίδιο καλά ακόμα κι αν η λούπα δεν βασίζεται σε αριθμητικό index (π.χ. σε μια <code>for</code> που διασχίζει βάσει άλλης συνθήκης).</p>
+
+<h2>Γενίκευση: εναλλαγή ανάμεσα σε παραπάνω από δύο καταστάσεις</h2>
+<p>Το boolean toggle δουλεύει μόνο για ΔΥΟ καταστάσεις. Για περισσότερες, το ισοδύναμο pattern χρησιμοποιεί το modulo (<code>%</code>) πάνω σε έναν μετρητή:</p>
+
+<pre><code class="lang-go">func printColorCycle(steps int) {
+    colors := []string{"red", "green", "blue"}
+    for i := 0; i < steps; i++ {
+        fmt.Println(colors[i%len(colors)]) // cycles through all 3, forever
+    }
+}</code></pre>
+`);
+
+    addQuiz({
+      q: "Ποιο είναι το πλεονέκτημα του boolean toggle (isPlayerOne = !isPlayerOne) σε σχέση με τον επανυπολογισμό i%2 == 0 σε κάθε iteration;",
+      options: [
+        "Η κατάσταση αποθηκεύεται απευθείας στη μεταβλητή αντί να υπολογίζεται ξανά κάθε φορά από το index — πιο σαφές και δουλεύει ακόμα κι αν η λούπα δεν έχει αριθμητικό index",
+        "Το boolean toggle είναι πάντα ταχύτερο σε εκτέλεση, αφού η Go βελτιστοποιεί ειδικά τον τελεστή ! για μεταβλητές τύπου bool",
+        "Ο επανυπολογισμός i%2==0 προκαλεί runtime error μετά από αρκετές iterations λόγω υπερχείλισης (overflow) της μεταβλητής i",
+        "Δεν υπάρχει καμία ουσιαστική διαφορά — και οι δύο προσεγγίσεις είναι απολύτως ισοδύναμες σε κάθε πιθανή περίπτωση χρήσης"
+      ],
+      correct: 0,
+      explain: "Το state toggle εκφράζει άμεσα την πρόθεση \"εναλλαγή κατάστασης\", και είναι πιο ευέλικτο — δουλεύει σε οποιαδήποτε λούπα, όχι μόνο σε λούπες με αριθμητικό μετρητή."
+    });
+
+    // ── Pattern 6: Threshold / Limit ─────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 6 / 9</div>
+<h1>Κατώφλι / Όριο (Threshold / Limit Pattern)</h1>
+<p class="lede">Χρειάζεσαι να σταματήσεις μια διαδικασία αφού φτάσει σε ένα όριο προσπαθειών — π.χ. "δοκίμασε ξανά μέχρι 3 φορές", ή "μην επεξεργαστείς παραπάνω από 100 στοιχεία". Το pattern συνδυάζει έναν μετρητή προσπαθειών με έναν έλεγχο ορίου.</p>
+
+<h2>Το πρόβλημα, χωρίς όριο</h2>
+<p>Φαντάσου μια function που προσομοιώνει "προσπάθειες σύνδεσης" μέχρι να πετύχει — αλλά χωρίς κανένα όριο, αν κάτι πάει στραβά, η λούπα μπορεί να τρέξει επ' άπειρον:</p>
+
+<pre><code class="lang-go">// DANGEROUS: no upper bound — could loop forever if isSuccessful() never returns true
+func retryForever() {
+    for {
+        if isSuccessful() {
+            return
+        }
+        // try again... and again... and again...
+    }
+}</code></pre>
+
+<h2>Με το pattern: μετρητής + όριο</h2>
+<pre><code class="lang-go">const maxRetries = 3
+
+func retryWithLimit() bool {
+    attempts := 0 // counter, starts at the neutral element for counting
+    for attempts < maxRetries {
+        if isSuccessful() {
+            return true
+        }
+        attempts++
+    }
+    return false // gave up after maxRetries attempts
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Ο συνδυασμός <code>attempts</code> (μετρητής, ένα accumulator pattern) και η συνθήκη <code>attempts < maxRetries</code> στη λούπα εγγυάται ότι το πρόγραμμα ΠΑΝΤΑ τερματίζει, ό,τι κι αν κάνει η <code>isSuccessful()</code>. Το <code>maxRetries</code> ως ονομασμένη σταθερά (<code>const</code>) κάνει το όριο εύκολο να αλλάξει και να διαβαστεί.
+</div>
+
+<h2>Συνδυασμός με Guard Clause</h2>
+<p>Το threshold pattern συχνά συνδυάζεται με το guard clause pattern (θα το δούμε αμέσως μετά) για να "προστατέψει" μια function από υπερβολικά μεγάλα ορίσματα εξαρχής:</p>
+
+<pre><code class="lang-go">func processItems(items []int, limit int) []int {
+    if limit > len(items) {
+        limit = len(items) // never process more than what actually exists
+    }
+    return items[:limit]
+}</code></pre>
+`);
+
+    addQuiz({
+      q: "Ποιο πρόβλημα λύνει συγκεκριμένα ο συνδυασμός \"μετρητής προσπαθειών + έλεγχος ορίου\" στο threshold pattern;",
+      options: [
+        "Εγγυάται ότι η λούπα θα τερματίσει σίγουρα μετά από συγκεκριμένο πλήθος προσπαθειών, ακόμα κι αν η επιθυμητή συνθήκη επιτυχίας δεν επαληθευτεί ποτέ",
+        "Κάνει τη λούπα να εκτελείται ταχύτερα, μειώνοντας τον συνολικό χρόνο εκτέλεσης του προγράμματος σε κάθε περίπτωση",
+        "Επιτρέπει στη λούπα να επεξεργάζεται περισσότερα δεδομένα ταυτόχρονα από ό,τι θα μπορούσε χωρίς το pattern",
+        "Μετατρέπει αυτόματα μια λούπα for σε λούπα range, ώστε να διασχίζει slices αντί για απλούς μετρητές"
+      ],
+      correct: 0,
+      explain: "Χωρίς όριο, μια λούπα που περιμένει μια συνθήκη επιτυχίας μπορεί θεωρητικά να τρέξει για πάντα. Ο συνδυασμός μετρητή + ορίου εγγυάται πεπερασμένη εκτέλεση."
+    });
+
+    // ── Fill-in-the-blank: Threshold ─────────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `const maxAttempts = 5
+
+// tryUntilLimit calls check() repeatedly until it returns true,
+// or gives up after maxAttempts tries.
+func tryUntilLimit() bool {
+    attempts := __start__
+    for attempts __cmp__ maxAttempts {
+        if check() {
+            return true
+        }
+        attempts__inc__
+    }
+    return false
+}`,
+      blanks: [
+        { id: "start", answer: "0" },
+        { id: "cmp", answer: "<" },
+        { id: "inc", answer: "++" }
+      ],
+      explain: "Ο μετρητής ξεκινά στο 0, η λούπα συνεχίζει όσο attempts < maxAttempts, και αυξάνεται κατά ένα σε κάθε αποτυχημένη προσπάθεια — τερματίζει εγγυημένα μετά από maxAttempts."
+    }, {
+      note: "Συμπλήρωσε ώστε η λούπα να τερματίζει σίγουρα μετά από maxAttempts προσπάθειες."
+    });
+
+    // ── Pattern 7: Guard Clause / Early Return ───────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 7 / 9</div>
+<h1>Φρουρός: Guard Clause / Early Return</h1>
+<p class="lede">Πιθανότατα το πιο σημαντικό pattern για την ΑΝΑΓΝΩΣΙΜΟΤΗΤΑ (readability) του κώδικά σου. Αντί να φωλιάζεις συνθήκες η μία μέσα στην άλλη (nested ifs), ελέγχεις τις "κακές"/εξαιρετικές περιπτώσεις ΠΡΩΤΑ και βγαίνεις αμέσως (<code>return</code>/<code>continue</code>) αν μία απ' αυτές ισχύει — αφήνοντας το υπόλοιπο της function να είναι η κύρια, "χαρούμενη" λογική (happy path), χωρίς εμφωλευμένα if.</p>
+
+<h2>Το πρόβλημα: βαθιά εμφώλευση</h2>
+<p>Φαντάσου μια function που υπολογίζει ένα ποσό ασφάλισης βάσει διάφορων συνθηκών. Μια φυσική αλλά προβληματική πρώτη προσπάθεια:</p>
+
+<pre><code class="lang-go">func insuranceAmountNested(hasInsurance bool, isTotaled bool, isDented bool, isBigDent bool) int {
+    amount := 0
+    if hasInsurance {
+        if isTotaled {
+            amount = 10000
+        } else {
+            if isDented {
+                amount = 160
+                if isBigDent {
+                    amount = 270
+                }
+            } else {
+                amount = 0
+            }
+        }
+    } else {
+        amount = 1
+    }
+    return amount
+}</code></pre>
+
+<p>Δοκίμασε να απαντήσεις γρήγορα: "πότε επιστρέφεται το 270;" Πρέπει να διασχίσεις νοερά ολόκληρο το δέντρο από την αρχή, μετρώντας πόσα αγκύλες βρίσκεσαι μέσα. Κάθε επιπλέον επίπεδο εμφώλευσης κάνει τη λογική εκθετικά πιο δύσκολο να την κρατήσεις στο μυαλό σου.</p>
+
+<h2>Με το pattern: guard clauses</h2>
+<pre><code class="lang-go">func insuranceAmount(hasInsurance bool, isTotaled bool, isDented bool, isBigDent bool) int {
+    if !hasInsurance {
+        return 1
+    }
+    if isTotaled {
+        return 10000
+    }
+    if !isDented {
+        return 0
+    }
+    if isBigDent {
+        return 270
+    }
+    return 160
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Κάθε "κακή"/ειδική περίπτωση ελέγχεται και εξέρχεται ΑΜΕΣΩΣ, στην κορυφή της function, με μηδενική εμφώλευση. Η ανάγνωση γίνεται γραμμική: διαβάζεις από πάνω προς τα κάτω, κάθε <code>if</code> είναι ανεξάρτητο, και το τελευταίο <code>return</code> είναι αυτόματα η "προεπιλεγμένη" περίπτωση όταν καμία guard δεν ενεργοποιήθηκε.
+</div>
+
+<h2>Guard clause σε λούπα: το continue</h2>
+<p>Το ίδιο pattern εφαρμόζεται και μέσα σε λούπες, με <code>continue</code> αντί για <code>return</code> — παραλείπεις γρήγορα τις μη-ενδιαφέρουσες περιπτώσεις:</p>
+
+<pre><code class="lang-go">// Without guard clause: the "real" logic is nested inside an if
+func sumEvensNested(numbers []int) int {
+    total := 0
+    for _, n := range numbers {
+        if n%2 == 0 {
+            total += n // buried one level deep
+        }
+    }
+    return total
+}
+
+// With guard clause: the "uninteresting" case exits first, main logic stays flat
+func sumEvens(numbers []int) int {
+    total := 0
+    for _, n := range numbers {
+        if n%2 != 0 {
+            continue // skip odd numbers immediately
+        }
+        total += n // this is now the "main" flow, not nested
+    }
+    return total
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το guard clause pattern δεν σημαίνει "αποφεύγω τα if πάση θυσία". Σημαίνει: βάζω τις εξαιρέσεις/ειδικές περιπτώσεις ΠΡΩΤΑ και τις αφήνω να φύγουν γρήγορα, ώστε ό,τι απομένει να είναι η κύρια λογική, χωρίς φώλιασμα.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποιο είναι το βασικό πλεονέκτημα των guard clauses σε σχέση με τα βαθιά εμφωλευμένα if/else;",
+        options: [
+          "Η ροή του κώδικα διαβάζεται γραμμικά από πάνω προς τα κάτω, χωρίς να χρειάζεται να θυμάσαι σε ποιο επίπεδο εμφώλευσης βρίσκεσαι",
+          "Τα guard clauses κάνουν το πρόγραμμα να εκτελείται ταχύτερα σε κάθε δυνατή περίπτωση εισόδου δεδομένων",
+          "Τα guard clauses καταργούν εντελώς την ανάγκη χρήσης της λέξης-κλειδί if σε ολόκληρη τη function",
+          "Το compiler της Go απαιτεί υποχρεωτικά τη χρήση guard clauses σε κάθε function με περισσότερες από δύο συνθήκες"
+        ],
+        correct: 0,
+        explain: "Το βασικό όφελος είναι αναγνωσιμότητα: κάθε guard clause είναι ανεξάρτητο και διαβάζεται με τη σειρά, αντί να χρειάζεται νοερή διάσχιση ενός δέντρου εμφωλευμένων if."
+      },
+      {
+        q: "Μέσα σε μια λούπα, ποιο keyword παίζει τον ρόλο που παίζει το return σε μια απλή function, για guard clauses;",
+        options: [
+          "continue — παραλείπει αμέσως την τρέχουσα iteration χωρίς να εκτελέσει τον υπόλοιπο κώδικα της λούπας για αυτό το στοιχείο",
+          "break — σταματάει τελείως τη λούπα και δεν επεξεργάζεται κανένα επόμενο στοιχείο του slice",
+          "return — τερματίζει αμέσως ολόκληρη τη function, ίδιο ακριβώς αποτέλεσμα με το continue σε κάθε περίπτωση",
+          "defer — αναβάλλει την εκτέλεση της τρέχουσας iteration για το τέλος της λούπας, χωρίς να τη σταματάει οριστικά"
+        ],
+        correct: 0,
+        explain: "Το continue παραλείπει την τρέχουσα iteration και προχωράει στην επόμενη — είναι το αντίστοιχο του early return, αλλά στο πλαίσιο μίας iteration, όχι ολόκληρης της function."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Guard Clause ──────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// safeDiv divides a by b, returning 0 if b is zero (avoiding a crash).
+func safeDiv(a int, b int) int {
+    if b == __zeroval__ {
+        __exitkw__ 0
+    }
+    return a / b
+}
+
+// sumPositives adds only the positive numbers in the slice.
+func sumPositives(numbers []int) int {
+    total := 0
+    for _, n := range numbers {
+        if n <= 0 {
+            __skipkw__
+        }
+        total += n
+    }
+    return total
+}`,
+      blanks: [
+        { id: "zeroval", answer: "0" },
+        { id: "exitkw", answer: "return" },
+        { id: "skipkw", answer: "continue" }
+      ],
+      explain: "Στη function, το return εξέρχεται αμέσως στην ειδική περίπτωση (b == 0). Στη λούπα, το continue παραλείπει τα μη-θετικά χωρίς να φωλιάζει το υπόλοιπο σώμα μέσα σε ένα if."
+    }, {
+      note: "Συμπλήρωσε και τα δύο guard clauses — ένα σε function, ένα μέσα σε λούπα."
+    });
+
+    // ── Pattern 8: Previous Value / Lagging Pointer ──────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 8 / 9</div>
+<h1>Παρακολούθηση Προηγούμενης Τιμής (Previous Value Pattern)</h1>
+<p class="lede">Πολλά προβλήματα χρειάζονται σύγκριση ΔΙΑΔΟΧΙΚΩΝ στοιχείων — "είναι το τρέχον στοιχείο μεγαλύτερο από το προηγούμενο;", "άλλαξε η τιμή σε σχέση με πριν;". Το pattern: κρατάμε μια ξεχωριστή μεταβλητή που θυμάται το στοιχείο του ΠΡΟΗΓΟΥΜΕΝΟΥ βήματος.</p>
+
+<h2>Το πρόβλημα: δεν έχεις πρόσβαση στο "πριν" μόνο με το range</h2>
+<p>Ένα απλό <code>for i, n := range numbers</code> σου δίνει το τρέχον στοιχείο, αλλά όχι απευθείας το προηγούμενο. Θα μπορούσες να χρησιμοποιήσεις το index (<code>numbers[i-1]</code>), αλλά αυτό χρειάζεται προσοχή στα όρια (τι γίνεται όταν <code>i == 0</code>;).</p>
+
+<h2>Με το pattern: ξεχωριστή μεταβλητή "prev"</h2>
+<p>Ας βρούμε πόσες φορές η τιμή "ανεβαίνει" σε σχέση με την προηγούμενη (χρήσιμο π.χ. σε ανάλυση χρηματιστηριακών τιμών):</p>
+
+<pre><code class="lang-go">func countIncreases(numbers []int) int {
+    if len(numbers) == 0 {
+        return 0 // guard clause: nothing to compare in an empty slice
+    }
+
+    count := 0
+    prev := numbers[0] // seed with the first element before the loop starts
+
+    for _, n := range numbers[1:] { // start comparing from the second element
+        if n > prev {
+            count++
+        }
+        prev = n // this iteration's value becomes "previous" for the next one
+    }
+    return count
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Η μεταβλητή <code>prev</code> "ταξιδεύει" μαζί με τη λούπα, ενημερώνοντας την τιμή της σε κάθε iteration ΑΦΟΥ έχει χρησιμοποιηθεί για τη σύγκριση. Αυτό είναι το χαρακτηριστικό βήμα του pattern: πρώτα συγκρίνεις με το prev, ΜΕΤΑ ενημερώνεις το prev.
+</div>
+
+<h2>Εφαρμογή: εύρεση διπλότυπων σε διαδοχικές θέσεις</h2>
+<pre><code class="lang-go">func hasConsecutiveDuplicate(numbers []int) bool {
+    if len(numbers) == 0 {
+        return false
+    }
+
+    prev := numbers[0]
+    for _, n := range numbers[1:] {
+        if n == prev {
+            return true // found two equal, adjacent elements
+        }
+        prev = n
+    }
+    return false
+}</code></pre>
+`);
+
+    addQuiz({
+      q: "Στο previous value pattern, γιατί ενημερώνουμε το prev = n ΜΕΤΑ τη σύγκριση, όχι πριν;",
+      options: [
+        "Γιατί η σύγκριση χρειάζεται την τιμή του prev ΠΡΙΝ ενημερωθεί — αν ενημερωνόταν πρώτα, θα συγκρίναμε κάθε στοιχείο με τον εαυτό του",
+        "Δεν έχει καμία σημασία η σειρά — και οι δύο εκδοχές δίνουν ακριβώς το ίδιο, σωστό αποτέλεσμα σε κάθε περίπτωση",
+        "Γιατί η Go απαιτεί συντακτικά όλες οι ενημερώσεις μεταβλητών να γίνονται στο τέλος κάθε iteration μιας λούπας for",
+        "Γιατί αλλιώς η λούπα θα προκαλούσε πάντα ένα runtime panic λόγω πρόσβασης εκτός ορίων του slice"
+      ],
+      correct: 0,
+      explain: "Αν ενημερωνόταν το prev πριν τη σύγκριση, θα είχε ήδη γίνει n, οπότε κάθε \"n > prev\" θα συνέκρινε ένα στοιχείο με τον εαυτό του — πάντα false. Η σειρά σύγκριση-πρώτα, ενημέρωση-μετά είναι το ίδιο το pattern."
+    });
+
+    // ── Pattern 9: Bucketing / Frequency Map ─────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Pattern 9 / 9</div>
+<h1>Δεξαμενή / Κατηγοριοποίηση (Bucketing / Frequency Map)</h1>
+<p class="lede">Το τελευταίο state pattern, και ένα από τα πιο ισχυρά: καταμέτρηση συχνότητας εμφάνισης στοιχείων. Χρησιμοποιείς έναν <code>map[K]int</code> (θυμήσου τα maps από το Μέρος 1) όπου το key είναι το ίδιο το στοιχείο, και η τιμή είναι πόσες φορές εμφανίστηκε.</p>
+
+<h2>Το πρόβλημα, χωρίς bucketing</h2>
+<p>Θέλουμε να βρούμε ποιο γράμμα εμφανίζεται συχνότερα σε ένα string. Χωρίς κάπου να "μαζεύουμε" τη συχνότητα κάθε γράμματος, θα χρειαζόμασταν μια εμφωλευμένη λούπα — για κάθε γράμμα, ξαναδιάσχισε ΟΛΟΚΛΗΡΟ το string μετρώντας πόσες φορές εμφανίζεται εκείνο συγκεκριμένα. Αυτό είναι πολύ αργό όσο μεγαλώνει το string (θα το ποσοτικοποιήσουμε ακριβώς με Big-O παρακάτω στην ενότητα).</p>
+
+<h2>Με το pattern: map[rune]int</h2>
+<pre><code class="lang-go">func letterFrequency(text string) map[rune]int {
+    freq := make(map[rune]int) // empty bucket map, ready to fill
+    for _, ch := range text {  // range over a string yields runes
+        freq[ch]++              // bump the count for this character by one
+    }
+    return freq
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Μία μόνο διάσχιση του string. Για κάθε χαρακτήρα, το <code>freq[ch]++</code> αυξάνει τον μετρητή του — και επειδή τα maps στη Go επιστρέφουν αυτόματα την zero-value (<code>0</code> για <code>int</code>) όταν ένα key δεν υπάρχει ακόμα, δεν χρειάζεται καν να ελέγξεις "υπάρχει ήδη αυτό το key;" πριν αυξήσεις.
+</div>
+
+<h2>Εφαρμογή: εύρεση αναγραμμάτων (anagrams)</h2>
+<p>Δύο λέξεις είναι ανάγραμμα αν περιέχουν ΑΚΡΙΒΩΣ τα ίδια γράμματα, στις ίδιες ποσότητες — απλά σε διαφορετική σειρά. Το bucketing pattern το ελέγχει κομψά:</p>
+
+<pre><code class="lang-go">func isAnagram(a string, b string) bool {
+    if len(a) != len(b) {
+        return false // guard clause: different lengths can't be anagrams
+    }
+
+    freq := make(map[rune]int)
+    for _, ch := range a {
+        freq[ch]++ // count letters from the first word
+    }
+    for _, ch := range b {
+        freq[ch]-- // "give back" letters for the second word
+    }
+
+    for _, count := range freq {
+        if count != 0 {
+            return false // some letter didn't perfectly balance out
+        }
+    }
+    return true
+}</code></pre>
+
+<p>Η ιδέα εδώ είναι κομψή: προσθέτουμε για τη μία λέξη, αφαιρούμε για την άλλη. Αν οι λέξεις είναι πραγματικά ανάγραμμα, κάθε μετρητής θα καταλήξει ακριβώς στο 0 — κάθε γράμμα "εξισορροπείται" τέλεια.</p>
+
+<h2>Bucketing με άμεσο index (Direct Indexing)</h2>
+<p>Όταν ξέρεις ότι τα δεδομένα σου είναι περιορισμένα σε ένα μικρό, γνωστό εύρος (π.χ. μόνο πεζά αγγλικά γράμματα, 26 δυνατότητες), μπορείς να χρησιμοποιήσεις ένα απλό <code>array</code> αντί για <code>map</code> — είναι ταχύτερο, αφού η πρόσβαση σε array με index είναι πιο άμεση από την αναζήτηση σε map:</p>
+
+<pre><code class="lang-go">func letterFrequencyFast(text string) [26]int {
+    var freq [26]int // all 26 slots start at zero automatically
+    for _, ch := range text {
+        freq[ch-'a']++ // map 'a'-'z' to indices 0-25
+    }
+    return freq
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το <code>ch-'a'</code> δουλεύει σωστά ΜΟΝΟ αν ο χαρακτήρας είναι πράγματι πεζό αγγλικό γράμμα. Κεφαλαία, τόνοι, ή ελληνικοί χαρακτήρες θα έδιναν αρνητικό ή εκτός-ορίων index, προκαλώντας panic. Το <code>map[rune]int</code> είναι πιο ασφαλές γενικής χρήσης — το array direct indexing είναι μια βελτιστοποίηση για συγκεκριμένες, γνωστές περιπτώσεις.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί δεν χρειάζεται να ελέγξουμε αν ένα key υπάρχει ήδη σε ένα map[rune]int πριν κάνουμε freq[ch]++;",
+        options: [
+          "Επειδή τα maps στη Go επιστρέφουν αυτόματα τη zero-value (0 για int) όταν ζητάς ένα key που δεν υπάρχει ακόμα",
+          "Επειδή η Go δημιουργεί αυτόματα όλα τα δυνατά keys ενός map τη στιγμή που δηλώνεται με make()",
+          "Επειδή ο τελεστής ++ σε Go δημιουργεί πάντα αυτόματα το key αν αυτό λείπει από το map, με τιμή 1",
+          "Χρειάζεται πάντα έλεγχος πριν — χωρίς αυτόν, το πρόγραμμα κάνει runtime panic στην πρώτη εμφάνιση ενός νέου key"
+        ],
+        correct: 0,
+        explain: "Η zero-value ενός int είναι 0, και η Go επιστρέφει αυτή τη zero-value όταν διαβάζεις ένα key που δεν υπάρχει σε map — οπότε freq[ch]++ σε νέο key λειτουργεί σωστά σαν 0+1=1, χωρίς κανένα ρητό έλεγχο."
+      },
+      {
+        q: "Στο isAnagram, γιατί προσθέτουμε (++) για τη μία λέξη και αφαιρούμε (--) για την άλλη, αντί να κρατάμε δύο ξεχωριστά maps;",
+        options: [
+          "Έτσι, αν οι λέξεις είναι πράγματι ανάγραμμα, κάθε μετρητής καταλήγει ακριβώς στο 0 — ένας μόνο τελικός έλεγχος αρκεί αντί για σύγκριση δύο ολόκληρων maps",
+          "Επειδή η Go απαγορεύει συντακτικά τη δημιουργία δύο διαφορετικών maps μέσα στην ίδια function",
+          "Δεν υπάρχει ουσιαστικός λόγος — απλά είναι μια τυχαία στιλιστική προτίμηση χωρίς πρακτικό όφελος στο αποτέλεσμα",
+          "Επειδή το -- σε map[rune]int προκαλεί πάντα panic αν το key δεν έχει ήδη προστεθεί με ++ νωρίτερα στον κώδικα"
+        ],
+        correct: 0,
+        explain: "Η προσθαφαίρεση σε ΕΝΑ map είναι πιο κομψή: αν κάθε γράμμα εξισορροπείται τέλεια (ίδιο πλήθος και στις δύο λέξεις), κάθε μετρητής καταλήγει στο 0 — ο τελικός έλεγχος γίνεται με ένα μόνο πέρασμα, χωρίς σύγκριση δύο ξεχωριστών maps."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Bucketing ─────────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// wordFrequency counts how many times each word appears in a slice.
+func wordFrequency(words []string) map[string]int {
+    freq := __makecall__(map[string]int)
+    for _, w := range words {
+        freq[w]__incr__
+    }
+    return freq
+}`,
+      blanks: [
+        { id: "makecall", answer: "make" },
+        { id: "incr", answer: "++" }
+      ],
+      explain: "make(map[string]int) δημιουργεί ένα κενό, έτοιμο προς χρήση map. Το freq[w]++ αυξάνει τον μετρητή — δουλεύει σωστά και για νέες λέξεις, χάρη στη zero-value του map."
+    }, {
+      note: "Συμπλήρωσε το bucketing pattern ώστε να μετράει σωστά τη συχνότητα κάθε λέξης."
+    });
+
+    // ── Matching — all 9 state/control-flow patterns ─────────────────────── ⊃
+    addMatching([
+      [
+        { term: "Flag / Bool Switch", def: "boolean που ξεκινά false, γίνεται true όταν βρεθεί κάτι, συχνά με early break" },
+        { term: "Sentinel Value", def: "ειδική τιμή (π.χ. -1) που δεν μπορεί ποτέ να είναι πραγματικό αποτέλεσμα, δηλώνει \"δεν βρέθηκε\"" },
+        { term: "Accumulator", def: "μεταβλητή που μαζεύει αποτέλεσμα, αρχικοποιημένη στο ουδέτερο στοιχείο της πράξης" },
+        { term: "Extremum", def: "εύρεση μέγιστου/ελάχιστου, με προσοχή στην αρχική τιμή σύγκρισης" },
+        { term: "State Toggle", def: "εναλλαγή ανάμεσα σε δύο (ή περισσότερες, με modulo) καταστάσεις σε κάθε βήμα" }
+      ],
+      [
+        { term: "Threshold / Limit", def: "μετρητής + όριο, εγγυάται τερματισμό μιας λούπας μετά από Ν προσπάθειες" },
+        { term: "Guard Clause", def: "έλεγχος εξαιρετικών περιπτώσεων πρώτα, με άμεσο return/continue, αποφεύγει εμφώλευση" },
+        { term: "Previous Value", def: "ξεχωριστή μεταβλητή που θυμάται το στοιχείο του προηγούμενου βήματος, για σύγκριση διαδοχικών τιμών" },
+        { term: "Bucketing / Frequency Map", def: "καταμέτρηση συχνότητας με map[K]int, μία μόνο διάσχιση των δεδομένων" }
+      ]
+    ], {
+      note: "Δύο σετ: τα πρώτα 5 patterns, μετά τα υπόλοιπα 4."
+    });
+
+
+    // ══════════════════════════════════════════════════════════════════════
+    // §3.2 — Μοτίβα Διάσχισης Πινάκων & Slices
+    // ══════════════════════════════════════════════════════════════════════
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — §3.2 Μοτίβα Διάσχισης</div>
+<h1>Μοτίβα Διάσχισης Πινάκων &amp; Slices</h1>
+<p class="lede">Τα 9 patterns που είδαμε αφορούν κυρίως ΤΙ κάνουμε σε κάθε βήμα μιας λούπας. Τώρα στρεφόμαστε σε ΠΩΣ διασχίζουμε τα ίδια τα δεδομένα — υπάρχουν συγκεκριμένοι τρόποι να κινηθείς μέσα σε ένα slice ή 2D πίνακα που εμφανίζονται ξανά και ξανά σε δύσκολα προβλήματα, και κάνουν τη διαφορά ανάμεσα σε μια αργή, αφελή λύση και μια γρήγορη, κομψή.</p>
+`);
+
+    // ── Nested Loops for 2D arrays ───────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — §3.2</div>
+<h1>Εμφωλευμένοι Βρόχοι (Nested Loops) για 2D Πίνακες</h1>
+<p class="lede">Θυμήσου τα 2D slices από το Μέρος 1 — ένα slice από slices, όπως μια σκακιέρα ή ένας πίνακας τιμών. Για να επισκεφθείς ΚΑΘΕ στοιχείο ενός 2D πίνακα, χρειάζεσαι δύο εμφωλευμένες λούπες: η εξωτερική διασχίζει τις γραμμές, η εσωτερική διασχίζει τις στήλες μέσα σε κάθε γραμμή.</p>
+
+<pre><code class="lang-go">func sumAll2D(grid [][]int) int {
+    total := 0
+    for _, row := range grid {       // outer loop: each row
+        for _, value := range row {  // inner loop: each value in that row
+            total += value
+        }
+    }
+    return total
+}</code></pre>
+
+<h2>Πρόσβαση με index, όταν χρειάζεσαι τη θέση</h2>
+<p>Αν χρειάζεσαι τη γραμμή/στήλη (π.χ. για να ελέγξεις γείτονες σε ένα grid — πάνω/κάτω/αριστερά/δεξιά), χρησιμοποιείς index αντί για range σε τιμές:</p>
+
+<pre><code class="lang-go">func countPositive2D(grid [][]int) int {
+    count := 0
+    for row := 0; row < len(grid); row++ {
+        for col := 0; col < len(grid[row]); col++ {
+            if grid[row][col] > 0 {
+                count++
+            }
+        }
+    }
+    return count
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Στη Go, ένα 2D slice δεν είναι υποχρεωτικά "τετράγωνο" — κάθε εσωτερικό slice (κάθε γραμμή) μπορεί να έχει διαφορετικό μήκος (jagged array). Γι' αυτό η εσωτερική λούπα χρησιμοποιεί <code>len(grid[row])</code>, ΟΧΙ ένα σταθερό αριθμό στηλών — αλλιώς ρισκάρεις είτε να παραλείψεις στοιχεία είτε να προκαλέσεις panic εκτός ορίων.
+</div>
+
+<h2>Πολυπλοκότητα: γιατί τα nested loops "κοστίζουν"</h2>
+<p>Αν το grid έχει <em>n</em> γραμμές και <em>m</em> στήλες, η εσωτερική λούπα τρέχει <em>m</em> φορές για ΚΑΘΕ μία από τις <em>n</em> φορές που τρέχει η εξωτερική — συνολικά <em>n × m</em> επισκέψεις. Αυτό δεν είναι πρόβλημα από μόνο του (πολλά προβλήματα ΑΠΑΙΤΟΥΝ να δεις κάθε στοιχείο), αλλά είναι η αφετηρία για να καταλάβουμε γιατί ο αλγόριθμος που διαλέγεις έχει σημασία — το βλέπουμε ακριβώς στην επόμενη υποενότητα, στο Big-O.</p>
+`);
+
+    addQuiz({
+      q: "Γιατί η εσωτερική λούπα ενός nested-loop 2D traversal στη Go πρέπει να χρησιμοποιεί len(grid[row]) αντί για έναν σταθερό αριθμό στηλών;",
+      options: [
+        "Επειδή κάθε γραμμή (εσωτερικό slice) ενός 2D slice στη Go μπορεί να έχει διαφορετικό μήκος από τις άλλες — δεν είναι εγγυημένα \"τετράγωνο\"",
+        "Επειδή η Go απαγορεύει συντακτικά τη χρήση σταθερών αριθμών μέσα στη συνθήκη μιας λούπας for",
+        "Επειδή το len() είναι πάντα ταχύτερο σε εκτέλεση από έναν χειροκίνητα γραμμένο σταθερό αριθμό στηλών",
+        "Δεν έχει καμία πρακτική σημασία — και οι δύο προσεγγίσεις λειτουργούν το ίδιο σε κάθε πιθανή περίπτωση 2D slice"
+      ],
+      correct: 0,
+      explain: "Τα 2D slices στη Go μπορούν να είναι \"jagged\" (ανομοιόμορφα) — κάθε εσωτερικό slice έχει το δικό του, ανεξάρτητο μήκος. Το len(grid[row]) προσαρμόζεται σωστά σε κάθε γραμμή ξεχωριστά."
+    });
+
+    // ── Two Pointers ──────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — §3.2</div>
+<h1>Τεχνική Δύο Δεικτών (Two Pointers Pattern)</h1>
+<p class="lede">Αντί για μία μεταβλητή δείκτη (index) που διασχίζει ένα slice, χρησιμοποιούμε ΔΥΟ ταυτόχρονα — συνήθως ξεκινώντας από τις δύο άκρες και κινούμενοι προς το κέντρο, ή και οι δύο από την ίδια πλευρά με διαφορετική ταχύτητα. Είναι εξαιρετικά χρήσιμο σε ΤΑΞΙΝΟΜΗΜΕΝΑ (sorted) δεδομένα, ή όταν ψάχνεις ζευγάρια/σχέσεις ανάμεσα σε στοιχεία.</p>
+
+<h2>Το πρόβλημα, χωρίς two pointers: εύρεση ζευγαριού με άθροισμα target</h2>
+<p>Δοσμένου ενός ΤΑΞΙΝΟΜΗΜΕΝΟΥ slice, θέλουμε να βρούμε αν υπάρχουν δύο στοιχεία που αθροίζουν σε μια δοσμένη τιμή. Η αφελής λύση ελέγχει ΚΑΘΕ ζευγάρι, με δύο εμφωλευμένες λούπες:</p>
+
+<pre><code class="lang-go">// Slow: checks every possible pair — O(n²), see Big-O later in this section
+func hasPairSumSlow(sorted []int, target int) bool {
+    for i := 0; i < len(sorted); i++ {
+        for j := i + 1; j < len(sorted); j++ {
+            if sorted[i]+sorted[j] == target {
+                return true
+            }
+        }
+    }
+    return false
+}</code></pre>
+
+<h2>Με το pattern: δύο δείκτες, αντίθετη κατεύθυνση</h2>
+<pre><code class="lang-go">func hasPairSum(sorted []int, target int) bool {
+    left, right := 0, len(sorted)-1 // pointers at opposite ends
+
+    for left < right {
+        sum := sorted[left] + sorted[right]
+        switch {
+        case sum == target:
+            return true
+        case sum < target:
+            left++ // sum too small — move left pointer up to increase it
+        default:
+            right-- // sum too big — move right pointer down to decrease it
+        }
+    }
+    return false
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Γιατί δουλεύει μόνο επειδή είναι ταξινομημένο</span>
+  Επειδή το slice είναι sorted, ξέρουμε ΜΕ ΣΙΓΟΥΡΙΑ: αν το άθροισμα είναι πολύ μικρό, μετακινώντας το <code>left</code> προς τα δεξιά ΠΑΝΤΑ αυξάνει το άθροισμα (αφού τα στοιχεία είναι σε αύξουσα σειρά) — δεν χρειάζεται να ελέγξεις ξανά προηγούμενα ζευγάρια. Αυτό είναι που επιτρέπει να διασχίσουμε το slice ΜΙΑ φορά αντί να ελέγξουμε κάθε δυνατό ζευγάρι.
+</div>
+
+<h2>Two Pointers, ίδια κατεύθυνση: αφαίρεση διπλότυπων in-place</h2>
+<p>Μια δεύτερη μορφή: και οι δύο δείκτες ξεκινούν από την ίδια πλευρά, αλλά κινούνται με διαφορετική "ταχύτητα" — ο ένας (<code>slow</code>) δείχνει πού θα γραφτεί το επόμενο έγκυρο στοιχείο, ο άλλος (<code>fast</code>) εξερευνά μπροστά:</p>
+
+<pre><code class="lang-go">// Removes consecutive duplicates in-place, returns the new valid length.
+// Assumes the slice is sorted, so duplicates are always adjacent.
+func removeDuplicates(nums []int) int {
+    if len(nums) == 0 {
+        return 0
+    }
+
+    slow := 0 // index of the last confirmed-unique element
+    for fast := 1; fast < len(nums); fast++ {
+        if nums[fast] != nums[slow] {
+            slow++
+            nums[slow] = nums[fast]
+        }
+    }
+    return slow + 1 // number of unique elements
+}</code></pre>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί το two pointers pattern (αντίθετης κατεύθυνσης) για εύρεση ζευγαριού με άθροισμα target απαιτεί ΤΑΞΙΝΟΜΗΜΕΝΟ (sorted) slice;",
+        options: [
+          "Επειδή μόνο σε ταξινομημένα δεδομένα ξέρουμε με σιγουριά προς ποια κατεύθυνση να κινήσουμε κάθε δείκτη ώστε το άθροισμα να αυξηθεί ή να μειωθεί προβλέψιμα",
+          "Επειδή η Go απαγορεύει συντακτικά τη χρήση δύο μεταβλητών index ταυτόχρονα σε μη ταξινομημένα slices",
+          "Δεν απαιτείται πραγματικά ταξινόμηση — το pattern λειτουργεί ακριβώς το ίδιο και σε τυχαία διατεταγμένα δεδομένα",
+          "Επειδή το άθροισμα δύο στοιχείων υπολογίζεται λανθασμένα από τον compiler αν το slice δεν είναι ταξινομημένο"
+        ],
+        correct: 0,
+        explain: "Η ταξινόμηση εγγυάται ότι μετακινώντας το left δείκτη δεξιά το άθροισμα ΠΑΝΤΑ αυξάνεται (και αντίστροφα για το right) — αυτή η προβλεψιμότητα είναι που επιτρέπει τη μία μόνο διάσχιση, χωρίς backtracking."
+      },
+      {
+        q: "Στο παράδειγμα removeDuplicates, τι αντιπροσωπεύει ο δείκτης slow;",
+        options: [
+          "Το index όπου θα γραφτεί το επόμενο επιβεβαιωμένα μοναδικό στοιχείο — δείχνει πού βρίσκεται το \"σύνορο\" των ήδη επεξεργασμένων, έγκυρων δεδομένων",
+          "Το πλήθος συνολικών διπλότυπων που έχουν βρεθεί μέχρι στιγμής κατά τη διάσχιση του slice",
+          "Την τρέχουσα τιμή που συγκρίνεται, ενώ ο fast δείκτης δείχνει το προηγούμενο επεξεργασμένο στοιχείο",
+          "Έναν σταθερό δείκτη που παραμένει πάντα στο index 0 καθ' όλη τη διάρκεια της λούπας, χωρίς να κινείται ποτέ"
+        ],
+        correct: 0,
+        explain: "Το slow δείχνει το \"σύνορο\" ανάμεσα σε ήδη-επεξεργασμένα, μοναδικά στοιχεία και στο υπόλοιπο slice — προχωράει μόνο όταν το fast βρει κάτι πραγματικά νέο."
+      }
+    ]);
+
+    // ── Sliding Window ────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — §3.2</div>
+<h1>Ολισθαίνον Παράθυρο (Sliding Window Pattern)</h1>
+<p class="lede">Στενά συνδεδεμένο με τα two pointers, αλλά με μια σημαντική διαφορά: εδώ και οι δύο δείκτες κινούνται ΜΟΝΟ προς τα δεξιά, οριοθετώντας ένα συνεχόμενο "παράθυρο" δεδομένων ανάμεσά τους. Χρησιμοποιείται όταν το πρόβλημα ζητάει κάτι πάνω σε ΣΥΝΕΧΟΜΕΝΑ (contiguous) υπο-τμήματα — υπο-slice, substring — όχι απλά ζευγάρια.</p>
+
+<h2>Το πρόβλημα, χωρίς sliding window: μέγιστο άθροισμα υπο-slice σταθερού μήκους</h2>
+<p>Θέλουμε το μεγαλύτερο δυνατό άθροισμα οποιωνδήποτε <em>k</em> διαδοχικών στοιχείων ενός slice. Η αφελής λύση υπολογίζει το άθροισμα κάθε παράθυρου από την αρχή:</p>
+
+<pre><code class="lang-go">// Slow: recomputes the full sum for every window position — O(n×k)
+func maxWindowSumSlow(numbers []int, k int) int {
+    maxSum := math.MinInt
+    for start := 0; start+k <= len(numbers); start++ {
+        sum := 0
+        for i := start; i < start+k; i++ { // recomputes from scratch every time
+            sum += numbers[i]
+        }
+        if sum > maxSum {
+            maxSum = sum
+        }
+    }
+    return maxSum
+}</code></pre>
+
+<h2>Με το pattern: fixed-size sliding window</h2>
+<pre><code class="lang-go">func maxWindowSum(numbers []int, k int) int {
+    windowSum := 0
+    for i := 0; i < k; i++ { // build the very first window
+        windowSum += numbers[i]
+    }
+    maxSum := windowSum
+
+    for i := k; i < len(numbers); i++ {
+        windowSum += numbers[i]   // add the element entering on the right
+        windowSum -= numbers[i-k] // remove the element leaving on the left
+        if windowSum > maxSum {
+            maxSum = windowSum
+        }
+    }
+    return maxSum
+}</code></pre>
+
+<div class="callout good">
+  <span class="tag">Τι άλλαξε</span>
+  Αντί να ξαναϋπολογίζουμε ολόκληρο το άθροισμα σε κάθε θέση παραθύρου, ενημερώνουμε το προηγούμενο άθροισμα: προσθέτουμε ό,τι μπαίνει στο παράθυρο δεξιά, αφαιρούμε ό,τι φεύγει από αριστερά. Κάθε βήμα γίνεται σε σταθερό χρόνο, ανεξάρτητα από το πόσο μεγάλο είναι το <em>k</em>.
+</div>
+
+<h2>Variable-size sliding window: όταν το μέγεθος δεν είναι σταθερό</h2>
+<p>Πιο δύσκολη, αλλά πολύ κοινή μορφή: το παράθυρο ΜΕΓΑΛΩΝΕΙ και ΜΙΚΡΑΙΝΕΙ δυναμικά, ανάλογα με μια συνθήκη. Παράδειγμα: το μεγαλύτερο συνεχόμενο υπο-slice όπου το άθροισμα δεν ξεπερνάει ένα όριο.</p>
+
+<pre><code class="lang-go">func longestWindowUnderLimit(numbers []int, limit int) int {
+    left := 0
+    sum := 0
+    best := 0
+
+    for right := 0; right < len(numbers); right++ {
+        sum += numbers[right] // always expand right first
+
+        for sum > limit { // shrink from the left while the window is invalid
+            sum -= numbers[left]
+            left++
+        }
+
+        windowLength := right - left + 1
+        if windowLength > best {
+            best = windowLength
+        }
+    }
+    return best
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Το σχήμα του variable window</span>
+  Πρόσεξε τη δομή: το <code>right</code> ΠΑΝΤΑ επεκτείνεται πρώτα (εξωτερική λούπα). Μετά, μια ΕΣΩΤΕΡΙΚΗ λούπα συρρικνώνει από αριστερά ΟΣΟ χρειάζεται, μέχρι η συνθήκη να ξαναϊσχύει. Αυτό το "expand-then-shrink" σχήμα είναι σχεδόν πάντα το ίδιο σε κάθε variable sliding window πρόβλημα, όποιο κι αν είναι το ακριβές κριτήριο εγκυρότητας.
+</div>
+
+<h2>Decision Framework: Two Pointers ή Sliding Window;</h2>
+<p>Τα δύο patterns μπερδεύονται συχνά, γιατί και τα δύο χρησιμοποιούν δύο δείκτες. Δύο ερωτήσεις ξεχωρίζουν ποιο ταιριάζει:</p>
+
+<div class="grid2">
+  <div class="card"><h3>Ερώτηση 1: Συνεχόμενο κομμάτι ή ζευγάρι/τριάδα;</h3><p>Αν το πρόβλημα ζητάει κάτι πάνω σε ΣΥΝΕΧΟΜΕΝΟ υπο-slice/substring ("μεγαλύτερο", "άθροισμα κάτω από"), είσαι σε <strong>sliding window</strong>. Αν ζητάει ζευγάρι/τριάδα στοιχείων με μια σχέση μεταξύ τους, είσαι σε <strong>two pointers</strong>.</p></div>
+  <div class="card"><h3>Ερώτηση 2: Χρειάζεσαι ό,τι είναι ΑΝΑΜΕΣΑ στους δείκτες, ή μόνο τους ίδιους;</h3><p>Το sliding window χρειάζεται ΟΛΑ τα δεδομένα ανάμεσα στους δύο δείκτες (γι' αυτό κρατάει ένα τρέχον άθροισμα/κατάσταση). Το two pointers συνήθως ενδιαφέρεται μόνο για τις ΔΥΟ τιμές στα άκρα, όχι τι υπάρχει ανάμεσά τους.</p></div>
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια είναι η βασική διαφορά ανάμεσα στο sliding window και το two pointers (αντίθετης κατεύθυνσης), όσον αφορά την κίνηση των δεικτών;",
+        options: [
+          "Στο sliding window και οι δύο δείκτες κινούνται μόνο προς τα δεξιά, ενώ στο two pointers αντίθετης κατεύθυνσης οι δείκτες ξεκινούν από τις άκρες και κινούνται ο ένας προς τον άλλο",
+          "Δεν υπάρχει καμία διαφορά — τα δύο patterns είναι ουσιαστικά το ίδιο πράγμα με διαφορετικό όνομα",
+          "Στο sliding window χρησιμοποιείται πάντα ένας μόνο δείκτης, ενώ το two pointers χρησιμοποιεί πάντα ακριβώς τρεις δείκτες",
+          "Το sliding window λειτουργεί μόνο σε 2D πίνακες, ενώ το two pointers λειτουργεί αποκλειστικά σε μονοδιάστατα slices"
+        ],
+        correct: 0,
+        explain: "Sliding window: και τα δύο άκρα κινούνται δεξιά, οριοθετώντας ένα συνεχόμενο παράθυρο. Two pointers (αντίθετης κατεύθυνσης): οι δείκτες ξεκινούν στα άκρα και συγκλίνουν προς το κέντρο."
+      },
+      {
+        q: "Σύμφωνα με το decision framework, ένα πρόβλημα που ζητάει \"το μεγαλύτερο συνεχόμενο υπο-slice με άθροισμα ≤ Χ\" ταιριάζει σε ποιο pattern, και γιατί;",
+        options: [
+          "Sliding window — γιατί ζητάει κάτι πάνω σε ΣΥΝΕΧΟΜΕΝΟ κομμάτι δεδομένων, και χρειάζεται όλα τα στοιχεία ανάμεσα στους δείκτες για να υπολογίσει το άθροισμα",
+          "Two pointers — γιατί χρησιμοποιεί δύο δείκτες που κινούνται μέσα στο slice, ανεξάρτητα από το αν το κομμάτι είναι συνεχόμενο",
+          "Bucketing — γιατί χρειάζεται καταμέτρηση συχνότητας εμφάνισης κάθε στοιχείου μέσα στο υπο-slice",
+          "Κανένα από τα δύο — τέτοιου είδους προβλήματα λύνονται αποκλειστικά με αναδρομή, όχι με μοτίβα διάσχισης δεικτών"
+        ],
+        correct: 0,
+        explain: "Η λέξη-κλειδί \"συνεχόμενο υπο-slice\" είναι το πρώτο σημάδι sliding window· η ανάγκη να ξέρεις το άθροισμα ΟΛΩΝ των στοιχείων ανάμεσα στους δείκτες (όχι μόνο των άκρων) επιβεβαιώνει την επιλογή."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Two Pointers + Sliding Window ─────────────────── ⊃
+    addFillBlank([
+      {
+        code:
+          `// isPalindrome checks if a slice reads the same forwards and backwards.
+func isPalindrome(s []rune) bool {
+    left, right := 0, __rightinit__
+
+    for left __cmp__ right {
+        if s[left] != s[right] {
+            return false
+        }
+        left__linc__
+        right__rdec__
+    }
+    return true
+}`,
+        blanks: [
+          { id: "rightinit", answer: "len(s)-1" },
+          { id: "cmp", answer: "<" },
+          { id: "linc", answer: "++" },
+          { id: "rdec", answer: "--" }
+        ],
+        explain: "Οι δύο δείκτες ξεκινούν στα άκρα (0 και len(s)-1), συγκλίνουν όσο left < right, και μετά από κάθε επιτυχή σύγκριση κινούνται προς το κέντρο."
+      },
+      {
+        code:
+          `// fixed-size sliding window: average of every k consecutive numbers,
+// returns the largest such average.
+func maxWindowAverage(numbers []int, k int) float64 {
+    sum := 0
+    for i := 0; i < k; i++ {
+        sum __plus__ numbers[i]
+    }
+    best := sum
+
+    for i := k; i < len(numbers); i++ {
+        sum += numbers[i]
+        sum __minus__ numbers[i-__windowsz__]
+        if sum > best {
+            best = sum
+        }
+    }
+    return float64(best) / float64(k)
+}`,
+        blanks: [
+          { id: "plus", answer: "+=" },
+          { id: "minus", answer: "-=" },
+          { id: "windowsz", answer: "k" }
+        ],
+        explain: "Το πρώτο παράθυρο χτίζεται με απλή πρόσθεση. Μετά, κάθε ολίσθηση προσθέτει το νέο δεξί στοιχείο και αφαιρεί το στοιχείο που φεύγει από αριστερά — ακριβώς k θέσεις πίσω από το τρέχον i."
+      }
+    ], {
+      note: "Δύο ξεχωριστά παραδείγματα: two pointers αντίθετης κατεύθυνσης, και fixed-size sliding window."
+    });
+
+
+    // ══════════════════════════════════════════════════════════════════════
+    // §3.3 — Πολυπλοκότητα Αλγορίθμων (Big O Notation)
+    // ══════════════════════════════════════════════════════════════════════
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — §3.3 Πολυπλοκότητα Αλγορίθμων</div>
+<h1>Big O Notation: Πώς Μετράμε "Πόσο Γρήγορο" Είναι Ένα Πρόγραμμα</h1>
+<p class="lede">Μέχρι τώρα, όποτε δείχναμε μια "αργή" και μια "γρήγορη" λύση σε ένα pattern, το λέγαμε περιγραφικά ("αργό γιατί ξαναδιασχίζει" κτλ). Το Big-O είναι ο επίσημος, μαθηματικός τρόπος να εκφράσουμε ΑΚΡΙΒΩΣ πόσο χειροτερεύει η απόδοση ενός αλγορίθμου καθώς μεγαλώνει η είσοδος — χωρίς να χρειάζεται να μετράμε δευτερόλεπτα σε συγκεκριμένο υπολογιστή.</p>
+
+<h2>Η βασική ιδέα: ρυθμός αύξησης, όχι απόλυτος χρόνος</h2>
+<p>Το Big-O ΔΕΝ απαντά "πόσο θα πάρει αυτό το πρόγραμμα σε δευτερόλεπτα" — αυτό εξαρτάται από τον επεξεργαστή, τη γλώσσα, το λειτουργικό σύστημα. Απαντά: "αν διπλασιάσω το μέγεθος της εισόδου, πόσο περισσότερη δουλειά θα χρειαστεί ο αλγόριθμος;" Είναι μια περιγραφή ΤΑΣΗΣ (trend), όχι μέτρησης.</p>
+
+<div class="callout">
+  <span class="tag">Χρόνος ΚΑΙ Χώρος</span>
+  Το Big-O χρησιμοποιείται εξίσου συχνά για δύο διαφορετικά πράγματα: <strong>Time Complexity</strong> (πόσα "βήματα" εκτέλεσης χρειάζεται) και <strong>Space Complexity</strong> (πόση επιπλέον μνήμη χρειάζεται). Στα παραδείγματα αυτής της υποενότητας εστιάζουμε κυρίως στο χρόνο, αλλά ο ίδιος συλλογισμός ισχύει και για τη μνήμη.
+</div>
+
+<h2>O(1) — Σταθερός χρόνος</h2>
+<p>Ο αλγόριθμος χρειάζεται τον ΙΔΙΟ αριθμό βημάτων ανεξάρτητα από το μέγεθος της εισόδου. Πρόσβαση σε ένα στοιχείο slice μέσω index είναι το κλασικό παράδειγμα:</p>
+
+<pre><code class="lang-go">func firstElement(numbers []int) int {
+    return numbers[0] // one step, whether the slice has 3 or 3 million elements
+}</code></pre>
+
+<h2>O(n) — Γραμμικός χρόνος</h2>
+<p>Ο αριθμός βημάτων αυξάνεται ΑΝΑΛΟΓΑ με το μέγεθος της εισόδου (<em>n</em>). Μια απλή διάσχιση:</p>
+
+<pre><code class="lang-go">func sum(numbers []int) int {
+    total := 0
+    for _, n := range numbers { // n iterations for a slice of length n
+        total += n
+    }
+    return total
+}</code></pre>
+
+<p>Αναγνωρίζεις αυτό το σχήμα — είναι το accumulator pattern που είδαμε νωρίτερα. Κάθε φορά που βλέπεις ΜΙΑ λούπα που διασχίζει όλα τα στοιχεία μία φορά, είσαι σε O(n).</p>
+
+<h2>O(n²) — Τετραγωνικός χρόνος</h2>
+<p>Δύο εμφωλευμένες λούπες, καθεμιά διασχίζοντας ολόκληρη την είσοδο — ο αριθμός βημάτων αυξάνεται με το ΤΕΤΡΑΓΩΝΟ του μεγέθους. Θυμήσου την "αφελή" λύση two-pointers που είδαμε πριν:</p>
+
+<pre><code class="lang-go">func hasPairSumSlow(numbers []int, target int) bool {
+    for i := 0; i < len(numbers); i++ {       // n iterations...
+        for j := i + 1; j < len(numbers); j++ { // ...times up to n more each
+            if numbers[i]+numbers[j] == target {
+                return true
+            }
+        }
+    }
+    return false
+}</code></pre>
+
+<p>Αν το slice έχει 10 στοιχεία, αυτό κάνει περίπου 100 συγκρίσεις στη χειρότερη περίπτωση. Αν έχει 1.000 στοιχεία, κάνει περίπου 1.000.000 — ο χρόνος ΔΕΝ αυξάνεται αναλογικά με τα δεδομένα, αυξάνεται πολύ πιο απότομα. Αυτός είναι ακριβώς ο λόγος που το two-pointers pattern (O(n)) είναι τόσο σημαντική βελτίωση σε σχέση με τη διπλή λούπα.</p>
+
+<h2>O(log n) — Λογαριθμικός χρόνος</h2>
+<p>Ο αλγόριθμος "πετάει" το μισό των δεδομένων σε κάθε βήμα, αντί να τα διασχίζει ένα-ένα. Θα το δούμε αναλυτικά στην Ενότητα 5 με το Binary Search, αλλά η ιδέα σε γενικές γραμμές: αν έχεις 1.000.000 ταξινομημένα στοιχεία, το binary search χρειάζεται μόνο περίπου 20 βήματα για να βρει αυτό που ψάχνει (κάθε βήμα μισαίνει τον χώρο αναζήτησης) — τεράστια διαφορά από τα 1.000.000 βήματα μιας γραμμικής αναζήτησης.</p>
+
+<h2>Σύγκριση με μια ματιά</h2>
+<div class="grid3">
+  <div class="card"><h3>O(1)</h3><p>Σταθερό. Πρόσβαση σε array/slice/map με key. Ίδιος χρόνος για 10 ή 10 εκατομμύρια στοιχεία.</p></div>
+  <div class="card"><h3>O(n)</h3><p>Γραμμικό. Μία διάσχιση. Accumulator, extremum, bucketing — όλα O(n).</p></div>
+  <div class="card"><h3>O(n²)</h3><p>Τετραγωνικό. Δύο εμφωλευμένες λούπες πάνω στα ίδια δεδομένα. Η "αφελής" λύση σε πολλά προβλήματα ζευγαριών.</p></div>
+</div>
+
+<div class="callout good">
+  <span class="tag">Το πρακτικό συμπέρασμα</span>
+  Κάθε φορά που είδαμε ένα pattern σε αυτή την ενότητα να αντικαθιστά δύο εμφωλευμένες λούπες με ΜΙΑ διάσχιση (two pointers, sliding window, bucketing με map), αυτό που πραγματικά κάναμε ήταν να κατεβάσουμε την πολυπλοκότητα από O(n²) σε O(n). Το Big-O δεν είναι ξεχωριστό θέμα από τα patterns — είναι το εργαλείο που εξηγεί ΓΙΑΤΙ τα patterns αξίζουν τον κόπο.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι περιγράφει ακριβώς το Big-O notation ενός αλγορίθμου;",
+        options: [
+          "Πώς αυξάνεται ο αριθμός βημάτων/η απαιτούμενη μνήμη καθώς μεγαλώνει το μέγεθος της εισόδου — ρυθμό αύξησης, όχι απόλυτο χρόνο σε δευτερόλεπτα",
+          "Τον ακριβή χρόνο εκτέλεσης σε δευτερόλεπτα, μετρημένο σε συγκεκριμένο επεξεργαστή αναφοράς",
+          "Το ακριβές πλήθος γραμμών κώδικα που περιέχει η υλοποίηση ενός συγκεκριμένου αλγορίθμου",
+          "Πόση μπαταρία καταναλώνει μια φορητή συσκευή κατά την εκτέλεση ενός συγκεκριμένου προγράμματος"
+        ],
+        correct: 0,
+        explain: "Το Big-O είναι μια περιγραφή ΤΑΣΗΣ — πώς κλιμακώνεται η δουλειά καθώς μεγαλώνει η είσοδος — ανεξάρτητη από συγκεκριμένο hardware ή γλώσσα προγραμματισμού."
+      },
+      {
+        q: "Ποια πολυπλοκότητα έχει μια function με δύο εμφωλευμένες λούπες, καθεμιά διασχίζοντας ολόκληρη την είσοδο μεγέθους n;",
+        options: [
+          "O(n²) — ο αριθμός βημάτων αυξάνεται με το τετράγωνο του μεγέθους της εισόδου",
+          "O(n) — ο αριθμός βημάτων αυξάνεται γραμμικά, ανεξάρτητα από το πλήθος των εμφωλευμένων λούπων",
+          "O(1) — ο αριθμός βημάτων παραμένει σταθερός, αφού πρόκειται πάντα για την ίδια δομή κώδικα",
+          "O(log n) — ο αριθμός βημάτων αυξάνεται πολύ αργά, αφού κάθε λούπα \"μοιράζει\" τη δουλειά της άλλης"
+        ],
+        correct: 0,
+        explain: "Δύο εμφωλευμένες λούπες πάνω στα ίδια δεδομένα σημαίνουν n επαναλήψεις της εξωτερικής, επί έως n επαναλήψεις της εσωτερικής — n × n = n² συνολικά βήματα στη χειρότερη περίπτωση."
+      },
+      {
+        q: "Ποια patterns που είδαμε νωρίτερα στην ενότητα μειώνουν την πολυπλοκότητα από O(n²) σε O(n), σε σχέση με την αφελή, εμφωλευμένη λύση;",
+        options: [
+          "Two pointers και sliding window — αντικαθιστούν δύο εμφωλευμένες λούπες με μία μόνο διάσχιση των δεδομένων",
+          "Guard clause και previous value — μειώνουν μόνο την αναγνωσιμότητα του κώδικα, όχι την πολυπλοκότητα χρόνου",
+          "State toggle και threshold — αφορούν αποκλειστικά την εναλλαγή καταστάσεων, άσχετο με το Big-O",
+          "Κανένα από τα patterns της ενότητας δεν επηρεάζει την πολυπλοκότητα χρόνου ενός αλγορίθμου"
+        ],
+        correct: 0,
+        explain: "Το two pointers (στο πρόβλημα ζευγαριού με άθροισμα) και το sliding window (στο πρόβλημα μέγιστου αθροίσματος παραθύρου) αντικατέστησαν ρητά διπλές λούπες με μία διάσχιση — ακριβώς η μετάβαση από O(n²) σε O(n)."
+      }
+    ]);
+
+    // ── Mini-glossary — §3.1-3.3 Big-O ───────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Πολυπλοκότητα</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Big-O</span><span class="gs-def">περιγραφή ρυθμού αύξησης της δουλειάς σε σχέση με το μέγεθος εισόδου</span></div>
+  <div class="gs-pill"><span class="gs-name">Time Complexity</span><span class="gs-def">πόσα βήματα εκτέλεσης χρειάζεται ένας αλγόριθμος</span></div>
+  <div class="gs-pill"><span class="gs-name">Space Complexity</span><span class="gs-def">πόση επιπλέον μνήμη χρειάζεται ένας αλγόριθμος</span></div>
+  <div class="gs-pill"><span class="gs-name">O(1)</span><span class="gs-def">σταθερός χρόνος, ανεξάρτητος από το μέγεθος εισόδου</span></div>
+  <div class="gs-pill"><span class="gs-name">O(n)</span><span class="gs-def">γραμμικός χρόνος, μία διάσχιση των δεδομένων</span></div>
+  <div class="gs-pill"><span class="gs-name">O(n²)</span><span class="gs-def">τετραγωνικός χρόνος, εμφωλευμένες λούπες πάνω στα ίδια δεδομένα</span></div>
+  <div class="gs-pill"><span class="gs-name">O(log n)</span><span class="gs-def">λογαριθμικός χρόνος, ο χώρος αναζήτησης μισαίνει σε κάθε βήμα</span></div>
+</div>
+`);
+
+    // ── Fill-in-the-blank: Big-O identification ──────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// snippet A
+func snippetA(numbers []int) int {
+    return numbers[len(numbers)-1] // complexity: __ans1__
+}
+
+// snippet B
+func snippetB(numbers []int) int {
+    total := 0
+    for _, n := range numbers { // complexity: __ans2__
+        total += n
+    }
+    return total
+}
+
+// snippet C
+func snippetC(numbers []int) bool {
+    for i := 0; i < len(numbers); i++ {
+        for j := 0; j < len(numbers); j++ { // complexity: __ans3__
+            if i != j && numbers[i] == numbers[j] {
+                return true
+            }
+        }
+    }
+    return false
+}`,
+      blanks: [
+        { id: "ans1", answer: "O(1)" },
+        { id: "ans2", answer: "O(n)" },
+        { id: "ans3", answer: "O(n^2)" }
+      ],
+      explain: "Α: πρόσβαση με index, σταθερός χρόνος. Β: μία διάσχιση, γραμμικός χρόνος. Γ: δύο εμφωλευμένες λούπες πάνω στα ίδια δεδομένα, τετραγωνικός χρόνος."
+    }, {
+      note: "Αναγνώρισε την πολυπλοκότητα χρόνου κάθε snippet (γράψε π.χ. O(1), O(n), O(n^2))."
+    });
+
+
+    // ══════════════════════════════════════════════════════════════════════
+    // §3 — Ανασκόπηση: Interleaved Review (αναγνώριση, όχι μόνο ανάκληση)
+    // ══════════════════════════════════════════════════════════════════════
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Interleaved Review</div>
+<h1>Ποιο Pattern Ταιριάζει Εδώ;</h1>
+<p class="lede">Μέχρι τώρα είδαμε κάθε pattern ΞΕΧΩΡΙΣΤΑ, με τη σειρά — αυτό λέγεται "blocked practice" και είναι απαραίτητο για να μάθεις καλά το καθένα. Αλλά η πραγματική δεξιότητα που θέλουμε να χτίσουμε δεν είναι "ξέρω τι κάνει το accumulator pattern" — είναι <strong>"βλέπω ένα καινούριο πρόβλημα και αναγνωρίζω ΠΟΙΟ pattern ταιριάζει"</strong>. Οι επόμενες ερωτήσεις αναμιγνύουν ΟΛΑ τα patterns της ενότητας, με τυχαία σειρά, ακριβώς όπως θα τα συναντήσεις σε πραγματικά προβλήματα.</p>
+
+<div class="callout">
+  <span class="tag">Γιατί έτσι</span>
+  Έρευνα στη γνωστική ψυχολογία (cognitive science) δείχνει ότι η ανάμειξη θεμάτων κατά την εξάσκηση (interleaving) οδηγεί σε καλύτερη μακροπρόθεσμη συγκράτηση και ικανότητα μεταφοράς γνώσης σε νέα προβλήματα, σε σχέση με την εξάσκηση ενός θέματος τη φορά. Είναι δυσκολότερο αρχικά — ακριβώς επειδή είναι δυσκολότερο, δουλεύει καλύτερα.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Πρόβλημα: \"Δοσμένου ενός μη ταξινομημένου slice, βρες αν υπάρχει τουλάχιστον ένα στοιχείο μεγαλύτερο του 100.\" Ποιο pattern ταιριάζει καλύτερα;",
+        options: [
+          "Flag / Bool Switch — χρειάζεσαι μόνο ΝΑΙ/ΟΧΙ απάντηση, με πρόωρη έξοδο μόλις βρεθεί κάτι που ικανοποιεί τη συνθήκη",
+          "Two Pointers — χρειάζεσαι δύο δείκτες που συγκλίνουν από τις άκρες του slice προς το κέντρο",
+          "Bucketing — χρειάζεσαι να μετρήσεις πόσες φορές εμφανίζεται κάθε τιμή μεγαλύτερη του 100",
+          "Sliding Window — χρειάζεσαι να διασχίσεις συνεχόμενα υπο-slices μεταβλητού μεγέθους"
+        ],
+        correct: 0,
+        explain: "Η ερώτηση \"υπάρχει...;\" με ΝΑΙ/ΟΧΙ απάντηση είναι το χαρακτηριστικό σημάδι του flag/bool switch — δεν χρειάζεται ταξινόμηση, συνεχόμενα δεδομένα, ή καταμέτρηση."
+      },
+      {
+        q: "Πρόβλημα: \"Δοσμένου ενός ΤΑΞΙΝΟΜΗΜΕΝΟΥ slice θετικών αριθμών, βρες αν υπάρχουν δύο στοιχεία που το γινόμενό τους ισούται με έναν δοσμένο στόχο.\" Ποιο pattern ταιριάζει;",
+        options: [
+          "Two Pointers — ταξινομημένα δεδομένα και αναζήτηση ζευγαριού με συγκεκριμένη μαθηματική σχέση είναι το κλασικό σενάριο για δύο δείκτες αντίθετης κατεύθυνσης",
+          "Sliding Window — ζητάει κάτι πάνω σε συνεχόμενο υπο-slice, άρα χρειάζεται παράθυρο που μεγαλώνει και μικραίνει",
+          "Previous Value — χρειάζεσαι σύγκριση κάθε στοιχείου με το αμέσως προηγούμενό του στη σειρά εμφάνισης",
+          "Threshold — χρειάζεσαι μετρητή προσπαθειών με ανώτατο όριο πριν εγκαταλείψεις την αναζήτηση"
+        ],
+        correct: 0,
+        explain: "Ταξινομημένα δεδομένα + αναζήτηση ζευγαριού με σχέση (εδώ γινόμενο αντί για άθροισμα, αλλά η ίδια λογική δουλεύει) = two pointers, αντίθετης κατεύθυνσης, ακριβώς όπως στο παράδειγμα με το άθροισμα."
+      },
+      {
+        q: "Πρόβλημα: \"Βρες το μικρότερο συνεχόμενο υπο-slice του οποίου το άθροισμα είναι τουλάχιστον Χ.\" Ποιο pattern ταιριάζει;",
+        options: [
+          "Sliding Window (variable-size) — \"συνεχόμενο υπο-slice\" με μεταβλητό μέγεθος βάσει συνθήκης είναι ο ορισμός του variable sliding window",
+          "Extremum — χρειάζεσαι απλά να βρεις το μεγαλύτερο ή μικρότερο στοιχείο μέσα στο slice, χωρίς να χρειάζεται παράθυρο",
+          "Guard Clause — χρειάζεσαι πολλαπλούς ελέγχους εξαιρετικών περιπτώσεων στην αρχή της function πριν από την κύρια λογική",
+          "State Toggle — χρειάζεσαι εναλλαγή ανάμεσα σε δύο διαφορετικές καταστάσεις καθώς διασχίζεις το slice"
+        ],
+        correct: 0,
+        explain: "\"Συνεχόμενο υπο-slice\" + μέγεθος που αλλάζει ανάλογα με συνθήκη (\"τουλάχιστον Χ\") ταιριάζει ακριβώς στο variable-size sliding window schema που είδαμε: expand right, shrink left όσο χρειάζεται."
+      },
+      {
+        q: "Πρόβλημα: \"Δοσμένου ενός string, βρες το γράμμα που εμφανίζεται τις περισσότερες φορές.\" Ποιο pattern ταιριάζει καλύτερα;",
+        options: [
+          "Bucketing / Frequency Map — χρειάζεσαι καταμέτρηση συχνότητας κάθε γράμματος, το κλασικό σενάριο για map[rune]int",
+          "Sentinel Value — χρειάζεσαι μια ειδική τιμή που δηλώνει \"δεν βρέθηκε κανένα γράμμα\" στο string",
+          "Guard Clause — χρειάζεσαι έλεγχο αν το string είναι κενό πριν από οποιαδήποτε άλλη επεξεργασία",
+          "Two Pointers — χρειάζεσαι δύο δείκτες που συγκρίνουν γράμματα από τις δύο άκρες του string"
+        ],
+        correct: 0,
+        explain: "\"Ποιο εμφανίζεται τις περισσότερες φορές\" είναι ακριβώς το πρόβλημα που λύνει το bucketing — μετράς τη συχνότητα κάθε στοιχείου με ένα map, μετά βρίσκεις το μέγιστο (συχνά σε συνδυασμό με extremum)."
+      },
+      {
+        q: "Πρόβλημα: \"Δοσμένης μιας ακολουθίας θερμοκρασιών ανά ημέρα, μέτρησε πόσες ημέρες η θερμοκρασία ήταν υψηλότερη από την προηγούμενη.\" Ποιο pattern ταιριάζει;",
+        options: [
+          "Previous Value + Accumulator — χρειάζεσαι να θυμάσαι την προηγούμενη θερμοκρασία για σύγκριση, ΚΑΙ έναν μετρητή που συσσωρεύει το πλήθος",
+          "Sliding Window — χρειάζεσαι ένα συνεχόμενο παράθυρο ημερών του οποίου η μέση θερμοκρασία υπολογίζεται δυναμικά",
+          "Bucketing — χρειάζεσαι να κατηγοριοποιήσεις κάθε θερμοκρασία σε \"δεξαμενές\" ανάλογα με το εύρος τιμών της",
+          "Extremum — χρειάζεσαι απλά να βρεις τη μέγιστη θερμοκρασία σε ολόκληρη την ακολουθία ημερών"
+        ],
+        correct: 0,
+        explain: "Αυτό συνδυάζει ΔΥΟ patterns μαζί — προηγούμενη τιμή για τη σύγκριση \"υψηλότερη από πριν\", και accumulator (μετρητής) για να μαζέψεις το συνολικό πλήθος. Πολλά πραγματικά προβλήματα χρειάζονται συνδυασμό."
+      }
+    ]);
+
+    // ── Matching — problem → pattern recognition (interleaved) ──────────── ⊃
+    addMatching([
+      { term: "\"Υπάρχει έστω ένα...;\" (ΝΑΙ/ΟΧΙ)", def: "Flag / Bool Switch" },
+      { term: "\"Επίστρεψε -1 αν δεν βρεθεί\"", def: "Sentinel Value" },
+      { term: "\"Άθροισε/μέτρησε όλα τα...\"", def: "Accumulator" },
+      { term: "\"Βρες το μέγιστο/ελάχιστο\"", def: "Extremum" },
+      { term: "\"Εναλλάξου ανάμεσα σε Α και Β\"", def: "State Toggle" },
+      { term: "\"Δοκίμασε μέχρι Ν φορές\"", def: "Threshold / Limit" },
+      { term: "\"Έλεγξε τις εξαιρέσεις πρώτα\"", def: "Guard Clause" },
+      { term: "\"Σύγκρινε με το αμέσως προηγούμενο\"", def: "Previous Value" },
+      { term: "\"Μέτρησε συχνότητα εμφάνισης\"", def: "Bucketing / Frequency Map" },
+      { term: "\"Ζευγάρι σε ταξινομημένα δεδομένα\"", def: "Two Pointers" },
+      { term: "\"Μεγαλύτερο/μικρότερο συνεχόμενο κομμάτι\"", def: "Sliding Window" },
+      { term: "\"Δύο φορές μεγαλύτερη είσοδος, τετραπλάσιος χρόνος\"", def: "O(n²)" }
+    ], {
+      note: "Ταίριαξε κάθε φράση-σήμα (όπως θα εμφανιζόταν σε ένα πρόβλημα) με το pattern που πραγματικά υποδεικνύει."
+    });
+
+    // ── VSCode Challenge #1 — combines 2 patterns ────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">VSCode Challenge 1/2 — Συνδυαστική Άσκηση</div>
+<h1>Το Πρόβλημα του "Δεύτερου Μεγαλύτερου"</h1>
+<p class="lede">Χρόνος να συνδυάσεις δύο patterns στην ίδια function.</p>
+
+<h2>Η αποστολή</h2>
+<p>Γράψε μια function που δέχεται ένα μη κενό slice από <code>int</code> και επιστρέφει τον <strong>δεύτερο μεγαλύτερο</strong> διαφορετικό αριθμό μέσα του (όχι απλά τον δεύτερο στη σειρά — αν το slice είναι <code>{5, 5, 3}</code>, ο δεύτερος μεγαλύτερος ΔΙΑΦΟΡΕΤΙΚΟΣ αριθμός είναι το 3, όχι το 5). Αν δεν υπάρχει δεύτερος διαφορετικός αριθμός (π.χ. το slice έχει μόνο ένα μοναδικό στοιχείο, όπως <code>{7, 7, 7}</code>), επίστρεψε ένα sentinel value της επιλογής σου.</p>
+
+<div class="callout">
+  <span class="tag">HINT 1</span>
+  Χρειάζεσαι ΔΥΟ μεταβλητές "μέχρι τώρα μέγιστο" — μία για τον απόλυτο μεγαλύτερο, μία για τον δεύτερο μεγαλύτερο. Σκέψου το extremum pattern, αλλά διπλό.
+</div>
+
+<div class="callout">
+  <span class="tag">HINT 2</span>
+  Πρόσεξε τι σημαίνει "διαφορετικός" — αν δεις έναν αριθμό ίσο με το τρέχον μέγιστο, δεν πρέπει να τον θεωρήσεις "δεύτερο μεγαλύτερο". Ένα guard clause (continue) σε αυτή την περίπτωση θα βοηθήσει να κρατήσεις τη λογική καθαρή.
+</div>
+
+<h2>Λύση</h2>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">import "math"
+
+// secondLargest returns the second-largest distinct value in the slice,
+// or math.MinInt if no such value exists.
+func secondLargest(numbers []int) int {
+    largest := math.MinInt
+    second := math.MinInt
+
+    for _, n := range numbers {
+        if n == largest {
+            continue // already counted as the largest, skip duplicates
+        }
+        if n > largest {
+            second = largest // old largest becomes the new second
+            largest = n
+        } else if n > second {
+            second = n
+        }
+    }
+    return second
+}</code></pre></div>
+`);
+
+    // ── VSCode Challenge #2 — bigger combined challenge ──────────────────── ⊃
+    addContent(`
+<div class="eyebrow">VSCode Challenge 2/2 — Μεγάλη Συνδυαστική Άσκηση</div>
+<h1>Ανάλυση Καταγραφής Θερμοκρασιών</h1>
+<p class="lede">Ένα πιο ρεαλιστικό, "πολυεπίπεδο" πρόβλημα — όπως αυτά που θα συναντήσεις σε πραγματικά projects, όπου συνδυάζονται πολλά patterns μαζί.</p>
+
+<h2>Η αποστολή</h2>
+<p>Έχεις ένα slice από <code>int</code> που αντιπροσωπεύει τη θερμοκρασία (σε βαθμούς Κελσίου) για κάθε ημέρα ενός μήνα. Γράψε μια function που επιστρέφει το μήκος του <strong>μεγαλύτερου συνεχόμενου διαστήματος ημερών</strong> όπου η θερμοκρασία ήταν <strong>αυστηρά αυξανόμενη</strong> κάθε ημέρα σε σχέση με την προηγούμενη (κάθε επόμενη ημέρα θερμότερη από την προηγούμενη). Αν το slice είναι κενό, επίστρεψε 0.</p>
+
+<div class="callout">
+  <span class="tag">HINT 1</span>
+  Αυτό ΔΕΝ είναι sliding window με τη συνήθη έννοια — δεν χρειάζεσαι άθροισμα του παραθύρου. Σκέψου το σαν συνδυασμό previous value (σύγκριση με την προηγούμενη ημέρα) και ενός μετρητή τρέχοντος διαστήματος που μηδενίζεται όποτε σπάει η αύξουσα ακολουθία.
+</div>
+
+<div class="callout">
+  <span class="tag">HINT 2</span>
+  Χρειάζεσαι δύο μετρητές: έναν για το ΤΡΕΧΟΝ διάστημα (που μπορεί να μηδενιστεί/ξαναρχίσει) και έναν για το ΚΑΛΥΤΕΡΟ διάστημα που έχεις δει μέχρι στιγμής (extremum pattern, δεν μηδενίζεται ποτέ).
+</div>
+
+<h2>Λύση</h2>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">// longestWarmingStreak returns the length of the longest run of days
+// where each day's temperature was strictly higher than the previous day's.
+func longestWarmingStreak(temps []int) int {
+    if len(temps) == 0 {
+        return 0
+    }
+
+    current := 1 // a single day counts as a streak of length 1
+    best := 1
+    prev := temps[0]
+
+    for _, temp := range temps[1:] {
+        if temp > prev {
+            current++ // streak continues
+        } else {
+            current = 1 // streak broken, restart counting from this day
+        }
+        if current > best {
+            best = current
+        }
+        prev = temp
+    }
+    return best
+}</code></pre></div>
+`);
+
+
+    // ══════════════════════════════════════════════════════════════════════
+    // SECTION 4 — Βασικές Δομές Δεδομένων (Stack, Queue)
+    // ══════════════════════════════════════════════════════════════════════
+
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/go_two.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Ενότητα 4 / 8</div>
+  <h1>Βασικές Δομές Δεδομένων<br>Stack &amp; Queue</h1>
+  <p class="lede">Θα φτιάξουμε δύο από τις πιο θεμελιώδεις δομές δεδομένων στον προγραμματισμό — τη Στοίβα (Stack) και την Ουρά (Queue) — χρησιμοποιώντας ΜΟΝΟ ό,τι ξέρουμε ήδη: slices και functions. Δεν έχουμε δει ακόμα structs ή methods, οπότε θα υλοποιήσουμε αυτές τις δομές με τον πιο απλό δυνατό τρόπο: ένα slice που αντιπροσωπεύει τη δομή, και functions που το χειρίζονται.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Σε πραγματικό, "παραγωγικό" κώδικα Go, το Stack/Queue συνήθως υλοποιείται με ένα struct και methods πάνω του — θα το δούμε σε επόμενο guide. Εδώ ο στόχος είναι να καταλάβεις τη ΛΟΓΙΚΗ της δομής (LIFO/FIFO), όχι τον "καλύτερο" τρόπο να τη γράψεις σε Go. Η αλγοριθμική σκέψη πρώτα, το idiomatic στυλ μετά.</div>
+</div>
+`);
+
+    // ── Section 4.1 — Stack ──────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
+<h1>Στοίβα (Stack) — LIFO</h1>
+<p class="lede">Μια στοίβα είναι μια δομή δεδομένων όπου το τελευταίο στοιχείο που μπήκε είναι το πρώτο που βγαίνει — <strong>LIFO: Last-In, First-Out</strong>. Σκέψου μια στοίβα από πιάτα: βάζεις νέα πιάτα από πάνω, και όταν παίρνεις ένα, παίρνεις πάντα αυτό που είναι στην κορυφή — το πιο πρόσφατο.</p>
+
+<h2>Οι τρεις βασικές λειτουργίες</h2>
+<div class="grid3">
+  <div class="card"><h3>Push</h3><p>Προσθέτει ένα νέο στοιχείο στην ΚΟΡΥΦΗ της στοίβας.</p></div>
+  <div class="card"><h3>Pop</h3><p>Αφαιρεί ΚΑΙ επιστρέφει το στοιχείο από την κορυφή της στοίβας.</p></div>
+  <div class="card"><h3>Peek</h3><p>Επιστρέφει το στοιχείο της κορυφής ΧΩΡΙΣ να το αφαιρέσει.</p></div>
+</div>
+
+<h2>Υλοποίηση με slice</h2>
+<p>Ένα slice είναι ήδη σχεδόν μια στοίβα — το <code>append</code> προσθέτει στο τέλος (η "κορυφή" μας), και το slicing μπορεί να αφαιρέσει το τελευταίο στοιχείο. Θεωρούμε ΠΑΝΤΑ ότι η κορυφή της στοίβας είναι το ΤΕΛΕΥΤΑΙΟ στοιχείο του slice — αυτή είναι μια σύμβαση που κρατάμε συνεπή σε όλες τις functions:</p>
+
+<pre><code class="lang-go">// Push adds a value to the top of the stack (end of the slice)
+// and returns the updated slice.
+func Push(stack []int, value int) []int {
+    return append(stack, value)
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το <code>Push</code> δεν τροποποιεί τη στοίβα "επί τόπου" (in-place) — επιστρέφει ΚΑΙΝΟΥΡΙΟ slice, ακριβώς όπως συμπεριφέρεται το <code>append</code> γενικά (θυμήσου το Μέρος 1: το <code>append</code> μπορεί να χρειαστεί να δημιουργήσει νέο underlying array). Γι' αυτό ΠΑΝΤΑ ξαναγράφουμε τη μεταβλητή της στοίβας με το αποτέλεσμα: <code>myStack = Push(myStack, 5)</code>, ποτέ απλά <code>Push(myStack, 5)</code> χωρίς ανάθεση.
+</div>
+
+<pre><code class="lang-go">// Pop removes and returns the top value of the stack,
+// along with the updated stack. ok is false if the stack was empty.
+func Pop(stack []int) (value int, updatedStack []int, ok bool) {
+    if len(stack) == 0 {
+        return 0, stack, false // guard clause: nothing to pop
+    }
+    top := len(stack) - 1
+    value = stack[top]
+    updatedStack = stack[:top] // slice off everything except the top
+    return value, updatedStack, true
+}
+
+// Peek returns the top value without removing it.
+func Peek(stack []int) (value int, ok bool) {
+    if len(stack) == 0 {
+        return 0, false
+    }
+    return stack[len(stack)-1], true
+}</code></pre>
+
+<p>Πρόσεξε το πρότυπο <code>(value int, ok bool)</code> στο <code>Peek</code>, και το αντίστοιχο τριπλό στο <code>Pop</code> — αυτό είναι μια πολύ κοινή σύμβαση στη Go: μια δεύτερη (ή τρίτη) τιμή επιστροφής τύπου <code>bool</code> δηλώνει αν η "κύρια" τιμή είναι πραγματικά έγκυρη. Το χρησιμοποιούμε εδώ αντί για κάποιο sentinel value, γιατί ένα stack από <code>int</code> θα μπορούσε θεωρητικά να περιέχει ΚΑΘΕ δυνατή τιμή int — δεν υπάρχει "ασφαλής" sentinel τιμή να επιλέξουμε.</p>
+
+<h2>Χρήση</h2>
+<pre><code class="lang-go">func main() {
+    var stack []int // nil slice, behaves as an empty stack
+
+    stack = Push(stack, 1)
+    stack = Push(stack, 2)
+    stack = Push(stack, 3) // stack is now [1, 2, 3], top = 3
+
+    top, ok := Peek(stack)
+    fmt.Println(top, ok) // 3 true
+
+    value, stack, ok := Pop(stack)
+    fmt.Println(value, ok) // 3 true
+    fmt.Println(stack)     // [1, 2]
+}</code></pre>
+
+<h2>Πρακτική εφαρμογή: έλεγχος ισορροπημένων παρενθέσεων</h2>
+<p>Ένα κλασικό πρόβλημα που λύνεται φυσικά με στοίβα: δοσμένου ενός string με παρενθέσεις <code>( ) [ ] { }</code>, είναι σωστά "ζευγαρωμένες"; Η λογική: κάθε φορά που βλέπεις ανοιχτή παρένθεση, την κάνεις push. Κάθε φορά που βλέπεις κλειστή, ελέγχεις αν ταιριάζει με ό,τι είναι στην κορυφή (pop) — αν όχι, κάτι είναι λάθος.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal → (πλήρες παράδειγμα, όχι άσκηση)</span></div><pre><code class="lang-go">func isBalanced(input string) bool {
+    var stack []rune
+    pairs := map[rune]rune{')': '(', ']': '[', '}': '{'}
+
+    for _, ch := range input {
+        switch ch {
+        case '(', '[', '{':
+            stack = append(stack, ch) // push opening bracket
+        case ')', ']', '}':
+            if len(stack) == 0 {
+                return false // closing bracket with nothing to match
+            }
+            top := stack[len(stack)-1]
+            stack = stack[:len(stack)-1] // pop
+            if top != pairs[ch] {
+                return false // mismatched pair, e.g. "(]"
+            }
+        }
+    }
+    return len(stack) == 0 // balanced only if every opener was matched
+}</code></pre></div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι σημαίνει το LIFO στην περιγραφή της στοίβας (Stack);",
+        options: [
+          "Last-In, First-Out — το τελευταίο στοιχείο που προστέθηκε είναι το πρώτο που αφαιρείται",
+          "Last-In, First-Out — αλλά αναφέρεται στη σειρά ανάγνωσης, όχι στη σειρά αφαίρεσης στοιχείων",
+          "Linear Input, Fixed Output — δηλώνει ότι το μέγεθος της στοίβας παραμένει πάντα σταθερό",
+          "List-Indexed, First-Out — δηλώνει ότι κάθε στοιχείο έχει μοναδικό, σταθερό index στη στοίβα"
+        ],
+        correct: 0,
+        explain: "LIFO = Last-In, First-Out. Το πιο πρόσφατα προστεθέν στοιχείο (η \"κορυφή\") είναι πάντα το πρώτο που αφαιρείται με Pop."
+      },
+      {
+        q: "Γιατί το Push(stack, value) σε αυτή την υλοποίηση επιστρέφει slice αντί να τροποποιεί το stack \"επί τόπου\";",
+        options: [
+          "Επειδή ακολουθεί τη συμπεριφορά του append() στη Go, το οποίο μπορεί να χρειαστεί να δημιουργήσει νέο underlying array — ο καλών πρέπει να ξανααναθέσει το αποτέλεσμα",
+          "Επειδή η Go απαγορεύει συντακτικά την τροποποίηση slices μέσα σε functions χωρίς χρήση pointers",
+          "Επειδή έτσι το Push εκτελείται ταχύτερα σε κάθε δυνατή περίπτωση χρήσης της στοίβας",
+          "Δεν υπάρχει ουσιαστικός λόγος — θα μπορούσε εξίσου καλά να τροποποιεί επί τόπου χωρίς καμία διαφορά στη συμπεριφορά"
+        ],
+        correct: 0,
+        explain: "Το append() μπορεί να επιστρέψει slice με διαφορετικό underlying array (αν χρειαστεί μεγαλύτερη χωρητικότητα) — η ίδια λογική που ισχύει για κάθε χρήση του append ισχύει και εδώ, γι' αυτό πάντα ξαναναθέτουμε το αποτέλεσμα."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Stack ──────────────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// Pop removes and returns the top value of the stack.
+func Pop(stack []int) (value int, updatedStack []int, ok bool) {
+    if len(stack) __emptycheck__ {
+        return 0, stack, false
+    }
+    top := len(stack) __minusone__
+    value = stack[top]
+    updatedStack = stack[__slicecut__]
+    return value, updatedStack, true
+}`,
+      blanks: [
+        { id: "emptycheck", answer: "== 0" },
+        { id: "minusone", answer: "- 1" },
+        { id: "slicecut", answer: ":top" }
+      ],
+      explain: "Πρώτα ελέγχουμε κενή στοίβα (guard clause). Το top είναι το τελευταίο index (len-1). Το stack[:top] κρατάει όλα τα στοιχεία ΕΚΤΟΣ της κορυφής — αυτό είναι το slicing που \"αφαιρεί\" το τελευταίο στοιχείο."
+    }, {
+      note: "Συμπλήρωσε τη λειτουργία Pop σύμφωνα με τη σύμβαση LIFO."
+    });
+
+    // ── Section 4.2 — Queue ──────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
+<h1>Ουρά (Queue) — FIFO</h1>
+<p class="lede">Η αντίστροφη λογική από τη στοίβα: το ΠΡΩΤΟ στοιχείο που μπήκε είναι το ΠΡΩΤΟ που βγαίνει — <strong>FIFO: First-In, First-Out</strong>. Σκέψου μια ουρά ανθρώπων σε ταμείο: όποιος μπήκε πρώτος στην ουρά, εξυπηρετείται πρώτος.</p>
+
+<h2>Οι δύο βασικές λειτουργίες</h2>
+<div class="grid2">
+  <div class="card"><h3>Enqueue</h3><p>Προσθέτει ένα νέο στοιχείο στο ΤΕΛΟΣ της ουράς.</p></div>
+  <div class="card"><h3>Dequeue</h3><p>Αφαιρεί ΚΑΙ επιστρέφει το στοιχείο από την ΑΡΧΗ της ουράς.</p></div>
+</div>
+
+<h2>Υλοποίηση με slice</h2>
+<p>Χρησιμοποιούμε την ίδια σύμβαση: το τέλος του slice είναι το "τέλος" της ουράς (εκεί μπαίνουν νέα στοιχεία), και το index 0 είναι η "αρχή" (από εκεί φεύγουν):</p>
+
+<pre><code class="lang-go">// Enqueue adds a value to the back of the queue.
+func Enqueue(queue []int, value int) []int {
+    return append(queue, value)
+}
+
+// Dequeue removes and returns the value at the front of the queue.
+func Dequeue(queue []int) (value int, updatedQueue []int, ok bool) {
+    if len(queue) == 0 {
+        return 0, queue, false
+    }
+    value = queue[0]
+    updatedQueue = queue[1:] // slice off the front element
+    return value, updatedQueue, true
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το <code>Dequeue</code> εδώ, κάθε φορά που αφαιρεί το πρώτο στοιχείο με <code>queue[1:]</code>, ΔΕΝ διαγράφει πραγματικά τη μνήμη του παλιού πρώτου στοιχείου — απλά μετακινεί το "παράθυρο" του slice. Σε πολύ μεγάλες, μακρόχρονες ουρές αυτό μπορεί σταδιακά να "σπαταλάει" μνήμη (το underlying array δεν συρρικνώνεται ποτέ από μόνο του). Για τους σκοπούς αυτού του guide δεν μας απασχολεί, αλλά είναι μια λεπτομέρεια που θα ξανασυναντήσεις σε πιο προχωρημένη δουλειά με δομές δεδομένων.
+</div>
+
+<h2>Χρήση</h2>
+<pre><code class="lang-go">func main() {
+    var queue []int
+
+    queue = Enqueue(queue, 1)
+    queue = Enqueue(queue, 2)
+    queue = Enqueue(queue, 3) // queue is now [1, 2, 3], front = 1
+
+    value, queue, ok := Dequeue(queue)
+    fmt.Println(value, ok) // 1 true (the FIRST element that was added)
+    fmt.Println(queue)     // [2, 3]
+}</code></pre>
+
+<h2>Διπλή Ουρά (Deque)</h2>
+<p>Μια <strong>deque</strong> (Double-Ended Queue) επιτρέπει προσθήκη/αφαίρεση ΚΑΙ από τις δύο άκρες — μπροστά ΚΑΙ πίσω. Είναι γενίκευση τόσο του Stack όσο και του Queue ταυτόχρονα:</p>
+
+<pre><code class="lang-go">func PushFront(deque []int, value int) []int {
+    return append([]int{value}, deque...) // new slice, value first, then the rest
+}
+
+func PushBack(deque []int, value int) []int {
+    return append(deque, value) // same as Enqueue
+}
+
+func PopFront(deque []int) (value int, updated []int, ok bool) {
+    if len(deque) == 0 {
+        return 0, deque, false
+    }
+    return deque[0], deque[1:], true // same as Dequeue
+}
+
+func PopBack(deque []int) (value int, updated []int, ok bool) {
+    if len(deque) == 0 {
+        return 0, deque, false
+    }
+    last := len(deque) - 1
+    return deque[last], deque[:last], true // same as Pop
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Σημαντικό</span>
+  Πρόσεξε το <code>PushFront</code>: το <code>append([]int{value}, deque...)</code> δημιουργεί ένα ΚΑΙΝΟΥΡΙΟ slice ξεκινώντας με το <code>value</code>, και μετά "ξεδιπλώνει" (<code>...</code>) όλα τα στοιχεία του παλιού deque πίσω από αυτό. Δεν υπάρχει φθηνός τρόπος να προσθέσεις στην ΑΡΧΗ ενός slice στη Go — πάντα χρειάζεται να αντιγραφούν όλα τα υπόλοιπα στοιχεία, σε αντίθεση με το <code>append</code> στο τέλος που είναι συνήθως πολύ φθηνότερο.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια είναι η βασική διαφορά ανάμεσα σε Stack (LIFO) και Queue (FIFO);",
+        options: [
+          "Στο Stack το τελευταίο στοιχείο που μπήκε είναι το πρώτο που βγαίνει, ενώ στο Queue το πρώτο στοιχείο που μπήκε είναι το πρώτο που βγαίνει",
+          "Το Stack επιτρέπει μόνο στοιχεία τύπου int, ενώ το Queue επιτρέπει οποιονδήποτε τύπο δεδομένων",
+          "Δεν υπάρχει καμία ουσιαστική διαφορά — τα δύο ονόματα περιγράφουν ακριβώς την ίδια συμπεριφορά δομής δεδομένων",
+          "Το Stack έχει πάντα σταθερό, προκαθορισμένο μέγεθος, ενώ το Queue μπορεί να μεγαλώνει απεριόριστα"
+        ],
+        correct: 0,
+        explain: "Stack = LIFO (τελευταίο μέσα, πρώτο έξω, σαν στοίβα πιάτων). Queue = FIFO (πρώτο μέσα, πρώτο έξω, σαν ουρά ανθρώπων). Είναι ακριβώς αντίστροφη λογική αφαίρεσης."
+      },
+      {
+        q: "Γιατί το PushFront σε ένα deque είναι πιο \"ακριβή\" λειτουργία σε σχέση με το PushBack, όσον αφορά την υλοποίηση με slice στη Go;",
+        options: [
+          "Το PushFront χρειάζεται να δημιουργήσει νέο slice και να αντιγράψει ΟΛΑ τα υπάρχοντα στοιχεία πίσω από το νέο πρώτο στοιχείο, ενώ το PushBack (μέσω append) είναι συνήθως πολύ φθηνότερο",
+          "Το PushFront δεν λειτουργεί καθόλου σε slices της Go — μόνο σε arrays σταθερού μεγέθους μπορεί να εφαρμοστεί",
+          "Δεν υπάρχει καμία διαφορά κόστους ανάμεσα στις δύο λειτουργίες — και οι δύο εκτελούνται πάντα στον ίδιο χρόνο",
+          "Το PushFront απαιτεί υποχρεωτικά τη χρήση pointers, ενώ το PushBack λειτουργεί χωρίς αυτούς σε κάθε περίπτωση"
+        ],
+        correct: 0,
+        explain: "Δεν υπάρχει φθηνός τρόπος να προσθέσεις στην αρχή ενός slice — χρειάζεται να αντιγραφούν όλα τα υπόλοιπα στοιχεία σε νέες θέσεις, σε αντίθεση με το append στο τέλος που συνήθως απλά επεκτείνει το υπάρχον underlying array."
+      }
+    ]);
+
+    // ── Fill-in-the-blank: Queue ──────────────────────────────────────────── ⊃
+    addFillBlank({
+      code:
+        `// Dequeue removes and returns the value at the front of the queue.
+func Dequeue(queue []int) (value int, updatedQueue []int, ok bool) {
+    if len(queue) == 0 {
+        return 0, queue, false
+    }
+    value = queue[__frontidx__]
+    updatedQueue = queue[__cutfrom__:]
+    return value, updatedQueue, true
+}`,
+      blanks: [
+        { id: "frontidx", answer: "0" },
+        { id: "cutfrom", answer: "1" }
+      ],
+      explain: "Η αρχή της ουράς είναι πάντα το index 0. Το queue[1:] κρατάει όλα τα στοιχεία ΕΚΤΟΣ του πρώτου — αυτό είναι το \"dequeue\", αφαιρεί από την αρχή."
+    }, {
+      note: "Συμπλήρωσε τη λειτουργία Dequeue σύμφωνα με τη σύμβαση FIFO."
+    });
+
+    // ── Matching — Stack/Queue/Deque concepts ────────────────────────────── ⊃
+    addMatching([
+      { term: "Stack — Push", def: "προσθέτει στην κορυφή (τέλος του slice)" },
+      { term: "Stack — Pop", def: "αφαιρεί από την κορυφή, LIFO" },
+      { term: "Queue — Enqueue", def: "προσθέτει στο τέλος της ουράς" },
+      { term: "Queue — Dequeue", def: "αφαιρεί από την αρχή, FIFO" },
+      { term: "Deque — PushFront", def: "προσθέτει στην αρχή, ακριβή λειτουργία σε slice" },
+      { term: "(value, ok bool)", def: "σύμβαση Go: δεύτερη τιμή δηλώνει αν το αποτέλεσμα είναι έγκυρο" }
+    ], {
+      note: "Ταίριαξε κάθε λειτουργία με τη σωστή περιγραφή της."
+    });
+
+    // ── VSCode Challenge — closes out §4 ─────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 4</div>
+<h1>Έλεγχος Ισορροπημένων Παρενθέσεων, Μόνος Σου</h1>
+<p class="lede">Είδες πώς λύνεται με στοίβα το πρόβλημα ισορροπημένων παρενθέσεων — τώρα δοκίμασε μια παραλλαγή μόνος σου.</p>
+
+<h2>Η αποστολή</h2>
+<p>Γράψε μια function που δέχεται ένα <code>string</code> και επιστρέφει <code>true</code> αν κάθε άνοιγμα παρένθεσης <code>(</code> έχει αντίστοιχο κλείσιμο <code>)</code> με τη σωστή σειρά (χωρίς να χρειάζεται να ανησυχήσεις για <code>[ ] { }</code> αυτή τη φορά — μόνο απλές παρενθέσεις). Αγνόησε κάθε άλλο χαρακτήρα στο string.</p>
+
+<div class="callout">
+  <span class="tag">HINT 1</span>
+  Χρειάζεσαι μόνο έναν ΜΕΤΡΗΤΗ (accumulator pattern), όχι απαραίτητα μια πλήρη στοίβα με πραγματικά στοιχεία — αφού υπάρχει μόνο ΕΝΑ είδος παρένθεσης. Σκέψου: τι σημαίνει "ο μετρητής έγινε αρνητικός" στη μέση της διάσχισης;
+</div>
+
+<div class="callout">
+  <span class="tag">HINT 2</span>
+  Στο τέλος της διάσχισης, τι πρέπει να ισχύει για τον μετρητή ώστε το string να είναι πραγματικά ισορροπημένο;
+</div>
+
+<h2>Λύση</h2>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">func isBalancedSimple(input string) bool {
+    depth := 0 // acts as a simplified stack: how many unmatched "(" so far
+    for _, ch := range input {
+        switch ch {
+        case '(':
+            depth++
+        case ')':
+            depth-- // guard clause below catches invalid negative depth
+            if depth < 0 {
+                return false // a ")" with no matching "(" before it
+            }
+        }
+    }
+    return depth == 0 // balanced only if every "(" was eventually closed
+}</code></pre></div>
+`);
+
+
+    initSlideDeck({ version: "2.0.0" });
+  </script>
+</body>
+
+</html>
