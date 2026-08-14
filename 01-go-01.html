@@ -3618,11 +3618,204 @@ func main() {
         Όταν εκτελείται ένα <code>return</code>, η function σταματά αμέσως — ό,τι κώδικα βρίσκεται μετά δεν εκτελείται. Γι' αυτό μπορούμε να γράψουμε <code>if a > b { return a }</code> και μετά απλά <code>return b</code> — αν το <code>a > b</code> ήταν true, η function θα είχε ήδη τερματίσει.
     </p>
 </div>
+
+<h1>Σειρά Εκτέλεσης: Πολλαπλές Κλήσεις Functions</h1>
+
+<p class="lede">
+    Μέχρι τώρα είδαμε τη <code>main()</code> να καλεί μία function κάθε φορά. Στην πράξη, ένα πρόγραμμα καλεί
+    συνήθως πολλές functions, η μία μετά την άλλη — και μερικές φορές, τη μία <em>μέσα</em> στην άλλη. Ας δούμε
+    ακριβώς πώς κινείται η εκτέλεση σε κάθε περίπτωση.
+</p>
+
+<h2>Παράδειγμα 1: Πολλαπλές κλήσεις στη σειρά</h2>
+
+<p>
+    Ας φανταστούμε ένα πρόγραμμα που προσομοιώνει την εξυπηρέτηση σε ένα εστιατόριο, καλώντας πέντε functions η
+    μία μετά την άλλη:
+</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func greet() {
+    fmt.Println("Καλημέρα!")
+}
+
+func showMenu() {
+    fmt.Println("Ορίστε το μενού της ημέρας.")
+}
+
+func takeOrder() {
+    fmt.Println("Τι θα θέλατε να παραγγείλετε;")
+}
+
+func serve() {
+    fmt.Println("Ορίστε η παραγγελία σας!")
+}
+
+func sayGoodbye() {
+    fmt.Println("Καλή σας όρεξη!")
+}
+
+func main() {
+    greet()
+    showMenu()
+    takeOrder()
+    serve()
+    sayGoodbye()
+}
+</code></pre>
+
+<p>Αυτό τυπώνει, με ακριβώς αυτή τη σειρά:</p>
+
+<pre><code>Καλημέρα!
+Ορίστε το μενού της ημέρας.
+Τι θα θέλατε να παραγγείλετε;
+Ορίστε η παραγγελία σας!
+Καλή σας όρεξη!
+</code></pre>
+
+<p>
+    Η εκτέλεση μέσα στη <code>main()</code> προχωρά γραμμή προς γραμμή, όπως πάντα. Μόλις συναντήσει την
+    <code>greet()</code>, "πηδά" μέσα στο σώμα της, την εκτελεί ολόκληρη, και μετά γυρίζει ακριβώς εκεί που
+    σταμάτησε — στην επόμενη γραμμή της <code>main()</code>. Το ίδιο ξανασυμβαίνει για κάθε επόμενη κλήση:
+    <code>showMenu()</code>, μετά <code>takeOrder()</code>, μετά <code>serve()</code>, μετά
+    <code>sayGoodbye()</code>. Καμία από αυτές τις functions δεν επιστρέφει τιμή — απλά κάνουν κάτι (εδώ, τυπώνουν
+    ένα μήνυμα) και επιστρέφουν αμέσως τον έλεγχο πίσω στο σημείο της κλήσης.
+</p>
+
+<h2>Παράδειγμα 2: Κλήσεις που επιστρέφουν και αποθηκεύουν τιμή</h2>
+
+<p>
+    Ας δούμε τώρα κάτι πιο σύνθετο: functions που δέχονται μια τιμή, την επεξεργάζονται, και την επιστρέφουν — και
+    κάθε φορά αποθηκεύουμε το αποτέλεσμα σε μια μεταβλητή, πριν το περάσουμε στην επόμενη function.
+</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func applyDiscount(price int) int {
+    return price - 10
+}
+
+func addTax(price int) int {
+    return price + 5
+}
+
+func roundToNearestFive(price int) int {
+    return (price / 5) * 5
+}
+
+func main() {
+    price := 97
+
+    price = applyDiscount(price)
+    fmt.Println("Μετά την έκπτωση:", price) // 87
+
+    price = addTax(price)
+    fmt.Println("Μετά τον φόρο:", price) // 92
+
+    price = roundToNearestFive(price)
+    fmt.Println("Τελική τιμή:", price) // 90
+}
+</code></pre>
+
+<p>
+    Η λογική είναι ίδια με το Παράδειγμα 1 — η εκτέλεση "πηδά" μέσα σε κάθε function με τη σειρά — με μία διαφορά:
+    κάθε function εδώ <strong>επιστρέφει</strong> μια τιμή, και εμείς την ξανααποθηκεύουμε στην ίδια μεταβλητή
+    <code>price</code>, αντικαθιστώντας την παλιά. Έτσι, κάθε επόμενη function δουλεύει πάνω στο <em>αποτέλεσμα</em>
+    της προηγούμενης, όχι στην αρχική τιμή.
+</p>
+
+<h2>Παράδειγμα 3: Το "σάντουιτς" — functions μέσα σε functions</h2>
+
+<p>
+    Αντί να αποθηκεύουμε το αποτέλεσμα κάθε βήματος σε ξεχωριστή γραμμή, μπορούμε να "φωλιάσουμε" τις ίδιες
+    ακριβώς κλήσεις τη μία μέσα στην άλλη, σε μία μόνο έκφραση — σαν σάντουιτς, με τη μία function τυλιγμένη γύρω
+    από την άλλη:
+</p>
+
+<pre><code class="lang-go">finalPrice := roundToNearestFive(addTax(applyDiscount(97)))
+fmt.Println(finalPrice) // 90
+</code></pre>
+
+<p>
+    Το αποτέλεσμα είναι ακριβώς το ίδιο με το Παράδειγμα 2 (90) — αλλά η σειρά με την οποία η Go <em>αξιολογεί</em>
+    (evaluate) αυτή τη γραμμή δεν είναι από αριστερά προς τα δεξιά, όπως θα διάβαζες μια πρόταση. Είναι από
+    <strong>μέσα προς τα έξω</strong>: πρώτα εκτελείται η πιο εσωτερική κλήση, αφού το αποτέλεσμά της χρειάζεται
+    ως όρισμα για την επόμενη:
+</p>
+
+<ol>
+    <li><code>applyDiscount(97)</code> εκτελείται πρώτη — είναι η πιο "βαθιά" κλήση. Επιστρέφει <code>87</code>.</li>
+    <li>Το <code>87</code> γίνεται το όρισμα της <code>addTax(87)</code>, η οποία εκτελείται δεύτερη. Επιστρέφει <code>92</code>.</li>
+    <li>Το <code>92</code> γίνεται το όρισμα της <code>roundToNearestFive(92)</code>, η οποία εκτελείται τελευταία. Επιστρέφει <code>90</code>.</li>
+</ol>
+
+<p>
+    Η <code>roundToNearestFive</code>, αν και είναι γραμμένη πιο <strong>έξω</strong> στον κώδικα (σαν το πάνω
+    φρυγανισμένο ψωμί του σάντουιτς), είναι στην πραγματικότητα η <strong>τελευταία</strong> που εκτελείται — η Go
+    δεν μπορεί να την καλέσει πριν μάθει τι θα επιστρέψει η <code>addTax</code>, η οποία με τη σειρά της περιμένει
+    την <code>applyDiscount</code>.
+</p>
+
+<div class="callout">
+    <span class="tag">Οι functions συχνά κάνουν κάτι παραπάνω από το να επιστρέφουν τιμή</span>
+    <p>
+        Σε όλα τα παραπάνω παραδείγματα, κάθε function θα μπορούσε κάλλιστα να κάνει και κάτι ακόμα, πέρα από το να
+        επιστρέφει μια τιμή — αυτό λέγεται <strong>side effect</strong> (παρενέργεια). Για παράδειγμα, η
+        <code>applyDiscount</code> θα μπορούσε να τυπώνει στην κονσόλα "Εφαρμόστηκε έκπτωση 10", ή να αποθηκεύει
+        μια γραμμή σε ένα αρχείο log στον δίσκο, πριν κάνει το <code>return</code>. Η επιστροφή τιμής και το side
+        effect δεν είναι αμοιβαία αποκλειόμενα — μια function μπορεί να κάνει και τα δύο ταυτόχρονα.
+    </p>
+</div>
+
+<div class="callout good">
+    <span class="tag">Ανακεφαλαίωση: πώς να "διαβάζεις" κλήσεις functions</span>
+    <p>
+        Σε κάθε περίπτωση, ο κανόνας είναι ένας και μοναδικός: όταν διαβάζεις τον κώδικα γραμμή-γραμμή και
+        συναντάς μια κλήση function, σταματάς το γραμμικό διάβασμα και "πηδάς" μέσα στο σώμα εκείνης της function.
+        Συνεχίζεις να διαβάζεις <em>εκεί</em>, μέχρι είτε να φτάσεις στο τέλος του σώματός της, είτε να συναντήσεις
+        τη λέξη <code>return</code> νωρίτερα — όποιο από τα δύο έρθει πρώτο. Μόνο τότε επιστρέφεις στο σημείο απ'
+        όπου έγινε η κλήση, και συνεχίζεις το γραμμικό διάβασμα από εκεί.
+    </p>
+</div>
+
 <br>
 <h1>Εμβέλεια (Scope) &amp; Διάρκεια Ζωής Μεταβλητών</h1>
 
 <p class="lede">
     Η έννοια του "scope" έχει εμφανιστεί ήδη αρκετές φορές σε προηγούμενες ενότητες (π.χ. στο if με short statement, και στο shadowing). Ήρθε η ώρα να την εξηγήσουμε πλήρως, από τη βάση.
+</p>
+
+<h2>Κάθε function έχει το δικό της scope</h2>
+
+<p>
+    Ας ξεκινήσουμε με κάτι που ίσως ήδη υποψιάζεσαι διαισθητικά: κάθε function έχει το δικό της, ξεχωριστό scope.
+    Μια μεταβλητή που δηλώνεται <strong>μέσα</strong> σε μια function είναι ορατή <strong>μόνο</strong> μέσα σε
+    εκείνη τη function — καμία άλλη function, ούτε καν η <code>main()</code> που την κάλεσε, δεν μπορεί να τη "δει"
+    ή να τη χρησιμοποιήσει.
+</p>
+
+<pre><code class="lang-go">func calculateTotal() {
+    total := 150 // η total υπάρχει ΜΟΝΟ μέσα στην calculateTotal
+    fmt.Println(total)
+}
+
+func main() {
+    calculateTotal()
+    fmt.Println(total) // ΣΦΑΛΜΑ: undefined: total
+}
+</code></pre>
+
+<p>
+    Παρόλο που η <code>main()</code> καλεί την <code>calculateTotal()</code>, δεν αποκτά καμία πρόσβαση στις
+    τοπικές μεταβλητές της — η <code>total</code> δημιουργήθηκε, χρησιμοποιήθηκε, και καταστράφηκε ολοκληρωτικά
+    μέσα στο σώμα της <code>calculateTotal()</code>, πριν καν επιστρέψει ο έλεγχος στη <code>main()</code>. Από τη
+    σκοπιά της <code>main()</code>, η <code>total</code> απλά δεν υπάρχει πουθενά — γι' αυτό ο compiler σταματά με
+    <code>undefined: total</code>, ακριβώς όπως είδαμε και στα loops.
 </p>
 
 <h2>Τοπικές μεταβλητές (Local variables)</h2>
@@ -3767,8 +3960,6 @@ func main() {
 <p><em>Τι θα συμβεί στον παραπάνω κώδικα;</em></p>
 
 <p>Εδώ δεν έχουμε ακριβώς shadowing, καθώς η function <code>AvoidNuclearWar</code> δεν "βλέπει" καθόλου τη μεταβλητή <code>redSwitch</code> της <code>main</code> — η παράμετρος είναι μια εντελώς ανεξάρτητη τοπική μεταβλητή. Παρόλα αυτά, το γεγονός ότι έχουμε το ίδιο όνομα και στις δύο πλευρές μπορεί να δημιουργήσει σύγχυση. Γι' αυτό, καλό είναι να δίνουμε <strong>διαφορετικά ονόματα</strong> σε παραμέτρους και εξωτερικές μεταβλητές, ώστε να είναι ξεκάθαρο ότι πρόκειται για διαφορετικές μεταβλητές. </p>
-
-
 `);
 
         addContent(`
@@ -4461,7 +4652,7 @@ func main() {
     <span class="tag">Στόχος Άσκησης</span>
     <p>
         1. Στην main, δημιούργησε μια μεταβλητή <code>health := 80</code>.<br>
-        2. Φτιάξε μια συνάρτηση <code>takeDamage</code> που να μειώνει το <code>health</code> απευθείας στη μνήμη.<br>
+        2. Φτιάξε μια function <code>takeDamage</code> που να μειώνει το <code>health</code> απευθείας στη μνήμη.<br>
         3. Κάλεσέ την και επιβεβαίωσε ότι η αρχική μεταβλητή άλλαξε!
     </p>
     <div class="spoiler" style="margin-top:8px; max-height:50px; overflow:hidden;">
@@ -6893,7 +7084,7 @@ __del__(m, "a")`,
     <div class="gc-line"><span class="gc-term">package</span><span class="gc-def">δηλώνει σε ποιο πακέτο ανήκει το αρχείο</span></div>
     <div class="gc-line"><span class="gc-term">package main</span><span class="gc-def">ειδικό όνομα — παράγει εκτελέσιμο πρόγραμμα</span></div>
     <div class="gc-line"><span class="gc-term">import</span><span class="gc-def">φέρνει διαθέσιμο κώδικα άλλου πακέτου</span></div>
-    <div class="gc-line"><span class="gc-term">func</span><span class="gc-def">keyword για ορισμό συνάρτησης</span></div>
+    <div class="gc-line"><span class="gc-term">func</span><span class="gc-def">keyword για ορισμό function</span></div>
     <div class="gc-line"><span class="gc-term">func main()</span><span class="gc-def">το entry point του προγράμματος</span></div>
     <div class="gc-line"><span class="gc-term">go run</span><span class="gc-def">compile + άμεση εκτέλεση, χωρίς μόνιμο αρχείο</span></div>
     <div class="gc-line"><span class="gc-term">go build</span><span class="gc-def">compile σε μόνιμο εκτελέσιμο αρχείο</span></div>
@@ -6959,7 +7150,7 @@ __del__(m, "a")`,
 <div class="glossary-group">
   <h2>Ενότητα 6 — Functions &amp; Scope</h2>
   <div class="glossary-strip">
-    <div class="gs-pill"><span class="gs-name">return</span><span class="gs-def">επιστρέφει τιμή/τιμές, τερματίζει τη συνάρτηση</span></div>
+    <div class="gs-pill"><span class="gs-name">return</span><span class="gs-def">επιστρέφει τιμή/τιμές, τερματίζει τη function</span></div>
     <div class="gs-pill"><span class="gs-name">...T</span><span class="gs-def">variadic παράμετρος — μεταβλητό πλήθος ορισμάτων</span></div>
     <div class="gs-pill"><span class="gs-name">named return</span><span class="gs-def">ονοματισμένη τιμή επιστροφής</span></div>
     <div class="gs-pill"><span class="gs-name">naked return</span><span class="gs-def">return χωρίς ρητές τιμές</span></div>
