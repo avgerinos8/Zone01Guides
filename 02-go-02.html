@@ -750,7 +750,7 @@ func main() {
     addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
 <h1>Γιατί χρειαζόμαστε "patterns"</h1>
 <p>Μέχρι τώρα έμαθες τα "γράμματα" της Go: syntax, τύπους, functions, packages. Αυτή η ενότητα είναι διαφορετική — δεν μαθαίνεις νέα syntax, μαθαίνεις <strong>τρόπους σκέψης</strong>. Κάθε δύσκολο πρόβλημα προγραμματισμού, όσο περίπλοκο κι αν φαίνεται, συνήθως λύνεται συνδυάζοντας 2-3 από ένα μικρό σύνολο επαναλαμβανόμενων μοτίβων (patterns). Μόλις τα αναγνωρίζεις, το "δεν ξέρω από πού να ξεκινήσω" γίνεται "α, αυτό είναι sliding window + accumulator".</p>
-
+<br>
 <h1>Result Variable — accumulator</h1>
 <p>Το πρώτο και πιο βασικό pattern απ' όλα: μια μεταβλητή που θα κρατήσει μια τιμή που θέλουμε να "μετρήσουμε" ή να καταγράφουμε καθώς τρέχει μια loop. Τη δηλώνουμε <strong>έξω</strong> από τη loop — μία φορά — και μέσα στη loop απλά την ενημερώνουμε, ξανά και ξανά, μέχρι να τελειώσει η επανάληψη.</p>
 
@@ -811,6 +811,8 @@ func CountElements(x []int) int {
     return sum
 }</code></pre>
 
+<div class="callout"><span class="tag">Προσοχή στην αρχική τιμή</span>Αν αντί για άθροισμα ήθελες <em>γινόμενο</em> (<code>result *= num</code>), η αρχική τιμή δεν πρέπει να είναι <code>0</code> — αφού οτιδήποτε επί 0 κάνει 0, το αποτέλεσμα θα ήταν μόνιμα <code>0</code>. Η σωστή αρχική τιμή για γινόμενο είναι <code>1</code>.</div>
+
 <h2>Στο result "χτίζουμε" μια φράση</h2>
 <p>Ακριβώς όπως αυξάνουμε ένα <code>count</code> τύπου <code>int</code>, μπορούμε να "χτίζουμε" και μια μεταβλητή τύπου <code>string</code> — κάθε φορά που κάτι ισχύει, προσθέτουμε κομμάτι κειμένου πάνω σε ό,τι έχουμε ήδη:</p>
 
@@ -831,9 +833,10 @@ func LongWords(words []string) string {
 }
 </code></pre>
 
-<div class="callout"><span class="tag">Ορισμός</span>Το pattern που μόλις είδες, ξανά και ξανά, λέγεται <strong>accumulator</strong>. Η ιδέα είναι πάντα η ίδια: μια μεταβλητή που ξεκινά από μια "ουδέτερη" αρχική τιμή <em>έξω</em> από τη λούπα (<code>0</code> για μέτρημα/άθροισμα, κενό string για κείμενο, <code>nil</code>/κενό slice για λίστα), και <em>μέσα</em> στη λούπα απλά "μαζεύει" κάτι πάνω σε ό,τι ήδη έχει — <code>count++</code>, <code>sum += n</code>, <code>result += w</code>, <code>append(result, x)</code>. Ό,τι κι αν αλλάζει (τύπος δεδομένων, συνθήκη, τελεστής), ο σκελετός παραμένει ο ίδιος.</div>
+<div class="callout good"><span class="tag">Ορισμός</span>Το pattern που μόλις είδες, ξανά και ξανά, λέγεται <strong>accumulator</strong>. Η ιδέα είναι πάντα η ίδια: μια μεταβλητή που ξεκινά από μια "ουδέτερη" αρχική τιμή <em>έξω</em> από τη λούπα (<code>0</code> για μέτρημα/άθροισμα, κενό string για κείμενο, <code>nil</code>/κενό slice για λίστα), και <em>μέσα</em> στη λούπα απλά "μαζεύει" κάτι πάνω σε ό,τι ήδη έχει — <code>count++</code>, <code>sum += n</code>, <code>result += w</code>, <code>append(result, x)</code>. Ό,τι κι αν αλλάζει (τύπος δεδομένων, συνθήκη, τελεστής), ο σκελετός παραμένει ο ίδιος.</div>
 
-<p>Σε μια result variable μπορούμε να βάζουμε <em>πολλά</em> πράγματα, όχι μόνο ένα. Π.χ. τις θέσεις (indices) που εμφανίζεται το γράμμα <code>e</code> μέσα σε ένα string — εδώ η result variable είναι ένα <code>[]int</code>, κι αντί για <code>+=</code> χρησιμοποιούμε <code>append</code>:</p>
+<p>Σε μια result variable μπορούμε να βάζουμε <em>πολλά</em> πράγματα, όχι μόνο ένα.
+<br>π.χ. τις θέσεις (indices) που εμφανίζεται το γράμμα <code>e</code> μέσα σε ένα string — εδώ η result variable είναι ένα <code>[]int</code>, κι αντί για <code>+=</code> χρησιμοποιούμε <code>append</code>:</p>
 
 <pre><code class="lang-go">func PositionsOfE(input string) []int {
     var positions []int // a slice can be a result variable too
@@ -845,7 +848,7 @@ func LongWords(words []string) string {
     return positions
 }</code></pre>
 
-<p>Πάμε τώρα ένα βήμα πιο κάτω με την ίδια ιδέα: πόσα γράμματα έχει η κάθε λέξη μιας φράσης;</p>
+<p>Πόσα γράμματα έχει η κάθε λέξη μιας φράσης;</p>
 
 <pre><code class="lang-go">// WordLengths returns the length of every word in the input.
 // Assumes words are separated by exactly one space.
@@ -872,26 +875,27 @@ func WordLengths(input string) []int {
 
 <p>Ας το τρέξουμε νοερά, χαρακτήρα-χαρακτήρα, όπως θα το έκανε η Go:</p>
 
+
 <table class="glossary-table">
-<tr><td class="gt-term">h e l l o</td><td class="gt-def">count ανεβαίνει σε 5</td></tr>
-<tr><td class="gt-term">κενό #1</td><td class="gt-def">append(5), count = 0</td></tr>
-<tr><td class="gt-term">κενό #2</td><td class="gt-def">το count ήταν ήδη 0 → append(<strong>0</strong>), count = 0</td></tr>
-<tr><td class="gt-term">κενό #3</td><td class="gt-def">το ίδιο ξανά → append(<strong>0</strong>), count = 0</td></tr>
-<tr><td class="gt-term">w o r l d</td><td class="gt-def">count ανεβαίνει σε 5</td></tr>
-<tr><td class="gt-term">τέλος</td><td class="gt-def">append(5)</td></tr>
+<tr><td class="gt-term">h e l l o</td><td class="gt-term">[]</td><td class="gt-term">5</td><td class="gt-def">count ανεβαίνει σε 5</td></tr>
+<tr><td class="gt-term">κενό #1</td><td class="gt-term">[5]</td><td class="gt-term">0</td><td class="gt-def">append(5), count = 0</td></tr>
+<tr><td class="gt-term">κενό #2</td><td class="gt-term">[5, 0]</td><td class="gt-term">0</td><td class="gt-def">το count ήταν 0 → append(<strong>0</strong>), count = 0</td></tr>
+<tr><td class="gt-term">κενό #3</td><td class="gt-term">[5, 0, 0]</td><td class="gt-term">0</td><td class="gt-def">το ίδιο ξανά → append(<strong>0</strong>), count = 0</td></tr>
+<tr><td class="gt-term">w o r l d</td><td class="gt-term">[5, 0, 0]</td><td class="gt-term">5</td><td class="gt-def">count ανεβαίνει σε 5</td></tr>
+<tr><td class="gt-term">τέλος</td><td class="gt-term">[5, 0, 0, 5]</td><td class="gt-term">5</td><td class="gt-def">append(5)</td></tr>
 </table>
+
 
 <p>Αποτέλεσμα: <code>[5 0 0 5]</code> — αντί για το σωστό <code>[5 5]</code>. Κάθε επιπλέον κενό δημιουργεί ένα ψεύτικο μηδενικό "word" μέσα στη λίστα μας. Το πρόβλημα δεν είναι το <code>count</code> — είναι ότι ο κώδικας δεν ξέρει να ξεχωρίσει "μόλις τελείωσα μια πραγματική λέξη" από "βρίσκομαι ήδη ανάμεσα σε λέξεις και βλέπω ένα ακόμα κενό".</p>
 
 <div class="callout"><span class="tag">Το πρόβλημα</span>Χρειαζόμαστε κάτι που να θυμάται: "βρίσκομαι <em>μέσα</em> σε λέξη αυτή τη στιγμή, ή όχι;" — και να κάνει <code>append</code> μόνο στην πρώτη περίπτωση.</div>
-
-<h1>Flag / Boolean Switch</h1>
-<p>Η λύση: μια δεύτερη μεταβλητή, τύπου <code>bool</code>, που απλά καταγράφει μια κατάσταση — <strong>true</strong> ή <strong>false</strong> — και ελέγχεται πριν από κάθε ενέργεια. Αυτό λέγεται <strong>flag</strong> ή <strong>boolean switch</strong>.</p>
-
+<br>
+<h1>Boolean Switch / Boolean State</h1>
+<p>Η λύση: μια δεύτερη μεταβλητή, τύπου <code>bool</code>, που απλά καταγράφει μια κατάσταση — <strong>true</strong> ή <strong>false</strong> — και ελέγχεται πριν από κάθε ενέργεια.</p>
 <pre><code class="lang-go">func WordLengths(input string) []int {
     var result []int
     count := 0
-    inWord := false // the flag — "am I currently inside a word?"
+    inWord := false // boolean switch — "am I currently inside a word?"
 
     for _, letter := range input {
         if letter == ' ' {
@@ -914,31 +918,95 @@ func WordLengths(input string) []int {
 // WordLengths("hello   world") → [5 5]  ✓</code></pre>
 
 <div class="callout good"><span class="tag">Τι άλλαξε</span>Το <code>inWord</code> δεν αποθηκεύει δεδομένα — αποθηκεύει <em>κατάσταση</em>. Ελέγχεται ΠΡΙΝ κάνουμε append, ώστε ένα κενό που ακολουθεί άλλο κενό να μην παράγει ψεύτικο μηδενικό.</div>
-
-<h2>Πότε το αναγνωρίζεις</h2>
-<p>Κάθε φορά που μέσα σε μια loop θέλεις να αλλάξεις τη συμπεριφορά σου ανάλογα με το αν έχει ήδη συμβεί κάτι — όχι ανάλογα με την τρέχουσα τιμή, αλλά ανάλογα με το <em>ιστορικό</em> μέχρι εκείνο το σημείο — μάλλον χρειάζεσαι ένα boolean switch.</p>
-
-<p>Άλλο παράδειγμα: τύπωσε μια λίστα αριθμών χωρισμένους με κόμμα <code>fmt.Print(", ", n)</code>, χωρίς περιττό κόμμα πριν από τον πρώτο:</p>
+<div class="callout"><span class="tag">Πότε το αναγνωρίζεις</span>Μάλλον χρειάζεσαι ένα boolean switch όταν, μέσα σε μια loop, θέλεις να αλλάξεις τη συμπεριφορά σου ανάλογα με το αν έχει ήδη συμβεί κάτι — όχι ανάλογα με την τρέχουσα τιμή, αλλά ανάλογα με το <em>ιστορικό</em> μέχρι εκείνο το σημείο.</div>
+<h2>Boolean Switch για αρχική κατάσταση</h2>
+<p>Άλλο παράδειγμα: Τύπωσε μια λίστα αριθμών χωρισμένους με κόμμα (χρησιμοποιώντας: <code>fmt.Print(", ", n)</code>), χωρίς όμως να βάλεις κόμμα πριν από τον πρώτο:</p>
 
 <pre><code class="lang-go">func PrintCommaSeparated(numbers []int) {
-    firstRun := true // flag: is this the very first number?
-    for _, n := range numbers {
+    firstRun := true // boolean switch: is this the very first number?
+    for _, num := range numbers {
         if firstRun {
-            fmt.Print(n)
+            fmt.Print(num)
             firstRun = false
         } else {
-            fmt.Print(", ", n)
+            fmt.Print(", ", num)
         }
     }
 }
 // PrintCommaSeparated([]int{1,2,3}) → 1, 2, 3   (no leading comma)</code></pre>
 
-<p>Θα μπορούσαμε βέβαια να το γράψουμε πιο απλά με <code>if index == 0 { ... } else { ... }</code>, αφού εδώ ξέρουμε πάντα ποιο είναι το πρώτο στοιχείο. Το κάναμε λίγο πιο σύνθετο επίτηδες, για να εξασκηθείς στη λογική "θυμάμαι αν συνέβη ήδη κάτι" — μια λογική που δεν βασίζεται πάντα σε index, και θα τη χρειαστείς σε περιπτώσεις όπου το index δεν είναι διαθέσιμο ή δεν αρκεί.</p>
+<p>Ας δούμε ακριβώς τι κάνει η <code>for</code> σε κάθε πέρασμα, για <code>numbers := []int{32, 64, 128}</code>:</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">index</td><td class="gt-term">num</td><td class="gt-term" style="color: #90EE90;">firstRun</td><td class="gt-def">console (Print)</td></tr>
+<tr><td class="gt-term">0</td><td class="gt-term">32</td><td class="gt-term" style="color: #90EE90;">true (→ false)</td><td class="gt-def"><code>32</code></td></tr>
+<tr><td class="gt-term">1</td><td class="gt-term">64</td><td class="gt-term" style="color: #90EE90;">false</td><td class="gt-def"><code>, 64</code></td></tr>
+<tr><td class="gt-term">2</td><td class="gt-term">128</td><td class="gt-term" style="color: #90EE90;">false</td><td class="gt-def"><code>, 128</code></td></tr>
+</table>
+
+<p>Έξοδος: <code>32, 64, 128</code>. Το <code>firstRun</code> "θυμάται" ότι το πρώτο νούμερο έχει ήδη τυπωθεί, ώστε κάθε επόμενο να προσθέτει το κόμμα μπροστά του — μόνο το πρώτο ξεφεύγει από αυτόν τον κανόνα.</p>
+
+<p>Θα μπορούσαμε βέβαια να το γράψουμε πιο απλά, χρησιμοποιώντας το ίδιο το <code>index</code> της λούπας αντί για ξεχωριστό boolean switch:</p>
+
+<pre><code class="lang-go">func PrintCommaSeparated(numbers []int) {
+    for index, num := range numbers {
+        if index == 0 {
+            fmt.Print(num) // the very first element — no comma before it
+        } else {
+            fmt.Print(", ", num) // every other element gets a leading comma
+        }
+    }
+}</code></pre>
+
+<p>Εδώ το <code>index == 0</code> κάνει ακριβώς την ίδια δουλειά με το <code>firstRun</code>: ξεχωρίζει "είμαστε στο πρώτο στοιχείο" από "είμαστε σε οποιοδήποτε άλλο". Η διαφορά είναι ότι δεν χρειάζεται δική του μεταβλητή — το <code>range</code> μάς δίνει το index έτοιμο, οπότε το ελέγχουμε απευθείας.</p>
+
+<div class="callout"><span class="tag">Γιατί όχι απευθείας index==0</span>Το κάναμε πρώτα με boolean switch επίτηδες, γιατί το <code>index == 0</code> δουλεύει μόνο όταν έχεις πρόσβαση σε index αριθμημένο από το 0 — κάτι που δεν ισχύει πάντα (π.χ. αν διάβαζες τους αριθμούς έναν-έναν από κάπου αλλού, χωρίς slice και χωρίς index). Το boolean switch βασίζεται στο ιστορικό ("έχει ήδη συμβεί;"), όχι στη θέση — γι' αυτό δουλεύει παντού, ενώ το index==0 δουλεύει μόνο όταν έχεις index.</div>
+<h2>Boolean Switch: "Είμαι μέσα σε παρένθεση;"</h2>
+<p>Ένα πιο ρεαλιστικό παράδειγμα. Μέτρα πόσα γράμματα έχει το <em>πραγματικό</em> κείμενο μιας φράσης, αγνοώντας οτιδήποτε βρίσκεται μέσα σε παρένθεση. (Για ευκολία κάνουμε την παραδοχή ότι η παρένθεση μπορεί απλά να ανοίγει και μετά να κλείνει, χωρίς εμφωλευμένες ή ημιτελείς παρενθέσεις.)</p>
+
+<pre><code class="lang-go">// CountLetters counts every letter — including inside parentheses. Wrong!
+func CountLetters(input string) int {
+    count := 0
+    for _, letter := range input {
+        if unicode.IsLetter(letter) {
+            count++
+        }
+    }
+    return count
+}
+// CountLetters("go is fun (ignore this part) really cool") → 31  (counts inside the parens too!)</code></pre>
+
+<p>Με ένα boolean switch που θυμάται αν βρισκόμαστε αυτή τη στιγμή μέσα σε παρένθεση, το περιεχόμενό της αγνοείται εντελώς — και, σε αντίθεση με το προηγούμενο παράδειγμα με το <code>#</code>, εδώ το switch χρειάζεται να ξαναγυρίσει σε <code>false</code> όταν κλείσει η παρένθεση, ώστε το κείμενο που ακολουθεί να ξαναμετρηθεί κανονικά:</p>
+
+<pre><code class="lang-go">func CountLetters(input string) int {
+    count := 0
+    inParens := false // boolean switch — "am I currently inside parentheses?"
+    for _, letter := range input {
+        if letter == '(' {
+            inParens = true
+        }
+        if !inParens && unicode.IsLetter(letter) {
+            count++
+        }
+        if letter == ')' {
+            inParens = false
+        }
+    }
+    return count
+}
+// CountLetters("go is fun (ignore this part) really cool") → 17  ✓</code></pre>
+
+<div class="callout"><span class="tag">Γιατί αυτή η σειρά;</span>Η σειρά των if, δεν μπήκε έτσι στην τύχη. Δοκίμασε νοερά να αντιστρέψεις τα δύο <code>if</code> των παρενθέσεων — πρώτα το κλείσιμο <code>')'</code>, και μετά το άνοιγμα <code>'('</code> (αντίστροφα από ότι τώρα) — και τρέξε την ίδια iteration στο μυαλό σου. Θα άλλαζε κάτι;</div>
+
+<h2>Πότε χρησιμοποιείς boolean switch</h2>
+<p>Χρειάζεσαι ένα boolean switch όποτε η συμπεριφορά σου μέσα σε μια loop πρέπει να αλλάξει ανάλογα με <em>κάτι που συνέβη νωρίτερα</em> — όχι ανάλογα με την τρέχουσα τιμή από μόνη της. Αν η απάντηση στο "τι κάνω τώρα;" εξαρτάται από το ιστορικό του loop μέχρι εκείνο το σημείο (είμαι ήδη μέσα σε λέξη; βρίσκομαι μέσα σε παρένθεση;), χρειάζεσαι κάτι να το θυμάται — και αυτό είναι πάντα μια μεταβλητή <code>bool</code>, δηλωμένη έξω από τη loop, ελεγχόμενη και ενημερωμένη μέσα σε αυτήν.</p>
+
+<div class="callout"><span class="tag">Γιατί "switch" / διακόπτης</span>Λειτουργεί σαν διακόπτης που μπορεί να αλλάζει "κατάσταση" ξανά και ξανά καθ' όλη τη διάρκεια του iteration (<code>true</code>→<code>false</code>→<code>true</code>...), και κάθε φορά που αλλάζει, αλλάζει μαζί του και η συμπεριφορά του κώδικα μέσα στη loop. Είδαμε και τις δύο περιπτώσεις: μπορεί να γίνει <code>true</code> μία φορά και να μείνει έτσι (σχόλιο), ή να αλλάζει κατεύθυνση συνέχεια (παρένθεση) — ο κώδικας γύρω από το switch είναι αυτός που καθορίζει ποια συμπεριφορά θα έχει, όχι το ίδιο το <code>bool</code>.</div>
 <br>
 <h1>Break, Continue, Early Return</h1>
-<p>Ένα pattern που μοιάζει πολύ με το flag — μερικές φορές αντί να <em>θυμόμαστε</em> κατάσταση, απλά <strong>σταματάμε</strong> ή <strong>παραλείπουμε</strong> τη στιγμή που δεν χρειάζεται να συνεχίσουμε. Τρεις παραλλαγές της ίδιας ιδέας:</p>
+<p>Ένα pattern που μοιάζει πολύ με το boolean switch — μερικές φορές αντί να <em>θυμόμαστε</em> κατάσταση, απλά <strong>σταματάμε</strong> ή <strong>παραλείπουμε</strong> τη στιγμή που δεν χρειάζεται να συνεχίσουμε. Τρεις παραλλαγές της ίδιας ιδέας:</p>
 
-<p><strong>break</strong> — βρήκα αυτό που χρειαζόμουν, δεν έχει νόημα να συνεχίσω τη loop:</p>
+<p><strong style="font-size: 1.2em"><code>break</code></strong> — βρήκα αυτό που χρειαζόμουν, δεν έχει νόημα να συνεχίσω τη loop:</p>
 
 <pre><code class="lang-go">func Contains(numbers []int, target int) bool {
     found := false
@@ -951,7 +1019,7 @@ func WordLengths(input string) []int {
     return found
 }</code></pre>
 
-<p><strong>continue</strong> — αυτό το πέρασμα της loop δεν με ενδιαφέρει, πάμε κατευθείαν στο επόμενο, χωρίς να τρέξει ο υπόλοιπος κώδικας του σώματος:</p>
+<p><strong style="font-size: 1.2em"><code>continue</code></strong> — αυτό το πέρασμα της loop δεν με ενδιαφέρει, πάμε κατευθείαν στο επόμενο, χωρίς να τρέξει ο υπόλοιπος κώδικας του σώματος:</p>
 
 <pre><code class="lang-go">func PrintCommaSeparatedV2(numbers []int) {
     firstRun := true
@@ -965,9 +1033,10 @@ func WordLengths(input string) []int {
     }
 }</code></pre>
 
-<p>Ίδιο αποτέλεσμα με πριν, αλλά διαφορετική οργάνωση: το <code>continue</code> "προστατεύει" τον κώδικα από κάτω, ώστε να τρέξει μόνο όταν πραγματικά χρειάζεται.</p>
+<div class="callout"><span class="tag">Ίδιο αποτέλεσμα με πριν, αλλά διαφορετική οργάνωση</span>Το <code>continue</code> "παρακάμπτει" τον κώδικα που ακολουθεί, ώστε να τρέξει μόνο όταν πραγματικά χρειάζεται.</div>
 
-<p><strong>early return</strong> — τερματίζει όλη τη function αμέσως, όχι μόνο ένα πέρασμα της loop. Π.χ. μια function που μετράει πόσα <code>e</code> υπάρχουν σε ένα string:</p>
+
+<p><strong style="font-size: 1.2em"><code>early return</code></strong> — τερματίζει όλη τη function αμέσως, όχι μόνο ένα πέρασμα της loop. Π.χ. μια function που μετράει πόσα <code>e</code> υπάρχουν σε ένα string:</p>
 
 <pre><code class="lang-go">func CountE(input string) int {
     if len(input) == 0 {
@@ -985,7 +1054,7 @@ func WordLengths(input string) []int {
 <p>Το <code>if len(input) == 0 { return 0 }</code> εδώ δεν είναι απλά "προαιρετική βελτιστοποίηση" — δηλώνει ρητά μια περίπτωση που ξέρουμε την απάντηση εκ των προτέρων, χωρίς να χρειάζεται καν να μπούμε στη λούπα.</p>
 <br>
 <h1>Sentinel Value</h1>
-<p>Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "κάτι πήγε στραβά" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong> ("τιμή φρουρού").</p>
+<p>Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "κάτι πήγε στραβά" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong>.</p>
 
 <p>Πρόβλημα: άθροισε τους αριθμούς μέσα σε ένα string, χωρισμένους με κενό — π.χ. <code>"3 15 7"</code> → <code>25</code>. Δεν έχουμε δει ακόμα το πακέτο <code>strconv</code> της standard library που κάνει ακριβώς αυτή τη μετατροπή string→int, οπότε θα γράψουμε τη δική μας απλή βοηθητική function, <code>Atoi</code> — και, για τους σκοπούς αυτού του παραδείγματος, θα υποθέσουμε ότι δεν εμφανίζονται αρνητικοί αριθμοί:</p>
 
@@ -1041,7 +1110,15 @@ func SumNumbers(input string) int {
 
 <p>Γενικότερα: σαν sentinel value βάζουμε μόνο τιμές που ξέρουμε με σιγουριά ότι δεν μπορούν να εμφανιστούν ως κανονικό αποτέλεσμα. Υπάρχουν όμως πολλές περιπτώσεις όπου αυτό απλά δεν γίνεται — δεν υπάρχει "ασφαλής" ειδική τιμή. Το sentinel value ως τεχνική έρχεται ιστορικά από γλώσσες που δεν μπορούσαν να επιστρέψουν πολλαπλές τιμές από μία function. Στη Go, δεν έχουμε αυτόν τον περιορισμό — μπορούμε απλά:</p>
 
-<pre><code class="lang-go">// ok reports whether the input was successfully parsed as a valid sum.
+<pre><code class="lang-go">func main() {
+    total, ok := SumNumbers("3 15 7")
+    fmt.Println(total, ok) // 25 true
+
+    total, ok = SumNumbers("3 x 7")
+    fmt.Println(total, ok) // 0 false
+}
+  
+// ok reports whether the input was successfully parsed as a valid sum.
 func SumNumbers(input string) (sum int, ok bool) {
     numStr := ""
     for _, letter := range input {
@@ -1056,14 +1133,6 @@ func SumNumbers(input string) (sum int, ok bool) {
     }
     sum += Atoi(numStr)
     return sum, true
-}
-
-func main() {
-    total, ok := SumNumbers("3 15 7")
-    fmt.Println(total, ok) // 25 true
-
-    total, ok = SumNumbers("3 x 7")
-    fmt.Println(total, ok) // 0 false
 }</code></pre>
 
 <div class="callout good"><span class="tag">Τι άλλαξε</span>Αντί να "κρύβουμε" το σφάλμα μέσα στην ίδια τιμή που θα μπορούσε να είναι και σωστό αποτέλεσμα, το δηλώνουμε ρητά με ένα δεύτερο <code>bool</code>. Δεν χρειάζεται πια να μαντέψουμε ποια τιμή είναι "ασφαλής" ως sentinel — λειτουργεί ακόμα κι όταν <em>κάθε</em> δυνατή τιμή int θα μπορούσε να είναι έγκυρο αποτέλεσμα.</div>
@@ -1071,7 +1140,7 @@ func main() {
 
     addQuiz([
       {
-        q: "Γιατί ο κώδικας WordLengths (χωρίς flag) δίνει [5 0 0 5] αντί για [5 5] στην είσοδο \"hello   world\" (τρία κενά);",
+        q: "Γιατί ο κώδικας WordLengths (χωρίς boolean switch) δίνει [5 0 0 5] αντί για [5 5] στην είσοδο \"hello   world\" (τρία κενά);",
         options: [
           "Κάθε επιπλέον κενό βρίσκει το count ήδη μηδενισμένο από το προηγούμενο κενό, και κάνει append ένα ψεύτικο μηδενικό \"word\"",
           "Η Go μετράει τα κενά ως γράμματα της λέξης, προσθέτοντάς τα στο count αντί να τα αγνοεί",
@@ -1090,7 +1159,7 @@ func main() {
           "Ελέγχει αν το string έχει φτάσει στο τέλος του, αντικαθιστώντας τη συνθήκη της λούπας for"
         ],
         correct: 0,
-        explain: "Το inWord είναι flag/boolean switch — καταγράφει κατάσταση (μέσα σε λέξη ή όχι), όχι δεδομένα. Ελέγχεται πριν κάνουμε append, φιλτράροντας τα \"ψεύτικα\" κενά."
+        explain: "Το inWord είναι boolean switch — καταγράφει κατάσταση (μέσα σε λέξη ή όχι), όχι δεδομένα. Ελέγχεται πριν κάνουμε append, φιλτράροντας τα \"ψεύτικα\" κενά."
       },
       {
         q: "Ποια είναι η βασική διαφορά ανάμεσα σε continue και early return μέσα σε μια loop;",
@@ -1133,7 +1202,7 @@ func main() {
         `func WordLengths(input string) []int {
     var result []int
     count := 0
-    __flagname__ := false // "am I currently inside a word?"
+    __flagname__ := false // boolean switch — "am I currently inside a word?"
 
     for _, letter := range input {
         if letter == ' ' {
@@ -1158,7 +1227,7 @@ func main() {
         { id: "incr", answer: "++" },
         { id: "setval", answer: "true" }
       ],
-      explain: "Το flag inWord ξεκινά false, γίνεται true μόλις μπούμε σε γράμμα, και ξαναγίνεται false μόλις κλείσουμε μια λέξη — ελέγχεται πριν από κάθε append ώστε τα διπλά κενά να μην προκαλούν ψεύτικα μηδενικά."
+      explain: "Το boolean switch inWord ξεκινά false, γίνεται true μόλις μπούμε σε γράμμα, και ξαναγίνεται false μόλις κλείσουμε μια λέξη — ελέγχεται πριν από κάθε append ώστε τα διπλά κενά να μην προκαλούν ψεύτικα μηδενικά."
     }, {
       note: "Συμπλήρωσε το boolean switch ώστε το WordLengths να αντέχει πολλαπλά συνεχόμενα κενά."
     });
@@ -1202,7 +1271,7 @@ func SumNumbers(input string) (sum int, __okname__ bool) {
         { term: "append(result, x)", def: "result variable τύπου slice — μαζεύει πολλαπλά αποτελέσματα" }
       ],
       [
-        { term: "flag / boolean switch", def: "μεταβλητή bool που θυμάται αν κάτι έχει ήδη συμβεί" },
+        { term: "boolean switch / boolean state", def: "μεταβλητή bool που θυμάται αν κάτι έχει ήδη συμβεί" },
         { term: "break", def: "τερματίζει αμέσως ολόκληρη τη λούπα" },
         { term: "continue", def: "παραλείπει το τρέχον πέρασμα, η λούπα συνεχίζει κανονικά" },
         { term: "early return", def: "τερματίζει αμέσως ολόκληρη τη function, όχι μόνο τη λούπα" },
@@ -1210,7 +1279,7 @@ func SumNumbers(input string) (sum int, __okname__ bool) {
         { term: "(value, ok bool)", def: "εναλλακτικό στο sentinel value — δουλεύει ακόμα κι όταν καμία τιμή δεν είναι ασφαλής ως sentinel" }
       ]
     ], {
-      note: "Δύο σετ: πρώτα τα result-variable concepts, μετά τα flag/exit/sentinel concepts."
+      note: "Δύο σετ: πρώτα τα result-variable concepts, μετά τα boolean-switch/exit/sentinel concepts."
     });
 
     // ══════════════════════════════════════════════════════════════════════
@@ -1323,8 +1392,8 @@ func containsZero(numbers []int) bool {
     // ── Pattern 2: Sentinel Value ─────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow">Ενότητα 3 / 8 — Pattern 2 / 9</div>
-<h1>Τιμή Φρουρού (Sentinel Value)</h1>
-<p class="lede">Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "δεν βρήκα τίποτα" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong> ("τιμή φρουρού").</p>
+<h1>Sentinel Value</h1>
+<p class="lede">Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "δεν βρήκα τίποτα" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong>.</p>
 
 <h2>Το πρόβλημα, χωρίς το pattern</h2>
 <p>Θέλουμε μια function που βρίσκει το index του πρώτου αρνητικού αριθμού σε ένα slice. Τι επιστρέφει αν ΔΕΝ υπάρχει κανένας αρνητικός; Μια αδέξια λύση θα ήταν να επιστρέψουμε δύο τιμές — τη θέση ΚΑΙ ένα bool — αλλά ακόμα δεν έχουμε δει multiple return values με αυτή τη λεπτομέρεια, οπότε ας δούμε πρώτα γιατί το sentinel value λύνει το ίδιο πρόβλημα με ΕΝΑ μόνο <code>int</code>.</p>
