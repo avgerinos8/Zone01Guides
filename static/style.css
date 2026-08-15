@@ -1157,7 +1157,7 @@ pre code {
 #dots-track {
   display: flex;
   align-items: center;
-  gap: clamp(0px, 0.25vw, 2px);
+  gap: 6px;
   height: 100%;
   position: absolute;
   top: 0;
@@ -1177,14 +1177,13 @@ pre code {
 }
 
 /* Active dot is ALWAYS a solid --accent (tone-5), regardless of slide
-   type — intentionally NOT overridden by .quiz-dot or .dot-dim below, so
-   every active dot (plain content, quiz, glossary, vscode challenge...)
+   type — intentionally NOT overridden by .quiz-dot below, so every
+   active dot (plain content, quiz, glossary, vscode challenge...)
    matches the same solid accent color. */
 .dot.active {
   background: var(--accent);
   width: 22px;
   border-radius: 5px;
-  opacity: 1;
 }
 
 
@@ -1192,14 +1191,59 @@ pre code {
   background: rgba(var(--danger-rgb), 0.55);
 }
 
-/* Special dots (interactive types, VSCode Challenge, Glossary — see the
-   `dim` flag returned by getDotPreviewText()) render at 50% opacity
-   ONLY while inactive. Uses the opacity property rather than touching
-   any root/theme color variable, so it composes correctly with both the
-   plain --ink dots and the --danger-tinted .quiz-dot ones. The .active
-   rule above always wins once a dim dot becomes the current slide. */
-.dot.dot-dim:not(.active) {
-  opacity: 0.5;
+/* ── grouped diamonds (quiz/fillblank/matching/glossary/vscode challenge) ── ⊃ */
+/* Only real content slides get a full-size dot in the main track (see the
+   build loop in initSlideDeck()). Every run of consecutive non-content
+   slides that follows a content slide is rendered instead as a small
+   .dot-group of diamonds sitting right next to that content dot — this
+   is what keeps the browsable strip focused on theory sections even in
+   decks with many quiz/glossary/etc. slides interleaved. */
+.dot-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.dot.dot-diamond {
+  width: 9px;
+  height: 9px;
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+.dot.dot-diamond.active {
+  width: 9px;
+  border-radius: 0;
+}
+
+/* "x/y" position badge — a SINGLE shared instance lives on <body>,
+   positioned via JS with position:fixed + getBoundingClientRect() (see
+   updateGroupBadge() in script.js), same technique as the shared
+   tooltip below. NOT nested inside #dots, so #dots's overflow:hidden
+   (only 26px tall, required for the windowed dot scroller) never clips
+   it. Shown only below the group that currently contains the active
+   diamond — toggled via the .visible class, never while browsing plain
+   content dots. z-index sits above the dots row but below the shared
+   tooltip's 500, so the tooltip always wins if both were ever visible. */
+.dot-group-badge {
+  position: fixed;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 100;
+  transition: opacity 0.12s ease;
+}
+
+.dot-group-badge.visible {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* ── dots hover-scroll arrow zones ───────────────────────────────────────── ⊃ */
