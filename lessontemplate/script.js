@@ -1491,9 +1491,55 @@ function initSlideDeck(config) {
   // (real theory content, including START/END) gets a full-size dot in
   // the main track; each run of consecutive "special" slides that
   // follows becomes one small .dot-group of diamonds next to it.
+  //
+  // On top of that, any run of two-or-more consecutive plain content
+  // dots with NO diamond group between them (i.e. no quiz/glossary/etc.
+  // in between) is wrapped in a .dot-run so they sit flush against each
+  // other with zero gap, the same way diamonds within one .dot-group
+  // already do. START (index 0) and END (the last slide) are always
+  // excluded from this — they never join a .dot-run, so they always
+  // keep the normal gap from their neighbor even when that neighbor is
+  // plain content with nothing between them.
+  const lastIdx = slides.length - 1;
   let i = 0;
+  let pendingRun = null; // the currently-open .dot-run wrapper, or null
+  let pendingRunLastIdx = -1; // slide index of the last dot appended to pendingRun
+
+  function flushPendingRun() {
+    pendingRun = null;
+    pendingRunLastIdx = -1;
+  }
+
+  function appendTopLevelDot(idx) {
+    const dotEl = buildDotEl(idx, false);
+    const eligibleForRun = idx !== 0 && idx !== lastIdx;
+
+    if (eligibleForRun && pendingRun && pendingRunLastIdx === idx - 1) {
+      // Extends the currently-open run (previous dot had no group after
+      // it, and this dot is also run-eligible) — append with zero gap.
+      pendingRun.appendChild(dotEl);
+      pendingRunLastIdx = idx;
+    } else if (eligibleForRun) {
+      // Starts a new potential run. We don't know yet whether a second
+      // dot will follow it without a group in between, so this always
+      // begins life as a single-dot .dot-run — CSS gives a 1-item flex
+      // container the exact same visual result as a bare dot, and it
+      // costs nothing to leave it wrapped.
+      const run = document.createElement("div");
+      run.className = "dot-run";
+      run.appendChild(dotEl);
+      dotsTrackEl.appendChild(run);
+      pendingRun = run;
+      pendingRunLastIdx = idx;
+    } else {
+      // START or END: never part of a run, always its own track child.
+      flushPendingRun();
+      dotsTrackEl.appendChild(dotEl);
+    }
+  }
+
   while (i < slides.length) {
-    dotsTrackEl.appendChild(buildDotEl(i, false));
+    appendTopLevelDot(i);
     i++;
 
     const groupIndices = [];
@@ -1502,6 +1548,8 @@ function initSlideDeck(config) {
       i++;
     }
     if (groupIndices.length) {
+      // A diamond group breaks any in-progress run of plain content dots.
+      flushPendingRun();
       const group = document.createElement("div");
       group.className = "dot-group";
       groupIndices.forEach((gi, posInGroup) => {

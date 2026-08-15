@@ -1089,7 +1089,7 @@ pre code {
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
-  background: linear-gradient(0deg, rgba(var(--tone-1-rgb), 0.98) 60%, rgba(var(--tone-1-rgb), 0) 100%);
+  background: linear-gradient(0deg, rgba(var(--tone-1-rgb), 0.98) 70%, rgba(var(--tone-1-rgb), 0) 100%);
   z-index: 50;
 }
 
@@ -1206,6 +1206,22 @@ pre code {
   position: relative;
 }
 
+/* Wraps a run of two-or-more consecutive plain content dots that have no
+   quiz/glossary/etc. diamond group between them, so they sit flush
+   against each other with zero gap — same idea as .dot-group above, but
+   for circles instead of diamonds. Every run-eligible content dot is
+   wrapped in one of these even when it ends up alone (a single-item flex
+   container looks identical to a bare dot, so this costs nothing
+   visually). START (first slide) and END (last slide) are never put in
+   a .dot-run — see the eligibility check in initSlideDeck() — so they
+   always keep the normal #dots-track gap from their neighbor. */
+.dot-run {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 0 0 auto;
+}
+
 .dot.dot-diamond {
   width: 9px;
   height: 9px;
@@ -1216,6 +1232,14 @@ pre code {
 .dot.dot-diamond.active {
   width: 9px;
   border-radius: 0;
+  /* .dot.quiz-dot below has the same specificity as .dot.active above and
+     comes later in the file, so on a diamond that is BOTH quiz-dot AND
+     active, quiz-dot's danger-colored background was winning the
+     source-order tie-break instead of the accent color an active dot is
+     supposed to have. Restate it here explicitly (higher specificity:
+     three classes vs quiz-dot's two) so an active diamond is always
+     accent, exactly like an active plain dot. */
+  background: var(--accent);
 }
 
 /* "x/y" position badge — a SINGLE shared instance lives on <body>,
@@ -1252,7 +1276,8 @@ pre code {
   top: 0;
   bottom: 0;
   width: 34px;
-  display: none; /* shown only via .can-scroll-left / .can-scroll-right on #dots */
+  display: none;
+  /* shown only via .can-scroll-left / .can-scroll-right on #dots */
   align-items: center;
   justify-content: center;
   cursor: pointer;

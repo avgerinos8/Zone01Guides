@@ -2476,16 +2476,6 @@ if score >= 13 {
                 ],
                 correct: 0,
                 explain: "Το score είναι 20, που είναι >= 13, άρα μπαίνει στο πρώτο if. Το else if score >= 18 δεν ελέγχεται ποτέ — είναι λάθος σειρά!"
-            },
-            {
-                q: "Στο if με short statement, πού υπάρχει η μεταβλητή που δηλώνεται;",
-                options: [
-                    "Σε όλο το πρόγραμμα",
-                    "Μόνο μέσα στο μπλοκ του if",
-                ],
-                correct: 1,
-                alsoCorrect: [0],
-                explain: "Η μεταβλητή υπάρχει μόνο στο μπλοκ του if (και στο else, αν υπάρχει). Μετά το } εξαφανίζεται."
             }
         ], {
             label: "Έλεγχος Κατανόησης",
@@ -2840,7 +2830,153 @@ func main() {
 }
 </code></pre>
 </div>
+`);
+        addContent(`
+<div class="eyebrow">Ενότητα 5 / 8 — Επαναλήψεις &amp; Loops</div>
 
+<h2>Φωλιασμένα loops (Nested loops)</h2>
+
+<p>
+    Μπορείς να βάλεις ένα loop μέσα σε άλλο loop — αυτό λέγεται <strong>nested loop</strong>. Η σχέση ανάμεσά τους
+    είναι συγκεκριμένη: για <strong>κάθε μία</strong> επανάληψη του εξωτερικού loop, το εσωτερικό loop ολοκληρώνει
+    <strong>όλες τις δικές του επαναλήψεις</strong>, από την πρώτη μέχρι την τελευταία, πριν το εξωτερικό loop
+    προχωρήσει καν στην επόμενή του επανάληψη.
+</p>
+<p>
+    Στο παράδειγμα παρακάτω, το εξωτερικό loop (με το <code>i</code>) τρέχει 3 φορές. Για <strong>κάθε</strong> μία
+    από αυτές τις 3 φορές, το εσωτερικό loop (με το <code>j</code>) ξεκινά από την αρχή και ολοκληρώνει τις δικές
+    του 3 επαναλήψεις (<code>j=1</code>, <code>j=2</code>, <code>j=3</code>), πριν το <code>i</code> προλάβει να
+    αλλάξει τιμή. Συνολικά, λοιπόν, το σώμα του εσωτερικού loop εκτελείται <code>3 × 3 = 9</code> φορές σε όλο το
+    πρόγραμμα — όχι μόνο 3. Θα το δεις καθαρά στην έξοδο: 3 γραμμές (μία ανά τιμή του <code>i</code>), η καθεμιά με
+    3 αριθμούς μέσα της (έναν ανά τιμή του <code>j</code>).
+</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    for i := 1; i <= 3; i++ {
+        for j := 1; j <= 3; j++ {
+            fmt.Print(i*j, " ")
+        }
+        fmt.Println()
+    }
+}
+</code></pre>
+
+<p>Αυτό τυπώνει:</p>
+
+<pre><code>1 2 3
+2 4 6
+3 6 9
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Σημαντικό: οι μεταβλητές των loops</span>
+    <p>
+        Οι μεταβλητές που δηλώνονται στην αρχικοποίηση ενός <code>for</code> (π.χ. <code>i := 0</code>)
+        <strong>υπάρχουν μόνο μέσα στο loop</strong>. Δεν είναι προσβάσιμες έξω από αυτό. Μόλις τελειώσει το loop σταματούν να υπάρχουν.
+    </p>
+</div>
+
+
+<p>Ας δούμε ένα παράδειγμα που τυπώνει ένα τρίγωνο από αριθμούς:</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    // Εξωτερικό loop: τρέχει από το 1 έως το 5
+    for outer := 1; outer <= 5; outer++ {
+        // Εσωτερικό loop: τρέχει από το 1 έως το outer
+        for inner := 1; inner <= outer; inner++ {
+            fmt.Print(inner, " ")
+        }
+        // Νέα γραμμή μετά από κάθε σειρά
+        fmt.Println()
+    }
+}
+</code></pre>
+
+<p>
+    Πριν δούμε την έξοδο, ας δούμε τη σειρά εκτέλεσης σαν δέντρο — κάθε κλαδί του εξωτερικού loop (<code>outer</code>)
+    περιέχει τα δικά του, ολοκληρωμένα κλαδιά του εσωτερικού loop (<code>inner</code>), πριν προχωρήσουμε στο επόμενο
+    κλαδί του <code>outer</code>:
+</p>
+
+
+<p>Αυτό το πρόγραμμα τυπώνει:</p>
+
+<pre><code>1
+1 2
+1 2 3
+1 2 3 4
+1 2 3 4 5
+</code></pre>
+
+<p>
+    Πώς δουλεύει; Για κάθε τιμή του <code>outer</code> (από 1 έως 5), το εσωτερικό loop τρέχει από το 1 μέχρι την
+    τρέχουσα τιμή του <code>outer</code>. Έτσι:
+</p>
+
+<pre><code>main()
+│
+├── outer = 1
+│   └── inner = 1 → fmt.Print(1, " ")
+│       fmt.Println()              → νέα γραμμή
+│
+├── outer = 2
+│   ├── inner = 1 → fmt.Print(1, " ")
+│   └── inner = 2 → fmt.Print(2, " ")
+│       fmt.Println()              → νέα γραμμή
+│
+├── outer = 3
+│   ├── inner = 1 → fmt.Print(1, " ")
+│   ├── inner = 2 → fmt.Print(2, " ")
+│   └── inner = 3 → fmt.Print(3, " ")
+│       fmt.Println()              → νέα γραμμή
+│
+├── outer = 4
+│   ├── inner = 1 → fmt.Print(1, " ")
+│   ├── inner = 2 → fmt.Print(2, " ")
+│   ├── inner = 3 → fmt.Print(3, " ")
+│   └── inner = 4 → fmt.Print(4, " ")
+│       fmt.Println()              → νέα γραμμή
+│
+└── outer = 5
+    ├── inner = 1 → fmt.Print(1, " ")
+    ├── inner = 2 → fmt.Print(2, " ")
+    ├── inner = 3 → fmt.Print(3, " ")
+    ├── inner = 4 → fmt.Print(4, " ")
+    └── inner = 5 → fmt.Print(5, " ")
+        fmt.Println()              → νέα γραμμή
+</code></pre>
+
+<p>
+    <strong>Παρατήρησε:</strong> Η μεταβλητή <code>inner</code> δηλώνεται <em>μέσα</em> στο εξωτερικό loop, οπότε
+    δημιουργείται από την αρχή (ξεκινάει πάλι από το 1) σε <em>κάθε</em> επανάληψη του εξωτερικού loop. Αν τη δήλωνες
+    έξω, η τιμή της θα κρατιόταν και θα χρειαζόταν επαναφορά χειροκίνητα.
+</p>
+
+
+<div class="callout">
+    <span class="tag">Συμβάσεις ονοματοδοσίας στις λούπες</span>
+    <p>
+        Στις λούπες, είναι συνηθισμένο να βλέπεις μεταβλητές με ονόματα <strong>i, j, k, l, m, n</strong>. Αυτή η
+        σύμβαση έχει μαθηματική προέλευση: προέρχονται από τα αθροίσματα και τους δείκτες πινάκων (indices) στα
+        μαθηματικά.
+    </p>
+    <p>
+        Το <code>i</code> χρησιμοποιείται συνήθως για την εξωτερική λούπα, το <code>j</code> για την επόμενη (αν υπάρχει
+        φωλιασμένη), και ούτω καθεξής. Το <code>i</code> ταιριάζει και με την αγγλική λέξη
+        <strong>index</strong> (δείκτης), που επίσης χρησιμοποιούμε όταν αναφερόμαστε σε θέσεις μέσα σε πίνακες.
+        Εναλλακτικά, όταν δουλεύουμε με πίνακες (που θα δούμε σε επόμενο κεφάλαιο), συχνά χρησιμοποιούμε πιο περιγραφικά
+        ονόματα όπως <code>row</code> (γραμμή) και <code>col</code> (στήλη), ή <code>x</code>, <code>y</code>,
+        <code>z</code> για συντεταγμένες.
+    </p>
+</div>
 
 <h2>Labels για διακοπή εξωτερικών loops</h2>
 
@@ -2878,113 +3014,6 @@ for i := 0; i < 3; i++ {
     <code>break</code> χωρίς label) — σταματά κατευθείαν <em>και</em> το εξωτερικό loop με το όνομα <code>outer</code>,
     τερματίζοντας ολόκληρη τη φωλιασμένη δομή.
 </p>
-
-<h2>Φωλιασμένα loops (Nested loops)</h2>
-
-<p>
-    Μπορείς να βάλεις ένα loop μέσα σε άλλο loop. Αυτό λέγεται <strong>φωλιασμένο loop</strong> (nested loop). Το
-    εσωτερικό loop εκτελείται ολόκληρο για κάθε επανάληψη του εξωτερικού loop.
-</p>
-
-<pre><code class="lang-go">package main
-
-import "fmt"
-
-func main() {
-    for i := 1; i <= 3; i++ {
-        for j := 1; j <= 3; j++ {
-            fmt.Print(i*j, " ")
-        }
-        fmt.Println()
-    }
-}
-</code></pre>
-
-<p>Αυτό τυπώνει:</p>
-
-<pre><code>1 2 3
-2 4 6
-3 6 9
-</code></pre>
-
-<div class="callout">
-    <span class="tag">Σημαντικό: οι μεταβλητές των loops</span>
-    <p>
-        Οι μεταβλητές που δηλώνονται στην αρχικοποίηση ενός <code>for</code> (π.χ. <code>i := 0</code>)
-        <strong>υπάρχουν μόνο μέσα στο loop</strong>. Δεν είναι προσβάσιμες έξω από αυτό. Μόλις τελειώσει το loop σταματούν να υπάρχουν.
-    </p>
-</div>
-
-<h2>Φωλιασμένα loops (Nested loops) — Ένα διασκεδαστικό παράδειγμα</h2>
-
-<p>
-    Μπορείς να βάλεις ένα loop μέσα σε άλλο loop. Αυτό λέγεται <strong>φωλιασμένο loop</strong> (nested loop). Το
-    εσωτερικό loop εκτελείται ολόκληρο για κάθε επανάληψη του εξωτερικού loop.
-</p>
-
-<p>Ας δούμε ένα παράδειγμα που τυπώνει ένα τρίγωνο από αριθμούς:</p>
-
-<pre><code class="lang-go">package main
-
-import "fmt"
-
-func main() {
-    // Εξωτερικό loop: τρέχει από το 1 έως το 5
-    for outer := 1; outer <= 5; outer++ {
-        // Εσωτερικό loop: τρέχει από το 1 έως το outer
-        for inner := 1; inner <= outer; inner++ {
-            fmt.Print(inner, " ")
-        }
-        // Νέα γραμμή μετά από κάθε σειρά
-        fmt.Println()
-    }
-}
-</code></pre>
-
-<p>Αυτό το πρόγραμμα τυπώνει:</p>
-
-<pre><code>1
-1 2
-1 2 3
-1 2 3 4
-1 2 3 4 5
-</code></pre>
-
-<p>
-    Πώς δουλεύει; Για κάθε τιμή του <code>outer</code> (από 1 έως 5), το εσωτερικό loop τρέχει από το 1 μέχρι την
-    τρέχουσα τιμή του <code>outer</code>. Έτσι:
-</p>
-
-<ul>
-    <li>Όταν <code>outer = 1</code>, το εσωτερικό τυπώνει: <code>1</code></li>
-    <li>Όταν <code>outer = 2</code>, το εσωτερικό τυπώνει: <code>1 2</code></li>
-    <li>Όταν <code>outer = 3</code>, το εσωτερικό τυπώνει: <code>1 2 3</code></li>
-    <li>Και ούτω καθεξής μέχρι το <code>outer = 5</code></li>
-</ul>
-
-<p>
-    <strong>Παρατήρησε:</strong> Η μεταβλητή <code>inner</code> δηλώνεται <em>μέσα</em> στο εξωτερικό loop, οπότε
-    δημιουργείται από την αρχή (ξεκινάει πάλι από το 1) σε <em>κάθε</em> επανάληψη του εξωτερικού loop. Αν τη δήλωνες
-    έξω, η τιμή της θα κρατιόταν και θα χρειαζόταν επαναφορά χειροκίνητα.
-</p>
-
-
-<div class="callout">
-    <span class="tag">Συμβάσεις ονοματοδοσίας στις λούπες</span>
-    <p>
-        Στις λούπες, είναι συνηθισμένο να βλέπεις μεταβλητές με ονόματα <strong>i, j, k, l, m, n</strong>. Αυτή η
-        σύμβαση έχει μαθηματική προέλευση: προέρχονται από τα αθροίσματα και τους δείκτες πινάκων (indices) στα
-        μαθηματικά.
-    </p>
-    <p>
-        Το <code>i</code> χρησιμοποιείται συνήθως για την εξωτερική λούπα, το <code>j</code> για την επόμενη (αν υπάρχει
-        φωλιασμένη), και ούτω καθεξής. Το <code>i</code> ταιριάζει και με την αγγλική λέξη
-        <strong>index</strong> (δείκτης), που επίσης χρησιμοποιούμε όταν αναφερόμαστε σε θέσεις μέσα σε πίνακες.
-        Εναλλακτικά, όταν δουλεύουμε με πίνακες (που θα δούμε σε επόμενο κεφάλαιο), συχνά χρησιμοποιούμε πιο περιγραφικά
-        ονόματα όπως <code>row</code> (γραμμή) και <code>col</code> (στήλη), ή <code>x</code>, <code>y</code>,
-        <code>z</code> για συντεταγμένες.
-    </p>
-</div>
 
 
 <h2>Συχνά λάθη</h2>
@@ -4099,8 +4128,9 @@ fmt.Println(finalPrice) // 90
         όπου έγινε η κλήση, και συνεχίζεις το γραμμικό διάβασμα από εκεί.
     </p>
 </div>
-
-<br>
+`);
+        addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Functions &amp; Scope</div>
 <h1>Εμβέλεια (Scope) &amp; Διάρκεια Ζωής Μεταβλητών</h1>
 
 <p class="lede">
@@ -5453,8 +5483,10 @@ nums = append(nums, more...) // προσθέτει τα 6, 7, 8 — σαν να 
 <p>
     Η ενσωματωμένη function <code>copy(dst, src)</code> αντιγράφει στοιχεία από ένα slice (<code>src</code> — source, πηγή) σε ένα άλλο (<code>dst</code> — destination, προορισμός), δημιουργώντας ένα πραγματικά ανεξάρτητο αντίγραφο — τα δύο slices δεν θα μοιράζονται πλέον το ίδιο υποκείμενο array μετά την αντιγραφή, οπότε αλλαγές στο ένα δεν θα επηρεάζουν το άλλο.
 </p>
+`);
 
-<br>
+        addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
 
 <h1>Iterating σε Slices</h1>
 
@@ -6681,7 +6713,7 @@ func diagonalSum(matrix [][]int) int {
 <h1>Maps</h1>
 
 <p class="lede">
-    Το τελευταίο data structure σε αυτόν τον οδηγό: ο map, η δομή "κλειδί/τιμή" (key/value) της Go — αντίστοιχο με ό,τι σε άλλες γλώσσες ονομάζεται dictionary ή hash map.
+    Το τελευταίο data structure σε αυτόν τον οδηγό: Το map, η δομή "κλειδί/τιμή" (key/value) της Go — αντίστοιχο με ό,τι σε άλλες γλώσσες ονομάζεται dictionary ή hash map.
 </p>
 
 <h2>Τι είναι ένας Map</h2>
@@ -6691,24 +6723,226 @@ func diagonalSum(matrix [][]int) int {
 </p>
 
 <div class="callout">
-    <span class="tag">Μια αναλογία: ο τηλεφωνικός κατάλογος</span>
+    <span class="tag">Ο τηλεφωνικός κατάλογος</span>
     <p>
-        Σκέψου έναν τηλεφωνικό κατάλογο. Για να βρεις τον αριθμό κάποιου, δεν ξεκινάς από τη σελίδα 1 και διαβάζεις όλα τα ονόματα ένα-ένα μέχρι να τον βρεις — χρησιμοποιείς το όνομα ως <strong>κλειδί</strong> (key) για να πας κατευθείαν στον αριθμό του (την <strong>τιμή</strong>, value). Ο map λειτουργεί ακριβώς έτσι: αντί να ψάχνεις με αριθμητικό index, ψάχνεις με ένα κλειδί που εσύ επιλέγεις.
+        Σκέψου έναν τηλεφωνικό κατάλογο. Για να βρεις τον αριθμό κάποιου, δεν ξεκινάς από τη σελίδα 1 και διαβάζεις όλα τα ονόματα ένα-ένα μέχρι να τον βρεις — χρησιμοποιείς το όνομα ως <strong>κλειδί</strong> (key) για να πας κατευθείαν στον αριθμό του (την <strong>τιμή</strong>, value). Ο map λειτουργεί ακριβώς έτσι: αντί να ψάχνεις με αριθμητικό index, ψάχνεις με ένα κλειδί που εσύ επιλέγεις. Σε αυτό το παράδειγμα, το κλειδί εδώ θα ήταν τύπου <code>string</code> (το όνομα του ατόμου), και η τιμή θα ήταν τύπου <code>int</code>, o 10ψήφιος αριθμός του τηλεφώνου.
+          </p>
+</div>  
+        <div class="callout">
+                <span class="tag">Τηλεφωνικοί Αριθμοί και type</span>
+        Στην πραγματικότητα, <strong>αποφεύγουμε</strong> να αποθηκεύουμε τηλεφωνικούς αριθμούς ως <code>int</code>, για δύο
+        συγκεκριμένους λόγους. Πρώτον, ένας αριθμός τηλεφώνου συχνά ξεκινά με <code>0</code> (π.χ.
+        <code>0691234567</code>) — αλλά ένας <code>int</code> απλά αποθηκεύει μια αριθμητική αξία, και δεν μπορεί
+        ποτέ να "θυμηθεί" ένα αρχικό μηδενικό· το <code>0691234567</code> θα γινόταν σιωπηλά <code>691234567</code>,
+        χάνοντας ένα ολόκληρο ψηφίο. Δεύτερον, ανάλογα με τον ακριβή ακέραιο τύπο που θα χρησιμοποιούσες (π.χ.
+        <code>int32</code>, που έχει μικρότερο μέγιστο όριο τιμών από τον προεπιλεγμένο <code>int</code>), ένας
+        10ψήφιος αριθμός θα μπορούσε να ξεπεράσει το όριο και να προκαλέσει overflow. Γι' αυτό, στην πράξη, οι
+        τηλεφωνικοί αριθμοί αποθηκεύονται σχεδόν πάντα ως <code>string</code>, όχι ως αριθμητικός τύπος. Οπότε το map που αντιπροσωπεύει τον τηλεφωνικό κατάλογο, τελικά, θα ήταν <strong>key:</strong> <code>string</code> string <strong>value:</strong> <code>string</code>.
     </p>
 </div>
 
-<h2>Δήλωση και αρχικοποίηση</h2>
+<h2>Πέντε τρόποι δημιουργίας ενός Map</h2>
 
-<pre><code class="lang-go">ages := make(map[string]int)  // an empty map, ready to use: keys are strings, values are ints
+<p>
+    Ακριβώς όπως και στα slices, υπάρχουν αρκετοί διαφορετικοί τρόποι να δημιουργήσεις/δηλώσεις έναν map, ο καθένας με τη
+    δική του περίπτωση χρήσης:
+</p>
 
-scores := map[string]int{     // map literal, with initial key/value pairs already filled in
-    "first":  90,
-    "second": 85,
+<table style="width:100%; border-collapse:collapse; margin:16px 0;">
+    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
+        <th style="text-align:left; padding:8px;">Τρόπος</th>
+        <th style="text-align:left; padding:8px;">Σύνταξη</th>
+        <th style="text-align:left; padding:8px;">Πότε να το χρησιμοποιήσεις</th>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>var</strong></td>
+        <td style="padding:8px;"><code>var m map[string]int</code></td>
+        <td style="padding:8px;">Δεν το χρησιμοποιούμε! ⚠️ Δηλώνει τον τύπο, αλλά ο map είναι <code>nil</code> — δεν επιτρέπει εγγραφή ακόμα</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>make</strong></td>
+        <td style="padding:8px;"><code>m := make(map[string]int)</code></td>
+        <td style="padding:8px;">Κενός, αλλά πλήρως έτοιμος προς εγγραφή map</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>make με capacity hint</strong></td>
+        <td style="padding:8px;"><code>m := make(map[string]int, 100)</code></td>
+        <td style="padding:8px;">Σαν το παραπάνω, με υπόδειξη αναμενόμενου πλήθους στοιχείων (capacity) — βελτιώνει απόδοση, δεν περιορίζει το μέγεθος</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>Map Literal</strong></td>
+        <td style="padding:8px;"><code>m := map[string]int{"a": 1}</code></td>
+        <td style="padding:8px;">Γνωστές αρχικές τιμές από την αρχή</td>
+    </tr>
+    <tr>
+        <td style="padding:8px;"><strong>Κενό Map Literal</strong></td>
+        <td style="padding:8px;"><code>m := map[string]int{}</code></td>
+        <td style="padding:8px;">Εναλλακτικό της κενής make — κενός αλλά έτοιμος προς εγγραφή</td>
+    </tr>
+</table>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    ages := make(map[string]int)
+    ages["Nikos"] = 34
+    ages["Eleni"] = 28
+    ages["Dimitris"] = 41
+    ages["Sofia"] = 19
+
+    fmt.Println(ages) // map[Dimitris:41 Eleni:28 Nikos:34 Sofia:19]
 }
 </code></pre>
 
+
 <p>
-    Η σύνταξη <code>map[string]int</code> σημαίνει "map όπου τα κλειδιά είναι τύπου string, και οι τιμές είναι τύπου int". Όπως και με τα slices, η <code>make</code> δημιουργεί έναν κενό, αλλά έτοιμο προς χρήση map.
+    Το map του παραπάνω παραδείγματος (σκέψου το σαν πίνακα) έχει 4 στοιχεία, που τα βάλαμε χειροκίνητα ένα προς
+    ένα. Όμως, για να πάρεις το πρώτο στοιχείο, <strong>δεν</strong> μπορείς να γράψεις <code>ages[0]</code>, όπως θα
+    έκανες σε έναν πίνακα. Αντ' αυτού, γράφεις <code>ages["Nikos"]</code> — γιατί το κλειδί (key) μας είναι τύπου
+    <code>string</code>, όχι <code>int</code>. Και δεν πρόκειται καν για το "πρώτο" στοιχείο, με την έννοια που θα
+    το εννοούσες σε πίνακα· τα στοιχεία ενός map δεν έχουν καμία "αρίθμηση" ή σειρά θέσεων, όπως έχει ένα array ή
+    slice.
+    </p>
+<p>
+Το <code>ages["Nikos"]</code> ισοδυναμεί απλά με <code>34</code> (έναν ακέραιο, <code>int</code>) —
+    δηλαδή, το <code>ages</code> στη θέση <code>"Nikos"</code> έχει την τιμή <code>34</code>.
+</p>
+
+
+<div class="callout">
+    <span class="tag">Δύο διαφορετικά πράγματα: δηλώνοντας τον τύπο vs χρησιμοποιώντας τη μεταβλητή</span>
+    <p>
+        Είναι εύκολο να μπερδέψεις αυτά τα δύο σημεία, οπότε ας τα ξεχωρίσουμε καθαρά. Όταν <strong>δηλώνεις τον
+        τύπο</strong> ενός map, γράφεις τη λέξη <code>map</code>, και μέσα στις αγκύλες <code>[]</code> βάζεις τον
+        τύπο του <strong>κλειδιού</strong> (key), ακολουθούμενο αμέσως από τον τύπο της <strong>τιμής</strong>
+        (value) — π.χ. <code>map[string]int</code> σημαίνει "κλειδιά string, τιμές int".
+    </p>
+    <p>
+        Όταν όμως <strong>χρησιμοποιείς</strong> τη μεταβλητή τύπου map (για να διαβάσεις ή να γράψεις μια τιμή), το
+        κάνεις ακριβώς όπως θα έκανες με έναν πίνακα — με αγκύλες <code>[]</code> μετά το όνομα της μεταβλητής — με
+        τη μόνη διαφορά ότι μέσα στις αγκύλες δεν βάζεις πάντα <code>int</code> (όπως σε array/slice), αλλά τον
+        <strong>τύπο του κλειδιού</strong> που όρισες. Αν ο τύπος του κλειδιού τυχαίνει να είναι <code>int</code>,
+        τότε ναι, θα βάλεις κι εκεί έναν ακέραιο — αλλά αυτό είναι σύμπτωση, όχι κανόνας.
+    </p>
+    <pre><code class="lang-go">var ages map[string]int  // TYPE declaration: key is string, value is int
+
+ages = make(map[string]int)
+ages["Maria"] = 35        // USING the variable: [] now holds a KEY (a string), not necessarily an int
+</code></pre>
+</div>
+
+<h2>Παραδείγματα με διαφορετικούς συνδυασμούς τύπων</h2>
+
+<p>
+    Το κλειδί και η τιμή ενός map μπορούν να είναι σχεδόν οποιοιδήποτε τύποι θέλεις (με τον περιορισμό ότι το
+    κλειδί πρέπει να είναι <strong>comparable</strong> — να συγκρίνεται με <code>==</code>, κάτι που θα δούμε πιο
+    αναλυτικά παρακάτω). Ας δούμε τρεις διαφορετικούς συνδυασμούς σε πράξη.
+</p>
+
+<h3>map[rune]int — μέτρημα εμφανίσεων χαρακτήρων</h3>
+<p>
+    Θυμήσου το <code>rune</code> από την Ενότητα 2: αναπαριστά έναν μεμονωμένο χαρακτήρα. Ένα <code>map[rune]int</code>
+    είναι ιδανικό για να μετρήσεις πόσες φορές εμφανίζεται κάθε γράμμα μέσα σε ένα string:
+</p>
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    counts := make(map[rune]int)
+
+    for _, ch := range "banana" {
+        counts[ch]++ // the zero value (0) lets this work even for a brand-new rune
+    }
+
+    fmt.Println(counts) // map[a:3 b:1 n:2]
+}
+</code></pre>
+
+<h3>map[rune]string — αντιστοίχιση χαρακτήρα σε λέξη</h3>
+<p>
+    Εδώ το κλειδί παραμένει ένας μεμονωμένος χαρακτήρας, αλλά η τιμή είναι ολόκληρη λέξη — π.χ. το φωνητικό
+    αλφάβητο (NATO alphabet), όπου κάθε γράμμα αντιστοιχεί σε μία λέξη για ξεκάθαρη προφορά:
+</p>
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    phonetic := map[rune]string{
+        'A': "Alpha",
+        'B': "Bravo",
+        'C': "Charlie",
+    }
+
+    fmt.Println(phonetic['B']) // Bravo
+}
+</code></pre>
+
+<h3>map[string]string — ένα απλό λεξικό</h3>
+<p>
+    Όταν και το κλειδί και η τιμή είναι κείμενο, έχεις ένα απλό, δίγλωσσο λεξικό:
+</p>
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+func main() {
+    greekWord := map[string]string{
+        "hello": "γεια",
+        "cat":   "γάτα",
+        "book":  "βιβλίο",
+    }
+
+    fmt.Println(greekWord["cat"]) // γάτα
+}
+</code></pre>
+
+<h2>map[int]string vs []string — μοιάζουν, αλλά διαφέρουν ουσιαστικά</h2>
+
+<p>
+    Στην επιφάνεια, ένα <code>map[int]string</code> και ένα <code>[]string</code> μοιάζουν παρόμοια — και τα δύο
+    χρησιμοποιούν έναν ακέραιο για να "φτάσεις" σε ένα string. Η ομοιότητα όμως σταματάει εκεί:
+</p>
+
+<div class="grid2">
+    <div class="card">
+        <h3>[]string (slice)</h3>
+        <p>
+            Οι θέσεις είναι πάντα <strong>συνεχόμενες</strong>, ξεκινώντας υποχρεωτικά από το 0, χωρίς κενά —
+            <code>0, 1, 2, 3...</code>. Έχει έννοια <code>len</code>/<code>cap</code>. Η <code>range</code> σου
+            δίνει πάντα τα στοιχεία με τη φυσική τους σειρά.
+        </p>
+    </div>
+    <div class="card">
+        <h3>map[int]string</h3>
+        <p>
+            Τα κλειδιά μπορούν να είναι <strong>οποιοιδήποτε</strong> ακέραιοι, ακόμα και αραιοί/χωρίς σειρά — π.χ.
+            μόνο τα κλειδιά <code>5</code>, <code>100</code>, <code>999</code>, χωρίς να χρειάζεται να "γεμίσεις"
+            τις ενδιάμεσες θέσεις. Δεν έχει <code>cap</code>. Η <code>range</code> δεν εγγυάται καμία σειρά.
+        </p>
+    </div>
+</div>
+
+<pre><code class="lang-go">// This works fine on a map — sparse keys, no need to fill in between:
+codes := map[int]string{
+    5:   "five",
+    100: "hundred",
+    999: "nearly a thousand",
+}
+
+fmt.Println(codes[5]) // five
+
+// The equivalent with a slice would require indices 0 through 999 to ALL exist —
+// wasting memory on hundreds of empty positions you'll never use.
+</code></pre>
+
+<p>
+    Με απλά λόγια: χρησιμοποίησε <code>[]string</code> όταν οι θέσεις σου είναι φυσικά συνεχόμενες και σου
+    ενδιαφέρει η σειρά. Χρησιμοποίησε <code>map[int]string</code> όταν τα "κλειδιά" σου είναι αραιά, τυχαία, ή απλά
+    δεν έχει νόημα να ξεκινούν από το 0.
 </p>
 
 <h2>Προσθήκη, ενημέρωση, και διαγραφή στοιχείων</h2>
@@ -6720,6 +6954,21 @@ delete(ages, "someone")    // removes a key (and its value) entirely from the ma
 <p>
     Η σύνταξη είναι ίδια είτε προσθέτεις ένα εντελώς νέο κλειδί, είτε ενημερώνεις την τιμή ενός κλειδιού που υπάρχει ήδη — η Go το χειρίζεται αυτόματα, χωρίς να χρειάζεται να ελέγξεις ρητά ποιο από τα δύο συμβαίνει.
 </p>
+
+<div class="callout">
+    <span class="tag">Το delete() δουλεύει ΜΟΝΟ σε maps, όχι σε slices</span>
+    <p>
+        Η <code>delete()</code> είναι μια ενσωματωμένη function που λειτουργεί αποκλειστικά πάνω σε maps — δεν
+        υπάρχει αντίστοιχη <code>delete()</code> για slices. Αν θες να αφαιρέσεις ένα στοιχείο από ένα slice, δεν
+        υπάρχει έτοιμη function γι' αυτό· το πετυχαίνεις συνδυάζοντας <code>append</code> με slicing:
+    </p>
+    <pre><code class="lang-go">nums := []int{10, 20, 30, 40}
+i := 1 // θέλουμε να αφαιρέσουμε το στοιχείο στη θέση 1 (το 20)
+
+nums = append(nums[:i], nums[i+1:]...)
+fmt.Println(nums) // [10 30 40]
+</code></pre>
+</div>
 
 <h2>Έλεγχος ύπαρξης κλειδιού — το πρόβλημα και η λύση του</h2>
 
@@ -6756,77 +7005,236 @@ if ok {
         Σε αντίθεση με τα slices και τα arrays, όπου η <code>range</code> σου δίνει πάντα τα στοιχεία με τη φυσική, αριθμητική τους σειρά (index 0, μετά 1, μετά 2, ...), η Go <strong>δεν εγγυάται καμία συγκεκριμένη σειρά</strong> όταν διασχίζεις έναν map με <code>for range</code>. Κάθε φορά που τρέχεις το ίδιο πρόγραμμα, η σειρά με την οποία εμφανίζονται τα key/value ζεύγη μπορεί να είναι διαφορετική. Αν χρειάζεσαι σταθερή, προβλέψιμη σειρά (π.χ. αλφαβητική), πρέπει πρώτα να εξάγεις όλα τα κλειδιά σε ένα ξεχωριστό slice, και μετά να τα ταξινομήσεις μόνος σου, πριν τα διατρέξεις.
     </p>
 </div>
+
+<div class="callout">
+    <span class="tag">Γιατί δεν μπορείς να κάνεις iterate σε map με κλασικό for i := 0; ...</span>
+    <p>
+        Στα slices, το <code>for i := 0; i &lt; len(nums); i++</code> δουλεύει επειδή τα στοιχεία έχουν
+        <strong>θέσεις</strong> — υπάρχει πάντα ένα "στοιχείο στη θέση 0", ένα "στοιχείο στη θέση 1", και ούτω
+        καθεξής, με φυσική, αριθμητική σειρά. Ένας map <strong>δεν έχει καθόλου</strong> αυτή την έννοια. Τα κλειδιά
+        του δεν είναι υποχρεωτικά ακέραιοι (μπορεί να είναι strings, runes, ή σχεδόν οτιδήποτε άλλο comparable), και
+        ακόμα κι όταν τυχαίνει να είναι ακέραιοι (όπως στο <code>map[int]string</code> παραπάνω), δεν εγγυάται
+        κανείς ότι υπάρχουν όλες οι τιμές από το 0 μέχρι κάποιο <code>len</code> — μπορεί να έχεις μόνο τα κλειδιά
+        5, 100, και 999. Δεν υπάρχει, δηλαδή, κανένα "i-οστό κλειδί" να ζητήσεις.
+    </p>
+    <p> 
+        Γι' αυτό η <strong>μόνη</strong>
+        δυνατότητα για iteration σε map είναι η <code>for range</code> — σου δίνει τα πραγματικά κλειδιά που
+        υπάρχουν, όποια κι αν είναι αυτά, με όποια σειρά τα δώσει.
+    </p>
+</div>
 `);
 
         addQuiz([
             {
-                q: "Γιατί πρέπει σχεδόν πάντα να ξανααναθέτεις το αποτέλεσμα της append, δηλαδή nums = append(nums, x);",
+                q: "Ποιος από τους πέντε τρόπους δημιουργίας map αφήνει τον map σε κατάσταση όπου ΔΕΝ μπορείς ακόμα να γράψεις τιμές;",
                 options: [
-                    "Επειδή η append τροποποιεί πάντα το slice επιτόπου, στη μνήμη, και το return value χρησιμεύει μόνο για logging",
-                    "Επειδή η append ενδέχεται να δημιουργήσει ένα εντελώς νέο υποκείμενο array όταν η υπάρχουσα capacity δεν αρκεί πια, οπότε το επιστρεφόμενο slice μπορεί να διαφέρει από το αρχικό",
-                    "Επειδή χωρίς επανεκχώρηση, η ίδια η Go αρνείται να μεταγλωττίσει τον κώδικα με compile error",
-                    "Επειδή η append λειτουργεί αποκλειστικά μέσα σε for range loops, ποτέ ως ανεξάρτητη κλήση αλλού"
+                    "var m map[string]int",
+                    "m := make(map[string]int)",
+                    "m := map[string]int{}",
+                    "m := make(map[string]int, 50)"
                 ],
-                correct: 1,
-                explain: "Η append μπορεί να χρειαστεί μεγαλύτερο υποκείμενο array όταν εξαντλείται η capacity — τότε το slice που επιστρέφει δείχνει σε εντελώς νέα μνήμη, γι' αυτό πρέπει πάντα να ξανααναθέτεις το αποτέλεσμα στη μεταβλητή σου."
+                correct: 0,
+                explain: "Το var m map[string]int δηλώνει μόνο τον τύπο — ο map παραμένει nil μέχρι να γίνει make ή να δηλωθεί ως literal."
             },
             {
-                q: "Ποια είναι η βασική διαφορά ανάμεσα σε ένα array και ένα slice στη Go;",
+                q: "Στη δήλωση τύπου map[string]int, τι ρόλο παίζει το string;",
                 options: [
-                    "Το array μπορεί να περιέχει μόνο αριθμητικούς τύπους δεδομένων, ενώ το slice οποιονδήποτε τύπο",
-                    "Το array έχει σταθερό μέγεθος που αποτελεί μέρος του ίδιου του τύπου του, ενώ το slice είναι δυναμικού μεγέθους — μια 'θέα' πάνω σε ένα υποκείμενο array",
-                    "Το slice δεν υποστηρίζει καθόλου πρόσβαση μέσω index, σε αντίθεση με το array",
-                    "Δεν υπάρχει καμία πρακτική ή τεχνική διαφορά — το slice είναι απλώς εναλλακτικό όνομα (συνώνυμο) για array"
+                    "Είναι ο τύπος του κλειδιού (key)",
+                    "Είναι ο τύπος της τιμής (value)",
+                    "Είναι το όνομα της μεταβλητής map",
+                    "Δηλώνει πόσα στοιχεία θα χωράει ο map"
                 ],
-                correct: 1,
-                explain: "Το array έχει σταθερό, δεσμευμένο μέγεθος που είναι μέρος του τύπου του (π.χ. [5]int). Το slice είναι ευέλικτο σε μέγεθος, χτισμένο πάνω από ένα κρυμμένο υποκείμενο array, με τα δικά του pointer/length/capacity."
+                correct: 0,
+                explain: "Στη σύνταξη map[KeyType]ValueType, το πρώτο μέσα στις αγκύλες είναι πάντα ο τύπος του κλειδιού."
+            },
+            {
+                q: "Έχεις έναν m := make(map[string]int). Όταν γράφεις m[\"total\"], τι ακριβώς βρίσκεται μέσα στις αγκύλες [];",
+                options: [
+                    "Ένα κλειδί (key), τύπου string σε αυτή την περίπτωση",
+                    "Πάντα ένας ακέραιος index, όπως σε array ή slice",
+                    "Η ίδια η τιμή (value) που θέλεις να αποθηκεύσεις",
+                    "Ο συνολικός αριθμός στοιχείων του map"
+                ],
+                correct: 0,
+                explain: "Όταν χρησιμοποιείς τη μεταβλητή map, οι αγκύλες κρατούν πάντα το κλειδί — εδώ τύπου string, όχι υποχρεωτικά int."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `letters := make(map[rune]int)
+for _, ch := range "mississippi" {
+    letters[ch]++
+}
+fmt.Println(letters['s'])`,
+                lang: "go",
+                options: [
+                    "4",
+                    "3",
+                    "11",
+                    "1"
+                ],
+                correct: 0,
+                explain: "Στο loop, ουσιαστικά δημιουργείται σταδιακά ένας map letters με 4 στοιχεία, τα οποία είναι: m→1, i→4, s→4, p→2 (κάθε γράμμα ως κλειδί, με πλήθος εμφανίσεων ως τιμή).<br>Όταν ζητάμε letters['s'], ζητάμε την τιμή που είναι αποθηκευμένη στο κλειδί 's' — και αυτή είναι 4."
+            },
+            {
+                q: "Γιατί προτιμάς έναν map[int]string αντί για ένα []string, όταν τα 'κλειδιά' σου είναι αραιά (π.χ. μόνο 10, 250, και 3000);",
+                options: [
+                    "Επειδή το slice θα απαιτούσε να υπάρχουν όλες οι ενδιάμεσες θέσεις, σπαταλώντας μνήμη σε άδεια κελιά",
+                    "Επειδή το map[int]string είναι πάντα πιο γρήγορο σε κάθε δυνατή περίπτωση χρήσης",
+                    "Επειδή το slice δεν επιτρέπει καθόλου ακέραια index μεγαλύτερα από 100",
+                    "Δεν υπάρχει καμία πρακτική διαφορά ανάμεσά τους σε αυτή την περίπτωση"
+                ],
+                correct: 0,
+                explain: "Ένα []string με index μέχρι το 3000 θα χρειαζόταν 3001 θέσεις, οι περισσότερες άδειες. Ο map κρατά μόνο τα κλειδιά που πραγματικά χρησιμοποιείς."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `codes := map[int]string{
+    10:   "ten",
+    250:  "two-fifty",
+    3000: "three thousand",
+}
+fmt.Println(codes[250])`,
+                lang: "go",
+                options: [
+                    "two-fifty",
+                    "ten",
+                    "3000",
+                    "Δεν μεταγλωττίζεται, αφού λείπουν τα κλειδιά 0 έως 9"
+                ],
+                correct: 0,
+                explain: "codes[250] ζητά τη τιμή στο κλειδί 250, που είναι 'two-fifty'. Τα κλειδιά ενός map μπορούν να είναι εντελώς αραιά, χωρίς να χρειάζεται να υπάρχουν οι ενδιάμεσες τιμές."
+            },
+            {
+                q: "Ποιο από τα παρακάτω ισχύει για την ενσωματωμένη function delete();",
+                options: [
+                    "Δουλεύει μόνο πάνω σε maps· δεν υπάρχει αντίστοιχη delete() για slices",
+                    "Δουλεύει το ίδιο καλά και σε maps και σε slices, με πανομοιότυπη σύνταξη",
+                    "Δουλεύει μόνο σε slices, ποτέ σε maps",
+                    "Χρειάζεται πάντα δεύτερο όρισμα τύπου bool για να λειτουργήσει σωστά"
+                ],
+                correct: 0,
+                explain: "Η delete() είναι αποκλειστικά για maps. Για να αφαιρέσεις στοιχείο από slice, συνδυάζεις append με slicing."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `nums := []int{5, 15, 25, 35, 45}
+i := 2
+nums = append(nums[:i], nums[i+1:]...)
+fmt.Println(nums)`,
+                lang: "go",
+                options: [
+                    "[5 15 35 45]",
+                    "[5 15 25 35]",
+                    "[25]",
+                    "[5 15 25 35 45]"
+                ],
+                correct: 0,
+                explain: "nums[:2] δίνει [5 15], nums[3:] δίνει [35 45]. Η append τα ενώνει, παραλείποντας το στοιχείο στη θέση 2 (το 25): [5 15 35 45]."
+            },
+            {
+                q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+                code: `stock := map[string]int{"apples": 12}
+quantity, ok := stock["bananas"]
+fmt.Println(quantity, ok)`,
+                lang: "go",
+                options: [
+                    "0 false",
+                    "12 true, αφού επιστρέφεται πάντα η πρώτη τιμή του map",
+                    "Panic κατά την εκτέλεση, αφού κάθε αναζήτηση σε ανύπαρκτο κλειδί προκαλεί πάντα σφάλμα κατά το runtime",
+                    "Compile error, αφού το bananas δεν έχει δηλωθεί ως κλειδί"
+                ],
+                correct: 0,
+                explain: "Το κλειδί 'bananas' δεν υπάρχει, οπότε το quantity παίρνει τη zero value (0), και ok γίνεται false. <br>Διευκρίνιση: αυτή η αναζήτηση δεν 'δημιουργεί' το κλειδί bananas μέσα στον map. Ο map stock εξακολουθεί να έχει μόνο το apples μέσα του — το bananas ΔΕΝ προστέθηκε πουθενά. Η ανάγνωση μιας ανύπαρκτης τιμής απλά σου επιστρέφει τη zero value σαν απάντηση, χωρίς να αγγίξει καθόλου τον ίδιο τον map. <br>Μόνο μια ρητή ανάθεση, όπως stock[\"bananas\"] = 0, θα πρόσθετε πραγματικά το κλειδί."
+            },
+            {
+                q: "Γιατί δεν μπορείς να κάνεις iterate σε έναν map με κλασικό for i := 0; i < len(m); i++;",
+                options: [
+                    "Επειδή τα κλειδιά ενός map δεν έχουν καμία έννοια αριθμητικής θέσης ή σειράς, σε αντίθεση με slice/array",
+                    "Θα δούλευε μόνο αν τα κλειδιά του map ήταν ακέραιοι που ξεκινούν από το 0 και δεν έχουν κενά ανάμεσά τους",
+                    "Θα δούλευε κανονικά, αν γνωρίζαμε την εσωτερική σειρά με την οποία η Go αποθηκεύει τα κλειδιά, και τη χρησιμοποιούσαμε σαν index",
+                    "Επειδή η for αυτής της μορφής λειτουργεί μόνο σε slices και arrays"
+                ],
+                correct: 0,
+                explain: "Δεν υπάρχει 'κλειδί στη θέση i' σε έναν map — τα κλειδιά μπορεί να είναι strings, runes, ή ακέραιοι που όμως και αυτοί θα ήταν χωρίς καμία έννοια σειράς (!). Η μόνη δυνατότητα iteration είναι η for range."
+            },
+            {
+                q: "Τι κάνει ακριβώς το δεύτερο όρισμα στο make(map[string]int, 100);",
+                options: [
+                    "Δίνει στη Go μια υπόδειξη αναμενόμενου πλήθους στοιχείων, για καλύτερη απόδοση",
+                    "Ορίζει το ΜΕΓΙΣΤΟ επιτρεπτό πλήθος στοιχείων που μπορεί να έχει ο map",
+                    "Είναι υποχρεωτικό όρισμα, χωρίς το οποίο η make() δεν μεταγλωττίζεται",
+                    "Καθορίζει πόσα bytes θα καταλαμβάνει κάθε τιμή μέσα στον map κατά τα πρότυπα του Unicode, ανάλογα με το επιλεγμένο encoding (UTF-8/16/32), το οποίο ορίζει αν το μέγεθος των χαρακτήρων θα είναι σταθερό ή μεταβλητό."
+                ],
+                correct: 0,
+                explain: "Το capacity hint είναι απλά μια υπόδειξη προς τη Go — βοηθάει σε απόδοση, αλλά ο map μπορεί κάλλιστα να μεγαλώσει πέρα από αυτό το νούμερο."
             }
         ]);
 
         addFillBlank([
             {
-                code: `m := __make__(map[string]int)
-m["apple"] = 3
+                code: `var counts __type1__          // declares the TYPE — nil map, can't write yet
+counts __init__ make(map[rune]int, __cap__) // now ready, with a capacity hint of 20
 
-value, ok := m[__key__]
-if ok {
-    fmt.Println("found:", value)
-}
-
-__delete__(m, "apple") // remove the key entirely`,
+counts['x'] __eq__ 5           // using the variable: [] holds a KEY (rune), not necessarily int`,
                 blanks: [
-                    { id: "make", answer: "make" },
-                    { id: "key", answer: "\"apple\"" },
-                    { id: "delete", answer: "delete" }
+                    { id: "type1", answer: "map[rune]int" },
+                    { id: "init", answer: "=" },
+                    { id: "cap", answer: "20" },
+                    { id: "eq", answer: "=" }
                 ],
-                explain: "make δημιουργεί κενό, έτοιμο προς χρήση map, η αναζήτηση με comma-ok pattern δίνει τιμή+πληροφορία ύπαρξης, και η delete αφαιρεί ένα κλειδί εντελώς."
+                explain: "var δηλώνει μόνο τον τύπο (nil map). Μετά το make, μπορείς να γράψεις κανονικά με =.",
+                lang: "go"
             },
             {
-                code: `nums := []int{1, 2, 3}
-nums = __append__(nums, 4) // reassignment matters here
-
-for i, v := __range__ nums {
-    fmt.Println(i, v)
-}`,
+                code: `letters := make(map[rune]int)
+for _, ch := __rng__ "mississippi" {
+    letters[ch]__inc__
+}
+fmt.Println(letters['s']) // 4`,
                 blanks: [
-                    { id: "append", answer: "append" },
-                    { id: "range", answer: "range" }
+                    { id: "rng", answer: "range" },
+                    { id: "inc", answer: "++" },
                 ],
-                explain: "append προσθέτει ένα στοιχείο (ενδεχομένως δημιουργώντας νέο υποκείμενο array), και το range δίνει index+value σε κάθε επανάληψη του iteration."
+                explain: "range διασχίζει το string rune-προς-rune. Το letters[ch]++ αυξάνει τον μετρητή. Το 's' εμφανίζεται 4 φορές στο mississippi.",
+                lang: "go"
+            },
+            {
+                code: `stock := __map__[string]__type__{"apples": 12}
+
+quantity, __ok__ := __stock__["bananas"]
+__if__ !ok {
+    fmt.Println("not in stock")
+}
+fmt.Println(quantity) // 0`,
+                blanks: [
+                    { id: "type", answer: "int" },
+                    { id: "ok", answer: "ok" },
+                    { id: "zero", answer: "ok" },
+                    { id: "stock", answer: "stock" },
+                    { id: "if", answer: "if" },
+                    { id: "map", answer: "map" }
+                ],
+                explain: "Το comma-ok pattern δίνει τιμή+bool.",
+                lang: "go"
             }
         ], {
-            note: "Συμπλήρωσε τα κενά με βάση όσα είδαμε για slices και maps σε αυτή την ενότητα."
+            note: "Συμπλήρωσε τα κενά με βάση όσα είδαμε για maps σε αυτή την ενότητα."
         });
 
         addContent(`
 <div class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
 <h1>Μετρητής Συχνότητας Λέξεων</h1>
 <p class="lede">Δημιούργησε έναν map που μετράει τη συχνότητα εμφανίσεων λέξεων σε ένα slice από strings: <code>words := []string{"apple", "orange", "pear", "orange", "apple", "apple", "pear", "pear", "apple"}</code>. Διάσχισε το slice με loop, ενημερώνοντας τον map, και στη συνέχεια τύπωσε τα αποτελέσματα.</p>
-<div class="callout">
-  <span class="tag">Οδηγίες</span>
-  Για κάθε λέξη μέσα στο slice, αύξησε κατά 1 τον αντίστοιχο μετρητή της στον map. Θυμήσου τη zero value: αφού η zero value του int είναι 0, μπορείς να γράψεις απευθείας <code>m[word]++</code> ακόμα και όταν το κλειδί <code>word</code> δεν υπάρχει ακόμα στον map — η Go το αντιμετωπίζει σαν να ξεκινούσε ήδη από 0, χωρίς να χρειάζεται προηγούμενος ρητός έλεγχος ύπαρξης.
+
+<div class="spoiler">
+    <div class="spoiler-lock"><span>HINT — Σύρε για να το δεις →</span></div>
+    <p>
+        Για κάθε λέξη μέσα στο slice, αύξησε κατά 1 τον αντίστοιχο μετρητή της στον map. Θυμήσου τη zero value: αφού η zero value του int είναι 0, μπορείς να γράψεις απευθείας <code>m[word]++</code> ακόμα και όταν το κλειδί <code>word</code> δεν υπάρχει ακόμα στον map — η Go το αντιμετωπίζει σαν να ξεκινούσε ήδη από 0, χωρίς να χρειάζεται προηγούμενος ρητός έλεγχος ύπαρξης.
+    </p>
 </div>
 
+<br>
 <div class="spoiler"><div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div><pre><code><span class="tok-kw">package</span> <span class="tok-func">main</span>
 
 <span class="tok-kw">import</span> <span class="tok-str">"fmt"</span>
