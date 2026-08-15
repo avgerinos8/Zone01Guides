@@ -1247,11 +1247,72 @@ function centerDotsOn(idx) {
 
   const viewport = dotsEl.clientWidth;
   const dot = dotEls[idx];
-  // dot.offsetLeft is relative to #dots-track (its offsetParent), since
-  // #dots-track is position:absolute and dots have no other positioned
-  // ancestor in between.
-  const dotCenter = dot.offsetLeft + dot.offsetWidth / 2;
+  // Diamonds live inside a nested .dot-group wrapper, so offsetLeft alone
+  // (relative to each element's own offsetParent) is unreliable across
+  // both top-level dots and nested diamonds. getBoundingClientRect() vs.
+  // the track's own rect gives the true position regardless of nesting.
+  // Both rects already reflect the track's CURRENT transform equally
+  // (the dot moves together with its ancestor track), so subtracting
+  // them cancels that transform out on its own — dotRect.left - trackRect.left
+  // is already the dot's untransformed offset within the track's local
+  // coordinate space. Do NOT subtract dotsScrollX again here: that would
+  // remove the same offset a second time and throw off the centered
+  // target whenever the track is already scrolled (i.e. almost always
+  // in a deck that doesn't fit the viewport).
+  const dotRect = dot.getBoundingClientRect();
+  const trackRect = dotsTrackEl.getBoundingClientRect();
+  const dotCenter = (dotRect.left - trackRect.left) + dotRect.width / 2;
   setDotsScroll(viewport / 2 - dotCenter);
+}
+
+/**
+ * Shows a small "x/y" position badge above whichever .dot-group contains
+ * the currently active diamond, and hides it everywhere else. A plain
+ * top-level content dot has no group, so this only ever affects grouped
+ * quiz/fillblank/matching/glossary/vscode-challenge diamonds.
+ * @param {number} idx - The newly active slide index.
+ */
+// ── shared floating group-position badge ────────────────────────────────── ⊃
+// Same reasoning as the shared tooltip above: a badge positioned BELOW a
+// diamond would be clipped by #dots's overflow:hidden if nested inside
+// it (the container is only 26px tall). One shared element on
+// document.body, positioned via getBoundingClientRect(), sidesteps that
+// entirely — and stays perfectly in sync with the dots-track scroll
+// position since it's repositioned fresh on every goTo().
+let groupBadgeEl = null;
+
+/** Lazily creates (once) and returns the single shared group-badge element. */
+function ensureGroupBadgeEl() {
+  if (groupBadgeEl) return groupBadgeEl;
+  groupBadgeEl = document.createElement("div");
+  groupBadgeEl.className = "dot-group-badge";
+  document.body.appendChild(groupBadgeEl);
+  return groupBadgeEl;
+}
+
+/**
+ * Shows a small "x/y" position badge below whichever .dot-group contains
+ * the currently active diamond, and hides it everywhere else. A plain
+ * top-level content dot has no group, so this only ever affects grouped
+ * quiz/fillblank/matching/glossary/vscode-challenge diamonds.
+ * @param {number} idx - The newly active slide index.
+ */
+function updateGroupBadge(idx) {
+  const badge = ensureGroupBadgeEl();
+  const dot = dotEls[idx];
+  if (!dot || !dot.classList.contains("dot-diamond")) {
+    badge.classList.remove("visible");
+    return;
+  }
+
+  const pos = Number(dot.dataset.groupPos) + 1;
+  const size = dot.dataset.groupSize;
+  badge.textContent = `${pos}/${size}`;
+
+  const rect = dot.getBoundingClientRect();
+  badge.style.left = `${rect.left + rect.width / 2}px`;
+  badge.style.top = `${rect.bottom + 6}px`;
+  badge.classList.add("visible");
 }
 
 /**
@@ -1312,6 +1373,7 @@ function goTo(i) {
   dotEls[current].classList.add("active");
   slideEls[current].scrollTop = 0;
   centerDotsOn(current); // re-center the windowed dots track on the new active dot
+  updateGroupBadge(current);
 
   counterEl.textContent = (current + 1) + " / " + slides.length;
   fillEl.style.width = (((current + 1) / slides.length) * 100) + "%";
@@ -1369,6 +1431,22 @@ function initSlideDeck(config) {
   let lastQuizIdx = -1;
   slides.forEach((s, i) => { if (s.type === "quiz") lastQuizIdx = i; });
 
+  // dotEls stays a SPARSE ARRAY the same length as slides, one entry per
+  // slide index — dotEls[i] always resolves to the exact clickable DOM
+  // element representing slide i, whether that's a full-size content dot
+  // or a small diamond nested inside a group. Everything downstream
+  // (goTo(), centerDotsOn()) keeps indexing dotEls[current] exactly as
+  // before and needs no changes.
+  dotEls = new Array(slides.length);
+
+  // Render every slide's content up front (needed before classifying,
+  // since getDotPreviewText reads each slide's real rendered DOM to spot
+  // "VSCode Challenge" / "Γλωσσάρι" eyebrows — those are type:"content"
+  // slides at the data level, but should still group as small diamonds
+  // alongside quiz/fillblank/matching, not as a full-size content dot).
+  const contentEls = new Array(slides.length);
+  const previews = new Array(slides.length);
+
   slides.forEach((s, i) => {
     const el = document.createElement("div");
     el.className = "slide";
@@ -1378,25 +1456,65 @@ function initSlideDeck(config) {
     el.appendChild(contentEl);
     deckEl.appendChild(el);
     renderSlide(el, contentEl, s, i);
-
-    const dot = document.createElement("div");
-    dot.addEventListener("click", () => goTo(i));
-
-    const preview = getDotPreviewText(contentEl, s.type, i, slides.length, i === lastQuizIdx);
-    dot.className = "dot"
-      + (s.type !== "content" ? " quiz-dot" : "")
-      + (preview.dim ? " dot-dim" : "");
-    dot.dataset.tipEyebrow = preview.eyebrow || "";
-    dot.dataset.tipTitle = preview.title || "";
-    dot.dataset.tipLabel = preview.label || "";
-    dot.addEventListener("mouseenter", () => showDotTooltip(dot));
-    dot.addEventListener("mouseleave", hideDotTooltip);
-
-    dotsTrackEl.appendChild(dot);
+    contentEls[i] = contentEl;
+    previews[i] = getDotPreviewText(contentEl, s.type, i, slides.length, i === lastQuizIdx);
   });
 
+  /**
+   * Builds one clickable dot (circle) or diamond element for slide i,
+   * wires its click/hover handlers, and returns it. Shared by both the
+   * top-level content dots and the small grouped diamonds below.
+   * @param {number} i - Slide index this element represents.
+   * @param {boolean} isDiamond
+   * @returns {HTMLElement}
+   */
+  function buildDotEl(i, isDiamond) {
+    const el = document.createElement("div");
+    el.className = isDiamond ? "dot dot-diamond" : "dot";
+    if (slides[i].type !== "content") el.classList.add("quiz-dot");
+    el.addEventListener("click", () => goTo(i));
+
+    const preview = previews[i];
+    el.dataset.tipEyebrow = preview.eyebrow || "";
+    el.dataset.tipTitle = preview.title || "";
+    el.dataset.tipLabel = preview.label || "";
+    el.addEventListener("mouseenter", () => showDotTooltip(el));
+    el.addEventListener("mouseleave", hideDotTooltip);
+
+    dotEls[i] = el;
+    return el;
+  }
+
+  // Group by the SAME "special" classification getDotPreviewText already
+  // uses (preview.dim) — this is quiz/fillblank/matching/glossary/vscode
+  // challenge, regardless of each slide's raw .type. Everything else
+  // (real theory content, including START/END) gets a full-size dot in
+  // the main track; each run of consecutive "special" slides that
+  // follows becomes one small .dot-group of diamonds next to it.
+  let i = 0;
+  while (i < slides.length) {
+    dotsTrackEl.appendChild(buildDotEl(i, false));
+    i++;
+
+    const groupIndices = [];
+    while (i < slides.length && previews[i].dim) {
+      groupIndices.push(i);
+      i++;
+    }
+    if (groupIndices.length) {
+      const group = document.createElement("div");
+      group.className = "dot-group";
+      groupIndices.forEach((gi, posInGroup) => {
+        const dEl = buildDotEl(gi, true);
+        dEl.dataset.groupPos = posInGroup;
+        dEl.dataset.groupSize = groupIndices.length;
+        group.appendChild(dEl);
+      });
+      dotsTrackEl.appendChild(group);
+    }
+  }
+
   slideEls = Array.from(document.querySelectorAll(".slide"));
-  dotEls = Array.from(document.querySelectorAll(".dot"));
 
   resetBtn.addEventListener("click", performHardReset);
   document.addEventListener("keydown", (e) => {
@@ -1419,12 +1537,14 @@ function initSlideDeck(config) {
   goTo(current);
   // On first load, #dots/#dots-track may not have a finalized layout yet
   // at this exact synchronous point (no paint has happened yet) —
-  // clientWidth/scrollWidth can read 0 or stale here, which throws the
-  // windowed dot scroller off until the next manual navigation forces a
-  // recompute. Re-run the centering once after the next paint, plus one
-  // more delayed pass as a safety net for slower initial layouts (e.g. a
+  // clientWidth/scrollWidth/getBoundingClientRect can read 0 or stale
+  // here, which throws off both the windowed dot scroller AND the
+  // floating group-position badge (same root cause: both rely on real
+  // layout geometry) until the next manual navigation forces a
+  // recompute. Re-run both once after the next paint, plus one more
+  // delayed pass as a safety net for slower initial layouts (e.g. a
   // background tab becoming visible), to guarantee correct measurements.
-  requestAnimationFrame(() => centerDotsOn(current));
-  setTimeout(() => centerDotsOn(current), 300);
+  requestAnimationFrame(() => { centerDotsOn(current); updateGroupBadge(current); });
+  setTimeout(() => { centerDotsOn(current); updateGroupBadge(current); }, 300);
   updateTotalScoreDisplay();
 }
