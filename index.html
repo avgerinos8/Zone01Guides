@@ -358,16 +358,28 @@
                 }
             }
 
+            // Έλεγχος URL parameter κατά το φόρτωμα
+            window.addEventListener('DOMContentLoaded', function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('show') === 'hidden' && !isOld) {
+                    toggleLessons();
+                }
+            });
+
             // το cursor κάνει εναλλαγή
             trigger.addEventListener('click', function (e) {
                 e.stopPropagation();
                 toggleLessons();
+                // Ενημέρωση URL χωρίς reload
+                const newUrl = isOld ? '?show=hidden' : window.location.pathname;
+                window.history.pushState({}, '', newUrl);
             });
 
             // προαιρετικά: αν ο χρήστης πατήσει ESC, επιστρέφουμε στα κύρια
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && isOld) {
                     toggleLessons();   // γυρίζει πίσω
+                    window.history.pushState({}, '', window.location.pathname);
                 }
             });
 
