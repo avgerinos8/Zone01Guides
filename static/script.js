@@ -1297,17 +1297,43 @@ function ensureGroupBadgeEl() {
  * quiz/fillblank/matching/glossary/vscode-challenge diamonds.
  * @param {number} idx - The newly active slide index.
  */
+/**
+ * Shows a small position badge below the currently active dot/diamond,
+ * and hides it everywhere else. Behavior depends on viewport width:
+ *
+ * - Above the 920px breakpoint (matches the compact-nav-bar media query
+ *   in style.css, which is also where #slide-counter gets hidden): shows
+ *   "x/y" — the active diamond's position WITHIN its own group — and
+ *   only applies to diamonds (a plain content dot has no group).
+ * - At 920px and below: #slide-counter is hidden entirely to save
+ *   horizontal space, so this always shows the deck-wide
+ *   "current/total" position instead, under whichever dot or diamond is
+ *   currently active — replacing the information #slide-counter used to
+ *   carry, rather than the group-relative position.
+ * @param {number} idx - The newly active slide index.
+ */
 function updateGroupBadge(idx) {
   const badge = ensureGroupBadgeEl();
   const dot = dotEls[idx];
-  if (!dot || !dot.classList.contains("dot-diamond")) {
+  if (!dot) {
     badge.classList.remove("visible");
     return;
   }
 
-  const pos = Number(dot.dataset.groupPos) + 1;
-  const size = dot.dataset.groupSize;
-  badge.textContent = `${pos}/${size}`;
+  const compact = window.innerWidth <= 920;
+
+  if (compact) {
+    // Deck-wide counter, always shown under whatever dot is active.
+    badge.textContent = `${idx + 1}/${slides.length}`;
+  } else if (dot.classList.contains("dot-diamond")) {
+    // Desktop: group-relative position, diamonds only.
+    const pos = Number(dot.dataset.groupPos) + 1;
+    const size = dot.dataset.groupSize;
+    badge.textContent = `${pos}/${size}`;
+  } else {
+    badge.classList.remove("visible");
+    return;
+  }
 
   const rect = dot.getBoundingClientRect();
   badge.style.left = `${rect.left + rect.width / 2}px`;
@@ -1349,7 +1375,7 @@ function wireDotsArrows() {
   rightArrow.addEventListener("mouseenter", () => startDotsAutoScroll(1));
   rightArrow.addEventListener("mouseleave", stopDotsAutoScroll);
 
-  window.addEventListener("resize", () => centerDotsOn(current));
+  window.addEventListener("resize", () => { centerDotsOn(current); updateGroupBadge(current); });
 }
 
 // ── deck initialization and navigation ─────────────────────────────────── ⊃

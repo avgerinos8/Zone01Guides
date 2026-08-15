@@ -1089,7 +1089,7 @@ pre code {
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
-  background: linear-gradient(0deg, rgba(var(--tone-1-rgb), 0.98) 70%, rgba(var(--tone-1-rgb), 0) 100%);
+  background: linear-gradient(0deg, rgba(var(--tone-1-rgb), 0.98) 80%, rgba(var(--tone-1-rgb), 0) 100%);
   z-index: 50;
 }
 
@@ -1276,8 +1276,7 @@ pre code {
   top: 0;
   bottom: 0;
   width: 34px;
-  display: none;
-  /* shown only via .can-scroll-left / .can-scroll-right on #dots */
+  display: none; /* shown only via .can-scroll-left / .can-scroll-right on #dots */
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -1407,16 +1406,24 @@ li {
   border-radius: 5px;
 }
 
-/* ── compact navigation bar for screens under 720px ──────────────────────── ⊃ */
-@media (max-width: 720px) {
+/* ── compact navigation bar for screens under 920px ──────────────────────── ⊃ */
+@media (max-width: 920px) {
 
   /* Dots now show on small screens too — the windowed/scrollable dot
      track (see #dots overflow:hidden + #dots-track transform sliding,
      the hover-scroll arrows, and the shared tooltip) already handles any
      number of slides without wrapping or overflowing, so there is no
-     longer a reason to hide them here. #slide-counter remains visible
-     alongside them (no separate rule hid it before, so nothing changes
-     there). */
+     longer a reason to hide them here. */
+
+  /* The right-side "x/59" slide counter is dropped entirely at this
+     width to free up horizontal space — its information is replaced by
+     the always-visible per-dot position badge under the active dot/
+     diamond instead (see .dot-group-badge + updateGroupBadge() in
+     script.js, which switches to deck-wide "current/total" mode at this
+     same breakpoint). */
+  #slide-counter {
+    display: none;
+  }
 
   /* Swap long desktop labels with short mobile labels */
   .desktop-text {
