@@ -57,7 +57,7 @@
   <div class="title-badge"><img src="./icons/go_two.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
   <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
   <h1>Go — Μέρος 2</h1>
-  <p class="lede">Μοτίβα λύσης προβλημάτων, αλγόριθμοι αναζήτησης και ταξινόμησης, αναδρομή, και οι θεμελιώδεις τεχνικές πίσω από σχεδόν κάθε δύσκολο πρόβλημα προγραμματισμού.</p>
+  <p class="lede">Μοτίβα λύσης προβλημάτων, αλγόριθμοι αναζήτησης και ταξινόμησης, αναδρομή, και θεμελιώδεις τεχνικές πίσω από δύσκολα προβλήματα προγραμματισμού.</p>
   <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
 </div>
 `);
@@ -1051,8 +1051,7 @@ func CountLetters(input string) int {
     }
 }</code></pre>
 
-<div class="callout"><span class="tag">Ίδιο αποτέλεσμα με πριν, αλλά διαφορετική οργάνωση</span>Το <code>continue</code> "παρακάμπτει" τον κώδικα που ακολουθεί, ώστε να τρέξει μόνο όταν πραγματικά χρειάζεται.</div>
-
+<p>Το <code>continue</code> "παρακάμπτει" τον κώδικα που ακολουθεί, ώστε να τρέξει μόνο όταν πραγματικά χρειάζεται.</p>
 
 <p><strong style="font-size: 1.2em"><code>early return</code></strong> — τερματίζει όλη τη function αμέσως, όχι μόνο ένα πέρασμα της loop. Π.χ. μια function που μετράει πόσα <code>e</code> υπάρχουν σε ένα string:</p>
 
@@ -1070,7 +1069,48 @@ func CountLetters(input string) int {
 }</code></pre>
 
 <p>Το <code>if len(input) == 0 { return 0 }</code> εδώ δεν είναι απλά "προαιρετική βελτιστοποίηση" — δηλώνει ρητά μια περίπτωση που ξέρουμε την απάντηση εκ των προτέρων, χωρίς να χρειάζεται καν να μπούμε στη λούπα.</p>
+
+
+<div class="callout good"><span class="tag">Good practice</span>Είναι πάντα καλή ιδέα να χρησιμοποιείς break, continue και early return για να "ξεφορτώνεσαι" περιπτώσεις, αντί για <code>if</code> μέσα σε <code>if</code> μέσα σε <code>if</code> — τα nested if δυσκολεύουν πολύ την ανάγνωση του κώδικα. Ο επίσημος <a href="https://go.dev/wiki/CodeReviewComments#indent-error-flow" target="_blank" rel="noopener">Go Code Review Comments</a> οδηγός προτείνει ρητά αυτό ακριβώς: κράτα το "happy path" της function χωρίς indentation — χειρίσου τα error/edge cases πρώτα με early return/continue, ώστε ο κύριος κώδικας να μένει επίπεδος αντί να βαθαίνει σε κάθε νέα συνθήκη.</div>
+<pre><code class="lang-go">// Chaos: nested ifs, hard to follow
+func PrintValid(numbers []int) {
+    for _, n := range numbers {
+        if n != 0 {
+            if n > 0 {
+                if n < 100 {
+                    fmt.Println(n)
+                } else {
+                    fmt.Println("rejected: too big")
+                }
+            } else {
+                fmt.Println("rejected: negative")
+            }
+        } else {
+            fmt.Println("rejected: zero")
+        }
+    }
+}
+
+// Organized: early exits, flat and easy to read
+func PrintValid(numbers []int) {
+    for _, n := range numbers {
+        if n == 0 {
+            fmt.Println("rejected: zero")
+            continue
+        }
+        if n < 0 {
+            fmt.Println("rejected: negative")
+            continue
+        }
+        if n >= 100 {
+            fmt.Println("rejected: too big")
+            continue
+        }
+        fmt.Println(n)
+    }
+}</code></pre>
 <br>
+
 <h1>Sentinel Value</h1>
 <p>Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "κάτι πήγε στραβά" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong>.</p>
 
@@ -1301,7 +1341,403 @@ func SumNumbers(input string) (sum int, __okname__ bool) {
         });
 
 
-        // ── VSCode Challenge #1 — combines 2 patterns ────────────────────────── ⊃
+        // ── Section 3 more patterns ──────────────────────────────────────────── ⊃
+        addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
+<h1>Extremum: Εύρεση Μεγίστου/Ελαχίστου</h1>
+<p>Ένα από τα πιο συχνά ερωτήματα πάνω σε δεδομένα: ποιο είναι το μεγαλύτερο (ή μικρότερο) στοιχείο;</p>
+
+<pre><code class="lang-go">// looks reasonable... but is it?
+func Max(numbers []int) int {
+    var max int
+    for _, n := range numbers {
+        if n > max {
+            max = n
+        }
+    }
+    return max
+}
+</code></pre>
+
+<p>Όλα φαίνονται να δουλεύουν σωστά. Αν βρεις μεγαλύτερο αριθμό από το <code>max</code>, αντικατέστησέ το — επομένως, αφού θα συγκρίνω όλους τους αριθμούς, στο τέλος θα καταλήξω με τον μεγαλύτερο. Για θετικούς αριθμούς όλα δουλεύουν σωστά. Το bug κρύβεται στην αρχικοποίηση της μεταβλητής μας!</p>
+
+<p>Δοκίμασέ το νοερά με τους αριθμούς <code>{-8, -3, -20}</code>. Το σωστό μέγιστο είναι <code>-3</code> — αλλά η function επιστρέφει <code>0</code>, αφού κανένα στοιχείο δεν ξεπερνάει ποτέ την αρχική τιμή <code>0</code>. Το <code>0</code> "κρύφτηκε" σαν λανθασμένη απάντηση, χωρίς κανένα ορατό σφάλμα.</p>
+
+<p>Η λύση: αρχικοποίησε τη μεταβλητή με ένα <em>πραγματικό</em> στοιχείο του slice — το πρώτο — αντί για μια αυθαίρετη τιμή σαν το 0:</p>
+<pre><code class="lang-go">func Max(numbers []int) int {
+    max := numbers[0] // start from a real element, not an arbitrary guess
+    for _, n := range numbers[1:] { // already used index 0 above, skip it
+        if n > max {
+            max = n
+        }
+    }
+    return max
+}
+// Max([]int{-8, -3, -20}) → -3   ✓</code></pre>
+
+<div class="callout"><span class="tag">Προσοχή</span>Αυτή η εκδοχή κάνει panic αν το slice είναι κενό — το <code>numbers[0]</code> δεν υπάρχει. Πάντα να ελέγχεις <code>len(numbers) == 0</code> πρώτα, αν υπάρχει έστω και μικρή πιθανότητα κενού slice.</div>
+
+<p>Ας πούμε τώρα, πώς το πρόβλημα ήταν βρες τον μεγαλύτερο <strong>άρτιο</strong> αριθμό ενός slice. Αν δοκίμαζες να «σπείρεις» τη μεταβλητή σου με το πρώτο στοιχείο του slice, θα είχες πρόβλημα αν αυτό το πρώτο στοιχείο ήταν μονός — δεν είναι καν υποψήφια απάντηση, οπότε αν τελικά δεν υπάρχει κανένας άρτιος στο slice, θα κατέληγες να επιστρέφεις έναν μονό αριθμό σαν να ήταν σωστό αποτέλεσμα, χωρίς κανένα σήμα ότι κάτι πήγε στραβά.</p>
+
+<p>Η εναλλακτική λύση εδώ: αντί για κάποιο στοιχείο του slice, ξεκίνα από τη <strong>μικρότερη δυνατή τιμή</strong> που θα μπορούσε ποτέ να υπάρξει — αυτό είναι το <strong>extremum pattern</strong>. Η Go δίνει έτοιμη μια τέτοια τιμή στο πακέτο <code>math</code>:</p>
+
+<pre><code class="lang-go">import "math"
+
+// MaxEven returns the largest even number in the slice.
+// If no even number exists, it returns math.MinInt — impossible as a real answer.
+func MaxEven(numbers []int) int {
+    best := math.MinInt // smallest possible value — a safe starting point
+    for _, n := range numbers {
+        if n%2 == 0 && n > best {
+            best = n
+        }
+    }
+    return best
+}
+// MaxEven([]int{7, 3, 12, 5, 8, 11}) → 12
+// MaxEven([]int{7, 3, 9, 5, 11})     → math.MinInt  (no even numbers at all)</code></pre>
+
+<div class="callout good"><span class="tag">Η λεπτομέρεια που μετράει</span>Και οι δύο προσεγγίσεις δουλεύουν όταν βρεθεί έστω ένας άρτιος. Η διαφορά φαίνεται στην αποτυχημένη περίπτωση: με το <code>numbers[0]</code> trick, αν δεν υπάρχει κανένας άρτιος, θα κατέληγες να επιστρέφεις έναν μονό αριθμό σαν να ήταν έγκυρη απάντηση — τίποτα δεν σου λέει ότι κάτι πήγε στραβά. Με το <code>math.MinInt</code>, το ίδιο το αποτέλεσμα σου το λέει: αν το τελικό <code>best</code> ισούται με <code>math.MinInt</code>, ξέρεις με σιγουριά ότι δεν βρέθηκε κανένας άρτιος — μπορείς να το ελέγξεις ρητά με <code>if best == math.MinInt</code>, αντί να το ανακαλύψεις αργότερα σαν bug.</div>
+
+<p>Στην πραγματικότητα, το extremum pattern από μόνο του δεν έχει ιδιαίτερο ενδιαφέρον — υπάρχουν αρκετές καλύτερες εναλλακτικές, ανάλογα με το πρόβλημα. Το παρουσιάσαμε εδώ κυρίως για να μπεις στη διαδικασία να σκέφτεσαι πόσο σημαντικό ρόλο παίζει η αρχικοποίηση μιας μεταβλητής — και, ένα βήμα παραπέρα, ότι η καλύτερη λύση συχνά δεν είναι ούτε το <code>numbers[0]</code> ούτε το <code>math.MinInt</code>, αλλά ένα <strong>τυχαίο στοιχείο από το ίδιο το δείγμα</strong> σου.</p>
+
+<br>
+<h1>Παρακολούθηση Προηγούμενης Τιμής</h1>
+<p>Πολλά προβλήματα χρειάζονται σύγκριση <em>διαδοχικών</em> στοιχείων — "είναι το τρέχον μεγαλύτερο από το προηγούμενο;" Το <code>range</code> από μόνο του δεν σου δίνει το προηγούμενο στοιχείο· χρειάζεσαι μια ξεχωριστή μεταβλητή που το "κουβαλάει" μαζί σου.</p>
+
+<p>Πρόβλημα: έχεις τις τιμές μιας μετοχής ανά ημέρα. Βρες το μήκος της μεγαλύτερης <em>συνεχόμενης ανοδικής πορείας</em> — πόσες ημέρες στη σειρά η τιμή ανέβαινε σε σχέση με την προηγούμενη:</p>
+
+<pre><code class="lang-go">prices := []int{3, 5, 8, 4, 9, 12, 15, 2}</code></pre>
+
+<pre><code class="lang-go">func LongestUpstreak(prices []int) int {
+    if len(prices) == 0 {
+        return 0
+    }
+
+    best := 1
+    current := 1
+    prev := prices[0] // seed with the first value before the loop starts
+
+    for _, p := range prices[1:] {
+        if p > prev {
+            current++ // still climbing
+        } else {
+            current = 1 // streak broken, restart counting from this day
+        }
+        if current > best {
+            best = current
+        }
+        prev = p // this iteration's value becomes "previous" for the next one
+    }
+    return best
+}
+// LongestUpstreak(prices) → 4</code></pre>
+
+<p>Ας το τρέξουμε νοερά, τιμή-τιμή:</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">τιμή</td><td class="gt-term">prev</td><td class="gt-def">current / best</td></tr>
+<tr><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-def">current=1, best=1 (αρχική τιμή)</td></tr>
+<tr><td class="gt-term">5</td><td class="gt-term">3</td><td class="gt-def">5 &gt; 3 → current=2, best=2</td></tr>
+<tr><td class="gt-term">8</td><td class="gt-term">5</td><td class="gt-def">8 &gt; 5 → current=3, best=3</td></tr>
+<tr><td class="gt-term">4</td><td class="gt-term">8</td><td class="gt-def">4 &lt; 8 → current=1 (σπάει η πορεία), best=3</td></tr>
+<tr><td class="gt-term">9</td><td class="gt-term">4</td><td class="gt-def">9 &gt; 4 → current=2, best=3</td></tr>
+<tr><td class="gt-term">12</td><td class="gt-term">9</td><td class="gt-def">12 &gt; 9 → current=3, best=3</td></tr>
+<tr><td class="gt-term">15</td><td class="gt-term">12</td><td class="gt-def">15 &gt; 12 → current=4, best=<strong>4</strong></td></tr>
+<tr><td class="gt-term">2</td><td class="gt-term">15</td><td class="gt-def">2 &lt; 15 → current=1 (σπάει), best=4</td></tr>
+</table>
+
+<p>Αποτέλεσμα: <strong>4</strong> — η πορεία <code>4 → 9 → 12 → 15</code>.</p>
+
+<div class="callout good"><span class="tag">Τι κάνει το prev</span>Το <code>prev</code> "ταξιδεύει" μαζί με τη λούπα: πρώτα χρησιμοποιείται για τη σύγκριση, <em>μετά</em> ενημερώνεται με την τρέχουσα τιμή. Αν η σειρά ήταν ανάποδη — ενημέρωση πρώτα, σύγκριση μετά — κάθε τιμή θα συγκρινόταν με τον εαυτό της, και το <code>p > prev</code> θα ήταν πάντα false.</div>
+
+<p>Θα μπορούσαμε βέβαια να συγκρίνουμε το τρέχον στοιχείο απευθείας με <code>prices[i-1]</code>, αντί να κρατάμε ξεχωριστή μεταβλητή <code>prev</code> — αλλά αυτό χρειάζεται έλεγχο <code>i > 0</code> σε κάθε iteration (αλλιώς <code>prices[-1]</code> δεν υπάρχει → panic). Το <code>prev</code> σαν μεταβλητή είναι συνολικά καλύτερη λύση — είναι ένα πολύ ωραίο pattern που θα χρησιμοποιήσεις αρκετά σε loops. Αποφεύγει εντελώς αυτόν τον έλεγχο, αφού αρχικοποιείται πριν καν ξεκινήσει η λούπα — και δουλεύει το ίδιο, ακόμα κι αν οι τιμές δεν έρχονταν από ένα slice με index, αλλά μία-μία από κάπου αλλού.</p>
+<p>Παρατήρησε επίσης το "αόριστο" <code>best := 1</code> — σαν να μην είχαν προηγηθεί όσα είπαμε με αφορμή το extremum pattern παραπάνω. Ας προβληματιστούμε λίγο για την αρχική τιμή που έχουμε βάλει. Δοκίμασέ το νοερά με μια εντελώς φθίνουσα ακολουθία, π.χ. <code>{15, 12, 9, 6, 3}</code>: κάθε μέρα «σπάει» την πορεία, το <code>current</code> ξαναγυρίζει σε 1 συνέχεια. Αφού καμία μέρα δεν ήταν πραγματικά ανοδική, θα περίμενες το τελικό <code>best</code> να είναι 0 ή 1;</p>
+
+<br>
+
+<h1>Sliding Window</h1>
+<p>Πρόβλημα: στο ίδιο slice τιμών, βρες το <strong>μέγιστο άθροισμα οποιωνδήποτε 3 διαδοχικών ημερών</strong> — δηλαδή το καλύτερο δυνατό "παράθυρο" τριών τιμών στη σειρά.</p>
+
+<pre><code class="lang-go">prices := []int{3, 5, 8, 4, 9, 12, 15, 2}</code></pre>
+
+<p>Η πρώτη, φυσική σκέψη: για κάθε πιθανή θέση παραθύρου, υπολόγισε το άθροισμα από την αρχή:</p>
+
+<pre><code class="lang-go">// Slow: recomputes the full sum for every window position
+func MaxWindowSum(prices []int, k int) int {
+    best := 0
+    for start := 0; start+k <= len(prices); start++ {
+        sum := 0
+        for i := start; i < start+k; i++ { // recomputes from scratch every time
+            sum += prices[i]
+        }
+        if sum > best {
+            best = sum
+        }
+    }
+    return best
+}
+// MaxWindowSum(prices, 3) → 36   (the window [9, 12, 15])</code></pre>
+
+<p>Δουλεύει σωστά — το πρόβλημα είναι ότι <strong>δεν είναι καθόλου αποδοτικός</strong>. Το παράθυρο <code>[3,5,8]</code> και το επόμενο <code>[5,8,4]</code> μοιράζονται δύο κοινά στοιχεία (<code>5</code> και <code>8</code>) — αλλά ο κώδικας τα ξαναπροσθέτει από το μηδέν σε κάθε νέα θέση, σαν να μην τα είχε ξαναδεί.</p>
+
+<h2>Με sliding window: πρόσθεσε δεξιά, αφαίρεσε αριστερά</h2>
+<pre><code class="lang-go">func MaxWindowSum(prices []int, k int) int {
+    windowSum := 0
+    for i := 0; i < k; i++ { // build the very first window, once
+        windowSum += prices[i]
+    }
+    best := windowSum
+
+    for i := k; i < len(prices); i++ {
+        windowSum += prices[i]   // add the element entering on the right
+        windowSum -= prices[i-k] // remove the element leaving on the left
+        if windowSum > best {
+            best = windowSum
+        }
+    }
+    return best
+}
+// MaxWindowSum(prices, 3) → 36   ✓ (same answer, far less repeated work)</code></pre>
+
+<div class="callout good"><span class="tag">Τι άλλαξε</span>Αντί να ξαναϋπολογίζουμε ολόκληρο το άθροισμα σε κάθε θέση, "σέρνουμε" το παράθυρο κατά μία θέση: προσθέτουμε το ένα νέο στοιχείο που μπαίνει δεξιά, αφαιρούμε το ένα στοιχείο που φεύγει αριστερά. Κάθε μετακίνηση του παραθύρου γίνεται με 2 πράξεις αντί να ξαναδιασχίζουμε ολόκληρο το <code>k</code> από την αρχή.</div>
+
+<h2>Πότε μας χρειάζεται</h2>
+<p>Κάθε φορά που το πρόβλημα ζητάει κάτι πάνω σε <em>συνεχόμενο</em> κομμάτι δεδομένων σταθερού μεγέθους — "άθροισμα k διαδοχικών", "μέση τιμή των τελευταίων k ημερών" — και παρατηρείς ότι διαδοχικά παράθυρα μοιράζονται τα περισσότερα στοιχεία τους, το sliding window γλιτώνει ακριβώς αυτή την επαναλαμβανόμενη δουλειά.</p>
+
+<br>
+
+<h1>Complement Lookup</h1>
+  <p class="lede">Ένα ακόμα pattern για να ψάχνεις σχέσεις ανάμεσα σε στοιχεία ενός slice.</p>
+
+  <h2>Το πρόβλημα</h2>
+  <p>Έχεις ένα slice από αριθμούς και έναν στόχο (target sum). Θες να βρεις ζευγάρια στοιχείων των οποίων το άθροισμα ισούται με το target.</p>
+  <div class="callout">
+    <p><strong>Παράδειγμα:</strong> <code>[2, 7, 11, 15, 4, 5]</code>, target = <code>9</code> → τα ζευγάρια <code>2 + 7</code> και <code>4 + 5</code> ταιριάζουν.</p>
+  </div>
+
+  <h2>Η πρώτη, προφανής λύση</h2>
+  <p>Για κάθε στοιχείο, σύγκρινέ το με κάθε άλλο στοιχείο που βρίσκεται μετά του. Δύο nested loops.</p>
+  <pre><code class="lang-go"><span class="tok-kw">func</span> findPairs(arr []<span class="tok-type">int</span>, targetSum <span class="tok-type">int</span>) [][]<span class="tok-type">int</span> {
+    <span class="tok-kw">var</span> pairs [][]<span class="tok-type">int</span>
+    <span class="tok-kw">for</span> i := <span class="tok-num">0</span>; i < <span class="tok-func">len</span>(arr); i++ {
+        <span class="tok-kw">for</span> j := i + <span class="tok-num">1</span>; j < <span class="tok-func">len</span>(arr); j++ {
+            <span class="tok-kw">if</span> arr[i]+arr[j] == targetSum {
+                pairs = <span class="tok-func">append</span>(pairs, []<span class="tok-type">int</span>{i, j})
+            }
+        }
+    }
+    <span class="tok-kw">return</span> pairs
+}</code></pre>
+
+<div class="callout">
+    <p>Αυτή η προσέγγιση —δοκίμασε <strong>όλους</strong> τους δυνατούς συνδυασμούς, χωρίς καμία συντόμευση— είναι προσέγγιση <strong>brute force</strong>. Δεν είναι έξυπνη, αλλά είναι πάντα σωστή αφετηρία: λύνει το πρόβλημα με σιγουριά, πριν σκεφτείς αν υπάρχει καλύτερος τρόπος.</p>
+    <p>Στη συγκεκριμένη περίπτωση: για <strong>κάθε</strong> στοιχείο του array, τρέχουμε ένα loop πάνω σε (σχεδόν) <strong>όλα</strong> τα υπόλοιπα στοιχεία. Αν το array έχει <code>n</code> στοιχεία, αυτό σημαίνει περίπου <code>n × n = n²</code> συγκρίσεις συνολικά.</p>
+    <p>Αυτό εκφράζεται ως πολυπλοκότητα χρόνου <strong>O(n²)</strong>. Στην πράξη: αν το array εισόδου διπλασιάσει το μέγεθός του, ο χρόνος εκτέλεσης δεν διπλασιάζεται — <strong>τετραπλασιάζεται</strong> (ακριβώς επειδή για κάθε νέο στοιχείο τρέχει ολόκληρος ο εσωτερικός βρόχος ξανά). Για μικρά arrays δεν φαίνεται πρόβλημα, αλλά όσο μεγαλώνουν τα δεδομένα, το O(n²) γίνεται γρήγορα ασύμφορο.</p>
+  </div>
+
+  <p>Ο διπλός βρόχος υπάρχει επειδή, για κάθε στοιχείο, <strong>ψάχνουμε</strong> ανάμεσα στα υπόλοιπα ποιο ταιριάζει. Αυτό το "ψάξιμο" είναι που κοστίζει.</p>
+  <div class="callout good">
+    <p>Θα μπορούσαμε να <strong>ξέρουμε αμέσως</strong> αν το ζευγάρι υπάρχει, αντί να το ψάχνουμε κάθε φορά από την αρχή;</p>
+  </div>
+
+  <p>Για κάθε στοιχείο <code>x</code>, το ζευγάρι που χρειαζόμαστε είναι πάντα συγκεκριμένο: <code>targetSum - x</code>. Δεν χρειάζεται να "ψάξουμε" γι' αυτό — απλά χρειάζεται να θυμόμαστε <strong>ποιες τιμές έχουμε ήδη δει</strong>.</p>
+  <p>Αν κρατάμε τις τιμές που έχουμε ήδη συναντήσει σε μια δομή όπου ο έλεγχος "το έχω ξαναδεί;" γίνεται στιγμιαία (O(1)), τότε δεν χρειάζεται δεύτερο loop καθόλου.</p>
+  <div class="callout">
+    <p>Ποια δομή από όσες ξέρεις ήδη προσφέρει ακριβώς αυτό — στιγμιαίο έλεγχο "υπάρχει ήδη αυτή η τιμή;"</p>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <h3>1. Υπολόγισε</h3>
+      <p>Για το τρέχον στοιχείο <code>x</code>, υπολόγισε <code>complement := targetSum - x</code>.</p>
+    </div>
+    <div class="card">
+      <h3>2. Έλεγξε</h3>
+      <p>Υπάρχει ήδη το <code>complement</code> μέσα στο map; Αν ναι, βρήκες ζευγάρι.</p>
+    </div>
+    <div class="card">
+      <h3>3. Αποθήκευσε</h3>
+      <p>Αν όχι, βάλε το τρέχον <code>x</code> στο map, για μελλοντική χρήση.</p>
+    </div>
+  </div>
+
+  <pre><code class="lang-go"><span class="tok-com">// ── find pairs in one pass using a map as lookup ──</span>
+<span class="tok-kw">func</span> findPairs(arr []<span class="tok-type">int</span>, targetSum <span class="tok-type">int</span>) [][]<span class="tok-type">int</span> {
+    <span class="tok-kw">var</span> pairs [][]<span class="tok-type">int</span>
+    seen := <span class="tok-func">make</span>(<span class="tok-kw">map</span>[<span class="tok-type">int</span>]<span class="tok-type">int</span>) <span class="tok-com">// value -> index where it was seen</span>
+ 
+    <span class="tok-kw">for</span> i, x := <span class="tok-kw">range</span> arr {
+        complement := targetSum - x
+        <span class="tok-kw">if</span> j, ok := seen[complement]; ok {
+            pairs = <span class="tok-func">append</span>(pairs, []<span class="tok-type">int</span>{j, i})
+        }
+        seen[x] = i
+    }
+ 
+    <span class="tok-kw">return</span> pairs
+}</code></pre>
+  <div class="callout good">
+    <p>Ένα μόνο πέρασμα από το array, χωρίς δεύτερο loop. Κάθε lookup στο map είναι O(1) κατά μέσο όρο — η συνολική πολυπλοκότητα πέφτει από O(n²) σε <strong>O(n)</strong>.</p>
+  </div>
+
+<h2>Πότε μας χρειάζεται</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">"βρες ζευγάρι που..."</span><span class="gs-def">αθροίζει σε συγκεκριμένο target</span></div>
+  <div class="gs-pill"><span class="gs-name">"υπάρχουν δύο στοιχεία"</span><span class="gs-def">που ικανοποιούν μια σχέση μεταξύ τους</span></div>
+  <div class="gs-pill"><span class="gs-name">nested loop</span><span class="gs-def">πάνω στα ίδια δεδομένα</span></div>
+  <div class="gs-pill"><span class="gs-name">χρειάζεσαι lookup</span><span class="gs-def">όχι ξανά loop από την αρχή</span></div>
+  <div class="gs-pill"><span class="gs-name">"το έχω ξαναδεί;"</span><span class="gs-def">στιγμιαίος έλεγχος με map, αντί για δεύτερο loop</span></div>
+</div>
+
+<p>Το <strong>Complement Lookup</strong> είναι ένα pattern που εκμεταλλεύεται τη δυνατότητα που δίνουν τα maps να κάνεις lookup σε στιγμιαίο χρόνο (O(1)). Αντί να ψάχνεις ενεργά μέσα σε μια δεύτερη λούπα αν υπάρχει το ταίρι ενός στοιχείου, υπολογίζεις εκ των προτέρων <em>ποιο ακριβώς</em> ταίρι χρειάζεσαι (<code>targetSum - x</code>). Μετά, απλά ρωτάς το map αν το έχεις ήδη δει. Η ιδέα «ξέρω τι ψάχνω, άρα το ρωτάω απευθείας αντί να το ψάχνω» είναι αυτό που ρίχνει την πολυπλοκότητα από O(n²) σε O(n).</p>
+
+<div class="callout"><span class="tag">Σκέψου το</span>
+    <p>Αν το πρόβλημα δεν έλεγε "ζευγάρια", αλλά γενικά <strong>συνδυασμούς</strong> στοιχείων (2, 3, ή όσα χρειαστούν) που αθροίζουν στο target — θα μπορούσαμε ακόμα να κάνουμε Complement Lookup;</p>
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div>
+    <p>Όχι. Για <strong>τριάδες</strong> ακόμα δουλεύει, με μια μικρή προσαρμογή. Για <strong>αυθαίρετο πλήθος</strong> στοιχείων όμως όχι.</p>
+</div>
+<br>
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div>
+    <p>Για <strong>τριάδες</strong> ακόμα δουλεύει, με μια μικρή προσαρμογή: για κάθε ζευγάρι στοιχείων <code>(a, b)</code>, ψάχνεις με lookup αν υπάρχει το <code>targetSum - a - b</code>. Αυτό σημαίνει ένα loop για τα ζευγάρια (O(n²)) συν ένα O(1) lookup ανά ζευγάρι — συνολικά O(n²), κάτω από το O(n³) που θα έπαιρνε το brute force με τρία nested loops. Ακόμα βελτίωση, δηλαδή — απλά όχι πια O(n).</p>
+    <p>Για <strong>αυθαίρετο πλήθος</strong> στοιχείων όμως (2, ή 3, ή όσα χρειαστεί, χωρίς να ξέρεις εκ των προτέρων πόσα), το complement lookup σταματάει να επαρκεί από μόνο του — χρειάζεσαι εντελώς διαφορετική τεχνική, που λέγεται <strong>backtracking</strong>: χτίζει και δοκιμάζει συνδυασμούς βήμα-βήμα, κάνοντας πίσω όποτε χρειάζεται. Θα τη γνωρίσουμε αναλυτικά σε επόμενο κεφάλαιο αυτού του μαθήματος.</p>
+</div>
+<br>
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal → (κώδικας για τριάδες)</span></div>
+    <pre><code class="lang-go"><span class="tok-com">// ── find triples using complement lookup, one map per fixed first element ──</span>
+<span class="tok-kw">func</span> findTriples(arr []<span class="tok-type">int</span>, targetSum <span class="tok-type">int</span>) [][]<span class="tok-type">int</span> {
+    <span class="tok-kw">var</span> triples [][]<span class="tok-type">int</span>
+
+    <span class="tok-kw">for</span> i := <span class="tok-num">0</span>; i < <span class="tok-func">len</span>(arr); i++ {
+        seen := <span class="tok-func">make</span>(<span class="tok-kw">map</span>[<span class="tok-type">int</span>]<span class="tok-type">int</span>) <span class="tok-com">// reset for each fixed arr[i]</span>
+        <span class="tok-kw">for</span> j := i + <span class="tok-num">1</span>; j < <span class="tok-func">len</span>(arr); j++ {
+            complement := targetSum - arr[i] - arr[j]
+            <span class="tok-kw">if</span> k, ok := seen[complement]; ok {
+                triples = <span class="tok-func">append</span>(triples, []<span class="tok-type">int</span>{i, k, j})
+            }
+            seen[arr[j]] = j
+        }
+    }
+
+    <span class="tok-kw">return</span> triples
+}</code></pre>
+    <p>Ο εξωτερικός βρόχος «κλειδώνει» ένα στοιχείο <code>arr[i]</code>, και μέσα του τρέχει η ίδια ακριβώς λογική με το <code>findPairs</code> — μόνο που τώρα ψάχνουμε <code>complement := targetSum - arr[i] - arr[j]</code> αντί για <code>targetSum - arr[i]</code>. Το map <code>seen</code> ξαναφτιάχνεται από την αρχή για κάθε νέο <code>i</code>, αφού κάθε τριάδα πρέπει να ξεκινάει με διαφορετικό πρώτο στοιχείο.</p>
+</div>
+`);
+
+        // ── Fill-in-the-blank: Extremum / Previous Value / Sliding Window / Complement Lookup ─ ⊃
+        addFillBlank([
+            {
+                code:
+                    `// Min returns the smallest number in a non-empty slice.
+func Min(numbers []int) int {
+    min := numbers[__firstidx__] // start from a real element
+    __forkw__ _, n := range numbers[__skipidx__:] {
+        __ifkw__ n __cmp__ min {
+            min = n
+        }
+    }
+    __retkw__ min
+}`,
+                blanks: [
+                    { id: "firstidx", answer: "0" },
+                    { id: "forkw", answer: "for" },
+                    { id: "skipidx", answer: "1" },
+                    { id: "ifkw", answer: "if" },
+                    { id: "cmp", answer: "<" },
+                    { id: "retkw", answer: "return" }
+                ],
+                explain: "Ξεκινάμε από numbers[0] (πραγματικό στοιχείο), διασχίζουμε με for...range από το index 1 και μετά, ελέγχουμε με if n < min αφού ψάχνουμε το ελάχιστο, και επιστρέφουμε με return."
+            },
+            {
+                code:
+                    `// HasConsecutiveDuplicate reports whether two adjacent elements are equal.
+func HasConsecutiveDuplicate(numbers []int) bool {
+    __ifkw__ len(numbers) == 0 {
+        return false
+    }
+    prev := numbers[__seedidx__]
+    for _, n := __rangekw__ numbers[1:] {
+        if n __eqcheck__ prev {
+            __retkw__ true
+        }
+        prev = __updateval__
+    }
+    return false
+}`,
+                blanks: [
+                    { id: "ifkw", answer: "if" },
+                    { id: "seedidx", answer: "0" },
+                    { id: "rangekw", answer: "range" },
+                    { id: "eqcheck", answer: "==" },
+                    { id: "retkw", answer: "return" },
+                    { id: "updateval", answer: "n" }
+                ],
+                explain: "Guard clause στην αρχή (if len==0), seed με το πρώτο στοιχείο, range για τη διάσχιση, σύγκριση με ==, return true μόλις βρεθεί διπλότυπο, ενημέρωση prev = n σε κάθε πέρασμα."
+            },
+            {
+                code:
+                    `// MinWindowSum returns the smallest sum of any k consecutive elements.
+func MinWindowSum(numbers []int, k int) int {
+    windowSum := 0
+    __forkw__ i := 0; i < k; i++ {
+        windowSum __plus__ numbers[i]
+    }
+    best := windowSum
+
+    for i := k; i < __lenkw__(numbers); i++ {
+        windowSum += numbers[i]
+        windowSum __minus__ numbers[i__offset__]
+        __ifkw__ windowSum __cmp__ best {
+            best = windowSum
+        }
+    }
+    return best
+}`,
+                blanks: [
+                    { id: "forkw", answer: "for" },
+                    { id: "plus", answer: "+=" },
+                    { id: "lenkw", answer: "len" },
+                    { id: "minus", answer: "-=" },
+                    { id: "offset", answer: "-k" },
+                    { id: "ifkw", answer: "if" },
+                    { id: "cmp", answer: "<" }
+                ],
+                explain: "Πρώτο παράθυρο χτίζεται με for/+=, μετά η κύρια λούπα χρησιμοποιεί len(numbers) ως όριο, μετατοπίζει το παράθυρο με += και -=, και ελέγχει με if windowSum < best αφού ψάχνουμε το ελάχιστο."
+            },
+            {
+                code:
+                    `// findPairs finds all index pairs whose values sum to targetSum.
+func findPairs(arr []int, targetSum int) [][]int {
+    var pairs [][]int
+    seen := __makecall__(map[int]int)
+
+    __forkw__ i, x := range arr {
+        complement := targetSum __op__ x
+        __ifkw__ j, ok := seen[complement]; __okcheck__ {
+            pairs = __appendcall__(pairs, []int{j, i})
+        }
+        seen[x] = __storeval__
+    }
+    __retkw__ pairs
+}`,
+                blanks: [
+                    { id: "makecall", answer: "make" },
+                    { id: "forkw", answer: "for" },
+                    { id: "op", answer: "-" },
+                    { id: "ifkw", answer: "if" },
+                    { id: "okcheck", answer: "ok" },
+                    { id: "appendcall", answer: "append" },
+                    { id: "storeval", answer: "i" },
+                    { id: "retkw", answer: "return" }
+                ],
+                explain: "make(map[int]int) φτιάχνει το lookup map. for/range διασχίζει το array. complement = targetSum - x είναι το ΑΚΡΙΒΕΣ ταίρι που ψάχνουμε. Το if με το ok ελέγχει αν βρέθηκε. append προσθέτει το ζευγάρι. Αποθηκεύουμε seen[x] = i για μελλοντικά lookups, και επιστρέφουμε με return."
+            }
+        ], {
+            note: "Τέσσερα ξεχωριστά patterns — extremum, previous value, sliding window, complement lookup."
+        });
+
         addContent(`
 <div class="eyebrow">VSCode Challenge 1/2 — Συνδυαστική Άσκηση</div>
 <h1>Το Πρόβλημα του "Δεύτερου Μεγαλύτερου"</h1>
@@ -1310,14 +1746,12 @@ func SumNumbers(input string) (sum int, __okname__ bool) {
 <h2>Η αποστολή</h2>
 <p>Γράψε μια function που δέχεται ένα μη κενό slice από <code>int</code> και επιστρέφει τον <strong>δεύτερο μεγαλύτερο</strong> διαφορετικό αριθμό μέσα του (όχι απλά τον δεύτερο στη σειρά — αν το slice είναι <code>{5, 5, 3}</code>, ο δεύτερος μεγαλύτερος ΔΙΑΦΟΡΕΤΙΚΟΣ αριθμός είναι το 3, όχι το 5). Αν δεν υπάρχει δεύτερος διαφορετικός αριθμός (π.χ. το slice έχει μόνο ένα μοναδικό στοιχείο, όπως <code>{7, 7, 7}</code>), επίστρεψε ένα sentinel value της επιλογής σου.</p>
 
-<div class="callout">
-  <span class="tag">HINT 1</span>
-  Χρειάζεσαι ΔΥΟ μεταβλητές "μέχρι τώρα μέγιστο" — μία για τον απόλυτο μεγαλύτερο, μία για τον δεύτερο μεγαλύτερο. Σκέψου το extremum pattern, αλλά διπλό.
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
+    <p>Χρειάζεσαι ΔΥΟ μεταβλητές "μέχρι τώρα μέγιστο" — μία για τον απόλυτο μεγαλύτερο, μία για τον δεύτερο μεγαλύτερο. Σκέψου το extremum pattern, αλλά διπλό.</p>
 </div>
-
-<div class="callout">
-  <span class="tag">HINT 2</span>
-  Πρόσεξε τι σημαίνει "διαφορετικός" — αν δεις έναν αριθμό ίσο με το τρέχον μέγιστο, δεν πρέπει να τον θεωρήσεις "δεύτερο μεγαλύτερο". Ένα guard clause (continue) σε αυτή την περίπτωση θα βοηθήσει να κρατήσεις τη λογική καθαρή.
+<br>
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
+    <p>Πρόσεξε τι σημαίνει "διαφορετικός" — αν δεις έναν αριθμό ίσο με το τρέχον μέγιστο, δεν πρέπει να τον θεωρήσεις "δεύτερο μεγαλύτερο". Ένα guard clause (continue) σε αυτή την περίπτωση θα βοηθήσει να κρατήσεις τη λογική καθαρή.</p>
 </div>
 
 <h2>Λύση</h2>
@@ -1345,55 +1779,6 @@ func secondLargest(numbers []int) int {
     return second
 }</code></pre></div>
 `);
-
-        // ── VSCode Challenge #2 — bigger combined challenge ──────────────────── ⊃
-        addContent(`
-<div class="eyebrow">VSCode Challenge 2/2 — Μεγάλη Συνδυαστική Άσκηση</div>
-<h1>Ανάλυση Καταγραφής Θερμοκρασιών</h1>
-<p class="lede">Ένα πιο ρεαλιστικό, "πολυεπίπεδο" πρόβλημα — όπως αυτά που θα συναντήσεις σε πραγματικά projects, όπου συνδυάζονται πολλά patterns μαζί.</p>
-
-<h2>Η αποστολή</h2>
-<p>Έχεις ένα slice από <code>int</code> που αντιπροσωπεύει τη θερμοκρασία (σε βαθμούς Κελσίου) για κάθε ημέρα ενός μήνα. Γράψε μια function που επιστρέφει το μήκος του <strong>μεγαλύτερου συνεχόμενου διαστήματος ημερών</strong> όπου η θερμοκρασία ήταν <strong>αυστηρά αυξανόμενη</strong> κάθε ημέρα σε σχέση με την προηγούμενη (κάθε επόμενη ημέρα θερμότερη από την προηγούμενη). Αν το slice είναι κενό, επίστρεψε 0.</p>
-
-<div class="callout">
-  <span class="tag">HINT 1</span>
-  Αυτό ΔΕΝ είναι sliding window με τη συνήθη έννοια — δεν χρειάζεσαι άθροισμα του παραθύρου. Σκέψου το σαν συνδυασμό previous value (σύγκριση με την προηγούμενη ημέρα) και ενός μετρητή τρέχοντος διαστήματος που μηδενίζεται όποτε σπάει η αύξουσα ακολουθία.
-</div>
-
-<div class="callout">
-  <span class="tag">HINT 2</span>
-  Χρειάζεσαι δύο μετρητές: έναν για το ΤΡΕΧΟΝ διάστημα (που μπορεί να μηδενιστεί/ξαναρχίσει) και έναν για το ΚΑΛΥΤΕΡΟ διάστημα που έχεις δει μέχρι στιγμής (extremum pattern, δεν μηδενίζεται ποτέ).
-</div>
-
-<h2>Λύση</h2>
-<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
-
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">// longestWarmingStreak returns the length of the longest run of days
-// where each day's temperature was strictly higher than the previous day's.
-func longestWarmingStreak(temps []int) int {
-    if len(temps) == 0 {
-        return 0
-    }
-
-    current := 1 // a single day counts as a streak of length 1
-    best := 1
-    prev := temps[0]
-
-    for _, temp := range temps[1:] {
-        if temp > prev {
-            current++ // streak continues
-        } else {
-            current = 1 // streak broken, restart counting from this day
-        }
-        if current > best {
-            best = current
-        }
-        prev = temp
-    }
-    return best
-}</code></pre></div>
-`);
-
 
         // ══════════════════════════════════════════════════════════════════════
         // SECTION 4 — Βασικές Δομές Δεδομένων (Stack, Queue)
