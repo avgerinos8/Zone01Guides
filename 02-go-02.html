@@ -416,39 +416,50 @@ func main() {
             note: "Δύο ξεχωριστά σετ: το πρώτο για go.mod/go.sum/εντολές, το δεύτερο για δομή/layout project."
         });
 
+
         // ── VSCode Challenge — closes out §1 ─────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 1</div>
 <h1>Φτιάξε το δικό σου πρώτο multi-package project</h1>
-<p class="lede">Χρόνος να το κάνεις πράξη, με τα ίδια σου τα χέρια, στο terminal και στο VSCode.</p>
 
-<h2>Η αποστολή</h2>
-<p>Φτιάξε ένα καινούριο, κενό φάκελο και μέσα του ένα Go module. Μέσα στο module, δημιούργησε ένα sub-package με όνομα <code>shapes</code>, και μέσα του μια exported function που δέχεται δύο <code>int</code> (πλάτος και ύψος) και επιστρέφει το εμβαδόν τους. Μετά, από ένα <code>main.go</code> στη ρίζα, κάνε import το <code>shapes</code> και τύπωσε το αποτέλεσμα μιας κλήσης της function σου.</p>
+<p>Χρειαζόμαστε μια function που δέχεται δύο <code>int</code> (πλάτος και ύψος) και επιστρέφει το εμβαδόν τους — αλλά η function αυτή πρέπει να ανήκει στο δικό της sub-package, με όνομα <code>shapes</code>, ξεχωριστό από το <code>main</code>. Από ένα <code>main.go</code>, κάνε import το <code>shapes</code> και τύπωσε το αποτέλεσμα μιας κλήσης της.</p>
 
-<div class="callout">
-  <span class="tag">HINT 1</span>
-  Θυμήσου: κάθε φάκελος = ένα package. Το import path για ένα sub-package είναι το module path (όπως γράφτηκε στο go.mod) συν το όνομα του υποφακέλου — όχι κάποιο relative path με τελεία.
-</div>
+<br>
 
-<div class="callout">
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Import path — Drag to reveal →</span></div><div class="callout">
   <span class="tag">HINT 2</span>
-  Η function σου πρέπει να είναι ορατή από το <code>main</code>, άρα κάτι πρέπει να ισχύει για το πρώτο γράμμα του ονόματός της. Ποιο κανόνα είδαμε γι' αυτό;</div>
+  Θυμήσου: κάθε φάκελος = ένα package. Το import path για ένα sub-package είναι το module path (όπως γράφτηκε στο go.mod) συν / το όνομα του υποφακέλου.
+</div></div>
+
+<br>
+
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Όνομα function — Drag to reveal →</span></div><div class="callout">
+  <span class="tag">HINT 1</span>
+  Η function σου πρέπει να είναι ορατή από το <code>main</code>, άρα κάτι πρέπει να ισχύει για το πρώτο γράμμα του ονόματός της. Ποιό κανόνα έχουμε δει γι' αυτό;
+</div></div>
+
+<br>
 
 <h2>Λύση</h2>
 <p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
 
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go"><span class="cm">// go.mod: module learngo</span>
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div>
 
-<span class="cm">// file: shapes/shapes.go</span>
-package shapes
+<p><code>go.mod</code>:</p>
+<pre><code class="lang-bash">module learngo
+
+go 1.25.6</code></pre>
+
+<p><code>shapes/shapes.go</code>:</p>
+<pre><code class="lang-go">package shapes
 
 <span class="tok-com">// Area returns the area of a rectangle given its width and height.</span>
 func Area(width int, height int) int {
     return width * height
-}
+}</code></pre>
 
-<span class="cm">// file: main.go</span>
-package main
+<p><code>main.go</code>:</p>
+<pre><code class="lang-go">package main
 
 import (
     "fmt"
@@ -457,7 +468,8 @@ import (
 
 func main() {
     fmt.Println(shapes.Area(4, 5)) // 20
-}</code></pre></div>
+}</code></pre>
+</div>
 `);
 
         // ── Section 2.1 — os.Args ────────────────────────────────────────────── ⊃
@@ -1007,7 +1019,8 @@ func CountLetters(input string) int {
 <p>Χρειάζεσαι ένα boolean switch όποτε η συμπεριφορά σου μέσα σε μια loop πρέπει να αλλάξει ανάλογα με <em>κάτι που συνέβη νωρίτερα</em> — όχι ανάλογα με την τρέχουσα τιμή από μόνη της. Αν η απάντηση στο "τι κάνω τώρα;" εξαρτάται από το ιστορικό του loop μέχρι εκείνο το σημείο (είμαι ήδη μέσα σε λέξη; βρίσκομαι μέσα σε παρένθεση;), χρειάζεσαι κάτι να το θυμάται — και αυτό είναι πάντα μια μεταβλητή <code>bool</code>, δηλωμένη έξω από τη loop, ελεγχόμενη και ενημερωμένη μέσα σε αυτήν.</p>
 
 <div class="callout"><span class="tag">Γιατί "switch" / διακόπτης</span>Λειτουργεί σαν διακόπτης που μπορεί να αλλάζει "κατάσταση" ξανά και ξανά καθ' όλη τη διάρκεια του iteration (<code>true</code>→<code>false</code>→<code>true</code>...), και κάθε φορά που αλλάζει, αλλάζει μαζί του και η συμπεριφορά του κώδικα μέσα στη loop. Είδαμε και τις δύο περιπτώσεις: μπορεί να γίνει <code>true</code> μία φορά και να μείνει έτσι (σχόλιο), ή να αλλάζει κατεύθυνση συνέχεια (παρένθεση) — ο κώδικας γύρω από το switch είναι αυτός που καθορίζει ποια συμπεριφορά θα έχει, όχι το ίδιο το <code>bool</code>.</div>
-<br>
+`);
+        addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
 <h1>Break, Continue, Early Return</h1>
 <p>Ένα pattern που μοιάζει πολύ με το boolean switch — μερικές φορές αντί να <em>θυμόμαστε</em> κατάσταση, απλά <strong>σταματάμε</strong> ή <strong>παραλείπουμε</strong> τη στιγμή που δεν χρειάζεται να συνεχίσουμε. Τρεις παραλλαγές της ίδιας ιδέας:</p>
 
