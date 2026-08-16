@@ -1504,6 +1504,55 @@ func MaxWindowSum(prices []int, k int) int {
 <h2>Πότε μας χρειάζεται</h2>
 <p>Κάθε φορά που το πρόβλημα ζητάει κάτι πάνω σε <em>συνεχόμενο</em> κομμάτι δεδομένων σταθερού μεγέθους — "άθροισμα k διαδοχικών", "μέση τιμή των τελευταίων k ημερών" — και παρατηρείς ότι διαδοχικά παράθυρα μοιράζονται τα περισσότερα στοιχεία τους, το sliding window γλιτώνει ακριβώς αυτή την επαναλαμβανόμενη δουλειά.</p>
 
+<div class="callout"><span class="tag">Θα το ξαναδούμε</span>Υπάρχει και μια διαφορετική μορφή sliding window: αντί για ήδη υπάρχον slice με γνωστό index (όπως εδώ), τα δεδομένα έρχονται <em>streaming</em> — ένα-ένα, χωρίς να ξέρεις εκ των προτέρων πόσα θα έρθουν. Εκεί χρειάζεσαι να θυμάσαι τα k πιο πρόσφατα στοιχεία κάπου, ώστε να ξέρεις ποιο να αφαιρέσεις όταν έρθει νέο — και αυτό ταιριάζει φυσικά με τη δομή <strong>Queue</strong> που θα δούμε στην Ενότητα 4. Θα το ξαναδούμε τότε.</div>
+
+<h1>Variable-Size Sliding Window</h1>
+<p>Το sliding window που είδαμε παραπάνω είχε σταθερό μέγεθος — πάντα ακριβώς <code>k</code> στοιχεία. Υπάρχει όμως και μια δεύτερη, εξίσου συχνή μορφή: το window <strong>μεγαλώνει και μικραίνει</strong> δυναμικά, ανάλογα με μια συνθήκη — δεν ξέρεις εκ των προτέρων πόσο μεγάλο θα είναι.</p>
+
+<p>Πρόβλημα: στο ίδιο slice τιμών, βρες το <strong>μεγαλύτερο συνεχόμενο διάστημα ημερών</strong> του οποίου το άθροισμα δεν ξεπερνάει ένα όριο <code>limit</code>:</p>
+
+<pre><code class="lang-go">prices := []int{3, 5, 8, 4, 9, 12, 15, 2}
+limit := 20</code></pre>
+
+<pre><code class="lang-go">func LongestWindowUnderLimit(prices []int, limit int) int {
+    left := 0
+    windowSum := 0
+    best := 0
+
+    for right := 0; right < len(prices); right++ {
+        windowSum += prices[right] // always expand right first
+
+        for windowSum > limit { // shrink from the left while the window is invalid
+            windowSum -= prices[left]
+            left++
+        }
+
+        length := right - left + 1
+        if length > best {
+            best = length
+        }
+    }
+    return best
+}
+// LongestWindowUnderLimit(prices, 20) → 4</code></pre>
+
+<p>Ας το τρέξουμε νοερά, βήμα-βήμα:</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">right (τιμή)</td><td class="gt-term">left</td><td class="gt-def">windowSum / length / best</td></tr>
+<tr><td class="gt-term">0 (3)</td><td class="gt-term">0</td><td class="gt-def">sum=3, length=1, best=1</td></tr>
+<tr><td class="gt-term">1 (5)</td><td class="gt-term">0</td><td class="gt-def">sum=8, length=2, best=2</td></tr>
+<tr><td class="gt-term">2 (8)</td><td class="gt-term">0</td><td class="gt-def">sum=16, length=3, best=3</td></tr>
+<tr><td class="gt-term">3 (4)</td><td class="gt-term">0</td><td class="gt-def">sum=20, length=4, best=<strong>4</strong></td></tr>
+<tr><td class="gt-term">4 (9)</td><td class="gt-term">0→3</td><td class="gt-def">sum γίνεται 29 &gt; 20 → shrink δύο φορές (αφαιρεί 3, μετά 5) μέχρι sum=13, length=2, best=4</td></tr>
+<tr><td class="gt-term">5 (12)</td><td class="gt-term">3→5</td><td class="gt-def">sum γίνεται 25 &gt; 20 → shrink (αφαιρεί 4, μετά 9) μέχρι sum=12, length=1, best=4</td></tr>
+<tr><td class="gt-term">6 (15)</td><td class="gt-term">5→6</td><td class="gt-def">sum γίνεται 27 &gt; 20 → shrink (αφαιρεί 12) μέχρι sum=15, length=1, best=4</td></tr>
+<tr><td class="gt-term">7 (2)</td><td class="gt-term">6</td><td class="gt-def">sum=17, length=2, best=4</td></tr>
+</table>
+
+<p>Αποτέλεσμα: <strong>4</strong> — το διάστημα <code>3 → 5 → 8 → 4</code>, με άθροισμα ακριβώς 20.</p>
+
+<div class="callout good"><span class="tag">Το σχήμα expand-then-shrink</span>Πρόσεξε τη δομή: το <code>right</code> ΠΑΝΤΑ επεκτείνεται πρώτα (εξωτερική λούπα). Μετά, μια ΕΣΩΤΕΡΙΚΗ λούπα συρρικνώνει από αριστερά ΟΣΟ χρειάζεται, μέχρι η συνθήκη να ξαναϊσχύσει. Αυτό το σχήμα είναι σχεδόν πάντα το ίδιο σε κάθε variable sliding window πρόβλημα, όποιο κι αν είναι το ακριβές κριτήριο εγκυρότητας.</div>
 <br>
 
 <h1>Complement Lookup</h1>
@@ -1624,6 +1673,8 @@ func MaxWindowSum(prices []int, k int) int {
 }</code></pre>
     <p>Ο εξωτερικός βρόχος «κλειδώνει» ένα στοιχείο <code>arr[i]</code>, και μέσα του τρέχει η ίδια ακριβώς λογική με το <code>findPairs</code> — μόνο που τώρα ψάχνουμε <code>complement := targetSum - arr[i] - arr[j]</code> αντί για <code>targetSum - arr[i]</code>. Το map <code>seen</code> ξαναφτιάχνεται από την αρχή για κάθε νέο <code>i</code>, αφού κάθε τριάδα πρέπει να ξεκινάει με διαφορετικό πρώτο στοιχείο.</p>
 </div>
+
+
 `);
 
         // ── Fill-in-the-blank: Extremum / Previous Value / Sliding Window / Complement Lookup ─ ⊃
