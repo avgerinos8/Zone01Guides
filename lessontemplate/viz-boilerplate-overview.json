@@ -1,0 +1,60 @@
+{
+    "purpose": "Reference for building the NEXT interactive step-by-step visualizer on this course (Zone01 Athens Go course, Part 2/3+, 02-go-02.html and beyond) on top of the already-built, already-tested shared boilerplate. Read this BEFORE writing a new visualizer from scratch — most of the plumbing already exists.",
+    "known_planned_future_use_cases": [
+        "Sudoku board backtracking (2D 9x9 grid, cell states: trying/conflict/committed) — explicitly mentioned by the user as the motivating example for building 2D grid support into the shared CSS now rather than later",
+        "Any future DFS/BFS visited-node grid, matrix traversal, or other 2D state-space visualization — the shared .vz-grid/.vz-grid-cell classes are generic enough to cover these without new CSS, only new JS logic per problem"
+    ],
+    "what_already_exists_reuse_dont_rewrite": {
+        "static/_viz-common.js": {
+            "exports": "A single global function: VizWaitFor(rootId, initFn)",
+            "what_it_solves": "The course template (static/script.js) builds ALL slide DOM lazily, inside initSlideDeck(), via contentEl.innerHTML = slide.html — NOT at the time addContent() is called, and NOT at the time any <script src> tag loads. A visualizer's own <script> tag runs at page load, long before its target markup exists in the DOM. Calling document.getElementById() at that point returns null, and code that doesn't account for this silently does nothing (no console error — just an empty box). This was root-caused by reading the actual static/script.js source directly (not assumed), specifically renderSlide() at the point where it does contentEl.innerHTML = slide.html for type:'content' slides.",
+            "how_to_use": "Wrap your entire visualizer's init logic in VizWaitFor('your-root-id', function(root) { ...your code... }). It fires initFn exactly once, either immediately (if the root id already exists when your script runs) or as soon as a MutationObserver detects it appearing in document.body's subtree. This is REQUIRED for every future visualizer on this template — do not write a bare document.getElementById() + immediate use pattern, it WILL fail intermittently/silently depending on script tag placement.",
+            "does_not_provide": "Any step/state/render logic whatsoever. Each visualizer designs its own steps array shape, its own render() function, its own event wiring. This was an explicit user decision this round — no shared 'step engine' convention exists or is planned; keep it that way unless the user asks for one."
+        },
+        "static/_viz-common.css": {
+            "for_1d_array_index_based_visualizers": {
+                "classes": [
+                    ".vz-controls",
+                    ".vz-pointer-row",
+                    ".vz-pointer-cell",
+                    ".vz-array-row",
+                    ".vz-cell"
+                ],
+                "pattern": "One .vz-pointer-row PER pointer (left, right, i, j, etc.) sitting above a single .vz-array-row, so multiple pointers never visually collide even when pointing at the same or adjacent index. Fill both via JS: create one .vz-cell child per data element in the array row, one .vz-pointer-cell child (same count, same order) per pointer row, and set .textContent on the correct index's pointer-cell to show/hide the pointer label per step.",
+                "already_proven_in": "The sliding-window visualizer (static/_viz-sliding-window.js) — copy its cell-building loop pattern for any new 1D-array visualizer (e.g. two-pointer problems, single-array traversal problems)."
+            },
+            "for_2d_grid_visualizers_not_yet_used": {
+                "classes": [
+                    ".vz-grid",
+                    ".vz-grid-cell"
+                ],
+                "pattern": "Single <div class=\"vz-grid\" style=\"--vz-grid-cols:N\"> containing exactly rows*N .vz-grid-cell children in row-major order (no per-row wrapper divs needed — CSS grid handles the wrapping via the --vz-grid-cols custom property). For a 9x9 Sudoku board, --vz-grid-cols:9 and 81 .vz-grid-cell children.",
+                "status": "Written and included in _viz-common.css this round but NOT YET used/tested by any real visualizer — verify it renders as expected when the Sudoku (or other 2D) visualizer is actually built, since it has not been exercised end-to-end the way the 1D array classes have."
+            },
+            "shared_by_both_1d_and_2d": {
+                "highlight_states": ".vz-highlight-a / .vz-highlight-b / .vz-highlight-c — apply to EITHER .vz-cell or .vz-grid-cell. These are deliberately semantic-agnostic (not named things like 'in-window' or 'just-added') so each new visualizer can assign its own meaning: e.g. sliding window uses a=inside current window, b=just added, c=just removed; a Sudoku backtracker might use a=cell being tried, b=constraint conflict, c=committed/confirmed value. Do not rename these globally to fit one visualizer's semantics — if a 4th/5th state is needed, add .vz-highlight-d/-e following the same pattern, or override just for that one visualizer's own <style> scoped to its root id.",
+                "diff_badge": ".vz-diff-badge (+ .vz-show / .vz-positive / .vz-negative modifier classes) — a floating top-right badge for showing a delta/change value (e.g. '+12', '-3'). Needs position:relative on some ancestor (the sliding-window visualizer puts it via inline style on a .quiz-code-block wrapper — reuse that same trick, or apply position:relative to a .vz-grid wrapper for 2D use).",
+                "state_value_highlight": ".vz-state-hl — pairs with the course's own .gs-def (inside .glossary-strip/.gs-pill) or any other value-holding element, to mark 'this value just changed this step' in a state/variables panel."
+            }
+        },
+        "course_native_classes_worth_reusing_directly": {
+            "note": "These are NOT part of _viz-common — they're the course's OWN existing style.css classes, already proven to work well for visualizer chrome. Prefer these over inventing new ones.",
+            ".reset-quiz-btn": "Small secondary button style — used for prev/next step controls",
+            ".quiz-code-block": "Accent-bordered code-like box — good wrapper for the main visualization area (array row, grid, etc.)",
+            ".glossary-strip / .gs-pill / .gs-name / .gs-def": "Pill-style term/definition strip — good for a live state/variables panel (used this round for right/left/windowSum/etc. — the user specifically requested this over the earlier .glossary-table row layout)",
+            ".glossary-group": "Simple margin-wrapper, pairs with .glossary-strip"
+        }
+    },
+    "workflow_for_the_next_visualizer": [
+        "1. Confirm static/_viz-common.js and static/_viz-common.css are already <script src>/<link>'d into the target HTML file (index.html or the relevant NN-go-NN.html) — if this is a NEW course file that hasn't included them yet, add both, common.js loaded before any _viz-<name>.js file that uses VizWaitFor",
+        "2. Design the specific algorithm's step sequence FIRST in a scratch Python/Node script — build the full steps array, hand-verify the final state against a known-correct trace, BEFORE writing any HTML/CSS/JS. This caught real bugs in past rounds (wrong table columns, wrong dataset) and is worth repeating every time.",
+        "3. Write the HTML snippet: a root container with a unique id (e.g. '<name>-viz'), reusing .reset-quiz-btn/.quiz-code-block/.glossary-strip/.vz-* classes wherever they fit; only add new one-off CSS for things genuinely not covered by _viz-common.css or the course's native classes",
+        "4. Write static/_viz-<name>.js: wrap everything in VizWaitFor('<name>-viz', function(root) { ... }). Build the steps array, write render(), wire prev/next buttons, call render() once at the end — same shape as _viz-sliding-window.js, but feel free to diverge in step-object shape/field names as the problem demands (no shared step-engine contract to conform to)",
+        "5. Test headless before delivering: use jsdom (or equivalent) to simulate the REAL page timing — load the visualizer's JS into an EMPTY page first, THEN insert the HTML snippet via innerHTML= (this reproduces the actual initSlideDeck()/renderSlide() timing, not just a naive 'load HTML then script' order which would mask the exact bug this boilerplate exists to prevent). Click through the full step sequence in both directions, verify final state matches the hand-verified trace from step 2, verify prev/next disabled states at both boundaries."
+    ],
+    "explicit_user_decisions_to_respect_going_forward": [
+        "No shared step-engine/state-shape convention across visualizers — each one is free-form beyond the VizWaitFor wrapper and the shared CSS classes. Do not introduce one without asking.",
+        "Zero new/custom design language — every visualizer must look like a natural extension of the existing course theme, using --tone-*/--accent/--correct/--wrong/--font-mono tokens and reusing native course classes wherever a fit exists, before reaching for new CSS.",
+        "Granular step definitions — when an algorithm has an inner loop (like the sliding-window shrink loop), the user wants EVERY inner-loop iteration as its own separate clickable step by default, not collapsed into the outer iteration that triggered it. Ask if unsure whether a given future algorithm's step granularity should follow the same principle."
+    ]
+}
