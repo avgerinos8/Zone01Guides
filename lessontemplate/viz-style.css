@@ -1,0 +1,187 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   _viz-common.css — shared building blocks for step-by-step visualizers.
+   Reuses the site's existing tokens/classes (--accent, --correct, --wrong,
+   --font-mono, .reset-quiz-btn, .quiz-code-block, .glossary-strip) — this
+   file only adds what those don't already cover: array cells, grid cells,
+   pointer markers, and the diff badge.
+
+   NAMING: highlight states use semantic-agnostic suffixes (-a/-b/-c), not
+   domain words like "in-window" — each visualizer decides what -a/-b/-c
+   MEANS for its own problem (e.g. sliding window: -a = in window, -b = just
+   added, -c = just removed; Sudoku backtracking: -a = trying, -b = conflict,
+   -c = committed). This is what makes the same 3 classes reusable across
+   completely different problems instead of writing new CSS every time.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── controls row (prev/next or similar step buttons) ─────────────────── ⊃ */
+.vz-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+/* ── 1D array/sequence layout ─────────────────────────────────────────── ⊃ */
+/* Fully responsive: cells share the row's 100% width equally (flex:1 1 0),
+   and the font-size shrinks smoothly via clamp() as the viewport narrows —
+   so the row NEVER overflows its container, at any screen width, without
+   ever wrapping onto a second line. min-width:0 on the cells is required
+   for flexbox to actually let them shrink below their content's natural
+   width (browsers default flex children to min-width:auto otherwise,
+   which silently blocks shrinking and causes overflow on narrow screens).
+
+   One .vz-pointer-row PER pointer (e.g. "↓left↓", "↓right↓") sitting above
+   the array itself. Use ONE .vz-pointer-row per pointer so multiple
+   pointers never collide visually, even when they point at the same or
+   adjacent cells. Pointer rows use the SAME flex/gap/min-width rules as
+   the array row below them, so each pointer cell stays aligned with its
+   corresponding array cell at every screen width. */
+.vz-pointer-row {
+    display: flex;
+    gap: clamp(2px, 1.2vw, 10px);
+    font-family: var(--font-mono);
+    font-size: clamp(9px, 1.8vw, 13px);
+    color: var(--accent);
+    min-height: 20px;
+    width: 100%;
+}
+
+.vz-pointer-cell {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.vz-array-row {
+    display: flex;
+    gap: clamp(2px, 1.2vw, 10px);
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 2.6vw, 18px);
+    color: var(--ink);
+    margin-top: 4px;
+    width: 100%;
+}
+
+.vz-cell {
+    flex: 1 1 0;
+    min-width: 0;
+    text-align: center;
+    padding: 4px 0;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* ── 2D grid layout (Sudoku boards, backtracking state-space, DFS/BFS
+   visited-grid, matrix traversal, etc.) ─────────────────────────────────── ⊃ */
+/* Markup: <div class="vz-grid" style="--vz-grid-cols:9"> one .vz-grid-cell
+   per cell, row-major order </div> — CSS grid auto-wraps into rows using
+   the --vz-grid-cols custom property, so no per-row wrapper divs needed. */
+.vz-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--vz-grid-cols, 8), 1fr);
+    gap: 4px;
+    font-family: var(--font-mono);
+    max-width: fit-content;
+}
+
+.vz-grid-cell {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: var(--ink);
+    background: rgba(var(--ink-rgb), 0.05);
+    border-radius: 5px;
+}
+
+/* ── shared highlight states — used by BOTH .vz-cell and .vz-grid-cell ──── ⊃ */
+/* Pick whichever of -a/-b/-c fit the visualizer's own 3 states; not all 3
+   need to be used, and any can be re-skinned per-visualizer by overriding
+   these rules AFTER this stylesheet if a problem needs a 4th/5th state. */
+.vz-highlight-a {
+    background: rgba(var(--accent-rgb), 0.18);
+}
+
+.vz-highlight-b {
+    box-shadow: inset 0 0 0 1px var(--correct);
+}
+
+.vz-highlight-c {
+    box-shadow: inset 0 0 0 1px var(--wrong);
+    opacity: .5;
+}
+
+/* ── floating diff/delta badge (e.g. "+12", "-3", "✓", "✗") ──────────────── ⊃ */
+/* Sits ABOVE .quiz-code-block entirely (not overlapping the numbers inside
+   it) — its own height is a custom property (--vz-badge-h) so the "top"
+   offset below can reference that SAME value via calc(), keeping the two
+   in lock-step: whatever the badge's height ends up being at a given
+   viewport width, "top" always places its bottom edge exactly --vz-badge-gap
+   above the container's top edge, never an approximate/hand-picked number.
+   Font-size and height both scale via clamp() in step with the array
+   cells below, so the badge stays proportional to them at every width —
+   the font clamp(22px, 5.2vw, 36px) is deliberately exactly 2x the array
+   cell's own clamp(11px, 2.6vw, 18px) at every breakpoint, so the badge
+   text is always precisely double the size of the numbers below it. */
+.vz-diff-badge {
+    --vz-badge-h: clamp(26px, 6.2vw, 42px);
+    --vz-badge-gap: 10px;
+    position: absolute;
+    top: calc(-1 * (var(--vz-badge-h) + var(--vz-badge-gap)));
+    right: 12px;
+    min-width: 10px;
+    height: var(--vz-badge-h);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-family: var(--font-mono);
+    font-size: clamp(22px, 5.2vw, 55px);
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    opacity: 0;
+    line-height: 1;
+    text-shadow:
+        1px 1px 0 var(--tone-1),
+        2px 2px 0 var(--tone-1),
+        3px 3px 0 var(--tone-1),
+        4px 4px 0 var(--tone-1),
+        5px 5px 0 var(--tone-1),
+        6px 6px 0 var(--tone-1);
+}
+
+.vz-diff-badge.vz-show {
+    opacity: 1;
+}
+
+.vz-diff-badge.vz-positive {
+    color: var(--correct);
+    background: rgba(var(--correct-rgb), 0.15);
+}
+
+.vz-diff-badge.vz-negative {
+    color: var(--wrong);
+    background: rgba(var(--wrong-rgb), 0.15);
+}
+
+/* Trailing "= <value>" that follows the +N/-N delta at the same size —
+   the "=" sign in muted gray, the resulting value in plain white/--ink,
+   both wrapped in spans set from JS alongside the +N/-N text itself. */
+.vz-diff-eq {
+    color: rgba(var(--ink-rgb), 0.5);
+}
+
+.vz-diff-value {
+    color: var(--ink);
+}
+
+/* ── state-panel value highlight — pairs with .glossary-strip's .gs-def,
+   marks "this value just changed this step" ─────────────────────────────── ⊃ */
+.vz-state-hl {
+    color: var(--accent);
+}
