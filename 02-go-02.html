@@ -49,6 +49,7 @@
 
     <script src="static/script.js?v=20260801"></script>
     <script src="static/highlighter.js?v=20260801"></script>
+    <script src="static/_visualization01.js"></script>
     <script>
         // Course content below.
 
@@ -890,8 +891,7 @@ func WordLengths(input string) []int {
 
 <pre><code class="lang-go">WordLengths("hello   world") // three spaces between the words</code></pre>
 
-<p>Ας το τρέξουμε νοερά, χαρακτήρα-χαρακτήρα, όπως θα το έκανε η Go:</p>
-
+<p>Ας το τρέξουμε με πινακάκι για κάθε iteration:</p>
 
 <table class="glossary-table">
 <tr><td class="gt-term">h e l l o</td><td class="gt-term">[]</td><td class="gt-term">5</td><td class="gt-def">count ανεβαίνει σε 5</td></tr>
@@ -1432,7 +1432,7 @@ func MaxEven(numbers []int) int {
 }
 // LongestUpstreak(prices) → 4</code></pre>
 
-<p>Ας το τρέξουμε νοερά, τιμή-τιμή:</p>
+<p>Ας το τρέξουμε με πινακάκι για κάθε iteration:</p>
 
 <table class="glossary-table">
 <tr><td class="gt-term">τιμή</td><td class="gt-term">prev</td><td class="gt-def">current / best</td></tr>
@@ -1452,6 +1452,40 @@ func MaxEven(numbers []int) int {
 
 <p>Θα μπορούσαμε βέβαια να συγκρίνουμε το τρέχον στοιχείο απευθείας με <code>prices[i-1]</code>, αντί να κρατάμε ξεχωριστή μεταβλητή <code>prev</code> — αλλά αυτό χρειάζεται έλεγχο <code>i > 0</code> σε κάθε iteration (αλλιώς <code>prices[-1]</code> δεν υπάρχει → panic). Το <code>prev</code> σαν μεταβλητή είναι συνολικά καλύτερη λύση — είναι ένα πολύ ωραίο pattern που θα χρησιμοποιήσεις αρκετά σε loops. Αποφεύγει εντελώς αυτόν τον έλεγχο, αφού αρχικοποιείται πριν καν ξεκινήσει η λούπα — και δουλεύει το ίδιο, ακόμα κι αν οι τιμές δεν έρχονταν από ένα slice με index, αλλά μία-μία από κάπου αλλού.</p>
 <p>Παρατήρησε επίσης το "αόριστο" <code>best := 1</code> — σαν να μην είχαν προηγηθεί όσα είπαμε με αφορμή το extremum pattern παραπάνω. Ας προβληματιστούμε λίγο για την αρχική τιμή που έχουμε βάλει. Δοκίμασέ το νοερά με μια εντελώς φθίνουσα ακολουθία, π.χ. <code>{15, 12, 9, 6, 3}</code>: κάθε μέρα «σπάει» την πορεία, το <code>current</code> ξαναγυρίζει σε 1 συνέχεια. Αφού καμία μέρα δεν ήταν πραγματικά ανοδική, θα περίμενες το τελικό <code>best</code> να είναι 0 ή 1;</p>
+
+<br>
+
+<h1>Two Pointers</h1>
+<p>Αντί για μία μεταβλητή δείκτη (index) που διασχίζει ένα slice, χρησιμοποιούμε <strong>δύο ταυτόχρονα</strong> — συνήθως ξεκινώντας από τις δύο άκρες και κινούμενοι προς το κέντρο. Είναι εξαιρετικά χρήσιμο όταν ψάχνεις σχέσεις ανάμεσα σε στοιχεία, ειδικά σε <strong>ταξινομημένα</strong> δεδομένα.</p>
+
+<h2>Παράδειγμα 1: Palindrome check</h2>
+<p>Ένα string είναι palindrome αν διαβάζεται ίδιο και ανάποδα — π.χ. <code>"level"</code>, <code>"radar"</code>. Ο φυσικός τρόπος να το ελέγξεις: βάλε έναν δείκτη στην αρχή, έναν στο τέλος, και σύγκρινε τους χαρακτήρες τους καθώς πλησιάζουν στο κέντρο.</p>
+
+<pre><code class="lang-go">func IsPalindrome(s string) bool {
+    left, right := 0, len(s)-1
+
+    for left < right {
+        if s[left] != s[right] {
+            return false
+        }
+        left++
+        right--
+    }
+    return true
+}</code></pre>
+
+<p>Ας το τρέξουμε νοερά για <code>"level"</code>:</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">left</td><td class="gt-term">right</td><td class="gt-def">σύγκριση</td></tr>
+<tr><td class="gt-term">0 (l)</td><td class="gt-term">4 (l)</td><td class="gt-def">l == l → match, left++, right--</td></tr>
+<tr><td class="gt-term">1 (e)</td><td class="gt-term">3 (e)</td><td class="gt-def">e == e → match, left++, right--</td></tr>
+<tr><td class="gt-term">2 == 2</td><td class="gt-term">—</td><td class="gt-def">left ΔΕΝ είναι πια &lt; right, η λούπα σταματάει → true</td></tr>
+</table>
+
+<p>Πρόσεξε ότι το μεσαίο γράμμα <code>v</code> δεν χρειάστηκε καν να συγκριθεί με τον εαυτό του — μόλις <code>left</code> και <code>right</code> συναντηθούν (ή προσπεράσουν ο ένας τον άλλο), κάθε ζευγάρι έχει ήδη ελεγχθεί. Δεν υπάρχει λόγος να συνεχίσει η λούπα.</p>
+
+<div class="callout"><span class="tag">Η γενική ιδέα</span>Two pointers δεν σημαίνει μόνο «ξεκίνα από τις άκρες». Είναι γενικότερα χρήσιμο να έχεις <strong>δύο ξεχωριστές μεταβλητές index</strong> μέσα στην ίδια λούπα — είτε κινούνται η μία προς την άλλη (όπως εδώ), είτε κινούνται προς την ίδια κατεύθυνση αλλά ανεξάρτητα, με διαφορετική «ταχύτητα» ή διαφορετικό ρόλο η καθεμία. Το κοινό σημείο σε όλες τις παραλλαγές: μία μεταβλητή index δεν αρκεί, χρειάζεσαι δύο ξεχωριστές «θέσεις» μέσα στα ίδια δεδομένα ταυτόχρονα.</div>
 
 <br>
 
@@ -1511,48 +1545,64 @@ func MaxWindowSum(prices []int, k int) int {
 
 <p>Πρόβλημα: στο ίδιο slice τιμών, βρες το <strong>μεγαλύτερο συνεχόμενο διάστημα ημερών</strong> του οποίου το άθροισμα δεν ξεπερνάει ένα όριο <code>limit</code>:</p>
 
-<pre><code class="lang-go">prices := []int{3, 5, 8, 4, 9, 12, 15, 2}
+<p>Θα συνδιάσουμε 2 μοτίβα. Το sliding window και το two pointers. Το window που ακολουθεί δεν έχει σταθερό μέγεθος — <strong>μεγαλώνει και μικραίνει</strong> δυναμικά, ανάλογα με μια συνθήκη, με δύο δείκτες <code>left</code> και <code>right</code> να δουλεύουν μαζί, ο καθένας με διαφορετικό ρόλο. Δεν ξέρεις εκ των προτέρων πόσο μεγάλο θα είναι το τελικό window.</p>
+<pre><code class="lang-go">prices := []int{3, 5, 8, 4, 12, 9, 4, 3, 2, 1, 8, 2, 7}
 limit := 20</code></pre>
 
-<pre><code class="lang-go">func LongestWindowUnderLimit(prices []int, limit int) int {
-    left := 0
-    windowSum := 0
-    best := 0
+<pre><code class="lang-go">func LongestWindowUnderLimit(prices []int, limit int) []int {
+    left := 0        // left edge of the current window
+    windowSum := 0    // running sum of everything currently inside the window
+    bestLength := 0   // length of the best window found so far
+    resultstart := 0        // left edge of the BEST window found so far
+    resultend := 0          // right edge of the BEST window found so far
 
     for right := 0; right < len(prices); right++ {
-        windowSum += prices[right] // always expand right first
+        windowSum += prices[right] // step 1: always expand the window to the right first
 
-        for windowSum > limit { // shrink from the left while the window is invalid
-            windowSum -= prices[left]
-            left++
-        }
+        for windowSum > limit { // this loop will enter only after right has progressed enough to make windowSum &gt; limit
+            windowSum -= prices[left] // remove the leftmost element from the sum
+            left++                    // move the left edge forward, shrinking the window
+        } // repeat shrinking until the window is valid again (sum <= limit)
 
-        length := right - left + 1
-        if length > best {
-            best = length
+        length := right - left + 1 // step 3: measure the current, now-valid window
+        if length > bestLength {   // step 4: is this the best window we've seen so far?
+            bestLength = length
+            resultstart = left  // remember WHERE this best window started...
+            resultend = right   // ...and where it ended
         }
     }
-    return best
+
+    return prices[start : end+1] // slice out the actual values of the best window found
 }
-// LongestWindowUnderLimit(prices, 20) → 4</code></pre>
+// LongestWindowUnderLimit(prices, 20) → [4 3 2 1 8 2]</code></pre>
 
-<p>Ας το τρέξουμε νοερά, βήμα-βήμα:</p>
+<p>Η σειρά εκτέλεσης μέσα σε κάθε πέρασμα της εξωτερικής λούπας ακολουθεί πάντα τα ίδια τέσσερα βήματα: πρώτα το <code>right</code> προχωράει και «μπάζει» ένα νέο στοιχείο μέσα στο window (το window μπορεί προσωρινά να γίνει άκυρο, με άθροισμα πάνω από το όριο) — μετά, μια εσωτερική λούπα σπρώχνει το <code>left</code> όσο χρειάζεται, «βγάζοντας» στοιχεία από την αριστερή άκρη, μέχρι το window να ξαναγίνει έγκυρο — μετά μετράμε το μήκος του τρέχοντος, έγκυρου πια window — και τέλος, αν αυτό το μήκος είναι το καλύτερο που έχουμε δει μέχρι στιγμής, καταγράφουμε ΠΟΥ ακριβώς βρίσκεται (τα <code>start</code>/<code>end</code>), όχι μόνο πόσο μεγάλο είναι.</p>
 
-<table class="glossary-table">
-<tr><td class="gt-term">right (τιμή)</td><td class="gt-term">left</td><td class="gt-def">windowSum / length / best</td></tr>
-<tr><td class="gt-term">0 (3)</td><td class="gt-term">0</td><td class="gt-def">sum=3, length=1, best=1</td></tr>
-<tr><td class="gt-term">1 (5)</td><td class="gt-term">0</td><td class="gt-def">sum=8, length=2, best=2</td></tr>
-<tr><td class="gt-term">2 (8)</td><td class="gt-term">0</td><td class="gt-def">sum=16, length=3, best=3</td></tr>
-<tr><td class="gt-term">3 (4)</td><td class="gt-term">0</td><td class="gt-def">sum=20, length=4, best=<strong>4</strong></td></tr>
-<tr><td class="gt-term">4 (9)</td><td class="gt-term">0→3</td><td class="gt-def">sum γίνεται 29 &gt; 20 → shrink δύο φορές (αφαιρεί 3, μετά 5) μέχρι sum=13, length=2, best=4</td></tr>
-<tr><td class="gt-term">5 (12)</td><td class="gt-term">3→5</td><td class="gt-def">sum γίνεται 25 &gt; 20 → shrink (αφαιρεί 4, μετά 9) μέχρι sum=12, length=1, best=4</td></tr>
-<tr><td class="gt-term">6 (15)</td><td class="gt-term">5→6</td><td class="gt-def">sum γίνεται 27 &gt; 20 → shrink (αφαιρεί 12) μέχρι sum=15, length=1, best=4</td></tr>
-<tr><td class="gt-term">7 (2)</td><td class="gt-term">6</td><td class="gt-def">sum=17, length=2, best=4</td></tr>
-</table>
+<p>Ας το δούμε οπτικα:</p>
 
-<p>Αποτέλεσμα: <strong>4</strong> — το διάστημα <code>3 → 5 → 8 → 4</code>, με άθροισμα ακριβώς 20.</p>
+<p>Ας το δούμε οπτικά:</p>
 
-<div class="callout good"><span class="tag">Το σχήμα expand-then-shrink</span>Πρόσεξε τη δομή: το <code>right</code> ΠΑΝΤΑ επεκτείνεται πρώτα (εξωτερική λούπα). Μετά, μια ΕΣΩΤΕΡΙΚΗ λούπα συρρικνώνει από αριστερά ΟΣΟ χρειάζεται, μέχρι η συνθήκη να ξαναϊσχύσει. Αυτό το σχήμα είναι σχεδόν πάντα το ίδιο σε κάθε variable sliding window πρόβλημα, όποιο κι αν είναι το ακριβές κριτήριο εγκυρότητας.</div>
+<div class="sw-viz" id="sw-viz">
+
+  <div style="display:flex; gap:10px; margin-bottom:14px;">
+    <button class="reset-quiz-btn" id="sw-prev" disabled>← Προηγούμενο βήμα</button>
+    <button class="reset-quiz-btn" id="sw-next">Επόμενο βήμα →</button>
+  </div>
+
+  <div class="quiz-code-block" style="position:relative; border-radius:8px; padding:18px 20px;">
+    <div id="sw-diff-badge" class="sw-diff-badge"></div>
+
+    <div class="sw-pointer-row" id="sw-right-row"></div>
+    <div class="sw-pointer-row" id="sw-left-row"></div>
+    <div class="sw-array-row" id="sw-array-row"></div>
+  </div>
+
+  <table class="glossary-table" id="sw-state-panel" style="margin-top:16px;"></table>
+
+</div>
+<p>Τελικό αποτέλεσμα: το καλύτερο window βρίσκεται στα <code>start=6, end=11</code> — δηλαδή <code>prices[6:12]</code> — με τιμές <code>[4, 3, 2, 1, 8, 2]</code>, άθροισμα ακριβώς 20, μήκος 6.</p>
+
+<div class="callout good"><span class="tag">Το σχήμα expand-then-shrink</span>Πρόσεξε τη δομή: το <code>right</code> ΠΑΝΤΑ επεκτείνεται πρώτα (εξωτερική λούπα). Μετά, μια ΕΣΩΤΕΡΙΚΗ λούπα συρρικνώνει από αριστερά ΟΣΟ χρειάζεται, μέχρι η συνθήκη να ξαναϊσχύσει. Αυτό το σχήμα είναι σχεδόν πάντα το ίδιο σε κάθε variable sliding window πρόβλημα, όποιο κι αν είναι το ακριβές κριτήριο εγκυρότητας — και το <code>start</code>/<code>end</code> είναι απλά μια δεύτερη «καταγραφή θέσης» πάνω στο ήδη γνωστό extremum pattern, ώστε να θυμόμαστε ΠΟΥ ήταν το καλύτερο, όχι μόνο πόσο μεγάλο.</div>
 <br>
 
 <h1>Complement Lookup</h1>
@@ -1591,9 +1641,15 @@ limit := 20</code></pre>
 
   <p>Για κάθε στοιχείο <code>x</code>, το ζευγάρι που χρειαζόμαστε είναι πάντα συγκεκριμένο: <code>targetSum - x</code>. Δεν χρειάζεται να "ψάξουμε" γι' αυτό — απλά χρειάζεται να θυμόμαστε <strong>ποιες τιμές έχουμε ήδη δει</strong>.</p>
   <p>Αν κρατάμε τις τιμές που έχουμε ήδη συναντήσει σε μια δομή όπου ο έλεγχος "το έχω ξαναδεί;" γίνεται στιγμιαία (O(1)), τότε δεν χρειάζεται δεύτερο loop καθόλου.</p>
-  <div class="callout">
-    <p>Ποια δομή από όσες ξέρεις ήδη προσφέρει ακριβώς αυτό — στιγμιαίο έλεγχο "υπάρχει ήδη αυτή η τιμή;"</p>
-  </div>
+
+<div class="spoiler" style="max-width:100%; margin:12px 0;">
+    <div class="spoiler-lock" style="padding:10px 16px; font-size:15px; line-height:1.2; min-height:auto; text-align:center;">
+        <span style="display:block;">Ποια δομή από όσες ξέρεις ήδη, προσφέρει ακριβώς αυτό; — στιγμιαίο έλεγχο "υπάρχει ήδη αυτή η τιμή;" →</span>
+    </div>
+    <div style="padding:10px 16px; background:rgba(var(--panel-rgb),0.3); border-radius:0 0 8px 8px; border-left:3px solid var(--accent); font-size:15px; line-height:1.2;">
+        Η δομή που το κάνει αυτό είναι το <strong>map</strong>
+    </div>
+</div>
 
   <div class="grid3">
     <div class="card">
@@ -1602,7 +1658,7 @@ limit := 20</code></pre>
     </div>
     <div class="card">
       <h3>2. Έλεγξε</h3>
-      <p>Υπάρχει ήδη το <code>complement</code> μέσα στο map; Αν ναι, βρήκες ζευγάρι.</p>
+      <p>Υπάρχει ήδη το <code>complement</code> μέσα στο <strong>map</strong>; Αν ναι, βρήκες ζευγάρι.</p>
     </div>
     <div class="card">
       <h3>3. Αποθήκευσε</h3>
