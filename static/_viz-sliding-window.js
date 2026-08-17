@@ -1,12 +1,9 @@
 // ── Sliding Window step visualizer ──────────────────────────────────────── ⊃
-// This file is loaded as a top-level <script> tag, but the slide markup it
-// targets (#sw-viz and its children) does not exist yet at that point — the
-// course template builds ALL slide DOM later, inside initSlideDeck(), via
-// contentEl.innerHTML = slide.html (see renderSlide() in static/script.js).
-// A MutationObserver waits for #sw-viz to actually appear before touching it,
-// so this works regardless of exactly when initSlideDeck() runs.
+// Uses VizWaitFor (see static/_viz-common.js) to safely wait for #sw-viz to
+// exist in the DOM before touching it — see that file's header comment for
+// why this is needed on this course template.
 (function () {
-    function initSlidingWindowViz() {
+    VizWaitFor("sw-viz", function () {
         const prices = [3, 5, 8, 4, 12, 9, 4, 3, 2, 1, 8, 2, 7];
         const limit = 20;
 
@@ -64,9 +61,6 @@
         const steps = buildSteps();
         let current = 0;
 
-        const viz = document.getElementById("sw-viz");
-        if (!viz) return; // shouldn't happen — caller already checked
-
         const arrayRow = document.getElementById("sw-array-row");
         const rightRow = document.getElementById("sw-right-row");
         const leftRow = document.getElementById("sw-left-row");
@@ -75,61 +69,64 @@
         const prevBtn = document.getElementById("sw-prev");
         const nextBtn = document.getElementById("sw-next");
 
-        // Guard: if this ever runs twice on the same markup (shouldn't, given
-        // the observer below disconnects after first match), don't double-init.
-        if (arrayRow.dataset.swInit === "1") return;
-        arrayRow.dataset.swInit = "1";
-
         // Build the static array cells once — only classes/pointer rows change per step.
+        // vz-cell / vz-pointer-cell / vz-pointer-row come from static/_viz-common.css.
         prices.forEach((value, i) => {
             const cell = document.createElement("div");
-            cell.className = "sw-cell";
+            cell.className = "vz-cell";
             cell.dataset.index = i;
             cell.textContent = value;
             arrayRow.appendChild(cell);
 
             const rightCell = document.createElement("div");
-            rightCell.className = "sw-pointer-cell";
+            rightCell.className = "vz-pointer-cell";
             rightCell.dataset.index = i;
             rightRow.appendChild(rightCell);
 
             const leftCell = document.createElement("div");
-            leftCell.className = "sw-pointer-cell";
+            leftCell.className = "vz-pointer-cell";
             leftCell.dataset.index = i;
             leftRow.appendChild(leftCell);
         });
 
-        // Builds one <tr class="gt-term">…<td class="gt-def">…</tr> row, reusing
-        // the site's own .glossary-table row/cell markup and classes.
-        function stateRow(label, value, highlight) {
-            const tr = document.createElement("tr");
-            const tdLabel = document.createElement("td");
-            tdLabel.className = "gt-term";
-            tdLabel.textContent = label;
-            const tdValue = document.createElement("td");
-            tdValue.className = "gt-def" + (highlight ? " sw-state-panel-hl" : "");
-            tdValue.textContent = value;
-            tr.appendChild(tdLabel);
-            tr.appendChild(tdValue);
-            return tr;
+        // Builds one .gs-pill (the site's own glossary-strip pill markup) for
+        // the state panel — reusing .glossary-strip/.gs-pill/.gs-name/.gs-def.
+        // emphasisBg (optional, inline) gives one specific pill its own
+        // background color so it visually stands out from the rest — used for
+        // windowSum, per user request, without touching the shared CSS classes.
+        function statePill(label, value, highlight, emphasisBg) {
+            const pill = document.createElement("div");
+            pill.className = "gs-pill";
+            if (emphasisBg) {
+                pill.style.background = emphasisBg;
+            }
+            const name = document.createElement("span");
+            name.className = "gs-name";
+            name.textContent = label;
+            const def = document.createElement("span");
+            def.className = "gs-def" + (highlight ? " vz-state-hl" : "");
+            def.textContent = value;
+            pill.appendChild(name);
+            pill.appendChild(def);
+            return pill;
         }
 
         function render() {
             const step = steps[current];
 
-            // Array cells: highlight the current window [left, right] and mark
-            // just-added / just-removed elements for this specific step.
+            // Array cells: vz-highlight-a = inside the current window,
+            // vz-highlight-b = just added (this step), vz-highlight-c = just removed.
             Array.from(arrayRow.children).forEach((cell) => {
                 const i = Number(cell.dataset.index);
-                cell.classList.remove("sw-in-window", "sw-just-added", "sw-just-removed");
+                cell.classList.remove("vz-highlight-a", "vz-highlight-b", "vz-highlight-c");
                 if (i >= step.left && i <= step.right) {
-                    cell.classList.add("sw-in-window");
+                    cell.classList.add("vz-highlight-a");
                 }
                 if (step.type === "expand" && i === step.right) {
-                    cell.classList.add("sw-just-added");
+                    cell.classList.add("vz-highlight-b");
                 }
                 if (step.type === "shrink" && i === step.left - 1) {
-                    cell.classList.add("sw-just-removed");
+                    cell.classList.add("vz-highlight-c");
                 }
             });
 
@@ -142,33 +139,42 @@
             });
 
             // Diff badge — only shown for expand/shrink steps, since "measure" steps
-            // don't change windowSum.
+            // don't change windowSum. Shows "+N = <new windowSum>" — the "+N"/"-N"
+            // part inherits the badge's own positive/negative color (vz-positive/
+            // vz-negative below), while "=" and the resulting value are wrapped in
+            // their own spans so they render in gray / plain --ink instead.
             if (step.diff !== null) {
                 const positive = step.diff > 0;
-                diffBadge.textContent = (positive ? "+" : "") + step.diff;
+                const deltaText = (positive ? "+" : "") + step.diff;
+                diffBadge.innerHTML =
+                    deltaText +
+                    '<span class="vz-diff-eq"> = </span>' +
+                    '<span class="vz-diff-value">' + step.windowSum + '</span>';
                 diffBadge.className =
-                    "sw-diff-badge sw-show " + (positive ? "sw-positive" : "sw-negative");
+                    "vz-diff-badge vz-show " + (positive ? "vz-positive" : "vz-negative");
             } else {
-                diffBadge.className = "sw-diff-badge";
+                diffBadge.className = "vz-diff-badge";
                 diffBadge.textContent = "";
             }
 
-            // State panel — rows in the site's own glossary-table format.
+            // State panel — pills in the site's own glossary-strip format.
+            // windowSum comes FIRST and gets its own background tint (accent,
+            // via the site's --accent-rgb token) so it stands out from the rest.
             statePanel.innerHTML = "";
-            statePanel.appendChild(stateRow("right", step.right));
-            statePanel.appendChild(stateRow("prices[right]", prices[step.right]));
-            statePanel.appendChild(stateRow("left", step.left));
             statePanel.appendChild(
-                stateRow("prices[left]", step.left < prices.length ? prices[step.left] : "—")
+                statePill("windowSum", step.windowSum, step.type !== "measure", "rgba(var(--accent-rgb), 0.18)")
+            );
+            statePanel.appendChild(statePill("right", step.right));
+            statePanel.appendChild(statePill("prices[right]", prices[step.right]));
+            statePanel.appendChild(statePill("left", step.left));
+            statePanel.appendChild(
+                statePill("prices[left]", step.left < prices.length ? prices[step.left] : "—")
             );
             statePanel.appendChild(
-                stateRow("windowSum", step.windowSum, step.type !== "measure")
+                statePill("length", step.length === null ? "—" : step.length)
             );
             statePanel.appendChild(
-                stateRow("length", step.length === null ? "—" : step.length)
-            );
-            statePanel.appendChild(
-                stateRow("bestLength", step.bestLength, step.type === "measure" && step.improved)
+                statePill("bestLength", step.bestLength, step.type === "measure" && step.improved)
             );
 
             prevBtn.disabled = current === 0;
@@ -190,21 +196,5 @@
         });
 
         render();
-    }
-
-    // #sw-viz doesn't exist yet when this file loads (see comment above) —
-    // wait for it. If it's somehow already there (e.g. this script got moved
-    // to load after initSlideDeck() in the future), init immediately instead
-    // of waiting on an observer that would never fire.
-    if (document.getElementById("sw-viz")) {
-        initSlidingWindowViz();
-    } else {
-        const observer = new MutationObserver(() => {
-            if (document.getElementById("sw-viz")) {
-                observer.disconnect();
-                initSlidingWindowViz();
-            }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-    }
+    });
 })();

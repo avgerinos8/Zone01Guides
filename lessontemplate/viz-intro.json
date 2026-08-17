@@ -1,0 +1,36 @@
+{
+    "purpose": "Session summary — what was built for the sliding-window step visualizer specifically. For the reusable boilerplate itself (usable on future visualizers), see the companion file viz-boilerplate-overview.json.",
+    "context": {
+        "course": "Zone01 Athens Go course, Part 2 (02-go-02.html), Ενότητα 3 §3.2 Variable-Size Sliding Window section",
+        "goal_stated_by_user": "An interactive step-by-step visualizer resembling a hand-sketched mockup: array of numbers, left/right pointer markers on separate rows above the array, a +N/-N diff badge appearing top-right whenever windowSum changes, prev/next step buttons, and a state panel showing right/left/windowSum/length/bestLength — all restyled to use the course's own existing CSS tokens and components rather than any custom design system"
+    },
+    "algorithm_visualized": {
+        "problem": "LongestWindowUnderLimit — find the longest contiguous subarray whose sum does not exceed a limit, tracking start/end indices of the best window found",
+        "dataset": "prices := []int{3, 5, 8, 4, 12, 9, 4, 3, 2, 1, 8, 2, 7}, limit := 20",
+        "verified_result": "bestLength=6, window = prices[6:12] = [4,3,2,1,8,2], sum=20 — cross-checked in Python before writing any JS, and re-verified after every refactor via headless jsdom tests"
+    },
+    "step_granularity": {
+        "decision": "User explicitly requested that EVERY shrink-loop iteration (windowSum -= prices[left]; left++) be its own separate clickable step, not bundled with the outer for-loop pass that triggered it",
+        "resulting_step_types": [
+            "expand — right++ / windowSum += prices[right], one per outer loop iteration",
+            "shrink — one per inner while-loop iteration (windowSum > limit), zero or more per expand step",
+            "measure — length calculation + best-window update check, one per outer loop iteration, always immediately after any shrink steps for that iteration"
+        ],
+        "total_steps_for_this_dataset": 34,
+        "verification_method": "Full step sequence built and hand-verified in Python (prices/index/windowSum/diff/length/bestLength per step) BEFORE writing the JS translation, then re-verified via headless jsdom click-through tests (34/34 steps, both directions, boundary disabled-button states) after every refactor"
+    },
+    "iteration_history": [
+        "v1: fully custom CSS (.sw-viz/.sw-btn/.sw-box/etc) with hand-picked colors not tied to the course's :root tokens — REJECTED by user, wanted zero new design language",
+        "v2: rebuilt using only the course's actual style.css classes (.reset-quiz-btn for buttons, .quiz-code-block for the bordered number box, .glossary-table for the state rows) plus minimal new CSS only for what didn't already exist (array cells, pointer rows, diff badge) — accepted",
+        "v3 (bug): visualizer rendered as a completely empty bordered box in production — root cause found by reading the actual static/script.js: addContent(html) only pushes {type:'content', html} into a slides[] array; the real DOM insertion happens later, inside initSlideDeck(), via contentEl.innerHTML = slide.html in renderSlide(). The visualizer's <script src> (as a top-level tag, or worse, inline inside the slide.html string where <script> tags never execute at all per the innerHTML spec) ran before that DOM insertion, so every getElementById() call returned null and the code silently no-op'd — no console error, just an empty box",
+        "v4 (fix): wrapped the init logic to wait for #sw-viz to exist via MutationObserver instead of running immediately — confirmed correct against the real static/script.js source (read directly, not assumed) and against a jsdom test that reproduces the exact real-world timing (script loads into an empty page, markup inserted later via innerHTML=)",
+        "v5 (generalization, this round): extracted the MutationObserver-wait logic into a shared, reusable static/_viz-common.js (VizWaitFor helper) and a shared static/_viz-common.css stylesheet (generic vz-* classes with semantic-agnostic -a/-b/-c highlight-state suffixes, covering both 1D array/pointer layouts AND 2D grid layouts for future visualizers like Sudoku backtracking), then rewrote this visualizer on top of that shared layer and renamed it from the placeholder _visualization01.js to _viz-sliding-window.js. State panel changed from .glossary-table rows to .glossary-strip/.gs-pill (pill-style), per explicit user request in this round."
+    ],
+    "final_file_set": {
+        "static/_viz-common.js": "Shared VizWaitFor(rootId, initFn) helper — the ONLY thing this file provides; no step-engine, no state-shape opinions (user explicitly declined a shared step-engine convention, wanting each future visualizer free to design its own step/render shape)",
+        "static/_viz-common.css": "Shared vz-* classes: .vz-controls, .vz-pointer-row/.vz-pointer-cell, .vz-array-row/.vz-cell (1D), .vz-grid/.vz-grid-cell (2D, new — not yet used by any visualizer, prepared ahead of the planned Sudoku/backtracking visualizer), .vz-highlight-a/b/c (semantic-agnostic reusable highlight states), .vz-diff-badge, .vz-state-hl",
+        "static/_viz-sliding-window.js": "The sliding-window-specific step-building (buildSteps) and rendering (render) logic, wrapped in VizWaitFor('sw-viz', ...) from the shared file. All own its own step array/type/render shape — no shared step-engine dependency.",
+        "html_snippet": "Inserted directly into the relevant addContent(...) call's HTML string in 02-go-02.html — uses #sw-viz as the VizWaitFor root id, reuses .reset-quiz-btn/.quiz-code-block/.glossary-strip/.gs-pill from the course's own style.css, plus the new vz-* classes from _viz-common.css"
+    },
+    "script_load_order_requirement": "static/_viz-common.js MUST be loaded (via <script src>) before static/_viz-sliding-window.js, since the latter calls the global VizWaitFor function defined in the former. Both must load before slides.length grows large enough to matter — but per the v3/v4 bug fix, exact load timing relative to initSlideDeck() no longer matters, since VizWaitFor handles arriving either before or after the target markup exists."
+}

@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go — Μέρος 2: Αλγοριθμική Σκέψη</title>
     <link rel="stylesheet" href="static/style.css?v=20260801">
+    <link rel="stylesheet" href="static/viz-style.css?v=20260817">
     <link rel="stylesheet" href="static/theme-go-two.css?v=20260801">
+
 </head>
 
 <body>
@@ -49,7 +51,8 @@
 
     <script src="static/script.js?v=20260801"></script>
     <script src="static/highlighter.js?v=20260801"></script>
-    <script src="static/_visualization01.js"></script>
+    <script src="static/_viz-common.js"></script>
+    <script src="static/_viz-sliding-window.js"></script>
     <script>
         // Course content below.
 
@@ -1573,31 +1576,30 @@ limit := 20</code></pre>
     }
 
     return prices[start : end+1] // slice out the actual values of the best window found
-}
-// LongestWindowUnderLimit(prices, 20) → [4 3 2 1 8 2]</code></pre>
+}</code></pre>
 
-<p>Η σειρά εκτέλεσης μέσα σε κάθε πέρασμα της εξωτερικής λούπας ακολουθεί πάντα τα ίδια τέσσερα βήματα: πρώτα το <code>right</code> προχωράει και «μπάζει» ένα νέο στοιχείο μέσα στο window (το window μπορεί προσωρινά να γίνει άκυρο, με άθροισμα πάνω από το όριο) — μετά, μια εσωτερική λούπα σπρώχνει το <code>left</code> όσο χρειάζεται, «βγάζοντας» στοιχεία από την αριστερή άκρη, μέχρι το window να ξαναγίνει έγκυρο — μετά μετράμε το μήκος του τρέχοντος, έγκυρου πια window — και τέλος, αν αυτό το μήκος είναι το καλύτερο που έχουμε δει μέχρι στιγμής, καταγράφουμε ΠΟΥ ακριβώς βρίσκεται (τα <code>start</code>/<code>end</code>), όχι μόνο πόσο μεγάλο είναι.</p>
 
-<p>Ας το δούμε οπτικα:</p>
+<div id="sw-viz">
 
-<p>Ας το δούμε οπτικά:</p>
-
-<div class="sw-viz" id="sw-viz">
-
-  <div style="display:flex; gap:10px; margin-bottom:14px;">
-    <button class="reset-quiz-btn" id="sw-prev" disabled>← Προηγούμενο βήμα</button>
-    <button class="reset-quiz-btn" id="sw-next">Επόμενο βήμα →</button>
+  <div class="vz-controls">
+    <button class="reset-quiz-btn" id="sw-prev" disabled>← visualization prev step</button>
+    <button class="reset-quiz-btn" id="sw-next">visualization next step →</button>
   </div>
 
   <div class="quiz-code-block" style="position:relative; border-radius:8px; padding:18px 20px;">
-    <div id="sw-diff-badge" class="sw-diff-badge"></div>
+    <div id="sw-diff-badge" class="vz-diff-badge"></div>
 
-    <div class="sw-pointer-row" id="sw-right-row"></div>
-    <div class="sw-pointer-row" id="sw-left-row"></div>
-    <div class="sw-array-row" id="sw-array-row"></div>
+    <div class="vz-pointer-row" id="sw-right-row"></div>
+    <div class="vz-pointer-row" id="sw-left-row"></div>
+    <div class="vz-array-row" id="sw-array-row"></div>
   </div>
 
-  <table class="glossary-table" id="sw-state-panel" style="margin-top:16px;"></table>
+  <div class="glossary-group" style="margin-top:16px;">
+    <div class="glossary-strip" id="sw-state-panel"></div>
+  </div>
+
+
+<p>Η σειρά εκτέλεσης μέσα σε κάθε πέρασμα της εξωτερικής λούπας ακολουθεί πάντα τα ίδια τέσσερα βήματα: πρώτα το <code>right</code> προχωράει και «μπάζει» ένα νέο στοιχείο μέσα στο window (το window μπορεί προσωρινά να γίνει άκυρο, με άθροισμα πάνω από το όριο) — μετά, μια εσωτερική λούπα σπρώχνει το <code>left</code> όσο χρειάζεται, «βγάζοντας» στοιχεία από την αριστερή άκρη, μέχρι το window να ξαναγίνει έγκυρο — μετά μετράμε το μήκος του τρέχοντος, έγκυρου πια window — και τέλος, αν αυτό το μήκος είναι το καλύτερο που έχουμε δει μέχρι στιγμής, καταγράφουμε ΠΟΥ ακριβώς βρίσκεται (τα <code>start</code>/<code>end</code>), όχι μόνο πόσο μεγάλο είναι.</p>
 
 </div>
 <p>Τελικό αποτέλεσμα: το καλύτερο window βρίσκεται στα <code>start=6, end=11</code> — δηλαδή <code>prices[6:12]</code> — με τιμές <code>[4, 3, 2, 1, 8, 2]</code>, άθροισμα ακριβώς 20, μήκος 6.</p>
