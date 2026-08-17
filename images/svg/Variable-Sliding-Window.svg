@@ -1,0 +1,133 @@
+<svg width="100%" viewBox="0 0 680 928" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Flowchart του LongestWindowUnderLimit</title>
+    <desc>Διάγραμμα ροής που δείχνει τα βήματα του variable-size sliding window algorithm: αρχικοποίηση, επέκταση δεξιά,
+        συρρίκνωση αριστερά όταν το άθροισμα ξεπερνά το όριο, μέτρηση μήκους, ενημέρωση καλύτερου αποτελέσματος, και
+        τελική επιστροφή.</desc>
+    <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6"
+            orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </marker>
+    </defs>
+
+    <!-- Start terminator -->
+    <rect x="150" y="30" width="220" height="44" rx="22" fill="var(--tone-2)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="260" y="52" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500"
+        fill="var(--tone-text)">Έναρξη</text>
+
+    <line x1="260" y1="74" x2="260" y2="104" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <!-- Init -->
+    <rect x="150" y="104" width="220" height="44" rx="8" fill="var(--tone-2)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="260" y="126" text-anchor="middle" dominant-baseline="central" font-size="14" fill="var(--tone-text)">left,
+        windowSum, best := 0</text>
+
+    <line x1="260" y1="148" x2="260" y2="178" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <!-- Decision 1: right < len(prices)? -->
+    <polygon points="260,168 380,213 260,258 140,213" fill="var(--tone-5)" stroke="var(--tone-2)" stroke-width="0.5" />
+    <text x="260" y="205" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-1)">right &lt;</text>
+    <text x="260" y="221" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-1)">len(prices) ?</text>
+
+    <line x1="260" y1="258" x2="260" y2="268" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+    <text x="278" y="264" font-size="12" fill="var(--tone-4)">ναι</text>
+
+    <!-- Proc: windowSum += prices[right] -->
+    <rect x="130" y="268" width="260" height="44" rx="8" fill="var(--tone-2)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="260" y="290" text-anchor="middle" dominant-baseline="central" font-size="13"
+        fill="var(--tone-text)">windowSum += prices[right]</text>
+
+    <line x1="260" y1="312" x2="260" y2="342" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <!-- Decision 2: windowSum > limit? -->
+    <polygon points="260,332 385,377 260,422 135,377" fill="var(--tone-5)" stroke="var(--tone-2)" stroke-width="0.5" />
+    <text x="260" y="369" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-1)">windowSum</text>
+    <text x="260" y="385" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-1)">&gt; limit ?</text>
+
+    <!-- Loop branch to the right: shrink -->
+    <line x1="385" y1="377" x2="500" y2="377" stroke="var(--tone-4)" stroke-width="1.5" />
+    <text x="440" y="368" font-size="12" fill="var(--tone-4)">ναι</text>
+    <line x1="500" y1="377" x2="500" y2="454" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <rect x="380" y="432" width="240" height="56" rx="8" fill="var(--tone-3)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="500" y="452" text-anchor="middle" dominant-baseline="central" font-size="13"
+        fill="var(--tone-text)">windowSum -= prices[left]</text>
+    <text x="500" y="470" text-anchor="middle" dominant-baseline="central" font-size="13"
+        fill="var(--tone-text)">left++</text>
+
+    <!-- return arrow from shrink back up into decision 2's right vertex -->
+    <line x1="620" y1="460" x2="640" y2="460" stroke="var(--tone-4)" stroke-width="1.5" />
+    <line x1="640" y1="460" x2="640" y2="377" stroke="var(--tone-4)" stroke-width="1.5" />
+    <line x1="640" y1="377" x2="387" y2="377" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <line x1="260" y1="422" x2="260" y2="518" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+    <text x="216" y="475" font-size="12" fill="var(--tone-4)">όχι</text>
+
+    <!-- Proc: length := right-left+1 -->
+    <rect x="130" y="518" width="260" height="44" rx="8" fill="var(--tone-2)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="260" y="540" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--tone-text)">length
+        := right-left+1</text>
+
+    <line x1="260" y1="562" x2="260" y2="592" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <!-- Decision 3: length > bestLength? -->
+    <polygon points="260,582 390,627 260,672 130,627" fill="var(--tone-5)" stroke="var(--tone-2)" stroke-width="0.5" />
+    <text x="260" y="619" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-1)">length &gt;</text>
+    <text x="260" y="635" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-1)">bestLength ?</text>
+
+    <line x1="260" y1="672" x2="260" y2="682" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+    <text x="278" y="678" font-size="12" fill="var(--tone-4)">ναι</text>
+
+    <!-- Proc: update best/start/end -->
+    <rect x="130" y="682" width="260" height="56" rx="8" fill="var(--tone-3)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="260" y="702" text-anchor="middle" dominant-baseline="central" font-size="13"
+        fill="var(--tone-text)">bestLength = length</text>
+    <text x="260" y="720" text-anchor="middle" dominant-baseline="central" font-size="13" fill="var(--tone-text)">start
+        = left, end = right</text>
+
+    <!-- "όχι" branch from decision 3 skips straight to right++ -->
+    <line x1="130" y1="627" x2="60" y2="627" stroke="var(--tone-4)" stroke-width="1.5" />
+    <text x="70" y="618" font-size="12" fill="var(--tone-4)">όχι</text>
+    <line x1="60" y1="627" x2="60" y2="778" stroke="var(--tone-4)" stroke-width="1.5" />
+    <line x1="60" y1="778" x2="150" y2="778" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <line x1="260" y1="738" x2="260" y2="768" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <!-- Proc: right++ -->
+    <rect x="150" y="768" width="220" height="44" rx="8" fill="var(--tone-2)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="260" y="790" text-anchor="middle" dominant-baseline="central" font-size="14"
+        fill="var(--tone-text)">right++</text>
+
+    <!-- return arrow from right++ back up to decision 1 -->
+    <line x1="150" y1="800" x2="80" y2="800" stroke="var(--tone-4)" stroke-width="1.5" />
+    <line x1="80" y1="800" x2="80" y2="213" stroke="var(--tone-4)" stroke-width="1.5" />
+    <line x1="80" y1="213" x2="140" y2="213" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <line x1="380" y1="213" x2="650" y2="213" stroke="var(--tone-4)" stroke-width="1.5" />
+    <text x="600" y="204" font-size="12" fill="var(--tone-4)">όχι</text>
+    <line x1="650" y1="213" x2="650" y2="842" stroke="var(--tone-4)" stroke-width="1.5" />
+    <line x1="650" y1="842" x2="380" y2="842" stroke="var(--tone-4)" stroke-width="1.5" marker-end="url(#arrow)" />
+
+    <!-- End terminator -->
+    <rect x="150" y="842" width="220" height="56" rx="28" fill="var(--tone-2)" stroke="var(--tone-4)"
+        stroke-width="0.5" />
+    <text x="260" y="862" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-text)">return</text>
+    <text x="260" y="880" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500"
+        fill="var(--tone-text)">prices[start:end+1]</text>
+
+</svg>
