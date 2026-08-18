@@ -89,7 +89,7 @@
         <span class="desktop-text">Reset Progress</span>
         <span class="mobile-text">Reset</span>
       </button>
-      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
         <span class="desktop-text">Return</span>
         <span class="mobile-text">Home</span>
       </a>
@@ -284,7 +284,7 @@ func validateAge(age int) error {
     addFillBlank([
       {
         code:
-`import "errors"
+          `import "errors"
 
 func checkStock(count int) error {
     if count == 0 {
@@ -300,7 +300,7 @@ func checkStock(count int) error {
       },
       {
         code:
-`import "fmt"
+          `import "fmt"
 
 func validateUsername(name string) error {
     if len(name) < 3 {
@@ -474,7 +474,7 @@ func validateUsername(name string) error {
     addFillBlank([
       {
         code:
-`func safeCall() (err error) {
+          `func safeCall() (err error) {
     __blank1__ func() {
         if r := __blank2__(); r != nil {
             err = fmt.Errorf("recovered: %v", r)
@@ -630,7 +630,7 @@ strings.EqualFold("Go", "GO")       // true — case-insensitive σύγκρισ�
     addFillBlank([
       {
         code:
-`import "strings"
+          `import "strings"
 
 func buildGreeting(names []string) string {
     var b strings.__blank1__
@@ -857,7 +857,7 @@ all := os.Environ() // []string με ΟΛΕΣ τις μεταβλητές, μο�
     addFillBlank([
       {
         code:
-`func main() {
+          `func main() {
     args := os.__blank1__
     if len(args) < 2 {
         fmt.Println("missing argument")
@@ -1492,7 +1492,7 @@ fmt.Println(it.Base.ID) // 1 — το embedded, ρητά, εξακολουθεί
     addFillBlank([
       {
         code:
-`type Engine struct {
+          `type Engine struct {
     Horsepower int
 }
 
@@ -1697,7 +1697,7 @@ fmt.Println(rect.Width) // 10 — ΑΛΛΑΞΕ! Η Go καλεί αυτόματ�
     addFillBlank([
       {
         code:
-`type Counter struct {
+          `type Counter struct {
     Value int
 }
 
@@ -2213,7 +2213,7 @@ type Person interface {
     addFillBlank([
       {
         code:
-`var s Shape = Circle{Radius: 5}
+          `var s Shape = Circle{Radius: 5}
 
 // Safe type assertion — does NOT panic if wrong
 rect, __blank1__ := s.(Rectangle)
@@ -2492,7 +2492,7 @@ data := buf[:n] // χρησιμοποίησε ΜΟΝΟ τα πρώτα n bytes, 
     addFillBlank([
       {
         code:
-`// GOOD: depends on abstraction, not concrete type
+          `// GOOD: depends on abstraction, not concrete type
 func CountLines(r io.__blank1__) (int, error) {
     scanner := bufio.NewScanner(r)
     count := 0
@@ -2682,7 +2682,7 @@ func main() {
     addFillBlank([
       {
         code:
-`type Stage func(string) (string, error)
+          `type Stage func(string) (string, error)
 
 func runPipeline(input string, stages ...__blank1__) (string, error) {
     result := input
@@ -2903,7 +2903,7 @@ func transition(current OrderState, event Event, orderID string) (OrderState, er
     addFillBlank([
       {
         code:
-`type transitionKey struct {
+          `type transitionKey struct {
     state OrderState
     event Event
 }
@@ -3263,7 +3263,7 @@ func main() {
     addFillBlank([
       {
         code:
-`type PaymentStrategy interface {
+          `type PaymentStrategy interface {
     __blank1__(amount float64) error
 }
 
@@ -3469,7 +3469,7 @@ srv3 := NewServer(
     addFillBlank([
       {
         code:
-`type Server struct {
+          `type Server struct {
     host string
     port int
 }

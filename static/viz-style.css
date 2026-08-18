@@ -16,9 +16,31 @@
 /* ── controls row (prev/next or similar step buttons) ─────────────────── ⊃ */
 .vz-controls {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-bottom: 14px;
     flex-wrap: wrap;
+}
+
+/* Same visual treatment as .callout .tag (font-mono, uppercase, accent
+   color) but standalone — not dependent on a .callout wrapper, since this
+   sits directly above a visualizer's controls, not inside a callout box. */
+.vz-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Fixed min-width so a play/pause-style button doesn't resize/jitter when
+   its label swaps between states (e.g. "▶ play" / "⏸ pause" /
+   "speed: N.Nx" during wheel-to-adjust-speed). Add this class to any
+   button whose text content changes at runtime. */
+.vz-btn-stable {
+    min-width: 128px;
 }
 
 /* ── 1D array/sequence layout ─────────────────────────────────────────── ⊃ */
