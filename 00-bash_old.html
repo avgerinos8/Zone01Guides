@@ -88,27 +88,6 @@
 <h2>Τι είναι Scripting</h2>
 <p>Scripting σημαίνει να γράφεις μια ακολουθία εντολών μέσα σε ένα αρχείο, ώστε να τις εκτελείς όλες μαζί αντί να τις πληκτρολογείς μία-μία κάθε φορά. Ένα shell script είναι απλά ένα αρχείο κειμένου γεμάτο εντολές shell, που το shell διαβάζει και εκτελεί σαν πρόγραμμα. Είναι το πρώτο σκαλί πριν τον προγραμματισμό όπως τον φαντάζεσαι, αφού οι ίδιες λογικές δομές (μεταβλητές, συνθήκες, βρόχοι) εμφανίζονται παντού.</p>
 
-<h2>Η ανατομία μιας εντολής</h2>
-<p>Πριν δεις έστω και μία εντολή, αξίζει να ξέρεις ότι σχεδόν όλες έχουν την ίδια δομή. Τρία μέρη, χωρισμένα μεταξύ τους με κενά: το όνομα του προγράμματος, τα flags που αλλάζουν τον τρόπο που δουλεύει, και τα arguments, δηλαδή το πάνω σε τι θα δουλέψει.</p>
-<pre><code><span class="tok-func">ls</span> <span class="tok-kw">-l</span> <span class="tok-type">/home</span>
-<span class="tok-com"># ls    -> the program name: WHAT you want to run</span>
-<span class="tok-com"># -l    -> a flag (option): changes HOW it runs, here "long format"</span>
-<span class="tok-com"># /home -> an argument: WHAT the program should work on</span>
-</code></pre>
-<p>Τα flags γράφονται είτε με μία παύλα και ένα γράμμα (<code>-l</code>), είτε με δύο παύλες και ολόκληρη λέξη (<code>--long</code>). Πολύ συχνά οι δύο μορφές κάνουν ακριβώς το ίδιο πράγμα, με τη δεύτερη να είναι πιο ευανάγνωστη όταν διαβάζεις εντολές κάποιου άλλου. Τα μονογράμματα flags συνδυάζονται και σε ένα: το <code>ls -l -a</code> γράφεται και <code>ls -la</code>. Αν κάτι σου φαίνεται μαγικό σε μια εντολή, σχεδόν πάντα είναι απλώς ένα flag που δεν έχεις ξαναδεί.</p>
-
-<h2>Τι συμβαίνει όταν πατάς Enter</h2>
-<p>Η εντολή δεν πηγαίνει κατευθείαν στον επεξεργαστή. Περνάει από μια σειρά βημάτων, και το να τα έχεις στο μυαλό σου βοηθάει τρομερά όταν κάτι δεν δουλεύει όπως περίμενες:</p>
-<div class="grid3">
-  <div class="card"><h3>1. Ανάγνωση</h3><p>Το shell διαβάζει τη γραμμή που έγραψες και τη σπάει σε λέξεις, με βάση τα κενά.</p></div>
-  <div class="card"><h3>2. Επέκταση</h3><p>Αντικαθιστά τα σύμβολα με την πραγματική τους τιμή: το ~ γίνεται ο home φάκελός σου, το *.txt γίνεται λίστα αρχείων.</p></div>
-  <div class="card"><h3>3. Εύρεση</h3><p>Ψάχνει σε μια προκαθορισμένη λίστα φακέλων (τη μεταβλητή PATH) το πρόγραμμα με αυτό το όνομα.</p></div>
-  <div class="card"><h3>4. Εκτέλεση</h3><p>Ζητάει από το λειτουργικό σύστημα να ξεκινήσει το πρόγραμμα ως νέα διεργασία.</p></div>
-  <div class="card"><h3>5. Έξοδος</h3><p>Το πρόγραμμα τυπώνει το αποτέλεσμά του και επιστρέφει έναν κωδικό επιτυχίας ή αποτυχίας.</p></div>
-  <div class="card"><h3>6. Επιστροφή</h3><p>Το shell εμφανίζει ξανά το prompt και περιμένει την επόμενη εντολή σου.</p></div>
-</div>
-<p>Το διάσημο μήνυμα <code>command not found</code> γεννιέται στο βήμα 3. Το πρόγραμμα μπορεί κάλλιστα να υπάρχει στον υπολογιστή σου, αλλά αν ο φάκελός του δεν βρίσκεται μέσα στο PATH, το shell δεν ξέρει πού να ψάξει. Θα δούμε το PATH αναλυτικά στην Ενότητα 6.</p>
-
 <div class="callout">
   <span class="tag">Καλό να ξέρεις</span>
   Κάθε φορά που ανοίγεις ένα "Terminal" app, αυτό που βλέπεις είναι ένα παράθυρο (terminal emulator) που σου δίνει πρόσβαση σε ένα shell. Terminal και shell δεν είναι το ίδιο πράγμα. Το terminal είναι το παράθυρο, το shell είναι το πρόγραμμα που τρέχει μέσα του.
@@ -120,9 +99,9 @@
         q: "Ποιος είναι ο ρόλος του Λειτουργικού Συστήματος;",
         options: [
           "Διαχειρίζεται τους πόρους του hardware και δίνει στα προγράμματα τρόπο να τους χρησιμοποιήσουν",
-          "Είναι ένα κύκλωμα χαραγμένο μόνιμα στον επεξεργαστή, που ρυθμίζει αυτόματα τη συχνότητα των πυρήνων χωρίς να χρειάζεται λογισμικό",
-          "Είναι το φυσικό κύκλωμα μέσα στον επεξεργαστή που εκτελεί τις εντολές",
-          "Χρησιμεύει αποκλειστικά για να ανοίγει άλλα προγράμματα με διπλό κλικ"
+          "Είναι το φυσικό κύκλωμα μέσα στον επεξεργαστή που λειτουργεί για όλα τα συστήματα",
+          "Χρησιμεύει αποκλειστικά για να ανοίγει άλλα προγράμματα με διπλό κλικ",
+          "Είναι ένα ενσωματωμένο υλικολογισμικό (firmware) το οποίο είναι χαραγμένο μόνιμα στην κρυφή μνήμη L1 του επεξεργαστή και αναλαμβάνει την αυτόματη κλιμάκωση των χρονισμών (clock speeds) των πυρήνων, παρακάμπτοντας οποιοδήποτε λογισμικό τρίτων."
         ],
         correct: 0,
         explain: "Το λειτουργικό σύστημα στέκεται ανάμεσα στο hardware και τα προγράμματα, διαχειριζόμενο μνήμη, αρχεία, διεργασίες και συσκευές."
@@ -130,10 +109,10 @@
       {
         q: "Γιατί χρησιμοποιείται τόσο συχνά το Linux σε servers και υποδομές ανάπτυξης λογισμικού;",
         options: [
-          "Επειδή είναι ανοιχτού κώδικα και δίνει άμεση πρόσβαση στο σύστημα αρχείων και στις διεργασίες",
-          "Επειδή είναι το μοναδικό λειτουργικό σύστημα που μπορεί να τρέξει προγράμματα χωρίς γραφικό περιβάλλον, κάτι απαραίτητο για servers",
-          "Επειδή απαιτεί ειδικό υλικό που δεν διαθέτουν τα Windows",
-          "Επειδή δεν επιτρέπει καθόλου γραμμή εντολών, μόνο GUI"
+          "Επειδή είναι ανοιχτού κώδικα και δίνει άμεση πρόσβαση στο σύστημα, κάτι που το έχει καθιερώσει ως βασικό εργαλείο του κλάδου",
+          "Επειδή είναι το μοναδικό λειτουργικό σύστημα που υποστηρίζει γραφικό περιβάλλον",
+          "Επειδή απαιτεί υποχρεωτικά ειδικό υλικό που δεν διαθέτουν τα Windows και τα macOS",
+          "Επειδή δεν επιτρέπει καθόλου χρήση γραμμής εντολών, μόνο GUI"
         ],
         correct: 0,
         explain: "Ο ανοιχτός κώδικας και η άμεση πρόσβαση σε σύστημα αρχείων και διεργασίες έκαναν το Linux τον κανόνα σε servers και εργαλεία ανάπτυξης."
@@ -141,35 +120,13 @@
       {
         q: "Ποια είναι η σχέση terminal και shell;",
         options: [
-          "Το terminal είναι το παράθυρο, το shell το πρόγραμμα που τρέχει μέσα του",
-          "Το shell είναι το γραφικό παράθυρο και το terminal η γλώσσα προγραμματισμού που γράφεις μέσα σε αυτό",
-          "Είναι ακριβώς το ίδιο πράγμα με δύο ονόματα",
+          "Το terminal είναι το παράθυρο, το shell είναι το πρόγραμμα που τρέχει μέσα του και ερμηνεύει εντολές",
+          "Είναι απολύτως το ίδιο πράγμα, απλώς διαφορετικά ονόματα",
+          "Το shell είναι το παράθυρο, το terminal είναι η γλώσσα προγραμματισμού που χρησιμοποιείται μέσα σε αυτό",
           "Το terminal υπάρχει μόνο σε Windows, το shell μόνο σε Linux"
         ],
         correct: 0,
         explain: "Το terminal εμφανίζει το περιβάλλον, αλλά αυτό που πραγματικά διαβάζει και εκτελεί τις εντολές σου είναι το shell."
-      },
-      {
-        q: "Στην εντολή ls -l /home, τι ρόλο έχει το /home;",
-        options: [
-          "Είναι argument: το αντικείμενο πάνω στο οποίο θα δουλέψει η εντολή",
-          "Είναι flag που αλλάζει τη μορφή της εξόδου, ακριβώς όπως και το -l που προηγείται",
-          "Είναι το όνομα του προγράμματος που θα εκτελεστεί",
-          "Είναι σχόλιο και αγνοείται από το shell"
-        ],
-        correct: 0,
-        explain: "Η δομή είναι πάντα πρόγραμμα, flags, arguments. Το -l αλλάζει το ΠΩΣ θα δουλέψει η ls, ενώ το /home δηλώνει το ΠΑΝΩ ΣΕ ΤΙ."
-      },
-      {
-        q: "Γιατί μια εντολή μπορεί να δίνει command not found ενώ το πρόγραμμα υπάρχει στον υπολογιστή;",
-        options: [
-          "Επειδή ο φάκελός του δεν βρίσκεται μέσα στη μεταβλητή PATH",
-          "Επειδή το πρόγραμμα δεν έχει μεταγλωττιστεί για την αρχιτεκτονική του επεξεργαστή σου, οπότε το shell το αγνοεί",
-          "Επειδή το shell δέχεται μόνο εντολές μέχρι δύο γράμματα",
-          "Επειδή χρειάζεται πάντα δικαιώματα root για κάθε εντολή"
-        ],
-        correct: 0,
-        explain: "Στο βήμα της εύρεσης, το shell ψάχνει το πρόγραμμα μόνο μέσα στους φακέλους του PATH. Αν ο φάκελός του λείπει από εκεί, το shell δεν έχει τρόπο να το βρει."
       }
     ]);
 
@@ -182,9 +139,6 @@
   <div class="gc-line"><span class="gc-term">GUI</span><span class="gc-def">Γραφικό περιβάλλον με εικονίδια/κλικ</span></div>
   <div class="gc-line"><span class="gc-term">Shell</span><span class="gc-def">Πρόγραμμα που ερμηνεύει τις εντολές σου προς το OS</span></div>
   <div class="gc-line"><span class="gc-term">Script</span><span class="gc-def">Αρχείο με ακολουθία εντολών προς εκτέλεση</span></div>
-  <div class="gc-line"><span class="gc-term">Flag / Option</span><span class="gc-def">Παράμετρος που αλλάζει τον τρόπο που δουλεύει μια εντολή</span></div>
-  <div class="gc-line"><span class="gc-term">Argument</span><span class="gc-def">Το αντικείμενο πάνω στο οποίο δουλεύει η εντολή</span></div>
-  <div class="gc-line"><span class="gc-term">PATH</span><span class="gc-def">Η λίστα φακέλων όπου το shell ψάχνει προγράμματα</span></div>
 </div>
 `);
 
@@ -223,90 +177,32 @@
 <span class="tok-func">wsl</span> --set-default-version 2
 </code></pre>
 <p>Μετά την εγκατάσταση, ανοίγεις το app "Ubuntu" (ή όποια διανομή επέλεξες) από το Start Menu και έχεις ένα πλήρες bash terminal.</p>
-
-<h2>Ποιο shell τρέχω αυτή τη στιγμή;</h2>
-<p>Δεν είναι πάντα προφανές ποιο shell είναι ενεργό, ειδικά όταν συνδέεσαι σε ξένο μηχάνημα ή σε server. Δύο γρήγοροι τρόποι να το δεις:</p>
-<pre><code><span class="tok-func">echo</span> <span class="tok-kw">$SHELL</span>        <span class="tok-com"># the shell registered as your default login shell</span>
-<span class="tok-func">echo</span> <span class="tok-kw">$0</span>            <span class="tok-com"># the shell that is actually running right now</span>
-<span class="tok-func">cat</span> /etc/shells     <span class="tok-com"># list every shell installed on this machine</span>
-<span class="tok-func">chsh</span> <span class="tok-kw">-s</span> /bin/bash   <span class="tok-com"># change your default shell (applies on next login)</span>
-</code></pre>
-<div class="callout">
-  <span class="tag">Λεπτή διαφορά</span>
-  Το <code>$SHELL</code> λέει ποιο shell σου έχει ανατεθεί ως προεπιλογή, όχι απαραίτητα ποιο τρέχει τώρα. Αν ανοίξεις ένα zsh terminal και μέσα του γράψεις <code>bash</code>, το <code>$SHELL</code> θα λέει ακόμα zsh ενώ εσύ βρίσκεσαι ήδη σε bash.
-</div>
-
-<h2>Το αρχείο ~/.bashrc</h2>
-<p>Κάθε φορά που ανοίγεις ένα νέο διαδραστικό bash terminal, το bash διαβάζει και εκτελεί ένα αρχείο ρυθμίσεων που βρίσκεται στον home φάκελό σου: το <code>~/.bashrc</code>. Ό,τι γράψεις μέσα εκεί ισχύει αυτόματα σε κάθε επόμενο terminal που θα ανοίξεις. Είναι το σημείο όπου μπαίνουν οι προσωπικές σου ρυθμίσεις και, κυρίως, τα aliases: συντομεύσεις που δίνουν δικό σου όνομα σε μια εντολή που πληκτρολογείς συνέχεια.</p>
-<pre><code><span class="tok-com"># inside ~/.bashrc</span>
-<span class="tok-func">alias</span> ll=<span class="tok-str">'ls -lah'</span>       <span class="tok-com"># typing ll now runs ls -lah</span>
-<span class="tok-func">alias</span> gs=<span class="tok-str">'git status'</span>
-<span class="tok-func">alias</span> ..=<span class="tok-str">'cd ..'</span>
-</code></pre>
-<pre><code><span class="tok-func">source</span> ~/.bashrc      <span class="tok-com"># re-read the file so changes apply to the CURRENT terminal too</span>
-<span class="tok-func">alias</span>                 <span class="tok-com"># list every alias currently defined</span>
-</code></pre>
-<p>Χωρίς το <code>source</code>, οι αλλαγές σου θα εμφανιστούν μόνο στο επόμενο terminal που θα ανοίξεις, γιατί το αρχείο διαβάζεται μόνο κατά την εκκίνηση του shell.</p>
 `);
 
     addQuiz([
       {
         q: "Ποιο από τα παρακάτω περιγράφει καλύτερα το WSL 2;",
         options: [
-          "Τρέχει έναν πραγματικό Linux kernel μέσα στα Windows, χωρίς dual-boot",
-          "Είναι emulator που μεταφράζει εντολές Linux σε εντολές Windows, γι' αυτό δεν χρειάζεται καθόλου kernel",
-          "Είναι shell αποκλειστικά για χρήστες macOS",
-          "Είναι άλλο όνομα του PowerShell"
+          "Επιτρέπει να τρέχεις πραγματικό Linux kernel μέσα στα Windows χωρίς dual-boot",
+          "Είναι ένα shell αποκλειστικά για macOS χρήστες",
+          "Είναι συνώνυμο του PowerShell με διαφορετικό όνομα",
+          "Χρειάζεται πάντα ξεχωριστό φυσικό δίσκο για να λειτουργήσει, σε αντίθεση με τα κανονικά προγράμματα Windows"
         ],
         correct: 0,
-        explain: "Το WSL 2 τρέχει πραγματικό Linux kernel πάνω σε lightweight εικονικοποίηση, δίνοντάς σου πλήρες Linux περιβάλλον μέσα στα Windows."
+        explain: "Το WSL 2 τρέχει έναν πραγματικό Linux kernel πάνω σε lightweight εικονικοποίηση, δίνοντάς σου πλήρες Linux περιβάλλον μέσα στα Windows."
       },
       {
         q: "Γιατί επιλέγεται συνήθως το bash σε σχέση με άλλα shells σε ένα πρόγραμμα σαν αυτό;",
         options: [
-          "Είναι το πιο διαδεδομένο και τεκμηριωμένο, με μεταφερόμενες δεξιότητες",
-          "Είναι το μοναδικό shell που υποστηρίζει pipes και redirection, τα οποία λείπουν εντελώς από τα υπόλοιπα",
-          "Είναι διαθέσιμο μόνο μέσα από το WSL",
+          "Είναι το πιο διαδεδομένο και τεκμηριωμένο, με δεξιότητες που μεταφέρονται σχεδόν παντού",
+          "Είναι το μοναδικό shell που υποστηρίζει pipes και redirection",
+          "Είναι διαθέσιμο μόνο σε Windows μέσα από το WSL",
           "Δεν υποστηρίζει scripting, μόνο διαδραστική χρήση"
         ],
         correct: 0,
-        explain: "Το bash είναι default σε πολλά συστήματα και ευρέως τεκμηριωμένο, οπότε οι γνώσεις πάνω του μεταφέρονται σχεδόν σε κάθε Unix-like περιβάλλον."
-      },
-      {
-        q: "Πού γράφεις ένα alias ώστε να υπάρχει και σε κάθε επόμενο terminal;",
-        options: [
-          "Στο αρχείο ~/.bashrc, που διαβάζεται σε κάθε νέο shell",
-          "Πουθενά, τα aliases ορίζονται μία φορά και αποθηκεύονται αυτόματα από το ίδιο το bash για πάντα",
-          "Μέσα στο αρχείο /etc/shells",
-          "Στη μεταβλητή PATH"
-        ],
-        correct: 0,
-        explain: "Το ~/.bashrc διαβάζεται σε κάθε νέο interactive shell, οπότε ό,τι γράψεις εκεί ισχύει αυτόματα από το επόμενο terminal και μετά."
-      },
-      {
-        q: "Άλλαξες το ~/.bashrc, αλλά το νέο alias δεν δουλεύει στο ήδη ανοιχτό terminal. Γιατί;",
-        options: [
-          "Το αρχείο διαβάζεται μόνο στην εκκίνηση του shell, θέλει source",
-          "Τα aliases δεν επιτρέπονται στο ~/.bashrc, πρέπει να μπαίνουν σε ξεχωριστό αρχείο που φορτώνει ο διαχειριστής",
-          "Χρειάζεται επανεκκίνηση ολόκληρου του υπολογιστή",
-          "Τα aliases δουλεύουν μόνο μέσα σε scripts"
-        ],
-        correct: 0,
-        explain: "Το τρέχον shell είχε ήδη διαβάσει το αρχείο όταν ξεκίνησε. Με source ~/.bashrc το ξαναδιαβάζει, αλλιώς η αλλαγή φαίνεται μόνο στο επόμενο terminal."
+        explain: "Το bash είναι default σε πολλά συστήματα, ευρέως τεκμηριωμένο, και οι γνώσεις πάνω του μεταφέρονται σε σχεδόν κάθε Unix-like περιβάλλον."
       }
     ]);
-
-    addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
-<h2>Όροι που μόλις είδαμε</h2>
-<div class="glossary-strip">
-  <div class="gs-pill"><span class="gs-name">bash / zsh / fish</span><span class="gs-def">Διαφορετικά shells με κοινή λογική</span></div>
-  <div class="gs-pill"><span class="gs-name">WSL 2</span><span class="gs-def">Πλήρες Linux με πραγματικό kernel μέσα στα Windows</span></div>
-  <div class="gs-pill"><span class="gs-name">~/.bashrc</span><span class="gs-def">Αρχείο ρυθμίσεων που διαβάζεται σε κάθε νέο shell</span></div>
-  <div class="gs-pill"><span class="gs-name">alias</span><span class="gs-def">Συντόμευση με δικό σου όνομα για μια εντολή</span></div>
-  <div class="gs-pill"><span class="gs-name">source</span><span class="gs-def">Ξαναδιαβάζει ένα αρχείο ρυθμίσεων στο τρέχον shell</span></div>
-</div>
-`);
 
     // ── Section 3 ────────────────────────────────────────────────────────── ⊃
     addContent(`
@@ -332,49 +228,6 @@
 <span class="tok-func">cd</span> -                 <span class="tok-com"># πήγαινε στον προηγούμενο φάκελο που ήσουν</span>
 </code></pre>
 
-<h2>Absolute και relative paths</h2>
-<p>Path είναι η διεύθυνση ενός αρχείου ή φακέλου μέσα στο filesystem. Υπάρχουν δύο τρόποι να τη γράψεις, και η διαφορά τους είναι από πού ξεκινάς να μετράς.</p>
-<pre><code><span class="tok-com"># absolute path: starts from the root of the filesystem, means the same thing from anywhere</span>
-/home/student/projects/notes.txt
-
-<span class="tok-com"># relative path: starts from wherever you happen to be standing right now</span>
-projects/notes.txt
-</code></pre>
-<div class="grid3">
-  <div class="card"><h3>/</h3><p>Η ρίζα (root) όλου του filesystem. Κάθε absolute path ξεκινά από εδώ, γι' αυτό και αναγνωρίζεται αμέσως.</p></div>
-  <div class="card"><h3>.</h3><p>Ο τρέχων φάκελος. Το <code>./script.sh</code> σημαίνει "το script που βρίσκεται ακριβώς εδώ".</p></div>
-  <div class="card"><h3>..</h3><p>Ο γονικός φάκελος, ένα επίπεδο πάνω. Συνδυάζεται με τον εαυτό του: <code>../../foo</code>.</p></div>
-  <div class="card"><h3>~</h3><p>Ο home φάκελός σου, π.χ. /home/student. Λειτουργεί σαν συντόμευση μέσα σε οποιοδήποτε path.</p></div>
-  <div class="card"><h3>-</h3><p>Δεν είναι path, αλλά χρησιμοποιείται σαν τέτοιο από το cd: "ο φάκελος στον οποίο ήμουν πριν".</p></div>
-  <div class="card"><h3>/home</h3><p>Ο φάκελος που περιέχει τους προσωπικούς φακέλους όλων των χρηστών του μηχανήματος.</p></div>
-</div>
-<p>Ας το δούμε πάνω σε ένα συγκεκριμένο δέντρο:</p>
-<pre><code>/home/student
-├── notes.txt
-└── projects
-    ├── go-project
-    │   └── main.go
-    └── bash-project
-</code></pre>
-<p>Αν αυτή τη στιγμή βρίσκεσαι μέσα στο <code>/home/student/projects/go-project</code>, όλα τα παρακάτω δείχνουν σωστά:</p>
-<pre><code><span class="tok-func">cat</span> <span class="tok-type">main.go</span>                <span class="tok-com"># relative: a file right next to me</span>
-<span class="tok-func">cd</span> ..                       <span class="tok-com"># -> /home/student/projects</span>
-<span class="tok-func">cd</span> ../bash-project           <span class="tok-com"># -> sideways, into a sibling folder</span>
-<span class="tok-func">cat</span> ../../notes.txt          <span class="tok-com"># two levels up, then read the file</span>
-<span class="tok-func">cat</span> /home/student/notes.txt  <span class="tok-com"># absolute: same file, works from anywhere</span>
-</code></pre>
-<div class="callout good">
-  <span class="tag">Πρακτικός κανόνας</span>
-  Μέσα σε ένα project χρησιμοποίησε relative paths, ώστε ο κώδικας να δουλεύει και στον υπολογιστή του συμφοιτητή σου. Όταν αναφέρεσαι σε κάτι του συστήματος, χρησιμοποίησε absolute path, ώστε να μη σε νοιάζει από πού τρέχει η εντολή.
-</div>
-
-<h2>Κρυφά αρχεία</h2>
-<p>Κάθε αρχείο ή φάκελος του οποίου το όνομα ξεκινά με τελεία θεωρείται κρυφό και δεν εμφανίζεται στην απλή <code>ls</code>. Δεν υπάρχει καμία ειδική προστασία από πίσω, ούτε κάποιο ξεχωριστό flag στο αρχείο: είναι απλώς μια σύμβαση για την τελεία στην αρχή του ονόματος. Έτσι κρύβονται τα αρχεία ρυθμίσεων, όπως το <code>.bashrc</code> ή ο φάκελος <code>.git</code>, για να μη γεμίζουν την οθόνη σου κάθε φορά.</p>
-<pre><code><span class="tok-func">ls</span>       <span class="tok-com"># notes.txt  projects</span>
-<span class="tok-func">ls</span> <span class="tok-kw">-a</span>    <span class="tok-com"># .  ..  .bashrc  .git  notes.txt  projects</span>
-</code></pre>
-<p>Πρόσεξε ότι η <code>ls -a</code> εμφανίζει και δύο "περίεργες" καταχωρήσεις: το <code>.</code> και το <code>..</code>. Δεν είναι σκουπίδια, είναι πραγματικές καταχωρήσεις που υπάρχουν μέσα σε κάθε φάκελο και δείχνουν στον ίδιο τον φάκελο και στον γονέα του αντίστοιχα. Ακριβώς γι' αυτό λειτουργεί το <code>cd ..</code> από οπουδήποτε.</p>
-
 <h2>Λεπτομέρειες αρχείων και φακέλων</h2>
 <p>Οι εντολές <code>ls -l</code> και <code>stat</code> δίνουν διαφορετικού βάθους πληροφορία. Η <code>tree</code> δείχνει ολόκληρη τη δομή σε μορφή δέντρου, κάτι πολύ χρήσιμο όταν θέλεις να καταλάβεις γρήγορα πώς είναι οργανωμένο ένα project.</p>
 <pre><code><span class="tok-func">stat</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># μέγεθος, ημερομηνία δημιουργίας και τροποποίησης ενός αρχείου</span>
@@ -383,18 +236,6 @@ projects/notes.txt
 <span class="tok-func">tree</span> <span class="tok-kw">-a</span>         <span class="tok-com"># δέντρο συμπεριλαμβανομένων κρυφών αρχείων</span>
 <span class="tok-func">tree</span> <span class="tok-kw">-d</span>         <span class="tok-com"># δέντρο μόνο με φακέλους, χωρίς αρχεία</span>
 </code></pre>
-
-<h2>Διαβάζοντας την έξοδο της ls -l</h2>
-<p>Η <code>ls -l</code> είναι από τις εντολές που θα τρέχεις καθημερινά, οπότε αξίζει να ξέρεις τι σημαίνει η κάθε στήλη της:</p>
-<pre><code>-rw-r--r--  1  student  student  220  Aug 18 10:12  notes.txt
-<span class="tok-com"># -rw-r--r--     -> file type + permissions (Ενότητα 6)</span>
-<span class="tok-com"># 1              -> number of hard links to this file</span>
-<span class="tok-com"># student student-> the owner, and the group it belongs to</span>
-<span class="tok-com"># 220            -> size in bytes (use -h for a human-readable form)</span>
-<span class="tok-com"># Aug 18 10:12   -> last modification date and time</span>
-<span class="tok-com"># notes.txt      -> the name</span>
-</code></pre>
-<p>Ο πρώτος χαρακτήρας της πρώτης στήλης λέει τι είδους καταχώρηση είναι: παύλα για κανονικό αρχείο, <code>d</code> για φάκελο (directory), <code>l</code> για symbolic link. Τα υπόλοιπα εννιά γράμματα είναι τα δικαιώματα, που θα τα αναλύσουμε στην Ενότητα 6.</p>
 
 <h2>Δημιουργία φακέλων</h2>
 <pre><code><span class="tok-func">mkdir</span> <span class="tok-type">foo</span>                      <span class="tok-com"># create a directory</span>
@@ -437,18 +278,6 @@ projects/notes.txt
 <span class="tok-func">cat</span> <span class="tok-type">file.txt</span>          <span class="tok-com"># print a file's contents</span>
 </code></pre>
 
-<h2>Παράδειγμα: στήσε ένα project από το μηδέν</h2>
-<p>Ας ενώσουμε όσα είδαμε σε μια πραγματική μικρή ροή εργασίας. Ο στόχος: ένας φάκελος project με δύο υποφακέλους και μερικά αρχεία μέσα, χωρίς να αγγίξεις καθόλου ποντίκι.</p>
-<pre><code><span class="tok-func">cd</span> ~                              <span class="tok-com"># start from the home folder</span>
-<span class="tok-func">mkdir</span> <span class="tok-kw">-p</span> <span class="tok-type">demo/{src,docs}</span>          <span class="tok-com"># create demo, demo/src and demo/docs in one go</span>
-<span class="tok-func">cd</span> <span class="tok-type">demo</span>                           <span class="tok-com"># step inside</span>
-<span class="tok-func">touch</span> <span class="tok-type">src/main.sh docs/readme.md</span>  <span class="tok-com"># create two empty files at once</span>
-<span class="tok-func">touch</span> <span class="tok-type">src/test{1..3}.sh</span>            <span class="tok-com"># brace expansion: test1.sh, test2.sh, test3.sh</span>
-<span class="tok-func">tree</span>                               <span class="tok-com"># confirm the structure you just built</span>
-<span class="tok-func">pwd</span>                                <span class="tok-com"># /home/student/demo — always verify where you are</span>
-</code></pre>
-<p>Δύο πράγματα αξίζουν προσοχή εδώ. Πρώτον, το <code>mkdir -p demo/{src,docs}</code> γλιτώνει τρεις ξεχωριστές εντολές, επειδή το brace expansion γίνεται από το shell πριν καν τρέξει η mkdir: αυτό που φτάνει στην εντολή είναι ήδη δύο έτοιμα paths. Δεύτερον, η τελευταία γραμμή. Το <code>pwd</code> μοιάζει περιττό, αλλά η πιο συχνή αιτία που μια εντολή "δεν δουλεύει" είναι ότι τρέχει από λάθος φάκελο.</p>
-
 <h2>Tab Completion</h2>
 <p>Πάτα Tab ενώ γράφεις ένα όνομα αρχείου, φακέλου ή εντολής, και το shell θα προσπαθήσει να το συμπληρώσει αυτόματα. Αν υπάρχουν πολλαπλές επιλογές, πάτα Tab ξανά για να τις δεις όλες. Είναι το πιο σημαντικό keyboard shortcut που θα μάθεις. Γλιτώνει χρόνο και τυπογραφικά λάθη.</p>
 
@@ -480,30 +309,12 @@ __cmd3__ -           # go to the previous directory you were in`,
       },
       {
         code:
-          `mkdir -__flag1__ foo/bar        # create nested directories, even if foo doesn't exist yet
-touch test{__range__}            # creates test1, test2, test3
-ls -__flag2__                   # list all files, including the hidden ones
-tree -__flag3__                 # show only directories, no files`,
+          `mkdir -__flag__ foo/bar   # create nested directories, even if foo doesn't exist yet
+touch test{1..3}           # creates test1, test2, test3`,
         blanks: [
-          { id: "flag1", answer: "p" },
-          { id: "range", answer: "1..3" },
-          { id: "flag2", answer: "a" },
-          { id: "flag3", answer: "d" }
+          { id: "flag", answer: "p" }
         ],
-        explain: "Το -p (parents) στη mkdir δημιουργεί όλους τους ενδιάμεσους φακέλους, το {1..3} είναι brace expansion, το -a δείχνει τα κρυφά αρχεία και το -d περιορίζει το tree μόνο σε φακέλους."
-      },
-      {
-        code:
-          `# you are standing in /home/student/projects/go-project
-cat __path1__/notes.txt       # read a file two levels up, with a relative path
-cd __path2__                  # jump straight to your home folder
-cd __path3__                  # go back to the folder you were in before`,
-        blanks: [
-          { id: "path1", answer: "../.." },
-          { id: "path2", answer: "~" },
-          { id: "path3", answer: "-" }
-        ],
-        explain: "Το .. ανεβαίνει ένα επίπεδο και συνδυάζεται (../..), το ~ είναι πάντα ο home φάκελος, και το cd - σε γυρίζει στον προηγούμενο φάκελο."
+        explain: "Το -p (parents) στο mkdir δημιουργεί όλους τους ενδιάμεσους φακέλους που δεν υπάρχουν ακόμα."
       }
     ], {
       note: "Συμπλήρωσε τις εντολές ή τα flags που λείπουν."
@@ -513,10 +324,10 @@ cd __path3__                  # go back to the folder you were in before`,
       {
         q: "Τι κάνει η εντολή stat σε ένα αρχείο;",
         options: [
-          "Δείχνει μέγεθος και ημερομηνίες δημιουργίας ή τροποποίησης του αρχείου",
-          "Αντιγράφει το αρχείο σε άλλον φάκελο, διατηρώντας ημερομηνίες, δικαιώματα και ιδιοκτήτη του",
+          "Δείχνει μέγεθος και ημερομηνίες δημιουργίας/τροποποίησης του αρχείου",
           "Διαγράφει το αρχείο μόνιμα",
-          "Μετατρέπει το αρχείο σε εκτελέσιμο"
+          "Μετατρέπει το αρχείο σε εκτελέσιμο",
+          "Αντιγράφει το αρχείο σε άλλον φάκελο"
         ],
         correct: 0,
         explain: "Η stat δίνει λεπτομερή μεταδεδομένα ενός αρχείου ή φακέλου, όπως μέγεθος και timestamps."
@@ -524,46 +335,13 @@ cd __path3__                  # go back to the folder you were in before`,
       {
         q: "Τι θα δημιουργήσει η εντολή touch test{1..3};",
         options: [
+          "Ένα αρχείο με όνομα test{1..3}",
           "Τρία αρχεία: test1, test2, test3",
-          "Ένα αρχείο με το κυριολεκτικό όνομα test{1..3}, γιατί το touch αγνοεί τα άγκιστρα",
-          "Έναν φάκελο με τρία υποαρχεία",
-          "Σφάλμα σύνταξης"
+          "Έναν φάκελο με τρία υποαρχεία τυχαίου ονόματος",
+          "Σφάλμα, γιατί το touch δεν υποστηρίζει brace expansion"
         ],
-        correct: 0,
-        explain: "Το brace expansion γίνεται από το shell ΠΡΙΝ τρέξει η touch: αυτό που φτάνει στην εντολή είναι ήδη τρία ξεχωριστά ονόματα."
-      },
-      {
-        q: "Τι σημαίνει το .. μέσα σε ένα path όπως cat ../notes.txt;",
-        options: [
-          "Ο γονικός φάκελος, ένα επίπεδο πάνω από τον τρέχοντα",
-          "Ο home φάκελος του χρήστη, ακριβώς όπως και το σύμβολο ~ που είδαμε νωρίτερα",
-          "Ο τρέχων φάκελος",
-          "Η ρίζα του filesystem"
-        ],
-        correct: 0,
-        explain: "Το .. είναι πραγματική καταχώρηση μέσα σε κάθε φάκελο και δείχνει στον γονέα του. Γι' αυτό δουλεύει το cd .. από οπουδήποτε."
-      },
-      {
-        q: "Πού καταλήγει ένα αρχείο μετά από rm foo.txt;",
-        options: [
-          "Πουθενά, διαγράφεται οριστικά, δεν υπάρχει κάδος ανακύκλωσης",
-          "Σε έναν κρυφό φάκελο μέσα στο home, από όπου μπορείς να το επαναφέρεις αργότερα",
-          "Στον κάδο ανακύκλωσης του συστήματος",
-          "Στο /tmp για 30 μέρες"
-        ],
-        correct: 0,
-        explain: "Η rm διαγράφει άμεσα και μόνιμα. Γι' αυτό το rm -rf πρέπει να γράφεται με ιδιαίτερη προσοχή, ειδικά με wildcards."
-      },
-      {
-        q: "Γιατί η σκέτη ls δεν δείχνει το αρχείο .bashrc;",
-        options: [
-          "Επειδή τα ονόματα που ξεκινούν με τελεία θεωρούνται κρυφά",
-          "Επειδή ανήκει στον χρήστη root και χρειάζεσαι δικαιώματα διαχειριστή για να το δεις",
-          "Επειδή βρίσκεται πάντα εκτός του home φακέλου",
-          "Επειδή η ls δείχνει μόνο φακέλους"
-        ],
-        correct: 0,
-        explain: "Δεν υπάρχει ειδικό flag κρυφού αρχείου: είναι απλή σύμβαση για την τελεία στην αρχή του ονόματος. Με ls -a εμφανίζονται όλα."
+        correct: 1,
+        explain: "Το brace expansion {1..3} επεκτείνεται σε 1, 2, 3, οπότε δημιουργούνται τρία ξεχωριστά αρχεία."
       }
     ]);
 
@@ -576,9 +354,6 @@ cd __path3__                  # go back to the folder you were in before`,
   <div class="gs-pill"><span class="gs-name">cd</span><span class="gs-def">Αλλαγή φακέλου</span></div>
   <div class="gs-pill"><span class="gs-name">Brace expansion</span><span class="gs-def">{a,b} επεκτείνεται σε πολλαπλά ονόματα</span></div>
   <div class="gs-pill"><span class="gs-name">Tab Completion</span><span class="gs-def">Αυτόματη συμπλήρωση με το πλήκτρο Tab</span></div>
-  <div class="gs-pill"><span class="gs-name">Absolute path</span><span class="gs-def">Διαδρομή που ξεκινά από τη ρίζα /</span></div>
-  <div class="gs-pill"><span class="gs-name">Relative path</span><span class="gs-def">Διαδρομή που ξεκινά από τον τρέχοντα φάκελο</span></div>
-  <div class="gs-pill"><span class="gs-name">Dot-file</span><span class="gs-def">Κρυφό αρχείο, το όνομά του αρχίζει με τελεία</span></div>
 </div>
 `);
 
@@ -613,15 +388,6 @@ cd __path3__                  # go back to the folder you were in before`,
 <span class="tok-func">git</span> clone <span class="tok-type">url</span>          <span class="tok-com"># download an existing repository from somewhere (e.g. GitHub) to your machine</span>
 </code></pre>
 
-<h2>Οι τρεις περιοχές του Git</h2>
-<p>Το Git μοιράζει τη δουλειά σου σε τρεις περιοχές. Αν καταλάβεις αυτές τις τρεις, όλες οι εντολές που ακολουθούν παύουν να είναι απομνημόνευση και γίνονται λογική:</p>
-<div class="grid3">
-  <div class="card"><h3>1. Working Directory</h3><p>Τα αρχεία όπως τα βλέπεις και τα επεξεργάζεσαι αυτή τη στιγμή στον δίσκο σου.</p></div>
-  <div class="card"><h3>2. Staging Area</h3><p>Το "καλάθι" με τις αλλαγές που έχεις διαλέξει να μπουν στο επόμενο commit.</p></div>
-  <div class="card"><h3>3. Repository</h3><p>Το μόνιμο ιστορικό: όλα τα commits που έχεις ήδη αποθηκεύσει, με τη σειρά τους.</p></div>
-</div>
-<p>Το <code>git add</code> μετακινεί αλλαγές από το 1 στο 2, το <code>git commit</code> από το 2 στο 3, και το <code>git push</code> στέλνει το τοπικό 3 στο αντίγραφο που ζει στο remote, π.χ. στο GitHub.</p>
-
 <h2>Ο βασικός κύκλος: add, commit, push</h2>
 <p>Αυτός είναι ο κύκλος που θα επαναλαμβάνεις κάθε φορά που θέλεις να αποθηκεύσεις πρόοδο:</p>
 <pre><code><span class="tok-func">git</span> add <span class="tok-type">filename</span>       <span class="tok-com"># stage a specific file — mark it as "ready to be committed"</span>
@@ -632,19 +398,6 @@ cd __path3__                  # go back to the folder you were in before`,
 <div class="callout good">
   <span class="tag">Γιατί δύο βήματα (add και commit)</span>
   Το add βάζει αλλαγές στο "staging area", ένα ενδιάμεσο σημείο πριν το commit. Αυτό σου επιτρέπει να επιλέξεις ακριβώς ποιες αλλαγές θα μπουν στο επόμενο commit, ακόμα κι αν έχεις αλλάξει πολλά αρχεία ταυτόχρονα.
-</div>
-
-<h2>Πού βρίσκομαι; status, log, diff</h2>
-<p>Ο κύκλος add-commit-push είναι το τι γράφεις. Οι τρεις εντολές που ακολουθούν είναι το τι βλέπεις, και στην πράξη θα τις τρέχεις πιο συχνά από όλες τις άλλες μαζί:</p>
-<pre><code><span class="tok-func">git</span> status              <span class="tok-com"># what changed, what is staged, which branch you are on</span>
-<span class="tok-func">git</span> log                 <span class="tok-com"># full history of commits, newest first (press q to quit)</span>
-<span class="tok-func">git</span> log --oneline       <span class="tok-com"># the same history, one compact line per commit</span>
-<span class="tok-func">git</span> diff                <span class="tok-com"># line-by-line changes you made but have NOT staged yet</span>
-<span class="tok-func">git</span> diff --staged       <span class="tok-com"># line-by-line changes that WILL go into the next commit</span>
-</code></pre>
-<div class="callout good">
-  <span class="tag">Αν κρατήσεις μία εντολή</span>
-  Κράτα το <code>git status</code>. Σου λέει σε ποιο branch είσαι, ποια αρχεία άλλαξες, ποια είναι ήδη staged, και συνήθως προτείνει από μόνο του την εντολή που χρειάζεσαι για το επόμενο βήμα. Τρέξ' το πριν και μετά από κάθε άλλη εντολή Git όσο μαθαίνεις.
 </div>
 
 <h2>Branches, εισαγωγικά</h2>
@@ -660,26 +413,6 @@ cd __path3__                  # go back to the folder you were in before`,
 <span class="tok-func">git</span> pull     <span class="tok-com"># download AND apply the latest changes to your current branch</span>
 <span class="tok-func">git</span> merge <span class="tok-type">branch-name</span>  <span class="tok-com"># bring the changes from another branch into the one you're on</span>
 </code></pre>
-
-<h2>.gitignore, τι ΔΕΝ μπαίνει στο repository</h2>
-<p>Δεν θέλεις να μπαίνουν όλα τα αρχεία στο ιστορικό. Τα εκτελέσιμα που παράγει ο compiler, οι προσωπικοί σου κωδικοί, τα προσωρινά αρχεία του editor: όλα αυτά είτε ξαναφτιάχνονται από μόνα τους, είτε δεν πρέπει ποτέ να δημοσιευτούν. Φτιάχνεις ένα αρχείο με όνομα <code>.gitignore</code> στη ρίζα του project και γράφεις μέσα ένα pattern ανά γραμμή:</p>
-<pre><code><span class="tok-com"># inside .gitignore</span>
-*.exe          <span class="tok-com"># every compiled binary</span>
-.env           <span class="tok-com"># secrets and passwords, never commit these</span>
-node_modules/  <span class="tok-com"># a whole folder, note the trailing slash</span>
-*.log
-</code></pre>
-<p>Το <code>.gitignore</code> είναι το ίδιο ένα κανονικό αρχείο του project, οπότε το κάνεις κι αυτό commit: έτσι ισχύει για όλη την ομάδα, όχι μόνο για σένα.</p>
-
-<h2>Merge conflicts, μια πρώτη ματιά</h2>
-<p>Όταν δύο άτομα αλλάξουν την ίδια γραμμή του ίδιου αρχείου, το Git δεν μπορεί να αποφασίσει ποια εκδοχή είναι η σωστή, οπότε σταματάει και σου το αφήνει. Αυτό λέγεται merge conflict, και δεν είναι σφάλμα ούτε καταστροφή. Το Git σημειώνει και τις δύο εκδοχές μέσα στο αρχείο:</p>
-<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-echo "my version of the line"
-=======
-echo "my teammate's version of the line"
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature-branch
-</code></pre>
-<p>Η δουλειά σου είναι να ανοίξεις το αρχείο, να κρατήσεις ό,τι πρέπει να μείνει, να σβήσεις τις γραμμές-σημάδια, και μετά να κάνεις <code>git add</code> και <code>git commit</code> κανονικά. Στην πράξη ο πιο σίγουρος τρόπος να αποφύγεις μεγάλα conflicts είναι να κάνεις <code>git pull</code> συχνά, ώστε να μη μαζεύονται αλλαγές μηνών.</p>
 
 <h2>Pull Requests, εισαγωγικά</h2>
 <p>Ένα pull request, συχνά συντομογραφία PR, δεν είναι εντολή του Git, αλλά χαρακτηριστικό πλατφορμών όπως το GitHub. Είναι ένα αίτημα να ενωθούν οι αλλαγές από το branch σου μέσα στο κύριο branch, και συνήθως συνοδεύεται από review: οι συνεργάτες σου βλέπουν τις αλλαγές, σχολιάζουν, ζητούν διορθώσεις, και μόνο όταν όλοι συμφωνήσουν εγκρίνεται το merge. Είναι ο βασικός τρόπος με τον οποίο δουλεύουν σχεδόν όλες οι ομάδες λογισμικού σήμερα.</p>
@@ -707,20 +440,6 @@ git config --global user.__field2__ "gmail@gmail.com"`,
           { id: "field2", answer: "email" }
         ],
         explain: "Το user.name και το user.email συνδέονται με κάθε commit που κάνεις."
-      },
-      {
-        code:
-          `git __cmd1__                    # what changed, what is staged, which branch
-git __cmd2__ --oneline          # compact history, one line per commit
-git __cmd3__                    # line-by-line changes not staged yet
-git checkout __flag__ feature   # create a new branch and switch to it`,
-        blanks: [
-          { id: "cmd1", answer: "status" },
-          { id: "cmd2", answer: "log" },
-          { id: "cmd3", answer: "diff" },
-          { id: "flag", answer: "-b" }
-        ],
-        explain: "status = πού βρίσκομαι, log = τι έχει ήδη γίνει, diff = τι ακριβώς άλλαξα. Το checkout -b φτιάχνει νέο branch και σε μεταφέρει αμέσως σε αυτό."
       }
     ], {
       note: "Συμπλήρωσε τις εντολές ή τα ονόματα πεδίων που λείπουν."
@@ -745,10 +464,10 @@ git checkout __flag__ feature   # create a new branch and switch to it`,
       {
         q: "Γιατί χρησιμοποιείται το Git περισσότερο από όλα σε ομαδική δουλειά;",
         options: [
-          "Επιτρέπει σε πολλούς να δουλεύουν παράλληλα και να ενώνουν τη δουλειά τους",
-          "Αντικαθιστά πλήρως την ανάγκη για επικοινωνία μέσα στην ομάδα, αφού λύνει μόνο του κάθε διαφωνία",
-          "Είναι το μοναδικό εργαλείο που ανοίγει αρχεία κώδικα",
-          "Λειτουργεί μόνο μέσω GitHub, ποτέ τοπικά"
+          "Επιτρέπει σε πολλά άτομα να δουλεύουν παράλληλα στο ίδιο project και δίνει σαφή τρόπο να ενωθεί η δουλειά όλων",
+          "Είναι το μοναδικό εργαλείο που μπορεί να ανοίξει αρχεία κώδικα",
+          "Αντικαθιστά εντελώς την ανάγκη για επικοινωνία μεταξύ των μελών της ομάδας",
+          "Λειτουργεί μόνο μέσα από το GitHub, ποτέ τοπικά"
         ],
         correct: 0,
         explain: "Ο βασικός λόγος ύπαρξης του Git είναι η ασφαλής συνεργασία πολλών ανθρώπων στον ίδιο κώδικα ταυτόχρονα."
@@ -756,10 +475,10 @@ git checkout __flag__ feature   # create a new branch and switch to it`,
       {
         q: "Ποια η διαφορά μεταξύ git fetch και git pull;",
         options: [
-          "Το fetch κατεβάζει χωρίς να εφαρμόζει, το pull κατεβάζει και εφαρμόζει",
-          "Το fetch δουλεύει μόνο σε τοπικά repositories και το pull μόνο σε απομακρυσμένα, γι' αυτό συνυπάρχουν",
-          "Δεν υπάρχει διαφορά, είναι συνώνυμα",
-          "Το pull σβήνει πρώτα το τοπικό ιστορικό"
+          "Το fetch κατεβάζει αλλαγές χωρίς να τις εφαρμόζει, το pull τις κατεβάζει ΚΑΙ τις εφαρμόζει",
+          "Δεν υπάρχει καμία διαφορά, είναι συνώνυμα",
+          "Το fetch λειτουργεί μόνο σε τοπικά repositories, το pull μόνο σε remote",
+          "Το pull διαγράφει το τοπικό ιστορικό πριν κατεβάσει τις νέες αλλαγές"
         ],
         correct: 0,
         explain: "Το fetch είναι πιο συντηρητικό: φέρνει τις αλλαγές αλλά αφήνει σε εσένα να αποφασίσεις πότε θα τις εφαρμόσεις."
@@ -767,35 +486,13 @@ git checkout __flag__ feature   # create a new branch and switch to it`,
       {
         q: "Τι είναι ένα pull request;",
         options: [
-          "Αίτημα σε πλατφόρμα όπως το GitHub να ενωθεί ένα branch, με review",
-          "Εντολή του Git που κατεβάζει τις αλλαγές των συνεργατών σου και τις εφαρμόζει αυτόματα στο branch σου",
-          "Ο τρόπος να διαγράψεις ένα branch",
+          "Μια εντολή του ίδιου του Git για να κατεβάσεις αλλαγές",
+          "Ένα αίτημα σε πλατφόρμα όπως το GitHub να ενωθούν οι αλλαγές ενός branch στο κύριο branch, συνήθως με review",
+          "Ο τρόπος με τον οποίο διαγράφεις ένα branch",
           "Συνώνυμο του git clone"
         ],
-        correct: 0,
-        explain: "Το pull request δεν είναι εντολή του Git αλλά χαρακτηριστικό πλατφορμών όπως το GitHub, και επιτρέπει review πριν το merge."
-      },
-      {
-        q: "Τι ακριβώς κάνει το git add;",
-        options: [
-          "Βάζει τις επιλεγμένες αλλαγές στο staging area, χωρίς να τις αποθηκεύει",
-          "Αποθηκεύει τις αλλαγές στο ιστορικό και τις ανεβάζει αμέσως στο remote repository, σε ένα βήμα",
-          "Δημιουργεί νέο branch για τις αλλαγές",
-          "Κατεβάζει αλλαγές από το remote"
-        ],
-        correct: 0,
-        explain: "Το add μετακινεί αλλαγές από το working directory στο staging area. Μόνο το commit τις γράφει μόνιμα στο ιστορικό."
-      },
-      {
-        q: "Ποια εντολή σου λέει τι έχεις αλλάξει, τι είναι staged και σε ποιο branch βρίσκεσαι;",
-        options: [
-          "Η git status, η πιο χρήσιμη εντολή του Git",
-          "Η git log --oneline, που δείχνει το ιστορικό των ήδη ολοκληρωμένων commits",
-          "Η git clone, για αντίγραφο του repository",
-          "Η git branch, για τη λίστα των branches"
-        ],
-        correct: 0,
-        explain: "Το git status δίνει πλήρη εικόνα της τρέχουσας κατάστασης και συνήθως προτείνει από μόνο του την επόμενη εντολή που χρειάζεσαι."
+        correct: 1,
+        explain: "Το pull request είναι χαρακτηριστικό πλατφορμών όπως το GitHub, όχι εντολή του ίδιου του Git, και επιτρέπει review πριν το merge."
       }
     ]);
 
@@ -829,18 +526,12 @@ git checkout __flag__ feature   # create a new branch and switch to it`,
 
 <span class="tok-func">ls</span> <span class="tok-type">exists</span> 1<span class="tok-kw">&gt;</span> <span class="tok-type">stdout.txt</span>   <span class="tok-com"># redirect standard output to a file (1 is optional, it's the default)</span>
 <span class="tok-func">ls</span> <span class="tok-type">noexist</span> 2<span class="tok-kw">&gt;</span> <span class="tok-type">stderror.txt</span>  <span class="tok-com"># redirect standard error to a file</span>
-<span class="tok-func">ls</span> <span class="tok-kw">&gt;</span> <span class="tok-type">out.txt</span> 2<span class="tok-kw">&gt;&amp;1</span>   <span class="tok-com"># stdout to the file, then send stderr wherever stdout goes</span>
-<span class="tok-func">ls</span> <span class="tok-kw">&amp;&gt;</span> <span class="tok-type">out.txt</span>          <span class="tok-com"># bash shorthand for exactly the same thing</span>
+<span class="tok-func">ls</span> 2<span class="tok-kw">&gt;&amp;1</span> <span class="tok-kw">&gt;</span> <span class="tok-type">out.txt</span>       <span class="tok-com"># redirect both stdout and stderr into the same file</span>
 <span class="tok-func">ls</span> <span class="tok-kw">&gt;</span> /dev/null       <span class="tok-com"># discard the output entirely — /dev/null is a "black hole"</span>
 
 <span class="tok-func">sort</span> <span class="tok-kw">&lt;</span> <span class="tok-type">input.txt</span>         <span class="tok-com"># redirect a file's content into a program's stdin</span>
 <span class="tok-func">read</span> <span class="tok-type">foo</span>                <span class="tok-com"># read from stdin and store it in the variable foo</span>
 </code></pre>
-
-<div class="callout">
-  <span class="tag">Η σειρά μετράει</span>
-  Το <code>2&gt;&amp;1</code> δεν σημαίνει "στείλε το stderr σε αρχείο", σημαίνει "στείλε το stderr όπου δείχνει αυτή τη στιγμή το stdout". Γι' αυτό μπαίνει πάντα ΜΕΤΑ το <code>&gt; out.txt</code>. Αν το γράψεις ανάποδα, το <code>ls 2&gt;&amp;1 &gt; out.txt</code>, το stderr αντιγράφει τον προορισμό που είχε τότε το stdout, δηλαδή την οθόνη, και μετά μόνο το stdout ανακατευθύνεται στο αρχείο. Το αποτέλεσμα είναι ακριβώς το αντίθετο από αυτό που ήθελες.
-</div>
 
 <h2>Pipes — σύνδεσε προγράμματα μεταξύ τους</h2>
 <p>Το σύμβολο <code>|</code> (pipe) παίρνει το stdout ενός προγράμματος και το κάνει stdin του επόμενου. Έτσι μπορείς να χτίσεις αλυσίδες εντολών, όπου η καθεμία κάνει μια απλή δουλειά, αλλά μαζί λύνουν πολύπλοκα προβλήματα.</p>
@@ -850,19 +541,6 @@ git checkout __flag__ feature   # create a new branch and switch to it`,
 <div class="callout">
   <span class="tag">Θα το ξαναδούμε</span>
   Σε πιο σύνθετα pipes θα συναντήσεις και εντολές φιλτραρίσματος κειμένου όπως το <code>grep</code>, που δεν έχουμε δει ακόμα. Θα το αναλύσουμε αναλυτικά στην επόμενη ενότητα. Προς το παρόν, κράτα ότι κάθε τέτοια εντολή απλά διαβάζει από το stdin της και γράφει στο stdout της, όπως ακριβώς και οι εντολές που ήδη ξέρεις.
-</div>
-
-<h2>Χτίζοντας ένα pipeline βήμα-βήμα</h2>
-<p>Τα pipes δεν γράφονται ολόκληρα με τη μία. Ο τρόπος που δουλεύει κανείς στην πράξη είναι να προσθέτει ένα κομμάτι κάθε φορά και να κοιτάει το αποτέλεσμα. Έστω ότι θέλουμε να μετρήσουμε πόσες φορές εμφανίζεται σφάλμα 404 σε ένα log αρχείο:</p>
-<pre><code><span class="tok-func">cat</span> <span class="tok-type">access.log</span>                        <span class="tok-com"># step 1: see everything (too much)</span>
-<span class="tok-func">cat</span> <span class="tok-type">access.log</span> <span class="tok-kw">|</span> <span class="tok-func">grep</span> <span class="tok-str">'404'</span>           <span class="tok-com"># step 2: keep only the lines that matter</span>
-<span class="tok-func">cat</span> <span class="tok-type">access.log</span> <span class="tok-kw">|</span> <span class="tok-func">grep</span> <span class="tok-str">'404'</span> <span class="tok-kw">|</span> <span class="tok-func">wc</span> <span class="tok-kw">-l</span>   <span class="tok-com"># step 3: count them</span>
-</code></pre>
-<p>Κάθε κρίκος της αλυσίδας δεν ξέρει τίποτα για τους υπόλοιπους. Το <code>grep</code> δεν έχει ιδέα ότι τα δεδομένα του ήρθαν από αρχείο και όχι από πληκτρολόγιο, και το <code>wc</code> δεν ξέρει ότι κάποιος τα φιλτράρισε πριν. Το μόνο που κάνει το καθένα είναι να διαβάζει από το stdin του και να γράφει στο stdout του. Αυτή ακριβώς η άγνοια είναι που τα κάνει συνδυάσιμα με άπειρους τρόπους.</p>
-
-<div class="callout">
-  <span class="tag">Τι ΔΕΝ περνάει από το pipe</span>
-  Το <code>|</code> μεταφέρει μόνο το stdout. Το stderr συνεχίζει να πηγαίνει κατευθείαν στην οθόνη σου, ακόμα κι αν βρίσκεται στη μέση ενός τεράστιου pipeline. Γι' αυτό βλέπεις μηνύματα λάθους ενώ το τελικό αποτέλεσμα είναι κενό: το λάθος δεν μπήκε ποτέ στον σωλήνα. Αν θέλεις να περάσει και αυτό, το ζητάς ρητά με <code>cmd 2&gt;&amp;1 | grep foo</code>.
 </div>
 
 <h2>Command Substitution &amp; Process Substitution</h2>
@@ -876,45 +554,14 @@ git checkout __flag__ feature   # create a new branch and switch to it`,
 </code></pre>
 `);
 
-    addFillBlank([
-      {
-        code:
-          `echo "line one" __op1__ log.txt     # create the file, overwriting anything inside
-echo "line two" __op2__ log.txt     # add a second line, keeping the first
-ls /nope __op3__ errors.txt         # send ONLY the error message to a file
-cat log.txt __op4__ wc -l           # feed the file into wc through a pipe`,
-        blanks: [
-          { id: "op1", answer: ">" },
-          { id: "op2", answer: ">>" },
-          { id: "op3", answer: "2>" },
-          { id: "op4", answer: "|" }
-        ],
-        explain: "Το > αντικαθιστά, το >> προσθέτει στο τέλος, το 2> πιάνει μόνο το stderr, και το | συνδέει το stdout της μιας εντολής με το stdin της επόμενης."
-      },
-      {
-        code:
-          `today=__sub__(date +%Y-%m-%d)   # command substitution: run it, keep the output
-echo "Today is __ref__today"        # use the value stored in the variable
-ls /nope > all.txt __redir__        # send stderr wherever stdout is already going`,
-        blanks: [
-          { id: "sub", answer: "$" },
-          { id: "ref", answer: "$" },
-          { id: "redir", answer: "2>&1" }
-        ],
-        explain: "Το $(...) τρέχει μια εντολή και κρατάει το αποτέλεσμά της, ενώ το 2>&1 λέει στο stderr να ακολουθήσει τον προορισμό που έχει ΕΚΕΙΝΗ ΤΗ ΣΤΙΓΜΗ το stdout."
-      }
-    ], {
-      note: "Συμπλήρωσε τα σύμβολα ανακατεύθυνσης που λείπουν."
-    });
-
     addQuiz([
       {
         q: "Τι κάνει το σύμβολο | (pipe) σε μια εντολή shell;",
         options: [
           "Παίρνει το stdout της αριστερής εντολής και το δίνει ως stdin στη δεξιά",
-          "Τρέχει τις δύο εντολές ταυτόχρονα και συγκρίνει μεταξύ τους τα αποτελέσματα, κρατώντας μόνο τις κοινές γραμμές",
           "Διαγράφει το αρχείο που ακολουθεί",
-          "Αποθηκεύει την έξοδο σε log αρχείο"
+          "Τρέχει τις δύο εντολές παράλληλα, χωρίς καμία σχέση μεταξύ τους",
+          "Αποθηκεύει μόνιμα την έξοδο και των δύο εντολών σε log αρχείο αυτόματα"
         ],
         correct: 0,
         explain: "Το pipe συνδέει την έξοδο ενός προγράμματος με την είσοδο του επόμενου, επιτρέποντας αλυσίδες εντολών."
@@ -922,35 +569,13 @@ ls /nope > all.txt __redir__        # send stderr wherever stdout is already goi
       {
         q: "Ποια η διαφορά μεταξύ > και >> στο redirection;",
         options: [
+          "Το > κάνει append, το >> γράφει από την αρχή αντικαθιστώντας τα πάντα",
           "Το > αντικαθιστά το αρχείο, το >> προσθέτει στο τέλος του",
-          "Το > κάνει append και το >> γράφει από την αρχή, σβήνοντας ό,τι υπήρχε πριν",
-          "Δεν υπάρχει διαφορά, είναι εναλλάξιμα",
-          "Το > δουλεύει μόνο με αριθμούς"
+          "Δεν υπάρχει καμία διαφορά, είναι εναλλάξιμα",
+          "Το > λειτουργεί μόνο με αριθμούς, το >> μόνο με κείμενο"
         ],
-        correct: 0,
+        correct: 1,
         explain: "Το > γράφει από την αρχή (overwrite), ενώ το >> προσθέτει στο τέλος υπάρχοντος περιεχομένου (append)."
-      },
-      {
-        q: "Τρέχεις cmd | grep foo, βλέπεις μήνυμα λάθους στην οθόνη αλλά το αποτέλεσμα είναι κενό. Γιατί;",
-        options: [
-          "Επειδή το pipe μεταφέρει μόνο το stdout, το stderr πάει στην οθόνη",
-          "Επειδή το grep σταματάει την εκτέλεση μόλις συναντήσει σφάλμα και τυπώνει το μήνυμα πριν προλάβει να φιλτράρει",
-          "Επειδή το pipe δέχεται μόνο αρχεία",
-          "Επειδή το grep δεν διαβάζει από stdin"
-        ],
-        correct: 0,
-        explain: "Το μήνυμα λάθους δεν μπήκε ποτέ στον σωλήνα: το stderr παρακάμπτει το pipe. Αν το θέλεις μέσα, το ζητάς ρητά με cmd 2>&1 | grep foo."
-      },
-      {
-        q: "Ποια γραμμή στέλνει ΚΑΙ το stdout ΚΑΙ το stderr στο ίδιο αρχείο;",
-        options: [
-          "ls > out.txt 2>&1",
-          "ls 2>&1 > out.txt, γιατί το stderr δηλώνεται πρώτο και έχει προτεραιότητα",
-          "ls > out.txt > err.txt",
-          "ls | out.txt"
-        ],
-        correct: 0,
-        explain: "Η σειρά μετράει: πρώτα στέλνεις το stdout στο αρχείο και μετά λες στο stderr να ακολουθήσει. Ανάποδα, το stderr αντιγράφει τον παλιό προορισμό, δηλαδή την οθόνη."
       }
     ]);
 
@@ -1009,7 +634,7 @@ ls /nope > all.txt __redir__        # send stderr wherever stdout is already goi
 <span class="tok-func">find</span> <span class="tok-kw">-type</span> d <span class="tok-kw">-name</span> <span class="tok-type">foo</span>           <span class="tok-com"># -type d: only directories</span>
 <span class="tok-func">find</span> <span class="tok-kw">-type</span> f <span class="tok-kw">-mtime</span> +30           <span class="tok-com"># files not modified in the last 30 days</span>
 <span class="tok-func">find</span> <span class="tok-kw">-name</span> <span class="tok-type">foo.txt</span> <span class="tok-kw">-delete</span>       <span class="tok-com"># find AND delete matching files, be very careful</span>
-<span class="tok-func">find</span> <span class="tok-kw">-name</span> <span class="tok-str">"*.png"</span> <span class="tok-kw">-exec</span> <span class="tok-func">pngquant</span> {} \\;  <span class="tok-com"># run a command on every matching file</span>
+<span class="tok-func">find</span> <span class="tok-kw">-name</span> <span class="tok-str">"*.png"</span> <span class="tok-kw">-exec</span> <span class="tok-func">pngquant</span> {}\;  <span class="tok-com"># run a command on every matching file</span>
 </code></pre>
 
 <div class="callout">
@@ -1026,49 +651,13 @@ ls /nope > all.txt __redir__        # send stderr wherever stdout is already goi
 
 <h2>sort, uniq, tr</h2>
 <pre><code><span class="tok-func">sort</span> <span class="tok-type">names.txt</span>              <span class="tok-com"># sort lines alphabetically</span>
-<span class="tok-func">sort</span> <span class="tok-kw">-r</span> <span class="tok-type">names.txt</span>           <span class="tok-com"># --reverse: Z to A</span>
-<span class="tok-func">sort</span> <span class="tok-kw">-n</span> <span class="tok-type">numbers.txt</span>         <span class="tok-com"># --numeric: 9 before 10, instead of alphabetical order</span>
-<span class="tok-func">sort</span> <span class="tok-kw">-u</span> <span class="tok-type">names.txt</span>           <span class="tok-com"># --unique: sort AND drop duplicates in one step</span>
 <span class="tok-func">uniq</span>                       <span class="tok-com"># remove ADJACENT duplicate lines (usually paired with sort first)</span>
-<span class="tok-func">uniq</span> <span class="tok-kw">-c</span>                    <span class="tok-com"># --count: prefix each line with how many times it appeared</span>
-<span class="tok-func">uniq</span> <span class="tok-kw">-d</span>                    <span class="tok-com"># --repeated: show only the lines that appear more than once</span>
 <span class="tok-func">echo</span> <span class="tok-str">"hello"</span> <span class="tok-kw">|</span> <span class="tok-func">tr</span> <span class="tok-str">'l'</span> <span class="tok-str">'1'</span>    <span class="tok-com"># translate characters — "l" becomes "1", result: he11o</span>
 <span class="tok-func">echo</span> <span class="tok-str">"aaabbbccc"</span> <span class="tok-kw">|</span> <span class="tok-func">tr</span> <span class="tok-kw">-s</span> <span class="tok-str">'a'</span>  <span class="tok-com"># -s squeezes repeated characters, result: abbbccc</span>
 </code></pre>
 <div class="callout">
-  <span class="tag">Το πιο συχνό λάθος με το uniq</span>
-  Η <code>uniq</code> αφαιρεί μόνο <em>διαδοχικές</em> ίδιες γραμμές, όχι όλα τα διπλότυπα του αρχείου. Αν το ίδιο όνομα εμφανίζεται στη γραμμή 2 και στη γραμμή 40, η uniq θα τα αφήσει και τα δύο, γιατί δεν είναι δίπλα-δίπλα. Γι' αυτό σχεδόν πάντα θα τη δεις γραμμένη ως <code>sort file | uniq</code>: το sort φέρνει τα ίδια δίπλα, και μετά η uniq έχει νόημα.
-</div>
-
-<div class="callout">
   <span class="tag">Προσοχή</span>
   Η <code>tr</code> δεν δέχεται απευθείας ονόματα αρχείων ως όρισμα. Λειτουργεί μόνο με ανακατεύθυνση ή pipe, π.χ. <code>tr 'a' 'b' &lt; input.txt</code>.
-</div>
-
-<h2>Παράδειγμα: οι πιο συχνές λέξεις ενός κειμένου</h2>
-<p>Αυτό είναι ίσως το πιο διάσημο pipeline του Unix, και δείχνει καθαρά τη φιλοσοφία "μικρά εργαλεία που ενώνονται". Κανένα από τα προγράμματα παρακάτω δεν ξέρει τι είναι "συχνή λέξη". Μαζί όμως το υπολογίζουν:</p>
-<pre><code><span class="tok-func">tr</span> <span class="tok-kw">-s</span> <span class="tok-str">' '</span> <span class="tok-str">'\\n'</span> &lt; <span class="tok-type">book.txt</span> <span class="tok-kw">|</span> <span class="tok-func">sort</span> <span class="tok-kw">|</span> <span class="tok-func">uniq</span> <span class="tok-kw">-c</span> <span class="tok-kw">|</span> <span class="tok-func">sort</span> <span class="tok-kw">-nr</span> <span class="tok-kw">|</span> <span class="tok-func">head</span>
-</code></pre>
-<p>Κρίκος-κρίκος, τι κάνει το καθένα:</p>
-<div class="grid3">
-  <div class="card"><h3>tr -s ' ' '\\n'</h3><p>Μετατρέπει κάθε κενό σε αλλαγή γραμμής, ώστε να καταλήξει μία λέξη ανά γραμμή.</p></div>
-  <div class="card"><h3>sort</h3><p>Φέρνει τις ίδιες λέξεις δίπλα-δίπλα, γιατί χωρίς αυτό το επόμενο βήμα δεν δουλεύει.</p></div>
-  <div class="card"><h3>uniq -c</h3><p>Συμπτύσσει τις διαδοχικές επαναλήψεις και γράφει μπροστά πόσες φορές εμφανίστηκε η καθεμία.</p></div>
-  <div class="card"><h3>sort -nr</h3><p>Ταξινομεί αριθμητικά και ανάποδα, ώστε οι μεγαλύτεροι μετρητές να πάνε πρώτοι.</p></div>
-  <div class="card"><h3>head</h3><p>Κρατάει μόνο τις πρώτες 10 γραμμές, δηλαδή τις δέκα πιο συχνές λέξεις.</p></div>
-  <div class="card"><h3>&lt; book.txt</h3><p>Δίνει το αρχείο ως stdin στην πρώτη εντολή, αφού η tr δεν δέχεται filename.</p></div>
-</div>
-<p>Δοκίμασέ το σε ένα δικό σου αρχείο και σβήσε κάθε φορά τον τελευταίο κρίκο, για να δεις πώς αλλάζει η έξοδος. Είναι ο πιο γρήγορος τρόπος να καταλάβεις τι ακριβώς προσθέτει το καθένα.</p>
-
-<h2>sed — αντικατάσταση κειμένου εν κινήσει</h2>
-<p>Το <code>sed</code> είναι ένας stream editor: διαβάζει κείμενο γραμμή-γραμμή, εφαρμόζει έναν κανόνα, και τυπώνει το αποτέλεσμα. Η συντριπτική πλειοψηφία της χρήσης του είναι μία μόνο μορφή, η αντικατάσταση:</p>
-<pre><code><span class="tok-func">sed</span> <span class="tok-str">'s/foo/bar/'</span> <span class="tok-type">file.txt</span>     <span class="tok-com"># replace the FIRST "foo" of each line with "bar"</span>
-<span class="tok-func">sed</span> <span class="tok-str">'s/foo/bar/g'</span> <span class="tok-type">file.txt</span>    <span class="tok-com"># g = global: every occurrence on each line</span>
-<span class="tok-func">sed</span> <span class="tok-kw">-i</span> <span class="tok-str">'s/foo/bar/g'</span> <span class="tok-type">file.txt</span> <span class="tok-com"># --in-place: rewrite the file itself, no output printed</span>
-</code></pre>
-<div class="callout">
-  <span class="tag">Προσοχή</span>
-  Χωρίς το <code>-i</code> το sed δεν αγγίζει το αρχείο σου: απλώς τυπώνει το τροποποιημένο κείμενο. Αυτό είναι χαρακτηριστικό, όχι έλλειψη. Τρέχε πάντα πρώτα την εντολή χωρίς <code>-i</code>, δες αν το αποτέλεσμα είναι αυτό που θέλεις, και μόνο τότε πρόσθεσέ το.
 </div>
 
 <h2>Wildcards, patterns για ονόματα αρχείων</h2>
@@ -1113,91 +702,28 @@ ls /nope > all.txt __redir__        # send stderr wherever stdout is already goi
       note: "Ταίριαξε κάθε εντολή/flag με τη λειτουργία της. Δύο σετ: γενικά εργαλεία και grep flags."
     });
 
-    addFillBlank([
-      {
-        code:
-          `cat words.txt | sort | __cmd1__ -c | sort __flag1__ | head   # top 10 most frequent lines
-grep __flag2__ 'error' app.log      # print only the NUMBER of matching lines
-grep __flag3__ 'ERROR' app.log      # match regardless of upper or lowercase`,
-        blanks: [
-          { id: "cmd1", answer: "uniq" },
-          { id: "flag1", answer: "-nr" },
-          { id: "flag2", answer: "-c" },
-          { id: "flag3", answer: "-i" }
-        ],
-        explain: "Το uniq -c μετράει διαδοχικές επαναλήψεις (γι' αυτό προηγείται το sort), το sort -nr ταξινομεί αριθμητικά και ανάποδα, το grep -c μετράει γραμμές και το -i αγνοεί πεζά/κεφαλαία."
-      },
-      {
-        code:
-          `__cmd2__ -d "," -f2 data.csv        # extract the 2nd column of a comma-separated file
-find . __flag4__ "*.log"            # find every .log file starting from here
-sed 's/foo/bar/__flag5__' notes.txt  # replace EVERY occurrence on each line`,
-        blanks: [
-          { id: "cmd2", answer: "cut" },
-          { id: "flag4", answer: "-name" },
-          { id: "flag5", answer: "g" }
-        ],
-        explain: "Το cut -d ορίζει τον διαχωριστή και το -f το πεδίο, το find -name ψάχνει με βάση το όνομα, και το g στο sed σημαίνει global, δηλαδή όλες τις εμφανίσεις της γραμμής."
-      }
-    ], {
-      note: "Συμπλήρωσε τις εντολές και τα flags που λείπουν."
-    });
-
     addQuiz([
       {
         q: "Τι κάνει το flag -r στο grep;",
         options: [
           "Ψάχνει αναδρομικά μέσα σε όλα τα αρχεία ενός φακέλου",
-          "Αντιστρέφει το αποτέλεσμα και δείχνει μόνο τις γραμμές που δεν ταιριάζουν με το pattern",
-          "Κάνει την αναζήτηση χωρίς διάκριση πεζών-κεφαλαίων",
+          "Αντιστρέφει το αποτέλεσμα της αναζήτησης",
+          "Κάνει την αναζήτηση χωρίς διάκριση πεζών/κεφαλαίων",
           "Διαγράφει τις γραμμές που ταιριάζουν"
         ],
         correct: 0,
         explain: "Το -r (--recursive) κάνει το grep να ψάξει μέσα σε όλα τα αρχεία ενός φακέλου, συμπεριλαμβανομένων των υποφακέλων."
       },
       {
-        q: "Ποια εντολή δίνει τη 2η στήλη ενός csv με κόμμα ως διαχωριστικό;",
+        q: "Ποιο εργαλείο χρησιμοποιείς για να πάρεις τη 2η στήλη από ένα αρχείο csv με κόμμα ως διαχωριστικό;",
         options: [
-          "Η cut -d ',' -f2, με το κόμμα ως delimiter",
-          "Η grep -c ',' data.csv, που μετράει πόσες γραμμές περιέχουν τουλάχιστον ένα κόμμα",
-          "Η sort -k2, που ταξινομεί με βάση τη στήλη",
-          "Η wc -f2, που μετράει τα πεδία"
+          "cut -d , -f2",
+          "grep -c 2",
+          "sort -k2",
+          "wc -f2"
         ],
         correct: 0,
-        explain: "Το -d ορίζει τον διαχωριστή και το -f ποιο πεδίο θα κρατηθεί από κάθε γραμμή."
-      },
-      {
-        q: "Γιατί σχεδόν πάντα γράφουμε sort file | uniq αντί για σκέτο uniq;",
-        options: [
-          "Επειδή η uniq αφαιρεί μόνο διαδοχικές ίδιες γραμμές",
-          "Επειδή η uniq δεν διαβάζει καθόλου από pipe, οπότε χρειάζεται μια εντολή πριν από αυτήν",
-          "Επειδή η uniq απαιτεί ταξινομημένη είσοδο αλλιώς σφάλλει",
-          "Επειδή το sort είναι ταχύτερο από την uniq"
-        ],
-        correct: 0,
-        explain: "Χωρίς sort, δύο ίδιες γραμμές που απέχουν μεταξύ τους δεν θεωρούνται διπλότυπα από την uniq. Το sort τις φέρνει δίπλα-δίπλα ώστε να έχει νόημα."
-      },
-      {
-        q: "Τι τυπώνει το ls | grep '.txt' | wc -l;",
-        options: [
-          "Το πλήθος των αρχείων που ταιριάζουν με .txt",
-          "Τα ονόματα των αρχείων .txt μαζί με το συνολικό πλήθος γραμμών του καθενός",
-          "Το περιεχόμενο όλων των .txt αρχείων",
-          "Το μέγεθος του φακέλου σε bytes"
-        ],
-        correct: 0,
-        explain: "Η ls δίνει μία γραμμή ανά αρχείο, το grep κρατάει όσες ταιριάζουν, και το wc -l μετράει γραμμές. Άρα το αποτέλεσμα είναι ένας αριθμός."
-      },
-      {
-        q: "Τι κάνει το sed 's/foo/bar/g' file.txt όταν το τρέξεις χωρίς το flag -i;",
-        options: [
-          "Τυπώνει το αλλαγμένο κείμενο, χωρίς να πειράξει το αρχείο",
-          "Αλλάζει το αρχείο μόνιμα και κρατάει αντίγραφο ασφαλείας με κατάληξη .bak δίπλα του",
-          "Αντικαθιστά μόνο την πρώτη εμφάνιση κάθε γραμμής",
-          "Δεν κάνει απολύτως τίποτα"
-        ],
-        correct: 0,
-        explain: "Χωρίς -i το sed λειτουργεί σαν φίλτρο: διαβάζει, μετασχηματίζει και τυπώνει. Γι' αυτό τρέχεις πρώτα χωρίς -i για να ελέγξεις το αποτέλεσμα."
+        explain: "Το cut -d , -f2 ορίζει το κόμμα ως delimiter και εξάγει το 2ο πεδίο κάθε γραμμής."
       }
     ]);
 
@@ -1235,12 +761,6 @@ sed 's/foo/bar/__flag5__' notes.txt  # replace EVERY occurrence on each line`,
 <span class="tok-func">echo</span> <span class="tok-kw">$PATH</span>                    <span class="tok-com"># print the PATH variable specifically</span>
 </code></pre>
 
-<p>Το PATH είναι ακριβώς εκείνη η λίστα φακέλων που ανέφερε το βήμα 3 στην Ενότητα 1: όταν γράφεις <code>ls</code>, το shell ψάχνει το πρόγραμμα μέσα σε αυτούς τους φακέλους, με τη σειρά, και σταματάει στον πρώτο που το βρίσκει. Μπορείς να δεις ποιον ακριβώς διάλεξε:</p>
-<pre><code><span class="tok-func">which</span> <span class="tok-type">ls</span>        <span class="tok-com"># /usr/bin/ls — the file that actually runs when you type ls</span>
-<span class="tok-func">type</span> <span class="tok-type">ll</span>         <span class="tok-com"># tells you if something is a program, an alias or a shell builtin</span>
-</code></pre>
-<p>Αυτό εξηγεί και γιατί, μόλις εγκαταστήσεις ένα νέο εργαλείο, μερικές φορές χρειάζεται να ανοίξεις νέο terminal για να το "δει" το σύστημα: το PATH του τρέχοντος shell είχε ήδη διαβαστεί πριν αλλάξει.</p>
-
 <h2>Ειδικές μεταβλητές</h2>
 <pre><code><span class="tok-kw">$0</span>        <span class="tok-com"># the name of the running script</span>
 <span class="tok-kw">$1</span>, <span class="tok-kw">$2</span> ...  <span class="tok-com"># positional arguments passed to the script</span>
@@ -1248,25 +768,6 @@ sed 's/foo/bar/__flag5__' notes.txt  # replace EVERY occurrence on each line`,
 <span class="tok-kw">$@</span>        <span class="tok-com"># all arguments as a list</span>
 <span class="tok-kw">$?</span>        <span class="tok-com"># exit code of the last command</span>
 </code></pre>
-
-<h2>Εισαγωγικά: η πιο συχνή πηγή μπερδέματος</h2>
-<p>Τα εισαγωγικά στο bash δεν είναι διακοσμητικά. Καθορίζουν αν το shell θα κοιτάξει μέσα στο κείμενό σου για μεταβλητές και σύμβολα ή αν θα το αφήσει ακριβώς όπως το έγραψες. Οι τρεις περιπτώσεις:</p>
-<pre><code>name=Kostas
-
-<span class="tok-func">echo</span> <span class="tok-str">"Hello $name"</span>   <span class="tok-com"># double quotes: variables ARE expanded  -> Hello Kostas</span>
-<span class="tok-func">echo</span> <span class="tok-str">'Hello $name'</span>   <span class="tok-com"># single quotes: everything stays literal -> Hello $name</span>
-<span class="tok-func">echo</span> Hello $name     <span class="tok-com"># no quotes: expanded, but spaces split it into separate words</span>
-</code></pre>
-<p>Η τρίτη περίπτωση είναι αυτή που δαγκώνει. Όσο η μεταβλητή δεν έχει κενά, όλα φαίνονται μια χαρά, και ο κώδικας δουλεύει για μήνες. Την πρώτη φορά που θα δώσεις κάτι με κενό, το shell θα το σπάσει σε δύο ορίσματα και η εντολή θα αποτύχει με μήνυμα που δεν βγάζει νόημα:</p>
-<pre><code>file=<span class="tok-str">"my notes.txt"</span>
-
-<span class="tok-func">cat</span> $file       <span class="tok-com"># WRONG: cat receives two arguments, "my" and "notes.txt"</span>
-<span class="tok-func">cat</span> <span class="tok-str">"$file"</span>     <span class="tok-com"># RIGHT: one single argument, spaces and all</span>
-</code></pre>
-<div class="callout good">
-  <span class="tag">Κανόνας που γλιτώνει ώρες</span>
-  Βάζε πάντα διπλά εισαγωγικά γύρω από μεταβλητές, εκτός αν έχεις συγκεκριμένο λόγο να μην το κάνεις. Το <code>"$file"</code> δεν κοστίζει τίποτα όταν δεν χρειάζεται, αλλά σε σώζει κάθε φορά που χρειάζεται.
-</div>
 
 <h2>Exit Codes — $? και exit</h2>
 <p>Κάθε εντολή, όταν τελειώσει, επιστρέφει έναν exit code: το 0 σημαίνει επιτυχία, οποιοσδήποτε άλλος αριθμός από 1 έως 255 σημαίνει κάποιου είδους αποτυχία. Το ελέγχεις αμέσως μετά με <code>$?</code>.</p>
@@ -1300,52 +801,6 @@ sed 's/foo/bar/__flag5__' notes.txt  # replace EVERY occurrence on each line`,
 <span class="tok-func">chmod</span> 755 <span class="tok-type">foo.sh</span>          <span class="tok-com"># numeric form: owner=rwx(7), group=rx(5), others=rx(5)</span>
 </code></pre>
 
-<h2>Οι αριθμοί πίσω από το chmod 755</h2>
-<p>Η αριθμητική μορφή δεν είναι αυθαίρετη. Κάθε δικαίωμα έχει μια σταθερή αξία, και τα προσθέτεις μεταξύ τους για να πάρεις ένα ψηφίο:</p>
-<div class="grid3">
-  <div class="card"><h3>read = 4</h3><p>Δικαίωμα ανάγνωσης του περιεχομένου.</p></div>
-  <div class="card"><h3>write = 2</h3><p>Δικαίωμα τροποποίησης ή διαγραφής.</p></div>
-  <div class="card"><h3>execute = 1</h3><p>Δικαίωμα εκτέλεσης του αρχείου ως πρόγραμμα.</p></div>
-</div>
-<p>Ένα ψηφίο ανά κατηγορία, πάντα με την ίδια σειρά: πρώτα ο owner, μετά το group, τέλος οι υπόλοιποι.</p>
-<pre><code>7 = 4+2+1 = rwx    <span class="tok-com"># read, write and execute</span>
-6 = 4+2   = rw-    <span class="tok-com"># read and write, but not executable</span>
-5 = 4+1   = r-x    <span class="tok-com"># read and execute, cannot be modified</span>
-4 = 4     = r--    <span class="tok-com"># read only</span>
-0 = 0     = ---    <span class="tok-com"># no permission at all</span>
-</code></pre>
-<pre><code><span class="tok-func">chmod</span> 755 <span class="tok-type">script.sh</span>   <span class="tok-com"># owner rwx, everyone else r-x — the usual setting for a script</span>
-<span class="tok-func">chmod</span> 644 <span class="tok-type">notes.txt</span>   <span class="tok-com"># owner rw-, everyone else r-- — the usual setting for a plain file</span>
-<span class="tok-func">chmod</span> 600 <span class="tok-type">secrets.env</span> <span class="tok-com"># owner rw-, nobody else can even read it</span>
-</code></pre>
-<p>Άρα το <code>755</code> και το <code>u=rwx,go=rx</code> λένε ακριβώς το ίδιο πράγμα. Η αριθμητική μορφή είναι πιο σύντομη και πιο συχνή σε οδηγούς, η συμβολική πιο ξεκάθαρη όταν θέλεις να αλλάξεις ένα μόνο δικαίωμα χωρίς να πειράξεις τα υπόλοιπα.</p>
-
-<h2>Το πρώτο σου script</h2>
-<p>Έχεις πλέον όλα τα κομμάτια: μεταβλητές, ορίσματα, exit codes και δικαιώματα. Ας τα ενώσουμε σε ένα πραγματικό, μικρό script. Δημιούργησε ένα αρχείο <code>greet.sh</code> με αυτό το περιεχόμενο:</p>
-<pre><code>#!/bin/bash
-# greet.sh - greets the name given as the first argument
-
-name=$1
-
-if [ -z "$name" ]; then
-    echo "Usage: ./greet.sh &lt;name&gt;"
-    exit 1
-fi
-
-echo "Hello, $name!"
-exit 0
-</code></pre>
-<p>Γραμμή προς γραμμή: η πρώτη γραμμή λέγεται shebang και δηλώνει με ποιον interpreter πρέπει να τρέξει το αρχείο, εδώ με bash. Το <code>name=$1</code> κρατάει το πρώτο όρισμα σε μεταβλητή με κατανοητό όνομα. Το <code>[ -z "$name" ]</code> ελέγχει αν η μεταβλητή είναι άδεια, δηλαδή αν ο χρήστης ξέχασε να δώσει όρισμα, οπότε τυπώνουμε οδηγίες χρήσης και βγαίνουμε με κωδικό αποτυχίας. Αν όλα πήγαν καλά, χαιρετάμε και βγαίνουμε με 0.</p>
-<pre><code><span class="tok-func">chmod</span> <span class="tok-kw">+x</span> <span class="tok-type">greet.sh</span>     <span class="tok-com"># without this, the file is just text and cannot run</span>
-./greet.sh <span class="tok-type">Kostas</span>       <span class="tok-com"># Hello, Kostas!</span>
-./greet.sh                <span class="tok-com"># Usage: ./greet.sh &lt;name&gt;</span>
-<span class="tok-func">echo</span> <span class="tok-kw">$?</span>                  <span class="tok-com"># 1 — the script reported failure</span>
-</code></pre>
-<div class="callout">
-  <span class="tag">Γιατί ./ και όχι σκέτο greet.sh</span>
-  Επειδή ο τρέχων φάκελος δεν βρίσκεται μέσα στο PATH. Χωρίς το <code>./</code>, το shell θα ψάξει το greet.sh μόνο στους φακέλους του PATH, δεν θα το βρει, και θα σου πει <code>command not found</code> ενώ το αρχείο βρίσκεται μπροστά στα μάτια σου. Το <code>./</code> σημαίνει "αυτό εδώ, στον φάκελο που βρίσκομαι".
-</div>
-
 <h2>Regular Expressions — μια πρώτη ματιά</h2>
 <p>Τα regex είναι patterns για ταίριασμα κειμένου, πιο ισχυρά από τα wildcards, και τα χρησιμοποιούν εργαλεία όπως το grep, το sed και το awk. Ας δούμε τα πρώτα σύμβολα:</p>
 <div class="grid3">
@@ -1359,39 +814,19 @@ exit 0
       {
         code:
           `ls /this/path/does/not/exist
-echo "Exit code was: $__var__"     # holds the exit code of the previous command
-exit __ok__                        # inside a script: report success
-exit __fail__                      # inside a script: report failure`,
+echo "Exit code was: $__var__"`,
         blanks: [
-          { id: "var", answer: "?" },
-          { id: "ok", answer: "0" },
-          { id: "fail", answer: "1" }
+          { id: "var", answer: "?" }
         ],
-        explain: "Το $? κρατάει τον exit code της αμέσως προηγούμενης εντολής. Το 0 σημαίνει πάντα επιτυχία, ενώ οτιδήποτε από 1 έως 255 σημαίνει κάποιου είδους αποτυχία."
+        explain: "Το $? κρατάει πάντα τον exit code της αμέσως προηγούμενης εντολής."
       },
       {
         code:
-          `__cmd__ PATH="$PATH:/my/path"   # make PATH updates visible to child processes too
-name="my notes.txt"
-cat "$__var2__"                  # quote the variable so the space does not split it
-chmod __num__ script.sh          # owner rwx, group r-x, others r-x`,
+          `__cmd__ PATH="$PATH:/my/path"   # make PATH updates visible to child processes too`,
         blanks: [
-          { id: "cmd", answer: "export" },
-          { id: "var2", answer: "name" },
-          { id: "num", answer: "755" }
+          { id: "cmd", answer: "export" }
         ],
-        explain: "Το export κάνει τη μεταβλητή ορατή στα child processes, τα διπλά εισαγωγικά κρατούν το όνομα με το κενό ως ένα όρισμα, και το 755 είναι rwx για τον owner (4+2+1) και r-x για τους υπόλοιπους (4+1)."
-      },
-      {
-        code:
-          `#!/bin/__interp__               # shebang: which interpreter runs this file
-name=$__arg__                    # first argument given to the script
-echo "Hello, $name!"`,
-        blanks: [
-          { id: "interp", answer: "bash" },
-          { id: "arg", answer: "1" }
-        ],
-        explain: "Η γραμμή shebang δηλώνει τον interpreter, και το $1 είναι το πρώτο όρισμα που δόθηκε στο script ($0 είναι το ίδιο το όνομα του αρχείου)."
+        explain: "Το export μετατρέπει μια shell variable σε environment variable, ορατή σε child processes."
       }
     ], {
       note: "Συμπλήρωσε τα κενά."
@@ -1401,57 +836,35 @@ echo "Hello, $name!"`,
       {
         q: "Ποια η διαφορά shell variable και environment variable;",
         options: [
-          "Η shell variable ζει μόνο στο τρέχον shell, η environment κληρονομείται",
-          "Η shell variable αποθηκεύεται πάντα σε αρχείο στον δίσκο, ενώ η environment υπάρχει μόνο στη μνήμη",
-          "Δεν υπάρχει πρακτική διαφορά",
-          "Η environment ισχύει μόνο για root"
+          "Η shell variable υπάρχει μόνο στο τρέχον shell, η environment variable κληρονομείται από τα child processes",
+          "Δεν υπάρχει καμία πρακτική διαφορά μεταξύ τους",
+          "Η environment variable ισχύει μόνο για root χρήστες",
+          "Η shell variable αποθηκεύεται πάντα σε αρχείο στον δίσκο, ενώ η environment variable υπάρχει μόνο στη μνήμη κατά την εκτέλεση"
         ],
         correct: 0,
-        explain: "Με export η μεταβλητή γίνεται environment variable και την κληρονομούν όλα τα προγράμματα που ξεκινάς από αυτό το shell."
+        explain: "Οι shell variables είναι τοπικές στο session, ενώ οι environment variables (μέσω export) μεταδίδονται σε προγράμματα που ξεκινούν από αυτό το shell."
       },
       {
         q: "Τι σημαίνει exit code 0 μετά από μια εντολή;",
         options: [
+          "Η εντολή απέτυχε πλήρως",
           "Η εντολή ολοκληρώθηκε επιτυχώς",
-          "Η εντολή απέτυχε, γιατί το μηδέν σημαίνει μηδενικά αποτελέσματα",
-          "Η εντολή δεν εκτελέστηκε",
-          "Δείχνει πόσο χρόνο πήρε"
+          "Η εντολή δεν εκτελέστηκε καθόλου",
+          "Δεν έχει σχέση με επιτυχία ή αποτυχία, δείχνει μόνο πόσο χρόνο πήρε η εκτέλεση"
         ],
-        correct: 0,
-        explain: "Exit code 0 σημαίνει επιτυχία. Οποιοσδήποτε μη-μηδενικός κωδικός, από 1 έως 255, σημαίνει κάποιο είδος αποτυχίας."
+        correct: 1,
+        explain: "Exit code 0 σημαίνει επιτυχία. Οποιοσδήποτε μη-μηδενικός κωδικός σημαίνει κάποιο είδος αποτυχίας."
       },
       {
-        q: "Έχεις file='my notes.txt'. Γιατί αποτυγχάνει το cat $file;",
+        q: "Τι κάνει η εντολή chmod u+x foo.sh;",
         options: [
-          "Το shell το σπάει σε δύο ορίσματα λόγω του κενού",
-          "Επειδή τα διπλά εισαγωγικά μπαίνουν μόνο στην ανάθεση και ακυρώνονται αυτόματα μόλις χρησιμοποιηθεί η μεταβλητή",
-          "Επειδή η cat δεν δέχεται μεταβλητές",
-          "Επειδή λείπει το export"
+          "Δίνει στον ιδιοκτήτη του αρχείου δικαίωμα εκτέλεσης",
+          "Διαγράφει το αρχείο foo.sh",
+          "Δίνει σε όλους δικαίωμα εγγραφής στο αρχείο",
+          "Μετονομάζει το αρχείο σε foo.sh.x"
         ],
         correct: 0,
-        explain: "Χωρίς εισαγωγικά, το shell χωρίζει την τιμή στα κενά και η cat δέχεται δύο ορίσματα. Το σωστό είναι cat \"$file\"."
-      },
-      {
-        q: "Τι σημαίνει το 644 στην εντολή chmod 644 notes.txt;",
-        options: [
-          "Owner rw-, group r--, others r--",
-          "Owner rwx, group rwx, others rwx, δηλαδή πλήρη δικαιώματα για όλους",
-          "Owner rwx, group r-x, others r-x",
-          "Μέγιστο μέγεθος 644 bytes"
-        ],
-        correct: 0,
-        explain: "read=4, write=2, execute=1. Άρα 6=4+2=rw- για τον owner, και 4=r-- για group και others."
-      },
-      {
-        q: "Γιατί ένα script τρέχει ως ./greet.sh και όχι ως σκέτο greet.sh;",
-        options: [
-          "Επειδή ο τρέχων φάκελος δεν βρίσκεται μέσα στο PATH",
-          "Επειδή η τελεία και η κάθετος δηλώνουν στο bash ότι το αρχείο είναι script και όχι κείμενο",
-          "Επειδή αλλιώς χρειάζεται δικαιώματα root",
-          "Επειδή το bash απαιτεί πάντα absolute path"
-        ],
-        correct: 0,
-        explain: "Χωρίς ./ το shell ψάχνει μόνο μέσα στους φακέλους του PATH. Το ./ δηλώνει ρητά ότι το αρχείο βρίσκεται στον τρέχοντα φάκελο."
+        explain: "Το u+x προσθέτει το execute δικαίωμα (x) στον owner (u) του αρχείου."
       }
     ]);
 
@@ -1463,9 +876,6 @@ echo "Hello, $name!"`,
   <div class="gc-line"><span class="gc-term">export</span><span class="gc-def">Κάνει μια μεταβλητή environment variable</span></div>
   <div class="gc-line"><span class="gc-term">chmod</span><span class="gc-def">Αλλαγή δικαιωμάτων αρχείου</span></div>
   <div class="gc-line"><span class="gc-term">declare</span><span class="gc-def">Δηλώνει μεταβλητή με συγκεκριμένο τύπο (integer, readonly)</span></div>
-  <div class="gc-line"><span class="gc-term">"$var" / '$var'</span><span class="gc-def">Διπλά: γίνεται expand. Μονά: μένει αυτούσιο</span></div>
-  <div class="gc-line"><span class="gc-term">Shebang</span><span class="gc-def">Η γραμμή #!/bin/bash στην αρχή ενός script</span></div>
-  <div class="gc-line"><span class="gc-term">chmod 755</span><span class="gc-def">Αριθμητικά δικαιώματα: r=4, w=2, x=1</span></div>
 </div>
 `);
 
@@ -1483,24 +893,6 @@ echo "Hello, $name!"`,
 <span class="tok-func">disown</span> %1          <span class="tok-com"># detach a job so it survives even if you close the terminal</span>
 <span class="tok-func">nohup</span> <span class="tok-type">command</span> &amp;   <span class="tok-com"># run a command immune to "hangup" — keeps running after logout</span>
 </code></pre>
-
-<h2>Σταματώντας μια διεργασία: σήματα και kill</h2>
-<p>Ένα πρόγραμμα δεν "σβήνει" απλώς. Το λειτουργικό σύστημα του στέλνει ένα σήμα, και το πρόγραμμα, ανάλογα με το σήμα, προλαβαίνει ή δεν προλαβαίνει να καθαρίσει τα πράγματά του πριν φύγει. Στην καθημερινή χρήση θα συναντήσεις κυρίως τρία:</p>
-<div class="grid3">
-  <div class="card"><h3>Ctrl + C</h3><p>Στέλνει SIGINT: "σταμάτα τώρα". Το πρόγραμμα μπορεί να καθαρίσει και να τερματίσει ομαλά.</p></div>
-  <div class="card"><h3>Ctrl + Z</h3><p>Στέλνει SIGTSTP: παγώνει τη διεργασία. Δεν πέθανε, περιμένει, και τη συνεχίζεις με fg ή bg.</p></div>
-  <div class="card"><h3>kill -9</h3><p>Στέλνει SIGKILL: τερματισμός χωρίς προειδοποίηση. Δεν μπορεί να αγνοηθεί, ούτε να καθαρίσει τίποτα.</p></div>
-</div>
-<pre><code><span class="tok-func">ps</span> <span class="tok-kw">aux</span> <span class="tok-kw">|</span> <span class="tok-func">grep</span> <span class="tok-str">'node'</span>   <span class="tok-com"># find the PID (process id) of what you want to stop</span>
-<span class="tok-func">kill</span> <span class="tok-type">4821</span>              <span class="tok-com"># polite request to terminate (SIGTERM)</span>
-<span class="tok-func">kill</span> <span class="tok-kw">-9</span> <span class="tok-type">4821</span>           <span class="tok-com"># force it, use only if the polite version failed</span>
-<span class="tok-func">pgrep</span> <span class="tok-type">node</span>             <span class="tok-com"># print the PIDs of processes matching a name</span>
-<span class="tok-func">pkill</span> <span class="tok-type">node</span>             <span class="tok-com"># kill by name instead of by PID, careful: matches everything</span>
-</code></pre>
-<div class="callout">
-  <span class="tag">Ξεκίνα από το ήπιο</span>
-  Το <code>kill -9</code> είναι δελεαστικό γιατί δουλεύει πάντα, αλλά δεν δίνει στο πρόγραμμα καμία ευκαιρία να αποθηκεύσει αρχεία, να κλείσει συνδέσεις ή να σβήσει προσωρινά δεδομένα. Δοκίμασε πρώτα το σκέτο <code>kill</code> και κράτα το -9 για όταν πραγματικά έχει κολλήσει.
-</div>
 
 <h2>Networking, βασικά εργαλεία</h2>
 <pre><code><span class="tok-func">ping</span> <span class="tok-type">example.com</span>     <span class="tok-com"># check if a host is reachable</span>
@@ -1520,8 +912,6 @@ echo "Hello, $name!"`,
 <span class="tok-func">uptime</span>    <span class="tok-com"># how long the system has been running</span>
 </code></pre>
 
-<p>Το <code>df</code> και το <code>du</code> μοιάζουν αλλά απαντούν σε διαφορετική ερώτηση. Το <code>df</code> κοιτάει τον δίσκο συνολικά και λέει πόσος χώρος απομένει. Το <code>du</code> κοιτάει έναν συγκεκριμένο φάκελο και λέει πόσο πιάνει αυτός. Όταν γεμίσει ο δίσκος σου, τρέχεις πρώτα <code>df -h</code> για να δεις ότι όντως γέμισε, και μετά <code>du -sh *</code> μέσα σε φακέλους για να βρεις ποιος φταίει.</p>
-
 <h2>Συμπίεση αρχείων</h2>
 <pre><code><span class="tok-func">tar</span> <span class="tok-kw">-czvf</span> <span class="tok-type">archive.tar.gz folder/</span>  <span class="tok-com"># create a compressed archive</span>
 <span class="tok-func">tar</span> <span class="tok-kw">-xzvf</span> <span class="tok-type">archive.tar.gz</span>       <span class="tok-com"># extract a compressed archive</span>
@@ -1540,70 +930,28 @@ echo "Hello, $name!"`,
 </div>
 `);
 
-    addMatching([
-      [
-        { term: "<code>ps aux</code>", def: "Λίστα όλων των διεργασιών που τρέχουν" },
-        { term: "<code>kill -9</code>", def: "Βίαιος τερματισμός, χωρίς δυνατότητα καθαρισμού" },
-        { term: "<code>df -h</code>", def: "Πόσος χώρος απομένει στον δίσκο συνολικά" },
-        { term: "<code>du -sh</code>", def: "Πόσο πιάνει ένας συγκεκριμένος φάκελος" },
-        { term: "<code>uptime</code>", def: "Πόση ώρα λειτουργεί το σύστημα" },
-        { term: "<code>free -h</code>", def: "Ελεύθερη και χρησιμοποιημένη μνήμη" }
-      ],
-      [
-        { term: "<code>ssh</code>", def: "Σύνδεση σε απομακρυσμένο μηχάνημα" },
-        { term: "<code>scp</code>", def: "Ασφαλής αντιγραφή αρχείου σε απομακρυσμένο μηχάνημα" },
-        { term: "<code>rsync</code>", def: "Συγχρονισμός, μεταφέροντας μόνο τις διαφορές" },
-        { term: "<code>ping</code>", def: "Έλεγχος αν ένας host είναι προσβάσιμος" },
-        { term: "<code>wget</code>", def: "Κατέβασμα αρχείου από URL" }
-      ]
-    ], {
-      note: "Ταίριαξε κάθε εντολή με τη λειτουργία της. Δύο σετ: σύστημα και δίκτυο."
-    });
-
     addQuiz([
       {
         q: "Τι κάνει η εντολή nohup;",
         options: [
-          "Αφήνει το πρόγραμμα να συνεχίσει ακόμα κι αν κλείσεις το terminal",
-          "Σκοτώνει αμέσως όλες τις διεργασίες του χρήστη πριν κλείσει το terminal, ώστε να μη μείνει τίποτα ανοιχτό",
-          "Ελέγχει τη διαθέσιμη μνήμη",
-          "Κάνει ping σε remote host"
+          "Επιτρέπει σε ένα πρόγραμμα να συνεχίσει να τρέχει ακόμα κι αν κλείσεις το terminal",
+          "Σκοτώνει άμεσα όλες τις τρέχουσες διεργασίες",
+          "Ελέγχει τη διαθέσιμη μνήμη του συστήματος",
+          "Κάνει ping σε έναν remote host για να ελέγξει τη συνδεσιμότητα"
         ],
         correct: 0,
-        explain: "Το nohup κάνει την εντολή ανθεκτική στο σήμα hangup που στέλνεται όταν κλείνεις το terminal, οπότε συνεχίζει να τρέχει."
+        explain: "Το nohup κάνει μια εντολή ανθεκτική στο σήμα hangup που στέλνεται όταν κλείνεις το terminal, οπότε συνεχίζει να τρέχει."
       },
       {
-        q: "Ποια εντολή αντιγράφει με ασφάλεια ένα αρχείο σε remote μηχάνημα;",
+        q: "Ποια εντολή χρησιμοποιείς για να αντιγράψεις με ασφάλεια ένα αρχείο σε remote μηχάνημα;",
         options: [
-          "Η scp, που αντιγράφει αρχεία μέσω SSH",
-          "Η gzip, που συμπιέζει το αρχείο πριν το στείλει στο δίκτυο",
-          "Η ping, που ελέγχει αν ο απομακρυσμένος υπολογιστής είναι προσβάσιμος",
-          "Η top, που δείχνει διεργασίες"
+          "ping",
+          "scp",
+          "top",
+          "gzip"
         ],
-        correct: 0,
-        explain: "Το scp (secure copy) στηρίζεται στο SSH, οπότε η μεταφορά είναι κρυπτογραφημένη από άκρο σε άκρο."
-      },
-      {
-        q: "Πότε χρησιμοποιείς το kill -9;",
-        options: [
-          "Μόνο όταν το απλό kill δεν κατάφερε να τερματίσει τη διεργασία",
-          "Πάντα, γιατί είναι ο μόνος τρόπος να τερματιστεί μια διεργασία και δίνει χρόνο να αποθηκευτούν τα αρχεία",
-          "Όταν θέλεις να παγώσεις μια διεργασία",
-          "Όταν η διεργασία τρέχει στο background"
-        ],
-        correct: 0,
-        explain: "Το SIGKILL δεν μπορεί να αγνοηθεί, αλλά δεν αφήνει και καμία ευκαιρία στο πρόγραμμα να αποθηκεύσει ή να καθαρίσει. Ξεκίνα πάντα από το ήπιο kill."
-      },
-      {
-        q: "Ο δίσκος γέμισε. Ποια εντολή σου λέει πρώτα πόσος χώρος απομένει συνολικά;",
-        options: [
-          "Η df -h, που δείχνει τον χώρο ανά filesystem",
-          "Η du -sh, που αθροίζει το μέγεθος ενός φακέλου και όλων των υποφακέλων του",
-          "Η free -h, για τη μνήμη",
-          "Η uptime, για τον χρόνο λειτουργίας"
-        ],
-        correct: 0,
-        explain: "Πρώτα df για να δεις ότι όντως γέμισε ο δίσκος, και μετά du μέσα σε φακέλους για να βρεις ποιος τον γέμισε."
+        correct: 1,
+        explain: "Το scp (secure copy) αντιγράφει αρχεία μέσω SSH σε remote μηχανήματα."
       }
     ]);
 
@@ -1615,9 +963,6 @@ echo "Hello, $name!"`,
   <div class="gs-pill"><span class="gs-name">ssh / scp</span><span class="gs-def">Ασφαλής απομακρυσμένη πρόσβαση/αντιγραφή</span></div>
   <div class="gs-pill"><span class="gs-name">top / htop</span><span class="gs-def">Παρακολούθηση διεργασιών σε live χρόνο</span></div>
   <div class="gs-pill"><span class="gs-name">tar / zip</span><span class="gs-def">Συμπίεση αρχείων</span></div>
-  <div class="gs-pill"><span class="gs-name">PID</span><span class="gs-def">Ο μοναδικός αριθμός κάθε διεργασίας</span></div>
-  <div class="gs-pill"><span class="gs-name">Signal</span><span class="gs-def">Μήνυμα προς διεργασία, π.χ. SIGINT από Ctrl+C</span></div>
-  <div class="gs-pill"><span class="gs-name">kill / kill -9</span><span class="gs-def">Ευγενικός ή βίαιος τερματισμός διεργασίας</span></div>
 </div>
 `);
 
@@ -1626,101 +971,68 @@ echo "Hello, $name!"`,
       {
         q: "Ποια εντολή δείχνει τα περιεχόμενα του τρέχοντος φακέλου;",
         options: [
-          "Η ls",
-          "Η pwd, που τυπώνει τη διαδρομή του τρέχοντος φακέλου",
-          "Η cd, που αλλάζει φάκελο",
-          "Η cat"
+          "pwd",
+          "ls",
+          "cd",
+          "cat"
         ],
-        correct: 0,
-        explain: "Η ls (list) εμφανίζει τα περιεχόμενα ενός φακέλου, ενώ η pwd απαντάει στο πού βρίσκομαι."
+        correct: 1,
+        explain: "Η ls (list) εμφανίζει τα περιεχόμενα ενός φακέλου."
       },
       {
         q: "Ποιο σύμβολο κάνει append σε ένα αρχείο, χωρίς να διαγράφει το προηγούμενο περιεχόμενο;",
         options: [
-          "Το >>",
-          "Το >, που γράφει από την αρχή σβήνοντας τα πάντα",
-          "Το |",
-          "Το <"
+          ">",
+          ">>",
+          "|",
+          "<"
         ],
-        correct: 0,
+        correct: 1,
         explain: "Το >> προσθέτει στο τέλος υπάρχοντος περιεχομένου, ενώ το > το αντικαθιστά πλήρως."
       },
       {
         q: "Ποιο flag στο grep κάνει αναζήτηση μέσα σε ολόκληρο φάκελο, αναδρομικά;",
         options: [
-          "Το -r",
-          "Το -v, που δείχνει τις γραμμές που δεν ταιριάζουν",
-          "Το -i",
-          "Το -c"
+          "-i",
+          "-v",
+          "-r",
+          "-c"
         ],
-        correct: 0,
-        explain: "Το -r ψάχνει μέσα σε κάθε αρχείο ενός φακέλου, συμπεριλαμβανομένων των υποφακέλων."
+        correct: 2,
+        explain: "Το -r (recursive) ψάχνει μέσα σε κάθε αρχείο ενός φακέλου, συμπεριλαμβανομένων των υποφακέλων."
       },
       {
         q: "Τι δηλώνει το wildcard * σε ένα pattern αρχείου όπως *.go;",
         options: [
-          "Οποιαδήποτε ακολουθία χαρακτήρων, ακόμα και κενή",
-          "Ακριβώς έναν χαρακτήρα, όπως ακριβώς και το ερωτηματικό στα patterns",
+          "Ακριβώς έναν χαρακτήρα",
+          "Οποιαδήποτε ακολουθία χαρακτήρων, ακόμα και μηδενικού μήκους",
           "Μόνο αριθμητικούς χαρακτήρες",
-          "Έναν χαρακτήρα από ένα σύνολο"
+          "Έναν χαρακτήρα μέσα σε συγκεκριμένο σύνολο"
         ],
-        correct: 0,
-        explain: "Το * ταιριάζει με οποιαδήποτε ακολουθία χαρακτήρων, ενώ το ? ταιριάζει με ακριβώς έναν."
+        correct: 1,
+        explain: "Το * ταιριάζει με οποιαδήποτε ακολουθία χαρακτήρων, ακόμα και κενή."
       },
       {
-        q: "Ποιο δικαίωμα χρειάζεται ένα script για να τρέξει ως πρόγραμμα, π.χ. ./script.sh;",
+        q: "Ποιο δικαίωμα χρειάζεται ένα script για να τρέξει απευθείας σαν πρόγραμμα, π.χ. ./script.sh;",
         options: [
-          "Το execute (x)",
-          "Το write (w), ώστε το σύστημα να μπορεί να το τροποποιήσει",
-          "Το read (r)",
-          "Κανένα, αρκεί να υπάρχει"
+          "read (r)",
+          "write (w)",
+          "execute (x)",
+          "Δεν χρειάζεται κανένα ειδικό δικαίωμα, αρκεί να υπάρχει το αρχείο στον δίσκο"
         ],
-        correct: 0,
-        explain: "Χωρίς το x το αρχείο παραμένει απλό κείμενο. Το προσθέτεις με chmod +x."
+        correct: 2,
+        explain: "Το execute (x) δικαίωμα επιτρέπει να τρέξει ένα αρχείο σαν πρόγραμμα."
       },
       {
-        q: "Ποια εντολή δείχνει live τις τρέχουσες διεργασίες και τη χρήση πόρων;",
+        q: "Ποια εντολή δείχνει live τις τρέχουσες διεργασίες και τη χρήση πόρων του συστήματος;",
         options: [
-          "Η top",
-          "Η cat, που τυπώνει το περιεχόμενο ενός αρχείου",
-          "Η mkdir",
-          "Η grep"
+          "top",
+          "cat",
+          "mkdir",
+          "grep"
         ],
         correct: 0,
-        explain: "Η top δίνει live εικόνα των διεργασιών και της χρήσης CPU και μνήμης."
-      },
-      {
-        q: "Ποιος τρόπος διαβάζει με ασφάλεια ένα αρχείο του οποίου το όνομα έχει κενό;",
-        options: [
-          "Το cat με διπλά εισαγωγικά γύρω από τη μεταβλητή",
-          "Το cat χωρίς εισαγωγικά, αφού το bash αναγνωρίζει μόνο του τα ονόματα με κενά",
-          "Το cat με μονά εισαγωγικά",
-          "Το cat με backslash πριν τη μεταβλητή"
-        ],
-        correct: 0,
-        explain: "Τα διπλά εισαγωγικά κάνουν expand τη μεταβλητή αλλά κρατούν την τιμή της ως ένα ενιαίο όρισμα, κενά και όλα."
-      },
-      {
-        q: "Βρίσκεσαι στο /home/student/projects/go-project. Πού σε πάει το cd ../..;",
-        options: [
-          "Στο /home/student",
-          "Στο /home/student/projects, δηλαδή ένα μόνο επίπεδο πάνω",
-          "Στη ρίζα /",
-          "Στο home του root"
-        ],
-        correct: 0,
-        explain: "Κάθε .. ανεβάζει ένα επίπεδο, οπότε δύο διαδοχικά ανεβάζουν δύο: από το go-project στο projects και μετά στο student."
-      },
-      {
-        q: "Άλλαξες τρία αρχεία, αλλά θέλεις μόνο ένα από αυτά στο επόμενο commit. Τι κάνεις;",
-        options: [
-          "git add μόνο σε αυτό το αρχείο και μετά commit",
-          "git commit -m και μετά διαγράφεις χειροκίνητα τα άλλα δύο αρχεία από το ιστορικό",
-          "git add . και μετά commit",
-          "git push μόνο αυτό το αρχείο"
-        ],
-        correct: 0,
-        explain: "Ακριβώς γι' αυτό υπάρχει το staging area: διαλέγεις εσύ τι μπαίνει στο επόμενο commit, ανεξάρτητα από το τι έχεις αλλάξει."
+        explain: "Η top δίνει live εικόνα των διεργασιών και της χρήσης CPU/μνήμης."
       }
     ]);
 
@@ -1757,26 +1069,11 @@ echo "Hello, $name!"`,
 </div>
 
 <div class="glossary-group">
-  <h2>Git</h2>
-  <table class="glossary-table">
-    <tr><td class="gt-term">git init / git clone url</td><td class="gt-def">Νέο repository / λήψη υπάρχοντος</td></tr>
-    <tr><td class="gt-term">git status</td><td class="gt-def">Τι άλλαξε, τι είναι staged, σε ποιο branch είσαι</td></tr>
-    <tr><td class="gt-term">git add file / git add .</td><td class="gt-def">Staging ενός αρχείου / όλων</td></tr>
-    <tr><td class="gt-term">git commit -m "msg"</td><td class="gt-def">Αποθήκευση των staged αλλαγών στο ιστορικό</td></tr>
-    <tr><td class="gt-term">git push / git pull / git fetch</td><td class="gt-def">Ανέβασμα / λήψη+εφαρμογή / λήψη χωρίς εφαρμογή</td></tr>
-    <tr><td class="gt-term">git log --oneline / git diff</td><td class="gt-def">Ιστορικό σε μία γραμμή / αλλαγές γραμμή-γραμμή</td></tr>
-    <tr><td class="gt-term">git branch / git checkout -b name</td><td class="gt-def">Λίστα branches / δημιουργία και μετάβαση</td></tr>
-    <tr><td class="gt-term">git merge branch</td><td class="gt-def">Ένωση branch στο τρέχον</td></tr>
-    <tr><td class="gt-term">.gitignore</td><td class="gt-def">Αρχεία/φάκελοι που δεν μπαίνουν στο repository</td></tr>
-  </table>
-</div>
-
-<div class="glossary-group">
   <h2>stdin, stdout, stderr, redirection</h2>
   <table class="glossary-table">
     <tr><td class="gt-term">echo "foo" &gt; bar.txt / &gt;&gt; bar.txt</td><td class="gt-def">Overwrite / append σε αρχείο</td></tr>
     <tr><td class="gt-term">cmd 1&gt; out.txt / cmd 2&gt; err.txt</td><td class="gt-def">Redirect stdout / stderr ξεχωριστά</td></tr>
-    <tr><td class="gt-term">cmd &gt; all.txt 2&gt;&amp;1 / cmd &amp;&gt; all.txt</td><td class="gt-def">Redirect stdout ΚΑΙ stderr μαζί (η σειρά μετράει)</td></tr>
+    <tr><td class="gt-term">cmd 2&gt;&amp;1 &gt; all.txt</td><td class="gt-def">Redirect stdout ΚΑΙ stderr μαζί</td></tr>
     <tr><td class="gt-term">cmd &gt; /dev/null</td><td class="gt-def">Απόρριψη εξόδου</td></tr>
     <tr><td class="gt-term">sort &lt; input.txt</td><td class="gt-def">Redirect αρχείου ως stdin</td></tr>
     <tr><td class="gt-term">read foo</td><td class="gt-def">Ανάγνωση από stdin σε μεταβλητή</td></tr>
@@ -1832,9 +1129,7 @@ echo "Hello, $name!"`,
     <tr><td class="gt-term">cut -c 2,5,7</td><td class="gt-def">Χαρακτήρες σε συγκεκριμένες θέσεις</td></tr>
     <tr><td class="gt-term">tr 'l' '1'</td><td class="gt-def">Αντικατάσταση χαρακτήρα προς χαρακτήρα</td></tr>
     <tr><td class="gt-term">tr -s 'a'</td><td class="gt-def">Συμπίεση διαδοχικών επαναλήψεων</td></tr>
-    <tr><td class="gt-term">sort / sort -r / sort -n / sort -u</td><td class="gt-def">Ταξινόμηση / ανάποδα / αριθμητικά / χωρίς διπλότυπα</td></tr>
-    <tr><td class="gt-term">uniq / uniq -c / uniq -d</td><td class="gt-def">Αφαίρεση διαδοχικών διπλότυπων / με μετρητή / μόνο τα διπλά</td></tr>
-    <tr><td class="gt-term">sed 's/foo/bar/g' / sed -i</td><td class="gt-def">Αντικατάσταση κειμένου / απευθείας μέσα στο αρχείο</td></tr>
+    <tr><td class="gt-term">sort / uniq</td><td class="gt-def">Ταξινόμηση / αφαίρεση διαδοχικών διπλότυπων</td></tr>
   </table>
 </div>
 
@@ -1865,8 +1160,6 @@ echo "Hello, $name!"`,
     <tr><td class="gt-term">nohup cmd &</td><td class="gt-def">Επιβίωση μετά από logout</td></tr>
     <tr><td class="gt-term">ping / wget / ssh / scp / rsync</td><td class="gt-def">Δικτυακά εργαλεία</td></tr>
     <tr><td class="gt-term">ps aux / top / htop</td><td class="gt-def">Λίστα / live παρακολούθηση διεργασιών</td></tr>
-    <tr><td class="gt-term">kill PID / kill -9 PID / pkill name</td><td class="gt-def">Ευγενικός / βίαιος τερματισμός / τερματισμός με όνομα</td></tr>
-    <tr><td class="gt-term">Ctrl+C / Ctrl+Z</td><td class="gt-def">Διακοπή / πάγωμα της τρέχουσας διεργασίας</td></tr>
     <tr><td class="gt-term">free -h / df -h / du -sh / uptime</td><td class="gt-def">Μνήμη / δίσκος / χρήση φακέλου / χρόνος λειτουργίας</td></tr>
     <tr><td class="gt-term">tar -czvf / -xzvf / zip / unzip / gzip / gunzip</td><td class="gt-def">Συμπίεση/αποσυμπίεση αρχείων</td></tr>
     <tr><td class="gt-term">apt / brew / pacman</td><td class="gt-def">Package managers (Debian / macOS / Arch)</td></tr>
@@ -1882,10 +1175,6 @@ echo "Hello, $name!"`,
     <tr><td class="gt-term">env</td><td class="gt-def">Λίστα environment variables</td></tr>
     <tr><td class="gt-term">$0 / $1.. / $# / $@ / $?</td><td class="gt-def">Script name / ορίσματα / πλήθος / όλα / exit code</td></tr>
     <tr><td class="gt-term">exit 0 / exit 1</td><td class="gt-def">Επιτυχής / ανεπιτυχής τερματισμός</td></tr>
-    <tr><td class="gt-term">"$var" / '$var'</td><td class="gt-def">Expand μεταβλητής / αυτούσιο κείμενο</td></tr>
-    <tr><td class="gt-term">which cmd / type cmd</td><td class="gt-def">Ποιο αρχείο τρέχει / τι είδους εντολή είναι</td></tr>
-    <tr><td class="gt-term">alias ll='ls -lah' / source ~/.bashrc</td><td class="gt-def">Συντόμευση / επαναφόρτωση ρυθμίσεων</td></tr>
-    <tr><td class="gt-term">#!/bin/bash</td><td class="gt-def">Shebang: ο interpreter ενός script</td></tr>
   </table>
 </div>
 
