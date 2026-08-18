@@ -37,14 +37,47 @@ const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final c
    * IP anyway; that would only ever come from server-side request logs).
    * @returns {Object}
    */
-  function getBrowserMeta() {
-    return {
+  function getExtendedBrowserMeta() {
+
+    const meta = {
       userAgent: navigator.userAgent,
       language: navigator.language,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       screen: window.screen.width + "x" + window.screen.height,
       platform: navigator.platform || ""
     };
+
+    // --- Graphics ---
+    meta.devicePixelRatio = window.devicePixelRatio || 1;
+    meta.colorDepth = screen.colorDepth || 'unknown';
+    meta.screenAvail = screen.availWidth + "x" + screen.availHeight;
+
+    // --- Performance/Hardware ---
+    meta.hardwareConcurrency = navigator.hardwareConcurrency || 'unknown';
+    meta.deviceMemory = navigator.deviceMemory || 'unknown';
+
+    // --- Network Information API ---
+    if (navigator.connection) {
+      meta.network = {
+        effectiveType: navigator.connection.effectiveType || 'unknown',
+        downlink: navigator.connection.downlink || 'unknown',
+        rtt: navigator.connection.rtt || 'unknown',
+        saveData: navigator.connection.saveData || false
+      };
+    } else {
+      meta.network = 'not supported';
+    }
+
+    // --- Browser flags ---
+    meta.browserFlags = {
+      isChrome: !!window.chrome,
+      isOpera: !!window.opera,
+      isWebdriver: !!navigator.webdriver,
+      pluginsCount: navigator.plugins ? navigator.plugins.length : 0,
+      hasTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    };
+
+    return meta;
   }
 
   /**
@@ -156,7 +189,7 @@ const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final c
         correct,
         total,
         answers: lines,
-        browser: getBrowserMeta()
+        browser: getExtendedBrowserMeta()   // <-- FIXED: now calls the correct function
       })
     }).catch(() => {
       clearSlideNotified(idx); // best-effort only — allow a retry on the next qualifying answer
@@ -204,7 +237,7 @@ const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final c
         score: percent,
         studentName: window.STUDENT_NAME || "", // optional, unchanged from the original — see index.html
         details: { breakdown },
-        browser: getBrowserMeta()
+        browser: getExtendedBrowserMeta()   // <-- FIXED: now calls the correct function
       })
     }).catch(() => {
       localStorage.removeItem(notifiedKey);
