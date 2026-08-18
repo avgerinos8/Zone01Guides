@@ -198,6 +198,7 @@
   * Αποφυγή κυκλικών εξαρτήσεων (Circular dependencies)
   * Standard Project Layout (φάκελοι `/cmd`, `/pkg`, `/internal`)
 
+
 ---
 
 ## 2. Εισαγωγή-Έξοδος & Ορίσματα CLI (`os`, `os.Args`)
@@ -206,43 +207,25 @@
   * Διάσχιση και επεξεργασία των ορισμάτων (`os.Args[1:]`)
 * **2.2. Ειδικές εντολές με - παύλα στην αρχή. Που χρησιμοποιούνται, πώς μπορώ να τις ανιχνεύσω πιο εύκολα (`πακέτο flag`)**
 
+
 ---
 
 ## 3. Θεμελιώδη Λογικά & Δομικά Μοτίβα Κώδικα
 
 * **3.1. Μοτίβα Ελέγχου Ροής & Μεταβλητών (Control Flow & State Patterns)**
-  * **Σημασία / Διακόπτης (Flag / Bool Switch):**
-    * Χρήση boolean για την παρακολούθηση κατάστασης (state tracking)
-    * Πρόωρη διακοπή λούπας (early break) μόλις ικανοποιηθεί μια συνθήκη (π.χ. `isFound`, `hasError`, `isSorted`)
-  * **Τιμή Φρουρού (Sentinel Value):**
-    * Ειδικές τιμές τερματισμού εισόδου ή επεξεργασίας (π.χ. `-1`, `EOF`, empty string `""`)
-    * Διαχωρισμός πραγματικών δεδομένων από σήματα ελέγχου
-  * **Συσσωρευτής (Accumulator Pattern):**
-    * Τεχνικές άθροισης (sum), γινομένου (product), συνένωσης (string concatenation) και καταμέτρησης (counters)
-    * Αρχικοποίηση συσσωρευτή βάσει ουδέτερου στοιχείου (`0` για πρόσθεση, `1` για πολλαπλασιασμό)
-  * **Εκτήκτης / Ελάχιστο-Μέγιστο (Extremum Pattern - Min/Max Finding):**
-    * Εύρεση μέγιστης/ελάχιστης τιμής σε συλλογή
-    * Σωστή αρχικοποίηση (χρήση πρώτου στοιχείου vs `math.MaxInt` / `math.MinInt`)
-  * **Εναλλάκτης Κατάστασης (State Toggle / Alternating Pattern):**
-    * Εναλλαγή μεταξύ δύο καταστάσεων (π.χ. `flag = !flag`, παίκτης A / παίκτης B, ζυγός / μονός δείκτης)
-  * **Κατώφλι / Όριο (Threshold / Limit Pattern):**
-    * Έλεγχος ορίων (π.χ. max retries, rate limiting, buffer limits)
-    * Χρήση μετρητή προσπαθειών σε λούπα `for`
-  * **Φρουρός Guard Clause / Early Return:**
-    * Αποφυγή βαθιάς εμφώλευσης (`nested ifs`) με πρόωρη επιστροφή (`return` / `continue`) μόλις αποτύχει μια συνθήκη
-  * **Παρακολούθηση Προηγούμενης Τιμής (Previous Value / Lagging Pointer Pattern):**
-    * Αποθήκευση της τιμής του προηγούμενου βήματος (`prev = current`) για σύγκριση διαδοχικών στοιχείων (π.χ. εύρεση διπλότυπων, εντοπισμός αλλαγής τάσης)
-  * **Δεξαμενή / Κατηγοριοποίηση (Bucketing / Frequency Map Pattern):**
-    * Καταμέτρηση συχνότητας εμφάνισης στοιχείων με χρήση πίνακα (Direct Indexing) ή `map[rune]int` / `map[string]int` (π.χ. αναγράμματα, συχνότητα γραμμάτων)
+  **Result Variable / Accumulator** — μετρητής (`count++`) → άθροισμα (`sum += n`) → string builder (`result += w`) → slice accumulator (`append`), με ρητό callout ορισμού "accumulator"
+  **Boolean Switch / Boolean State** — `WordLengths` bug→fix με `inWord`, μετά `PrintCommaSeparated` (σύγκριση με `index==0`), μετά `CountLetters` με παρενθέσεις (true↔false toggle)
 
-* **3.2. Μοτίβα Διάσχισης Πινάκων & Slices**
-  * Εμφωλευμένοι βρόχοι (Nested Loops / Διπλές λούπες) για 2D πίνακες
-  * Τεχνική δύο δεικτών (Two Pointers Pattern) για αναζήτηση και αντιστροφή
-  * Ολισθαίνον παράθυρο (Sliding Window Pattern) για υπο-ακολουθίες
+* **3.2.**
+  **Break / Continue / Early Return** — τρία παραδείγματα, σύγκριση nested-if "χάος" vs flat early-exit, παραπομπή στον επίσημο Go Code Review Comments οδηγό
+  **Sentinel Value** — `SumNumbers`/`Atoi` naive → σπάει σε μη-αριθμό → `-1` sentinel → μετάβαση σε `(sum int, ok bool)`
 
-* **3.3. Πολυπλοκότητα Αλγορίθμων (Big O Notation)**
-  * Εισαγωγή στην πολυπλοκότητα χρόνου και μνήμης (Time & Space Complexity)
-  * Κατανόηση των $O(1)$, $O(n)$, $O(n^2)$, $O(\log n)$
+* **3.3.**
+  **Extremum** — `Max` naive (bug με αρνητικούς) → `numbers[0]` fix → `math.MinInt` εναλλακτική
+  **Previous Value** — `LongestUpstreak` πάνω σε `prices` dataset, σύγκριση με `prices[i-1]`
+  **Two Pointers**
+  **Sliding Window fixed/variable**
+  **Complement Lookup**
 
 ---
 
@@ -255,20 +238,24 @@
   * Έννοια First-In, First-Out
   * Υλοποίηση Ουράς με Go Slices (`Enqueue`, `Dequeue`)
   * Διπλή Ουρά (Deque - Double Ended Queue)
+* **4.3. Linked Lists και Binary Trees**
+  * Υπενθύμιση των pointers
+  * Διαφορά από πίνακες
+  * Πλεονεκτήματα και που τα χρησιμοποιούμε
+  * Παραδείγματα
 
 ---
 
 ## 5. Αλγόριθμοι Ταξινόμησης & Αναζήτησης
-* **5.1. Αλγόριθμοι Αναζήτησης (Searching)**
+* **5.1 Πολυπλοκότητα Αλγορίθμων (Big O Notation)**
+  * Εισαγωγή στην πολυπλοκότητα χρόνου και μνήμης (Time & Space Complexity)
+  * Κατανόηση των $O(1)$, $O(n)$, $O(n^2)$, $O(\log n)$
+* **5.2. Αλγόριθμοι Αναζήτησης (Searching)**
   * Γραμμική Αναζήτηση (Linear Search - $O(n)$)
   * Δυαδική Αναζήτηση (Binary Search - $O(\log n)$) σε ταξινομημένα Slices
-* **5.2. Βασικοί Αλγόριθμοι Ταξινόμησης (Elementary Sorting)**
-  * Ταξινόμηση Φυσαλίδας (Bubble Sort)
-  * Ταξινόμηση με Επιλογή (Selection Sort)
-  * Ταξινόμηση με Εισαγωγή (Insertion Sort)
-* **5.3. Προηγμένοι Αλγόριθμοι Ταξινόμησης (Advanced Sorting)**
-  * Ταξινόμηση με Συγχώνευση (Merge Sort)
-  * Γρήγορη Ταξινόμηση (Quick Sort)
+* **5.3. Αλγόριθμοι Ταξινόμησης**
+  * Ταξινόμηση Φυσαλίδας (Bubble Sort) με visualization
+  * Υπόλοιποι αλγόριθμοι ταξινόμησης, όλοι με visualization (και κώδικα)
 
 ---
 
@@ -313,8 +300,6 @@
   * Βέλτιστο Coin Change Problem
   * Πρόβλημα του Σακιδίου (0/1 Knapsack Problem)
   * Μεγαλύτερη Κοινή Υποακολουθία (Longest Common Subsequence)
-
-  
 ---
 ---
 ---

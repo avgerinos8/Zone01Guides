@@ -25,7 +25,7 @@
                 <span class="desktop-text">Reset Progress</span>
                 <span class="mobile-text">Reset</span>
             </button>
-            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides" target="_blank" rel="noopener">
+            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
                 <span class="desktop-text">Return</span>
                 <span class="mobile-text">Home</span>
             </a>
@@ -1346,6 +1346,9 @@ func SumNumbers(input string) (sum int, __okname__ bool) {
 
         // ── Section 3 more patterns ──────────────────────────────────────────── ⊃
         addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
+<h1>Η αξία των patterns</h1>
+<p>Δεν χρειάζεται να απομνημονεύσεις τα παρακάτω patterns. Όσα περισσότερα patterns γνωρίζεις, τόσες περισσότερες ιδέες θα έχεις διαθέσιμες όταν σκέφτεσαι πώς να λύσεις ένα πρόβλημα — είτε πρόκειται για ένα εντελώς άσχετο πρόβλημα που απλά «μοιάζει» με κάτι που έχεις ξαναδεί, είτε για ένα πιο σύνθετο πρόβλημα που χρειάζεται να συνδυάσεις δύο ή περισσότερα patterns μαζί. Οπότε απλά κατανόησε πώς δουλεύουν.</p>
+
 <h1>Extremum: Εύρεση Μεγίστου/Ελαχίστου</h1>
 <p>Ένα από τα πιο συχνά ερωτήματα πάνω σε δεδομένα: ποιο είναι το μεγαλύτερο (ή μικρότερο) στοιχείο;</p>
 
@@ -1575,15 +1578,21 @@ limit := 20</code></pre>
         }
     }
 
-    return prices[start : end+1] // slice out the actual values of the best window found
+    return prices[resultstart : resultend+1] // slice out the actual values of the best window found
 }</code></pre>
 
 
+<p>Ας το δούμε οπτικά:</p>
+
 <div id="sw-viz">
 
+  <span class="vz-tag">Sliding Window — Βήμα προς Βήμα — Algorithm visualization</span>
+
   <div class="vz-controls">
-    <button class="reset-quiz-btn" id="sw-prev" disabled>← visualization prev step</button>
-    <button class="reset-quiz-btn" id="sw-next">visualization next step →</button>
+    <button class="reset-quiz-btn" id="sw-prev" disabled>← prev step</button>
+    <button class="reset-quiz-btn" id="sw-next">next step →</button>
+    <button class="reset-quiz-btn" id="sw-reset">⟲ reset</button>
+    <button class="reset-quiz-btn vz-btn-stable" id="sw-play" title="Play / Pause ↕">▶ autoplay ↕</button>
   </div>
 
   <div class="quiz-code-block" style="position:relative; border-radius:8px; padding:18px 20px;">
@@ -1597,6 +1606,8 @@ limit := 20</code></pre>
   <div class="glossary-group" style="margin-top:16px;">
     <div class="glossary-strip" id="sw-state-panel"></div>
   </div>
+
+</div>
 
 
 <p>Η σειρά εκτέλεσης μέσα σε κάθε πέρασμα της εξωτερικής λούπας ακολουθεί πάντα τα ίδια τέσσερα βήματα: πρώτα το <code>right</code> προχωράει και «μπάζει» ένα νέο στοιχείο μέσα στο window (το window μπορεί προσωρινά να γίνει άκυρο, με άθροισμα πάνω από το όριο) — μετά, μια εσωτερική λούπα σπρώχνει το <code>left</code> όσο χρειάζεται, «βγάζοντας» στοιχεία από την αριστερή άκρη, μέχρι το window να ξαναγίνει έγκυρο — μετά μετράμε το μήκος του τρέχοντος, έγκυρου πια window — και τέλος, αν αυτό το μήκος είναι το καλύτερο που έχουμε δει μέχρι στιγμής, καταγράφουμε ΠΟΥ ακριβώς βρίσκεται (τα <code>start</code>/<code>end</code>), όχι μόνο πόσο μεγάλο είναι.</p>
@@ -1797,7 +1808,7 @@ func MinWindowSum(numbers []int, k int) int {
 
     for i := k; i < __lenkw__(numbers); i++ {
         windowSum += numbers[i]
-        windowSum __minus__ numbers[i__offset__]
+        windowSum __minus__ numbers[__i__ - __offset__]
         __ifkw__ windowSum __cmp__ best {
             best = windowSum
         }
@@ -1809,7 +1820,8 @@ func MinWindowSum(numbers []int, k int) int {
                     { id: "plus", answer: "+=" },
                     { id: "lenkw", answer: "len" },
                     { id: "minus", answer: "-=" },
-                    { id: "offset", answer: "-k" },
+                    { id: "offset", answer: "k" },
+                    { id: "i", answer: "i" },
                     { id: "ifkw", answer: "if" },
                     { id: "cmp", answer: "<" }
                 ],
@@ -1843,9 +1855,7 @@ func findPairs(arr []int, targetSum int) [][]int {
                 ],
                 explain: "make(map[int]int) φτιάχνει το lookup map. for/range διασχίζει το array. complement = targetSum - x είναι το ΑΚΡΙΒΕΣ ταίρι που ψάχνουμε. Το if με το ok ελέγχει αν βρέθηκε. append προσθέτει το ζευγάρι. Αποθηκεύουμε seen[x] = i για μελλοντικά lookups, και επιστρέφουμε με return."
             }
-        ], {
-            note: "Τέσσερα ξεχωριστά patterns — extremum, previous value, sliding window, complement lookup."
-        });
+        ]);
 
         addContent(`
 <div class="eyebrow">VSCode Challenge 1/2 — Συνδυαστική Άσκηση</div>
@@ -1889,18 +1899,47 @@ func secondLargest(numbers []int) int {
 }</code></pre></div>
 `);
 
+        // ── Mini-glossary — Ενότητα 3 (όλα τα patterns) ──────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3 / 8</div>
+<h1>Όλα τα Patterns, με μια Ματιά</h1>
+<p class="lede">Ένα σύντομο "πότε το χρησιμοποιείς" για κάθε pattern που είδαμε σε αυτό το κεφάλαιο.</p>
+
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Accumulator / Result</span><span class="gs-def">μεταβλητή έξω από τη loop που "μαζεύει" κάτι σε κάθε πέρασμα — count++, sum += n, append(result, x)</span></div>
+  <div class="gs-pill"><span class="gs-name">Boolean Switch</span><span class="gs-def">η συμπεριφορά σου αλλάζει ανάλογα με το ιστορικό της loop, όχι μόνο με την τρέχουσα τιμή</span></div>
+  <div class="gs-pill"><span class="gs-name">Break</span><span class="gs-def">βρήκες αυτό που χρειαζόσουν — δεν έχει νόημα να συνεχίσεις τη loop</span></div>
+  <div class="gs-pill"><span class="gs-name">Continue</span><span class="gs-def">αυτό το πέρασμα δεν σε ενδιαφέρει — πήγαινε κατευθείαν στο επόμενο</span></div>
+  <div class="gs-pill"><span class="gs-name">Early Return</span><span class="gs-def">ξέρεις την απάντηση εκ των προτέρων — τερμάτισε όλη τη function αμέσως</span></div>
+  <div class="gs-pill"><span class="gs-name">Sentinel Value</span><span class="gs-def">ειδική τιμή αδύνατη ως πραγματικό αποτέλεσμα, δηλώνει "κάτι πήγε στραβά" — ή, καλύτερα, multi-return (value, ok bool)</span></div>
+  <div class="gs-pill"><span class="gs-name">Extremum</span><span class="gs-def">ψάχνεις μέγιστο/ελάχιστο — πρόσεξε την αρχική τιμή: πραγματικό στοιχείο του slice ή math.MinInt/MaxInt</span></div>
+  <div class="gs-pill"><span class="gs-name">Previous Value</span><span class="gs-def">συγκρίνεις διαδοχικά στοιχεία — μια μεταβλητή prev "ταξιδεύει" μαζί με τη loop</span></div>
+  <div class="gs-pill"><span class="gs-name">Two Pointers</span><span class="gs-def">δύο ξεχωριστές θέσεις index μέσα στα ίδια δεδομένα ταυτόχρονα, συνήθως σε ταξινομημένα δεδομένα</span></div>
+  <div class="gs-pill"><span class="gs-name">Sliding Window (fixed)</span><span class="gs-def">συνεχόμενο κομμάτι σταθερού μεγέθους k — πρόσθεσε δεξιά, αφαίρεσε αριστερά, αντί να ξαναϋπολογίζεις</span></div>
+  <div class="gs-pill"><span class="gs-name">Sliding Window (vrble)</span><span class="gs-def">το window μεγαλώνει/μικραίνει δυναμικά ανάλογα με μια συνθήκη — expand δεξιά πρώτα, shrink αριστερά όσο χρειάζεται</span></div>
+  <div class="gs-pill"><span class="gs-name">Complement Lookup</span><span class="gs-def">ψάχνεις ζευγάρι/σχέση ανάμεσα σε στοιχεία — υπολόγισε το ακριβές ταίρι που ψάχνεις, ρώτα το map αν το έχεις ξαναδεί</span></div>
+</div>
+`);
+
         // ══════════════════════════════════════════════════════════════════════
         // SECTION 4 — Βασικές Δομές Δεδομένων (Stack, Queue)
         // ══════════════════════════════════════════════════════════════════════
 
 
-        // ── Section 4.1 — Stack ──────────────────────────────────────────────── ⊃
+        // ── Section 4.1 — append mechanics + Stack ───────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
-  <h1>Βασικές Δομές Δεδομένων<br>Stack &amp; Queue</h1>
-  <p class="lede">Θα φτιάξουμε δύο από τις πιο θεμελιώδεις δομές δεδομένων στον προγραμματισμό — τη Στοίβα (Stack) και την Ουρά (Queue) — χρησιμοποιώντας ΜΟΝΟ ό,τι ξέρουμε ήδη: slices και functions. Δεν έχουμε δει ακόμα structs ή methods, οπότε θα υλοποιήσουμε αυτές τις δομές με τον πιο απλό δυνατό τρόπο: ένα slice που αντιπροσωπεύει τη δομή, και functions που το χειρίζονται.</p>
-  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Σε πραγματικό, "παραγωγικό" κώδικα Go, το Stack/Queue συνήθως υλοποιείται με ένα struct και methods πάνω του — θα το δούμε σε επόμενο guide. Εδώ ο στόχος είναι να καταλάβεις τη ΛΟΓΙΚΗ της δομής (LIFO/FIFO), όχι τον "καλύτερο" τρόπο να τη γράψεις σε Go. Η αλγοριθμική σκέψη πρώτα, το idiomatic στυλ μετά.</div>
-</div>
+<h1>Βασικές Δομές Δεδομένων<br>Stack &amp; Queue</h1>
+<p class="lede">Θα φτιάξουμε δύο από τις πιο θεμελιώδεις δομές δεδομένων στον προγραμματισμό — τη Στοίβα (Stack) και την Ουρά (Queue) — χρησιμοποιώντας ΜΟΝΟ ό,τι ξέρουμε ήδη: slices και functions. Δεν έχουμε δει ακόμα structs ή methods, οπότε θα υλοποιήσουμε αυτές τις δομές με τον πιο απλό δυνατό τρόπο: ένα slice που αντιπροσωπεύει τη δομή, και functions που το χειρίζονται.</p>
+<div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ</span>Σε πραγματικό, "παραγωγικό" κώδικα Go, το Stack/Queue συνήθως υλοποιείται με ένα struct και methods πάνω του — θα το δούμε σε επόμενο guide. Εδώ ο στόχος είναι να καταλάβεις τη ΛΟΓΙΚΗ της δομής (LIFO/FIFO), όχι τον "καλύτερο" τρόπο να τη γράψεις σε Go. Η αλγοριθμική σκέψη πρώτα, το idiomatic στυλ μετά.</div>
+
+<h2>Πριν ξεκινήσουμε: τι ξέρουμε ήδη για το append</h2>
+<p>Ο μόνος τρόπος που έχουμε δει μέχρι τώρα για να προσθέσουμε στοιχείο σε ένα slice είναι το <code>append</code> — και το <code>append</code> προσθέτει πάντα στο <strong>τέλος</strong> του slice, ποτέ στη μέση ή στην αρχή:</p>
+<pre><code class="lang-go">numbers := []int{1, 2, 3}
+numbers = append(numbers, 4) // numbers is now [1, 2, 3, 4]</code></pre>
+
+<p>Θυμήσου επίσης κάτι που ΔΕΝ έχουμε: σε αντίθεση με ένα <code>map</code>, όπου το <code>delete(m, key)</code> αφαιρεί ένα στοιχείο άμεσα, <strong>δεν υπάρχει έτοιμη <code>delete</code> function για slices</strong> στη Go. Αν θες να "αφαιρέσεις" κάτι από ένα slice, χρειάζεται να το κάνεις εσύ ρητά, με slicing — κόβοντας το slice στο σημείο που θες. Αυτό ακριβώς θα δούμε σε λίγο.</p>
+
 <br>
 <h1>Στοίβα (Stack) — LIFO</h1>
 <p class="lede">Μια στοίβα είναι μια δομή δεδομένων όπου το τελευταίο στοιχείο που μπήκε είναι το πρώτο που βγαίνει — <strong>LIFO: Last-In, First-Out</strong>. Σκέψου μια στοίβα από πιάτα: βάζεις νέα πιάτα από πάνω, και όταν παίρνεις ένα, παίρνεις πάντα αυτό που είναι στην κορυφή — το πιο πρόσφατο.</p>
@@ -1913,7 +1952,7 @@ func secondLargest(numbers []int) int {
 </div>
 
 <h2>Υλοποίηση με slice</h2>
-<p>Ένα slice είναι ήδη σχεδόν μια στοίβα — το <code>append</code> προσθέτει στο τέλος (η "κορυφή" μας), και το slicing μπορεί να αφαιρέσει το τελευταίο στοιχείο. Θεωρούμε ΠΑΝΤΑ ότι η κορυφή της στοίβας είναι το ΤΕΛΕΥΤΑΙΟ στοιχείο του slice — αυτή είναι μια σύμβαση που κρατάμε συνεπή σε όλες τις functions:</p>
+<p>Ένα slice είναι ήδη σχεδόν μια στοίβα — το <code>append</code> προσθέτει στο τέλος (η "κορυφή" μας). Θεωρούμε ΠΑΝΤΑ ότι η κορυφή της στοίβας είναι το ΤΕΛΕΥΤΑΙΟ στοιχείο του slice — αυτή είναι μια σύμβαση που κρατάμε συνεπή σε όλες τις functions:</p>
 
 <pre><code class="lang-go">// Push adds a value to the top of the stack (end of the slice)
 // and returns the updated slice.
@@ -1925,6 +1964,8 @@ func Push(stack []int, value int) []int {
   <span class="tag">Προσοχή / Συχνό λάθος</span>
   Το <code>Push</code> δεν τροποποιεί τη στοίβα "επί τόπου" (in-place) — επιστρέφει ΚΑΙΝΟΥΡΙΟ slice, ακριβώς όπως συμπεριφέρεται το <code>append</code> γενικά (θυμήσου το Μέρος 1: το <code>append</code> μπορεί να χρειαστεί να δημιουργήσει νέο underlying array). Γι' αυτό ΠΑΝΤΑ ξαναγράφουμε τη μεταβλητή της στοίβας με το αποτέλεσμα: <code>myStack = Push(myStack, 5)</code>, ποτέ απλά <code>Push(myStack, 5)</code> χωρίς ανάθεση.
 </div>
+
+<p>Για το <code>Pop</code>, χρειαζόμαστε να "αφαιρέσουμε" το τελευταίο στοιχείο — και όπως είδαμε, αυτό σημαίνει slicing, όχι κάποιο <code>delete</code>. Κόβουμε το slice ώστε να κρατήσει ό,τι ΔΕΝ είναι η κορυφή:</p>
 
 <pre><code class="lang-go">// Pop removes and returns the top value of the stack,
 // along with the updated stack. ok is false if the stack was empty.
@@ -1945,6 +1986,11 @@ func Peek(stack []int) (value int, ok bool) {
     }
     return stack[len(stack)-1], true
 }</code></pre>
+
+<div class="callout good">
+  <span class="tag">Γιατί το stack[:top] είναι καλή επιλογή</span>
+  Το <code>stack[:top]</code> δεν δημιουργεί καινούριο underlying array — απλά δηλώνει ότι το slice "βλέπει" λιγότερα στοιχεία από πριν (μικρότερο <code>len</code>, ίδιο <code>cap</code>). Η τιμή που ήταν στην κορυφή ΔΕΝ διαγράφεται πραγματικά από τη μνήμη — απλά δεν είναι πια "ορατή" μέσα από το slice. Αυτό είναι καλό για εμάς εδώ: αν κάνεις <code>Push</code> ξανά αμέσως μετά, το νέο στοιχείο μπαίνει ακριβώς εκεί που ήταν το παλιό, χωρίς να χρειαστεί να δεσμευτεί νέος χώρος μνήμης.
+</div>
 
 <p>Πρόσεξε το πρότυπο <code>(value int, ok bool)</code> στο <code>Peek</code>, και το αντίστοιχο τριπλό στο <code>Pop</code> — αυτό είναι μια πολύ κοινή σύμβαση στη Go: μια δεύτερη (ή τρίτη) τιμή επιστροφής τύπου <code>bool</code> δηλώνει αν η "κύρια" τιμή είναι πραγματικά έγκυρη. Το χρησιμοποιούμε εδώ αντί για κάποιο sentinel value, γιατί ένα stack από <code>int</code> θα μπορούσε θεωρητικά να περιέχει ΚΑΘΕ δυνατή τιμή int — δεν υπάρχει "ασφαλής" sentinel τιμή να επιλέξουμε.</p>
 
@@ -1988,9 +2034,53 @@ func Peek(stack []int) (value int, ok bool) {
     }
     return len(stack) == 0 // balanced only if every opener was matched
 }</code></pre></div>
+
+<h2>VSCode Challenge — Έλεγχος Ισορροπημένων Παρενθέσεων, Μόνος Σου</h2>
+<p class="lede">Είδες πώς λύνεται με στοίβα το πρόβλημα ισορροπημένων παρενθέσεων — τώρα δοκίμασε μια παραλλαγή μόνος σου.</p>
+
+<h3>Η αποστολή</h3>
+<p>Γράψε μια function που δέχεται ένα <code>string</code> και επιστρέφει <code>true</code> αν κάθε άνοιγμα παρένθεσης <code>(</code> έχει αντίστοιχο κλείσιμο <code>)</code> με τη σωστή σειρά (χωρίς να χρειάζεται να ανησυχήσεις για <code>[ ] { }</code> αυτή τη φορά — μόνο απλές παρενθέσεις). Αγνόησε κάθε άλλο χαρακτήρα στο string.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal → (HINT 1)</span></div>
+<p>Χρειάζεσαι μόνο έναν ΜΕΤΡΗΤΗ (accumulator pattern), όχι απαραίτητα μια πλήρη στοίβα με πραγματικά στοιχεία — αφού υπάρχει μόνο ΕΝΑ είδος παρένθεσης. Σκέψου: τι σημαίνει "ο μετρητής έγινε αρνητικός" στη μέση της διάσχισης;</p>
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal → (HINT 2)</span></div>
+<p>Στο τέλος της διάσχισης, τι πρέπει να ισχύει για τον μετρητή ώστε το string να είναι πραγματικά ισορροπημένο;</p>
+</div>
+
+<h3>Λύση</h3>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">func isBalancedSimple(input string) bool {
+    depth := 0 // acts as a simplified stack: how many unmatched "(" so far
+    for _, ch := range input {
+        switch ch {
+        case '(':
+            depth++
+        case ')':
+            depth-- // guard clause below catches invalid negative depth
+            if depth < 0 {
+                return false // a ")" with no matching "(" before it
+            }
+        }
+    }
+    return depth == 0 // balanced only if every "(" was eventually closed
+}</code></pre></div>
 `);
 
         addQuiz([
+            {
+                q: "Γιατί δεν υπάρχει κάποια έτοιμη delete function για slices στη Go, σε αντίθεση με τα maps;",
+                options: [
+                    "Δεν υπάρχει built-in delete για slices — η αφαίρεση στοιχείου γίνεται ρητά με slicing, κόβοντας το slice στο σημείο που θέλουμε",
+                    "Υπάρχει, αλλά ονομάζεται remove() αντί για delete() και λειτουργεί μόνο σε slices από strings",
+                    "Δεν χρειάζεται ποτέ να αφαιρέσεις στοιχείο από slice στη Go — μόνο να προσθέσεις με append",
+                    "Υπάρχει delete() και για τα δύο, απλά χρειάζεται διαφορετική σύνταξη ανάμεσα σε slice και map"
+                ],
+                correct: 0,
+                explain: "Η Go δεν προσφέρει built-in delete για slices όπως κάνει για maps — η αφαίρεση γίνεται χειροκίνητα με slicing (π.χ. stack[:top]), κάτι που ήδη χρησιμοποιήσαμε στο Pop."
+            },
             {
                 q: "Τι σημαίνει το LIFO στην περιγραφή της στοίβας (Stack);",
                 options: [
@@ -2012,33 +2102,38 @@ func Peek(stack []int) (value int, ok bool) {
                 ],
                 correct: 0,
                 explain: "Το append() μπορεί να επιστρέψει slice με διαφορετικό underlying array (αν χρειαστεί μεγαλύτερη χωρητικότητα) — η ίδια λογική που ισχύει για κάθε χρήση του append ισχύει και εδώ, γι' αυτό πάντα ξαναναθέτουμε το αποτέλεσμα."
+            },
+            {
+                q: "Γιατί το stack[:top] είναι καλή επιλογή για το Pop, αντί π.χ. να φτιάχνουμε καινούριο slice με μη-κορυφαία στοιχεία;",
+                options: [
+                    "Δεν δημιουργεί νέο underlying array — απλά μειώνει το ορατό μήκος του slice, οπότε ένα επόμενο Push ξαναγράφει τον ίδιο χώρο μνήμης χωρίς νέα δέσμευση",
+                    "Επειδή διαγράφει άμεσα το στοιχείο της κορυφής από τη μνήμη, ελευθερώνοντας χώρο αμέσως",
+                    "Επειδή είναι η μοναδική έγκυρη σύνταξη στη Go για να αφαιρέσεις στοιχείο από slice",
+                    "Δεν υπάρχει πραγματικό πλεονέκτημα — είναι απλά συντομότερο να γραφτεί"
+                ],
+                correct: 0,
+                explain: "Το slicing δεν αντιγράφει ή διαγράφει δεδομένα — απλά αλλάζει το len του slice. Το underlying array παραμένει ίδιο, οπότε ένα επόμενο append/Push γράφει ξανά στην ίδια, ήδη δεσμευμένη θέση μνήμης."
+            },
+            {
+                q: "Κοίτα τον παρακάτω κώδικα. Τι θα τυπώσει το fmt.Println στο τέλος;",
+                code: `var stack []int
+stack = Push(stack, 10)
+stack = Push(stack, 20)
+_, stack, _ = Pop(stack)
+stack = Push(stack, 30)
+fmt.Println(stack)`,
+                options: [
+                    "[10 30]",
+                    "[10 20 30]",
+                    "[30 20]",
+                    "[10 20]"
+                ],
+                correct: 0,
+                explain: "Push(10) → [10]. Push(20) → [10, 20]. Pop αφαιρεί το 20 → [10]. Push(30) → [10, 30]. Το 20 δεν επανεμφανίζεται ποτέ, αφού το Pop το είχε αφαιρέσει οριστικά από το ορατό slice."
             }
         ]);
 
-        // ── Fill-in-the-blank: Stack ──────────────────────────────────────────── ⊃
-        addFillBlank({
-            code:
-                `// Pop removes and returns the top value of the stack.
-func Pop(stack []int) (value int, updatedStack []int, ok bool) {
-    if len(stack) __emptycheck__ {
-        return 0, stack, false
-    }
-    top := len(stack) __minusone__
-    value = stack[top]
-    updatedStack = stack[__slicecut__]
-    return value, updatedStack, true
-}`,
-            blanks: [
-                { id: "emptycheck", answer: "== 0" },
-                { id: "minusone", answer: "- 1" },
-                { id: "slicecut", answer: ":top" }
-            ],
-            explain: "Πρώτα ελέγχουμε κενή στοίβα (guard clause). Το top είναι το τελευταίο index (len-1). Το stack[:top] κρατάει όλα τα στοιχεία ΕΚΤΟΣ της κορυφής — αυτό είναι το slicing που \"αφαιρεί\" το τελευταίο στοιχείο."
-        }, {
-            note: "Συμπλήρωσε τη λειτουργία Pop σύμφωνα με τη σύμβαση LIFO."
-        });
-
-        // ── Section 4.2 — Queue ──────────────────────────────────────────────── ⊃
+        // ── Section 4.2 — Queue + Deque + append tricks ──────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
 <h1>Ουρά (Queue) — FIFO</h1>
@@ -2069,8 +2164,8 @@ func Dequeue(queue []int) (value int, updatedQueue []int, ok bool) {
 }</code></pre>
 
 <div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>Dequeue</code> εδώ, κάθε φορά που αφαιρεί το πρώτο στοιχείο με <code>queue[1:]</code>, ΔΕΝ διαγράφει πραγματικά τη μνήμη του παλιού πρώτου στοιχείου — απλά μετακινεί το "παράθυρο" του slice. Σε πολύ μεγάλες, μακρόχρονες ουρές αυτό μπορεί σταδιακά να "σπαταλάει" μνήμη (το underlying array δεν συρρικνώνεται ποτέ από μόνο του). Για τους σκοπούς αυτού του guide δεν μας απασχολεί, αλλά είναι μια λεπτομέρεια που θα ξανασυναντήσεις σε πιο προχωρημένη δουλειά με δομές δεδομένων.
+  <span class="tag">Performance</span>
+  Το <code>Dequeue</code> εδώ, κάθε φορά που αφαιρεί το πρώτο στοιχείο με <code>queue[1:]</code>, ΔΕΝ διαγράφει πραγματικά τη μνήμη του παλιού πρώτου στοιχείου — απλά μετακινεί το "παράθυρο" του slice προς τα δεξιά. Σε πολύ μεγάλες, μακρόχρονες ουρές αυτό μπορεί σταδιακά να "σπαταλάει" μνήμη (το underlying array δεν συρρικνώνεται ποτέ από μόνο του — μεγαλώνει μόνο). Για τους σκοπούς αυτού του guide δεν μας απασχολεί, αλλά είναι μια λεπτομέρεια που θα ξανασυναντήσεις σε πιο προχωρημένη δουλειά με δομές δεδομένων.
 </div>
 
 <h2>Χρήση</h2>
@@ -2086,7 +2181,49 @@ func Dequeue(queue []int) (value int, updatedQueue []int, ok bool) {
     fmt.Println(queue)     // [2, 3]
 }</code></pre>
 
-<h2>Διπλή Ουρά (Deque)</h2>
+<h2>VSCode Challenge — Πρώτος Μη-Επαναλαμβανόμενος Χαρακτήρας</h2>
+<p class="lede">Ένα κλασικό πρόβλημα που λύνεται φυσικά με ουρά: σε ένα stream χαρακτήρων που έρχονται ένας-ένας, βρες ανά πάσα στιγμή τον πρώτο χαρακτήρα που έχει εμφανιστεί ΜΟΝΟ μία φορά μέχρι στιγμής.</p>
+
+<h3>Η αποστολή</h3>
+<p>Γράψε μια function <code>FirstUnique(stream []rune) []rune</code> που δέχεται τους χαρακτήρες ενός stream με τη σειρά άφιξής τους, και επιστρέφει ένα slice: για κάθε βήμα i, ποιος είναι ο πρώτος μη-επαναλαμβανόμενος χαρακτήρας ανάμεσα στους <code>stream[0:i+1]</code> — ή <code>0</code> (rune μηδέν) αν δεν υπάρχει κανένας.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal → (HINT 1)</span></div>
+<p>Χρειάζεσαι μια ουρά από ΥΠΟΨΗΦΙΟΥΣ χαρακτήρες (αυτούς που έχεις δει μόνο μία φορά μέχρι στιγμής), ΚΑΙ ένα map που μετράει πόσες φορές έχεις δει τον κάθε χαρακτήρα συνολικά.</p>
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal → (HINT 2)</span></div>
+<p>Σε κάθε νέο χαρακτήρα: ενημέρωσε το μετρητή του στο map, και κάν' τον enqueue αν είναι η πρώτη φορά που τον βλέπεις. Μετά, ΠΡΙΝ απαντήσεις, καθάρισε την αρχή της ουράς από χαρακτήρες που πλέον έχουν μετρητή &gt; 1 (dequeue όσο χρειάζεται) — ο πρώτος που θα μείνει στην αρχή είναι η απάντησή σου.</p>
+</div>
+
+<h3>Λύση</h3>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">func FirstUnique(stream []rune) []rune {
+    var queue []rune          // candidates seen exactly once, in arrival order
+    counts := make(map[rune]int)
+    result := make([]rune, 0, len(stream))
+
+    for _, ch := range stream {
+        counts[ch]++
+        if counts[ch] == 1 {
+            queue = append(queue, ch) // new candidate
+        }
+
+        for len(queue) > 0 && counts[queue[0]] > 1 {
+            queue = queue[1:] // front is no longer unique, drop it
+        }
+
+        if len(queue) == 0 {
+            result = append(result, 0) // no unique character yet
+        } else {
+            result = append(result, queue[0])
+        }
+    }
+    return result
+}</code></pre></div>
+
+<br>
+<h1>Διπλή Ουρά (Deque)</h1>
 <p>Μια <strong>deque</strong> (Double-Ended Queue) επιτρέπει προσθήκη/αφαίρεση ΚΑΙ από τις δύο άκρες — μπροστά ΚΑΙ πίσω. Είναι γενίκευση τόσο του Stack όσο και του Queue ταυτόχρονα:</p>
 
 <pre><code class="lang-go">func PushFront(deque []int, value int) []int {
@@ -2113,8 +2250,27 @@ func PopBack(deque []int) (value int, updated []int, ok bool) {
 }</code></pre>
 
 <div class="callout">
-  <span class="tag">Σημαντικό</span>
-  Πρόσεξε το <code>PushFront</code>: το <code>append([]int{value}, deque...)</code> δημιουργεί ένα ΚΑΙΝΟΥΡΙΟ slice ξεκινώντας με το <code>value</code>, και μετά "ξεδιπλώνει" (<code>...</code>) όλα τα στοιχεία του παλιού deque πίσω από αυτό. Δεν υπάρχει φθηνός τρόπος να προσθέσεις στην ΑΡΧΗ ενός slice στη Go — πάντα χρειάζεται να αντιγραφούν όλα τα υπόλοιπα στοιχεία, σε αντίθεση με το <code>append</code> στο τέλος που είναι συνήθως πολύ φθηνότερο.
+  <span class="tag">Σημαντικό — γιατί το PushFront είναι ακριβό</span>
+  Πρόσεξε το <code>PushFront</code>: το <code>append([]int{value}, deque...)</code> δημιουργεί ένα ΚΑΙΝΟΥΡΙΟ slice ξεκινώντας με το <code>value</code>, και μετά "ξεδιπλώνει" (<code>...</code>) όλα τα στοιχεία του παλιού deque πίσω από αυτό. Δεν υπάρχει φθηνός τρόπος να προσθέσεις στην ΑΡΧΗ ενός slice στη Go — πάντα χρειάζεται να αντιγραφούν όλα τα υπόλοιπα στοιχεία σε νέες θέσεις μνήμης, σε αντίθεση με το <code>append</code> στο τέλος που είναι συνήθως πολύ φθηνότερο (συχνά δεν χρειάζεται καν νέο array, αν υπάρχει ήδη ελεύθερη χωρητικότητα).
+</div>
+
+<h2>Ένα ακόμα κόλπο: αφαίρεση από τη ΜΕΣΗ ενός slice</h2>
+<p>Έχουμε δει πώς αφαιρούμε από την αρχή (<code>slice[1:]</code>) και από το τέλος (<code>slice[:len-1]</code>). Τι γίνεται αν θες να αφαιρέσεις το στοιχείο στη θέση <code>n</code>, κάπου στη ΜΕΣΗ; Ένα συνηθισμένο idiom:</p>
+
+<pre><code class="lang-go">// RemoveAt removes the element at index n and returns the updated slice.
+func RemoveAt(slice []int, n int) []int {
+    return append(slice[:n], slice[n+1:]...)
+}</code></pre>
+
+<p>Η ιδέα: κρατάμε ό,τι είναι ΠΡΙΝ το <code>n</code> (<code>slice[:n]</code>), και κάνουμε <code>append</code> πάνω του ό,τι είναι ΜΕΤΑ το <code>n</code> (<code>slice[n+1:]...</code>) — παραλείποντας έτσι εντελώς το στοιχείο στη θέση <code>n</code>.</p>
+
+<div class="callout"><span class="tag">Προσοχή — γιατί δεν το κάνουμε συνήθως έτσι στην πράξη</span>Το <code>append(slice[:n], slice[n+1:]...)</code> γράφει ΕΠΙ ΤΟΠΟΥ πάνω στο ίδιο underlying array του αρχικού slice — μετακινεί όλα τα στοιχεία μετά το <code>n</code> μία θέση πιο αριστερά. Αυτό σημαίνει ότι αν κάποια ΑΛΛΗ μεταβλητή "έβλεπε" το ίδιο underlying array (π.χ. ένα slice που είχες φτιάξει νωρίτερα από το ίδιο array), τα δεδομένα της αλλάζουν ΚΑΙ αυτής χωρίς να το περιμένεις — ένα από τα πιο ύπουλα bugs με slices στη Go. Επίσης, ακριβώς όπως το <code>PushFront</code>, κοστίζει O(n) γιατί χρειάζεται να μετακινήσει κατά μέσο όρο τα μισά στοιχεία του slice σε κάθε κλήση.</div>
+
+<h2>Πότε μας χρειάζεται μια δομή σαν το deque</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Χρειάζεσαι προσθήκη/αφαίρεση</span><span class="gs-def">και στις δύο άκρες, όχι μόνο σε μία</span></div>
+  <div class="gs-pill"><span class="gs-name">Sliding window streaming</span><span class="gs-def">κρατάς τα k πιο πρόσφατα στοιχεία, αφαιρώντας από μπροστά και προσθέτοντας πίσω</span></div>
+  <div class="gs-pill"><span class="gs-name">Undo/redo ιστορικό</span><span class="gs-def">προσθήκη πάντα στο τέλος, αλλά αφαίρεση μπορεί να χρειαστεί και από τις δύο πλευρές</span></div>
 </div>
 `);
 
@@ -2131,6 +2287,17 @@ func PopBack(deque []int) (value int, updated []int, ok bool) {
                 explain: "Stack = LIFO (τελευταίο μέσα, πρώτο έξω, σαν στοίβα πιάτων). Queue = FIFO (πρώτο μέσα, πρώτο έξω, σαν ουρά ανθρώπων). Είναι ακριβώς αντίστροφη λογική αφαίρεσης."
             },
             {
+                q: "Γιατί το queue[1:] στο Dequeue δεν \"ελευθερώνει\" αμέσως τη μνήμη του παλιού πρώτου στοιχείου;",
+                options: [
+                    "Το slicing απλά μετακινεί το \"παράθυρο\" του slice — δεν αγγίζει το underlying array, οπότε το παλιό στοιχείο παραμένει εκεί, απλά έξω από το ορατό εύρος",
+                    "Επειδή η Go διαγράφει αυτόματα τη μνήμη μόνο κάθε 1000 κλήσεις Dequeue, για λόγους απόδοσης",
+                    "Δεν είναι αλήθεια — το queue[1:] ελευθερώνει πάντα τη μνήμη του πρώτου στοιχείου αμέσως",
+                    "Επειδή το queue είναι πάντα τύπου map από κάτω, όχι πραγματικό slice"
+                ],
+                correct: 0,
+                explain: "Slicing σε Go δεν αντιγράφει ούτε διαγράφει δεδομένα — απλά αλλάζει τα όρια (offset/len) πάνω στο ίδιο underlying array. Το \"χαμένο\" στοιχείο παραμένει φυσικά στη μνήμη μέχρι το garbage collector να το καθαρίσει, αν δεν υπάρχει πια καμία αναφορά σε αυτό."
+            },
+            {
                 q: "Γιατί το PushFront σε ένα deque είναι πιο \"ακριβή\" λειτουργία σε σχέση με το PushBack, όσον αφορά την υλοποίηση με slice στη Go;",
                 options: [
                     "Το PushFront χρειάζεται να δημιουργήσει νέο slice και να αντιγράψει ΟΛΑ τα υπάρχοντα στοιχεία πίσω από το νέο πρώτο στοιχείο, ενώ το PushBack (μέσω append) είναι συνήθως πολύ φθηνότερο",
@@ -2140,79 +2307,492 @@ func PopBack(deque []int) (value int, updated []int, ok bool) {
                 ],
                 correct: 0,
                 explain: "Δεν υπάρχει φθηνός τρόπος να προσθέσεις στην αρχή ενός slice — χρειάζεται να αντιγραφούν όλα τα υπόλοιπα στοιχεία σε νέες θέσεις, σε αντίθεση με το append στο τέλος που συνήθως απλά επεκτείνει το υπάρχον underlying array."
+            },
+            {
+                q: "Τι κάνει ακριβώς το append(slice[:n], slice[n+1:]...) και ποιος είναι ο κίνδυνος στη χρήση του;",
+                options: [
+                    "Αφαιρεί το στοιχείο στη θέση n γράφοντας επί τόπου πάνω στο ίδιο underlying array — αν κάποιο άλλο slice \"έβλεπε\" το ίδιο array, θα επηρεαστεί απροειδοποίητα",
+                    "Αφαιρεί το στοιχείο στη θέση n δημιουργώντας πάντα ένα εντελώς νέο, ανεξάρτητο underlying array, χωρίς κανέναν κίνδυνο",
+                    "Προσθέτει ένα νέο στοιχείο στη θέση n, μετακινώντας τα υπόλοιπα μία θέση δεξιά",
+                    "Δεν κάνει τίποτα διαφορετικό από slice[n+1:] — το πρώτο κομμάτι slice[:n] αγνοείται σιωπηλά"
+                ],
+                correct: 0,
+                explain: "Το append(slice[:n], slice[n+1:]...) γράφει τα στοιχεία μετά το n πάνω στο ίδιο underlying array, μία θέση πιο αριστερά. Αν υπάρχει άλλη μεταβλητή που δείχνει στο ίδιο array, τα δεδομένα της αλλάζουν κι αυτής — ένα κλασικό, ύπουλο bug με slices στη Go.",
+                code: null
+            },
+            {
+                q: "Σε ένα πρόβλημα streaming δεδομένων, όπου χρειάζεται να προσθέτεις συνεχώς στοιχεία στο τέλος αλλά να αφαιρείς παλιά στοιχεία ΚΑΙ από την αρχή ΚΑΙ (σπανιότερα) από το τέλος, ποια δομή ταιριάζει καλύτερα;",
+                options: [
+                    "Deque — γενικεύει και τις δύο άκρες ταυτόχρονα, ακριβώς αυτό που χρειάζεται εδώ",
+                    "Απλό Stack — αφού έχουμε συνεχή προσθήκη στοιχείων",
+                    "Απλό Queue — αφού αφαιρούμε από την αρχή",
+                    "Κανένα από τα δύο δεν ταιριάζει, χρειάζεται πάντα custom δομή"
+                ],
+                correct: 0,
+                explain: "Το deque καλύπτει ακριβώς αυτό το σενάριο: λειτουργίες και στις δύο άκρες. Ένα απλό Stack ή Queue θα κάλυπτε μόνο τη μία πλευρά της ανάγκης."
             }
         ]);
 
-        // ── Fill-in-the-blank: Queue ──────────────────────────────────────────── ⊃
-        addFillBlank({
-            code:
-                `// Dequeue removes and returns the value at the front of the queue.
-func Dequeue(queue []int) (value int, updatedQueue []int, ok bool) {
-    if len(queue) == 0 {
-        return 0, queue, false
-    }
-    value = queue[__frontidx__]
-    updatedQueue = queue[__cutfrom__:]
-    return value, updatedQueue, true
-}`,
-            blanks: [
-                { id: "frontidx", answer: "0" },
-                { id: "cutfrom", answer: "1" }
-            ],
-            explain: "Η αρχή της ουράς είναι πάντα το index 0. Το queue[1:] κρατάει όλα τα στοιχεία ΕΚΤΟΣ του πρώτου — αυτό είναι το \"dequeue\", αφαιρεί από την αρχή."
-        }, {
-            note: "Συμπλήρωσε τη λειτουργία Dequeue σύμφωνα με τη σύμβαση FIFO."
-        });
+        // ── Section 4.3 — Linked Lists ────────────────────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
+<h1>Το πρόβλημα: εισαγωγή/αφαίρεση στη ΜΕΣΗ</h1>
+<p class="lede">Είδαμε ότι το να πειράζεις στοιχεία στην αρχή ή στη μέση ενός slice είναι ακριβό — χρειάζεται να μετακινηθούν όλα τα υπόλοιπα στοιχεία, γιατί ένα slice είναι, από κάτω, ένα συνεχόμενο κομμάτι μνήμης.</p>
 
-        // ── Matching — Stack/Queue/Deque concepts ────────────────────────────── ⊃
+<p>Σκέψου μια <strong>playlist τραγουδιών</strong>: θες να μπορείς ανά πάσα στιγμή να αφαιρέσεις ΟΠΟΙΟΔΗΠΟΤΕ τραγούδι (όχι μόνο το πρώτο ή το τελευταίο), ή να προσθέσεις ένα νέο τραγούδι στη ΜΕΣΗ της λίστας — ανάμεσα σε δύο υπάρχοντα. Με slice, αυτό μοιάζει έτσι:</p>
+
+<pre><code class="lang-go">// InsertAt inserts value at index n, shifting everything after it to the right.
+func InsertAt(playlist []string, n int, value string) []string {
+    playlist = append(playlist, "")       // make room for one more element
+    copy(playlist[n+1:], playlist[n:])    // shift everything from n onward, one step right
+    playlist[n] = value                   // place the new value in the gap
+    return playlist
+}</code></pre>
+
+<p>Δούλεψε — αλλά κοίτα τι πραγματικά συμβαίνει: το <code>append</code> μπορεί να χρειαστεί ολόκληρο νέο underlying array, ΚΑΙ το <code>copy</code> μετακινεί ΟΛΑ τα στοιχεία μετά τη θέση <code>n</code> μία θέση δεξιά. Αν η playlist έχει 10.000 τραγούδια και προσθέτεις κοντά στην αρχή, μετακινείς σχεδόν 10.000 στοιχεία — για μια απλή εισαγωγή. Το ίδιο πρόβλημα, συμμετρικά, ισχύει και για αφαίρεση από τη μέση (το είδαμε ήδη με το <code>RemoveAt</code>).</p>
+
+<div class="callout"><span class="tag">Το βαθύτερο πρόβλημα</span>Ένα slice (και ένα array από κάτω του) υποθέτει ότι τα στοιχεία του είναι <strong>συνεχόμενα</strong> στη μνήμη — αυτό είναι που το κάνει γρήγορο στην πρόσβαση με index (<code>playlist[500]</code> είναι στιγμιαίο), αλλά ακριβό στην εισαγωγή/αφαίρεση στη μέση, ακριβώς επειδή "σπάει" τη συνέχεια και όλα τα υπόλοιπα πρέπει να μετακινηθούν.</p></div>
+
+<h1>Η λύση: Linked List</h1>
+<p class="lede">Μια <strong>linked list</strong> είναι μια εντελώς διαφορετική προσέγγιση: αντί για ένα συνεχόμενο κομμάτι μνήμης, κάθε στοιχείο ("κόμβος" — node) ζει ΞΕΧΩΡΙΣΤΑ όπου βρει χώρο η μνήμη, και απλά "δείχνει" (κρατάει pointer) προς το επόμενο στοιχείο.</p>
+
+<div class="callout"><span class="tag">Υπενθύμιση: pointers</span>Θυμήσου από το Μέρος 1: ένας pointer δεν κρατάει μια τιμή απευθείας — κρατάει τη <strong>διεύθυνση μνήμης</strong> όπου βρίσκεται μια τιμή. Το <code>*Node</code> σημαίνει "pointer προς Node" — μπορεί είτε να δείχνει σε έναν πραγματικό κόμβο, είτε να είναι <code>nil</code> (δεν δείχνει πουθενά — "τέλος της λίστας").</div>
+
+<h2>Ορισμός: πώς μοιάζει ένας κόμβος</h2>
+<p>Δεν έχουμε δει ακόμα structs επίσημα σε αυτό το course, αλλά χρειαζόμαστε κάτι που να κρατάει ΜΑΖΙ μια τιμή ΚΑΙ έναν pointer προς τον επόμενο κόμβο. Θα το δεις σε πλήρη μορφή στο επόμενο guide (Structs) — προς το παρόν, κράτα μόνο την ιδέα: κάθε κόμβος έχει μια τιμή, και δείχνει προς τον επόμενο.</p>
+
+<pre><code class="lang-go">type Node struct {
+    Value string
+    Next  *Node // pointer to the next node — nil if this is the last one
+}</code></pre>
+
+<h2>Slice vs Linked List — η βασική διαφορά</h2>
+<div class="grid2">
+  <div class="card"><h3>Slice / Array</h3><p>Συνεχόμενη μνήμη. Γρήγορη πρόσβαση με index (<code>O(1)</code>). Ακριβή εισαγωγή/αφαίρεση στη μέση (<code>O(n)</code>, μετακίνηση στοιχείων).</p></div>
+  <div class="card"><h3>Linked List</h3><p>Διάσπαρτη μνήμη, συνδεδεμένη με pointers. Ακριβή πρόσβαση με index (<code>O(n)</code>, πρέπει να διασχίσεις έναν-έναν). Φθηνή εισαγωγή/αφαίρεση, ΑΝ ήδη έχεις τον κόμβο (<code>O(1)</code> — απλά αλλάζεις ένα pointer).</p></div>
+</div>
+
+<h2>Πλεονεκτήματα και πού τα χρησιμοποιούμε</h2>
+<p>Η linked list κερδίζει ακριβώς εκεί που το slice χάνει: όταν κάνεις ΣΥΧΝΑ εισαγωγές/αφαιρέσεις σε τυχαία σημεία, όχι κυρίως πρόσβαση με index. Παραδείγματα: undo/redo ιστορικό, playlist που ο χρήστης αναδιατάσσει συνεχώς, υλοποίηση άλλων δομών (π.χ. ένα Queue "από μέσα" συχνά είναι linked list, ώστε το Dequeue να είναι πάντα φθηνό χωρίς το πρόβλημα "σπατάλης μνήμης" που είδαμε νωρίτερα).</p>
+
+<h2>Οι βασικές λειτουργίες (με απλές functions, όχι methods)</h2>
+
+<pre><code class="lang-go">// Prepend adds a new node at the very front of the list.
+// head is the pointer to the current first node (nil if the list is empty).
+func Prepend(head *Node, value string) *Node {
+    newNode := &Node{Value: value, Next: head} // point to the old head
+    return newNode // this is the new head
+}
+
+// Append adds a new node at the very end of the list.
+func Append(head *Node, value string) *Node {
+    newNode := &Node{Value: value, Next: nil}
+
+    if head == nil {
+        return newNode // empty list — the new node becomes the head
+    }
+
+    current := head
+    for current.Next != nil { // walk until we find the last node
+        current = current.Next
+    }
+    current.Next = newNode // link the last node to the new one
+    return head             // head hasn't changed
+}
+
+// Find walks the list and returns the node with the given value, or nil.
+func Find(head *Node, value string) *Node {
+    current := head
+    for current != nil {
+        if current.Value == value {
+            return current
+        }
+        current = current.Next
+    }
+    return nil // not found
+}
+
+// Remove deletes the first node with the given value, if it exists.
+func Remove(head *Node, value string) *Node {
+    if head == nil {
+        return nil
+    }
+    if head.Value == value {
+        return head.Next // new head skips the removed node
+    }
+
+    current := head
+    for current.Next != nil {
+        if current.Next.Value == value {
+            current.Next = current.Next.Next // skip over the removed node
+            return head
+        }
+        current = current.Next
+    }
+    return head // value not found, list unchanged
+}</code></pre>
+
+<div class="callout good"><span class="tag">Η βασική κίνηση του Remove</span>Πρόσεξε ότι δεν "σβήνουμε" τίποτα με την κυριολεκτική έννοια — απλά αλλάζουμε ΕΝΑ pointer (<code>current.Next</code>) ώστε να παρακάμπτει τον κόμβο που θέλουμε να αφαιρέσουμε. Ο παλιός κόμβος παραμένει στη μνήμη, αλλά κανείς δεν "δείχνει" πια προς αυτόν — οπότε γίνεται αόρατος στη λίστα, ίδια λογική με το <code>stack[:top]</code> που είδαμε νωρίτερα, απλά με pointers αντί για slicing.</div>
+
+<h2>Παράδειγμα χρήσης</h2>
+<pre><code class="lang-go">func main() {
+    var playlist *Node // nil — empty list
+
+    playlist = Append(playlist, "Song A")
+    playlist = Append(playlist, "Song B")
+    playlist = Append(playlist, "Song C")
+    // playlist: Song A -> Song B -> Song C -> nil
+
+    playlist = Prepend(playlist, "Song Zero")
+    // playlist: Song Zero -> Song A -> Song B -> Song C -> nil
+
+    playlist = Remove(playlist, "Song B")
+    // playlist: Song Zero -> Song A -> Song C -> nil
+
+    for current := playlist; current != nil; current = current.Next {
+        fmt.Println(current.Value)
+    }
+}</code></pre>
+
+<h2>Οπτικοποίηση</h2>
+<p>Ας δούμε οπτικά πώς αλλάζουν οι pointers σε κάθε βήμα του παραδείγματος παραπάνω:</p>
+
+<div id="ll-viz">
+  <span class="vz-tag">Linked List — Βήμα προς Βήμα — Prepend / Append / Remove</span>
+
+  <div class="vz-controls">
+    <button class="reset-quiz-btn" id="ll-prev" disabled>← prev step</button>
+    <button class="reset-quiz-btn" id="ll-next">next step →</button>
+    <button class="reset-quiz-btn" id="ll-reset">⟲ reset</button>
+    <button class="reset-quiz-btn vz-btn-stable" id="ll-play" title="Play / Pause ↕">▶ autoplay ↕</button>
+  </div>
+
+  <div class="quiz-code-block" style="position:relative; border-radius:8px; padding:18px 20px;">
+    <div id="ll-diff-badge" class="vz-diff-badge"></div>
+    <div class="vz-array-row" id="ll-node-row"></div>
+  </div>
+
+  <div class="glossary-group" style="margin-top:16px;">
+    <div class="glossary-strip" id="ll-state-panel"></div>
+  </div>
+</div>
+`);
+
+        addQuiz([
+            {
+                q: "Γιατί η εισαγωγή στη μέση ενός slice είναι ακριβή λειτουργία (O(n)), ενώ σε μια linked list μπορεί να είναι φθηνή (O(1));",
+                options: [
+                    "Το slice χρειάζεται συνεχόμενη μνήμη, οπότε η εισαγωγή απαιτεί μετακίνηση όλων των επόμενων στοιχείων· η linked list απλά αλλάζει έναν pointer, χωρίς να μετακινεί τίποτα",
+                    "Επειδή η Go απαγορεύει τεχνικά την εισαγωγή στη μέση slices, αλλά το επιτρέπει σε linked lists",
+                    "Δεν υπάρχει πραγματική διαφορά — και οι δύο δομές έχουν ακριβώς το ίδιο κόστος εισαγωγής στη μέση",
+                    "Επειδή οι linked lists στη Go αποθηκεύονται πάντα σε ταχύτερη μνήμη (cache) σε σχέση με τα slices"
+                ],
+                correct: 0,
+                explain: "Το slice είναι συνεχόμενο κομμάτι μνήμης — εισαγωγή στη μέση σημαίνει μετακίνηση όλων των επόμενων στοιχείων. Η linked list δεν έχει αυτόν τον περιορισμό: μια εισαγωγή είναι απλά μια αλλαγή σε έναν pointer, ΑΝ ήδη έχεις πρόσβαση στο σωστό σημείο."
+            },
+            {
+                q: "Γιατί η πρόσβαση με index (π.χ. \"δώσε μου το 500ό στοιχείο\") είναι αργή σε μια linked list, σε αντίθεση με ένα slice;",
+                options: [
+                    "Δεν υπάρχει άμεσος τρόπος να \"πηδήξεις\" σε συγκεκριμένη θέση — πρέπει να διασχίσεις τη λίστα κόμβο προς κόμβο, ακολουθώντας pointers, μέχρι να φτάσεις εκεί",
+                    "Επειδή οι linked lists στη Go περιορίζονται σε μέγιστο 100 στοιχεία",
+                    "Δεν είναι αλήθεια — η πρόσβαση με index σε linked list είναι πάντα το ίδιο γρήγορη με slice",
+                    "Επειδή κάθε node σε linked list αποθηκεύεται σε ξεχωριστό αρχείο στον δίσκο"
+                ],
+                correct: 0,
+                explain: "Σε ένα slice, το index υπολογίζει απευθείας τη διεύθυνση μνήμης (σταθερός χρόνος). Σε linked list δεν υπάρχει τέτοιος υπολογισμός — μόνο ο δρόμος node-by-node μέσω pointers, άρα O(n) στη χειρότερη περίπτωση."
+            },
+            {
+                q: "Στη function Remove, τι ακριβώς κάνει η γραμμή current.Next = current.Next.Next;",
+                code: `current.Next = current.Next.Next // skip over the removed node`,
+                options: [
+                    "\"Παρακάμπτει\" τον επόμενο κόμβο, κάνοντας τον τρέχοντα κόμβο να δείχνει κατευθείαν στον μεθεπόμενο — ο ενδιάμεσος κόμβος γίνεται αόρατος στη λίστα",
+                    "Διαγράφει οριστικά τον επόμενο κόμβο από τη μνήμη του υπολογιστή",
+                    "Ανταλλάσσει τη σειρά ανάμεσα στον τρέχοντα και τον επόμενο κόμβο",
+                    "Δημιουργεί έναν νέο, τρίτο κόμβο ανάμεσα στους δύο υπάρχοντες"
+                ],
+                correct: 0,
+                explain: "Αυτό είναι ακριβώς το \"αφαίρεσε τον επόμενο κόμβο\": ο τρέχων κόμβος σταματά να δείχνει στον άμεσο επόμενο και δείχνει κατευθείαν στον μεθεπόμενο. Ο παρακαμφθείς κόμβος παραμένει στη μνήμη, αλλά τίποτα δεν δείχνει πλέον προς αυτόν."
+            },
+            {
+                q: "Γιατί το Append (προσθήκη στο ΤΕΛΟΣ) μιας linked list χρειάζεται να διασχίσει ολόκληρη τη λίστα, ενώ το Prepend (προσθήκη στην ΑΡΧΗ) είναι στιγμιαίο;",
+                options: [
+                    "Το Prepend έχει ήδη άμεση πρόσβαση στον head — απλά φτιάχνει νέο κόμβο που δείχνει σε αυτόν. Το Append χρειάζεται πρώτα να βρει τον ΤΕΛΕΥΤΑΙΟ κόμβο, κάτι που η λίστα δεν \"ξέρει\" απευθείας χωρίς διάσχιση",
+                    "Δεν υπάρχει πραγματική διαφορά — και τα δύο έχουν ακριβώς το ίδιο κόστος",
+                    "Επειδή το Append απαιτεί δέσμευση δέκα φορές περισσότερης μνήμης από το Prepend",
+                    "Επειδή στη Go το Append λειτουργεί μόνο σε λίστες με λιγότερους από 10 κόμβους"
+                ],
+                correct: 0,
+                explain: "Η λίστα μόνο \"γνωρίζει\" τον head. Για να βρεις το τέλος, πρέπει να ακολουθήσεις pointers έναν προς έναν μέχρι να βρεις κόμβο με Next == nil — αυτό είναι O(n). Το Prepend δεν χρειάζεται καθόλου διάσχιση, γι' αυτό είναι O(1)."
+            },
+            {
+                q: "Ποιο από τα παρακάτω σενάρια ταιριάζει καλύτερα σε linked list, αντί για slice;",
+                options: [
+                    "Μια δομή για undo/redo ιστορικό, όπου συχνά εισάγεις/αφαιρείς στοιχεία σε τυχαία σημεία μέσα στην ακολουθία, χωρίς να χρειάζεσαι συχνά πρόσβαση με index",
+                    "Έναν πίνακα βαθμολογιών παικτών, όπου χρειάζεσαι συχνά να διαβάζεις τον παίκτη στη θέση Ν χωρίς καμία εισαγωγή στη μέση",
+                    "Μια λίστα ημερομηνιών που δεν αλλάζει ποτέ μετά τη δημιουργία της",
+                    "Έναν πίνακα σταθερού μεγέθους 10 στοιχείων που διαβάζεις συνεχώς με index"
+                ],
+                correct: 0,
+                explain: "Η linked list κερδίζει ακριβώς όταν έχεις συχνές εισαγωγές/αφαιρέσεις σε τυχαία σημεία και δεν χρειάζεσαι γρήγορη πρόσβαση με index — το undo/redo είναι κλασικό τέτοιο σενάριο. Τα άλλα παραδείγματα ταιριάζουν καλύτερα σε slice, όπου η πρόσβαση με index είναι το βασικό ζητούμενο."
+            }
+        ]);
+
+        // ── Matching — Stack/Queue/Deque/LinkedList concepts ─────────────────── ⊃
         addMatching([
             { term: "Stack — Push", def: "προσθέτει στην κορυφή (τέλος του slice)" },
             { term: "Stack — Pop", def: "αφαιρεί από την κορυφή, LIFO" },
             { term: "Queue — Enqueue", def: "προσθέτει στο τέλος της ουράς" },
             { term: "Queue — Dequeue", def: "αφαιρεί από την αρχή, FIFO" },
             { term: "Deque — PushFront", def: "προσθέτει στην αρχή, ακριβή λειτουργία σε slice" },
-            { term: "(value, ok bool)", def: "σύμβαση Go: δεύτερη τιμή δηλώνει αν το αποτέλεσμα είναι έγκυρο" }
+            { term: "(value, ok bool)", def: "σύμβαση Go: δεύτερη τιμή δηλώνει αν το αποτέλεσμα είναι έγκυρο" },
+            { term: "Linked List — Node", def: "κρατάει μια τιμή και pointer προς τον επόμενο κόμβο" },
+            { term: "Linked List — Prepend", def: "O(1), απλή αλλαγή του head pointer" },
+            { term: "Linked List — Append", def: "O(n), χρειάζεται διάσχιση μέχρι τον τελευταίο κόμβο" },
+            { term: "Linked List — πρόσβαση με index", def: "O(n), δεν υπάρχει άμεσο \"πήδημα\" σε θέση" }
         ], {
-            note: "Ταίριαξε κάθε λειτουργία με τη σωστή περιγραφή της."
+            note: "Ταίριαξε κάθε λειτουργία/έννοια με τη σωστή περιγραφή της."
         });
 
-        // ── VSCode Challenge — closes out §4 ─────────────────────────────────── ⊃
+        // ── Section 4.4 — Hash Map/Set/Heap reference + BST + chapter review ─── ⊃
         addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 4</div>
-<h1>Έλεγχος Ισορροπημένων Παρενθέσεων, Μόνος Σου</h1>
-<p class="lede">Είδες πώς λύνεται με στοίβα το πρόβλημα ισορροπημένων παρενθέσεων — τώρα δοκίμασε μια παραλλαγή μόνος σου.</p>
+<div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
+<h1>Λίγο Παραπάνω: Hash Map, Set, Heap</h1>
+<p class="lede">Πριν προχωρήσουμε στα δέντρα, μια σύντομη αναφορά σε τρεις ακόμα δομές που θα συναντήσεις συχνά — δεν θα τις χτίσουμε από το μηδέν εδώ, αλλά αξίζει να ξέρεις πού ταιριάζουν.</p>
 
-<h2>Η αποστολή</h2>
-<p>Γράψε μια function που δέχεται ένα <code>string</code> και επιστρέφει <code>true</code> αν κάθε άνοιγμα παρένθεσης <code>(</code> έχει αντίστοιχο κλείσιμο <code>)</code> με τη σωστή σειρά (χωρίς να χρειάζεται να ανησυχήσεις για <code>[ ] { }</code> αυτή τη φορά — μόνο απλές παρενθέσεις). Αγνόησε κάθε άλλο χαρακτήρα στο string.</p>
-
-<div class="callout">
-  <span class="tag">HINT 1</span>
-  Χρειάζεσαι μόνο έναν ΜΕΤΡΗΤΗ (accumulator pattern), όχι απαραίτητα μια πλήρη στοίβα με πραγματικά στοιχεία — αφού υπάρχει μόνο ΕΝΑ είδος παρένθεσης. Σκέψου: τι σημαίνει "ο μετρητής έγινε αρνητικός" στη μέση της διάσχισης;
+<div class="grid3">
+  <div class="card">
+    <h3>Hash Map</h3>
+    <p>Αυτό ΕΙΝΑΙ το <code>map</code> της Go που ήδη χρησιμοποιείς — lookup, εισαγωγή και διαγραφή σε (κατά μέσο όρο) <code>O(1)</code>. Το χρησιμοποιήσαμε ήδη ρητά στο <strong>Complement Lookup</strong> pattern του προηγούμενου κεφαλαίου.</p>
+  </div>
+  <div class="card">
+    <h3>Set</h3>
+    <p>Μια συλλογή ΜΟΝΑΔΙΚΩΝ στοιχείων, χωρίς σειρά. Η Go δεν έχει built-in Set τύπο — το προσομοιώνουμε με <code>map[T]bool</code> ή, ακόμα καλύτερα, <code>map[T]struct{}</code> (το <code>struct{}</code> δεν καταναλώνει καθόλου μνήμη, αφού δεν κρατάει καμία τιμή — μας ενδιαφέρει μόνο το ΚΛΕΙΔΙ):</p>
+    <pre><code class="lang-go">seen := make(map[string]struct{})
+seen["apple"] = struct{}{} // add to the set
+_, exists := seen["apple"] // check membership</code></pre>
+  </div>
+  <div class="card">
+    <h3>Heap</h3>
+    <p>Μια δομή που σου δίνει άμεση πρόσβαση στο ΜΙΚΡΟΤΕΡΟ (ή μεγαλύτερο) στοιχείο μιας συλλογής, ακόμα κι όταν προσθέτεις/αφαιρείς συνεχώς — χρήσιμο για προβλήματα σαν "βρες τα k μεγαλύτερα στοιχεία". Η Go έχει το πακέτο <code>container/heap</code>, αλλά χρειάζεται interfaces για να δουλέψει, οπότε θα το δούμε σε επόμενο guide.</p>
+  </div>
 </div>
 
-<div class="callout">
-  <span class="tag">HINT 2</span>
-  Στο τέλος της διάσχισης, τι πρέπει να ισχύει για τον μετρητή ώστε το string να είναι πραγματικά ισορροπημένο;
-</div>
+<br>
+<h1>Δυαδικό Δέντρο Αναζήτησης (Binary Search Tree)</h1>
+<p class="lede">Ένα Binary Tree είναι μια δομή όπου κάθε κόμβος έχει ΤΟ ΠΟΛΥ δύο "παιδιά" — αριστερό και δεξί. Ένα <strong>Binary Search Tree (BST)</strong> προσθέτει έναν κανόνα (invariant) πάνω σε αυτό, που το κάνει εξαιρετικά χρήσιμο για αναζήτηση.</p>
 
-<h2>Λύση</h2>
-<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+<h2>Ο κανόνας του BST</h2>
+<p>Για ΚΑΘΕ κόμβο του δέντρου: όλες οι τιμές στο αριστερό υποδέντρο του είναι <strong>μικρότερες</strong> από την τιμή του, και όλες οι τιμές στο δεξί υποδέντρο είναι <strong>μεγαλύτερες</strong>. Αυτός ο κανόνας ισχύει αναδρομικά, σε κάθε κόμβο, σε κάθε επίπεδο του δέντρου.</p>
 
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">func isBalancedSimple(input string) bool {
-    depth := 0 // acts as a simplified stack: how many unmatched "(" so far
-    for _, ch := range input {
-        switch ch {
-        case '(':
-            depth++
-        case ')':
-            depth-- // guard clause below catches invalid negative depth
-            if depth < 0 {
-                return false // a ")" with no matching "(" before it
-            }
-        }
+<pre><code class="lang-go">type TreeNode struct {
+    Value int
+    Left  *TreeNode
+    Right *TreeNode
+}</code></pre>
+
+<h2>Γιατί αυτός ο κανόνας είναι τόσο δυνατός</h2>
+<p>Σε κάθε κόμβο που βρίσκεσαι, ξέρεις ΑΜΕΣΩΣ προς ποια κατεύθυνση να ψάξεις: αν η τιμή που ψάχνεις είναι μικρότερη, πήγαινε αριστερά· αν είναι μεγαλύτερη, πήγαινε δεξιά. Κάθε βήμα "πετάει" ολόκληρο το άλλο μισό δέντρο από τις πιθανότητες — ακριβώς η ίδια ιδέα με το Binary Search σε ταξινομημένο slice, που θα δεις στην επόμενη ενότητα.</p>
+
+<h2>Οι βασικές λειτουργίες</h2>
+
+<pre><code class="lang-go">// Insert adds a value to the tree, keeping the BST rule intact, and returns the (possibly new) root.
+func Insert(root *TreeNode, value int) *TreeNode {
+    if root == nil {
+        return &TreeNode{Value: value} // empty spot found — place the new node here
     }
-    return depth == 0 // balanced only if every "(" was eventually closed
-}</code></pre></div>
+    if value < root.Value {
+        root.Left = Insert(root.Left, value) // belongs somewhere in the left subtree
+    } else if value > root.Value {
+        root.Right = Insert(root.Right, value) // belongs somewhere in the right subtree
+    }
+    return root // value == root.Value: already present, no duplicates
+}
+
+// Contains reports whether value exists anywhere in the tree.
+func Contains(root *TreeNode, value int) bool {
+    if root == nil {
+        return false // reached an empty spot without finding it
+    }
+    if value == root.Value {
+        return true
+    }
+    if value < root.Value {
+        return Contains(root.Left, value)
+    }
+    return Contains(root.Right, value)
+}
+
+// Min returns the smallest value in a non-empty tree.
+func Min(root *TreeNode) int {
+    for root.Left != nil { // the smallest value is always as far left as possible
+        root = root.Left
+    }
+    return root.Value
+}</code></pre>
+
+<div class="callout good"><span class="tag">Γιατί το Insert είναι αναδρομικό</span>Το <code>Insert</code> χρησιμοποιεί τη Divide and Conquer λογική που θα δούμε αναλυτικά στο επόμενο κεφάλαιο: σε κάθε κόμβο, το πρόβλημα "βάλε αυτή την τιμή στο σωστό σημείο" ανάγεται στο ΙΔΙΟ πρόβλημα, αλλά σε μικρότερο δέντρο (το αριστερό ή το δεξί υποδέντρο) — μέχρι να φτάσεις σε ένα σημείο όπου δεν υπάρχει καν υποδέντρο (<code>nil</code>), και εκεί μπαίνει ο νέος κόμβος.</div>
+
+<h2>Παράδειγμα</h2>
+<pre><code class="lang-go">func main() {
+    var root *TreeNode
+
+    for _, v := range []int{8, 3, 10, 1, 6, 14} {
+        root = Insert(root, v)
+    }
+
+    fmt.Println(Contains(root, 6))  // true
+    fmt.Println(Contains(root, 99)) // false
+    fmt.Println(Min(root))          // 1
+}
+// Resulting shape:
+//         8
+//       /   \\
+//      3     10
+//     / \\      \\
+//    1   6      14</code></pre>
+
+<div class="callout"><span class="tag">Μια σημαντική λεπτομέρεια</span>Το πόσο γρήγορο είναι ένα BST εξαρτάται εντελώς από το ΣΧΗΜΑ του. Αν εισάγεις τιμές ήδη ταξινομημένες (π.χ. 1, 2, 3, 4, 5 με τη σειρά), κάθε νέος κόμβος πάει πάντα δεξιά — το δέντρο καταλήγει να είναι ουσιαστικά μια linked list, χάνοντας εντελώς το πλεονέκτημα του "πέτα το μισό δέντρο κάθε φορά". Δέντρα που φροντίζουν να παραμένουν "ισορροπημένα" (π.χ. AVL, Red-Black trees) λύνουν αυτό το πρόβλημα — αλλά είναι έξω από τα όρια αυτού του guide.</div>
+`);
+
+        addQuiz([
+            {
+                q: "Γιατί χρησιμοποιούμε map[T]struct{} αντί για map[T]bool όταν προσομοιώνουμε ένα Set στη Go;",
+                options: [
+                    "Το struct{} δεν καταναλώνει καθόλου μνήμη ανά τιμή, αφού δεν κρατάει κανένα δεδομένο — μας ενδιαφέρει μόνο αν το κλειδί υπάρχει, όχι τι τιμή έχει",
+                    "Το map[T]bool δεν επιτρέπεται συντακτικά στη Go για αυτόν τον σκοπό",
+                    "Το struct{} επιτρέπει πιο γρήγορο lookup σε σχέση με το bool, σε κάθε περίπτωση",
+                    "Δεν υπάρχει καμία πρακτική διαφορά — είναι απλά διαφορετικό στυλ γραφής"
+                ],
+                correct: 0,
+                explain: "Το struct{} είναι ένας τύπος μηδενικού μεγέθους — δεν δεσμεύει μνήμη για την τιμή. Σε ένα Set μας νοιάζει μόνο η ύπαρξη του κλειδιού, οπότε το struct{} είναι η πιο \"φτηνή\" δυνατή τιμή."
+            },
+            {
+                q: "Ποιος είναι ο βασικός κανόνας (invariant) ενός Binary Search Tree;",
+                options: [
+                    "Σε κάθε κόμβο, όλες οι τιμές στο αριστερό υποδέντρο είναι μικρότερες από αυτόν, και όλες στο δεξί υποδέντρο μεγαλύτερες",
+                    "Κάθε κόμβος πρέπει να έχει ακριβώς δύο παιδιά, ποτέ λιγότερα",
+                    "Οι τιμές πρέπει να εισάγονται πάντα με αύξουσα σειρά",
+                    "Το αριστερό και το δεξί υποδέντρο πρέπει να έχουν πάντα το ίδιο ύψος"
+                ],
+                correct: 0,
+                explain: "Αυτός είναι ο κανόνας που ορίζει ένα BST: αριστερά μικρότερα, δεξιά μεγαλύτερα, αναδρομικά σε κάθε κόμβο. Αυτό επιτρέπει την αποδοτική αναζήτηση."
+            },
+            {
+                q: "Γιατί ένα BST μπορεί να \"καταλήξει\" ουσιαστικά σε linked list, χάνοντας το πλεονέκτημά του;",
+                code: `for _, v := range []int{1, 2, 3, 4, 5} {
+    root = Insert(root, v)
+}`,
+                options: [
+                    "Αν οι τιμές εισάγονται ήδη ταξινομημένες, κάθε νέος κόμβος πάει πάντα προς την ίδια κατεύθυνση (π.χ. πάντα δεξιά), δημιουργώντας μια μονή αλυσίδα αντί για ισορροπημένο δέντρο",
+                    "Επειδή η Go μετατρέπει αυτόματα κάθε BST με πάνω από 3 κόμβους σε linked list",
+                    "Δεν είναι αλήθεια — ένα BST διατηρεί πάντα ισορροπημένο σχήμα ανεξάρτητα από τη σειρά εισαγωγής",
+                    "Επειδή το Insert() έχει bug που εμφανίζεται μόνο με ταξινομημένη είσοδο"
+                ],
+                correct: 0,
+                explain: "Με ήδη ταξινομημένη είσοδο, κάθε νέα τιμή είναι μεγαλύτερη από την προηγούμενη, οπότε πηγαίνει πάντα δεξιά. Το αποτέλεσμα είναι ένα \"δέντρο\" με ύψος n αντί για log(n) — ουσιαστικά μια linked list, χάνοντας το πλεονέκτημα της αναζήτησης."
+            },
+            {
+                q: "Ποια δομή είναι πιο κατάλληλη για ένα πρόβλημα σαν \"βρες τα 5 μεγαλύτερα στοιχεία από ένα ρεύμα δεδομένων που συνεχώς ενημερώνεται\";",
+                options: [
+                    "Heap — δίνει άμεση πρόσβαση στο μικρότερο/μεγαλύτερο στοιχείο, ακόμα κι όταν προσθέτεις/αφαιρείς συνεχώς",
+                    "Stack — αφού χρειάζεται LIFO πρόσβαση στα δεδομένα",
+                    "Απλό slice χωρίς ταξινόμηση, με γραμμική αναζήτηση σε κάθε νέο στοιχείο",
+                    "Linked List, αφού χρειάζεται συχνή εισαγωγή στοιχείων"
+                ],
+                correct: 0,
+                explain: "Το Heap είναι φτιαγμένο ακριβώς για \"top-k\" προβλήματα σε δυναμικά δεδομένα — κρατάει πάντα γρήγορη πρόσβαση στο ακρότατο στοιχείο, χωρίς να χρειάζεται πλήρης ταξινόμηση."
+            },
+            {
+                q: "Στη function Insert του BST, τι σημαίνει η γραμμή root.Left = Insert(root.Left, value);",
+                code: `if value < root.Value {
+    root.Left = Insert(root.Left, value)
+}`,
+                options: [
+                    "Η νέα τιμή ανήκει στο αριστερό υποδέντρο — καλούμε αναδρομικά την ίδια function πάνω σε αυτό το (πιθανώς μικρότερο ή nil) υποδέντρο, και ενημερώνουμε το root.Left με το αποτέλεσμα",
+                    "Αντικαθιστά ολόκληρο το αριστερό υποδέντρο με τη νέα τιμή, διαγράφοντας ό,τι υπήρχε",
+                    "Ελέγχει αν η τιμή υπάρχει ήδη στο αριστερό υποδέντρο, χωρίς να προσθέτει τίποτα",
+                    "Δημιουργεί ένα εντελώς νέο, ανεξάρτητο δέντρο χωρίς σχέση με το αρχικό root"
+                ],
+                correct: 0,
+                explain: "Αυτή είναι η αναδρομική καρδιά του Insert: το πρόβλημα \"βάλε τη value στο σωστό σημείο\" ανατίθεται στο αριστερό υποδέντρο, και το αποτέλεσμα (είτε το ίδιο υποδέντρο με τον νέο κόμβο προστεθειμένο, είτε ένας ολοκαίνουριος κόμβος αν το υποδέντρο ήταν nil) ξαναγράφεται στο root.Left."
+            }
+        ]);
+
+        // ── Chapter-wide review quiz — Ενότητα 4 ─────────────────────────────── ⊃
+        addQuiz([
+            {
+                q: "Ταξινόμησε νοερά: ποια δομή ταιριάζει καλύτερα σε ένα πρόβλημα \"undo\" σε έναν επεξεργαστή κειμένου, όπου κάθε νέα ενέργεια μπαίνει πάνω από τις προηγούμενες και το Ctrl+Z αναιρεί πάντα την ΠΙΟ ΠΡΟΣΦΑΤΗ;",
+                options: [
+                    "Stack — LIFO ταιριάζει ακριβώς: η πιο πρόσφατη ενέργεια είναι η πρώτη που αναιρείται",
+                    "Queue — FIFO, η πρώτη ενέργεια είναι η πρώτη που αναιρείται",
+                    "BST — για γρήγορη αναζήτηση ανάμεσα σε ενέργειες",
+                    "Linked List, αδιάφορο ποιο άκρο χρησιμοποιείς"
+                ],
+                correct: 0,
+                explain: "Undo σημαίνει πάντα \"το πιο πρόσφατο πρώτο\" — ακριβώς η λογική LIFO ενός Stack."
+            },
+            {
+                q: "Ποια δομή ταιριάζει σε ένα σύστημα εκτύπωσης εγγράφων, όπου πολλά έγγραφα περιμένουν στη σειρά και εκτυπώνονται με τη σειρά που στάλθηκαν;",
+                options: [
+                    "Queue — FIFO, το πρώτο έγγραφο που στάλθηκε είναι το πρώτο που εκτυπώνεται",
+                    "Stack — LIFO, το πιο πρόσφατο έγγραφο εκτυπώνεται πρώτο",
+                    "BST — για γρήγορη αναζήτηση εγγράφων",
+                    "Καμία από τις δύο, χρειάζεται πάντα linked list"
+                ],
+                correct: 0,
+                explain: "Μια ουρά εκτύπωσης είναι κλασικό παράδειγμα Queue: δίκαιη σειρά εξυπηρέτησης, FIFO."
+            },
+            {
+                q: "Γιατί επιλέγουμε συχνά linked list αντί για slice όταν υλοποιούμε ένα Queue \"από μέσα\", σε πιο προχωρημένες υλοποιήσεις;",
+                options: [
+                    "Το Dequeue σε linked list είναι πάντα O(1) χωρίς να \"σπαταλά\" σταδιακά μνήμη, ενώ το slice-based Dequeue αφήνει πίσω αχρησιμοποίητο χώρο στο underlying array",
+                    "Επειδή οι linked lists είναι πάντα ταχύτερες σε ΚΑΘΕ λειτουργία σε σχέση με slices",
+                    "Επειδή τα slices δεν υποστηρίζουν καθόλου FIFO πρόσβαση",
+                    "Δεν υπάρχει πρακτικός λόγος, είναι απλά στιλιστική προτίμηση"
+                ],
+                correct: 0,
+                explain: "Είδαμε το πρόβλημα \"σπατάλης μνήμης\" στο slice-based Dequeue (queue[1:] δεν ελευθερώνει χώρο). Μια linked list-based ουρά δεν έχει αυτό το πρόβλημα, αφού κάθε αφαιρεμένος κόμβος γίνεται πραγματικά ασύνδετος."
+            },
+            {
+                q: "Ποια είναι η ουσιαστική διαφορά ανάμεσα σε ένα Binary Tree γενικά και ένα Binary Search Tree ειδικά;",
+                options: [
+                    "Το BST προσθέτει τον κανόνα \"αριστερά μικρότερα, δεξιά μεγαλύτερα\" σε κάθε κόμβο — ένα απλό Binary Tree δεν έχει καμία τέτοια υπόθεση για τη διάταξη των τιμών",
+                    "Ένα Binary Tree επιτρέπει άπειρα παιδιά ανά κόμβο, ενώ το BST περιορίζεται σε δύο",
+                    "Δεν υπάρχει καμία διαφορά, είναι απλά δύο ονόματα για την ίδια δομή",
+                    "Το BST δεν επιτρέπει καθόλου αναδρομικές λειτουργίες, σε αντίθεση με το Binary Tree"
+                ],
+                correct: 0,
+                explain: "Και τα δύο περιορίζονται σε το πολύ δύο παιδιά ανά κόμβο — αυτό είναι κοινό. Η διαφορά είναι ο κανόνας διάταξης (invariant) που προσθέτει το BST, ο οποίος επιτρέπει αποδοτική αναζήτηση."
+            },
+            {
+                q: "Ένα πρόγραμμα χρειάζεται να ελέγχει συχνά αν ένα username υπάρχει ήδη σε μια λίστα καταχωρημένων χρηστών, χωρίς να ενδιαφέρεται για τη σειρά τους. Ποια δομή ταιριάζει καλύτερα;",
+                options: [
+                    "Set (μέσω map[string]struct{}) — στιγμιαίος έλεγχος ύπαρξης, χωρίς νόημα σειράς",
+                    "Stack — LIFO πρόσβαση στα usernames",
+                    "Queue — FIFO πρόσβαση στα usernames",
+                    "Linked List με γραμμική αναζήτηση σε κάθε έλεγχο"
+                ],
+                correct: 0,
+                explain: "Το Set είναι ακριβώς φτιαγμένο για αυτό: \"υπάρχει ήδη;\" σε στιγμιαίο χρόνο, χωρίς να μας νοιάζει καμία σειρά — ταιριάζει πολύ καλύτερα από γραμμική αναζήτηση σε λίστα."
+            }
+        ]);
+
+        // ── Mini-glossary — Ενότητα 4 (όλες οι δομές) ────────────────────────── ⊃
+        addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 4 / 8</div>
+<h1>Όλες οι Δομές, με μια Ματιά</h1>
+<p class="lede">Ένα σύντομο "πότε το χρησιμοποιείς" για κάθε δομή δεδομένων που είδαμε σε αυτό το κεφάλαιο.</p>
+
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Stack (LIFO)</span><span class="gs-def">το πιο πρόσφατο στοιχείο βγαίνει πρώτο — undo, έλεγχος παρενθέσεων, call stack</span></div>
+  <div class="gs-pill"><span class="gs-name">Queue (FIFO)</span><span class="gs-def">το πρώτο στοιχείο που μπήκε βγαίνει πρώτο — ουρές εξυπηρέτησης, BFS, streaming επεξεργασία</span></div>
+  <div class="gs-pill"><span class="gs-name">Deque</span><span class="gs-def">προσθήκη/αφαίρεση και στις δύο άκρες — sliding window streaming, undo/redo με δύο κατευθύνσεις</span></div>
+  <div class="gs-pill"><span class="gs-name">Linked List</span><span class="gs-def">συχνές εισαγωγές/αφαιρέσεις σε τυχαία σημεία, χωρίς ανάγκη γρήγορης πρόσβασης με index</span></div>
+  <div class="gs-pill"><span class="gs-name">Hash Map</span><span class="gs-def">lookup/εισαγωγή/διαγραφή σε O(1) — το ήδη γνωστό map της Go</span></div>
+  <div class="gs-pill"><span class="gs-name">Set</span><span class="gs-def">"το έχω ξαναδεί;" σε στιγμιαίο χρόνο, χωρίς νόημα σειράς — map[T]struct{} στη Go</span></div>
+  <div class="gs-pill"><span class="gs-name">Heap</span><span class="gs-def">άμεση πρόσβαση στο ακρότατο (μικρότερο/μεγαλύτερο) στοιχείο, ακόμα και με συνεχείς αλλαγές — top-k προβλήματα</span></div>
+  <div class="gs-pill"><span class="gs-name">Binary Search Tree</span><span class="gs-def">αριστερά μικρότερα, δεξιά μεγαλύτερα — γρήγορη αναζήτηση, ΑΝ το δέντρο παραμένει ισορροπημένο</span></div>
+</div>
 `);
 
 
