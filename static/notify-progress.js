@@ -23,7 +23,7 @@
 
 // ── config — edit these two switches, nothing else needs touching ───────── ⊃
 const SLIDE_NOTIFY_ENABLED = true;              // master on/off for per-slide emails
-const SLIDE_NOTIFY_MIN_GAP_MS = 5 * 60 * 1000;  // auto-throttle: min gap between slide emails, per browser (5 min)
+const SLIDE_NOTIFY_MIN_GAP_MS = 1 * 10 * 1000;  // auto-throttle: min gap between slide emails, per browser (10 seconds)
 const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final course-summary email
 
 (function () {
