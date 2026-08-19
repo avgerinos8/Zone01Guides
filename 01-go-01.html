@@ -6005,6 +6005,85 @@ for i, letter := range word {
     πάνω του με τον ίδιο ακριβώς τρόπο όπως σε ένα slice: πρώτη τιμή η θέση, δεύτερη τιμή το ίδιο το στοιχείο. Ό,τι ξέρεις
     ήδη για το <code>for range</code> σε slices, ισχύει αυτούσιο και σε strings.
 </div>
+
+<br>
+<h1>Variadic functions — μεταβλητό πλήθος ορισμάτων</h1>
+
+<p>
+    Στην ενότητα με τις functions δεν αναφερθήκαμε σε μια πολύ χρήσιμη δυνατότητα: το να δηλώνουμε μια παράμετρο που δέχεται <strong>μεταβλητό αριθμό ορισμάτων</strong>. Τότε όμως δεν είχαμε μιλήσει ακόμα για slices και για τη <code>for range</code> — και η υλοποίησή τους στηρίζεται ακριβώς σε αυτές τις έννοιες. Τώρα που τα ξέρουμε, μπορούμε να δούμε πώς δουλεύουν.
+</p>
+
+<p>
+    Μέχρι τώρα κάθε function που έχουμε δει δέχεται έναν <strong>σταθερό</strong> αριθμό ορισμάτων: η
+    <code class="lang-go">func sum(x, y int)</code> θέλει ακριβώς δύο, ούτε ένα λιγότερο ούτε ένα παραπάνω. Τι γίνεται όμως αν θέλεις
+    μια function που προσθέτει <em>όσους</em> αριθμούς της δώσεις — τρεις τη μία φορά, δέκα την άλλη;
+</p>
+
+<p>
+    Έχεις ήδη χρησιμοποιήσει μια τέτοια function δεκάδες φορές χωρίς να το προσέξεις: η
+    <code>fmt.Println()</code> δέχεται ένα όρισμα, δύο, πέντε, ή και κανένα, και δουλεύει το ίδιο σε όλες τις
+    περιπτώσεις. Αυτό λέγεται <strong>variadic</strong> function, και δηλώνεται βάζοντας
+    <strong>τρεις τελείες πριν τον τύπο</strong> της τελευταίας παραμέτρου:
+</p>
+
+<pre><code class="lang-go">func sum(numbers ...int) int {
+    total := 0
+    for _, n := range numbers {
+        total += n
+    }
+    return total
+}
+</code></pre>
+
+<p>
+    Πρόσεξε τη θέση των τελειών: γράφονται <code>numbers ...int</code> — πρώτα το όνομα, μετά οι τελείες, μετά
+    ο τύπος. Το <code>...int</code> σημαίνει «κανένα ή περισσότερα ορίσματα τύπου <code>int</code>».
+</p>
+
+<p>Τώρα η ίδια function δέχεται όσα ορίσματα θέλεις:</p>
+
+<pre><code class="lang-go">fmt.Println(sum(1, 2))          // 3
+fmt.Println(sum(1, 2, 3, 4, 5)) // 15
+fmt.Println(sum())              // 0 - zero arguments is perfectly valid
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Το κλειδί: μέσα στη function, η παράμετρος είναι ένα slice</span>
+    <p>
+        Ο λόγος που ο κώδικας παραπάνω μπορεί να γράψει <code class="lang-go">for _, n := range numbers</code> είναι ότι η Go
+        μαζεύει όλα τα ορίσματα που έδωσες και τα βάζει σε ένα <strong>slice</strong>. Αν καλέσεις <code class="lang-go">sum(1, 2, 3)</code>, τότε μέσα στη function το
+        <code>numbers</code> είναι το slice <code class="lang-go">[]int{1, 2, 3}</code>. Αν καλέσεις <code>sum()</code> χωρίς
+        τίποτα, το <code>numbers</code> είναι ένα άδειο slice — γι' αυτό το αποτέλεσμα είναι 0 και όχι σφάλμα.
+    </p>
+</div>
+
+<h3>Δύο κανόνες που πρέπει να θυμάσαι</h3>
+
+<ul>
+    <li>
+        Η variadic παράμετρος πρέπει να είναι πάντα η <strong>τελευταία</strong> στη λίστα. Μπορείς να έχεις
+        κανονικές παραμέτρους πριν από αυτήν, ποτέ μετά:
+        <pre><code class="lang-go">func report(title string, values ...int) { /* ... */ }  // OK
+// func report(values ...int, title string) { }         // compile error
+</code></pre>
+    </li>
+    <li>
+        Μπορείς να έχεις <strong>μόνο μία</strong> variadic παράμετρο ανά function. Δεν υπάρχει τρόπος να
+        γράψεις μια function που δέχεται «όσα int θέλεις και μετά όσα string θέλεις» — ο compiler δεν θα είχε
+        τρόπο να ξέρει πού τελειώνουν τα πρώτα και πού αρχίζουν τα δεύτερα.
+    </li>
+</ul>
+
+<div class="callout">
+    <span class="tag">Γιατί το fmt.Println δέχεται ανακατεμένους τύπους</span>
+    <p>
+        Ίσως αναρωτιέσαι: αν η variadic παράμετρος έχει έναν συγκεκριμένο τύπο, πώς μπορεί η
+        <code>fmt.Println("Age:", 25, true)</code> να δεχτεί string, int και bool ταυτόχρονα; Η απάντηση είναι
+        ότι η υπογραφή της είναι <code>Println(a ...any)</code> — και το <code>any</code> είναι ένας ειδικός
+        τύπος που σημαίνει «οτιδήποτε». Θα δούμε τι ακριβώς είναι σε επόμενο guide, όταν μιλήσουμε για
+        interfaces.
+    </p>
+</div>
 `);
 
         addQuiz([
