@@ -747,10 +747,10 @@ var _internal bool
 var totalPrice2024 float64
 
 // NOT valid — the compiler refuses all four
-// var 2fast int      // starts with a digit
-// var my-var int     // contains a hyphen
-// var total price int // contains a space
-// var func int       // reserved keyword
+var 2fast int         // starts with a digit
+var my-var int       // contains a hyphen
+var total price int // contains a space
+var func int       // reserved keyword
 </code></pre>
 
 <div class="callout">
@@ -758,7 +758,7 @@ var totalPrice2024 float64
     <p>
         Στη Go, το αν το όνομα ξεκινά με <strong>κεφαλαίο</strong> ή <strong>πεζό</strong> δεν είναι απλό θέμα
         αισθητικής — αλλάζει τη <em>συμπεριφορά</em> του κώδικα, καθορίζοντας αν το όνομα είναι ορατό από άλλα
-        packages. Δεν σε επηρεάζει όσο δουλεύεις σε ένα μόνο αρχείο, αλλά θα το εξηγήσουμε πλήρως στην Ενότητα 6
+        packages. Δεν σε επηρεάζει όσο δουλεύεις σε ένα μόνο αρχείο, αλλά θα το εξηγήσουμε καλύτερα στην Ενότητα 6
         (exported / unexported).
     </p>
 </div>
@@ -857,6 +857,30 @@ x := 20 // ERROR: no new variables on left side of :=
   ο compiler αρνείται να μεταγλωττίσει το πρόγραμμα.
   Αυτό είναι σκόπιμο: αποτρέπει τη συσσώρευση νεκρού κώδικα
   και κρατά τα προγράμματα καθαρά.
+</p>
+
+<h3>4. Ασυμφωνία πλήθους τιμών σε πολλαπλή ανάθεση</h3>
+
+<p>
+  Όταν κάνεις ανάθεση σε πολλαπλές μεταβλητές (είτε με <code>=</code> είτε με <code>:=</code>),
+  ο αριθμός των μεταβλητών στα αριστερά <strong>πρέπει να ταιριάζει ακριβώς</strong> με τον αριθμό των τιμών στα δεξιά.
+  Η Go δεν κάνει αυτόματες προσαρμογές — αν οι ποσότητες δεν ταιριάζουν, ο compiler βγάζει σφάλμα.
+</p>
+
+<pre><code class="lang-go">// Αριστερή πλευρά: 1 μεταβλητή — Δεξιά πλευρά: 2 τιμές
+a := 1
+a = 2, 3 // ERROR: assignment mismatch: 1 variable but 2 values
+
+// Αριστερή πλευρά: 2 μεταβλητές — Δεξιά πλευρά: 1 τιμή
+b, c := 1, 2
+b, c = 10 // ERROR: assignment mismatch: 2 variables but 1 value
+</code></pre>
+
+<p>
+  Το ίδιο ισχύει και κατά τη δήλωση με <code>:=</code>:
+  </p>
+  <p>
+  <code>x, y := 5</code> είναι επίσης λάθος, γιατί η Go περιμένει δύο τιμές για να αναθέσει στις <code>x</code> και <code>y</code>.
 </p>
 `);
 
