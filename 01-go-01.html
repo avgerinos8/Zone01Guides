@@ -556,7 +556,7 @@ main()
                 options: [
                     "Επειδή ολόκληρο το πρόγραμμα πρέπει να μεταφραστεί μία φορά σε machine code πριν καν τρέξει, ενώ μια interpreted γλώσσα εκτελείται γραμμή-γραμμή κάθε φορά που τρέχει",
                     "Επειδή οι interpreted γλώσσες χρειάζονται compiler και οι compiled χρειάζονται interpreter — είναι ακριβώς το αντίθετο, γιατί έτσι λειτουργεί η ροή της πληροφορίας μέσα στο σύστημα",
-                    "Επειδή μόνο οι compiled γλώσσες μπορούν να τυπώσουν κείμενο στο terminal",
+                    "Επειδή ο compiler χρειάζεται να ελέγξει τους τύπους όλων των μεταβλητών κατά την εκτέλεση, κάτι που μια interpreted γλώσσα κάνει μία μόνο φορά, πριν ξεκινήσει το πρόγραμμα",
                     "Δεν υπάρχει καμία πρακτική διαφορά· η ονομασία είναι απλώς ιστορική σύμβαση χωρίς τεχνικό αντίκρισμα"
                 ],
                 correct: 0,
@@ -578,7 +578,7 @@ main()
                 options: [
                     "Το go build δουλεύει μόνο σε Linux, ενώ το go run είναι διαθέσιμο σε όλα τα λειτουργικά συστήματα",
                     "Το go run μεταγλωττίζει και τρέχει αμέσως χωρίς να αφήσει μόνιμο αρχείο πίσω του, ενώ το go build παράγει μόνιμο εκτελέσιμο αρχείο χωρίς να το τρέξει",
-                    "Το go run απαιτεί υποχρεωτικά την ύπαρξη GOPATH, ενώ το go build λειτουργεί μόνο με Go Modules",
+                    "Το go run παράγει πάντα ένα μόνιμο εκτελέσιμο αρχείο στον τρέχοντα φάκελο και μετά το εκτελεί, ενώ το go build κάνει ακριβώς το ίδιο αλλά χωρίς να το τρέξει",
                     "Και οι δύο εντολές κάνουν ακριβώς το ίδιο πράγμα — η μία απλά χρησιμοποιείται από αρχάριους και η άλλη από προχωρημένους προγραμματιστές"
                 ],
                 correct: 1,
@@ -697,8 +697,71 @@ name <span class="tok-kw">:=</span> <span class="tok-str">"Unknown"</span>
 </code></pre>
 <p>Παρατήρησε ότι εδώ δεν γράψαμε καθόλου τον τύπο (<code>int</code> ή <code>string</code>) — και όμως, η μεταβλητή <em>έχει</em> έναν συγκεκριμένο τύπο, ακριβώς όπως πριν. Αυτό γίνεται επειδή ο compiler κάνει <strong>type inference</strong> (εξαγωγή τύπου): κοιτάζει την τιμή στα δεξιά του <code>:=</code> και συμπεραίνει αυτόματα ποιος τύπος ταιριάζει. Το <code>25</code> είναι προφανώς ακέραιος αριθμός, άρα το <code>age</code> γίνεται τύπου <code>int</code>. Το <code>"Unknown"</code> είναι κείμενο μέσα σε εισαγωγικά, άρα το <code>name</code> γίνεται τύπου <code>string</code>. Μετά από αυτό το σημείο, η μεταβλητή έχει πλέον σταθερό τύπο — δεν μπορείς να της αναθέσεις αργότερα μια τιμή διαφορετικού τύπου.</p>
 
-<p>Το <code>:=</code> είναι το πιο συχνά χρησιμοποιούμενο μοτίβο μέσα σε σώματα συναρτήσεων, ακριβώς επειδή είναι πιο σύντομο και το type inference καλύπτει τις περισσότερες περιπτώσεις χωρίς απώλεια σαφήνειας. Το <code>var</code> παραμένει απαραίτητο σε τρεις περιπτώσεις: (1) όταν θες μόνο τη zero value, χωρίς καμία αρχικοποίηση, (2) όταν δηλώνεις μεταβλητή στο επίπεδο του package, εκτός κάθε function, όπου το <code>:=</code> απαγορεύεται εντελώς, ή (3) όταν θες να επιβάλεις ρητά διαφορετικό τύπο από αυτόν που θα συμπέρανε αυτόματα ο compiler (π.χ. <code>var x float64 = 5</code> αντί για το inferred <code>int</code>).</p>
+<p>Το <code>:=</code> είναι το πιο συχνά χρησιμοποιούμενο μοτίβο μέσα σε σώματα functions, ακριβώς επειδή είναι πιο σύντομο και το type inference καλύπτει τις περισσότερες περιπτώσεις χωρίς απώλεια σαφήνειας. Το <code>var</code> παραμένει απαραίτητο σε τρεις περιπτώσεις: (1) όταν θες μόνο τη zero value, χωρίς καμία αρχικοποίηση, (2) όταν δηλώνεις μεταβλητή στο επίπεδο του package, εκτός κάθε function, όπου το <code>:=</code> απαγορεύεται εντελώς, ή (3) όταν θες να επιβάλεις ρητά διαφορετικό τύπο από αυτόν που θα συμπέρανε αυτόματα ο compiler (π.χ. <code>var x float64 = 5</code> αντί για το inferred <code>int</code>).</p>
 
+
+<h2>Πώς επιτρέπεται να ονομάζεις μια μεταβλητή</h2>
+
+<p>
+    Μέχρι τώρα δώσαμε ονόματα όπως <code>age</code> και <code>name</code> χωρίς να πούμε ποτέ τι
+    <em>επιτρέπεται</em> να γράψεις εκεί. Οι κανόνες είναι λίγοι και απόλυτοι — αν τους παραβιάσεις, ο compiler
+    αρνείται να μεταγλωττίσει.
+</p>
+
+<div class="grid2">
+    <div class="card">
+        <span class="card-tag">Κανόνες (υποχρεωτικοί)</span>
+        <ul>
+            <li>Ξεκινά με <strong>γράμμα</strong> ή κάτω παύλα <code>_</code> — ποτέ με ψηφίο. Το
+                <code>2fast</code> είναι compile error, το <code>fast2</code> είναι μια χαρά.</li>
+            <li>Μετά το πρώτο σύμβολο, επιτρέπονται γράμματα, ψηφία και <code>_</code>. Τίποτα άλλο — καμία
+                παύλα, κανένα κενό, κανένα σύμβολο. Το <code>my-var</code> δεν είναι όνομα· ο compiler το
+                διαβάζει ως <code>my</code> μείον <code>var</code>.</li>
+            <li>Δεν μπορεί να είναι μία από τις <strong>25 λέξεις-κλειδιά</strong> της γλώσσας
+                (<code>var</code>, <code>for</code>, <code>func</code>, <code>if</code>, <code>range</code>,
+                κ.λπ.). Αυτές είναι δεσμευμένες.</li>
+            <li>Τα ονόματα είναι <strong>case-sensitive</strong>: τα <code>age</code>, <code>Age</code> και
+                <code>AGE</code> είναι τρεις εντελώς διαφορετικές μεταβλητές.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <span class="card-tag">Συμβάσεις (όχι υποχρεωτικές, αλλά τηρούνται παντού)</span>
+        <ul>
+            <li><strong>camelCase</strong>: πρώτη λέξη με πεζό, κάθε επόμενη λέξη με κεφαλαίο αρχικό —
+                <code>userName</code>, <code>totalPrice</code>, <code>isReady</code>. Όχι
+                <code>user_name</code> (αυτό είναι στυλ της Python) και όχι <code>username</code>.</li>
+            <li><strong>Περιγραφικά ονόματα</strong>: <code>totalPrice</code> αντί για <code>tp</code> ή
+                <code>x</code>. Η μόνη καθιερωμένη εξαίρεση είναι οι μετρητές λούπας (<code>i</code>,
+                <code>j</code>), που θα δούμε στην Ενότητα 5.</li>
+            <li>Για <code>bool</code>, το όνομα διαβάζεται σαν ερώτηση ναι/όχι: <code>isReady</code>,
+                <code>hasLicense</code>, <code>found</code>.</li>
+        </ul>
+    </div>
+</div>
+
+<pre><code class="lang-go">// valid
+var age int
+var userName string
+var _internal bool
+var totalPrice2024 float64
+
+// NOT valid — the compiler refuses all four
+// var 2fast int      // starts with a digit
+// var my-var int     // contains a hyphen
+// var total price int // contains a space
+// var func int       // reserved keyword
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Το αρχικό γράμμα κρύβει έναν επιπλέον κανόνα</span>
+    <p>
+        Στη Go, το αν το όνομα ξεκινά με <strong>κεφαλαίο</strong> ή <strong>πεζό</strong> δεν είναι απλό θέμα
+        αισθητικής — αλλάζει τη <em>συμπεριφορά</em> του κώδικα, καθορίζοντας αν το όνομα είναι ορατό από άλλα
+        packages. Δεν σε επηρεάζει όσο δουλεύεις σε ένα μόνο αρχείο, αλλά θα το εξηγήσουμε πλήρως στην Ενότητα 6
+        (exported / unexported).
+    </p>
+</div>
 
 <h2>Δήλωση πολλαπλών μεταβλητών</h2>
 
@@ -1460,8 +1523,21 @@ fmt.Println(string(magic))      // 🪄
 fmt.Println(int(latinC) + int(magic)) // 67 + 129428 = 129495
 
 // Το 129495 είναι ο Unicode code point για το emoji 🧗 (άνθρωπος που σκαρφαλώνει):
-fmt.Println(string(int(latinC) + int(magic))) // 🧗
+fmt.Println(string(rune(int(latinC) + int(magic)))) // 🧗
 </code></pre>
+
+<div class="callout">
+    <span class="tag">Γιατί γράφουμε rune() και όχι απευθείας string()</span>
+    <p>
+        Στην τελευταία γραμμή θα περίμενες ίσως να γράψουμε απλά <code>string(129495)</code>. Τεχνικά
+        μεταγλωττίζεται, αλλά η Go το θεωρεί <strong>ύποπτο</strong>: το εργαλείο ελέγχου <code>go vet</code>
+        (τρέχει αυτόματα από το VS Code) θα σε προειδοποιήσει, γιατί οι περισσότεροι που γράφουν
+        <code>string(κάποιος_αριθμός)</code> στην πραγματικότητα ήθελαν να μετατρέψουν τον
+        <em>αριθμό σε κείμενο</em> (π.χ. το <code>42</code> στο κείμενο <code>"42"</code>), και όχι σε
+        χαρακτήρα. Γράφοντας ρητά <code>string(rune(...))</code>, δηλώνεις ξεκάθαρα ότι θες τον
+        <em>χαρακτήρα</em> με αυτόν τον code point.
+    </p>
+</div>
 
 <p><strong>Παράξενο, έτσι;</strong> Μπορείς να κάνεις αριθμητικές πράξεις με τους αριθμούς των χαρακτήρων!
     Το <code>C</code> (67) συν το <code>🪄</code> (129428) κάνει <code>🧗</code>,
@@ -1555,7 +1631,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
             {
                 q: "Γιατί η γραμμή x + y δεν μεταγλωττίζεται όταν το x είναι τύπου int και το y τύπου float64;",
                 options: [
-                    "Επειδή η Go δεν διαθέτει καθόλου operator πρόσθεσης για δεκαδικούς αριθμούς",
+                    "Επειδή η Go επιτρέπει πράξεις μόνο ανάμεσα σε μεταβλητές που έχουν δηλωθεί στην ίδια γραμμή κώδικα, αλλιώς χρειάζεται ξεχωριστή βοηθητική μεταβλητή",
                     "Επειδή το y πρέπει πάντα να δηλώνεται πριν το x σε κάθε αριθμητική έκφραση της Go",
                     "Επειδή η Go δεν κάνει ποτέ σιωπηλές μετατροπές ανάμεσα σε διαφορετικούς αριθμητικούς τύπους — απαιτείται ρητή μετατροπή, όπως float64(x)",
                     "Επειδή ο operator + λειτουργεί μόνο ανάμεσα σε μεταβλητές που δηλώθηκαν με το ίδιο ακριβώς keyword, είτε var είτε :="
@@ -1609,7 +1685,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 </p>
 <ul>
     <li>
-        <strong>Declaration statements</strong> — δηλώσεις μεταβλητών, σταθερών, τύπων, συναρτήσεων (π.χ.
+        <strong>Declaration statements</strong> — δηλώσεις μεταβλητών, σταθερών, τύπων, functions (π.χ.
         <code>var x int</code>, <code>const Pi = 3.14</code>, <code>func main() { ... }</code>)
     </li>
     <li>
@@ -1729,6 +1805,130 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
     Για παράδειγμα, στην έκφραση <code>2 + 3 * 4</code>, ο πολλαπλασιασμός γίνεται πρώτος (3*4=12), και μετά προστίθεται
     το 2, δίνοντας 14. <br> Με τις εξής παρενθέσεις: <code>(2 + 3) * 4</code> δίνει 20.
 </p>
+
+<h2>Τα πέντε επίπεδα προτεραιότητας της Go</h2>
+
+<p>
+    Ενώ άλλες γλώσσες έχουν δεκαπέντε και πλέον επίπεδα προτεραιότητας (κάτι που κανείς δεν θυμάται στην πράξη),
+    η Go τα περιόρισε σκόπιμα σε <strong>πέντε</strong> για τους binary operators. Όσο πιο ψηλά στον πίνακα, τόσο
+    <em>νωρίτερα</em> εκτελείται ο operator:
+</p>
+
+<table style="width:100%; border-collapse:collapse; margin:16px 0;">
+    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
+        <th style="text-align:left; padding:8px;">Επίπεδο</th>
+        <th style="text-align:left; padding:8px;">Operators</th>
+        <th style="text-align:left; padding:8px;">Κατηγορία</th>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>5</strong> (πρώτα)</td>
+        <td style="padding:8px;"><code>*</code> <code>/</code> <code>%</code> <code>&lt;&lt;</code> <code>&gt;&gt;</code> <code>&amp;</code> <code>&amp;^</code></td>
+        <td style="padding:8px;">Πολλαπλασιασμός, διαίρεση, modulo</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>4</strong></td>
+        <td style="padding:8px;"><code>+</code> <code>-</code> <code>|</code> <code>^</code></td>
+        <td style="padding:8px;">Πρόσθεση, αφαίρεση</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>3</strong></td>
+        <td style="padding:8px;"><code>==</code> <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>&gt;=</code></td>
+        <td style="padding:8px;">Συγκρίσεις</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;"><strong>2</strong></td>
+        <td style="padding:8px;"><code>&amp;&amp;</code></td>
+        <td style="padding:8px;">Λογικό AND</td>
+    </tr>
+    <tr>
+        <td style="padding:8px;"><strong>1</strong> (τελευταία)</td>
+        <td style="padding:8px;"><code>||</code></td>
+        <td style="padding:8px;">Λογικό OR</td>
+    </tr>
+</table>
+
+<p>
+    Οι μονομελείς (unary) operators — <code>!</code> (NOT), το πρόσημο <code>-</code>, και ο
+    <code>&amp;</code> που θα δούμε στους pointers — δένουν <strong>πιο σφιχτά από όλα</strong>, πριν καν το
+    επίπεδο 5. Γι' αυτό το <code>!found &amp;&amp; ready</code> σημαίνει <code>(!found) &amp;&amp; ready</code>, όχι
+    <code>!(found &amp;&amp; ready)</code> — μια διάκριση που αλλάζει εντελώς το αποτέλεσμα.
+</p>
+
+<h2>Πώς διαβάζεται μια σύνθετη έκφραση, βήμα-βήμα</h2>
+
+<p>
+    Ο πίνακας γίνεται χρήσιμος μόνο όταν τον εφαρμόσεις. Πάρε αυτή τη γραμμή, που δεν έχει
+    <em>καμία</em> παρένθεση:
+</p>
+
+<pre><code class="lang-go">age := 20
+score := 85
+banned := false
+
+ok := age >= 18 && score > 50 || banned
+</code></pre>
+
+<p>Η Go την υπολογίζει έτσι:</p>
+
+<ul>
+    <li>Πρώτα το <strong>επίπεδο 3</strong> (συγκρίσεις): το <code>age >= 18</code> δίνει
+        <code>true</code>, το <code>score > 50</code> δίνει <code>true</code>. Η έκφραση έχει γίνει πλέον
+        <code>true && true || banned</code>.</li>
+    <li>Μετά το <strong>επίπεδο 2</strong> (<code>&&</code>): το <code>true && true</code> δίνει
+        <code>true</code>. Μένει <code>true || banned</code>.</li>
+    <li>Τέλος το <strong>επίπεδο 1</strong> (<code>||</code>): <code>true || false</code> δίνει
+        <code>true</code>.</li>
+</ul>
+
+<p>
+    Το κρίσιμο σημείο: επειδή το <code>&amp;&amp;</code> δένει πιο σφιχτά από το <code>||</code>, η γραμμή
+    σημαίνει <code>(age >= 18 && score > 50) || banned</code> — και όχι
+    <code>age >= 18 && (score > 50 || banned)</code>. Οι δύο εκδοχές δίνουν διαφορετικό αποτέλεσμα για έναν
+    15χρονο που είναι <code>banned</code>: η πρώτη βγάζει <code>true</code>, η δεύτερη <code>false</code>.
+</p>
+
+<div class="callout">
+    <span class="tag">Η πρακτική συμβουλή</span>
+    <p>
+        Δεν χρειάζεται να αποστηθίσεις τον πίνακα. Χρειάζεται να θυμάσαι <strong>δύο πράγματα</strong>: ότι οι
+        πράξεις προηγούνται των συγκρίσεων, και ότι το <code>&amp;&amp;</code> προηγείται του <code>||</code>.
+        Για οτιδήποτε άλλο, <strong>βάλε παρενθέσεις</strong> — ακόμα κι όταν είναι τεχνικά περιττές. Ο κώδικας
+        <code>(a &amp;&amp; b) || c</code> κάνει ακριβώς ό,τι και το <code>a &amp;&amp; b || c</code>, αλλά ο
+        επόμενος που θα τον διαβάσει (πιθανότατα εσύ, σε τρεις μήνες) δεν θα χρειαστεί να ανοίξει πίνακα
+        προτεραιότητας.
+    </p>
+</div>
+
+<h2>Σύντομη παρένθεση: τι κάνουν οι bitwise operators</h2>
+
+<p>
+    Στον πίνακα των κατηγοριών παραπάνω αναφέραμε τους bitwise operators
+    (<code>&amp;</code> <code>|</code> <code>^</code> <code>&amp;^</code> <code>&lt;&lt;</code>
+    <code>&gt;&gt;</code>) χωρίς εξήγηση. Δεν θα τους χρησιμοποιήσεις στο Μέρος 1, αλλά αξίζει να ξέρεις τι
+    είναι, ώστε να μην τους μπερδεύεις με τους λογικούς <code>&amp;&amp;</code> και <code>||</code>.
+</p>
+
+<p>
+    Οι λογικοί operators δουλεύουν πάνω σε <code>bool</code> τιμές. Οι bitwise δουλεύουν πάνω στα
+    <strong>επιμέρους bits ενός ακέραιου</strong>. Θυμήσου από την Ενότητα 1 ότι κάθε αριθμός αποθηκεύεται ως
+    ακολουθία από 0 και 1 — οι bitwise operators αγγίζουν αυτά τα ψηφία ένα προς ένα:
+</p>
+
+<pre><code class="lang-go">a := 12 // in binary: 1100
+b := 10 // in binary: 1010
+
+fmt.Println(a & b)  // 8  -> 1000 : a 1 only where BOTH have a 1
+fmt.Println(a | b)  // 14 -> 1110 : a 1 where EITHER has a 1
+fmt.Println(a &lt;&lt; 1) // 24 -> 11000: shift left one place = multiply by 2
+fmt.Println(a &gt;&gt; 1) // 6  -> 110  : shift right one place = divide by 2
+</code></pre>
+
+<p>
+    Πρόσεξε τη διαφορά που μπερδεύει τους περισσότερους αρχάριους: το <code>&amp;</code> (ένα) είναι bitwise
+    AND πάνω σε αριθμούς, ενώ το <code>&amp;&amp;</code> (δύο) είναι λογικό AND πάνω σε <code>bool</code>. Δεν
+    είναι εναλλάξιμα, και η Go δεν σε αφήνει να τα μπερδέψεις: το <code>true &amp; false</code> δεν
+    μεταγλωττίζεται καν.
+</p>
 `);
 
         addQuiz([
@@ -1736,7 +1936,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
                 q: "Γιατί το var x int θεωρείται statement και όχι expression;",
                 options: [
                     "Δηλώνει μια μεταβλητή, αλλά δεν παράγει καμία τιμή που να μπορείς να χρησιμοποιήσεις αλλού",
-                    "Επειδή περιέχει τη λέξη-κλειδί var, και κάθε λέξη-κλειδί κάνει κάτι statement",
+                    "Επειδή περιέχει τη λέξη-κλειδί var, και στη Go κάθε γραμμή που ξεκινά με λέξη-κλειδί θεωρείται αυτόματα statement",
                     "Επειδή δεν έχει operator ίσον = μέσα του",
                     "Επειδή είναι πολύ μικρό σε μήκος για να είναι expression"
                 ],
@@ -1748,7 +1948,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
                 options: [
                     "Αριθμητικοί",
                     "Σύγκρισης",
-                    "Bitwise",
+                    "Bitwise, αφού δουλεύει πάνω στα bits",
                     "Εκχώρησης"
                 ],
                 correct: 0,
@@ -1759,7 +1959,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
                 options: [
                     "Σύγκρισης",
                     "Αριθμητικοί",
-                    "Λογικοί",
+                    "Λογικοί, αφού συνδυάζει δύο συνθήκες μεταξύ τους",
                     "Εκχώρησης"
                 ],
                 correct: 0,
@@ -1769,7 +1969,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
                 q: "Τι θα υπολογίσει η έκφραση 6 + 4 * 3;",
                 options: [
                     "18",
-                    "30",
+                    "30, αν η πρόσθεση εκτελεστεί πριν τον πολλαπλασιασμό",
                     "13",
                     "72"
                 ],
@@ -1780,7 +1980,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
                 q: "Τι θα υπολογίσει η έκφραση (6 + 4) * 3;",
                 options: [
                     "30",
-                    "18",
+                    "18, αφού οι παρενθέσεις αγνοούνται από τον compiler",
                     "13",
                     "10"
                 ],
@@ -1791,7 +1991,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
                 q: "Τι ισοδυναμεί ακριβώς με το x += 5;",
                 options: [
                     "x = x + 5",
-                    "x = 5",
+                    "x = 5, αγνοώντας την προηγούμενη τιμή",
                     "x == x + 5",
                     "5 = x + 5"
                 ],
@@ -1803,7 +2003,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
                 options: [
                     "5",
                     "12",
-                    "0",
+                    "0, αφού το 12 δεν χωράει στο 5",
                     "7"
                 ],
                 correct: 0,
@@ -2300,7 +2500,7 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
 
 <div class="callout">
   <span class="tag">Ναι, μπορείς να έχεις δύο μεταβλητές με το ίδιο όνομα!</span>
-  <p>Αρκεί να μην δηλώνονται στο ίδιο επίπεδο block. Αυτή που δηλώνεται στο πιο "τοπικό" (μικρότερο) block επισκιάζει (shadows) την άλλη, και την αντικαθιστά σαν να μην υπήρχε — μέχρι το τέλος του block της. Όλα αυτά θα τα δούμε αναλυτικά στο κεφάλαιο για το scope (δηλαδή τον χρόνο ζωής) των συναρτήσεων.</p>
+  <p>Αρκεί να μην δηλώνονται στο ίδιο επίπεδο block. Αυτή που δηλώνεται στο πιο "τοπικό" (μικρότερο) block επισκιάζει (shadows) την άλλη, και την αντικαθιστά σαν να μην υπήρχε — μέχρι το τέλος του block της. Όλα αυτά θα τα δούμε αναλυτικά στο κεφάλαιο για το scope (δηλαδή τον χρόνο ζωής) των functions.</p>
 </div>
 
 <p>Αν η πρόθεσή σου είναι να ενημερώσεις την <em>υπάρχουσα</em> εξωτερική μεταβλητή <code>score</code>, η λύση είναι απλή: χρησιμοποίησε απλό <code>=</code> αντί για <code>:=</code> μέσα στο if. Το <code>=</code> σημαίνει "ανάθεση σε ήδη υπάρχουσα μεταβλητή", ενώ το <code>:=</code> σημαίνει πάντα "δήλωσε καινούρια".</p>
@@ -2338,6 +2538,75 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
 }
 </code></pre>
 <p>Η Go ελέγχει τα cases με τη σειρά από πάνω προς τα κάτω, και εκτελεί το πρώτο του οποίου η συνθήκη είναι true — ακριβώς όπως μια αλυσίδα <code>if</code>/<code>else if</code>/<code>else</code>, αλλά με πιο συμπυκνωμένη, οπτικά καθαρή σύνταξη όταν έχεις πολλές διαδοχικές συνθήκες πάνω στην ίδια μεταβλητή.</p>
+
+<h2>Το αυτόματο break — και η λέξη fallthrough</h2>
+
+<p>
+    Υπάρχει ένα σημείο όπου η <code>switch</code> της Go διαφέρει ουσιαστικά από αυτήν της C, της Java ή της
+    JavaScript, και αξίζει να το ξέρεις από τώρα: <strong>μόλις ένα case ταιριάξει και εκτελεστεί, η
+    <code>switch</code> τελειώνει</strong>. Δεν συνεχίζει στο επόμενο case.
+</p>
+
+<p>
+    Στις παραπάνω γλώσσες, αν ξεχάσεις να γράψεις <code>break</code> στο τέλος κάθε case, η εκτέλεση
+    «γλιστράει» στο επόμενο case και εκτελεί κι εκείνο — μια από τις πιο κλασικές πηγές bugs στην ιστορία του
+    προγραμματισμού. Η Go αποφάσισε ότι αυτή η συμπεριφορά είναι λάθος προεπιλογή, και την αντέστρεψε: το
+    <code>break</code> υπονοείται πάντα, χωρίς να χρειάζεται να το γράψεις.
+</p>
+
+<pre><code class="lang-go">day := 6
+
+switch day {
+case 6:
+    fmt.Println("Saturday")
+    // no break needed here - the switch ends by itself
+case 7:
+    fmt.Println("Sunday") // this NEVER runs when day is 6
+}
+// output: Saturday
+</code></pre>
+
+<p>
+    Αν όμως θέλεις <em>πραγματικά</em> να συνεχίσει η εκτέλεση στο επόμενο case, η Go σου δίνει μια ρητή
+    λέξη-κλειδί γι' αυτό: <code>fallthrough</code>. Επειδή πρέπει να τη γράψεις εσύ, η πρόθεσή σου είναι
+    ξεκάθαρη σε όποιον διαβάσει τον κώδικα — δεν μοιάζει με ξεχασμένο <code>break</code>:
+</p>
+
+<pre><code class="lang-go">level := 3
+
+switch level {
+case 3:
+    fmt.Println("Access to level 3")
+    fallthrough // deliberately continue into the next case
+case 2:
+    fmt.Println("Access to level 2")
+    fallthrough
+case 1:
+    fmt.Println("Access to level 1")
+}
+// output:
+// Access to level 3
+// Access to level 2
+// Access to level 1
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Δύο λεπτομέρειες για το fallthrough</span>
+    <ul>
+        <li>Το <code>fallthrough</code> πηγαίνει στο <strong>αμέσως επόμενο</strong> case και εκτελεί το σώμα
+            του <em>χωρίς να ελέγξει τη συνθήκη του</em>. Στο παράδειγμα παραπάνω, το <code>case 2</code>
+            εκτελείται παρόλο που το <code>level</code> δεν είναι 2.</li>
+        <li>Πρέπει να είναι η <strong>τελευταία εντολή</strong> μέσα στο case, και δεν επιτρέπεται στο
+            τελευταίο case (δεν υπάρχει επόμενο για να πάει).</li>
+    </ul>
+</div>
+
+<p>
+    Στην πράξη, το <code>fallthrough</code> χρησιμοποιείται σπάνια — το κλιμακωτό παράδειγμα με τα επίπεδα
+    πρόσβασης είναι από τις λίγες περιπτώσεις όπου βγάζει πραγματικό νόημα. Στις περισσότερες περιπτώσεις που
+    θα σε μπει ο πειρασμός να το χρησιμοποιήσεις, αυτό που θέλεις στην πραγματικότητα είναι απλά να
+    ομαδοποιήσεις τιμές σε ένα case με κόμμα (<code>case 1, 2, 3:</code>), όπως είδαμε παραπάνω.
+</p>
 `);
 
 
@@ -2348,7 +2617,7 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
                     "if x > 5 { fmt.Println(\"large\") }",
                     "if (x > 5) { fmt.Println(\"large\") }",
                     "if x > 5: { fmt.Println(\"large\") }",
-                    "if x > 5 then { fmt.Println(\"large\") }"
+                    "if x > 5 then { fmt.Println(\"large\") } — με τη λέξη then"
                 ],
                 correct: 0,
                 explain: "Στη Go, οι παρενθέσεις γύρω από τη συνθήκη ΔΕΝ χρησιμοποιούνται. Τα άγκιστρα { } είναι υποχρεωτικά."
@@ -2370,7 +2639,7 @@ if score >= 90 {
                     "A",
                     "B",
                     "C",
-                    "F"
+                    "F, αφού καμία συνθήκη δεν ταιριάζει"
                 ],
                 correct: 1,
                 explain: "Το score είναι 75, άρα η συνθήκη score >= 75 είναι true. Οι επόμενες συνθήκες δεν ελέγχονται."
@@ -2379,7 +2648,7 @@ if score >= 90 {
                 q: "Ποια είναι η σωστή σύνταξη για switch στη Go;",
                 options: [
                     "switch day { case 1: fmt.Println(\"Monday\") }",
-                    "switch(day) { case 1: fmt.Println(\"Monday\") }",
+                    "switch (day) { case 1: fmt.Println(\"Monday\") } — με παρενθέσεις γύρω από την τιμή",
                     "switch day: { case 1: fmt.Println(\"Monday\") }",
                     "switch { day: case 1: fmt.Println(\"Monday\") }"
                 ],
@@ -2401,7 +2670,7 @@ default:
                 options: [
                     "weekday",
                     "weekend",
-                    "invalid",
+                    "invalid, αφού το default εκτελείται πάντα",
                     "Δεν μεταγλωττίζεται"
                 ],
                 correct: 0,
@@ -2412,7 +2681,7 @@ default:
                 options: [
                     "var x int",
                     "x = 5",
-                    "x++",
+                    "x++, που είναι expression αφού παράγει τιμή",
                     "x + 5"
                 ],
                 correct: 3,
@@ -2453,7 +2722,7 @@ if x = 5 {
                     "switch { case x > 5: fmt.Println(\"large\") }",
                     "switch true { case x > 5: fmt.Println(\"large\") }",
                     "switch false { case x > 5: fmt.Println(\"large\") }",
-                    "switch x > 5 { fmt.Println(\"large\") }"
+                    "switch x > 5 { fmt.Println(\"large\") } — χωρίς καθόλου case"
                 ],
                 correct: 0,
                 explain: "Η tagless switch γράφεται switch { case συνθήκη: ... }"
@@ -2472,7 +2741,7 @@ if score >= 13 {
                 options: [
                     "teenager",
                     "adult",
-                    "child",
+                    "child, αφού το age είναι μικρότερο του 18",
                     "Δεν μεταγλωττίζεται"
                 ],
                 correct: 0,
@@ -3342,7 +3611,7 @@ func main() {
                 options: [
                     "i = i + 1",
                     "i = i * 1",
-                    "i = 1",
+                    "i = 1, δηλαδή απλή ανάθεση της τιμής 1",
                     "i == i + 1"
                 ],
                 correct: 0,
@@ -3358,7 +3627,7 @@ func main() {
                     "0, 9, 18",
                     "0, 9, 18, 27",
                     "9, 18",
-                    "0, 18"
+                    "0, 18, αφού το βήμα διπλασιάζει τον μετρητή"
                 ],
                 correct: 0,
                 explain: "Ξεκινώντας από 0, με βήμα +9 και όριο <=18, οι τιμές είναι 0, 9, 18 — μετά το i γίνεται 27 και η συνθήκη σταματά τη λούπα."
@@ -3373,7 +3642,7 @@ func main() {
                     "5, 4, 3, 2, 1, 0",
                     "5, 4, 3, 2, 1",
                     "0, 1, 2, 3, 4, 5",
-                    "5, 3, 1"
+                    "5, 3, 1, αφού το βήμα μειώνει κατά δύο"
                 ],
                 correct: 0,
                 explain: "Με αρνητικό βήμα (i--) και συνθήκη i >= 0, το 0 συμπεριλαμβάνεται κανονικά — η μέτρηση σταματά μόνο όταν i γίνει -1."
@@ -3419,7 +3688,7 @@ fmt.Println(sum)`,
                     "10",
                     "15",
                     "55",
-                    "0"
+                    "0, αφού το sum δεν ενημερώνεται ποτέ"
                 ],
                 correct: 0,
                 explain: "Το break εκτελείται ΠΡΙΝ την πρόσθεση όταν i γίνει 5 — άρα προστίθενται μόνο τα 1+2+3+4 = 10."
@@ -3439,7 +3708,7 @@ fmt.Println(sum)`,
                     "15",
                     "10",
                     "55",
-                    "0"
+                    "0, αφού η λούπα δεν εκτελείται καθόλου"
                 ],
                 correct: 0,
                 explain: "Εδώ το sum += i εκτελείται ΠΡΙΝ τον έλεγχο του break — άρα το 5 προλαβαίνει να προστεθεί πριν σταματήσει η λούπα: 1+2+3+4+5 = 15. <br>Είναι σημαντικό να καταλάβεις την σειρά εκτέλεσης και ποιά ακριβώς είναι η διαφορά με το προηγουμένο πολλαπλής επιλογής."
@@ -3483,7 +3752,7 @@ fmt.Println(sum)`,
                     "Off-by-one error — τυπώνει μόνο 1, 2, 3, 4, λείπει το 5",
                     "Δεν έχει κανένα πρόβλημα, τυπώνει σωστά το 1 έως το 5",
                     "Θα προκαλέσει ατέρμονη λούπα, αφού η συνθήκη ποτέ δεν γίνεται false",
-                    "Compile error, αφού το < απαιτεί πάντα ίσο αριθμό ψηφίων"
+                    "Off-by-one error — τυπώνει 1, 2, 3, 4, 5, 6, δηλαδή έναν αριθμό παραπάνω από όσους ζητήθηκαν"
                 ],
                 correct: 0,
                 explain: "Η συνθήκη i < 5 σταματά τη λούπα πριν το i φτάσει το 5 — κλασικό off-by-one error. Έπρεπε να είναι i <= 5 ή i < 6."
@@ -3516,7 +3785,7 @@ fmt.Println(i)`,
                     "Compile error — χωρίς το πρώτο i, το Println(i) θα ήταν εκτός scope",
                     "0, 1, 2, 0",
                     "0, 1, 2, 2",
-                    "0, 1, 2, nil"
+                    "0, 1, 2, 3 — η λούπα τυπώνει μία φορά παραπάνω, αφού λείπει η αρχικοποίηση"
                 ],
                 correct: 0,
                 explain: "Αυτή τη φορά δεν υπάρχει κανένα εξωτερικό i := 0 πριν το loop.<br>Το i που δηλώνεται μέσα στο for i := 0; ... έχει scope περιορισμένο ΜΟΝΟ μέσα στο loop (αρχικοποίηση, συνθήκη, βήμα, και σώμα) — έξω από αυτό, δεν υπάρχει καθόλου.<br>Η τελευταία γραμμή, fmt.Println(i), προσπαθεί να χρησιμοποιήσει ένα i που δεν υπάρχει πουθενά σε εκείνο το σημείο του κώδικα, οπότε ο compiler σταματά με undefined: i — δηλαδή 'δεν γνωρίζω καμία μεταβλητή με αυτό το όνομα εδώ', πριν καν προλάβει να τρέξει το πρόγραμμα."
@@ -3531,7 +3800,7 @@ for ; i < 5; i++ {
                 options: [
                     "Ότι παραλείπεται σκόπιμα η αρχικοποίηση, αφού η μεταβλητή i υπάρχει ήδη από πριν",
                     "Ότι το loop θα εκτελεστεί ακριβώς μία φορά, ανεξαρτήτως συνθήκης",
-                    "Προκαλεί πάντα compile error, αφού λείπει η αρχικοποίηση",
+                    "Ότι η συνθήκη θα ελεγχθεί μόνο μία φορά, στην αρχή, και μετά η λούπα θα τρέχει ασταμάτητα",
                     "Ότι η Go θα δημιουργήσει αυτόματα μια νέα μεταβλητή i με τυχαία αρχική τιμή"
                 ],
                 correct: 0,
@@ -3615,7 +3884,7 @@ for count < 3 {
 </p>
 
 <p>
-    Μια <strong>συνάρτηση</strong> (function) είναι ένα ονομασμένο, αυτόνομο "κομμάτι" κώδικα, το οποίο μπορείς να "καλέσεις" (call) — δηλαδή να ζητήσεις να εκτελεστεί — από οποιοδήποτε άλλο σημείο του προγράμματός σου, όσες φορές θέλεις, χωρίς να χρειάζεται να ξαναγράψεις τον ίδιο κώδικα κάθε φορά.
+    Μια <strong>function</strong> είναι ένα ονομασμένο, αυτόνομο "κομμάτι" κώδικα, το οποίο μπορείς να "καλέσεις" (call) — δηλαδή να ζητήσεις να εκτελεστεί — από οποιοδήποτε άλλο σημείο του προγράμματός σου, όσες φορές θέλεις, χωρίς να χρειάζεται να ξαναγράψεις τον ίδιο κώδικα κάθε φορά.
 </p>
 
 <p>
@@ -3652,7 +3921,7 @@ for count < 3 {
 <h2>Πώς δουλεύει μια κλήση function</h2>
 
 <p>
-    Όταν το πρόγραμμά σου εκτελείται, οι εντολές εκτελούνται διαδοχικά μέσα σε μια function. Όταν συναντά μια <strong>κλήση συνάρτησης</strong> (function call), η εκτέλεση "διακόπτεται" προσωρινά, ο υπολογιστής θυμάται πού βρισκόταν, εκτελεί τον κώδικα της function που κλήθηκε, και μετά επιστρέφει ακριβώς στο σημείο που είχε μείνει και συνεχίζει.
+    Όταν το πρόγραμμά σου εκτελείται, οι εντολές εκτελούνται διαδοχικά μέσα σε μια function. Όταν συναντά μια <strong>κλήση function</strong> (function call), η εκτέλεση "διακόπτεται" προσωρινά, ο υπολογιστής θυμάται πού βρισκόταν, εκτελεί τον κώδικα της function που κλήθηκε, και μετά επιστρέφει ακριβώς στο σημείο που είχε μείνει και συνεχίζει.
 </p>
 
 <p>
@@ -3719,8 +3988,15 @@ Back to main
 </code></pre>
 
 <p>
-    Μια function <strong>πρέπει να ορίζεται πριν χρησιμοποιηθεί</strong> — αν προσπαθήσεις να την καλέσεις πριν τη δηλώσεις, ο compiler θα δώσει σφάλμα.
+    Σε αντίθεση με πολλές άλλες γλώσσες, στη Go <strong>η σειρά με την οποία γράφεις τις functions μέσα στο αρχείο δεν έχει καμία σημασία</strong>. Μπορείς να καλέσεις μια function που ορίζεται πιο κάτω από το σημείο της κλήσης — ο compiler διαβάζει ολόκληρο το package πριν αποφασίσει τι υπάρχει και τι όχι. Το είδαμε ήδη στο προηγούμενο παράδειγμα: η <code>main()</code> κάλεσε τη <code>sayHello()</code>, η οποία ήταν γραμμένη <em>κάτω</em> από αυτήν, και δούλεψε κανονικά.
 </p>
+
+<div class="callout">
+    <span class="tag">Προσοχή: αυτό ισχύει μόνο στο επίπεδο του package</span>
+    <p>
+        Ο κανόνας «η σειρά δεν μετράει» αφορά ό,τι δηλώνεται <strong>έξω</strong> από κάθε function — functions, package-level μεταβλητές, σταθερές. <strong>Μέσα</strong> σε μια function, η σειρά μετράει απόλυτα: μια τοπική μεταβλητή πρέπει να δηλωθεί πριν τη χρησιμοποιήσεις, αλλιώς παίρνεις <code>undefined</code>.
+    </p>
+</div>
 
 <div class="callout">
     <span class="tag">Κανόνας: η main() είναι η είσοδος του προγράμματος</span>
@@ -3809,12 +4085,88 @@ func add(x int, y int) {
 }
 func add(x, y int) { // συμπτυγμένη γραφή
 // ...
-// } 
+}
 </code></pre>
 
 <p>
     Είναι απλά μια συντομογραφία — δεν αλλάζει τίποτα στη λειτουργία της function.
 </p>
+
+<h2>Variadic functions — μεταβλητό πλήθος ορισμάτων</h2>
+
+<p>
+    Μέχρι τώρα κάθε function που είδαμε δέχεται έναν <strong>σταθερό</strong> αριθμό ορισμάτων: η
+    <code>add(x, y int)</code> θέλει ακριβώς δύο, ούτε ένα λιγότερο ούτε ένα παραπάνω. Τι γίνεται όμως αν θέλεις
+    μια function που προσθέτει <em>όσους</em> αριθμούς της δώσεις — τρεις τη μία φορά, δέκα την άλλη;
+</p>
+
+<p>
+    Έχεις ήδη χρησιμοποιήσει μια τέτοια function δεκάδες φορές χωρίς να το προσέξεις: η
+    <code>fmt.Println()</code> δέχεται ένα όρισμα, δύο, πέντε, ή και κανένα, και δουλεύει το ίδιο σε όλες τις
+    περιπτώσεις. Αυτό λέγεται <strong>variadic</strong> function, και δηλώνεται βάζοντας
+    <strong>τρεις τελείες πριν τον τύπο</strong> της τελευταίας παραμέτρου:
+</p>
+
+<pre><code class="lang-go">func sum(numbers ...int) int {
+    total := 0
+    for _, n := range numbers {
+        total += n
+    }
+    return total
+}
+</code></pre>
+
+<p>
+    Πρόσεξε τη θέση των τελειών: γράφονται <code>numbers ...int</code> — πρώτα το όνομα, μετά οι τελείες, μετά
+    ο τύπος. Το <code>...int</code> σημαίνει «κανένα ή περισσότερα ορίσματα τύπου <code>int</code>».
+</p>
+
+<p>Τώρα η ίδια function δέχεται όσα ορίσματα θέλεις:</p>
+
+<pre><code class="lang-go">fmt.Println(sum(1, 2))          // 3
+fmt.Println(sum(1, 2, 3, 4, 5)) // 15
+fmt.Println(sum())              // 0 - zero arguments is perfectly valid
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Το κλειδί: μέσα στη function, η παράμετρος είναι ένα slice</span>
+    <p>
+        Ο λόγος που ο κώδικας παραπάνω μπορεί να γράψει <code>for _, n := range numbers</code> είναι ότι η Go
+        μαζεύει όλα τα ορίσματα που έδωσες και τα βάζει σε ένα <strong>slice</strong> (θα τα δούμε αναλυτικά
+        στην Ενότητα 8 — προς το παρόν, σκέψου το σαν μια λίστα από τιμές). Αν καλέσεις
+        <code>sum(1, 2, 3)</code>, τότε μέσα στη function το <code>numbers</code> είναι ουσιαστικά η λίστα
+        <code>[1 2 3]</code>. Αν καλέσεις <code>sum()</code> χωρίς τίποτα, το <code>numbers</code> είναι μια
+        άδεια λίστα — γι' αυτό το αποτέλεσμα είναι 0 και όχι σφάλμα.
+    </p>
+</div>
+
+<h3>Δύο κανόνες που πρέπει να θυμάσαι</h3>
+
+<ul>
+    <li>
+        Η variadic παράμετρος πρέπει να είναι πάντα η <strong>τελευταία</strong> στη λίστα. Μπορείς να έχεις
+        κανονικές παραμέτρους πριν από αυτήν, ποτέ μετά:
+        <pre><code class="lang-go">func report(title string, values ...int) { /* ... */ }  // OK
+// func report(values ...int, title string) { }         // compile error
+</code></pre>
+    </li>
+    <li>
+        Μπορείς να έχεις <strong>μόνο μία</strong> variadic παράμετρο ανά function. Δεν υπάρχει τρόπος να
+        γράψεις μια function που δέχεται «όσα int θέλεις και μετά όσα string θέλεις» — ο compiler δεν θα είχε
+        τρόπο να ξέρει πού τελειώνουν τα πρώτα και πού αρχίζουν τα δεύτερα.
+    </li>
+</ul>
+
+<div class="callout">
+    <span class="tag">Γιατί το fmt.Println δέχεται ανακατεμένους τύπους</span>
+    <p>
+        Ίσως αναρωτιέσαι: αν η variadic παράμετρος έχει έναν συγκεκριμένο τύπο, πώς μπορεί η
+        <code>fmt.Println("Age:", 25, true)</code> να δεχτεί string, int και bool ταυτόχρονα; Η απάντηση είναι
+        ότι η υπογραφή της είναι <code>Println(a ...any)</code> — και το <code>any</code> είναι ένας ειδικός
+        τύπος που σημαίνει «οτιδήποτε». Θα δούμε τι ακριβώς είναι σε επόμενο guide, όταν μιλήσουμε για
+        interfaces.
+    </p>
+</div>
 
 <br>
 
@@ -4214,7 +4566,7 @@ func greet() {
 
 <h2>Global variables</h2>
 
-<p> Μια μεταβλητή που δηλώνεται <strong>εκτός</strong> από οποιαδήποτε συνάρτηση, στο επίπεδο του package, είναι ορατή από <strong>όλες</strong> τις functions μέσα στο ίδιο package (συχνά αποκαλούνται και <strong>global</strong> μεταβλητές, παρόλο που ο σωστός όρος στη Go είναι package-level): </p>
+<p> Μια μεταβλητή που δηλώνεται <strong>εκτός</strong> από οποιαδήποτε function, στο επίπεδο του package, είναι ορατή από <strong>όλες</strong> τις functions μέσα στο ίδιο package (συχνά αποκαλούνται και <strong>global</strong> μεταβλητές, παρόλο που ο σωστός όρος στη Go είναι package-level): </p>
 
 <pre><code class="lang-go">package main
 
@@ -4284,7 +4636,7 @@ func increment() {
 }
 </code></pre>
 
-<p> <em>ΠΡΟΣΟΧΗ:</em> Το ίδιο ακριβώς συμβαίνει και με τις παραμέτρους συναρτήσεων. Μια παράμετρος είναι μια τοπική μεταβλητή μέσα στη function — ακόμα κι αν έχει το ίδιο όνομα με μια μεταβλητή έξω από αυτήν, είναι εντελώς διαφορετική:</p>
+<p> <em>ΠΡΟΣΟΧΗ:</em> Το ίδιο ακριβώς συμβαίνει και με τις παραμέτρους των functions. Μια παράμετρος είναι μια τοπική μεταβλητή μέσα στη function — ακόμα κι αν έχει το ίδιο όνομα με μια μεταβλητή έξω από αυτήν, είναι εντελώς διαφορετική:</p>
 
 <pre><code class="lang-go">func main() {
     var redSwitch bool = true
@@ -4359,7 +4711,7 @@ func AvoidNuclearWar(redSwitch bool) {
     <tr>
         <td class="gt-term"><span class="tok-func">Functions</span></td>
         <td class="gt-def">
-            ονόματα συναρτήσεων, π.χ. <span class="tok-func">main</span>, <span class="tok-func">Println</span>
+            ονόματα functions, π.χ. <span class="tok-func">main</span>, <span class="tok-func">Println</span>
         </td>
     </tr>
     <tr>
@@ -4417,21 +4769,21 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                     "function",
                     "func",
                     "fn",
-                    "def"
+                    "def, όπως στην Python και σε άλλες γλώσσες"
                 ],
                 correct: 1,
-                explain: "Στη Go, μια συνάρτηση ορίζεται με τη λέξη-κλειδί func. Οι άλλες επιλογές (function, fn, def) χρησιμοποιούνται σε άλλες γλώσσες, αλλά όχι στη Go."
+                explain: "Στη Go, μια function ορίζεται με τη λέξη-κλειδί func. Οι άλλες επιλογές (function, fn, def) χρησιμοποιούνται σε άλλες γλώσσες, αλλά όχι στη Go."
             },
             {
                 q: "Τι συμβαίνει όταν μια function έχει παράμετρο και την ονομάζουμε με το ίδιο όνομα με μια μεταβλητή έξω από αυτήν;",
                 options: [
                     "Χρησιμοποιούμε την εξωτερική μεταβλητή απευθείας — οποιαδήποτε αλλαγή γίνει μέσα στη function αντανακλάται στην ίδια την εξωτερική μεταβλητή, χωρίς να χρειάζεται να την επιστρέψουμε.",
                     "Η παράμετρος είναι μια εντελώς νέα, ανεξάρτητη τοπική μεταβλητή",
-                    "Δημιουργείται νέα τοπική μεταβλητή που κάνει shadow την εξωτερική",
+                    "Η παράμετρος κάνει shadow την εξωτερική μεταβλητή, οπότε κάθε αλλαγή της φαίνεται και έξω από τη function",
                     "Ο compiler δίνει σφάλμα γιατί δεν επιτρέπονται ίδια ονόματα"
                 ],
                 correct: 1,
-                explain: "Μια παράμετρος συνάρτησης είναι πάντα μια νέα τοπική μεταβλητή — δεν έχει καμία σχέση με μεταβλητές έξω από τη function, ακόμα κι αν έχουν το ίδιο όνομα."
+                explain: "Μια παράμετρος function είναι πάντα μια νέα τοπική μεταβλητή — δεν έχει καμία σχέση με μεταβλητές έξω από τη function, ακόμα κι αν έχουν το ίδιο όνομα."
             },
             {
                 q: "Πώς ξέρουμε ότι μια function στη Go επιστρέφει τιμή;",
@@ -4442,7 +4794,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                     "Όλες οι functions στη Go επιστρέφουν τιμή, απλά πολλές φορές τις αγνοούμε"
                 ],
                 correct: 1,
-                explain: "Το keyword return απλά τερματίζει τη συνάρτηση — μπορεί να επιστρέψει τιμή ή να τερματίσει πρόωρα τη συνάρτηση χωρίς τιμή. Το αν μια συνάρτηση επιστρέφει τιμή το καθορίζει ο return type της."
+                explain: "Το keyword return απλά τερματίζει τη function — μπορεί να επιστρέψει τιμή ή να τερματίσει πρόωρα τη function χωρίς τιμή. Το αν μια function επιστρέφει τιμή το καθορίζει ο return type της."
             },
             {
                 q: "Ποιο είναι το σωστό τρόπο να δηλώσεις μια function με πολλαπλές τιμές επιστροφής;",
@@ -4450,7 +4802,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                     "func divmod(a, b int) (int, int) { ... }",
                     "func divmod(a, b int) int, int { ... }",
                     "func divmod(a, b int) (int int) { ... }",
-                    "func divmod(a, b int) [int, int] { ... }"
+                    "func divmod(a, b int) returns (int, int) { ... } — με τη λέξη returns"
                 ],
                 correct: 0,
                 explain: "Στη Go, οι πολλαπλές τιμές επιστροφής δηλώνονται μέσα σε παρένθεση: (int, int)."
@@ -4458,7 +4810,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
             {
                 q: "Ποιο είναι το όριο του scope μιας μεταβλητής που δηλώνεται μέσα σε ένα if block;",
                 options: [
-                    "Σε όλο το πρόγραμμα",
+                    "Σε όλο το πρόγραμμα, αφού κάθε μεταβλητή που δηλώνεται μία φορά παραμένει ορατή παντού",
                     "Μόνο μέσα στο if block και στο αντίστοιχο else (αν υπάρχει)",
                     "Σε όλη τη function",
                     "Μέχρι το τέλος του αρχείου"
@@ -4471,7 +4823,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                 options: [
                     "Η package-level (global) είναι ορατή από όλες τις functions του package, η local μόνο μέσα στο block της",
                     "Η package-level (global) δημιουργείται όταν καλείται η function, η local πριν την main",
-                    "Δεν υπάρχει διαφορά, είναι το ίδιο πράγμα",
+                    "Η package-level (global) δεσμεύεται στη στοίβα και χάνεται μετά από κάθε κλήση, ενώ η local ζει σε όλη τη διάρκεια του προγράμματος",
                     "Η package-level (global) μπορεί να αλλάξει μόνο από την main"
                 ],
                 correct: 0,
@@ -4481,19 +4833,18 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                 q: "Τι είναι ένα docstring comment στη Go;",
                 options: [
                     "Σχόλιο πάνω από function που περιγράφει τι κάνει — το βλέπεις σαν tooltip στο VS Code",
-                    "Σχόλιο που προηγείται της function και περιγράφει τις παραμέτρους και την τιμή επιστροφής της",
+                    "Σχόλιο που γράφεται υποχρεωτικά με /* */ ακριβώς κάτω από τη function, αλλιώς ο compiler αρνείται να μεταγλωττίσει το αρχείο",
                     "Σχόλιο μέσα στη function που εξηγεί κάθε γραμμή κώδικα ξεχωριστά",
                     "Σχόλιο που μπαίνει στο τέλος της function για να αναφέρει τον δημιουργό της",
                 ],
                 correct: 0,
-                alsoCorrect: [1],
-                explain: "Έχουμε 2 σωστές απαντήσεις! Το docstring είναι το σχόλιο ακριβώς πάνω από μια function. Περιγράφει τι κάνει, τις παραμέτρους και την τιμή επιστροφής. Στο VS Code εμφανίζεται ως tooltip όταν κρατάς το ποντίκι πάνω από το όνομά της."
+                explain: "Το docstring είναι το σχόλιο ακριβώς πάνω από μια function. Περιγράφει τι κάνει, τις παραμέτρους και την τιμή επιστροφής. Στο VS Code εμφανίζεται ως tooltip όταν κρατάς το ποντίκι πάνω από το όνομά της. Γράφεται με //, όχι με /* */, και πάνω από τη function, όχι κάτω."
             },
             {
                 q: "Τι συμβαίνει όταν μια function καλεί μια άλλη function;",
                 options: [
                     "Η εκτέλεση πηδάει στην καλούμενη function και επιστρέφει όταν τελειώσει",
-                    "Η εκτέλεση σταματά εντελώς",
+                    "Η εκτέλεση σταματά εντελώς και το πρόγραμμα τερματίζει, εκτός αν υπάρχει ρητό return",
                     "Η καλούμενη function εκτελείται παράλληλα",
                     "Δεν επιτρέπεται να καλείς function μέσα σε function"
                 ],
@@ -4506,7 +4857,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                     "func sum(nums ...int) int { ... }",
                     "func sum(nums []int) int { ... }",
                     "func sum(nums ...int) (int) { ... }",
-                    "func sum(nums ...int) int"
+                    "func sum(...nums int) int { ... } — με τις τελείες πριν το όνομα"
                 ],
                 correct: 0,
                 explain: "Μια variadic function στη Go δηλώνεται με ...τύπος πριν το όνομα της παραμέτρου. Μέσα στη function, η παράμετρος συμπεριφέρεται σαν slice."
@@ -4528,7 +4879,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
                     "Πάντα τη zero value του τύπου επιστροφής, ανεξάρτητα από τις τρέχουσες τιμές των named returns",
                     "Προκαλεί πάντα compile error, αφού η Go απαιτεί ρητή τιμή σε κάθε return statement",
                     "Τις τρέχουσες τιμές των ονοματισμένων μεταβλητών επιστροφής, ακριβώς όπως έχουν διαμορφωθεί μέχρι εκείνο το σημείο της function",
-                    "Μόνο την πρώτη από τις ονοματισμένες τιμές επιστροφής, αγνοώντας εντελώς τις υπόλοιπες"
+                    "Μόνο την πρώτη από τις ονοματισμένες τιμές επιστροφής, ενώ οι υπόλοιπες συμπληρώνονται αυτόματα με τη zero value τους, χωρίς καμία προειδοποίηση"
                 ],
                 correct: 2,
                 explain: "Τα named returns συμπεριφέρονται σαν κανονικές τοπικές μεταβλητές· ένα γυμνό return στέλνει πίσω ό,τι τιμές έχουν εκείνη τη στιγμή, χωρίς να χρειάζεται να τις ξαναγράψεις ρητά."
@@ -4536,7 +4887,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
             {
                 q: "Πώς ξεχωρίζει η Go ένα exported από ένα unexported identifier, χωρίς λέξεις-κλειδιά όπως public/private;",
                 options: [
-                    "Με ειδικό annotation γραμμένο πάνω από τη δήλωση της function ή της μεταβλητής",
+                    "Με ειδικό annotation γραμμένο ακριβώς πάνω από τη δήλωση, το οποίο διαβάζει ο compiler κατά τη μεταγλώττιση",
                     "Με βάση το αν το identifier δηλώθηκε με var ή με τη σύντομη μορφή :=",
                     "Με βάση το πρώτο γράμμα του ονόματος: κεφαλαίο αρχικό σημαίνει exported, πεζό αρχικό σημαίνει unexported",
                     "Με βάση αποκλειστικά το αν βρίσκεται μέσα στη func main() ή σε κάποια άλλη function"
@@ -5081,7 +5432,7 @@ fmt.Println(x)    // 100
                 q: "Ποιος είναι ο βασικός λόγος που χρησιμοποιούμε pointers στη Go;",
                 options: [
                     "Για να μπορεί μια function να τροποποιήσει πραγματικά μια εξωτερική μεταβλητή, όχι το αντίγραφό της",
-                    "Για να τρέχει ο κώδικας πιο γρήγορα",
+                    "Για να τρέχει ο κώδικας πιο γρήγορα, αφού η Go βελτιστοποιεί αυτόματα κάθε function που δέχεται pointer",
                     "Για να αποφεύγουμε εντελώς τη χρήση της λέξης-κλειδί return σε οποιαδήποτε function",
                     "Για να αποθηκεύουμε πολλαπλές τιμές μέσα σε μία μόνο απλή μεταβλητή"
                 ],
@@ -5105,7 +5456,7 @@ fmt.Println(x)    // 100
                     "42, η τιμή που βρίσκεται στη διεύθυνση που κρατάει ο p",
                     "0xc0000140a0, δηλαδή η ίδια η διεύθυνση μνήμης του x",
                     "Compile error, αφού το * δεν επιτρέπεται πριν από μεταβλητή pointer",
-                    "nil, αφού ο p δεν έχει ακόμα αρχικοποιηθεί σωστά"
+                    "nil, αφού ένας pointer χρειάζεται ρητή αρχικοποίηση με make πριν από οποιοδήποτε dereference"
                 ],
                 correct: 0,
                 explain: "Το *p κάνει dereference — 'ακολουθεί' τον pointer και δίνει την τιμή στη διεύθυνση που κρατάει, δηλαδή 42."
@@ -5149,7 +5500,7 @@ fmt.Println(x)    // 100
                     "Δύο — **q",
                     "Ένα — *q",
                     "Τρία — ***q",
-                    "Κανένα"
+                    "Κανένα — το q δείχνει ήδη απευθείας στο x"
                 ],
                 correct: 0,
                 explain: "Το *q σε δίνει το p (έναν ακόμα pointer). Χρειάζεσαι δεύτερο dereference, **q, για να φτάσεις τελικά στην τιμή του x."
@@ -5159,7 +5510,7 @@ fmt.Println(x)    // 100
                 options: [
                     "Είναι μέρος του τύπου — δηλώνει ότι το p είναι pointer προς int",
                     "Κάνει dereference στο p, διαβάζοντας την τιμή στην οποία δείχνει",
-                    "Είναι operator πολλαπλασιασμού ανάμεσα σε δύο τιμές",
+                    "Είναι operator πολλαπλασιασμού, οπότε η δήλωση σημαίνει ότι το p θα πολλαπλασιαστεί με έναν ακέραιο αργότερα",
                     "Δηλώνει ότι το p δεν μπορεί ποτέ να αλλάξει τιμή, σαν σταθερά"
                 ],
                 correct: 0,
@@ -5189,7 +5540,7 @@ fmt.Println(x)`,
                 options: [
                     "Το πέρασμα ενός pointer κοστίζει σταθερά λίγα bytes, ενώ η αντιγραφή ολόκληρης της δομής θα ήταν ακριβή",
                     "Επειδή η Go αρνείται εντελώς να μεταγλωττίσει functions που δέχονται μεγάλες δομές by value",
-                    "Επειδή μόνο οι pointers επιτρέπεται να περνιούνται ως παράμετροι σε functions της Go",
+                    "Επειδή μόνο οι pointers επιτρέπεται να περνιούνται ως παράμετροι σε functions της Go, ενώ οι απλές τιμές πρέπει πάντα να επιστρέφονται",
                     "Επειδή by value σημαίνει ότι η τιμή χάνεται εντελώς μετά την κλήση της function"
                 ],
                 correct: 0,
@@ -5634,7 +5985,7 @@ for _, letter := range word {
 </code></pre>
 
 <p>
-    Το <code>_</code> εδώ αγνοεί τη θέση — μας ενδιαφέρει μόνο αν κάθε χαρακτήρας <code>ch</code> είναι το γράμμα
+    Το <code>_</code> εδώ αγνοεί τη θέση — μας ενδιαφέρει μόνο αν κάθε χαρακτήρας <code>letter</code> είναι το γράμμα
     <code>'e'</code> (σε single quotes, γιατί συγκρίνουμε με έναν μεμονωμένο χαρακτήρα, όχι με string).
 </p>
 
@@ -5676,7 +6027,97 @@ for i := 0; i < len(word); i++ {
 // found an e!
 </code></pre>
 
-<p>Ίδιο αποτέλεσμα, απλά πιο "φλύαρος" τρόπος να το πετύχεις — ακριβώς όπως είδαμε στη σύγκριση για τα slices παραπάνω.</p>
+<p>Ίδιο αποτέλεσμα, απλά πιο "φλύαρος" τρόπος να το πετύχεις — ακριβώς όπως είδαμε στη σύγκριση για τα slices παραπάνω. <strong>Με μία σοβαρή προϋπόθεση, όμως</strong>, που αξίζει τη δική της ενότητα.</p>
+
+<h2>Η κρυφή παγίδα: το word[i] δεν σου δίνει rune, σου δίνει byte</h2>
+
+<p>
+    Τα δύο παραδείγματα παραπάνω έβγαλαν ίδιο αποτέλεσμα — αλλά <em>μόνο</em> επειδή η λέξη ήταν
+    <code>"elephant"</code>, δηλαδή αποκλειστικά λατινικοί χαρακτήρες. Δεν κάνουν το ίδιο πράγμα.
+</p>
+
+<p>
+    Θυμήσου από την Ενότητα 2: ένα string αποθηκεύεται στη μνήμη ως ακολουθία από <strong>bytes</strong> σε
+    κωδικοποίηση UTF-8, όπου κάθε χαρακτήρας πιάνει 1 έως 4 bytes — 1 byte οι λατινικοί, 2 bytes οι ελληνικοί,
+    4 bytes τα emoji. Οι δύο τρόποι «διαβάζουν» αυτή την ακολουθία διαφορετικά:
+</p>
+
+<div class="grid2">
+    <div class="card">
+        <span class="card-tag">for i, ch := range word</span>
+        <p>
+            Το <code>range</code> <strong>αποκωδικοποιεί</strong> την UTF-8: σου δίνει έναν ολόκληρο
+            <code>rune</code> κάθε φορά, όσα bytes κι αν χρειάστηκαν. Το <code>i</code> είναι η θέση σε
+            <em>bytes</em>, οπότε προχωράει με άλματα (0, 2, 4...) σε ελληνικό κείμενο.
+        </p>
+    </div>
+    <div class="card">
+        <span class="card-tag">word[i]</span>
+        <p>
+            Η προσπέλαση με index σου δίνει <strong>ένα σκέτο byte</strong> (τύπου <code>byte</code>, δηλαδή
+            <code>uint8</code>) — όχι χαρακτήρα. Σε λατινικό κείμενο τα δύο συμπίπτουν, γιατί εκεί 1 χαρακτήρας
+            = 1 byte. Σε οτιδήποτε άλλο, όχι.
+        </p>
+    </div>
+</div>
+
+<p>Δες τι συμβαίνει με ελληνικά, όπου κάθε γράμμα πιάνει 2 bytes:</p>
+
+<pre><code class="lang-go">word := "Γεια"
+
+fmt.Println(len(word)) // 8  - NOT 4! len() counts BYTES, not characters
+
+// With range: 4 iterations, one per actual character
+for i, ch := range word {
+    fmt.Println(i, string(ch))
+}
+// 0 Γ
+// 2 ε
+// 4 ι
+// 6 α
+
+// With index: 8 iterations, each one HALF of a character - meaningless on its own
+for i := 0; i < len(word); i++ {
+    fmt.Println(i, word[i])
+}
+// 0 206
+// 1 147   <- these two bytes TOGETHER are the letter Γ
+// 2 206
+// 3 181   <- these two are the letter ε
+// ...
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Δύο συνέπειες που θα σε δαγκώσουν αν δεν τις ξέρεις</span>
+    <ul>
+        <li>
+            Το <code>len(s)</code> σε ένα string επιστρέφει το πλήθος των <strong>bytes</strong>, όχι των
+            χαρακτήρων. Το <code>len("Γεια")</code> είναι 8, το <code>len("hello")</code> είναι 5. Αν θες
+            πραγματικά το πλήθος των χαρακτήρων, μετράς με <code>range</code> ή χρησιμοποιείς τη
+            <code>utf8.RuneCountInString()</code> (θα τη δούμε σε επόμενο guide).
+        </li>
+        <li>
+            Το <code>word[i]</code> είναι τύπου <code>byte</code>, όχι <code>rune</code>. Γι' αυτό το
+            <code>word[0] == 'Γ'</code> <strong>δεν μεταγλωττίζεται καν</strong>: το <code>'Γ'</code> είναι rune
+            με τιμή 915, και ένα <code>byte</code> δεν φτάνει καν ως εκεί (μέγιστο 255).
+        </li>
+    </ul>
+</div>
+
+<h3>Πότε χρησιμοποιείς ποιο</h3>
+
+<p>
+    Ο κανόνας είναι απλός: <strong>αν δουλεύεις με κείμενο ως κείμενο, χρησιμοποίησε
+    <code>range</code></strong>. Είναι ο μόνος τρόπος που σου εγγυάται ότι παίρνεις χαρακτήρες και όχι
+    μισοκομμένα bytes, και δουλεύει σωστά σε οποιαδήποτε γλώσσα — ελληνικά, κινέζικα, emoji.
+</p>
+
+<p>
+    Η προσπέλαση με <code>word[i]</code> είναι σωστή επιλογή μόνο όταν <em>ξέρεις</em> ότι δουλεύεις με καθαρό
+    ASCII (π.χ. επεξεργάζεσαι έναν κωδικό από γράμματα και ψηφία), ή όταν σε ενδιαφέρουν πραγματικά τα bytes
+    (π.χ. διαβάζεις δυαδικά δεδομένα από αρχείο). Αν η απάντηση δεν είναι ξεκάθαρα «ναι» σε ένα από τα δύο,
+    χρησιμοποίησε <code>range</code>.
+</p>
 
 <h2>Ξαναγυρνάμε στο range με το e — αυτή τη φορά κρατάμε τη θέση</h2>
 
@@ -5722,7 +6163,7 @@ for i, letter := range word {
                     "nums := [ ]int {1, 2, 3}",
                     "nums := make( [ ]int, 1, 2, 3)",
                     "nums := [3]int {1, 2, 3}",
-                    "nums := int[ ] {1, 2, 3}"
+                    "nums := int[ ] {1, 2, 3} — με τον τύπο πριν τις αγκύλες"
                 ],
                 correct: 0,
                 explain: "Το []int{...} χωρίς αριθμό μέσα στις αγκύλες είναι slice literal. Το [3]int{...} με αριθμό είναι array. Η make([]int, 1, 2, 3) δεν είναι σωστή σύνταξη — η make δέχεται δύο ή τρία ορίσματα: τον τύπο, το length, και προαιρετικά το capacity. Δεν δέχεται literal values."
@@ -5744,7 +6185,7 @@ for i, letter := range word {
                     "nums[1:4]",
                     "nums[1:3]",
                     "nums(1, 4)",
-                    "nums[:4]"
+                    "nums[:4], που ξεκινά όμως από τη θέση 0"
                 ],
                 correct: 0,
                 explain: "Το start (1) είναι inclusive, το end (4) exclusive — άρα [1:4] δίνει τα index 1, 2, 3."
@@ -5755,7 +6196,7 @@ for i, letter := range word {
                     "a = append(a, b...)",
                     "a = append(a, b)",
                     "a = append(a..., b)",
-                    "a = copy(a, b)"
+                    "a = copy(a, b), που αντιγράφει αντί να προσθέτει"
                 ],
                 correct: 0,
                 explain: "Οι τρεις τελείες 'ξεδιπλώνουν' το b σε μεμονωμένα ορίσματα. Χωρίς αυτές, η append(a, b) δεν μεταγλωττίζεται."
@@ -5765,7 +6206,7 @@ for i, letter := range word {
                 options: [
                     "Η append προσθέτει στοιχεία, πιθανόν δημιουργώντας νέο underlying array, ενώ η copy αντιγράφει τιμές σε ένα ήδη υπάρχον, ανεξάρτητο slice",
                     "Η append τροποποιεί πάντα το slice επιτόπου, ενώ η copy δημιουργεί πάντα εντελώς νέο array στη μνήμη",
-                    "Δεν υπάρχει καμία πρακτική διαφορά, είναι συνώνυμα",
+                    "Η append δουλεύει μόνο όταν το slice έχει ακόμα ελεύθερη capacity, ενώ η copy χρησιμοποιείται υποχρεωτικά σε κάθε άλλη περίπτωση προσθήκης στοιχείων",
                     "Η copy λειτουργεί μόνο πάνω σε arrays, ποτέ σε slices"
                 ],
                 correct: 0,
@@ -5788,7 +6229,7 @@ for i, letter := range word {
                     "Πρώτα το index, μετά την τιμή του στοιχείου",
                     "Μόνο την τιμή του στοιχείου· αυτή είναι η διαφορά με την παραδοσιακή for loop, που σου δίνει μέσω του i και την πληροφορία για τη θέση του",
                     "Πρώτα την τιμή, μετά το index του στοιχείου",
-                    "Μόνο το index, χωρίς την τιμή"
+                    "Μόνο το index, οπότε πρέπει να γράψεις μόνος σου nums[i] για την τιμή"
                 ],
                 correct: 0,
                 explain: "Στο for i, v := range nums, η πρώτη τιμή είναι πάντα το index, η δεύτερη η τιμή του στοιχείου."
@@ -5806,7 +6247,7 @@ for i, v := range nums {
                     "20",
                     "30",
                     "10",
-                    "1"
+                    "1, δηλαδή το index αντί για την τιμή"
                 ],
                 correct: 0,
                 explain: "Στο index 1 βρίσκεται η τιμή 20 (index 0 → 10, index 1 → 20, index 2 → 30)."
@@ -5824,7 +6265,7 @@ fmt.Println(sum)`,
                     "45",
                     "50",
                     "70",
-                    "30"
+                    "30, αν το τελευταίο στοιχείο εξαιρούνταν"
                 ],
                 correct: 0,
                 explain: "nums[1:4] δίνει τα στοιχεία 10, 15, 20 (index 1, 2, 3). Το άθροισμά τους είναι 45."
@@ -5842,7 +6283,7 @@ fmt.Println(sum)`,
                 options: [
                     "25",
                     "60",
-                    "70",
+                    "70, αν αθροίζονταν όλα τα στοιχεία του slice",
                     "45"
                 ],
                 correct: 0,
@@ -5862,7 +6303,7 @@ for i, v := range nums {
                     "3",
                     "7",
                     "4",
-                    "0"
+                    "0, αφού το slice ξεκινά άδειο"
                 ],
                 correct: 0,
                 explain: "Ο πρώτος περιττός αριθμός του slice είναι το 7, στη θέση (index) 3. Το break σταματά τη λούπα αμέσως μόλις τυπωθεί."
@@ -5884,7 +6325,7 @@ fmt.Println(count)`,
                     "2",
                     "3",
                     "10",
-                    "0"
+                    "0, αφού το _ αγνοεί κάθε τιμή"
                 ],
                 correct: 0,
                 explain: "Η εξωτερική for διασχίζει κάθε λέξη, η εσωτερική κάθε γράμμα της. Μόνο το 'o' στο go και το 'u' στο fun ταιριάζουν — σύνολο 2."
@@ -5894,7 +6335,7 @@ fmt.Println(count)`,
                 options: [
                     "Για να αγνοήσεις ρητά το index, αφού δηλωμένη αλλά αχρησιμοποίητη μεταβλητή θα προκαλούσε compile error",
                     "Για να δηλώσεις ρητά ότι το slice nums είναι άδειο και δεν περιέχει κανένα στοιχείο",
-                    "Επειδή η Go απαιτεί πάντα δύο μεταβλητές σε κάθε range",
+                    "Επειδή η Go απαιτεί πάντα δύο μεταβλητές σε κάθε range, και το _ είναι η μόνη έγκυρη ονομασία για τη δεύτερη",
                     "Για να διπλασιάσεις την ταχύτητα εκτέλεσης της επανάληψης"
                 ],
                 correct: 0,
@@ -5906,7 +6347,7 @@ fmt.Println(count)`,
                     "Επειδή ένα string στη Go συμπεριφέρεται ουσιαστικά σαν ακολουθία από runes, και το range δίνει θέση+τιμή όπως και σε slice",
                     "Επειδή κάθε string μετατρέπεται αυτόματα σε ξεχωριστό slice πριν την εκτέλεση, με επιπλέον κόστος απόδοσης",
                     "Επειδή η Go αποθηκεύει τα strings εσωτερικά ως slices ακέραιων αριθμών και κάθε φορά που τρέχει το range, δημιουργείται ένα νέο slice από τα bytes του string, που σημαίνει πως η range λειτουργεί πάνω σε ένα προσωρινό, άρα η αρχική μεταβλητή μένει ανεπηρέαστη",
-                    "Επειδή κάθε string είναι στην πραγματικότητα ένας κρυμμένος map[int]rune"
+                    "Επειδή κάθε string είναι στην πραγματικότητα ένας κρυμμένος map[int]rune, και η range σε map δίνει πάντα ζεύγη κλειδιού και τιμής με σταθερή σειρά"
                 ],
                 correct: 0,
                 explain: "Ένα string είναι ουσιαστικά μια ακολουθία από runes — γι' αυτό το range του δίνει θέση+τιμή, ίδια λογική με slice."
@@ -6453,7 +6894,7 @@ cube[0][0][0] = 1
                     "4",
                     "1",
                     "2, η δεύτερη τιμή της πρώτης γραμμής αντί για την πρώτη τιμή της δεύτερης",
-                    "6"
+                    "6, δηλαδή το τελευταίο στοιχείο της δεύτερης γραμμής"
                 ],
                 correct: 0,
                 explain: "matrix[1] είναι η δεύτερη γραμμή {4,5,6}, και matrix[1][0] είναι το πρώτο της στοιχείο: 4."
@@ -6464,7 +6905,7 @@ cube[0][0][0] = 1
                     "Οι εσωτερικές γραμμές μπορούν να έχουν διαφορετικό μήκος η μία από την άλλη",
                     "Το πρόγραμμα κάνει πάντα panic όταν προσπαθείς να το τυπώσεις",
                     "Όλες οι γραμμές πρέπει υποχρεωτικά να έχουν ακριβώς το ίδιο μήκος",
-                    "Ισχύει μόνο για δισδιάστατα arrays, ποτέ για slices"
+                    "Ισχύει μόνο για δισδιάστατα arrays, αφού εκεί το μήκος κάθε γραμμής είναι μέρος του τύπου"
                 ],
                 correct: 0,
                 explain: "Σε αντίθεση με ένα δισδιάστατο array, ένα [][]int δεν εγγυάται ίσο μήκος γραμμών — κάθε γραμμή είναι ανεξάρτητο slice."
@@ -6477,7 +6918,7 @@ grid[0][0] = 1`,
                 options: [
                     "Panic κατά την εκτέλεση, αφού το grid[0] είναι ακόμα nil",
                     "Θα δουλέψει κανονικά, τυπώνοντας 1 στη θέση [0][0]",
-                    "Δεν θα μεταγλωττιστεί καθόλου, compile error",
+                    "Δεν θα μεταγλωττιστεί καθόλου, αφού ο compiler ελέγχει εκ των προτέρων κάθε πρόσβαση σε index",
                     "Θα τυπώσει 0, τη zero value"
                 ],
                 correct: 0,
@@ -6488,7 +6929,7 @@ grid[0][0] = 1`,
                 options: [
                     "make([][]int, 3) και μετά make([]int, 4) για κάθε γραμμή ξεχωριστά, μέσα σε loop",
                     "make([][]int, 3, 4) μόνο, χωρίς τίποτα άλλο",
-                    "make([3][4]int) απευθείας",
+                    "make([][]int, 3, 4) και μετά ένα ακόμα make για κάθε στήλη, μέσα σε φωλιασμένη λούπα",
                     "var grid [][]int αρκεί από μόνο του"
                 ],
                 correct: 0,
@@ -6498,7 +6939,7 @@ grid[0][0] = 1`,
                 q: "Στο for i, row := range matrix { for j, val := range row { ... } }, τι είναι το row;",
                 options: [
                     "Ολόκληρο το slice της συγκεκριμένης γραμμής",
-                    "Μόνο η πρώτη τιμή της γραμμής",
+                    "Μόνο η πρώτη τιμή της γραμμής, δηλαδή το στοιχείο στη θέση μηδέν",
                     "Ο συνολικός αριθμός γραμμών του matrix",
                     "Το άθροισμα όλων των τιμών της γραμμής"
                 ],
@@ -6738,7 +7179,7 @@ func diagonalSum(matrix [][]int) int {
         χάνοντας ένα ολόκληρο ψηφίο. Δεύτερον, ανάλογα με τον ακριβή ακέραιο τύπο που θα χρησιμοποιούσες (π.χ.
         <code>int32</code>, που έχει μικρότερο μέγιστο όριο τιμών από τον προεπιλεγμένο <code>int</code>), ένας
         10ψήφιος αριθμός θα μπορούσε να ξεπεράσει το όριο και να προκαλέσει overflow. Γι' αυτό, στην πράξη, οι
-        τηλεφωνικοί αριθμοί αποθηκεύονται σχεδόν πάντα ως <code>string</code>, όχι ως αριθμητικός τύπος. Οπότε το map που αντιπροσωπεύει τον τηλεφωνικό κατάλογο, τελικά, θα ήταν <strong>key:</strong> <code>string</code> string <strong>value:</strong> <code>string</code>.
+        τηλεφωνικοί αριθμοί αποθηκεύονται σχεδόν πάντα ως <code>string</code>, όχι ως αριθμητικός τύπος. Οπότε το map που αντιπροσωπεύει τον τηλεφωνικό κατάλογο, τελικά, θα ήταν <code>map[string]string</code> — δηλαδή <strong>key:</strong> <code>string</code>, <strong>value:</strong> <code>string</code>.
     </p>
 </div>
 
@@ -7033,7 +7474,7 @@ if ok {
                     "var m map[string]int",
                     "m := make(map[string]int)",
                     "m := map[string]int{}",
-                    "m := make(map[string]int, 50)"
+                    "m := make(map[string]int, 50), αφού η capacity δεσμεύει ήδη θέσεις"
                 ],
                 correct: 0,
                 explain: "Το var m map[string]int δηλώνει μόνο τον τύπο — ο map παραμένει nil μέχρι να γίνει make ή να δηλωθεί ως literal."
@@ -7043,7 +7484,7 @@ if ok {
                 options: [
                     "Είναι ο τύπος του κλειδιού (key)",
                     "Είναι ο τύπος της τιμής (value)",
-                    "Είναι το όνομα της μεταβλητής map",
+                    "Είναι το όνομα της μεταβλητής map, όπως δηλώνεται στην αριστερή πλευρά",
                     "Δηλώνει πόσα στοιχεία θα χωράει ο map"
                 ],
                 correct: 0,
@@ -7055,7 +7496,7 @@ if ok {
                     "Ένα κλειδί (key), τύπου string σε αυτή την περίπτωση",
                     "Πάντα ένας ακέραιος index, όπως σε array ή slice",
                     "Η ίδια η τιμή (value) που θέλεις να αποθηκεύσεις",
-                    "Ο συνολικός αριθμός στοιχείων του map"
+                    "Ο συνολικός αριθμός στοιχείων του map, δηλαδή κάτι αντίστοιχο με τη len ενός slice"
                 ],
                 correct: 0,
                 explain: "Όταν χρησιμοποιείς τη μεταβλητή map, οι αγκύλες κρατούν πάντα το κλειδί — εδώ τύπου string, όχι υποχρεωτικά int."
@@ -7072,7 +7513,7 @@ fmt.Println(letters['s'])`,
                     "4",
                     "3",
                     "11",
-                    "1"
+                    "1, αφού ο μετρητής δεν αυξάνεται ποτέ"
                 ],
                 correct: 0,
                 explain: "Στο loop, ουσιαστικά δημιουργείται σταδιακά ένας map letters με 4 στοιχεία, τα οποία είναι: m→1, i→4, s→4, p→2 (κάθε γράμμα ως κλειδί, με πλήθος εμφανίσεων ως τιμή).<br>Όταν ζητάμε letters['s'], ζητάμε την τιμή που είναι αποθηκευμένη στο κλειδί 's' — και αυτή είναι 4."
@@ -7083,7 +7524,7 @@ fmt.Println(letters['s'])`,
                     "Επειδή το slice θα απαιτούσε να υπάρχουν όλες οι ενδιάμεσες θέσεις, σπαταλώντας μνήμη σε άδεια κελιά",
                     "Επειδή το map[int]string είναι πάντα πιο γρήγορο σε κάθε δυνατή περίπτωση χρήσης",
                     "Επειδή το slice δεν επιτρέπει καθόλου ακέραια index μεγαλύτερα από 100",
-                    "Δεν υπάρχει καμία πρακτική διαφορά ανάμεσά τους σε αυτή την περίπτωση"
+                    "Δεν υπάρχει καμία πρακτική διαφορά ανάμεσά τους, αφού η Go αποθηκεύει και τα δύο με τον ίδιο ακριβώς τρόπο"
                 ],
                 correct: 0,
                 explain: "Ένα []string με index μέχρι το 3000 θα χρειαζόταν 3001 θέσεις, οι περισσότερες άδειες. Ο map κρατά μόνο τα κλειδιά που πραγματικά χρησιμοποιείς."
@@ -7127,7 +7568,7 @@ fmt.Println(nums)`,
                 options: [
                     "[5 15 35 45]",
                     "[5 15 25 35]",
-                    "[25]",
+                    "[25], δηλαδή μόνο το στοιχείο που διαγράφηκε",
                     "[5 15 25 35 45]"
                 ],
                 correct: 0,
@@ -7164,7 +7605,7 @@ fmt.Println(quantity, ok)`,
                 options: [
                     "Δίνει στη Go μια υπόδειξη αναμενόμενου πλήθους στοιχείων, για καλύτερη απόδοση",
                     "Ορίζει το ΜΕΓΙΣΤΟ επιτρεπτό πλήθος στοιχείων που μπορεί να έχει ο map",
-                    "Είναι υποχρεωτικό όρισμα, χωρίς το οποίο η make() δεν μεταγλωττίζεται",
+                    "Είναι υποχρεωτικό όρισμα σε κάθε make για map, χωρίς το οποίο ο compiler δίνει σφάλμα",
                     "Καθορίζει πόσα bytes θα καταλαμβάνει κάθε τιμή μέσα στον map κατά τα πρότυπα του Unicode, ανάλογα με το επιλεγμένο encoding (UTF-8/16/32), το οποίο ορίζει αν το μέγεθος των χαρακτήρων θα είναι σταθερό ή μεταβλητό."
                 ],
                 correct: 0,
@@ -7226,7 +7667,7 @@ fmt.Println(quantity) // 0`,
         addContent(`
 <div class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
 <h1>Μετρητής Συχνότητας Λέξεων</h1>
-<p class="lede">Δημιούργησε έναν map που μετράει τη συχνότητα εμφανίσεων λέξεων σε ένα slice από strings: <code>words := []string{"apple", "orange", "pear", "orange", "apple", "apple", "pear", "pear", "apple"}</code>. Διάσχισε το slice με loop, ενημερώνοντας τον map, και στη συνέχεια τύπωσε τα αποτελέσματα.</p>
+<p class="lede">Δημιούργησε έναν map που μετράει τη συχνότητα εμφανίσεων λέξεων σε ένα slice από strings: <code>words := []string{"apple", "orange", "pear", "orange", "apple", "apple", "pear", "pear", "apple"}</code>. Κάνε iterate το slice με loop, ενημερώνοντας τον map, και στη συνέχεια τύπωσε τα αποτελέσματα.</p>
 
 <div class="spoiler">
     <div class="spoiler-lock"><span>HINT — Σύρε για να το δεις →</span></div>
@@ -7292,7 +7733,7 @@ fmt.Println(quantity) // 0`,
                     "Ο compiler αρνείται να παράξει εκτελέσιμο αρχείο — λείπει το υποχρεωτικό entry point",
                     "Το πρόγραμμα τρέχει κανονικά, ξεκινώντας από την πρώτη function που ορίζεται στο αρχείο",
                     "Η Go δημιουργεί αυτόματα μια κενή func main() κατά τη μεταγλώττιση",
-                    "Δουλεύει μόνο με go run, ποτέ με go build"
+                    "Δουλεύει μόνο με go run, ενώ το go build απαιτεί ρητή δήλωση του entry point"
                 ],
                 correct: 0,
                 explain: "Μέσα σε package main πρέπει να υπάρχει ακριβώς μία func main(), το entry point του προγράμματος. Χωρίς αυτήν, ο compiler δεν μπορεί να παράξει εκτελέσιμο."
@@ -7302,7 +7743,7 @@ fmt.Println(quantity) // 0`,
                 options: [
                     "Για να αποτρέψει τη συσσώρευση 'νεκρού' κώδικα που κανείς δεν χρησιμοποιεί πραγματικά",
                     "Επειδή κάθε import καταναλώνει πάρα πολλή μνήμη κατά την εκτέλεση του προγράμματος",
-                    "Επειδή τα imports επιτρέπονται μόνο μέσα σε func main(), πουθενά αλλού",
+                    "Επειδή τα imports επιτρέπονται μόνο μέσα σε func main(), οπότε οποιοδήποτε άλλο import θεωρείται λάθος",
                     "Δεν ισχύει κάτι τέτοιο — η Go αγνοεί σιωπηλά τα αχρησιμοποίητα imports"
                 ],
                 correct: 0,
@@ -7314,7 +7755,7 @@ fmt.Println(quantity) // 0`,
                     "Ξαναγράφει αυτόματα τον κώδικα ώστε να ακολουθεί την επίσημη, ενιαία μορφοποίηση της Go",
                     "Μεταγλωττίζει το πρόγραμμα και το τρέχει αμέσως, χωρίς να αφήνει μόνιμο αρχείο",
                     "Ελέγχει το πρόγραμμα για λογικά σφάλματα πριν την εκτέλεση",
-                    "Κατεβάζει αυτόματα τα packages που χρειάζεται το πρόγραμμα"
+                    "Κατεβάζει αυτόματα τα packages που χρειάζεται το πρόγραμμα και ενημερώνει το αρχείο των εξαρτήσεων του project"
                 ],
                 correct: 0,
                 explain: "go fmt αίρει κάθε συζήτηση περί στυλ κώδικα, εφαρμόζοντας αυτόματα την επίσημη μορφοποίηση της Go."
@@ -7324,7 +7765,7 @@ fmt.Println(quantity) // 0`,
                 options: [
                     "false",
                     "0",
-                    "nil",
+                    "nil, όπως σε pointers και slices",
                     "true"
                 ],
                 correct: 0,
@@ -7334,7 +7775,7 @@ fmt.Println(quantity) // 0`,
                 q: "Τι είναι, τεχνικά, ο τύπος rune στη Go;",
                 options: [
                     "Alias για τον τύπο int32, αναπαριστά έναν μεμονωμένο Unicode χαρακτήρα",
-                    "Ξεχωριστός, αυτόνομος τύπος που δεν σχετίζεται με κανέναν αριθμητικό τύπο",
+                    "Ξεχωριστός, αυτόνομος τύπος που δεν σχετίζεται με κανέναν αριθμητικό τύπο και δεν μπορεί να μετατραπεί σε int",
                     "Alias για τον τύπο string, ειδικά για έναν μόνο χαρακτήρα",
                     "Alias για τον τύπο byte (uint8), ίδιος ακριβώς με αυτόν"
                 ],
@@ -7358,7 +7799,7 @@ fmt.Println(quantity) // 0`,
                     "Επειδή η ανάθεση είναι statement, όχι expression — δεν παράγει τιμή που να μπορεί να αξιολογηθεί",
                     "Επειδή το if στη Go δέχεται μόνο συγκρίσεις ανάμεσα σε δύο ήδη υπάρχουσες μεταβλητές",
                     "Επειδή το x πρέπει πρώτα να δηλωθεί ρητά ως τύπου bool πριν χρησιμοποιηθεί σε if",
-                    "Επειδή λείπει διπλό ίσον, και η Go το διορθώνει σιωπηλά σε σύγκριση"
+                    "Επειδή λείπει το διπλό ίσον, και η Go το διορθώνει σιωπηλά σε σύγκριση χωρίς να σου δώσει καμία προειδοποίηση"
                 ],
                 correct: 0,
                 explain: "Η ανάθεση δεν παράγει τιμή στη Go — γι' αυτό ένα τυπογραφικό λάθος σαν αυτό απλά δεν μεταγλωττίζεται, αντί να περάσει απαρατήρητο."
@@ -7368,7 +7809,7 @@ fmt.Println(quantity) // 0`,
                 options: [
                     "Δεν είναι εγγυημένη από τη γλώσσα — μπορεί να εκτελεστούν με οποιαδήποτε σειρά",
                     "Το g() εκτελείται πάντα πρώτο, αφού εμφανίζεται πρώτο στον κώδικα",
-                    "Εκτελούνται ταυτόχρονα, σε ξεχωριστά νήματα εκτέλεσης",
+                    "Εκτελούνται ταυτόχρονα, σε ξεχωριστά νήματα εκτέλεσης, αφού η Go παραλληλοποιεί αυτόματα κάθε κλήση μέσα σε ορίσματα",
                     "Το h() εκτελείται πάντα πρώτο, ανεξαρτήτως σειράς εμφάνισης"
                 ],
                 correct: 0,
@@ -7380,7 +7821,7 @@ fmt.Println(quantity) // 0`,
                     "Η switch συγκρίνει μια τιμή με τα case, ενώ η tagless switch έχει ανεξάρτητη συνθήκη σε κάθε case",
                     "Η tagless switch δεν επιτρέπει καθόλου τη λέξη default, σε αντίθεση με την κανονική switch",
                     "Η switch εκτελεί πάντα όλα τα case, ενώ η tagless switch μόνο το πρώτο που ταιριάζει",
-                    "Δεν υπάρχει καμία πρακτική διαφορά ανάμεσά τους στη Go"
+                    "Δεν υπάρχει καμία πρακτική διαφορά ανάμεσά τους στη Go, αφού ο compiler μετατρέπει ούτως ή άλλως και τις δύο σε αλυσίδα από if"
                 ],
                 correct: 0,
                 explain: "Η tagless switch λειτουργεί σαν καθαρή εναλλακτική μιας αλυσίδας if/else if, με πλήρη συνθήκη σε κάθε case."
@@ -7419,7 +7860,7 @@ fmt.Println(x)`,
                     "Επειδή ένα απλό break σταματά μόνο το πλησιέστερο, εσωτερικό loop, όχι το εξωτερικό",
                     "Επειδή η Go απαγορεύει εντελώς τη χρήση break μέσα σε φωλιασμένα loops",
                     "Επειδή το break χωρίς label προκαλεί πάντα compile error σε nested loops",
-                    "Επειδή τα labels είναι υποχρεωτικά σε κάθε for loop"
+                    "Επειδή τα labels είναι υποχρεωτικά σε κάθε for loop που περιέχει άλλο for loop μέσα του"
                 ],
                 correct: 0,
                 explain: "Χωρίς label, το break 'βλέπει' μόνο το loop στο οποίο βρίσκεται άμεσα — το label σου επιτρέπει να στοχεύσεις ρητά το εξωτερικό."
@@ -7429,7 +7870,7 @@ fmt.Println(x)`,
                 options: [
                     "Να δέχεται η function μεταβλητό πλήθος ορισμάτων, από κανένα έως πολλά",
                     "Να επιστρέφει η function πολλαπλές τιμές ταυτόχρονα, χωρίς wrapper αντικείμενο",
-                    "Να τρέχει η function παράλληλα σε πολλά νήματα εκτέλεσης",
+                    "Να τρέχει η function παράλληλα σε πολλά νήματα, ένα για κάθε όρισμα που δόθηκε",
                     "Να δέχεται η function μόνο ακριβώς τρία ορίσματα, ούτε περισσότερα ούτε λιγότερα"
                 ],
                 correct: 0,
@@ -7441,7 +7882,7 @@ fmt.Println(x)`,
                     "Με βάση το πρώτο γράμμα του ονόματος — κεφαλαίο σημαίνει exported, πεζό unexported",
                     "Με ειδική λέξη-κλειδί public ή private πριν από κάθε δήλωση",
                     "Με βάση το αν δηλώθηκε μέσα ή έξω από τη func main()",
-                    "Με βάση το αν το identifier έχει τύπο pointer ή όχι"
+                    "Με βάση το αν το identifier έχει τύπο pointer ή όχι, αφού μόνο οι pointers ταξιδεύουν μεταξύ packages"
                 ],
                 correct: 0,
                 explain: "Η Go δεν έχει public/private — χρησιμοποιεί απλή σύμβαση: κεφαλαίο αρχικό = exported, πεζό = unexported."
@@ -7452,7 +7893,7 @@ fmt.Println(x)`,
                     "Είναι ονοματισμένη τιμή επιστροφής που συμπεριφέρεται σαν τοπική μεταβλητή· το naked return επιστρέφει την τρέχουσα τιμή της",
                     "Το named return απαιτεί πάντα ρητή τιμή στο return, ενώ το naked return δεν επιτρέπεται καθόλου",
                     "Είναι η μοναδική τιμή επιστροφής μιας function με πολλαπλά return values",
-                    "Είναι δεσμευμένη λέξη που αντικαθιστά εντελώς τη λέξη-κλειδί return"
+                    "Είναι δεσμευμένη λέξη που αντικαθιστά εντελώς τη λέξη-κλειδί return, οπότε δεν επιτρέπεται να εμφανιστούν και τα δύο μαζί στην ίδια function"
                 ],
                 correct: 0,
                 explain: "Named returns συμπεριφέρονται σαν τοπικές μεταβλητές· ένα naked return στέλνει πίσω τις τρέχουσες τιμές τους, χωρίς να τις ξαναγράψεις."
@@ -7462,7 +7903,7 @@ fmt.Println(x)`,
                 options: [
                     "Τη διεύθυνση μνήμης μιας άλλης μεταβλητής, όχι απευθείας μια 'κανονική' τιμή",
                     "Πάντα την τιμή nil, μέχρι να της ανατεθεί ρητά κάποια άλλη τιμή",
-                    "Ένα αντίγραφο ολόκληρου του προγράμματος στη μνήμη",
+                    "Ένα αντίγραφο ολόκληρου του προγράμματος στη μνήμη, ώστε να μπορεί να το τροποποιεί ελεύθερα",
                     "Δύο τιμές ταυτόχρονα, μία για ανάγνωση και μία για εγγραφή"
                 ],
                 correct: 0,
@@ -7473,7 +7914,7 @@ fmt.Println(x)`,
                 options: [
                     "Επειδή η function δουλεύει πάνω σε ένα τοπικό αντίγραφο της τιμής, όχι στο ίδιο το x",
                     "Επειδή το x πρέπει πρώτα να δηλωθεί με var, αντί για :=, για να μπορεί να τροποποιηθεί",
-                    "Επειδή η Go απαγορεύει την τροποποίηση μεταβλητών εκτός της func main()",
+                    "Επειδή η Go απαγορεύει την τροποποίηση μεταβλητών εκτός της func main(), εκτός αν δηλωθούν ρητά ως package-level μεταβλητές",
                     "Επειδή η function πρέπει πρώτα να επιστρέψει κάποια τιμή για να ισχύσει η αλλαγή"
                 ],
                 correct: 0,
@@ -7494,7 +7935,7 @@ fmt.Println(x)`,
                 q: "Γιατί τα [3]int και [5]int θεωρούνται εντελώς διαφορετικοί τύποι στη Go;",
                 options: [
                     "Επειδή το μέγεθος ενός array είναι μέρος του ίδιου του τύπου του, όχι απλά μια ιδιότητά του",
-                    "Επειδή μόνο ένα από τα δύο επιτρέπεται να περιέχει αρνητικές τιμές",
+                    "Επειδή μόνο ένα από τα δύο επιτρέπεται να περιέχει αρνητικές τιμές, ενώ το άλλο δέχεται αποκλειστικά θετικούς ακεραίους χωρίς εξαίρεση",
                     "Επειδή το [5]int απαιτεί υποχρεωτικά χρήση της make, ενώ το [3]int όχι",
                     "Στην πραγματικότητα δεν διαφέρουν καθόλου, είναι απλά δύο ονόματα του ίδιου τύπου"
                 ],
@@ -7533,7 +7974,7 @@ fmt.Println(more)`,
                     "Επειδή ένα string στη Go συμπεριφέρεται ουσιαστικά σαν ακολουθία από runes, όχι από μεμονωμένα bytes",
                     "Επειδή η Go μετατρέπει αυτόματα κάθε string σε slice από int πριν την iteration",
                     "Δεν ισχύει κάτι τέτοιο — το range σε string δίνει πάντα byte, ποτέ rune",
-                    "Επειδή κάθε string περιέχει πάντα ακριβώς έναν χαρακτήρα ανά byte, χωρίς εξαίρεση"
+                    "Επειδή κάθε string περιέχει πάντα ακριβώς έναν χαρακτήρα ανά byte, οπότε rune και byte είναι ούτως ή άλλως το ίδιο"
                 ],
                 correct: 0,
                 explain: "Ένα string είναι ουσιαστικά μια ακολουθία από runes — γι' αυτό η range του δίνει θέση+τιμή, ίδια λογική με slice."
@@ -7556,7 +7997,7 @@ grid[0][0] = 1`,
                 q: "Τι σημαίνει ότι ένα δισδιάστατο slice είναι ragged (jagged);",
                 options: [
                     "Οι γραμμές του μπορούν να έχουν διαφορετικό μήκος η μία από την άλλη",
-                    "Περιέχει μόνο αρνητικές τιμές σε τυχαίες θέσεις του",
+                    "Περιέχει μόνο αρνητικές τιμές σε τυχαίες θέσεις του, με αποτέλεσμα να μην μπορεί να τυπωθεί σωστά",
                     "Δεν μπορεί ποτέ να γίνει iterate με for range, μόνο με απλή for",
                     "Ισχύει μόνο για δισδιάστατα arrays, ποτέ για δισδιάστατα slices"
                 ],
@@ -7583,7 +8024,7 @@ m["a"] = 1`,
                     "Επειδή οι maps στη Go είναι reference types — και τα δύο 'αντίγραφα' δείχνουν στην ίδια δομή",
                     "Επειδή η Go μετατρέπει αυτόματα κάθε map σε pointer πίσω από τις σκηνές, μόνο κατά την κλήση",
                     "Δεν ισχύει κάτι τέτοιο — χρειάζεται πάντα ρητός pointer, ακριβώς όπως και σε απλή μεταβλητή int",
-                    "Επειδή οι maps αντιγράφονται πλήρως σε κάθε κλήση, αλλά η αλλαγή διαπερνά ούτως ή άλλως"
+                    "Επειδή οι maps αντιγράφονται πλήρως σε κάθε κλήση, αλλά η Go συγχρονίζει αυτόματα το αντίγραφο με το πρωτότυπο μετά το return"
                 ],
                 correct: 0,
                 explain: "Ένας map είναι εσωτερικά pointer προς κρυμμένη δομή· 'αντιγράφοντάς' τον, αντιγράφεις τον pointer, όχι τη δομή — και τα δύο δείχνουν στα ίδια δεδομένα."
@@ -7592,7 +8033,7 @@ m["a"] = 1`,
                 q: "Γιατί δεν μπορείς να χρησιμοποιήσεις ένα slice ως κλειδί σε έναν map της Go;",
                 options: [
                     "Επειδή τα slices δεν είναι comparable τύποι, και τα κλειδιά ενός map πρέπει να είναι",
-                    "Επειδή μόνο string επιτρέπεται ως τύπος κλειδιού σε maps της Go",
+                    "Επειδή μόνο string και int επιτρέπονται ως τύποι κλειδιού σε maps της Go, χωρίς καμία άλλη εξαίρεση",
                     "Μπορείς κάλλιστα, αρκεί το slice να έχει σταθερό μήκος",
                     "Επειδή τα slices καταλαμβάνουν πάρα πολλή μνήμη για να χρησιμεύσουν ως κλειδιά"
                 ],
@@ -7605,7 +8046,7 @@ m["a"] = 1`,
                     "Τίποτα — δεν προκαλεί κανένα σφάλμα, ούτε compile error ούτε panic",
                     "Panic κατά την εκτέλεση, ακριβώς όπως σε πρόσβαση εκτός ορίων σε slice",
                     "Δημιουργεί αυτόματα το κλειδί με τιμή 0, και μετά το διαγράφει",
-                    "Compile error, αφού ο compiler ελέγχει την ύπαρξη του κλειδιού"
+                    "Compile error, αφού ο compiler ελέγχει εκ των προτέρων ποια κλειδιά υπάρχουν στον map"
                 ],
                 correct: 0,
                 explain: "Σε αντίθεση με το out-of-bounds panic σε slices, η delete σε ανύπαρκτο κλειδί map είναι ασφαλής — απλά δεν κάνει τίποτα."
@@ -7906,7 +8347,7 @@ __del__(m, "a")`,
     <div class="gc-line"><span class="gc-term">len / cap</span><span class="gc-def">μήκος / χωρητικότητα ενός slice</span></div>
     <div class="gc-line"><span class="gc-term">map</span><span class="gc-def">δομή key/value</span></div>
     <div class="gc-line"><span class="gc-term">delete</span><span class="gc-def">αφαιρεί κλειδί από map</span></div>
-    <div class="gc-line"><span class="gc-term">range</span><span class="gc-def">διάσχιση slice, array, ή map</span></div>
+    <div class="gc-line"><span class="gc-term">range</span><span class="gc-def">iteration σε slice, array, ή map</span></div>
     <div class="gc-line"><span class="gc-term">_</span><span class="gc-def">blank identifier — αγνοεί μια τιμή</span></div>
   </div>
 </div>
