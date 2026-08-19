@@ -1439,14 +1439,13 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
 <div class="callout good">
   <span class="tag">Το επόμενο βήμα</span>
   Η θεωρία μόνη της δεν αρκεί — το concurrency «μαθαίνεται» πραγματικά μόνο γράφοντας κώδικα, βλέποντας deadlocks να συμβαίνουν
-  στην πράξη, και ξεδιαλύνοντας race conditions με το <code>go run -race</code>. Αυτή η παρουσίαση σκόπιμα δεν λύνει καμία
-  άσκηση — το επόμενο βήμα είναι δικό σου: σχεδίασε τη ροή σου σε χαρτί πριν γράψεις κώδικα.
+  στην πράξη, και ξεδιαλύνοντας race conditions με το <code>go run -race</code>.
 </div>
 
 <p class="lede">Έτοιμος/η για το τελικό, συνδυαστικό quiz;</p>
 `, {
             bg: "../images/goroutines.jpg",
-            overlayAlpha: 0.88,
+            overlayAlpha: 0.80,
             backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
             backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
             backgroundPosition: "center center"
@@ -1511,7 +1510,7 @@ patterns πάνω σε channels — futures, notifications, locks, semaphores, p
         ], {
             label: "Final Quiz",
             bg: "../images/goroutines.jpg",
-            overlayAlpha: 0.88,
+            overlayAlpha: 0.80,
             backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
             backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
             backgroundPosition: "center center"
@@ -2875,9 +2874,21 @@ func main() {
 <div id="final-score"></div>
 <p style="margin-top:48px; color:rgba(255,243,176,0.55); font-family:var(--font-mono); font-size:14px;">
 </p>
+<div class="feedback-box">
+  <span class="tag">Feedback</span>
+  <p>Πες μου προαιρετικά τη γνώμη σου για το guide. Αν θέλεις να προτείνεις διόρθωση σε κάτι συγκεκριμένο, ήθελες κάτι πιο αναλυτικά, ή δεν σου άρεσε κάποιο κομμάτι, στείλε μου τα σχόλιά σου και θα κάνω άμεσα τις διορθώσεις.</p>
+  <form id="feedback-form" class="feedback-form">
+
+  <input type="text" id="feedback-username" class="feedback-input" placeholder="Το όνομά σου (προαιρετικό)" autocomplete="off" maxlength="120">
+  <textarea id="feedback-text" class="feedback-textarea" placeholder="Τα σχόλιά σου..." rows="4" maxlength="24000"></textarea>
+
+    <button type="submit" id="feedback-submit-btn" class="nav-btn feedback-submit-btn">Αποστολή feedback</button>
+    <div id="feedback-status" class="feedback-status"></div>
+  </form>
+</div>
         `, {
             bg: "../images/goroutines2.jpg",
-            overlayAlpha: 0.95,
+            overlayAlpha: 0.80,
             backgroundSize: "auto 100%",      // ή "contain" / "100% 100%" (stretch) / "100% auto" (fit-to-width)
             backgroundRepeat: "repeat-x", // ή "repeat" / "repeat-x" / "repeat-y"
             backgroundPosition: "center center"

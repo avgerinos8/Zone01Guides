@@ -1,5 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   notify-progress.js — per-slide + course-completion email notifications.
+   notify-progress.js — per-slide, course-completion, and feedback-form
+   email notifications.
 
    ADD-ONLY FILE: does not edit static/script.js. It hooks in by re-assigning
    two of its top-level function bindings (persistScores, maybeNotifyCompletion)
@@ -14,11 +15,14 @@
    in index.html. Placement relative to the inline content-building <script>
    at the bottom of index.html does not matter — this file only READS
    `slides`/`savedScores`/`savedAnswers` at answer-time, never at load-time.
+   The feedback form listener works the same way, via event delegation on
+   `document` (see the feedback section below) — it doesn't need the form
+   to exist in the DOM yet at the time this file runs.
 
    Reuses the SAME `notifyUrl` (set via initSlideDeck({ notifyUrl: "..." }))
-   for both email types — the payload's "type" field ("slide" | "course")
-   is what the Apps Script Web App uses to pick subject/body. See the
-   doPost() snippet shared alongside this file for the Apps Script side.
+   for all three email types — the payload's "type" field
+   ("slide" | "course" | "feedback") is what the Apps Script Web App uses to
+   pick subject/body. See Code.gs for the Apps Script side.
    ══════════════════════════════════════════════════════════════════════════ */
 
 // ── config — edit these two switches, nothing else needs touching ───────── ⊃
@@ -158,10 +162,21 @@ const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final c
   }
 
   // ── type-1 email: fires once a slide's questions are ALL answered ───── ⊃
-  function checkSlideCompletionAndNotify() {
-    if (!SLIDE_NOTIFY_ENABLED || !notifyUrl) return;
+  // In-memory set of slide indices with a pending deferred retry, so a
+  // throttled completion isn't dropped forever — it gets ONE scheduled
+  // retry for exactly when the throttle window clears. (In-memory only:
+  // a full page reload during the wait cancels the pending retry — the
+  // next new answer on that slide will simply re-trigger the check.)
+  const pendingRetries = new Set();
 
-    const idx = current; // slide being interacted with when a score was just saved
+  /**
+   * Re-checks and, if eligible, sends the slide-completion email for one
+   * specific slide index. Called both directly (right after an answer is
+   * scored) and again automatically from a deferred setTimeout if the
+   * first attempt was blocked only by the throttle.
+   * @param {number} idx
+   */
+  function attemptSlideNotify(idx) {
     const s = slides[idx];
     if (!s) return;
 
@@ -170,7 +185,19 @@ const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final c
       return;
     }
     if (slideAlreadyNotified(idx)) return;
-    if (!throttleAllows()) return; // too soon since the last slide email — skip silently, no queue/retry
+
+    if (!throttleAllows()) {
+      if (!pendingRetries.has(idx)) {
+        pendingRetries.add(idx);
+        const lastTs = parseInt(localStorage.getItem(getStoragePrefix() + "last_slide_notify_ts")) || 0;
+        const waitMs = Math.max(0, SLIDE_NOTIFY_MIN_GAP_MS - (Date.now() - lastTs)) + 250; // small buffer
+        setTimeout(() => {
+          pendingRetries.delete(idx);
+          attemptSlideNotify(idx); // re-check from scratch — state may have changed meanwhile
+        }, waitMs);
+      }
+      return; // not dropped — just deferred
+    }
 
     markSlideNotified(idx);
     markThrottleTimestamp();
@@ -189,11 +216,16 @@ const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final c
         correct,
         total,
         answers: lines,
-        browser: getExtendedBrowserMeta()   // <-- FIXED: now calls the correct function
+        browser: getExtendedBrowserMeta()
       })
     }).catch(() => {
       clearSlideNotified(idx); // best-effort only — allow a retry on the next qualifying answer
     });
+  }
+
+  function checkSlideCompletionAndNotify() {
+    if (!SLIDE_NOTIFY_ENABLED || !notifyUrl) return;
+    attemptSlideNotify(current); // slide being interacted with when a score was just saved
   }
 
   const originalPersistScores = persistScores;
@@ -237,10 +269,85 @@ const COURSE_NOTIFY_ENABLED = true;             // master on/off for the final c
         score: percent,
         studentName: window.STUDENT_NAME || "", // optional, unchanged from the original — see index.html
         details: { breakdown },
-        browser: getExtendedBrowserMeta()   // <-- FIXED: now calls the correct function
+        browser: getExtendedBrowserMeta()
       })
     }).catch(() => {
       localStorage.removeItem(notifiedKey);
     });
   };
+
+  // ── type-3 email: feedback form on the final slide ───────────────────── ⊃
+  // Event delegation on `document`, NOT a direct listener on #feedback-form —
+  // the form only exists in the DOM once the course template renders the
+  // final slide's innerHTML (same underlying timing issue _viz-common.js
+  // documents for visualizers), so listening on `document` sidesteps the
+  // wait entirely: the listener itself always exists from page load, and
+  // the actual target element is only looked up at submit-time.
+  document.addEventListener("submit", function (event) {
+    if (!event.target || event.target.id !== "feedback-form") return;
+    event.preventDefault();
+    submitFeedback(event.target);
+  });
+
+  // Same caps as the HTML maxlength attributes on #feedback-username /
+  // #feedback-text — kept here too as defense-in-depth, since maxlength
+  // only stops normal typing/paste, not a value set programmatically
+  // (e.g. via DevTools) bypassing the form entirely.
+  const FEEDBACK_USERNAME_MAX = 120;
+  const FEEDBACK_TEXT_MAX = 24000;
+
+  /**
+   * Reads, validates, and sends one feedback-form submission.
+   * @param {HTMLFormElement} form - the #feedback-form element that fired submit.
+   */
+  function submitFeedback(form) {
+    const usernameEl = form.querySelector("#feedback-username");
+    const textEl = form.querySelector("#feedback-text");
+    const statusEl = form.querySelector("#feedback-status");
+    const submitBtn = form.querySelector("#feedback-submit-btn");
+
+    const text = (textEl.value || "").trim().slice(0, FEEDBACK_TEXT_MAX);
+    const username = (usernameEl.value || "").trim().slice(0, FEEDBACK_USERNAME_MAX);
+
+    if (!text) {
+      statusEl.textContent = "Γράψε κάτι πριν στείλεις :)";
+      statusEl.className = "feedback-status error";
+      return;
+    }
+    if (!notifyUrl) {
+      statusEl.textContent = "Το feedback δεν είναι ενεργό σε αυτό το guide.";
+      statusEl.className = "feedback-status error";
+      return;
+    }
+
+    submitBtn.disabled = true;
+    statusEl.textContent = "Αποστολή...";
+    statusEl.className = "feedback-status";
+
+    fetch(notifyUrl, {
+      method: "POST",
+      mode: "no-cors", // opaque response — fetch resolves even on a successful send, see below
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({
+        type: "feedback",
+        course: document.title || window.location.pathname,
+        username,
+        text,
+        browser: getExtendedBrowserMeta()
+      })
+    }).then(function () {
+      // no-cors responses are opaque — .then() firing only means the
+      // request went out without a network-level error, not that Apps
+      // Script actually processed it, but that's the same fire-and-forget
+      // guarantee the slide/course emails already rely on.
+      statusEl.textContent = "Σε ευχαριστώ για το feedback.";
+      statusEl.className = "feedback-status sent";
+      form.reset();
+      submitBtn.disabled = false;
+    }).catch(function () {
+      statusEl.textContent = "Κάτι πήγε στραβά, δοκίμασε ξανά.";
+      statusEl.className = "feedback-status error";
+      submitBtn.disabled = false;
+    });
+  }
 })();

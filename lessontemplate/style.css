@@ -1408,6 +1408,95 @@ li {
   border-radius: 5px;
 }
 
+/* ── feedback form (final slide) ─────────────────────────────────────────── ⊃ */
+/* Reuses the site's existing tokens (--panel, --ink, --accent, --font-mono,
+   --font-body, --correct, --wrong) — no new colors introduced, matches the
+   .callout / .nav-btn / .fb-blank aesthetic already used elsewhere. */
+.feedback-box {
+  background: rgba(var(--panel-rgb), 0.4);
+  border: 1px solid rgba(var(--ink-rgb), 0.18);
+  border-radius: 10px;
+  padding: 22px 26px;
+  margin-top: 36px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.feedback-box .tag {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.feedback-box p {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  color: rgba(var(--ink-rgb), 0.85);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feedback-input,
+.feedback-textarea {
+  font-family: var(--font-body);
+  font-size: 14px;
+  background: rgba(var(--ink-rgb), 0.06);
+  border: 1px solid rgba(var(--ink-rgb), 0.25);
+  border-radius: 6px;
+  color: var(--ink);
+  padding: 9px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color .15s ease;
+}
+
+.feedback-input:focus,
+.feedback-textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.feedback-textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* .nav-btn already covers the base look (font-mono, panel bg, hover-fills
+   accent) — this class only tweaks alignment/spacing for the form context. */
+.feedback-submit-btn {
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.feedback-submit-btn:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+.feedback-status {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  min-height: 18px;
+}
+
+.feedback-status.sent {
+  color: var(--correct);
+}
+
+.feedback-status.error {
+  color: var(--wrong);
+}
+
 /* ── compact navigation bar for screens under 920px ──────────────────────── ⊃ */
 @media (max-width: 920px) {
 
