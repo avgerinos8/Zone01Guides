@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Avgerinos8 · Developer Dashboard</title>
+    <title>Guides 01 · guides01.devs.surf</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
     <style>
-        /* ——— premium minimalist developer theme ——— */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -42,6 +41,24 @@
         .cyan-text {
             color: #00ffff;
             font-weight: 500;
+            cursor: pointer;
+        }
+
+        a.cyan-text {
+            text-decoration: none;
+            color: #00ffff;
+            background: transparent;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            display: inline;
+            transition: none;
+            transform: none;
+            box-shadow: none;
+        }
+
+        a.cyan-text:hover {
+            text-decoration: underline;
         }
 
         .ascii-container {
@@ -83,7 +100,7 @@
             margin-bottom: 14px;
         }
 
-        a {
+        li a {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -96,7 +113,7 @@
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        a:hover {
+        li a:hover {
             color: #00ffff;
             background: rgba(0, 255, 255, 0.1);
             border-color: #00ffff;
@@ -115,14 +132,13 @@
             transition: all 0.25s ease;
         }
 
-        a:hover .tag {
+        li a:hover .tag {
             color: #00ffff;
             background: rgba(0, 255, 255, 0.05);
             border-color: #00ffff;
             text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
         }
 
-        /* ——— blinking cursor ——— */
         .cursor {
             display: inline-block;
             background-color: #6366f1;
@@ -146,35 +162,272 @@
             }
         }
 
-        /* ——— transition for the module list ——— */
         .module-list {
             transition: opacity 0.2s ease;
         }
 
-        /* μικρή βελτίωση για τα παλιά μαθήματα */
         .old-lesson .tag {
             color: #f472b6;
             border-color: rgba(244, 114, 182, 0.3);
             background: rgba(244, 114, 182, 0.08);
         }
 
-        .old-lesson a:hover .tag {
+        .old-lesson li a:hover .tag {
             color: #00ffff;
             border-color: #00ffff;
             background: rgba(0, 255, 255, 0.05);
         }
 
-        .status-line {
-            white-space: normal;
+        /* Password Modal */
+        #passwordModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
         }
 
-        .ascii-container {
-            overflow-x: hidden;
+        #passwordModal .modal-card {
+            background: #141722;
+            padding: 40px 30px;
+            border-radius: 12px;
+            border: 1px solid #a855f7;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.2);
         }
 
-        /* ——— responsive (mobile / small landscape screens) ——— */
+        #passwordModal .modal-card p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        #passwordModal .modal-card input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0d0e12;
+            border: 1px solid #222530;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        #passwordModal .modal-card input[type="password"]:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1 1 auto;
+        }
+
+        .submit-btn {
+            background: #a855f7;
+            color: #fff;
+        }
+
+        .submit-btn:hover {
+            background: #00ffff;
+            color: #0d0e12;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        }
+
+        .cancel-btn {
+            background: transparent;
+            color: #f472b6;
+            border: 1px solid #f472b6 !important;
+        }
+
+        .cancel-btn:hover {
+            background: #f472b6;
+            color: #0d0e12;
+        }
+
+        .error-msg {
+            color: #f472b6;
+            font-size: 0.8rem;
+            min-height: 1.5em;
+            margin-top: 8px;
+        }
+
+        /* Secret Content */
+        #secretContent {
+            display: none;
+        }
+
+        #secretContent .ascii-art {
+            color: #a855f7;
+        }
+
+        /* Code block */
+        .code-block {
+            background: #0d0e12;
+            border: 1px solid #222530;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: #0d0e12;
+            border: 1px solid #6366f1;
+            color: #6366f1;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+            z-index: 2;
+        }
+
+        .code-block .copy-btn:hover {
+            background: #6366f1;
+            color: #0d0e12;
+        }
+
+        .code-block .copy-btn.copied {
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .code-block pre {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre-wrap;
+        }
+
+        /* Editable spans */
+        .editable {
+            display: inline-block;
+            min-width: 2em;
+            padding: 0 2px;
+            border-radius: 2px;
+            transition: all 0.15s;
+            cursor: text;
+            color: #00ffff;
+        }
+
+        .editable.editing {
+            border: 1px solid #00ffff;
+            background: rgba(0, 255, 255, 0.08);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+            animation: blink-border 1s step-end infinite;
+        }
+
+        @keyframes blink-border {
+
+            0%,
+            100% {
+                border-color: #00ffff;
+            }
+
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        .editable:not(.editing) {
+            border: 1px solid transparent;
+        }
+
+        .public-projects {
+            margin-top: 30px;
+            border-top: 1px solid #222530;
+            padding-top: 20px;
+        }
+
+        .public-projects h3 {
+            color: #718096;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid #6366f1;
+            color: #6366f1;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            transition: 0.2s;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background: #6366f1;
+            color: #0d0e12;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #141722;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
         @media (max-width: 700px) {
-
             body {
                 margin: 24px auto;
                 padding: 0 12px;
@@ -182,27 +435,23 @@
 
             .status-line {
                 font-size: 0.72rem;
-                line-height: 1.5;
-                word-break: break-word;
             }
 
             .ascii-art {
                 font-size: 4px;
-                line-height: 1.05;
             }
 
-            a {
+            li a {
                 padding: 13px 15px;
             }
 
-            a span:first-child {
+            li a span:first-child {
                 font-size: 0.82rem;
+                white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                white-space: nowrap;
             }
 
-            /* Hide lesson type */
             .tag {
                 display: none;
             }
@@ -210,11 +459,22 @@
             .section-title {
                 font-size: 0.75rem;
             }
+
+            #passwordModal .modal-card {
+                padding: 28px 20px;
+            }
+
+            .code-block pre {
+                font-size: 0.7rem;
+            }
+
+            .code-block .copy-btn {
+                font-size: 0.6rem;
+                padding: 2px 8px;
+            }
         }
 
-        /* Very small phones */
         @media (max-width: 420px) {
-
             .ascii-art {
                 font-size: 3px;
             }
@@ -223,36 +483,12 @@
                 font-size: 0.65rem;
             }
 
-            a {
+            li a {
                 padding: 11px 12px;
             }
 
-            a span:first-child {
+            li a span:first-child {
                 font-size: 0.75rem;
-            }
-        }
-
-        /* Small landscape devices */
-        @media (max-height: 500px) and (orientation: landscape) {
-
-            body {
-                margin: 14px auto;
-            }
-
-            .terminal-header {
-                margin-bottom: 16px;
-            }
-
-            .ascii-container {
-                margin-bottom: 16px;
-            }
-
-            .ascii-art {
-                font-size: 4px;
-            }
-
-            .tag {
-                display: none;
             }
         }
     </style>
@@ -260,96 +496,314 @@
 
 <body>
 
-    <header class="terminal-header">
-        <div class="status-line">
-            AUTHOR: <span class="cyan-text">avgerinos</span> // ACCESS_LEVEL: <span class="cyan-text">LEARNER_</span> //
-            HOST: <span class="cyan-text">https://guides01.devs.surf/</span>
-        </div>
-    </header>
+    <!-- ===== MAIN CONTENT ===== -->
+    <div id="mainContent">
+        <header class="terminal-header">
+            <div class="status-line">
+                ACCESS_LEVEL: <span class="cyan-text" id="learnerTrigger">LEARNER_</span> // AUTHOR: <span
+                    class="cyan-text">avgerinos</span> //
+                HOST: <a href="https://guides01.devs.surf/" target="_blank" class="cyan-text">guides01.devs.surf</a>
+            </div>
+        </header>
 
-    <div class="ascii-container">
-        <pre class="ascii-art">
- 8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                    
-       d88P                                           d88P  Y88b  d8888              d88P  Y88b            888       888                     
-      d88P                                            888    888    888              888    888                      888                     
-     d88P      .d88b.   88888b.    .d88b.             888    888    888              888         888  888 "888   .d88888   .d88b.   .d8888b  
-    d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              888  88888  888  888  888  d88" 888  d8P  Y8b  88K      
-   d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  88888888  "Y8888b. 
-  d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888              Y88b  d88P  Y88b 888  888  Y88b 888  Y8b.           X88 
- d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888             "Y8888P88   "Y88888  888   "Y88888   "Y8888    88888P'  </pre>
+        <div class="ascii-container">
+            <pre class="ascii-art">
+   8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                    
+         d88P                                           d88P  Y88b  d8888              d88P  Y88b            888       888                     
+        d88P                                            888    888    888              888    888                      888                     
+       d88P      .d88b.   88888b.    .d88b.             888    888    888              888         888  888 "888   .d88888   .d88b.   .d8888b  
+      d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              888  88888  888  888  888  d88" 888  d8P  Y8b  88K      
+     d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  88888888  "Y8888b. 
+    d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888              Y88b  d88P  Y88b 888  888  Y88b 888  Y8b.           X88 
+   d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888             "Y8888P88   "Y88888  888   "Y88888   "Y8888    88888P'  </pre>
+        </div>
+
+        <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor" id="secretTrigger"></span>
+        </p>
+        <p class="section-title" id="sectionTitle">SELECT TARGET MODULE FOR DEPLOYMENT:</p>
+
+        <ul class="module-list" id="mainModuleList">
+            <li><a href="./00-bash.html"><span style="color: #718096;">&gt; ./00_Shell_Bash</span><span
+                        class="tag">[BASH]</span></a></li>
+            <li><a href="./01-go-01.html"><span>&gt; ./01_go_part_1</span><span class="tag">[GO]</span></a></li>
+            <li><a href="08-Docker.html"><span>&gt; ./08_dockerize</span><span class="tag">[DOCKER]</span></a></li>
+            <li><a href="10-goroutines-channels.html"><span>&gt; ./10_goroutines_channels</span><span class="tag">[GO] +
+                        [CONCURRENCY]</span></a></li>
+        </ul>
+
+        <ul class="module-list old-lesson" id="oldModuleList" style="display: none;">
+            <li><a href="./02-go-02.html"><span>&gt; ./02_go_part_2</span><span class="tag">[GO]</span></a></li>
+            <li><a href="./01-go_networking_theory.html"><span>&gt; ./01_go_networking_theory</span><span
+                        class="tag">[NETWORKING] + [CONCURRENCY]</span></a></li>
+            <li><a href="./07-Networks.html"><span>&gt; ./07_network_cybersecurity</span><span class="tag">[GO] +
+                        [NETWORK]</span></a></li>
+        </ul>
     </div>
 
-    <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor" id="secretTrigger"></span></p>
-    <p class="section-title" id="sectionTitle">SELECT TARGET MODULE FOR DEPLOYMENT:</p>
+    <!-- ===== PASSWORD MODAL ===== -->
+    <div id="passwordModal">
+        <div class="modal-card">
+            <p style="color: #a855f7; font-weight: 500; font-size: 1.1rem;">Easy tiger, you are clicking faster than we
+                can think</p>
+            <input type="password" id="passwordInput" placeholder="········" autocomplete="off">
+            <div class="error-msg" id="passwordError"></div>
+            <div class="modal-buttons">
+                <button class="submit-btn" id="submitPassword">Unlock</button>
+                <button class="cancel-btn" id="cancelPassword">I don't know the password</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- ΚΥΡΙΑ ΛΙΣΤΑ ΜΑΘΗΜΑΤΩΝ (αντικαθίσταται) -->
-    <ul class="module-list" id="mainModuleList">
-        <li>
-            <a href="./00-bash.html">
-                <span style="color: #718096;">&gt; ./00_Shell_Bash</span>
-                <span class="tag">[BASH]</span>
-            </a>
-        </li>
-        <li>
-            <a href="./01-go-01.html">
-                <span>&gt; ./01_go_part_1</span>
-                <span class="tag">[GO]</span>
-            </a>
-        </li>
-        <li>
-            <a href="08-Docker.html">
-                <span>&gt; ./08_dockerize</span>
-                <span class="tag">[DOCKER]</span>
-            </a>
-        </li>
-        <li>
-            <a href="10-goroutines-channels.html">
-                <span>&gt; ./10_goroutines_channels</span>
-                <span class="tag">[GO] + [CONCURRENCY]</span>
-            </a>
-        </li>
-    </ul>
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast">✅ Copied!</div>
 
-    <!-- SECRET MENU -->
-    <ul class="module-list old-lesson" id="oldModuleList" style="display: none;">
-        <li>
-            <a href="./02-go-02.html">
-                <span>&gt; ./02_go_part_2</span>
-                <span class="tag">[GO]</span>
-            </a>
-        </li>
-        <li>
-            <a href="./01-go_networking_theory.html">
-                <span>&gt; ./01_go_networking_theory</span>
-                <span class="tag">[NETWORKING] + [CONCURRENCY]</span>
-            </a>
-        </li>
-        <li>
-            <a href="./07-Networks.html">
-                <span>&gt; ./07_network_cybersecurity</span>
-                <span class="tag">[GO] + [NETWORK]</span>
-            </a>
-        </li>
-    </ul>
+    <!-- ===== SECRET CONTENT (ADMIN) ===== -->
+    <div id="secretContent">
+        <header class="terminal-header">
+            <div class="status-line">
+                ACCESS_LEVEL: <span class="cyan-text" id="adminTrigger">ADMIN_</span> // AUTHOR: <span
+                    class="cyan-text">avgerinos</span> //
+                HOST: <a href="https://guides01.devs.surf/" target="_blank" class="cyan-text">guides01.devs.surf</a>
+            </div>
+        </header>
+
+        <div class="ascii-container">
+            <pre class="ascii-art">
+   8888888888P                                           .d8888b.    d888                  YP           888P                d88           
+         d88P                                           d88P  Y88b  d8888                 Y88P          888                 888           
+        d88P                                            888    888    888                Y8PY8P         888                               
+       d88P      .d88b.   88888b.    .d88b.             888    888    888               Y8b  d8P    .d88888  88888b.d88b.  "888  88888b.  
+      d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              Y8b    d8P  d88" 888  888 "888 "88b  888  888 "88b 
+     d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  888  888  888 
+    d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888             "8888888888" Y88b 888  888  888  888  888  888  888 
+   d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888            888    888   "Y88888  888  888  888  888  888  888 </pre>
+        </div>
+
+        <!-- ===== CODE BLOCK ===== -->
+        <div class="code-block">
+            <button class="copy-btn" id="copyBtn">Copy</button>
+            <pre><code id="codeContent"></code></pre>
+        </div>
+
+        <!-- ===== PUBLIC PROJECTS (hidden by default) ===== -->
+        <div class="public-projects" id="publicProjects" style="display: none;">
+            <h3>PUBLIC PROJECTS</h3>
+            <ul>
+                <li><a href="https://ascii-art-web-wkaa.onrender.com/" target="_blank"><span>🌐 ASCII Art
+                            Web</span><span class="tag">[LIVE]</span></a></li>
+            </ul>
+        </div>
+
+        <button class="back-btn" id="backToMain">Back</button>
+    </div>
 
     <script>
         (function () {
+            // ================================================================
+            // 1. USER DATABASE
+            // ================================================================
+            const USERS = [
+                {
+                    password: "SWANSONG",
+                    email: "avgerinos.xe@gmail.com",
+                    username: "pavgerin"
+                },
+                // Example custom user:
+                // {
+                //     password: "custom123",
+                //     email: "custom@example.com",
+                //     username: "customuser",
+                //     script: `# Custom script
+                // echo "Hello {{username}}"
+                // git config --global user.email {{email}}
+                // git config --global user.name {{username}}`
+                // }
+            ];
+
+            // ================================================================
+            // 2. DEFAULT SCRIPT (with placeholders)
+            // ================================================================
+            const DEFAULT_SCRIPT = `# Open VSCode on ~/Desktop
+code ~/Desktop
+
+# Set Firefox as default browser & Launch with three tabs
+xdg-settings set default-web-browser firefox.desktop
+firefox https://platform.zone01.gr/git/{{username}} https://gemini.google.com/signin https://platform.zone01.gr/ &
+
+# Add Greek keyboard layout to existing English (switch with Alt+Shift)
+setxkbmap -layout us,gr -option grp:alt_shift_toggle,grp:win_space_toggle
+
+# Configure Git globally
+git config --global credential.helper store
+git config --global user.email {{email}}
+git config --global user.name {{username}}`;
+
+            // ================================================================
+            // 3. PASSWORD CHECK (case‑insensitive only)
+            // ================================================================
+            function checkPassword(input, correct) {
+                return input && input.toUpperCase() === correct.toUpperCase();
+            }
+
+            function findUser(input) {
+                if (!input) return null;
+                const norm = input.toUpperCase();
+                for (let user of USERS) {
+                    if (user.password.toUpperCase() === norm) {
+                        return user;
+                    }
+                }
+                return null;
+            }
+
+            // ================================================================
+            // 4. RENDER CODE BLOCK (with editable spans)
+            // ================================================================
+            function renderCode(user) {
+                const script = user.script || DEFAULT_SCRIPT;
+                // Replace placeholders with actual values
+                let html = script.replace(/\{\{email\}\}/g, user.email)
+                    .replace(/\{\{username\}\}/g, user.username);
+                // Wrap email and username in editable spans
+                // We need to target the specific lines where they appear.
+                // Since we have placeholders replaced, we can wrap the actual values.
+                // But we have to be careful to only wrap the ones in git config lines.
+                // Simpler: we'll use a regex to find the lines and replace with spans.
+                // We'll split lines, process each.
+                const lines = html.split('\n');
+                const processed = lines.map(line => {
+                    if (line.includes('git config --global user.email')) {
+                        // Find the email part
+                        const parts = line.split(' ');
+                        // The email is the last part (after the command)
+                        // But we can just replace the occurrence of the email with a span
+                        const emailSpan = `<span class="editable" contenteditable="false">${user.email}</span>`;
+                        return line.replace(user.email, emailSpan);
+                    }
+                    if (line.includes('git config --global user.name')) {
+                        const nameSpan = `<span class="editable" contenteditable="false">${user.username}</span>`;
+                        return line.replace(user.username, nameSpan);
+                    }
+                    return line;
+                });
+                return processed.join('\n');
+            }
+
+            // ================================================================
+            // 5. DOM REFS
+            // ================================================================
+            const learnerTrigger = document.getElementById('learnerTrigger');
+            const adminTrigger = document.getElementById('adminTrigger');
+            const modal = document.getElementById('passwordModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const submitBtn = document.getElementById('submitPassword');
+            const cancelBtn = document.getElementById('cancelPassword');
+            const errorMsg = document.getElementById('passwordError');
+            const mainContent = document.getElementById('mainContent');
+            const secretContent = document.getElementById('secretContent');
+            const backBtn = document.getElementById('backToMain');
+            const codeContent = document.getElementById('codeContent');
+            const copyBtn = document.getElementById('copyBtn');
+            const publicProjects = document.getElementById('publicProjects');
+            const toast = document.getElementById('toast');
+
+            let currentUser = null;
+            let isSwansong = false; // whether the logged-in user used SWANSONG
+
+            // ================================================================
+            // 6. MODAL LOGIC
+            // ================================================================
+            function closeModal() {
+                modal.style.display = 'none';
+                errorMsg.textContent = '';
+            }
+
+            learnerTrigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                modal.style.display = 'flex';
+                passwordInput.value = '';
+                errorMsg.textContent = '';
+                passwordInput.focus();
+            });
+
+            cancelBtn.addEventListener('click', closeModal);
+
+            function showToast(msg) {
+                toast.textContent = msg || '✅ Copied!';
+                toast.classList.add('show');
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+
+            // Function to refresh the code block with current user data
+            function refreshCode() {
+                if (!currentUser) return;
+                const html = renderCode(currentUser);
+                codeContent.innerHTML = html;
+                // Attach editable listeners
+                attachEditableListeners();
+                // Update public projects visibility based on isSwansong
+                publicProjects.style.display = isSwansong ? '' : 'none';
+            }
+
+            function tryUnlock() {
+                const pwd = passwordInput.value;
+                const user = findUser(pwd);
+                if (user) {
+                    currentUser = user;
+                    isSwansong = (pwd.toUpperCase() === 'SWANSONG');
+                    refreshCode();
+                    modal.style.display = 'none';
+                    mainContent.style.display = 'none';
+                    secretContent.style.display = 'block';
+                } else {
+                    errorMsg.textContent = '⛔ Wrong password. Try again.';
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            }
+
+            submitBtn.addEventListener('click', tryUnlock);
+            passwordInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    tryUnlock();
+                }
+            });
+
+            // ================================================================
+            // 7. ADMIN_ → BACK TO LEARNER_
+            // ================================================================
+            adminTrigger.addEventListener('click', function () {
+                secretContent.style.display = 'none';
+                mainContent.style.display = 'block';
+                closeModal();
+            });
+
+            backBtn.addEventListener('click', function () {
+                secretContent.style.display = 'none';
+                mainContent.style.display = 'block';
+                closeModal();
+            });
+
+            // ================================================================
+            // 8. TOGGLE HIDDEN LESSONS (cursor)
+            // ================================================================
             const trigger = document.getElementById('secretTrigger');
             const mainList = document.getElementById('mainModuleList');
             const oldList = document.getElementById('oldModuleList');
             const sectionTitle = document.getElementById('sectionTitle');
-
-            let isOld = false;   // κατάσταση: false = κύρια, true = παλιά
+            let isOld = false;
 
             function toggleLessons() {
                 if (isOld) {
-                    // επιστροφή στα κύρια μαθήματα
                     mainList.style.display = '';
                     oldList.style.display = 'none';
                     sectionTitle.textContent = 'SELECT TARGET MODULE FOR DEPLOYMENT:';
                     isOld = false;
                 } else {
-                    // εμφάνιση παλιών μαθημάτων
                     mainList.style.display = 'none';
                     oldList.style.display = '';
                     sectionTitle.textContent = 'SECRET MENU. NEW GUIDES UNDER DEVELOPMENT';
@@ -357,7 +811,6 @@
                 }
             }
 
-            // Έλεγχος URL parameter κατά το φόρτωμα
             window.addEventListener('DOMContentLoaded', function () {
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.get('show') === 'hidden' && !isOld) {
@@ -365,22 +818,130 @@
                 }
             });
 
-            // το cursor κάνει εναλλαγή
             trigger.addEventListener('click', function (e) {
                 e.stopPropagation();
                 toggleLessons();
-                // Ενημέρωση URL χωρίς reload
                 const newUrl = isOld ? '?show=hidden' : window.location.pathname;
                 window.history.pushState({}, '', newUrl);
             });
 
-            // προαιρετικά: αν ο χρήστης πατήσει ESC, επιστρέφουμε στα κύρια
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape' && isOld) {
-                    toggleLessons();   // γυρίζει πίσω
+                    toggleLessons();
                     window.history.pushState({}, '', window.location.pathname);
                 }
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
             });
+
+            // ================================================================
+            // 9. COPY BUTTON
+            // ================================================================
+            copyBtn.addEventListener('click', function () {
+                const text = codeContent.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                    showToast('✅ Copied!');
+                }).catch(() => {
+                    const range = document.createRange();
+                    range.selectNode(codeContent);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    document.execCommand('copy');
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                    }, 2000);
+                    showToast('✅ Copied!');
+                });
+            });
+
+            // ================================================================
+            // 10. EDITABLE SPANS – update user & re‑render on change
+            // ================================================================
+            function attachEditableListeners() {
+                const editables = document.querySelectorAll('.editable');
+                editables.forEach(span => {
+                    // Click to edit
+                    span.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        if (this.contentEditable === 'true') return;
+                        this.contentEditable = 'true';
+                        this.classList.add('editing');
+                        this.focus();
+                        const range = document.createRange();
+                        range.selectNodeContents(this);
+                        const sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    });
+
+                    // On Enter, save changes and re-render
+                    span.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            this.contentEditable = 'false';
+                            this.classList.remove('editing');
+                            this.blur();
+                            // Update user data
+                            const newValue = this.textContent.trim();
+                            if (this.id === 'editableEmail' || this.classList.contains('email')) {
+                                // We can identify by content: if it's the email field
+                                // We'll use a more reliable method: check if the text is the email
+                                // But we can store a data attribute or class.
+                                // We'll assume the email span is the one containing '@'
+                                if (newValue.includes('@')) {
+                                    currentUser.email = newValue;
+                                } else {
+                                    currentUser.username = newValue;
+                                }
+                            } else {
+                                // Fallback: check if value contains '@'
+                                if (newValue.includes('@')) {
+                                    currentUser.email = newValue;
+                                } else {
+                                    currentUser.username = newValue;
+                                }
+                            }
+                            // Re-render the whole code block with new data
+                            refreshCode();
+                        }
+                        if (e.key === 'Escape') {
+                            this.contentEditable = 'false';
+                            this.classList.remove('editing');
+                            this.blur();
+                            // Revert? We'll just discard changes by re-rendering
+                            refreshCode();
+                        }
+                    });
+
+                    // On blur, save and re-render
+                    span.addEventListener('blur', function () {
+                        if (this.contentEditable === 'true') {
+                            this.contentEditable = 'false';
+                            this.classList.remove('editing');
+                            // Update user data
+                            const newValue = this.textContent.trim();
+                            if (newValue.includes('@')) {
+                                currentUser.email = newValue;
+                            } else {
+                                currentUser.username = newValue;
+                            }
+                            refreshCode();
+                        }
+                    });
+                });
+            }
+
+            // Initial empty
+            codeContent.innerHTML = '';
+            attachEditableListeners();
 
         })();
     </script>
