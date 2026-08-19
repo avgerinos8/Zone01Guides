@@ -15,13 +15,38 @@
             padding: 0;
         }
 
+        /* ── fluid scaling driver ─────────────────────────────────────────────── ⊃
+           BUGFIX (previous version): clamp(0, calc((100vw - 320px) / 480), 1)
+           compared a LENGTH (the calc()) against two bare NUMBERS (0 and 1).
+           clamp() requires all three arguments to be the same type — a
+           length-vs-number mismatch makes the ENTIRE custom property invalid,
+           and an invalid var() reference makes every property that uses it
+           fall back to its inherited/initial value. That's why nothing was
+           scaling and the ascii-art/moto rendered at an inherited ~16px
+           instead of the intended small size.
+           Fix: keep --fluid-range as a LENGTH throughout (0px at 320px
+           viewport width, up to 704px at 1024px viewport width — all three
+           clamp args are lengths, so this is valid). Every consumer below
+           divides it by 704 (a plain number), which is legal calc: length
+           × number and length ÷ number are both fine; only length × length
+           or comparing mismatched types is not. */
+        :root {
+            --fluid-range: clamp(0px, calc(100vw - 320px), 704px);
+        }
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Fira Code', monospace;
             background-color: #0d0e12;
             color: #e2e8f0;
             max-width: 850px;
-            margin: 60px auto;
-            padding: 0 24px;
+            margin: calc(24px + 36 * var(--fluid-range) / 704) auto;
+            padding: 0 calc(12px + 12 * var(--fluid-range) / 704);
             line-height: 1.5;
         }
 
@@ -32,10 +57,12 @@
         }
 
         .status-line {
-            font-size: 0.85rem;
+            font-size: calc(10px + 4 * var(--fluid-range) / 704);
             color: #718096;
             text-align: center;
             letter-spacing: 0.5px;
+            line-height: 1.5;
+            word-break: break-word;
         }
 
         .cyan-text {
@@ -65,17 +92,28 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            overflow-x: auto;
-            margin-bottom: 32px;
+            overflow: auto;
+            margin-bottom: 8px;
+            /* scrollbar hidden on purpose — content is sized to always fit via
+               --fluid-range, this is just a safety net, never meant to be seen */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .ascii-container::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
 
         .ascii-art {
             margin: 0 auto;
-            font-size: 8px;
+            font-size: calc(3px + 5 * var(--fluid-range) / 704);
             color: #6366f1;
-            line-height: 1.2;
+            line-height: 1.15;
             white-space: pre;
             font-family: 'Fira Code', monospace;
+            text-align: left;
         }
 
         .prompt {
@@ -85,7 +123,7 @@
 
         .section-title {
             color: #718096;
-            font-size: 0.85rem;
+            font-size: calc(12px + 2 * var(--fluid-range) / 704);
             font-weight: 500;
             margin-top: 8px;
             margin-bottom: 20px;
@@ -104,13 +142,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             color: #e2e8f0;
             text-decoration: none;
-            padding: 16px 20px;
+            padding: calc(11px + 5 * var(--fluid-range) / 704) calc(12px + 8 * var(--fluid-range) / 704);
             background: #141722;
             border: 1px solid #222530;
             border-radius: 8px;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* min-width: 0 is the flexbox fix that actually lets this span shrink
+           below its content size, so text-overflow: ellipsis below can kick in
+           at ANY width instead of only past a fixed breakpoint. */
+        li a span:first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: calc(12px + 4 * var(--fluid-range) / 704);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         li a:hover {
@@ -213,7 +264,7 @@
 
         #passwordModal .modal-card input[type="password"] {
             width: 100%;
-            padding: 12px 16px;
+            padding: 2px 16px;
             background: #0d0e12;
             border: 1px solid #222530;
             border-radius: 6px;
@@ -265,6 +316,16 @@
             background: transparent;
             color: #f472b6;
             border: 1px solid #f472b6 !important;
+            /* fixed width, not min-width: with box-sizing:border-box the 48px
+               of left+right padding was eating into the ch budget, so
+               min-width alone could still let the button grow past it when
+               the longer string ("I don't know the password" = 25 chars) was
+               showing. Explicit width + the padding added back on top, plus
+               flex:0 0 auto so the shared flex-grow rule below can't stretch
+               it based on content either — now it truly cannot resize. */
+            flex: 0 0 auto;
+            width: calc(28ch + 48px);
+            white-space: nowrap;
         }
 
         .cancel-btn:hover {
@@ -275,8 +336,10 @@
         .error-msg {
             color: #f472b6;
             font-size: 0.8rem;
-            min-height: 1.5em;
-            margin-top: 8px;
+            line-height: 1.4;
+            min-height: 1.4em;
+            margin-top: 6px;
+            margin-bottom: 14px;
         }
 
         /* Secret Content */
@@ -295,8 +358,16 @@
             border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
-            overflow-x: auto;
+            overflow: auto;
             position: relative;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .code-block::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
 
         .code-block .copy-btn {
@@ -387,6 +458,97 @@
             margin-bottom: 16px;
         }
 
+        /* Reverse-engineer message box */
+        .reverse-msg {
+            margin: 30px 0 20px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: center;
+            overflow: auto;
+            padding: 0 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .reverse-msg-add-top {
+            margin-top: 14px;
+        }
+
+        .reverse-msg::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .reverse-msg pre {
+            background: #0a0b12;
+            border: 2px solid #a855f7;
+            border-radius: 8px;
+            margin: 0 auto;
+            padding: 2px calc(10px + 12 * var(--fluid-range) / 704);
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            /* the real fix for "weight doesn't look bolder": these box-drawing
+               glyphs (╭─╴╷ etc.) most likely have no bold variant in Fira
+               Code, so the browser silently substitutes a system fallback
+               font for them — font-weight has nothing to grab onto there.
+               text-stroke draws directly on top of whatever glyph actually
+               got rendered, so it thickens the strokes regardless of which
+               font drew them. currentColor keeps it in sync with the JS
+               breathing/hover color automatically. */
+            -webkit-text-stroke: 0.55px currentColor;
+            font-size: calc(6px + 4 * var(--fluid-range) / 704);
+            color: #a855f7;
+            line-height: 1.6;
+            white-space: pre;
+            box-shadow: 0 0 24px rgba(168, 85, 247, 0.18), inset 0 0 12px rgba(168, 85, 247, 0.07);
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.22);
+            max-width: 100%;
+            overflow: auto;
+            position: relative;
+            cursor: default;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .reverse-msg pre::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        /* Color, border-color, box-shadow and text-shadow above are now the
+           FIRST-PAINT fallback only — motto.js overwrites all four every
+           animation frame (breathing + hover crossfade), see the script block
+           near the bottom of <body>. Kept here so the box still looks right
+           for the instant before JS attaches (or if JS fails to load). */
+
+        /* the ASCII text itself is wrapped in <a id="mottoLink"> so only the
+           text — not the whole padded box — is the clickable/pointer area */
+        .reverse-msg pre a {
+            color: inherit;
+            text-shadow: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Scanline overlay */
+        .reverse-msg pre::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, 0.04) 2px,
+                    rgba(0, 255, 255, 0.04) 4px);
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
         .back-btn {
             background: transparent;
             border: 1px solid #6366f1;
@@ -427,69 +589,122 @@
             opacity: 1;
         }
 
-        @media (max-width: 700px) {
-            body {
-                margin: 24px auto;
-                padding: 0 12px;
-            }
+        /* ================================================================
+           RESPONSIVE SCALING
+           Everything that can be a continuous value (font sizes, padding,
+           margins) now reads from --fluid, set once at the top of this
+           stylesheet, instead of jumping at 700px/420px/350px. That removes
+           the "dead zones" between breakpoints where nothing had shrunk yet
+           but content already didn't fit.
 
-            .status-line {
-                font-size: 0.72rem;
-            }
+           display:none for .tag can't be fluid — a thing is either shown or
+           hidden — so it keeps one deliberate breakpoint. Same story for the
+           landscape block below: that's a HEIGHT/orientation constraint, a
+           different axis than --fluid (which tracks width), so it stays as
+           its own small, width-independent override.
+           ================================================================ */
 
-            .ascii-art {
-                font-size: 4px;
-            }
-
-            li a {
-                padding: 13px 15px;
-            }
-
-            li a span:first-child {
-                font-size: 0.82rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
+        @media (max-width: 640px) {
             .tag {
                 display: none;
             }
+        }
 
-            .section-title {
-                font-size: 0.75rem;
+        /* ================================================================
+           CRT EFFECT (toggled by clicking the HOST link)
+           Kept deliberately subtle/infrequent — brief flicker every few
+           seconds rather than a continuous strobe, so it stays comfortable
+           to look at instead of being an eyesore (or an actual seizure risk).
+           ================================================================ */
+        body.crt-on {
+            animation: crtFlicker 7s steps(1) infinite;
+        }
+
+        @keyframes crtFlicker {
+
+            0%,
+            96%,
+            100% {
+                filter: none;
             }
 
-            #passwordModal .modal-card {
-                padding: 28px 20px;
+            97% {
+                filter: brightness(1.15) contrast(1.05) hue-rotate(-4deg);
             }
 
-            .code-block pre {
-                font-size: 0.7rem;
+            98% {
+                filter: brightness(0.88);
             }
 
-            .code-block .copy-btn {
-                font-size: 0.6rem;
-                padding: 2px 8px;
+            99% {
+                filter: brightness(1.1) saturate(1.35);
             }
         }
 
-        @media (max-width: 420px) {
-            .ascii-art {
-                font-size: 3px;
+        /* full-page scanline film, same technique as the reverse-msg box */
+        body.crt-on::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 500;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(0, 255, 255, 0.025) 3px,
+                    rgba(0, 255, 255, 0.025) 4px);
+            mix-blend-mode: screen;
+        }
+
+        /* occasional RGB-split glitch on the ascii-art */
+        body.crt-on .ascii-art {
+            animation: chromaGlitch 5s steps(1) infinite;
+        }
+
+        @keyframes chromaGlitch {
+
+            0%,
+            92%,
+            100% {
+                text-shadow: none;
+                transform: translate(0, 0);
             }
 
-            .status-line {
-                font-size: 0.65rem;
+            93% {
+                text-shadow: -2px 0 rgba(255, 0, 110, 0.65), 2px 0 rgba(0, 255, 255, 0.65);
+                transform: translate(-1px, 0);
             }
 
-            li a {
-                padding: 11px 12px;
+            94% {
+                text-shadow: 2px 0 rgba(255, 0, 110, 0.65), -2px 0 rgba(0, 255, 255, 0.65);
+                transform: translate(1px, 0);
             }
 
-            li a span:first-child {
-                font-size: 0.75rem;
+            95% {
+                text-shadow: none;
+                transform: translate(0, 0);
             }
+        }
+
+        /* the blinking cursor glows harder, alternating cyan/magenta */
+        body.crt-on .cursor {
+            animation: blink 1s step-end infinite, crtCursorGlow 2.4s ease-in-out infinite;
+        }
+
+        @keyframes crtCursorGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 6px #00ffff;
+            }
+
+            50% {
+                box-shadow: 0 0 10px #ff2fd0, 0 0 20px #00ffff;
+            }
+        }
+
+        .crt-toggle {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -502,20 +717,28 @@
             <div class="status-line">
                 ACCESS_LEVEL: <span class="cyan-text" id="learnerTrigger">LEARNER_</span> // AUTHOR: <a
                     href="https://github.com/avgerinos8" target="_blank" class="cyan-text">avgerinos</a> //
-                HOST: <a href="https://guides01.devs.surf/" target="_blank" class="cyan-text">guides01.devs.surf</a>
+                HOST: <a href="https://guides01.devs.surf/" target="_blank"
+                    class="cyan-text crt-toggle">guides01.devs.surf</a>
             </div>
         </header>
 
         <div class="ascii-container">
             <pre class="ascii-art">
-   8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                    
-         d88P                                           d88P  Y88b  d8888              d88P  Y88b            888       888                     
-        d88P                                            888    888    888              888    888                      888                     
-       d88P      .d88b.   88888b.    .d88b.             888    888    888              888         888  888 "888   .d88888   .d88b.   .d8888b  
-      d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              888  88888  888  888  888  d88" 888  d8P  Y8b  88K      
-     d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  88888888  "Y8888b. 
-    d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888              Y88b  d88P  Y88b 888  888  Y88b 888  Y8b.           X88 
+   8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                     
+         d88P                                           d88P  Y88b  d8888              d88P  Y88b            888       888                      
+        d88P                                            888    888    888              888    888                      888                      
+       d88P      .d88b.   88888b.    .d88b.             888    888    888              888         888  888 "888   .d88888   .d88b.   .d8888b   
+      d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              888  88888  888  888  888  d88" 888  d8P  Y8b  88K       
+     d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  88888888  "Y8888b.  
+    d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888              Y88b  d88P  Y88b 888  888  Y88b 888  Y8b.           X88  
    d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888             "Y8888P88   "Y88888  888   "Y88888   "Y8888    88888P'  </pre>
+        </div>
+
+        <!-- ===== REVERSE-ENGINEER MESSAGE ===== -->
+        <div class="reverse-msg">
+            <pre id="reverseMsgPre"><a id="mottoLink" href="" target="_blank" rel="noopener">╭─╴╭─╮╭─╴╷╶┬╴╭─╮╶┬╴╷╭─╮   ╭─╴╷ ╷╭╮╷╶┬╮╭─╮╭┬╮╭─╴╭╮╷╶┬╴╷╭─╮   ╭─╮╭─╴╭─╴╭╮╷╷ ╷╭┬╮   ╭─╮╭─╴╶┬╮╷╭─╴╷╭─╴╭─╮
+│  │ ││╶╮│ │ ├─┤ │ │╰─╮   ├╴ │ ││╰┤ ││├─┤│││├╴ │╰┤ │ │╰─╮   ├┬╯├╴ │╶╮│╰┤│ ││││   ├─┤├╴  │││├╴ ││  ├─┤
+╰─╴╰─╯╰─╯╵ ╵ ╵ ╵ ╵ ╵╰─╯   ╵  ╰─╯╵ ╵╶┴╯╵ ╵╵ ╵╰─╴╵ ╵ ╵ ╵╰─╯   ╵╰╴╰─╴╰─╯╵ ╵╰─╯╵ ╵   ╵ ╵╰─╴╶┴╯╵╵  ╵╰─╴╵ ╵</a></pre>
         </div>
 
         <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor" id="secretTrigger"></span>
@@ -526,7 +749,8 @@
             <li><a href="./00-bash.html"><span style="color: #718096;">&gt; ./00_Shell_Bash</span><span
                         class="tag">[BASH]</span></a></li>
             <li><a href="./01-go-01.html"><span>&gt; ./01_go_part_1</span><span class="tag">[GO]</span></a></li>
-            <li><a href="08-Docker.html"><span>&gt; ./08_dockerize</span><span class="tag">[DOCKER]</span></a></li>
+            <li><a href="08-Docker.html"><span style="color: #96a2b4;">&gt; ./08_dockerize</span><span
+                        class="tag">[DOCKER]</span></a></li>
             <li><a href="10-goroutines-channels.html"><span>&gt; ./10_goroutines_channels</span><span class="tag">[GO] +
                         [CONCURRENCY]</span></a></li>
         </ul>
@@ -555,7 +779,7 @@
     </div>
 
     <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast">✅ Copied!</div>
+    <div id="toast" class="toast">Copied!</div>
 
     <!-- ===== SECRET CONTENT (ADMIN) ===== -->
     <div id="secretContent">
@@ -563,7 +787,8 @@
             <div class="status-line">
                 ACCESS_LEVEL: <span class="cyan-text" id="adminTrigger">ADMIN_</span> // AUTHOR: <span
                     class="cyan-text">avgerinos</span> //
-                HOST: <a href="https://guides01.devs.surf/" target="_blank" class="cyan-text">guides01.devs.surf</a>
+                HOST: <a href="https://guides01.devs.surf/" target="_blank"
+                    class="cyan-text crt-toggle">guides01.devs.surf</a>
             </div>
         </header>
 
@@ -579,6 +804,15 @@
    d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888            888    888   "Y88888  888  888  888  888  888  888 </pre>
         </div>
 
+        <!-- ===== ADMIN ASCII BLOCK ===== -->
+        <div class="reverse-msg reverse-msg-add-top">
+            <pre id="reverseMsgPreAdmin">
+                                                  |
+ _  _  _ _    _  _ _|   _ _  _  _  _ _  _ . _ _ _||
+|_)(_|_)_)\)/(_)| (_|  (_(_)||||_)| (_)||||_)(-(_|.
+|                              |                   </pre>
+        </div>
+
         <!-- ===== CODE BLOCK ===== -->
         <div class="code-block">
             <button class="copy-btn" id="copyBtn">Copy</button>
@@ -589,12 +823,10 @@
         <div class="public-projects" id="publicProjects" style="display: none;">
             <h3>PUBLIC PROJECTS</h3>
             <ul>
-                <li><a href="https://ascii-art-web-wkaa.onrender.com/" target="_blank"><span>🌐 ASCII Art
-                            Web</span><span class="tag">[LIVE]</span></a></li>
+                <li><a href="https://ascii-art-web-wkaa.onrender.com/" target="_blank"><span>ASCII Art
+                            Web</span><span class="tag">[RENDER]</span></a></li>
             </ul>
         </div>
-
-        <button class="back-btn" id="backToMain">Back</button>
     </div>
 
     <script>
@@ -728,14 +960,26 @@ git config --global user.name {{username}}`;
 
             cancelBtn.addEventListener('click', closeModal);
 
+            // ---- HOVER: change "I don't know the password" text ----
+            const originalCancelText = "I don't know the password";
+            const hoverCancelText = "Try to hack it yourself?"; // same length (24 chars)
+
+            cancelBtn.addEventListener('mouseenter', function () {
+                this.textContent = hoverCancelText;
+            });
+            cancelBtn.addEventListener('mouseleave', function () {
+                this.textContent = originalCancelText;
+            });
+
             function showToast(msg) {
-                toast.textContent = msg || '✅ Copied!';
+                toast.textContent = msg || 'Copied!';
                 toast.classList.add('show');
                 clearTimeout(toast._timer);
                 toast._timer = setTimeout(() => {
                     toast.classList.remove('show');
                 }, 2000);
             }
+            window.showToast = showToast; // shared with the crt-toggle script below
 
             // Function to refresh the code block with current user data
             function refreshCode() {
@@ -759,7 +1003,7 @@ git config --global user.name {{username}}`;
                     mainContent.style.display = 'none';
                     secretContent.style.display = 'block';
                 } else {
-                    errorMsg.textContent = '⛔ Wrong password. Try again.';
+                    errorMsg.textContent = 'Wrong password. Try again.';
                     passwordInput.value = '';
                     passwordInput.focus();
                 }
@@ -782,11 +1026,18 @@ git config --global user.name {{username}}`;
                 closeModal();
             });
 
-            backBtn.addEventListener('click', function () {
-                secretContent.style.display = 'none';
-                mainContent.style.display = 'block';
-                closeModal();
-            });
+            // guarded: no element with id="backToMain" exists in the markup
+            // (adminTrigger below is the actual/only back-to-learner control).
+            // Calling addEventListener on null used to throw here and silently
+            // kill every statement after it in this IIFE — that's what was
+            // breaking the hidden-lessons cursor toggle and ?show=hidden.
+            if (backBtn) {
+                backBtn.addEventListener('click', function () {
+                    secretContent.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    closeModal();
+                });
+            }
 
             // ================================================================
             // 8. TOGGLE HIDDEN LESSONS (cursor)
@@ -847,7 +1098,7 @@ git config --global user.name {{username}}`;
                         copyBtn.textContent = 'Copy';
                         copyBtn.classList.remove('copied');
                     }, 2000);
-                    showToast('✅ Copied!');
+                    showToast('Copied!');
                 }).catch(() => {
                     const range = document.createRange();
                     range.selectNode(codeContent);
@@ -858,7 +1109,7 @@ git config --global user.name {{username}}`;
                     setTimeout(() => {
                         copyBtn.textContent = 'Copy';
                     }, 2000);
-                    showToast('✅ Copied!');
+                    showToast('Copied!');
                 });
             });
 
@@ -943,6 +1194,209 @@ git config --global user.name {{username}}`;
             codeContent.innerHTML = '';
             attachEditableListeners();
 
+        })();
+    </script>
+
+    <script>
+        // ── reverse-msg glow: breathing loop + soft hover crossfade ──────────── ⊃
+        // Runs on EVERY `.reverse-msg pre` on the page (currently 2: the moto
+        // now on the main/learner view, and the new admin-only ascii block) —
+        // each gets its own independent phase/timer via initGlow() so hovering
+        // one never affects the other, but all instances share the same
+        // constants and the same rAF-driven clock `now`, so their default
+        // breathing stays naturally in sync with each other.
+        //
+        // Why not CSS @keyframes + :hover (like before)? Two separate keyframe
+        // animations can't hand off smoothly — switching triggers an instant
+        // restart from each animation's own 0% state, which is what caused the
+        // "snap" instead of a transition. Driving color/shadow from JS every
+        // frame means we always know the exact color on screen right now, so a
+        // hover event can crossfade FROM that exact color TO the other loop's
+        // live (moving) position, and a mouse-leave crossfades back the same way.
+        (function () {
+            const pres = document.querySelectorAll('.reverse-msg pre');
+            if (!pres.length) return;
+
+            // ── motto link target (fill in once you've decided where this points) ─── ⊃
+            // only the original moto has a #mottoLink anchor inside it — the
+            // admin ascii block is plain text, no link wiring needed for it.
+            const MOTTO_LINK = ""; // e.g. "https://github.com/avgerinos8"
+            const mottoLink = document.getElementById('mottoLink');
+            if (mottoLink) {
+                mottoLink.href = MOTTO_LINK || '#';
+                if (!MOTTO_LINK) {
+                    // no destination set yet: don't navigate anywhere on click
+                    mottoLink.addEventListener('click', function (e) { e.preventDefault(); });
+                }
+            }
+
+            const BREATHE_PERIOD_MS = 6000; // matches the original 6s breathing cycle
+            const CROSSFADE_MS = 1300;      // soft hover transition (~1.3s)
+
+            const COLORS = {
+                purple: [168, 85, 247],
+                cyan: [86, 157, 177],   // #569db1
+                white: [226, 232, 240],
+            };
+
+            // ── glow intensity presets ───────────────────────────────────────── ⊃
+            // low  = value at the "colored" end of the breathing cycle
+            // high = value at the brightest end of the breathing cycle
+            // hover values run a bit hotter than default, and textBlur/textAlpha
+            // are pushed up more than boxBlur/boxAlpha so the text reads as
+            // glowing a little more than the border, as requested.
+            const GLOW = {
+                default: {
+                    low: { boxBlur: 24, boxAlpha: 0.18, boxInset: 12, boxInsetAlpha: 0.07, textBlur: 11, textAlpha: 0.24 },
+                    high: { boxBlur: 44, boxAlpha: 0.14, boxInset: 24, boxInsetAlpha: 0.05, textBlur: 22, textAlpha: 0.22 },
+                },
+                hover: {
+                    low: { boxBlur: 34, boxAlpha: 0.24, boxInset: 22, boxInsetAlpha: 0.08, textBlur: 16, textAlpha: 0.28 },
+                    high: { boxBlur: 56, boxAlpha: 0.16, boxInset: 30, boxInsetAlpha: 0.055, textBlur: 30, textAlpha: 0.24 },
+                },
+            };
+
+            function lerp(a, b, t) { return a + (b - a) * t; }
+            function lerpColor(c1, c2, t) {
+                return [lerp(c1[0], c2[0], t), lerp(c1[1], c2[1], t), lerp(c1[2], c2[2], t)];
+            }
+            function rgbStr(c, a) {
+                return `rgba(${Math.round(c[0])}, ${Math.round(c[1])}, ${Math.round(c[2])}, ${a})`;
+            }
+            function lerpGlow(g1, g2, t) {
+                return {
+                    boxBlur: lerp(g1.boxBlur, g2.boxBlur, t),
+                    boxAlpha: lerp(g1.boxAlpha, g2.boxAlpha, t),
+                    boxInset: lerp(g1.boxInset, g2.boxInset, t),
+                    boxInsetAlpha: lerp(g1.boxInsetAlpha, g2.boxInsetAlpha, t),
+                    textBlur: lerp(g1.textBlur, g2.textBlur, t),
+                    textAlpha: lerp(g1.textAlpha, g2.textAlpha, t),
+                };
+            }
+            // ease-in-out, used only for the crossfade progress (0→1)
+            function easeInOutQuad(p) {
+                return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+            }
+
+            // 0 → 1 → 0 every BREATHE_PERIOD_MS, smooth (sine), same timing feel
+            // as the original 0%/50%/100% ease-in-out keyframes.
+            function breatheB(t) {
+                return (1 - Math.cos((2 * Math.PI * t) / BREATHE_PERIOD_MS)) / 2;
+            }
+
+            // full visual state (color + shadow numbers) for a loop at time t.
+            // baseColorKey/peakColorKey are the two ends of the breathing
+            // color cycle — pass the same key for both to keep the color
+            // fixed while glow intensity still breathes (used for hover/white).
+            function loopState(baseColorKey, peakColorKey, glowPreset, t) {
+                const b = breatheB(t);
+                return {
+                    color: lerpColor(COLORS[baseColorKey], COLORS[peakColorKey], b),
+                    glow: lerpGlow(glowPreset.low, glowPreset.high, b),
+                };
+            }
+
+            function blendStates(s1, s2, t) {
+                return {
+                    color: lerpColor(s1.color, s2.color, t),
+                    glow: lerpGlow(s1.glow, s2.glow, t),
+                };
+            }
+
+            // sets up one independent breathing/hover state machine for a
+            // single .reverse-msg pre element
+            function initGlow(pre) {
+                function applyState(state) {
+                    const { color, glow } = state;
+                    pre.style.color = rgbStr(color, 1);
+                    pre.style.borderColor = rgbStr(color, 1);
+                    pre.style.boxShadow =
+                        `0 0 ${glow.boxBlur}px ${rgbStr(color, glow.boxAlpha)}, ` +
+                        `inset 0 0 ${glow.boxInset}px ${rgbStr(color, glow.boxInsetAlpha)}`;
+                    pre.style.textShadow = `0 0 ${glow.textBlur}px ${rgbStr(color, glow.textAlpha)}`;
+                }
+
+                // phase: 'default' | 'toHover' | 'hover' | 'toDefault'
+                let phase = 'default';
+                let transitionStart = 0;
+                let transitionFrom = null;
+                let currentState = loopState('purple', 'cyan', GLOW.default, 0);
+
+                function tick(now) {
+                    let state;
+
+                    if (phase === 'default') {
+                        state = loopState('purple', 'cyan', GLOW.default, now);
+                    } else if (phase === 'hover') {
+                        state = loopState('white', 'white', GLOW.hover, now);
+                    } else {
+                        // toHover / toDefault: chase the LIVE (still-breathing)
+                        // target loop from the color captured when the crossfade
+                        // started — this is what makes mouse-leave land wherever
+                        // the default loop "would be" instead of snapping.
+                        const isToHover = phase === 'toHover';
+                        const targetBase = isToHover ? 'white' : 'purple';
+                        const targetPeak = isToHover ? 'white' : 'cyan';
+                        const targetGlow = isToHover ? GLOW.hover : GLOW.default;
+                        const target = loopState(targetBase, targetPeak, targetGlow, now);
+                        const progress = Math.min(1, (now - transitionStart) / CROSSFADE_MS);
+                        const eased = easeInOutQuad(progress);
+                        state = blendStates(transitionFrom, target, eased);
+                        if (progress >= 1) {
+                            phase = (phase === 'toHover') ? 'hover' : 'default';
+                        }
+                    }
+
+                    currentState = state;
+                    applyState(state);
+                    requestAnimationFrame(tick);
+                }
+
+                pre.addEventListener('mouseenter', function () {
+                    transitionFrom = currentState;
+                    transitionStart = performance.now();
+                    phase = 'toHover';
+                });
+                pre.addEventListener('mouseleave', function () {
+                    transitionFrom = currentState;
+                    transitionStart = performance.now();
+                    phase = 'toDefault';
+                });
+
+                requestAnimationFrame(tick);
+            }
+
+            pres.forEach(initGlow);
+        })();
+    </script>
+
+    <script>
+        // ── CRT effect toggle ────────────────────────────────────────────── ⊃
+        // Clicking "guides01.devs.surf" used to just navigate to the page you're
+        // already on. Now it flips a class on <body> that switches on the
+        // scanline/glitch effects defined in <style>, and reuses the existing
+        // toast (exposed as window.showToast in the first script block) to
+        // confirm the state change.
+        (function () {
+            const toggles = document.querySelectorAll('.crt-toggle');
+            if (!toggles.length) return;
+
+            let on = false;
+
+            function setState(next) {
+                on = next;
+                document.body.classList.toggle('crt-on', on);
+                if (window.showToast) {
+                    window.showToast(on ? 'CRT EFFECT: ON' : 'CRT EFFECT: OFF');
+                }
+            }
+
+            toggles.forEach(function (link) {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault(); // stop the self-navigation
+                    setState(!on);
+                });
+            });
         })();
     </script>
 
