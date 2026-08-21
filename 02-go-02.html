@@ -3717,24 +3717,22 @@ func BubbleSort(numbers []int) {
     8, το 3 θέση 0, και το 99 πρέπει να δώσει <code>false</code>.
 </p>
 
-<div class="callout">
-    <span class="tag">Τρία λάθη που κάνουν σχεδόν όλοι</span>
-    <ul>
-        <li>Ατέρμονη λούπα, αν γράψεις <code>left = mid</code> αντί για <code>left = mid + 1</code>.</li>
-        <li>Χαμένο στοιχείο, αν γράψεις <code>left &lt; right</code> αντί για <code>left &lt;= right</code>.</li>
-        <li>Panic, αν αρχικοποιήσεις το <code>right</code> με <code>len(numbers)</code> αντί για
-            <code>len(numbers)-1</code>.</li>
-    </ul>
-</div>
+
 
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
-    <p>Δύο μεταβλητές, <code>left</code> και <code>right</code>, ορίζουν το διάστημα που <em>μπορεί ακόμα</em> να περιέχει τον στόχο. Σε κάθε πέρασμα μικραίνεις αυτό το διάστημα. Η λούπα τελειώνει όταν το διάστημα αδειάσει.</p>
+    <p>Δύο μεταβλητές θέσης (index), <code>left</code> και <code>right</code>, ορίζουν το διάστημα που <em>μπορεί ακόμα</em> να περιέχει τον στόχο. Σε κάθε iteration μικραίνεις αυτό το διάστημα. Αρχικοποίησε τες και ξεκίνα με <code>for left <= right { }</code>.</p>
 </div>
 
 <br>
 
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
-    <p>Μετά τη σύγκριση με το <code>numbers[mid]</code>, το ίδιο το <code>mid</code> έχει ήδη ελεγχθεί — δεν χρειάζεται να ξαναμπεί στο διάστημα. Γι' αυτό το νέο άκρο είναι <code>mid + 1</code> ή <code>mid - 1</code>, ποτέ σκέτο <code>mid</code>.</p>
+    <p>Για να χωρίσεις στην μέση θα χρειαστείς μια μεταβλητή mid που θα είναι σε κάθε iteration <code>mid := (left + right) / 2</code>.</p>
+</div>
+
+<br>
+
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 3 — Drag to reveal →</span></div>
+    <p>Μετά θα πάρεις 3 περιπτώσεις. Εάν το στοιχείο στην θέση mid (στην μεσαία θέση) είναι ακριβώς ο στόχος τότε το λύσαμε -> early return. Αλλιώς διακρίνουμε 2 περιπτώσεις: ο στόχος είναι μεγαλύτερος από το στοιχείο στην θέση mid (που σημαίνει ότι θα συνεχίσουμε να τον αναζητούμε στο δεξί κομμάτι), και το ανάποδο. Σε αυτές τις περιπτώσεις θα πρέπει να ανανεώσεις τα left ή το right (ανάλογα) και να προχωρήσεις στο επόμενο iteration του loop.</p>
 </div>
 
 <br>
@@ -3764,6 +3762,18 @@ func BinarySearch(numbers []int, target int) (int, bool) {
 }
 </code></pre></div>
 
+<br>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Comment — Drag to reveal →</span></div>
+<div class="callout">
+    <span class="tag">Δύο λάθη που κάνουν σχεδόν όλοι</span>
+    <ul>
+        <li>Ατέρμονη λούπα, αν γράψεις <code>left = mid</code> αντί για <code>left = mid + 1</code>.</li>
+        <li>Χαμένο στοιχείο, αν γράψεις <code>left &lt; right</code> αντί για <code>left &lt;= right</code>.</li>
+    </ul>
+</div>
+</div>
+
 <div class="callout good">
     <span class="tag">Αν θες να πας παρακάτω</span>
     <p>
@@ -3772,6 +3782,41 @@ func BinarySearch(numbers []int, target int) (int, bool) {
         παραμείνει ταξινομημένο μετά την εισαγωγή. Αυτό ακριβώς κάνει η <code>slices.BinarySearch</code>, και
         η αλλαγή στον κώδικά σου είναι μικρότερη απ' όσο νομίζεις.
     </p>
+</div>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Η αλλαγή — Drag to reveal →</span></div>
+<p>
+    Για να επιστρέφεις τη θέση εισαγωγής, η μόνη τροποποίηση είναι στην <code>return</code> του
+    <code>false</code> κλάδου: αντί για <code>return 0, false</code>, επέστρεψε το <code>left</code>.
+    Δες τον κώδικα:
+</p>
+<pre><code class="lang-go">// BinarySearchInsert returns the index where target should be inserted
+// to keep the slice sorted, and whether it was found.
+func BinarySearchInsert(numbers []int, target int) (int, bool) {
+    left, right := 0, len(numbers)-1
+
+    for left &lt;= right {
+        mid := (left + right) / 2
+
+        if numbers[mid] == target {
+            return mid, true
+        }
+        if numbers[mid] &lt; target {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    // Όταν βγαίνουμε από τη λούπα, το left δείχνει ακριβώς τη θέση
+    // όπου πρέπει να μπει το target για να διατηρηθεί η ταξινόμηση.
+    return left, false
+}
+</code></pre>
+<p>
+    Για παράδειγμα, στο <code>{3, 8, 12, 17, 23, 31, 40, 56, 78}</code>, το 99 θα επέστρεφε
+    <code>9, false</code> (στο τέλος), ενώ το 5 θα επέστρεφε <code>1, false</code> (μετά το 3).
+    Δοκίμασέ το!
+</p>
 </div>
 `);
 
@@ -3804,20 +3849,107 @@ func BinarySearch(numbers []int, target int) (int, bool) {
 
         // ── §6.1 — Τι είναι η αναδρομή ───────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Αναδρομή & Divide and Conquer</div>
+<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Αναδρομή: μια function που καλεί τον εαυτό της</h1>
 
 <p class="lede">
-    Μέχρι τώρα, κάθε επανάληψη που γράψαμε ήταν λούπα. Υπάρχει όμως και δεύτερος τρόπος να κάνεις κάτι ξανά
-    και ξανά — ένας τρόπος που στην αρχή μοιάζει με τέχνασμα, και μετά γίνεται το πιο φυσικό εργαλείο για μια
-    ολόκληρη κατηγορία προβλημάτων.
+    Κάθε επανάληψη, που γράψαμε μέχρι στιγμής, ήταν λούπα. Υπάρχει όμως και δεύτερος τρόπος να κάνεις κάτι ξανά και ξανά — ένας τρόπος που στην αρχή μοιάζει με τέχνασμα, και μόλις το καταλάβεις γίνεται εργαλείο για μια ολόκληρη κατηγορία προβλημάτων.
 </p>
 
+<div class="callout">
 <p>
-    Δεν υπάρχει τίποτα στη Go που να απαγορεύει σε μια function να καλέσει τον εαυτό της. Αν το κάνει, λέμε
-    ότι είναι <strong>αναδρομική</strong> (recursive). Ας δούμε το πιο κλασικό παράδειγμα: το παραγοντικό
-    ενός αριθμού — δηλαδή <code>4! = 4 × 3 × 2 × 1 = 24</code>.
+Μέχρι τώρα, καλούσαμε μια συνάρτηση από μια άλλη συνάρτηση. Τι θα συμβεί, όμως, αν μια συνάρτηση αποφασίσει να καλέσει τον εαυτό της; Φαντάσου μια φωτογραφία να τραβάει τον εαυτό της, ή έναν καθρέφτη να κοιτάζει τον καθρέφτη απέναντί του – τι βλέπεις; Άπειρες αντανακλάσεις. Κάτι παρόμοιο συμβαίνει και στον κώδικα, κάτι που είναι δυσνόητο στην αρχή. Θέλεις μήπως να το δοκιμάσεις από περιέργεια, πριν διαβάσεις παρακάτω;
 </p>
+</div>
+
+<p>
+    Μια συνάρτηση που καλεί τον εαυτό της ονομάζεται <strong>αναδρομική</strong> (recursive):
+</p>
+<pre><code class="lang-go">func Countdown(n int) {
+    fmt.Println(n)
+    Countdown(n - 1)
+}
+</code></pre>
+
+<p>
+    Αν καλέσουμε <code>Countdown(3)</code>, τι περιμένουμε να δούμε;
+</p>
+
+<pre><code>3
+2
+1
+0
+-1
+-2
+-3
+-4
+-5
+-6
+... και συνεχίζει για πάντα!!</code></pre>
+
+<p>
+    Αυτή η συνάρτηση <strong>δεν σταματάει ποτέ</strong>. Θα τυπώνει όλο και μικρότερους αριθμούς, κατεβαίνοντας
+    στο <code>-1</code>, <code>-2</code>, ..., <code>-1000</code>, ...  – αν την καλέσουμε από την main, δεν θα "ξυπνήσει" ποτέ και ότι βρίσκεται κάτω από την κλήση της, δεν θα εκτελεστεί ποτέ. Το runtime θα παγιδευτεί για πάντα εκεί μέσα και δε θα σταματήσει μέχρι να γεμίσει η μνήμη (stack overflow) και το πρόγραμμα να «κρασάρει». Δεν υπάρχει καμία συνθήκη που να της λέει «φτάνει, σταμάτα».
+</p>
+<p>
+    Για να λειτουργήσει σωστά, κάθε αναδρομική συνάρτηση χρειάζεται μια <strong>base case</strong> – μια συνθήκη
+    που σταματάει την αναδρομή. Ας την προσθέσουμε:
+</p>
+
+<pre><code class="lang-go">func Countdown(n int) {
+    if n <= 0 {
+        fmt.Println("BOOM!!")
+        return
+    }
+    fmt.Println(n)
+    Countdown(n - 1)
+}
+</code></pre>
+
+<p>
+    Αν καλέσουμε <code>Countdown(3)</code>, η έξοδος θα είναι:
+</p>
+
+<pre><code>3
+2
+1
+BOOM!!</code></pre>
+
+<p>
+    Δες τι έγινε: η συνάρτηση κάλεσε τον εαυτό της τρεις φορές – με <code>n = 2</code>, μετά <code>n = 1</code>, και τέλος με <code>n = 0</code>. Στο <code>n <= 0</code> σταμάτησε: αυτή είναι η <strong>base case</strong> («οριακή συνθήκη τερματισμού»), μια "έξοδος" που εμποδίζει την ατέρμονη κλήση. Κάθε αναδρομική συνάρτηση χρειάζεται <strong>υποχρεωτικά</strong> μια τέτοια συνθήκη τερματισμού.
+</p>
+
+<h2>Μια κλασσική εφαρμογή</h2>
+
+<p>
+    Ας δούμε το πιο κλασικό παράδειγμα που έχει χρησιμότητα μια recursive function: το <strong>παραγοντικό</strong>.
+</p>
+
+<div class="callout">
+    <span class="tag">Μαθηματική βάση</span>
+    <p>
+        Το παραγοντικό ενός θετικού ακεραίου <code>n</code> (συμβολίζεται <code>n!</code>) είναι το γινόμενο όλων των
+        ακεραίων από το 1 μέχρι το <code>n</code>. Για παράδειγμα:
+        <br>
+        <code>4! = 4 × 3 × 2 × 1 = 24</code>.
+        <br><br>
+        Κατ' επέκταση, <code>3! = 3 × 2 × 1 = 6</code>, <code>2! = 2 × 1 = 2</code>, και <code>1! = 1</code>.
+        Υπάρχει και μια ειδική περίπτωση: <code>0! = 1</code> (ορίζεται έτσι για να λειτουργούν οι μαθηματικοί τύποι).
+        <br><br>
+        Παρατήρησε τώρα κάτι σημαντικό: το <code>4!</code> μπορεί να γραφτεί ως <code>4 × 3!</code>, γιατί
+        <code>3! = 3 × 2 × 1</code>.
+        <br>
+        Επίσης ακολούθως για το <code>3!</code> ισχύει <code>3! = 3 × 2!</code>
+        <br>
+        Γενικότερα:
+        <code>n! = n × (n-1)!</code> &nbsp;για κάθε <code>n > 0</code>.
+        <br><br>
+        Αυτή είναι η <strong>αναδρομική σχέση</strong>: το πρόβλημα <code>n!</code> ανάγεται στο μικρότερο πρόβλημα
+        <code>(n-1)!</code>, το οποίο με τη σειρά του ανάγεται στο <code>(n-2)!</code>, και ούτω καθεξής, μέχρι να
+        φτάσουμε στο <code>1!</code> ή στο <code>0!</code> – εκεί σταματάμε, γιατί ξέρουμε την απάντηση χωρίς άλλη
+        αναγωγή. Αυτό ακριβώς κάνει ο κώδικας παρακάτω.
+    </p>
+</div>
 
 <pre><code class="lang-go">// Factorial returns n! for a non-negative n.
 func Factorial(n int) int {
@@ -3860,10 +3992,10 @@ func Factorial(n int) int {
 <div class="callout good">
     <span class="tag">Το αναγνωρίζεις;</span>
     <p>
-        Τελευταία κλήση που μπήκε, πρώτη που βγαίνει. Αυτό είναι <strong>LIFO</strong> — ακριβώς η
-        <em>στοίβα</em> της Ενότητας 4. Και δεν είναι μεταφορά: ο υπολογιστής χρησιμοποιεί κυριολεκτικά μια
+        Τελευταία κλήση που μπήκε, πρώτη που βγαίνει. Αυτό είναι <strong>LIFO</strong> — ακριβώς του
+        <em>stack</em> της Ενότητας 4. Και δεν το λέμε μεταφορικά: ο υπολογιστής χρησιμοποιεί κυριολεκτικά μια
         δομή που λέγεται <strong>call stack</strong> για να θυμάται ποια κλήση περιμένει ποια. Όταν γράφεις
-        αναδρομή, δεν αποφεύγεις τη στοίβα — απλά αφήνεις τη γλώσσα να τη διαχειριστεί για σένα, αντί να τη
+        αναδρομή, δεν αποφεύγεις την έννοια της στοίβας (stack) — απλά αφήνεις τη γλώσσα να τη διαχειριστεί για σένα, αντί να τη
         φτιάξεις μόνος σου με ένα slice.
     </p>
 </div>
@@ -3885,19 +4017,26 @@ func Factorial(n int) int {
         <span class="card-tag">Recursive case — το βήμα</span>
         <p>
             Η κλήση στον εαυτό της, με ένα όρισμα που είναι <strong>πιο κοντά στο base case</strong>. Το
-            "πιο κοντά" είναι κρίσιμο: αν το πρόβλημα δεν μικραίνει, δεν θα φτάσεις ποτέ στην έξοδο.
+            "πιο κοντά" είναι κρίσιμο: αν το πρόβλημα δεν "μικραίνει", δεν θα φτάσεις ποτέ στην έξοδο.
         </p>
     </div>
 </div>
 
-<h2>Τι γίνεται αν ξεχάσεις το base case</h2>
+<div class="callout">
+    <span class="tag">Ροή Εκτέλεσης</span>
 
-<pre><code class="lang-go">// BROKEN: no base case, this never stops
-func Countdown(n int) {
-    fmt.Println(n)
-    Countdown(n - 1) // calls forever: 3, 2, 1, 0, -1, -2, ...
-}
-</code></pre>
+    <pre><code>Countdown(3)
+    → τυπώνει 3, καλεί Countdown(2)
+        → τυπώνει 2, καλεί Countdown(1)
+            → τυπώνει 1, καλεί Countdown(0)
+                → τυπώνει "BOOM!!", επιστρέφει
+            → επιστρέφει 
+        → επιστρέφει
+    → επιστρέφει</code></pre>
+
+</div>
+
+<h2>Τι γίνεται αν ξεχάσεις το base case</h2>
 
 <p>
     Ο compiler δεν θα διαμαρτυρηθεί — συντακτικά είναι απόλυτα σωστό. Το πρόγραμμα θα τρέξει, θα τυπώσει
@@ -3910,7 +4049,7 @@ fatal error: stack overflow
 
 <p>
     Αυτό είναι το περίφημο <strong>stack overflow</strong>: κάθε κλήση δεσμεύει λίγη μνήμη στο call stack, και
-    οι κλήσεις δεν τελειώνουν ποτέ για να την ελευθερώσουν. Η στοίβα γεμίζει, και το πρόγραμμα τερματίζει βίαια.
+    οι κλήσεις δεν τελειώνουν ποτέ για να την ελευθερώσουν. Η στοίβα (stack) γεμίζει, και το πρόγραμμα τερματίζει βίαια.
 </p>
 
 <div class="callout">
@@ -3921,26 +4060,74 @@ fatal error: stack overflow
         ο κώδικας, και μόνο για τις τιμές που το προκαλούν. Μια αναδρομή μπορεί να δουλεύει μια χαρά για
         <code>n = 10</code> και να καταρρέει για <code>n = -1</code>.
     </p>
-</div>
-
-<h2>Το ίδιο πράγμα με λούπα</h2>
+</div><h2>Το ίδιο πράγμα με λούπα</h2>
 
 <p>
-    Καθετί που γράφεται αναδρομικά γράφεται και με λούπα. Το <code>Factorial</code> δεν χρειάζεται καν
-    προσπάθεια:
+    Καθετί που γράφεται αναδρομικά γράφεται και με λούπα.
 </p>
 
-<pre><code class="lang-go">func FactorialLoop(n int) int {
-    result := 1 // accumulator - the pattern from section 3
-    for i := 2; i &lt;= n; i++ {
+<div class="grid2">
+  <div class="card">
+    <h3>Recursive</h3>
+    <pre><code class="lang-go">func Countdown(n int) {
+    if n <= 0 {            // base case
+        fmt.Println("BOOM!!")
+        return
+    }
+    fmt.Println(n)          // do the work
+    Countdown(n - 1)         // recurse: smaller version of the same problem
+}</code></pre>
+    <p>
+        Το <code>n</code> μένει "κρεμασμένο" σε κάθε επίπεδο του call stack, ένα πάνω στο άλλο — γι' αυτό
+        μπορεί να καταρρεύσει με stack overflow σε μεγάλο <code>n</code>.
+    </p>
+  </div>
+  <div class="card">
+    <h3>Iterative</h3>
+    <pre><code class="lang-go">func Countdown(n int) {
+    for i := n; i > 0; i-- { // loop instead of recursing
+        fmt.Println(i)        // do the work
+    }
+    fmt.Println("BOOM!!")     // same ending, no recursive call
+}</code></pre>
+    <p>
+        Πρόσεξε τη συνθήκη: το <code>i &gt; 0</code> εδώ είναι ακριβώς η <strong>αντίστροφη</strong> του
+        <code>n <= 0</code> στη recursive εκδοχή — η λούπα συνεχίζει όσο το recursive base case ΔΕΝ έχει
+        ακόμα ισχύσει. Ίδιος έλεγχος, απλά κοιτάει την αντίθετη πλευρά της ίδιας συνθήκης.
+    </p>
+  </div>
+</div>
+
+<p>
+    Το <code>Factorial</code> δεν χρειάζεται καν προσπάθεια:
+</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Recursive</h3>
+    <pre><code class="lang-go">// Factorial returns n! for a non-negative n.
+func Factorial(n int) int {
+    if n <= 1 {
+        return 1 // BASE CASE - stop here, do not call again
+    }
+    return n * Factorial(n-1) // recurse
+}</code></pre>
+  </div>
+  <div class="card">
+    <h3>Iterative</h3>
+    <pre><code class="lang-go">// FactorialLoop returns n! for a non-negative n.
+func FactorialLoop(n int) int {
+    result := 1 // accumulator
+    for i := 2; i <= n; i++ {
         result *= i
     }
     return result
-}
-</code></pre>
+}</code></pre>
+  </div>
+</div>
 
 <p>
-    Και για την ακρίβεια, εδώ η εκδοχή με λούπα είναι <strong>καλύτερη</strong>: πιο γρήγορη, χωρίς κίνδυνο
+    Και στην πραγματικότητα, η εκδοχή με λούπα είναι <strong>καλύτερη</strong>: πιο γρήγορη, χωρίς κίνδυνο
     stack overflow, εξίσου ευανάγνωστη. Αν όλα τα αναδρομικά προβλήματα ήταν σαν το παραγοντικό, η αναδρομή
     δεν θα άξιζε ένα ολόκληρο κεφάλαιο.
 </p>
@@ -3951,15 +4138,15 @@ fatal error: stack overflow
         Γιατί υπάρχει μια κατηγορία προβλημάτων όπου η λούπα είναι <em>δυνατή αλλά εφιαλτική</em>, και η
         αναδρομή είναι πέντε γραμμές. Το κοινό τους χαρακτηριστικό: το πρόβλημα
         <strong>περιέχει μέσα του μικρότερα αντίγραφα του εαυτού του</strong> — και δεν ξέρεις εκ των
-        προτέρων πόσα ή πόσο βαθιά. Τέτοια είναι η αναζήτηση σε λαβύρινθο, η εξερεύνηση ενός δικτύου φίλων, η
-        ταξινόμηση με divide and conquer. Θα δούμε και τα τρία.
+        προτέρων πόσα ή πόσο βαθιά. Τέτοια είναι το maze solving, το graph traversal, η
+        ταξινόμηση με divide and conquer.
     </p>
 </div>
 `);
 
         // ── §6.2 — Πώς σκέφτεσαι αναδρομικά ──────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Αναδρομή & Divide and Conquer</div>
+<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Πώς σκέφτεσαι αναδρομικά</h1>
 
 <p class="lede">
@@ -4094,7 +4281,7 @@ func Reverse(s string) string {
 
         // ── §6.3 — Divide and Conquer ────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Αναδρομή & Divide and Conquer</div>
+<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Divide and Conquer: σπάσε, λύσε, ένωσε</h1>
 
 <p class="lede">
@@ -4284,7 +4471,7 @@ func merge(left, right []int) []int {
 
         // ── §6.4 — DFS & BFS ─────────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Αναδρομή & Divide and Conquer</div>
+<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Εξερεύνηση δικτύων: DFS και BFS</h1>
 
 <p class="lede">
@@ -4394,7 +4581,7 @@ func main() {
 func BFS(graph map[string][]string, start string) []string {
     visited := map[string]bool{start: true}
     queue := []string{start} // the Queue from section 4
-    var order []string       // accumulator, the pattern from section 3
+    var order []string       // accumulator
 
     for len(queue) &gt; 0 {
         node := queue[0]
@@ -4505,7 +4692,7 @@ func Distance(graph map[string][]string, start string) map[string]int {
 
         // ── §6.5 — Οι παγίδες της αναδρομής ──────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Αναδρομή & Divide and Conquer</div>
+<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Οι τρεις παγίδες</h1>
 
 <p class="lede">
@@ -7777,7 +7964,8 @@ func CountWays(n int) int {
         // ── Κλείσιμο ─────────────────────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Έφτασες στο τέλος</div>
-<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+
+<p class="lede">Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</p>
 
 <p class="lede">
     Στο Μέρος 1 έμαθες τη γλώσσα. Εδώ έμαθες τι να την κάνεις.
@@ -7786,34 +7974,28 @@ func CountWays(n int) int {
 <p>
     Δεν χρειάζεται να θυμάσαι κάθε αλγόριθμο που είδαμε — κανείς δεν τους θυμάται. Αυτό που μένει είναι η
     ικανότητα να αναγνωρίζεις σε ποια κατηγορία ανήκει ένα πρόβλημα, και να ξέρεις πού να ψάξεις. Αν την
-    επόμενη φορά που δεις μια άσκηση σκεφτείς «αυτό μοιάζει με sliding window» ή «εδώ τα υποπροβλήματα
-    επικαλύπτονται», το Μέρος 2 έκανε τη δουλειά του.
+    επόμενη φορά που δεις μια άσκηση σκέφτεσαι πιο δημιουργικά λύσεις, το Μέρος 2 έκανε τη δουλειά του.
 </p>
-
-<div class="callout good">
-    <span class="tag">Τι ακολουθεί</span>
-    <p>
-        Σε όλο αυτό το μέρος δουλέψαμε με ό,τι είχαμε: slices, maps, functions. Κάποια σημεία θα σου φάνηκαν
-        αναγκαστικά αδέξια — δύο παράλληλα slices για τους ρωμαϊκούς αριθμούς, ένα
-        <code>map[[2]int]bool</code> για συντεταγμένες, η αδυναμία να χειριστούμε σφάλματα σωστά. Όλα αυτά
-        λύνονται με τρία πράγματα που έρχονται στο επόμενο guide: <strong>structs</strong>,
-        <strong>interfaces</strong> και <strong>error handling</strong>.
-    </p>
-</div>
-
-<p class="lede">Για περαιτέρω εμβάθυνση:</p>
-<div class="sources-list">
-  <a href="https://go.dev/tour/" target="_blank" rel="noopener">A Tour of Go — go.dev</a>
-  <a href="https://go.dev/doc/effective_go" target="_blank" rel="noopener">Effective Go — go.dev</a>
-  <a href="https://pkg.go.dev/slices" target="_blank" rel="noopener">Package slices — pkg.go.dev</a>
-  <a href="https://go.dev/doc/" target="_blank" rel="noopener">Go Documentation — go.dev</a>
-</div>
 
 <div id="final-score"></div>
 
 <p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
   Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
 </p>
+
+<div class="feedback-box">
+  <span class="tag">Feedback</span>
+  <p>Πες μου προαιρετικά τη γνώμη σου για το guide. Αν θέλεις να προτείνεις διόρθωση σε κάτι συγκεκριμένο, ήθελες κάτι πιο αναλυτικά, ή δεν σου άρεσε κάποιο κομμάτι, στείλε μου τα σχόλιά σου και θα κάνω άμεσα τις διορθώσεις.</p>
+  <form id="feedback-form" class="feedback-form">
+
+  <input type="text" id="feedback-username" class="feedback-input" placeholder="Το όνομά σου (προαιρετικό)" autocomplete="off" maxlength="120">
+  <textarea id="feedback-text" class="feedback-textarea" placeholder="Τα σχόλιά σου..." rows="4" maxlength="24000"></textarea>
+
+    <button type="submit" id="feedback-submit-btn" class="nav-btn feedback-submit-btn">Αποστολή feedback</button>
+    <div id="feedback-status" class="feedback-status"></div>
+  </form>
+</div>
+
 `);
 
         initSlideDeck({
