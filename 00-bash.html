@@ -331,8 +331,8 @@
 <span class="tok-func">cd</span> <span class="tok-type">foo</span>              <span class="tok-com"># change directory — μπες στον υποφάκελο foo</span>
 <span class="tok-func">cd</span>                  <span class="tok-com"># χωρίς όρισμα, πήγαινε στον home φάκελο</span>
 <span class="tok-func">cd</span> ~                <span class="tok-com"># πήγαινε στον home φάκελο (ρητά)</span>
-<span class="tok-func">cd</span> ..                <span class="tok-com"># πήγαινε έναν φάκελο πάνω</span>
-<span class="tok-func">cd</span> -                 <span class="tok-com"># πήγαινε στον προηγούμενο φάκελο που ήσουν</span>
+<span class="tok-func">cd</span> ..               <span class="tok-com"># πήγαινε έναν φάκελο πάνω (στον "γονικό" φάκελο)</span>
+<span class="tok-func">cd</span> -                <span class="tok-com"># πήγαινε στον προηγούμενο φάκελο που ήσουν</span>
 </code></pre>
 
 <h2>Absolute και relative paths</h2>
@@ -386,8 +386,8 @@ projects/notes.txt
 </div>
 
 <p>Αν αυτή τη στιγμή βρίσκεσαι μέσα στο <code>/home/student/projects/go-project</code>, όλα τα παρακάτω δείχνουν σωστά:</p>
-<pre><code><span class="tok-func">cat</span> <span class="tok-type">main.go</span>                <span class="tok-com"># relative: a file right next to me</span>
-<span class="tok-func">cd</span> ..                       <span class="tok-com"># -> /home/student/projects</span>
+<pre><code><span class="tok-func">cat</span> <span class="tok-type">main.go</span>                  <span class="tok-com"># relative: a file right next to me</span>
+<span class="tok-func">cd</span> ..                        <span class="tok-com"># -> /home/student/projects</span>
 <span class="tok-func">cd</span> ../bash-project           <span class="tok-com"># -> sideways, into a sibling folder</span>
 <span class="tok-func">cat</span> ../../notes.txt          <span class="tok-com"># two levels up, then read the file</span>
 <span class="tok-func">cat</span> /home/student/notes.txt  <span class="tok-com"># absolute: same file, works from anywhere</span>
@@ -426,10 +426,10 @@ projects/notes.txt
 <p>Ο πρώτος χαρακτήρας της πρώτης στήλης λέει τι είδους καταχώρηση είναι: παύλα για κανονικό αρχείο, <code>d</code> για φάκελο (directory), <code>l</code> για symbolic link. Τα υπόλοιπα εννιά γράμματα είναι τα δικαιώματα, που θα τα αναλύσουμε στην Ενότητα 6.</p>
 
 <h2>Δημιουργία φακέλων</h2>
-<pre><code><span class="tok-func">mkdir</span> <span class="tok-type">foo</span>                      <span class="tok-com"># create a directory</span>
-<span class="tok-func">mkdir</span> <span class="tok-type">foo bar</span>                  <span class="tok-com"># create multiple directories at once</span>
-<span class="tok-func">mkdir</span> <span class="tok-kw">-p</span> <span class="tok-type">foo/bar</span>              <span class="tok-com"># create nested directories (parents), ακόμα κι αν το foo δεν υπάρχει ακόμα</span>
-<span class="tok-func">mkdir</span> <span class="tok-kw">-p</span> <span class="tok-type">{foo,bar}/baz</span>        <span class="tok-com"># brace expansion: δημιουργεί foo/baz ΚΑΙ bar/baz</span>
+<pre><code><span class="tok-func">mkdir</span> <span class="tok-type">foo</span>                    <span class="tok-com"># create a directory</span>
+<span class="tok-func">mkdir</span> <span class="tok-type">foo bar</span>                <span class="tok-com"># create multiple directories at once</span>
+<span class="tok-func">mkdir</span> <span class="tok-kw">-p</span> <span class="tok-type">foo/bar</span>             <span class="tok-com"># create nested directories (parents), ακόμα κι αν το foo δεν υπάρχει ακόμα</span>
+<span class="tok-func">mkdir</span> <span class="tok-kw">-p</span> <span class="tok-type">{foo,bar}/baz</span>       <span class="tok-com"># brace expansion: δημιουργεί foo/baz ΚΑΙ bar/baz</span>
 <span class="tok-func">mktemp</span> <span class="tok-kw">-d</span>                    <span class="tok-com"># create a temporary directory με μοναδικό όνομα</span>
 </code></pre>
 
@@ -476,7 +476,20 @@ projects/notes.txt
 <span class="tok-func">tree</span>                               <span class="tok-com"># confirm the structure you just built</span>
 <span class="tok-func">pwd</span>                                <span class="tok-com"># /home/student/demo — always verify where you are</span>
 </code></pre>
-<p>Δύο πράγματα αξίζουν προσοχή εδώ. Πρώτον, το <code>mkdir -p demo/{src,docs}</code> γλιτώνει τρεις ξεχωριστές εντολές, επειδή το brace expansion γίνεται από το shell πριν καν τρέξει η mkdir: αυτό που φτάνει στην εντολή είναι ήδη δύο έτοιμα paths. Δεύτερον, η τελευταία γραμμή. Το <code>pwd</code> μοιάζει περιττό, αλλά η πιο συχνή αιτία που μια εντολή "δεν δουλεύει" είναι ότι τρέχει από λάθος φάκελο.</p>
+
+
+<p>Ας δούμε σε <code>tree</code> τι ακριβώς φτιάξαμε:</p>
+<pre><code><span class="tok-type">demo</span>
+├── <span class="tok-type">docs</span>
+│   └── readme.md
+└── <span class="tok-type">src</span>
+    ├── main.sh
+    ├── test1.sh
+    ├── test2.sh
+    └── test3.sh
+
+2 directories, 5 files</code></pre>
+
 
 <h2>Tab Completion</h2>
 <p>Πάτα Tab ενώ γράφεις ένα όνομα αρχείου, φακέλου ή εντολής, και το shell θα προσπαθήσει να το συμπληρώσει αυτόματα. Αν υπάρχουν πολλαπλές επιλογές, πάτα Tab ξανά για να τις δεις όλες. Είναι το πιο σημαντικό keyboard shortcut που θα μάθεις. Γλιτώνει χρόνο και τυπογραφικά λάθη.</p>
