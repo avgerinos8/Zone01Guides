@@ -4060,10 +4060,10 @@ fatal error: stack overflow
         ο κώδικας, και μόνο για τις τιμές που το προκαλούν. Μια αναδρομή μπορεί να δουλεύει μια χαρά για
         <code>n = 10</code> και να καταρρέει για <code>n = -1</code>.
     </p>
-</div><h2>Το ίδιο πράγμα με λούπα</h2>
+</div><h2>Το ίδιο πράγμα με loop</h2>
 
 <p>
-    Καθετί που γράφεται αναδρομικά γράφεται και με λούπα.
+    Καθετί που γράφεται αναδρομικά (recursive) γράφεται και με loop (iterative). 
 </p>
 
 <div class="grid2">
@@ -4142,19 +4142,10 @@ func FactorialLoop(n int) int {
         ταξινόμηση με divide and conquer.
     </p>
 </div>
-`);
 
-        // ── §6.2 — Πώς σκέφτεσαι αναδρομικά ──────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
+<br>
+
 <h1>Πώς σκέφτεσαι αναδρομικά</h1>
-
-<p class="lede">
-    Το δυσκολότερο κομμάτι της αναδρομής δεν είναι η σύνταξη — είναι ότι το μυαλό σου θέλει να παρακολουθήσει
-    κάθε κλήση ξεχωριστά, και χάνεται στο τρίτο επίπεδο. Υπάρχει τρόπος να το αποφύγεις.
-</p>
-
-<h2>Το άλμα εμπιστοσύνης</h2>
 
 <p>
     Όταν γράφεις μια αναδρομική function, <strong>μην προσπαθήσεις να τρέξεις όλα τα επίπεδα στο μυαλό
@@ -4209,37 +4200,79 @@ func SumSlice(numbers []int) int {
     return numbers[0] + SumSlice(numbers[1:]) // 3. combine  |  2. shrink
 }
 </code></pre>
+<h2>Το unwinding phase — τι γίνεται ΜΕΤΑ την κλήση</h2>
 
 <p>
-    Πρόσεξε ότι η γραμμή του recursive case διαβάζεται σχεδόν σαν ελληνικά: «το πρώτο, συν το άθροισμα των
-    υπολοίπων». Αυτό είναι το σημάδι ότι η αναδρομή ταιριάζει στο πρόβλημα — όταν η περιγραφή του προβλήματος
-    <em>είναι</em> ο κώδικας.
+    Μέχρι στιγμής, σε όλες τις αναδρομικές functions που γράψαμε, η κλήση στον εαυτό τους ήταν η
+    <strong>τελευταία</strong> πράξη — είτε σκέτη γραμμή (<code>Countdown(n - 1)</code>), είτε μέσα σε ένα
+    <code>return</code> (<code>return n * Factorial(n-1)</code>). Σε καμία περίπτωση δεν υπήρχε κάτι
+    <em>μετά</em> την αναδρομική κλήση.
 </p>
 
-<h2>Ένα ακόμα: αντιστροφή string</h2>
+<p>
+    Θυμήσου το <code>Countdown</code> που γράψαμε νωρίτερα:
+</p>
 
-<p>Ίδιες τρεις ερωτήσεις, εντελώς διαφορετικό πρόβλημα:</p>
-
-<pre><code class="lang-go">// Reverse returns the input string, backwards.
-// Works on ASCII text - see the callout below for why.
-func Reverse(s string) string {
-    if len(s) &lt;= 1 {
-        return s // base case: a single character reversed is itself
+<pre><code class="lang-go">func Countdown(n int) {
+    if n <= 0 {
+        fmt.Println("BOOM!!")
+        return
     }
-    // last character first, then the reverse of everything before it
-    return string(s[len(s)-1]) + Reverse(s[:len(s)-1])
+    fmt.Println(n)
+    Countdown(n - 1)
 }
-// Reverse("hello") -&gt; "olleh"
 </code></pre>
 
-<div class="callout">
-    <span class="tag">Γιατί "works on ASCII"</span>
+<p>
+    Το <code>fmt.Println(n)</code> εδώ είναι ΠΡΙΝ την αναδρομική κλήση. Τι θα γινόταν αν άλλαζες τη σειρά —
+    αν έβαζες το <code>fmt.Println(n)</code> ΜΕΤΑ το <code>Countdown(n - 1)</code>; Σκέψου το πριν διαβάσεις
+    παρακάτω: ποια σειρά αριθμών θα περίμενες να δεις;
+</p>
+
+<p>
+    Η απάντηση: ένα expression ΜΕΤΑ την αναδρομική κλήση δεν εκτελείται αμέσως — περιμένει μέχρι η κλήση
+    <code>Countdown(n-1)</code> να ΕΠΙΣΤΡΕΨΕΙ ολόκληρη, δηλαδή αφού ΟΛΕΣ οι βαθύτερες κλήσεις έχουν με τη
+    σειρά τους ολοκληρωθεί. Αν μετακινήσεις το <code>fmt.Println(n)</code> μετά το <code>Countdown(n-1)</code>,
+    θα δεις τους αριθμούς <code>1, 2, 3</code> — σε <strong>ανάποδη</strong> σειρά από αυτή που μετρήθηκαν
+    (3 πρώτα, 1 τελευταίο), δηλαδή σε <strong>κανονική</strong> αύξουσα αριθμητική σειρά. Αυτό το κομμάτι
+    κώδικα — ό,τι εκτελείται καθώς οι κλήσεις "επιστρέφουν" η μία μετά την άλλη, από τη βαθύτερη προς την
+    αρχική — λέγεται <strong>unwinding phase</strong> (η στοίβα κλήσεων "ξετυλίγεται").
+</p>
+
+<h3>Παράδειγμα: αντιστροφή λέξεων ενός κειμένου</h3>
+
+<p>
+    Ας δούμε κάτι πιο χρήσιμο: διάβασε ένα κείμενο λέξη-λέξη, και τύπωσέ το με τις λέξεις σε
+    <strong>αντίστροφη σειρά</strong> — χωρίς να χρησιμοποιήσεις καθόλου slice ή stack.
+</p>
+<p>
+    Η ιδέα:
+    διάβασε ΟΛΟ το κείμενο πρώτα (αναδρομικά, μέχρι να βρεις το τέλος), και τύπωσε κάθε λέξη στο unwinding
+    phase — η ίδια ακριβώς λογική με το <code>PrintReversed</code> παραπάνω, απλά με λέξεις αντί για
+    αριθμούς.
+</p>
+
+<pre><code class="lang-go">// PrintWordsReversed reads words[index:] and prints them back-to-front.
+func PrintWordsReversed(words []string, index int) {
+    if index >= len(words) {
+        return // base case: reached the end of the text
+    }
+    PrintWordsReversed(words, index+1) // go deeper FIRST — read the rest
+    fmt.Println(words[index])           // print AFTER, on the way back out
+}</code></pre>
+
+<p>
+    Κάλεσε <code>PrintWordsReversed([]string{"the", "quick", "brown", "fox"}, 0)</code> και θα πάρεις
+    <code>fox</code>, <code>brown</code>, <code>quick</code>, <code>the</code> — ακριβώς με αυτή τη σειρά,
+    χωρίς να χρειαστεί καν να φτιάξεις καινούριο slice.
+</p>
+
+<div class="callout good">
+    <span class="tag">Δοκίμασέ το μόνος σου</span>
     <p>
-        Θυμήσου από το Μέρος 1: το <code>s[i]</code> σου δίνει <strong>byte</strong>, όχι rune. Σε ελληνικό
-        κείμενο κάθε γράμμα πιάνει 2 bytes, οπότε αυτή η function θα τα κόψει στη μέση και θα βγάλει
-        σκουπίδια. Η σωστή εκδοχή θα μετέτρεπε πρώτα σε <code>[]rune</code>. Το αφήνουμε έτσι επίτηδες, γιατί
-        το θέμα εδώ είναι η αναδρομή — αλλά αξίζει να θυμάσαι ότι το byte-vs-rune δεν εξαφανίζεται επειδή
-        άλλαξες τεχνική.
+        Δοκίμασε τώρα να γράψεις μια αναδρομική function που να τυπώνει τους αριθμούς <code>1</code> έως
+        <code>n</code> ΚΑΙ πριν ΚΑΙ μετά την αναδρομική κλήση — δηλαδή μία γραμμή στην "κανονική" φάση, και
+        μία στο unwinding phase. Τι σειρά αριθμών θα δεις συνολικά;
     </p>
 </div>
 
@@ -4262,21 +4295,27 @@ func Reverse(s string) string {
         <td style="padding:8px;">το πρόβλημα προχωράει «κατά ένα» κάθε φορά</td>
         <td style="padding:8px;">το πρόβλημα <strong>σπάει σε μικρότερα ίδιου είδους</strong></td>
     </tr>
-    <tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;">η απόδοση και η μνήμη μετράνε</td>
         <td style="padding:8px;">η αναδρομική εκδοχή είναι δραματικά πιο ευανάγνωστη</td>
     </tr>
+    <tr>
+        <td style="padding:8px;">χρειάζεσαι τα βήματα με τη σειρά που έγιναν</td>
+        <td style="padding:8px;">χρειάζεσαι τα βήματα με <strong>αντίστροφη</strong> σειρά — το unwinding phase σου το δίνει έτοιμο, χωρίς δική σου στοίβα</td>
+    </tr>
 </table>
 
-<div class="callout good">
-    <span class="tag">Ο πρακτικός κανόνας</span>
-    <p>
-        Αν μπορείς να το γράψεις άνετα με λούπα, γράψ' το με λούπα. Η αναδρομή δεν είναι «πιο έξυπνη» — είναι
-        απλά το κατάλληλο εργαλείο όταν το πρόβλημα διακλαδώνεται. Το να γράψεις αναδρομικά κάτι που είναι
-        φυσικά γραμμικό (όπως το άθροισμα παραπάνω) είναι καλή <em>άσκηση</em>, αλλά κακή <em>απόφαση</em> σε
-        πραγματικό κώδικα.
-    </p>
+<h2>Τα κομμάτια μιας αναδρομικής function, συγκεντρωτικά</h2>
+
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">Base case</span><span class="gs-def">το μικρότερο πρόβλημα που απαντάς απευθείας, χωρίς άλλη κλήση — σταματάει την αναδρομή</span></div>
+  <div class="gs-pill"><span class="gs-name">Recursive case</span><span class="gs-def">η κλήση της function στον εαυτό της, πάνω σε μικρότερη εκδοχή του προβλήματος</span></div>
+  <div class="gs-pill"><span class="gs-name">Πριν την κλήση</span><span class="gs-def">κώδικας που εκτελείται με τη "φυσιολογική" σειρά, καθώς προχωράς προς το base case</span></div>
+  <div class="gs-pill"><span class="gs-name">Unwinding phase</span><span class="gs-def">κώδικας ΜΕΤΑ την αναδρομική κλήση — εκτελείται σε αντίστροφη σειρά, καθώς οι κλήσεις επιστρέφουν</span></div>
+  <div class="gs-pill"><span class="gs-name">Call stack</span><span class="gs-def">η μνήμη που κρατάει ενεργή κάθε αναδρομική κλήση μέχρι να ολοκληρωθεί — γεμάτο call stack σημαίνει stack overflow</span></div>
 </div>
+
+
 `);
 
         // ── §6.3 — Divide and Conquer ────────────────────────────────────────── ⊃
@@ -4285,33 +4324,41 @@ func Reverse(s string) string {
 <h1>Divide and Conquer: σπάσε, λύσε, ένωσε</h1>
 
 <p class="lede">
-    Η αναδρομή γίνεται πραγματικά ισχυρή όταν το πρόβλημα δεν μικραίνει <em>κατά ένα</em>, αλλά κόβεται
-    <strong>στη μέση</strong>. Αυτή η διαφορά είναι που ρίχνει το κόστος από <code>O(n)</code> σε
-    <code>O(log n)</code>, και από <code>O(n²)</code> σε <code>O(n log n)</code>.
+    Θυμάσαι τους αλγόριθμους που έριχναν την πολυπλοκότητα σε <code>O(log n)</code>; Έπαιρναν τα δεδομένα,
+    και σε κάθε βήμα πετούσαν τα μισά — κοιτούσαν μόνο το ένα κομμάτι, ξανά και ξανά, μέχρι να μείνει ένα
+    μόνο στοιχείο.<br>Αυτό που έκανες εκεί έχει όνομα: <strong>Divide and Conquer</strong> — "διαίρει και
+    βασίλευε". Και ταιριάζει εξαιρετικά με την αναδρομή, ακριβώς επειδή το πρόβλημα δεν μικραίνει
+    <em>κατά ένα</em> κάθε φορά, αλλά κόβεται <strong>στη μέση</strong> — το είδος του "μικρότερου
+    προβλήματος του ίδιου τύπου" που ήδη ξέρεις να αναγνωρίζεις ως base case/recursive case. Αυτή η διαφορά
+    είναι που ρίχνει το κόστος από <code>O(n)</code> σε <code>O(log n)</code>, και από <code>O(n²)</code> σε
+    <code>O(n log n)</code>.
 </p>
 
-<p>Το σχήμα έχει πάντα τρία βήματα, και του έδωσαν όνομα: <strong>divide and conquer</strong>.</p>
-
-<div class="grid3">
-    <div class="card">
-        <span class="card-tag">1. Divide</span>
-        <p>Σπάσε το πρόβλημα σε δύο (ή περισσότερα) μικρότερα προβλήματα <strong>του ίδιου είδους</strong>.</p>
-    </div>
-    <div class="card">
-        <span class="card-tag">2. Conquer</span>
-        <p>Λύσε το καθένα — αναδρομικά, με την ίδια function. Αν είναι αρκετά μικρό, λύσ' το απευθείας.</p>
-    </div>
-    <div class="card">
-        <span class="card-tag">3. Combine</span>
-        <p>Ένωσε τις επιμέρους απαντήσεις σε μία απάντηση για το αρχικό πρόβλημα.</p>
-    </div>
+<div class="grid3" style="position:relative;"> 
+  <div class="card" style="position:relative; border:none; overflow:hidden; padding:38px 20px 12px;"> 
+    <span class="card-tag" style="position:absolute; top:-18px; left:20px; font-size:4.2em; letter-spacing: -0.05em; font-family: var(--font-display); font-weight: 700; color:var(--tone-1); line-height:1; white-space:nowrap; z-index:2;">1. Divide</span> 
+    <p style="position:relative; z-index:10; margin-bottom:0;">Σπάσε το πρόβλημα σε δύο (ή περισσότερα) μικρότερα προβλήματα <strong>του ίδιου είδους</strong>.</p> 
+  </div> 
+  
+  <div class="card" style="position:relative; border:none; overflow:hidden; padding:38px 20px 12px;"> 
+    <span style="position:absolute; left:-22px; top:50%; transform:translateY(-50%); font-size:1.4em; opacity:0.5;">→</span> 
+    <span class="card-tag" style="position:absolute; top:-18px; left:20px; font-size:4.2em;  letter-spacing: -0.05em; font-family: var(--font-display); font-weight: 700; color:var(--tone-1); line-height:1; white-space:nowrap; z-index:2;">2. Conquer</span> 
+    <p style="position:relative; z-index:10; margin-bottom:0;">Αν είναι αρκετά μικρό (base case), λύσ' το άμεσα. Αλλιώς, επίλυσέ το αναδρομικά με την ίδια function.</p> 
+  </div> 
+  
+  <div class="card" style="position:relative; border:none; overflow:hidden; padding:38px 20px 12px;"> 
+    <span style="position:absolute; left:-22px; top:50%; transform:translateY(-50%); font-size:1.4em; opacity:0.5;">→</span> 
+    <span class="card-tag" style="position:absolute; top:-18px; left:20px; font-size:4.2em;  letter-spacing: -0.05em; font-family: var(--font-display); font-weight: 700; color:var(--tone-1); line-height:1; white-space:nowrap; z-index:2;">3. Combine</span> 
+    <p style="position:relative; z-index:10; margin-bottom:0;">Ένωσε τις επιμέρους απαντήσεις σε μία απάντηση για το αρχικό πρόβλημα.</p> 
+  </div> 
 </div>
 
 <h2>Το ήδη γνωστό παράδειγμα: binary search</h2>
 
 <p>
-    Στην Ενότητα 5 γράψαμε τη δυαδική αναζήτηση με λούπα και δύο δείκτες. Δες την τώρα γραμμένη αναδρομικά,
-    και πρόσεξε πόσο καθαρά φαίνονται τα τρία βήματα:
+    Στην Ενότητα 5 γράψαμε τη δυαδική αναζήτηση <strong>iterative</strong> (με <code>for</code>) και δύο
+    δείκτες θέσης (index). Δες την τώρα γραμμένη <strong>recursive</strong>, και πρόσεξε πόσο καθαρά
+    φαίνονται τα τρία βήματα:
 </p>
 
 <pre><code class="lang-go">// BinarySearchRec searches a SORTED slice between indexes left and right.
@@ -4342,23 +4389,24 @@ func BinarySearchRec(numbers []int, target, left, right int) (int, bool) {
         <code>O(log n)</code> και όχι <code>O(n log n)</code>: δουλεύει μόνο σε ένα κλαδί σε κάθε επίπεδο,
         όχι σε δύο.
     </p>
+    <p>
+        Είναι όμως η recursive εκδοχή <strong>καλύτερη</strong> από την iterative που ήδη ξέρεις; Όχι εδώ —
+        η recursive εκδοχή χτίζει call stack σε κάθε κλήση (μέχρι <code>log n</code> επίπεδα βάθος), ενώ η
+        iterative δουλεύει με δύο απλές μεταβλητές, χωρίς καμία επιπλέον μνήμη. Το κόστος σε χρόνο
+        παραμένει το ίδιο (<code>O(log n)</code> και στις δύο), αλλά η iterative είναι ελαφρώς πιο
+        οικονομική σε μνήμη. Την είδαμε με την recursive μορφή εδώ, σαν <strong>ανακεφαλαίωση</strong>: για να δούμε με recursion κάτι που έχεις ήδη
+        χτίσει και ξέρεις καλά — και για να του δώσουμε επιτέλους το όνομά του, <strong>divide and
+        conquer</strong>.
+    </p>
 </div>
 
 <h2>Το πλήρες παράδειγμα: merge sort</h2>
 
 <p>
-    Στην Ενότητα 5 σου υποσχεθήκαμε ότι το merge sort θα επιστρέψει εδώ. Όχι για να το γράφεις σε πραγματικό
-    κώδικα — για αυτό υπάρχει η <code>slices.Sort</code> — αλλά επειδή είναι ο καθαρότερος τρόπος να δεις
-    <strong>τι ακριβώς σου δίνει η αναδρομή</strong>.
+    Στην Ενότητα 5 υποσχεθήκαμε ότι το merge sort θα επιστρέψει εδώ. Όχι για να το γράφεις σε πραγματικό
+    κώδικα — για αυτό υπάρχει η <code>slices.Sort</code> — αλλά επειδή είναι το πιο καθαρό παράδειγμα divide
+    and conquer που θα δεις. Ορίστε ολόκληρο το πρόγραμμα:
 </p>
-
-<p>Οι τρεις ερωτήσεις, εφαρμοσμένες στην ταξινόμηση:</p>
-
-<ul>
-    <li><strong>Base case:</strong> ένα slice με 0 ή 1 στοιχεία είναι <em>ήδη ταξινομημένο</em>. Τίποτα να κάνω.</li>
-    <li><strong>Divide:</strong> κόψε στη μέση. Δύο slices, το καθένα μισό μέγεθος.</li>
-    <li><strong>Combine:</strong> έχοντας δύο <em>ταξινομημένα</em> μισά, ένωσέ τα σε ένα ταξινομημένο σύνολο.</li>
-</ul>
 
 <pre><code class="lang-go">// MergeSort returns a NEW sorted slice. It does not modify the input.
 func MergeSort(numbers []int) []int {
@@ -4372,14 +4420,8 @@ func MergeSort(numbers []int) []int {
 
     return merge(left, right) // combine two sorted halves into one
 }
-</code></pre>
 
-<p>
-    Πέντε γραμμές ουσίας, και ολόκληρη η ταξινόμηση κρύβεται στο <code>merge</code>. Άρα το μόνο που μένει
-    είναι: πώς ενώνεις δύο <em>ήδη ταξινομημένα</em> slices;
-</p>
-
-<pre><code class="lang-go">// merge combines two already-sorted slices into one sorted slice.
+// merge combines two already-sorted slices into one sorted slice.
 func merge(left, right []int) []int {
     result := make([]int, 0, len(left)+len(right))
     i, j := 0, 0 // one pointer per slice
@@ -4401,46 +4443,91 @@ func merge(left, right []int) []int {
 }
 </code></pre>
 
-<div class="callout good">
-    <span class="tag">Το αναγνωρίζεις;</span>
-    <p>
-        Δύο δείκτες, ο καθένας στη δική του συλλογή, που προχωράνε ανεξάρτητα ανάλογα με τη σύγκριση — αυτό
-        είναι <strong>two pointers</strong>, στην παραλλαγή «δύο θέσεις, δύο διαφορετικοί ρόλοι» που
-        περιγράψαμε στην Ενότητα 3. Το merge sort δεν είναι κάτι καινούριο· είναι δύο πράγματα που ήδη ξέρεις,
-        το ένα μέσα στο άλλο.
-    </p>
-</div>
+<p>
+    Το func <code>MergeSort</code> από μόνο του δεν κάνει σχεδόν καμία δουλειά — απλά σπάει στη μέση και
+    εμπιστεύεται ότι οι δύο αναδρομικές κλήσεις θα του φέρουν πίσω δύο <em>ήδη ταξινομημένα</em> κομμάτια.
+    <strong>Όλη η πραγματική δουλειά κρύβεται στο <code>merge</code></strong>. Αλλά ας δούμε πρώτα πώς θα τα σπάσει: 
+</p>
+
+<pre><code class="lang-go">          [5, 2, 9, 1, 7, 3, 8, 4]                  επίπεδο 0
+    [5, 2, 9, 1]            [7, 3, 8, 4]            επίπεδο 1
+  [5, 2]      [9, 1]      [7, 3]      [8, 4]        επίπεδο 2
+[5]    [2]  [9]    [1]  [7]    [3]  [8]    [4]      επίπεδο 3 (base case)
+</code></pre>
+
+<h3>Η func merge</h3>
+
+<pre><code class="lang-go">result := make([]int, 0, len(left)+len(right))
+i, j := 0, 0 // one pointer per slice</code></pre>
+
+<p>
+    Δύο δείκτες θέσης, ένας για κάθε λίστα — <code>i</code> δείχνει πού έχεις φτάσει στο <code>left</code>,
+    <code>j</code> πού έχεις φτάσει στο <code>right</code>. Και οι δύο ξεκινούν στην αρχή, αφού καμία λίστα
+    δεν έχει "χρησιμοποιηθεί" ακόμα.
+</p>
+
+<h3>Κομμάτι 2: η σύγκριση</h3>
+
+<pre><code class="lang-go">for i &lt; len(left) &amp;&amp; j &lt; len(right) {
+    if left[i] &lt;= right[j] {
+        result = append(result, left[i])
+        i++
+    } else {
+        result = append(result, right[j])
+        j++
+    }
+}</code></pre>
+
+<p>
+    Όσο ΚΑΙ οι δύο λίστες έχουν ακόμα αχρησιμοποίητα στοιχεία, κοίταξε ΜΟΝΟ τα δύο στοιχεία στην αρχή κάθε λίστας —
+    <code>left[i]</code> και <code>right[j]</code>. Πάρε το μικρότερο, βάλ' το στο <code>result</code>, και
+    προχώρα ΜΟΝΟ τον δείκτη εκείνης της λίστας. Επειδή κάθε λίστα είναι ήδη ταξινομημένη, το μικρότερο
+    "ανοιχτό" στοιχείο και των δύο βρίσκεται πάντα ακριβώς σε αυτές τις δύο θέσεις — ποτέ δεν χρειάζεται να
+    κοιτάξεις παραπέρα μέσα στη λίστα.
+</p>
+
+<p>Ας το ιχνηλατήσουμε με <code>left = [2, 5]</code> και <code>right = [1, 9]</code>:</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">σύγκριση</td><td class="gt-def">ενέργεια</td></tr>
+<tr><td class="gt-term">left[0]=2 vs right[0]=1</td><td class="gt-def">1 &lt; 2 → πάρε το 1, j++ → result: <code>[1]</code></td></tr>
+<tr><td class="gt-term">left[0]=2 vs right[1]=9</td><td class="gt-def">2 &lt; 9 → πάρε το 2, i++ → result: <code>[1, 2]</code></td></tr>
+<tr><td class="gt-term">left[1]=5 vs right[1]=9</td><td class="gt-def">5 &lt; 9 → πάρε το 5, i++ → result: <code>[1, 2, 5]</code></td></tr>
+<tr><td class="gt-term">i=2 == len(left)</td><td class="gt-def">το <code>left</code> τελείωσε — η λούπα σταματάει εδώ</td></tr>
+</table>
+
+<h3>Κομμάτι 3: ό,τι απομένει</h3>
+
+<pre><code class="lang-go">// one side ran out - whatever is left on the other side is already sorted
+result = append(result, left[i:]...)
+result = append(result, right[j:]...)</code></pre>
+
+<p>
+    Στο παράδειγμά μας, το <code>left[i:]</code> είναι πλέον κενό (<code>i=2</code>, μήκος 2), και το
+    <code>right[j:]</code> είναι <code>[9]</code> (<code>j=1</code>, το μόνο στοιχείο που απόμεινε). Αυτά
+    κολλάνε στο τέλος <strong>όπως είναι, χωρίς καμία επιπλέον σύγκριση</strong> — αποτέλεσμα:
+    <code>[1, 2, 5, 9]</code>.
+</p>
+
+<div class="callout"><span class="tag">Γιατί δεν χρειάζεται άλλος έλεγχος εδώ</span>Μόλις μία από τις δύο λίστες αδειάσει, ό,τι απομένει στην άλλη είναι ΗΔΗ στη σωστή θέση σε σχέση με όλα τα υπόλοιπα — ήταν ήδη ταξινομημένη λίστα, και όλα τα στοιχεία που "βγήκαν" μέχρι τώρα ήταν μικρότερα ή ίσα από αυτήν.</div>
+
+<p>Να δούμε και σε επίπεδο recursion πως ανεβαίνει ενώνοντας (unwinding phase), με το <code>merge</code> σε κάθε βήμα:</p>
+
+<pre><code class="lang-go">[5] [2]   [9] [1]     [7] [3]   [8] [4]     επίπεδο 3
+ [2, 5]    [1, 9]     [3, 7]    [4, 8]      επίπεδο 2
+    [1, 2, 5, 9]         [3, 4, 7, 8]       επίπεδο 1
+         [1, 2, 3, 4, 5, 7, 8, 9]           επίπεδο 0
+</code></pre>
 
 <h2>Γιατί βγαίνει <code>O(n log n)</code></h2>
 
-<p>Ας ταξινομήσουμε το <code>[5, 2, 9, 1, 7, 3, 8, 4]</code>. Πρώτα κατεβαίνει σπάζοντας:</p>
-
-<pre><code>                [5, 2, 9, 1, 7, 3, 8, 4]          επίπεδο 0
-           [5, 2, 9, 1]      [7, 3, 8, 4]          επίπεδο 1
-        [5, 2]  [9, 1]    [7, 3]   [8, 4]          επίπεδο 2
-      [5] [2]  [9] [1]  [7] [3]  [8] [4]           επίπεδο 3 (base case)
-</code></pre>
-
-<p>Και μετά ανεβαίνει ενώνοντας, με το <code>merge</code> σε κάθε βήμα:</p>
-
-<pre><code>      [5] [2]  [9] [1]  [7] [3]  [8] [4]           επίπεδο 3
-        [2, 5]  [1, 9]    [3, 7]   [4, 8]          επίπεδο 2
-           [1, 2, 5, 9]      [3, 4, 7, 8]          επίπεδο 1
-                [1, 2, 3, 4, 5, 7, 8, 9]          επίπεδο 0
-</code></pre>
-
-<p>Τώρα μέτρα δύο πράγματα ξεχωριστά:</p>
-
-<ul>
-    <li><strong>Πόσα επίπεδα;</strong> Κάθε επίπεδο υποδιπλασιάζει το μέγεθος. Από 8 σε 1 χρειάζονται 3 βήματα —
-        δηλαδή <code>log₂(8) = 3</code>. Για ένα εκατομμύριο στοιχεία, 20 επίπεδα.</li>
-    <li><strong>Πόση δουλειά ανά επίπεδο;</strong> Σε κάθε επίπεδο, όλα τα <code>merge</code> μαζί περνούν από
-        κάθε στοιχείο ακριβώς μία φορά. Δηλαδή <code>n</code> δουλειά, όσο βαθιά κι αν είσαι.</li>
-</ul>
-
 <p>
+    Κάθε φορά που καλείς <code>MergeSort</code> σε ένα slice μεγέθους <code>n</code>, αυτό χωρίζεται σε δύο
+    μισά (<code>log n</code> φορές συνολικά, μέχρι να φτάσεις σε base case), και σε ΚΑΘΕ ένα από αυτά τα
+    <code>log n</code> "επίπεδα" διαίρεσης, το σύνολο της δουλειάς που κάνουν όλα τα <code>merge</code> μαζί
+    είναι <code>n</code> (κάθε στοιχείο περνάει ακριβώς μία φορά μέσα από κάποιο merge, σε κάθε επίπεδο).
     <code>n</code> δουλειά, <code>log n</code> φορές → <strong><code>O(n log n)</code></strong>. Αυτό είναι
-    όλο. Και τώρα ξέρεις γιατί το <code>log</code> εμφανίζεται στον τύπο: <em>δεν</em> είναι αυθαίρετο σύμβολο,
+    όλο — και τώρα ξέρεις γιατί το <code>log</code> εμφανίζεται στον τύπο: δεν είναι αυθαίρετο σύμβολο,
     είναι απλώς «πόσες φορές μπορώ να κόψω στη μέση».
 </p>
 
@@ -4465,227 +4552,6 @@ func merge(left, right []int) []int {
         εικόνας, ακόμα και στον πολλαπλασιασμό πολύ μεγάλων αριθμών. Το σήμα είναι πάντα το ίδιο:
         <em>«αν είχα τη λύση για τα δύο μισά, θα ήξερα τι να κάνω;»</em> Αν η απάντηση είναι ναι, έχεις
         divide and conquer.
-    </p>
-</div>
-`);
-
-        // ── §6.4 — DFS & BFS ─────────────────────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
-<h1>Εξερεύνηση δικτύων: DFS και BFS</h1>
-
-<p class="lede">
-    Εδώ η αναδρομή σταματάει να είναι εναλλακτική της λούπας και γίνεται <strong>ο φυσικός τρόπος</strong>.
-    Γιατί τα δεδομένα δεν είναι πια γραμμή — είναι δίκτυο.
-</p>
-
-<h2>Πώς παριστάνουμε ένα δίκτυο χωρίς structs</h2>
-
-<p>
-    Ένα <strong>γράφημα</strong> (graph) είναι απλά ένα σύνολο κόμβων και οι συνδέσεις μεταξύ τους. Δεν
-    χρειάζεσαι καμία ειδική δομή για να το γράψεις — ένα <code>map</code> από κόμβο σε λίστα γειτόνων αρκεί:
-</p>
-
-<pre><code class="lang-go">// each key is a person, each value is the list of that person's friends
-friends := map[string][]string{
-    "ana":  {"bob", "cleo"},
-    "bob":  {"ana", "dan"},
-    "cleo": {"ana", "dan", "eve"},
-    "dan":  {"bob", "cleo"},
-    "eve":  {"cleo"},
-}
-</code></pre>
-
-<pre><code>        ana
-       /   \
-     bob   cleo
-       \   /   \
-        dan     eve
-</code></pre>
-
-<p>
-    Η ερώτηση που θέλουμε να απαντήσουμε: <em>ξεκινώντας από την ana, ποιους μπορώ να φτάσω;</em> Και εδώ
-    εμφανίζεται αμέσως ένα πρόβλημα που δεν είχαμε ποτέ με slices: <strong>κύκλοι</strong>. Η ana οδηγεί στον
-    bob, ο bob πίσω στην ana, η ana πάλι στον bob… για πάντα.
-</p>
-
-<div class="callout">
-    <span class="tag">Ο κανόνας που λύνει τα πάντα</span>
-    <p>
-        Κράτα ένα <code>map</code> με τους κόμβους που έχεις ήδη επισκεφτεί, και μην ξαναμπείς σε κανέναν.
-        Αυτό το <code>visited</code> map είναι <strong>υποχρεωτικό</strong> σε κάθε εξερεύνηση γραφήματος —
-        χωρίς αυτό, η αναδρομή δεν τερματίζει ποτέ.
-    </p>
-</div>
-
-<h2>DFS — Depth-First Search (κατά βάθος)</h2>
-
-<p>
-    «Ακολούθησε ένα μονοπάτι όσο πιο βαθιά μπορείς. Όταν κολλήσεις, γύρνα πίσω και δοκίμασε το επόμενο.»
-    Ακριβώς όπως εξερευνάς έναν λαβύρινθο κρατώντας το δεξί σου χέρι στον τοίχο.
-</p>
-
-<pre><code class="lang-go">// DFS visits every node reachable from start, going as deep as possible first.
-func DFS(graph map[string][]string, node string, visited map[string]bool) {
-    if visited[node] {
-        return // base case: been here already, stop this branch
-    }
-    visited[node] = true
-    fmt.Println("visiting:", node)
-
-    for _, neighbour := range graph[node] {
-        DFS(graph, neighbour, visited) // go deep, one neighbour at a time
-    }
-}
-
-func main() {
-    visited := make(map[string]bool)
-    DFS(friends, "ana", visited)
-}
-// visiting: ana
-// visiting: bob
-// visiting: dan
-// visiting: cleo
-// visiting: eve
-</code></pre>
-
-<p>
-    Παρακολούθησε τη σειρά. Από την <code>ana</code> πάει στον <code>bob</code>. Από τον <code>bob</code> στον
-    <code>dan</code> — <strong>δεν</strong> γυρίζει να δει την <code>cleo</code> ακόμα, γιατί πρώτα εξαντλεί
-    το βάθος. Ο <code>dan</code> οδηγεί στην <code>cleo</code>, η <code>cleo</code> στην <code>eve</code>.
-    Μόνο όταν δεν έχει πού αλλού να πάει ξετυλίγεται πίσω.
-</p>
-
-<div class="callout">
-    <span class="tag">Πού είναι η στοίβα;</span>
-    <p>
-        Το DFS <em>είναι</em> στοίβα — απλά δεν τη βλέπεις, γιατί είναι το call stack. Κάθε αναδρομική κλήση
-        προστίθεται στη στοίβα· κάθε επιστροφή αφαιρεί μία από αυτήν. Αν έγραφες DFS χωρίς αναδρομή, θα χρειαζόσουν ένα slice ως
-        Stack και θα έκανες Push/Pop με το χέρι — ακριβώς όπως στην Ενότητα 4.
-    </p>
-</div>
-
-<h2>BFS — Breadth-First Search (κατά πλάτος)</h2>
-
-<p>
-    Η ακριβώς αντίθετη στρατηγική: «δες <strong>όλους</strong> τους άμεσους γείτονες πρώτα, μετά όλους τους
-    γείτονες των γειτόνων.» Σαν τους ομόκεντρους κύκλους που απλώνονται όταν πέσει μια πέτρα στο νερό.
-</p>
-
-<p>
-    Και εδώ είναι το ενδιαφέρον: το BFS <strong>δεν γράφεται φυσικά αναδρομικά</strong>. Χρειάζεται ουρά — τη
-    δομή που φτιάξαμε στην Ενότητα 4:
-</p>
-
-<pre><code class="lang-go">// BFS visits every reachable node, closest first.
-func BFS(graph map[string][]string, start string) []string {
-    visited := map[string]bool{start: true}
-    queue := []string{start} // the Queue from section 4
-    var order []string       // accumulator
-
-    for len(queue) &gt; 0 {
-        node := queue[0]
-        queue = queue[1:] // Dequeue: take from the FRONT
-        order = append(order, node)
-
-        for _, neighbour := range graph[node] {
-            if !visited[neighbour] {
-                visited[neighbour] = true      // mark on ENQUEUE, not on visit
-                queue = append(queue, neighbour) // Enqueue: add to the BACK
-            }
-        }
-    }
-    return order
-}
-// BFS(friends, "ana") -&gt; [ana bob cleo dan eve]
-</code></pre>
-
-<p>
-    Σύγκρινε τα δύο αποτελέσματα. Το DFS έδωσε <code>ana, bob, dan, cleo, eve</code> — προχώρησε όσο πιο βαθιά μπορούσε. Το BFS
-    έδωσε <code>ana, bob, cleo, dan, eve</code> — πρώτα και οι δύο άμεσοι φίλοι της ana, μετά το επόμενο
-    επίπεδο.
-</p>
-
-<div class="callout">
-    <span class="tag">Προσοχή / Συχνό λάθος</span>
-    <p>
-        Στο BFS, σημειώνεις τον κόμβο ως <code>visited</code> τη στιγμή που τον <strong>βάζεις στην
-        ουρά</strong>, όχι όταν τον βγάζεις. Αν το κάνεις ανάποδα, ο ίδιος κόμβος μπορεί να μπει στην ουρά
-        πολλές φορές πριν προλάβει να επεξεργαστεί — και σε μεγάλα γραφήματα η ουρά μεγαλώνει ανεξέλεγκτα.
-    </p>
-</div>
-
-<h2>Το πραγματικό πλεονέκτημα του BFS: συντομότερη διαδρομή</h2>
-
-<p>
-    Επειδή το BFS εξερευνά επίπεδο-επίπεδο, την πρώτη φορά που θα φτάσει σε έναν κόμβο, τον έχει φτάσει με
-    <strong>τα λιγότερα δυνατά βήματα</strong>. Αυτό δεν ισχύει για το DFS, που μπορεί να φτάσει στον ίδιο
-    κόμβο μέσα από μια πολύ μακριά διαδρομή.
-</p>
-
-<pre><code class="lang-go">// Distance returns how many steps away each node is from start.
-func Distance(graph map[string][]string, start string) map[string]int {
-    dist := map[string]int{start: 0}
-    queue := []string{start}
-
-    for len(queue) &gt; 0 {
-        node := queue[0]
-        queue = queue[1:]
-
-        for _, neighbour := range graph[node] {
-            if _, seen := dist[neighbour]; !seen {
-                dist[neighbour] = dist[node] + 1 // one step further than here
-                queue = append(queue, neighbour)
-            }
-        }
-    }
-    return dist
-}
-// Distance(friends, "ana") -&gt; map[ana:0 bob:1 cleo:1 dan:2 eve:2]
-</code></pre>
-
-<p>
-    Πρόσεξε ότι το <code>dist</code> map παίζει <strong>δύο ρόλους ταυτόχρονα</strong>: κρατάει την απόσταση,
-    και ταυτόχρονα λειτουργεί ως <code>visited</code> — αν ένας κόμβος έχει ήδη απόσταση, τον έχουμε ήδη δει.
-    Είναι μια συνηθισμένη τεχνική που σου εξοικονομεί μια ολόκληρη μεταβλητή.
-</p>
-
-<h2>Πότε ποιο</h2>
-
-<table style="width:100%; border-collapse:collapse; margin:16px 0;">
-    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
-        <th style="text-align:left; padding:8px;"></th>
-        <th style="text-align:left; padding:8px;">DFS</th>
-        <th style="text-align:left; padding:8px;">BFS</th>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>Δομή</strong></td>
-        <td style="padding:8px;">Stack (συνήθως το call stack, μέσω αναδρομής)</td>
-        <td style="padding:8px;">Queue (πάντα ρητή, με λούπα)</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>Σειρά</strong></td>
-        <td style="padding:8px;">βαθιά σε ένα κλαδί, μετά πίσω</td>
-        <td style="padding:8px;">όλο το επίπεδο, μετά το επόμενο</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>Χρησιμοποίησέ το για</strong></td>
-        <td style="padding:8px;">«υπάρχει διαδρομή;», εξερεύνηση όλων των συνδυασμών, λαβύρινθοι</td>
-        <td style="padding:8px;">«ποια είναι η <em>συντομότερη</em> διαδρομή;», επίπεδα απόστασης</td>
-    </tr>
-    <tr>
-        <td style="padding:8px;"><strong>Κίνδυνος</strong></td>
-        <td style="padding:8px;">stack overflow σε πολύ βαθιά γραφήματα</td>
-        <td style="padding:8px;">μεγάλη κατανάλωση μνήμης σε πολύ πλατιά γραφήματα</td>
-    </tr>
-</table>
-
-<div class="callout good">
-    <span class="tag">Και τα δύο κοστίζουν το ίδιο</span>
-    <p>
-        Το DFS και το BFS είναι και τα δύο <code>O(V + E)</code>: κάθε κόμβος (vertex) επισκέπτεται μία φορά,
-        κάθε σύνδεση (edge) εξετάζεται μία φορά. Η επιλογή ανάμεσά τους δεν είναι θέμα ταχύτητας — είναι θέμα
-        <strong>του τι σειρά χρειάζεσαι</strong>.
     </p>
 </div>
 `);
@@ -4801,10 +4667,7 @@ func CountdownGood(n int) {
 </table>
 
 <p>
-    Αυτό είναι μια νέα κατηγορία Big-O που δεν είχαμε συναντήσει: <strong><code>O(2ⁿ)</code></strong>,
-    <em>εκθετική</em>. Κάθε επιπλέον στοιχείο εισόδου <strong>διπλασιάζει</strong> τη δουλειά. Είναι η
-    χειρότερη κατηγορία που θα δεις σε πρακτικό κώδικα, και σχεδόν πάντα σημαίνει ότι κάτι υπολογίζεται
-    πολλές φορές χωρίς λόγο.
+    Αυτή είναι η <em>εκθετική</em> κατηγορία Big-O : <strong><code>O(2ⁿ)</code></strong>. Κάθε επιπλέον στοιχείο εισόδου <strong>διπλασιάζει</strong> τη δουλειά. Είναι η χειρότερη κατηγορία που θα δεις σε πρακτικό κώδικα, και σχεδόν πάντα σημαίνει ότι κάτι υπολογίζεται πολλές φορές χωρίς λόγο.
 </p>
 
 <div class="callout">
@@ -7964,8 +7827,6 @@ func CountWays(n int) int {
         // ── Κλείσιμο ─────────────────────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Έφτασες στο τέλος</div>
-
-<p class="lede">Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</p>
 
 <p class="lede">
     Στο Μέρος 1 έμαθες τη γλώσσα. Εδώ έμαθες τι να την κάνεις.
