@@ -323,11 +323,11 @@
 </code></pre>
 
 <h2>Βασικές εντολές πλοήγησης</h2>
-<pre><code><span class="tok-func">ls</span>                 <span class="tok-com"># list — τι περιέχει ο τρέχων φάκελος</span>
-<span class="tok-func">ls</span> <span class="tok-kw">-a</span>              <span class="tok-com"># list all — δείχνει και τα κρυφά αρχεία</span>
-<span class="tok-func">ls</span> <span class="tok-kw">-l</span>              <span class="tok-com"># list σε long form (δικαιώματα, μέγεθος, ημερομηνία)</span>
-<span class="tok-func">ls</span> <span class="tok-kw">-l</span> <span class="tok-kw">-h</span>          <span class="tok-com"># long form με human-readable μεγέθη (π.χ. 4.0K αντί για 4096)</span>
-<span class="tok-func">ls</span> <span class="tok-kw">-t</span>              <span class="tok-com"># ταξινόμηση κατά ημερομηνία τροποποίησης, το πιο πρόσφατο πρώτο</span>
+<pre><code><span class="tok-func">ls</span>                  <span class="tok-com"># list — τι περιέχει ο τρέχων φάκελος</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-a</span>               <span class="tok-com"># list all — δείχνει και τα κρυφά αρχεία</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-l</span>               <span class="tok-com"># list σε long form (δικαιώματα, μέγεθος, ημερομηνία)</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-l</span> <span class="tok-kw">-h</span>            <span class="tok-com"># long form με human-readable μεγέθη (π.χ. 4.0K αντί για 4096)</span>
+<span class="tok-func">ls</span> <span class="tok-kw">-t</span>               <span class="tok-com"># ταξινόμηση κατά ημερομηνία τροποποίησης, το πιο πρόσφατο πρώτο</span>
 <span class="tok-func">cd</span> <span class="tok-type">foo</span>              <span class="tok-com"># change directory — μπες στον υποφάκελο foo</span>
 <span class="tok-func">cd</span>                  <span class="tok-com"># χωρίς όρισμα, πήγαινε στον home φάκελο</span>
 <span class="tok-func">cd</span> ~                <span class="tok-com"># πήγαινε στον home φάκελο (ρητά)</span>
@@ -406,8 +406,8 @@ projects/notes.txt
 
 <h2>Λεπτομέρειες αρχείων και φακέλων</h2>
 <p>Οι εντολές <code>ls -l</code> και <code>stat</code> δίνουν διαφορετικού βάθους πληροφορία. Η <code>tree</code> δείχνει ολόκληρη τη δομή σε μορφή δέντρου, κάτι πολύ χρήσιμο όταν θέλεις να καταλάβεις γρήγορα πώς είναι οργανωμένο ένα project.</p>
-<pre><code><span class="tok-func">stat</span> <span class="tok-type">foo.txt</span>   <span class="tok-com"># μέγεθος, ημερομηνία δημιουργίας και τροποποίησης ενός αρχείου</span>
-<span class="tok-func">stat</span> <span class="tok-type">foo</span>       <span class="tok-com"># το ίδιο, αλλά για φάκελο</span>
+<pre><code><span class="tok-func">stat</span> <span class="tok-type">foo.txt</span>    <span class="tok-com"># μέγεθος, ημερομηνία δημιουργίας και τροποποίησης ενός αρχείου</span>
+<span class="tok-func">stat</span> <span class="tok-type">foo</span>        <span class="tok-com"># το ίδιο, αλλά για φάκελο</span>
 <span class="tok-func">tree</span>            <span class="tok-com"># δέντρο φακέλων και αρχείων</span>
 <span class="tok-func">tree</span> <span class="tok-kw">-a</span>         <span class="tok-com"># δέντρο συμπεριλαμβανομένων κρυφών αρχείων</span>
 <span class="tok-func">tree</span> <span class="tok-kw">-d</span>         <span class="tok-com"># δέντρο μόνο με φακέλους, χωρίς αρχεία</span>
@@ -497,7 +497,7 @@ projects/notes.txt
 <h2>Help Commands</h2>
 <pre><code><span class="tok-func">man</span> <span class="tok-type">ls</span>       <span class="tok-com"># manual page — πλήρης τεκμηρίωση της εντολής</span>
 <span class="tok-func">ls</span> --help    <span class="tok-com"># σύντομη βοήθεια, τα περισσότερα προγράμματα την υποστηρίζουν</span>
-<span class="tok-func">whatis</span> <span class="tok-type">ls</span>   <span class="tok-com"># μονόγραμμη περιγραφή της εντολής</span>
+<span class="tok-func">whatis</span> <span class="tok-type">ls</span>    <span class="tok-com"># μονόγραμμη περιγραφή της εντολής</span>
 </code></pre>
 
 <div class="callout good">
@@ -537,7 +537,8 @@ tree -__flag3__                 # show only directories, no files`,
       {
         code:
           `# you are standing in /home/student/projects/go-project
-cat __path1__/notes.txt       # read a file two levels up, with a relative path
+# there is a file notes.txt in /home/student/
+cat __path1__/notes.txt       # read the file two levels up, with a relative path (in a single command)
 cd __path2__                  # jump straight to your home folder
 cd __path3__                  # go back to the folder you were in before`,
         blanks: [
