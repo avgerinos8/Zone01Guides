@@ -1,0 +1,371 @@
+{
+  "spec_name": "zone01guides-lesson-generator",
+  "spec_version": "2.0",
+  "purpose": "Complete, self-contained instruction set for generating an interactive HTML slide-deck guide on ANY topic, at a quality level that requires no manual review. Every rule here was derived from a real correction made during the Go Part 1, Go Part 2 and Bash guides. Follow all of it; nothing here is optional unless marked optional.",
+
+  "how_to_use": {
+    "step_1": "Fill in every field of `guide_config`. Anything left null must be asked about before writing starts.",
+    "step_2": "Produce `curriculum_plan` (section list + per-section learning objectives + prerequisite ledger) and get it approved before writing prose.",
+    "step_3": "Write the deck section by section, following `authoring_pipeline`.",
+    "step_4": "Run EVERY check in `verification_protocol` after each splice. Do not deliver a deck with a single failing check.",
+    "step_5": "Deliver per `delivery_protocol`.",
+    "non_negotiable": "If a rule in `hard_rules` conflicts with anything else in this file, `hard_rules` wins."
+  },
+
+  "guide_config": {
+    "_comment": "Per-guide configuration. Fill this in before generating.",
+    "topic": null,
+    "guide_title": null,
+    "file_name": null,
+    "part_number": null,
+    "theme_css": null,
+    "icon_path": null,
+    "deck_version": "3.0.0",
+    "notify_url": null,
+    "return_nav_url": null,
+    "prose_language": "el",
+    "code_comment_language": "en",
+    "audience_level": "absolute beginner, assumes no prior programming knowledge",
+    "section_count": 8,
+    "forbidden_constructs": [],
+    "_forbidden_constructs_note": "Language/library features NOT yet taught, which this guide must not use. Example from Go Part 2: ['structs','methods','interfaces','error handling','strings package']. If one is truly unavoidable, mention it in ONE sentence and defer with 'θα το δούμε σε επόμενο guide'.",
+    "already_taught": [],
+    "_already_taught_note": "Everything earlier parts covered. Used to build explicit callbacks and to know what may be assumed.",
+    "will_be_taught_later": [],
+    "_will_be_taught_later_note": "Used for forward hand-offs and for honestly naming what is deliberately awkward in this part.",
+    "author_credit": null
+  },
+
+  "hard_rules": [
+    "NEVER place a raw backtick character inside addContent/addFillBlank content — it silently terminates the JS template literal and breaks the entire script block. Use <code>x</code> in prose, or plain words in code comments.",
+    "NEVER place ${ inside addContent content — it is interpreted as template interpolation.",
+    "Inside <pre><code> blocks, HTML-escape < as &lt;, > as &gt;, and && as &amp;&amp;.",
+    "addQuiz `q` and `options` are PLAIN TEXT ONLY. No HTML tags — they render literally and look broken. Code belongs in the separate `code` field.",
+    "The correct answer is ALWAYS written at index 0 in the source; the renderer shuffles client-side. `correct` must still be set explicitly and must be in range.",
+    "Never use a real person's name in an example. Use neutral placeholder names or none at all.",
+    "The '// ── label ─── ⊃' separator is a chat/dev-session convention only. It may appear as a JS comment between blocks; it must NEVER appear inside slide content.",
+    "Exactly one initSlideDeck({...}) call, at the very end of the script block.",
+    "Never solve an exercise in the open. The full solution is always inside a drag-to-reveal spoiler."
+  ],
+
+  "language_rules": {
+    "prose": "Written in `prose_language`. Natural, plain, correct. Explanatory register, not journalistic.",
+    "code_comments": "Written in `code_comment_language`, always.",
+    "technical_terms_stay_in_source_language": {
+      "rule": "Keep the English technical term inside the prose whenever the translation would be unnatural, ambiguous, or would hide the term the student will actually meet in documentation.",
+      "examples": ["slice", "array", "map", "function", "pointer", "iteration", "package", "module", "struct", "interface", "compile error", "panic", "base case", "call stack", "memo", "pruning", "in place", "stable sort", "sentinel value", "guard clause", "accumulator", "aliasing"]
+    },
+    "forced_terminology": {
+      "_comment": "Absolute substitutions. Scan for the left side; it must never appear.",
+      "συνάρτηση / συναρτήσεων / συναρτησιακός": "function",
+      "διάσχιση / διασχίζω": "iteration / κάνω iterate"
+    },
+    "banned_style": {
+      "no_calques": "No English idiom translated word-for-word. If it does not exist as a Greek expression, rewrite it descriptively.",
+      "no_invented_verbs": "No verb used in a sense it does not have in the target language.",
+      "no_punchlines": "No punchy one-liner 'ατάκα' style. No dramatic personification of code. Explain plainly instead of trying to be witty.",
+      "no_self_undermining": "Do not describe your own material as uninteresting or unimportant. If a topic is minor, say when it is useful instead."
+    },
+    "banned_expressions_with_replacements": {
+      "_comment": "Real corrections. Treat as a checker dictionary: the key must never appear; the value is the fix pattern.",
+      "μισεύει (meaning 'halve')": "υποδιπλασιάζει / κόβει στη μέση",
+      "ξεστοιβάζει / ξεστοιβάζονται": "αφαιρεί από τη στοίβα / ολοκληρώνονται με την αντίστροφη σειρά",
+      "διπλογράφεται": "καταγράφεται δύο φορές",
+      "διπλομετράει": "μετράει δύο φορές",
+      "μαρκάρω / ξεμαρκάρω / μαρκάρισμα": "σημειώνω / αναιρώ τη σήμανση / η σήμανση",
+      "δωρεάν (as 'for free')": "χωρίς επιπλέον δουλειά / έχει το δικό του κόστος",
+      "εκρήγνυται (of a data structure or cost)": "μεγαλώνει ανεξέλεγκτα / πολλαπλασιάζεται",
+      "αγγίζει (as 'touches each element')": "περνάει από / επεξεργάζεται",
+      "πρωτοαγγίξει": "φτάσει για πρώτη φορά",
+      "βούτηξε βαθιά": "προχώρησε όσο πιο βαθιά μπορούσε",
+      "το πρόγραμμα πεθαίνει": "το πρόγραμμα τερματίζει βίαια",
+      "σκάει / θα σκάσει": "καταρρέει / θα προκαλέσει panic",
+      "θα παγώσει": "θα μείνει απασχολημένος",
+      "υφαίνει": "ενώνει",
+      "φουσκώνει την ουρά": "μεγαλώνει άσκοπα την ουρά",
+      "δεν σπάει θορυβωδώς": "δεν αποτυγχάνει με εμφανή τρόπο",
+      "καταρρίπτει (a search space)": "συρρικνώνει",
+      "ταξιδεύει προς τα πάνω": "μεταδίδεται προς τα πάνω",
+      "δικαιώνει το όνομά του": "φαίνεται γιατί ονομάζεται έτσι",
+      "μολύνει": "μεταφέρεται",
+      "ξεδιπλώνεται πίσω": "επιστρέφει πίσω",
+      "κολλητά": "δίπλα-δίπλα",
+      "μέχρι αύριο": "θα χρειαζόταν ώρες",
+      "μαγικός αριθμός (loosely)": "αυθαίρετο σύμβολο / δεν προκύπτει από πουθενά",
+      "σπάει χαζά / σπάει έξυπνα": "χωρίζει με τον απλούστερο τρόπο / με έξυπνο τρόπο",
+      "θα καθίσει δίπλα / θα ακουμπούσε (personification)": "θα βρεθεί δίπλα / θα βρισκόταν δίπλα",
+      "έχει κλειδώσει (of an element)": "έχει μπει στη θέση του",
+      "κόλπο": "τέχνασμα / τεχνική / ιδέα",
+      "ζουν όλοι οι …": "σε αυτή την κατηγορία ανήκουν όλοι οι …",
+      "μοιάζει με ζαβολιά": "μοιάζει με τέχνασμα",
+      "ακούγεται σαν απάτη": "ακούγεται σαν να κλέβεις",
+      "λάθη που θα σε φάνε": "λάθη που κάνουν σχεδόν όλοι",
+      "εφιάλτης με λούπες": "με λούπες γίνεται πολύ δύσκολο",
+      "μέχρι να ησυχάσουν": "μέχρι να μη χρειάζεται καμία αλλαγή",
+      "πιάνει τις περιπτώσεις": "καλύπτει τις περιπτώσεις",
+      "rabbit hole": "θέμα για να ασχοληθείς μόνος σου"
+    },
+    "grammar_checks": [
+      "Enclitic double accent: a proparoxytone imperative followed by a clitic pronoun takes a second accent — 'Μετάφρασέ το', 'Δοκίμασέ το', 'Πρόσεξέ το'. NOTE: this does NOT apply when the following word is an article ('Πρόσεξε τη διατύπωση' is correct as written).",
+      "Masculine accusative before a noun: 'έναν λαβύρινθο', not 'ένα λαβύρινθο'.",
+      "Subject–verb number agreement, especially with 'πόσα X υπάρχουν'.",
+      "Adjective–noun word order for loanwords: 'το ίδιο πρόβλημα aliasing', not 'το ίδιο aliasing πρόβλημα'.",
+      "Feminine plural accusative of -ος nouns: 'τις διαγωνίους' / rewrite to avoid."
+    ]
+  },
+
+  "pedagogy": {
+    "core_philosophy": "Extremely detailed, from-zero explanation. Explain what a thing IS and WHY it exists before showing syntax. learncpp.com level of depth, not a quick reference. Slide length is never a concern; skipping an explanation is.",
+    "mandatory_patterns": [
+      {
+        "name": "naive_first",
+        "rule": "Never introduce a technique as an abstract definition. Show the obvious/naive attempt FIRST, run it mentally on a real input, show it producing a WRONG or absurd result, and only then introduce the technique as the fix.",
+        "example": "WordLengths naively returns [5 0 0 5] on a sentence with double spaces; Max returns 0 for {-8,-3,-20}; greedy returns 3 coins for {4,3,1} target 6 when the answer is 2."
+      },
+      {
+        "name": "concrete_failure",
+        "rule": "Any claim that something breaks must be accompanied by the specific input that breaks it, and the specific wrong output. Never 'this can fail in some cases'."
+      },
+      {
+        "name": "trace_tables",
+        "rule": "Anything with evolving state (loops, recursion, DP tables, sorting passes, backtracking) gets a step-by-step trace table with one row per step, showing the state before and the action taken. 5–10 rows is the useful range."
+      },
+      {
+        "name": "recognition_callout",
+        "rule": "Every reusable technique gets a 'Πότε το αναγνωρίζεις' callout naming the PHRASES that appear in problem statements when this technique applies. Recognition is the transferable skill; the mechanics are not.",
+        "example": "«συνεχόμενα» or a comparison with something earlier → previous value. «μέγιστο άθροισμα k διαδοχικών» → fixed sliding window."
+      },
+      {
+        "name": "explicit_callbacks",
+        "rule": "When new material reuses something already taught, say so by name and by section number. Use a 'Το αναγνωρίζεις;' callout. This is what turns a sequence of chapters into one coherent guide.",
+        "example": "'Το swapped είναι το boolean switch της Ενότητας 3'; 'το merge είναι two pointers'; 'το call stack είναι η στοίβα της Ενότητας 4'."
+      },
+      {
+        "name": "forward_handoff",
+        "rule": "End a section with an unresolved problem that the next section opens by solving. Deliver on every promise made this way."
+      },
+      {
+        "name": "interleaved_review",
+        "rule": "After blocked practice per technique, add a mixed review that DESCRIBES A PROBLEM and asks which technique fits — not which definition matches which term. Recall exercises do not build transfer."
+      },
+      {
+        "name": "guided_fading",
+        "rule": "Scaffolding decreases across the guide: early exercises fill in decisions with heavy hints, later ones give only a problem statement."
+      },
+      {
+        "name": "decision_framework",
+        "rule": "Whenever two or more techniques are easily confused, give an explicit decision table or question list, not two isolated definitions."
+      },
+      {
+        "name": "ready_made_first",
+        "rule": "If the standard library already solves it, show that FIRST and say plainly that this is what the student will use. Only then teach the manual algorithm, and say explicitly why it is still worth understanding."
+      },
+      {
+        "name": "breadth_without_depth",
+        "rule": "For a family of related items where full coverage is not worth it, teach ONE completely and list the rest in a table with: name, cost, one-line idea, and where it is preferred. NO implementations. Close with an invitation to go deeper independently."
+      },
+      {
+        "name": "name_the_mistakes",
+        "rule": "Every section has at least one 'Προσοχή / Συχνό λάθος' callout naming a specific error a beginner will actually make, why it happens, and what it looks like when it does."
+      },
+      {
+        "name": "independent_verification",
+        "rule": "Where an exercise has a countable answer, show the student how to arrive at it a SECOND way (combinatorics, a smaller case, a different decomposition). This is how they learn to trust or distrust their own output."
+      },
+      {
+        "name": "honest_limits",
+        "rule": "When the current constraints force something clumsy, say so and name what would fix it. Never pretend an awkward workaround is elegant."
+      }
+    ],
+    "anti_patterns": [
+      "Defining a term in a quiz distractor or glossary that was never taught in prose.",
+      "An exercise whose blanks test syntax already covered in an earlier part rather than the decisions of the current topic.",
+      "A worked example that contradicts itself or where both compared strategies give the same result — the example must actually demonstrate the difference.",
+      "Two options in a quiz that are both defensibly correct.",
+      "Claiming a language behaviour without checking it (order of declaration, conversion rules, vet warnings)."
+    ]
+  },
+
+  "deck_anatomy": {
+    "template_files": ["index.html", "static/style.css", "static/script.js", "static/highlighter.js", "static/theme-<name>.css", "static/notify-progress.js", "./icons/<name>.png"],
+    "generation_api": ["addContent(`...`)", "addQuiz([...], opts?)", "addFillBlank([...])", "addMatching([[...],[...]], opts?)", "initSlideDeck({version, notifyUrl})"],
+    "slide_header": "Every content slide opens with <div class=\"eyebrow\">…</div> then <h1>…</h1>, optionally followed by <p class=\"lede\">…</p>.",
+    "eyebrow_conventions": {
+      "section_slide": "Ενότητα N / TOTAL — <Section Title>",
+      "subsection_continuation": "same eyebrow repeated on each slide of the section",
+      "challenge": "VSCode Challenge — Κλείνοντας την Ενότητα N   (or 'Κλείνοντας το §N.M' for a mid-section challenge)",
+      "mini_glossary": "Μίνι Γλωσσάρι — Ενότητα N / TOTAL",
+      "final_review": "Τελική Επανάληψη — <Guide Title>",
+      "final_glossary": "Τελικό Γλωσσάρι — <Guide Title>",
+      "closing": "Έφτασες στο τέλος"
+    },
+    "section_required_blocks": {
+      "order": ["one or more addContent teaching slides", "addQuiz", "addFillBlank", "addMatching", "VSCode Challenge slide", "mini-glossary slide"],
+      "rule": "EVERY numbered section ends with its own fillBlank + matching + VSCode Challenge + mini-glossary. Hands-on practice happens per section, not only in the final review."
+    },
+    "deck_tail": {
+      "order": [
+        "Τελική Επανάληψη slide: a table of what each section added, plus a decision framework covering the whole guide",
+        "cumulative quiz spanning every section (12–30 questions depending on guide size)",
+        "final matching (2 sets, cross-section)",
+        "final glossary slide grouped into themed gs-wrap blocks",
+        "closing slide"
+      ],
+      "closing_slide_contents": [
+        "<div class=\"eyebrow\">Έφτασες στο τέλος</div>",
+        "<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>",
+        "a short paragraph on what actually transfers from this guide",
+        "a callout naming what was deliberately awkward here and which future guide fixes it",
+        "<p class=\"lede\">Για περαιτέρω εμβάθυνση:</p> plus <div class=\"sources-list\"> with 3–4 real links",
+        "<div id=\"final-score\"></div>",
+        "the author credit line in mono, 14px, 55% ink"
+      ]
+    },
+    "html_vocabulary": {
+      "structure": ["eyebrow", "lede", "grid2", "grid3", "card", "card-tag"],
+      "emphasis": ["callout", "callout good", "tag (inside callout)"],
+      "code": "<pre><code class=\"lang-<language>\">…</code></pre>",
+      "spoiler": "<div class=\"spoiler\"><div class=\"spoiler-lock\"><span>LABEL — Drag to reveal →</span></div> …content… </div>",
+      "glossary_styles": ["glossary-table with gt-term/gt-def cells", "gs-wrap with gs-pill / gs-name / gs-def", "glossary-columns"],
+      "glossary_style_rule": "Deliberately vary the glossary style across sections rather than using one everywhere.",
+      "tables": "Plain <table> with inline style for borders is acceptable for comparison/decision tables; glossary-table for term lists.",
+      "links": "<div class=\"sources-list\"> with <a target=\"_blank\" rel=\"noopener\">"
+    }
+  },
+
+  "block_specs": {
+    "addContent": {
+      "signature": "addContent(`<html>`)",
+      "rules": [
+        "One slide per call.",
+        "No raw backticks, no ${ anywhere in the content.",
+        "Escape <, > and && inside code blocks.",
+        "Slide should be self-contained: a reader landing here knows what section they are in from the eyebrow."
+      ]
+    },
+    "addQuiz": {
+      "signature": "addQuiz([{q, options, correct, explain, code?, lang?}], {note?, bg?, overlayAlpha?}?)",
+      "rules": [
+        "q and options are PLAIN TEXT. No HTML.",
+        "Correct answer written at index 0 in source; `correct` set explicitly and in range.",
+        "Exactly one correct answer. Never use alsoCorrect. If two options are both defensible, rewrite one.",
+        "The stem must match the answer type: a 'γιατί' question needs a causal answer, not a 'what is true' statement.",
+        "`explain` is mandatory: say why the correct one is correct AND why the most tempting wrong one is wrong.",
+        "`code` (with lang) is the only place code may appear.",
+        "No duplicate question stems anywhere in the deck. If the final review revisits a topic, REWORD the stem.",
+        "No duplicate option strings within a question."
+      ],
+      "distractor_length_rule": {
+        "requirement": "At least ONE wrong option must be 2–8 words longer than the correct answer (word count, whitespace-split).",
+        "ceiling": "At most TWO wrong options may fall in that 2–8 band. Never three.",
+        "critical": "The correct answer must NEVER be the longest option in the set. This is the single most common defect — measure it deck-wide, not per question.",
+        "exceptions_where_the_rule_is_skipped": [
+          "The correct answer is 3 words or fewer.",
+          "All options are under 5 words.",
+          "The question is a straightforward 'what does this code do / what does this call return' with a mechanical answer."
+        ],
+        "how_to_satisfy_it": "EXTEND an existing wrong option with a clause that encodes a real misconception. Do NOT add a fifth option, and do NOT pad with filler. A bare numeric distractor '30' becomes '30, αν η πρόσθεση εκτελεστεί πριν τον πολλαπλασιασμό' — longer AND diagnostic."
+      },
+      "distractor_quality_rule": "Every wrong option should be something a confused student could actually believe. Absurd options waste a slot. The best distractors name the exact misconception the section just warned about."
+    },
+    "addFillBlank": {
+      "signature": "addFillBlank([{code, blanks:[{id, answer}], explain}])",
+      "rules": [
+        "2–4 blanks per item — never just one.",
+        "Every blank id must match a __id__ placeholder in `code` exactly; every placeholder must have a blank.",
+        "Blanks must land on the DECISIONS of the current topic: seed values, comparison operators, index arithmetic, the shrink expression, the undo operation, the memo write.",
+        "NEVER blank out language keywords (for / if / return) that were taught in an earlier part — that is syntax drill, not practice.",
+        "`explain` addresses each blank's reasoning, not just the answers.",
+        "Comments inside `code` may point at the decision: '// what do we start from, and why not 0?'"
+      ]
+    },
+    "addMatching": {
+      "signature": "addMatching([[{term, def}], [{term, def}]], {allowHTML?, note?})",
+      "rules": [
+        "allowHTML:true works here (unlike quiz), so <code> is fine in term/def.",
+        "Use 2 sets with genuinely DIFFERENT groupings — not the same terms with reworded definitions.",
+        "Productive set types: concept→definition, problem-signal-phrase→technique, technique→cost, symptom→cause."
+      ]
+    },
+    "vscode_challenge": {
+      "structure": [
+        "eyebrow + h1 + lede",
+        "<h2>Η αποστολή</h2> with the problem statement and a concrete example input plus the expected answer",
+        "optional callout naming the mistake the student is about to make",
+        "1–3 spoiler blocks labelled 'HINT 1 — Drag to reveal →', 'HINT 2 — …', separated by <br>",
+        "<h2>Λύση</h2> + the line 'Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.'",
+        "a final spoiler containing the complete solution",
+        "a 'callout good' explaining what the exercise actually taught",
+        "an 'Αν θες να πας παρακάτω' callout with 2–3 graded extension ideas"
+      ],
+      "rules": [
+        "Difficulty stays EASY, especially on hard topics. A student meeting recursion or DP for the first time must not also meet a hard problem.",
+        "Prefer extending a lesson example by ONE extra rule over inventing a new problem. Same skeleton, one new check.",
+        "The prompt must not give away the exact function signature or parameter names.",
+        "Hint labels must be sequential and must match their content — verify HINT 1 actually contains hint 1.",
+        "Include the expected answer for a concrete input so the student can self-check.",
+        "Where possible, show a second independent way to arrive at the answer."
+      ]
+    }
+  },
+
+  "prerequisite_ledger": {
+    "purpose": "Prevent using a construct the reader has not met, and prevent teaching something twice.",
+    "maintain": [
+      "A running list of every concept introduced, with the section that introduced it.",
+      "A running list of every term used in a quiz, glossary or matching block. Before delivery, verify each one was TAUGHT IN PROSE somewhere. This check caught variadic functions, fallthrough and identifier-naming rules being quizzed but never explained."
+    ],
+    "on_violation": "Either teach the concept properly, or remove it from the exercise."
+  },
+
+  "authoring_pipeline": {
+    "1_plan": "Write the section outline with learning objectives and the prerequisite ledger. Confirm before writing prose.",
+    "2_write_chunks": "Write each content chunk into its own .js file (e.g. s5a.js, s5b.js). Do not edit the large HTML directly with a text-replace tool.",
+    "3_splice": "Splice chunks into the HTML with a Python script that string-replaces the unique marker '        initSlideDeck({' with the new content followed by that marker. Assert the marker occurs exactly once before and after.",
+    "4_verify": "Run the full verification_protocol. Fix everything it reports.",
+    "5_targeted_edits": "For later corrections, use a Python script with a list of (label, exact_old, exact_new) triples, asserting each old string matches EXACTLY ONCE. Abort and write nothing if any assertion fails.",
+    "6_structural_edits": "For edits addressed by position rather than text (e.g. 'replace option 3 of question 7 of quiz block 5'), parse the blocks by paren-matching and edit by index. Apply from last to first so offsets stay valid."
+  },
+
+  "verification_protocol": {
+    "must_all_pass": true,
+    "checks": [
+      {"id": "syntax", "what": "Extract the <script> body, prepend stubs for addContent/addQuiz/addFillBlank/addMatching/initSlideDeck, run `node --check` AND actually execute it."},
+      {"id": "backtick_parity", "what": "Count backticks in the script body. Must be even. An odd count means a stray backtick inside content."},
+      {"id": "quiz_correct_in_range", "what": "Every `correct` index is an integer within 0..len(options)-1."},
+      {"id": "quiz_single_answer", "what": "No alsoCorrect field anywhere. No two options that are semantically both correct (manual read of any question whose explain hedges)."},
+      {"id": "quiz_length_rule", "what": "For every question: at least one wrong option is 2–8 words longer than the correct one, unless an exception applies. Report exceptions separately rather than silently passing them."},
+      {"id": "quiz_length_ceiling", "what": "No question has 3 or more wrong options in the 2–8 band."},
+      {"id": "quiz_correct_not_longest", "what": "Deck-wide, the number of questions where the correct answer is the longest option must be 0 (ignoring questions where the correct answer is 3 words or fewer)."},
+      {"id": "quiz_duplicates", "what": "No duplicate question stems deck-wide; no duplicate option strings within a question."},
+      {"id": "fillblank_placeholders", "what": "Every blank id has a matching __id__ placeholder and vice versa."},
+      {"id": "banned_words", "what": "Scan for every key of language_rules.banned_expressions_with_replacements, forced_terminology, and any personal name. Zero hits allowed."},
+      {"id": "grammar_heuristics", "what": "Scan for proparoxytone imperative + clitic pronoun without a second accent; 'ένα' before a masculine accusative noun; 'πόσα X υπάρχει'."},
+      {"id": "structural_diff", "what": "Compare counts of addContent / addQuiz / addFillBlank / addMatching / initSlideDeck against the previous version. An unexplained drop means content was lost during a splice."},
+      {"id": "prerequisite_audit", "what": "Every term used in a quiz, glossary or matching block appears in prose somewhere earlier."},
+      {"id": "hint_labels", "what": "Inside each challenge, HINT labels are sequential and the label matches the content."},
+      {"id": "promise_audit", "what": "Every 'θα το δούμε σε επόμενη ενότητα' promise is either fulfilled later in this guide or explicitly deferred to a named future guide."}
+    ],
+    "reference_implementation": "verify_deck.py — supplied alongside this spec. Run it after every splice."
+  },
+
+  "delivery_protocol": {
+    "default": "Deliver the complete HTML file.",
+    "review_passes": "When making corrections to an existing deck, ALSO deliver a separate markdown file listing every individual change as Πριν/Μετά pairs, generated with difflib against a pre-change backup, so the user can approve or reject them one by one.",
+    "per_project_override": "Some projects want snippets in chat instead of the whole file (the user copy-pastes manually). Honour guide_config if it specifies this.",
+    "summary_message": "Report: file size, structural counts, every verification check with its result, and a short prose account of the substantive decisions made — not a list of everything written."
+  },
+
+  "known_failure_modes": [
+    {"symptom": "Entire script block breaks with 'missing ) after argument list'", "cause": "A raw backtick inside addContent content.", "fix": "Replace with <code>…</code> or plain words."},
+    {"symptom": "Correct answer is the longest option in ~90% of questions", "cause": "Writing the correct answer fully and precisely, then dashing off short distractors.", "fix": "Extend a distractor with a misconception clause. Measure deck-wide."},
+    {"symptom": "The same question appears twice in a section", "cause": "Copy-paste during a section rewrite.", "fix": "Deduplicate by stem before delivery."},
+    {"symptom": "A worked example proves nothing", "cause": "Both compared strategies happen to give the same result on the chosen input.", "fix": "Choose an input where they diverge, and verify by hand."},
+    {"symptom": "Exercise blanks feel trivial", "cause": "Blanking language keywords instead of decisions.", "fix": "Move blanks onto seed values, operators, index arithmetic, undo steps."},
+    {"symptom": "A term is quizzed but the student has never seen it", "cause": "Glossary and quiz written from the curriculum outline rather than from the prose actually written.", "fix": "Run the prerequisite audit."},
+    {"symptom": "Hint 1 contains hint 2's content", "cause": "Nested callout tags not updated when reordering.", "fix": "Check hint labels against content."},
+    {"symptom": "A factual claim about the language is wrong", "cause": "Writing from memory instead of checking.", "fix": "Verify any claim about declaration order, conversion rules, tooling warnings, or version availability before writing it."}
+  ],
+
+  "quality_bar": "The deck is done when: every verification check passes; every technique has a recognition callout; every section has at least one named common mistake; every promise is kept; every exercise blank tests a decision; and a reader who finishes the guide could explain WHY each technique exists, not just how to type it."
+}
