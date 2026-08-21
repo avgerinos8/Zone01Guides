@@ -54,6 +54,7 @@
     <script src="static/highlighter.js?v=20260801"></script>
     <script src="static/viz-common.js"></script>
     <script src="static/viz-sliding-window.js"></script>
+    <script src="static/viz-merge-sort.js"></script>
     <script>
         // Course content below.
 
@@ -4468,6 +4469,14 @@ i, j := 0, 0 // one pointer per slice</code></pre>
 
 <h3>Κομμάτι 2: η σύγκριση</h3>
 
+<p>
+    Όσο ΚΑΙ οι δύο λίστες έχουν ακόμα αχρησιμοποίητα στοιχεία, κοίταξε ΜΟΝΟ τα δύο στοιχεία στην αρχή κάθε λίστας —
+    <code>left[i]</code> και <code>right[j]</code>. Πάρε το μικρότερο, βάλ' το στο <code>result</code>, και
+    προχώρα ΜΟΝΟ τον δείκτη εκείνης της λίστας. Επειδή κάθε λίστα είναι ήδη ταξινομημένη, το μικρότερο
+    "ανοιχτό" στοιχείο και των δύο βρίσκεται πάντα ακριβώς σε αυτές τις δύο θέσεις — ποτέ δεν χρειάζεται να
+    κοιτάξεις παραπέρα μέσα στη λίστα.
+</p>
+
 <pre><code class="lang-go">for i &lt; len(left) &amp;&amp; j &lt; len(right) {
     if left[i] &lt;= right[j] {
         result = append(result, left[i])
@@ -4479,22 +4488,43 @@ i, j := 0, 0 // one pointer per slice</code></pre>
 }</code></pre>
 
 <p>
-    Όσο ΚΑΙ οι δύο λίστες έχουν ακόμα αχρησιμοποίητα στοιχεία, κοίταξε ΜΟΝΟ τα δύο στοιχεία στην αρχή κάθε λίστας —
-    <code>left[i]</code> και <code>right[j]</code>. Πάρε το μικρότερο, βάλ' το στο <code>result</code>, και
-    προχώρα ΜΟΝΟ τον δείκτη εκείνης της λίστας. Επειδή κάθε λίστα είναι ήδη ταξινομημένη, το μικρότερο
-    "ανοιχτό" στοιχείο και των δύο βρίσκεται πάντα ακριβώς σε αυτές τις δύο θέσεις — ποτέ δεν χρειάζεται να
-    κοιτάξεις παραπέρα μέσα στη λίστα.
+    Ας το οπτικοποιήσουμε στο επίπεδο 1 του παραδείγματός μας — αφού έχουν ήδη επιστρέψει
+    ταξινομημένα από τις αναδρομικές κλήσεις: <code>left = [1, 2, 5, 9]</code> και
+    <code>right = [3, 4, 7, 8]</code>:
 </p>
 
-<p>Ας το ιχνηλατήσουμε με <code>left = [2, 5]</code> και <code>right = [1, 9]</code>:</p>
+<div id="ms-merge-viz">
+    <span class="vz-tag">η func merge, βήμα βήμα</span>
+<div class="vz-controls">
+    <button class="reset-quiz-btn" data-vzm="prev">← prev step</button>
+    <button class="reset-quiz-btn" data-vzm="next">next step →</button>
+    <button class="reset-quiz-btn" data-vzm="reset">⟲ reset</button>
+    <button class="reset-quiz-btn vz-btn-stable" data-vzm="play">▶ autoplay ↕</button>
+    <span class="vzm-counter" data-vzm="counter"></span>
+</div>
 
-<table class="glossary-table">
-<tr><td class="gt-term">σύγκριση</td><td class="gt-def">ενέργεια</td></tr>
-<tr><td class="gt-term">left[0]=2 vs right[0]=1</td><td class="gt-def">1 &lt; 2 → πάρε το 1, j++ → result: <code>[1]</code></td></tr>
-<tr><td class="gt-term">left[0]=2 vs right[1]=9</td><td class="gt-def">2 &lt; 9 → πάρε το 2, i++ → result: <code>[1, 2]</code></td></tr>
-<tr><td class="gt-term">left[1]=5 vs right[1]=9</td><td class="gt-def">5 &lt; 9 → πάρε το 5, i++ → result: <code>[1, 2, 5]</code></td></tr>
-<tr><td class="gt-term">i=2 == len(left)</td><td class="gt-def">το <code>left</code> τελείωσε — η λούπα σταματάει εδώ</td></tr>
-</table>
+    <div class="quiz-code-block">
+        <div class="vzm-halves">
+            <div>
+                <div class="vzm-label"><span>left</span><span class="vzm-idx" data-vzm="i-label">i = 0</span></div>
+                <div class="vzm-ptr" style="--vzm-cols:4" data-vzm="left-ptr"></div>
+                <div class="vzm-cells" style="--vzm-cols:4" data-vzm="left-cells"></div>
+            </div>
+            <div>
+                <div class="vzm-label"><span>right</span><span class="vzm-idx" data-vzm="j-label">j = 0</span></div>
+                <div class="vzm-ptr" style="--vzm-cols:4" data-vzm="right-ptr"></div>
+                <div class="vzm-cells" style="--vzm-cols:4" data-vzm="right-cells"></div>
+            </div>
+        </div>
+
+        <div class="vzm-compare" data-vzm="compare"></div>
+
+        <div class="vzm-label"><span>result</span><span class="vzm-idx" data-vzm="k-label">0 / 8</span></div>
+        <div class="vzm-cells" style="--vzm-cols:8" data-vzm="result-cells"></div>
+    </div>
+
+    <p class="vzm-note" data-vzm="note"></p>
+</div>
 
 <h3>Κομμάτι 3: ό,τι απομένει</h3>
 
@@ -4503,10 +4533,11 @@ result = append(result, left[i:]...)
 result = append(result, right[j:]...)</code></pre>
 
 <p>
-    Στο παράδειγμά μας, το <code>left[i:]</code> είναι πλέον κενό (<code>i=2</code>, μήκος 2), και το
-    <code>right[j:]</code> είναι <code>[9]</code> (<code>j=1</code>, το μόνο στοιχείο που απόμεινε). Αυτά
-    κολλάνε στο τέλος <strong>όπως είναι, χωρίς καμία επιπλέον σύγκριση</strong> — αποτέλεσμα:
-    <code>[1, 2, 5, 9]</code>.
+    Στο παράδειγμά μας η λίστα <code>right</code> άδειασε πρώτη (<code>j = 4</code>, μήκος 4),
+    οπότε το <code>right[j:]</code> είναι πλέον κενό και το <code>left[i:]</code> είναι
+    <code>[9]</code> (<code>i = 3</code>, το μόνο στοιχείο που απόμεινε). Αυτό κολλάει στο τέλος
+    <strong>όπως είναι, χωρίς καμία επιπλέον σύγκριση</strong> — αποτέλεσμα:
+    <code>[1, 2, 3, 4, 5, 7, 8, 9]</code>.
 </p>
 
 <div class="callout"><span class="tag">Γιατί δεν χρειάζεται άλλος έλεγχος εδώ</span>Μόλις μία από τις δύο λίστες αδειάσει, ό,τι απομένει στην άλλη είναι ΗΔΗ στη σωστή θέση σε σχέση με όλα τα υπόλοιπα — ήταν ήδη ταξινομημένη λίστα, και όλα τα στοιχεία που "βγήκαν" μέχρι τώρα ήταν μικρότερα ή ίσα από αυτήν.</div>
@@ -4518,6 +4549,61 @@ result = append(result, right[j:]...)</code></pre>
     [1, 2, 5, 9]         [3, 4, 7, 8]       επίπεδο 1
          [1, 2, 3, 4, 5, 7, 8, 9]           επίπεδο 0
 </code></pre>
+
+
+<p>
+    Ώρα να δεις ολόκληρο τον αλγόριθμο να τρέχει. Σημαντικό: το παρακάτω <strong>δεν</strong>
+    προχωράει επίπεδο-επίπεδο, όπως το δείχνουν τα στατικά διαγράμματα — προχωράει με την
+    <strong>πραγματική σειρά των κλήσεων</strong>. Ολόκληρο το αριστερό μισό τελειώνει πρώτο,
+    μέχρι το τέλος, πριν καν ξεκινήσει το δεξί.
+</p>
+
+<div id="ms-tree-viz">
+    <span class="vz-tag">MergeSort — το δέντρο των κλήσεων</span>
+<div class="vz-controls">
+    <button class="reset-quiz-btn" data-vzm="prev">← prev step</button>
+    <button class="reset-quiz-btn" data-vzm="next">next step →</button>
+    <button class="reset-quiz-btn" data-vzm="reset">⟲ reset</button>
+    <button class="reset-quiz-btn vz-btn-stable" data-vzm="play">▶ autoplay ↕</button>
+    <span class="vzm-counter" data-vzm="counter"></span>
+</div>
+
+    <div class="quiz-code-block">
+        <div class="vzm-tree" data-vzm="tree"></div>
+    </div>
+
+    <div class="glossary-group">
+        <div class="glossary-strip">
+            <span class="gs-pill"><span class="gs-name">φάση</span><span class="gs-def" data-vzm="phase">—</span></span>
+            <span class="gs-pill"><span class="gs-name">κλήση</span><span class="gs-def" data-vzm="call">—</span></span>
+            <span class="gs-pill"><span class="gs-name">βάθος</span><span class="gs-def" data-vzm="depth">—</span></span>
+        </div>
+    </div>
+
+    <p class="vzm-note" data-vzm="note"></p>
+</div>
+
+<div class="callout good">
+    <span class="tag">Το πιο συχνό λάθος στην κατανόηση</span>
+    <p>
+        Στην κατάβαση <strong>δεν ταξινομείται τίποτα</strong>. Οι αριθμοί απλώς χωρίζονται και
+        μένουν ακριβώς όπως ήταν. Όλη η ταξινόμηση συμβαίνει στην <strong>άνοδο</strong>, όταν οι
+        κλήσεις επιστρέφουν μία-μία και το <code>merge</code> ενώνει. Αν το περιμένεις αλλιώς, ο
+        κώδικας θα σου φαίνεται μαγικός· αν το περιμένεις έτσι, θα σου φαίνεται προφανής.
+    </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Γιατί &lt;= και όχι &lt;</span>
+    <p>
+        Όταν τα δύο στοιχεία είναι <strong>ίσα</strong>, ο κώδικας παίρνει αυτό του
+        <code>left</code>. Δεν είναι τυχαίο: το <code>left</code> κρατάει πάντα τα στοιχεία που
+        βρίσκονταν πιο μπροστά στην αρχική λίστα, άρα δύο ίσες τιμές διατηρούν τη σχετική τους
+        σειρά. Αυτό ακριβώς σημαίνει <strong>stable</strong> ταξινόμηση, που είδαμε ονομαστικά
+        στην Ενότητα 5. Άλλαξε το <code>&lt;=</code> σε <code>&lt;</code> και το merge sort
+        συνεχίζει να ταξινομεί σωστά — αλλά παύει να είναι stable. Ένας χαρακτήρας.
+    </p>
+</div>
 
 <h2>Γιατί βγαίνει <code>O(n log n)</code></h2>
 
@@ -4545,7 +4631,7 @@ result = append(result, right[j:]...)</code></pre>
 </div>
 
 <div class="callout good">
-    <span class="tag">Πού αλλού θα δεις αυτό το σχήμα</span>
+    <span class="tag">Πού αλλού θα δεις αυτό το pattern</span>
     <p>
         Το divide and conquer δεν είναι τεχνική ταξινόμησης — είναι τρόπος σκέψης. Θα το συναντήσεις σε
         αναζήτηση (binary search), σε δέντρα (κάθε υποδέντρο είναι ένα μικρότερο δέντρο), σε επεξεργασία
