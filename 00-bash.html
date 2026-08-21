@@ -175,8 +175,14 @@
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
   <div class="gc-line"><span class="gc-term">OS</span><span class="gc-def">Πρόγραμμα που διαχειρίζεται τους πόρους του υπολογιστή</span></div>
-  <div class="gc-line"><span class="gc-term">CLI</span><span class="gc-def">Κειμενικό περιβάλλον εντολών</span></div>
-  <div class="gc-line"><span class="gc-term">GUI</span><span class="gc-def">Γραφικό περιβάλλον με εικονίδια/κλικ</span></div>
+<div class="gc-line">
+  <span class="gc-term">CLI</span>
+  <span class="gc-def"><span style="color: #f0f8ff; font-style: italic;">Command Line Interface</span> — Περιβάλλον γραμμής εντολών</span>
+</div>
+<div class="gc-line">
+  <span class="gc-term">GUI</span>
+  <span class="gc-def"><span style="color: #f0f8ff; font-style: italic;">Graphical User Interface</span> — Γραφικό περιβάλλον με εικονίδια/ποντίκι</span>
+</div>
   <div class="gc-line"><span class="gc-term">Shell</span><span class="gc-def">Πρόγραμμα που ερμηνεύει τις εντολές σου προς το OS</span></div>
   <div class="gc-line"><span class="gc-term">Script</span><span class="gc-def">Αρχείο με ακολουθία εντολών προς εκτέλεση</span></div>
   <div class="gc-line"><span class="gc-term">Flag / Option</span><span class="gc-def">Παράμετρος που αλλάζει τον τρόπο που δουλεύει μια εντολή</span></div>
@@ -353,6 +359,32 @@ projects/notes.txt
     │   └── main.go
     └── bash-project
 </code></pre>
+
+
+<div class="callout">
+  <span class="tag">Αρχεία, Φάκελοι &amp; Επεκτάσεις</span>
+  <p><strong>Πώς τα ξεχωρίζουμε:</strong>
+  <ul>
+    <li><strong>Αρχείο (File):</strong> Περιέχει δεδομένα (κείμενο, κώδικα, εικόνα). Συνήθως τελειώνει σε κατάληξη (extension) όπως <code>.go</code>, <code>.txt</code>, <code>.sh</code> (π.χ. <code>main.go</code>, <code>notes.txt</code>).</li>
+    <li><strong>Φάκελος (Directory):</strong> Περιέχει άλλα αρχεία ή φακέλους (π.χ. <code>projects</code>, <code>go-project</code>). Συχνά προσθέτουμε ένα <code>/</code> στο τέλος (<code>projects/</code>) για να δηλώσουμε ρητά ότι πρόκειται για φάκελο.</li>
+  </ul>
+  <p>
+  Όταν βλέπεις μια τελεία σε ένα όνομα, η θέση της αλλάζει εντελώς τη σημασία της:
+</p>
+<p>
+  Αν η τελεία βρίσκεται στο τέλος, όπως στο <code>name.something</code> (π.χ. <code>main.go</code>, <code>script.sh</code>), το τμήμα μετά την τελεία είναι η επέκταση (extension) που δηλώνει τον τύπο του αρχείου — για παράδειγμα, το <code>.go</code> φανερώνει πηγαίο κώδικα Go και το <code>.txt</code> απλό κείμενο. 
+  Αντίθετα, όταν η τελεία βρίσκεται στην αρχή του ονόματος (π.χ. <code>.git</code>, <code>.env</code>, <code>.bashrc</code>), δηλώνει ότι το αρχείο ή ο φάκελος είναι <strong>κρυφός</strong>. Το σύστημα αποκρύπτει αυτά τα στοιχεία από την απλή εντολή <code>ls</code> (απαιτείται <code>ls -a</code> για να εμφανιστούν) και χρησιμοποιούνται συνήθως για αρχεία ρυθμίσεων (configuration).
+  Σημείωσε ότι στο Linux η επέκταση δεν είναι υποχρεωτική για να αναγνωριστεί ένα αρχείο, σε αντίθεση με τα Windows όπου το extension καθορίζει με ποιο πρόγραμμα θα ανοίξει (αν και εξ ορισμού είναι κρυμμένο από τον χρήστη).
+</p>
+<p><strong>Παραδείγματα:</strong></p>
+  <ul>
+    <li><code>main.go</code> &rarr; Αρχείο κειμένου που περιέχει πηγαίο κώδικα Go.</li>
+    <li><code>notes.txt</code> &rarr; Αρχείο απλού κειμένου (plain text).</li>
+    <li><code>go-project</code> &rarr; Φάκελος (directory). Δεν έχει κατάληξη, αν και <em>θα μπορούσε</em> θεωρητικά να έχει τελεία στο όνομά του.</li>
+    <li><code>.gitignore</code> &rarr; <strong>Κρυφό αρχείο:</strong> Κάθε αρχείο ή φάκελος που ξεκινάει με τελεία (<code>.</code>) είναι κρυφό στο filesystem και εμφανίζεται μόνο με την εντολή <code>ls -a</code>.</li>
+  </ul>
+</div>
+
 <p>Αν αυτή τη στιγμή βρίσκεσαι μέσα στο <code>/home/student/projects/go-project</code>, όλα τα παρακάτω δείχνουν σωστά:</p>
 <pre><code><span class="tok-func">cat</span> <span class="tok-type">main.go</span>                <span class="tok-com"># relative: a file right next to me</span>
 <span class="tok-func">cd</span> ..                       <span class="tok-com"># -> /home/student/projects</span>
@@ -568,14 +600,14 @@ cd __path3__                  # go back to the folder you were in before`,
 <div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-strip">
-  <div class="gs-pill"><span class="gs-name">pwd</span><span class="gs-def">Δείχνει τον τρέχοντα φάκελο</span></div>
-  <div class="gs-pill"><span class="gs-name">ls / tree</span><span class="gs-def">Λιστάρουν περιεχόμενα φακέλου</span></div>
-  <div class="gs-pill"><span class="gs-name">cd</span><span class="gs-def">Αλλαγή φακέλου</span></div>
+  <div class="gs-pill"><span class="gs-name">pwd</span><span class="gs-def"><span style="color: #f0f8ff; font-style: italic;">print working directory —</span> Δείχνει τον τρέχοντα φάκελο</span></div>
+  <div class="gs-pill"><span class="gs-name">ls / tree</span><span class="gs-def">Εμφανίζει μια λίστα με τα περιεχόμενα του φακέλου</span></div>
+  <div class="gs-pill"><span class="gs-name">cd</span><span class="gs-def"><span style="color: #f0f8ff; font-style: italic;">change directory</span> — Αλλαγή φακέλου</span></div>
   <div class="gs-pill"><span class="gs-name">Brace expansion</span><span class="gs-def">{a,b} επεκτείνεται σε πολλαπλά ονόματα</span></div>
   <div class="gs-pill"><span class="gs-name">Tab Completion</span><span class="gs-def">Αυτόματη συμπλήρωση με το πλήκτρο Tab</span></div>
   <div class="gs-pill"><span class="gs-name">Absolute path</span><span class="gs-def">Διαδρομή που ξεκινά από τη ρίζα /</span></div>
   <div class="gs-pill"><span class="gs-name">Relative path</span><span class="gs-def">Διαδρομή που ξεκινά από τον τρέχοντα φάκελο</span></div>
-  <div class="gs-pill"><span class="gs-name">Dot-file</span><span class="gs-def">Κρυφό αρχείο, το όνομά του αρχίζει με τελεία</span></div>
+  <div class="gs-pill"><span class="gs-name">.file</span><span class="gs-def">Κρυφό αρχείο, το όνομά του αρχίζει με τελεία</span></div>
 </div>
 `);
 
