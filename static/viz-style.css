@@ -207,3 +207,279 @@
 .vz-state-hl {
     color: var(--accent);
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MERGE SORT VISUALIZERS (.vzm-*) — additive only, nothing above is touched.
+   Two visualizers share this block: #ms-merge-viz (the merge function) and
+   #ms-tree-viz (the full call tree).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── shared chrome ────────────────────────────────────────────────────── ⊃ */
+#ms-merge-viz button:disabled,
+#ms-tree-viz button:disabled {
+    opacity: .3;
+    cursor: default;
+}
+
+.vzm-counter {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(var(--ink-rgb), .5);
+}
+
+/* Fixed min-height so the box never jumps in height when the narration
+   text wraps onto a different number of lines between steps. */
+.vzm-note {
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 2.2vw, 13px);
+    line-height: 1.65;
+    color: rgba(var(--ink-rgb), .8);
+    margin: 14px 0 0;
+    min-height: 3.3em;
+}
+
+.vzm-note b {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* ── merge visualizer: the two halves ─────────────────────────────────── ⊃ */
+.vzm-halves {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(12px, 3.5vw, 34px);
+}
+
+.vzm-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(var(--ink-rgb), .45);
+    margin-bottom: 6px;
+}
+
+.vzm-idx {
+    color: var(--accent);
+}
+
+/* Both the pointer row and the cell row are grids driven by the SAME
+   --vzm-cols custom property (set inline in the markup), so every pointer
+   stays locked to its own cell at any viewport width. */
+.vzm-ptr,
+.vzm-cells {
+    display: grid;
+    grid-template-columns: repeat(var(--vzm-cols, 8), minmax(0, 1fr));
+    gap: clamp(3px, 1vw, 8px);
+    font-family: var(--font-mono);
+}
+
+.vzm-ptr {
+    font-size: clamp(9px, 1.8vw, 12px);
+    color: var(--accent);
+    min-height: 18px;
+    text-align: center;
+}
+
+.vzm-cells {
+    font-size: clamp(12px, 2.6vw, 18px);
+}
+
+.vzm-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(4px, 1.4vw, 10px) 0;
+    border-radius: 6px;
+    background: rgba(var(--ink-rgb), .06);
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1px transparent;
+    transition: background .18s, color .18s, opacity .18s, box-shadow .18s;
+}
+
+/* ── merge visualizer: cell states ────────────────────────────────────── ⊃ */
+.vzm-used {
+    /* already consumed, pointer moved past it */
+    opacity: .25;
+}
+
+.vzm-cand {
+    /* under comparison right now             */
+    background: rgba(var(--accent-rgb), .18);
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.vzm-win {
+    /* won the comparison, moves to result    */
+    background: rgba(var(--correct-rgb), .22);
+    color: var(--correct);
+    box-shadow: inset 0 0 0 1px var(--correct);
+}
+
+.vzm-lose {
+    /* lost, stays where it is                */
+    opacity: .45;
+}
+
+.vzm-tail {
+    /* leftover chunk appended without compare */
+    background: rgba(var(--accent-rgb), .16);
+    box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.vzm-just {
+    /* result slot filled by this very step   */
+    background: rgba(var(--correct-rgb), .22);
+    box-shadow: inset 0 0 0 1px var(--correct);
+}
+
+.vzm-done {
+    /* final result, all slots filled         */
+    background: rgba(var(--correct-rgb), .12);
+    color: var(--correct);
+}
+
+.vzm-slot {
+    /* empty result slot, waiting             */
+    background: transparent;
+    box-shadow: inset 0 0 0 1px rgba(var(--ink-rgb), .16);
+}
+
+/* ── merge visualizer: the comparison bar ─────────────────────────────── ⊃ */
+.vzm-compare {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(6px, 2vw, 14px);
+    margin: clamp(16px, 3.5vw, 26px) 0;
+    min-height: 2.4em;
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 2.4vw, 16px);
+}
+
+.vzm-cmp-side {
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(var(--ink-rgb), .06);
+    transition: all .18s;
+}
+
+.vzm-cmp-side.is-win {
+    color: var(--correct);
+    background: rgba(var(--correct-rgb), .15);
+}
+
+.vzm-cmp-side.is-lose {
+    opacity: .4;
+}
+
+.vzm-cmp-op {
+    color: rgba(var(--ink-rgb), .45);
+    font-size: 1.15em;
+}
+
+.vzm-cmp-out {
+    color: var(--accent);
+}
+
+.vzm-cmp-hint {
+    color: rgba(var(--ink-rgb), .45);
+}
+
+/* ── call-tree visualizer ─────────────────────────────────────────────── ⊃ */
+/* One single grid: 8 columns wide (one per element of the input), 4 rows
+   (one per recursion level). Each node is placed with grid-column: start+1 /
+   span len, so a node's WIDTH is literally proportional to the size of its
+   subproblem - which is the visual argument for "n work per level". */
+.vzm-tree {
+    --vzm-gap-y: clamp(18px, 4vw, 34px);
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: var(--vzm-gap-y) clamp(3px, 1vw, 8px);
+    padding-top: 4px;
+}
+
+.vzm-node {
+    position: relative;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 2px;
+    padding: clamp(4px, 1.2vw, 8px) clamp(2px, .8vw, 6px);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: rgba(var(--ink-rgb), .06);
+    font-family: var(--font-mono);
+    font-size: clamp(9px, 2vw, 14px);
+    color: var(--ink);
+    transition: all .22s;
+}
+
+.vzm-num {
+    text-align: center;
+    padding: 2px 0;
+}
+
+/* Vertical stub reaching up to the parent's bottom edge. The parent box
+   spans both children, so no horizontal connector bar is needed. */
+.vzm-node::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: calc(-1 * var(--vzm-gap-y));
+    width: 1px;
+    height: var(--vzm-gap-y);
+    background: rgba(var(--ink-rgb), .22);
+}
+
+.vzm-node[data-depth="0"]::before {
+    display: none;
+}
+
+/* ── call-tree: node states (order matters - later rules win) ─────────── ⊃ */
+.vzm-node-hidden {
+    /* call not made yet                      */
+    opacity: .16;
+    background: transparent;
+    border: 1px dashed rgba(var(--ink-rgb), .35);
+}
+
+.vzm-node-done {
+    /* this call has returned, sorted         */
+    background: rgba(var(--correct-rgb), .12);
+    border-color: var(--correct);
+    color: var(--correct);
+}
+
+.vzm-node-src {
+    /* one of the two inputs of this merge    */
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), .12);
+}
+
+.vzm-node-active {
+    /* the call being executed this step      */
+    border-color: var(--accent);
+    background: rgba(var(--accent-rgb), .18);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .12);
+}
+
+/* ── stage box: drop the accent border that .quiz-code-block carries ──── ⊃ */
+/* .quiz-code-block is meant for code listings, so it comes with the accent
+   side border. Here it is just a container, so the border is removed and
+   the box is rounded instead - scoped by id so the sliding-window
+   visualizer keeps the original treatment. */
+#ms-merge-viz .quiz-code-block,
+#ms-tree-viz .quiz-code-block {
+    border: none;
+    border-radius: 14px;
+    background: rgba(var(--ink-rgb), .04);
+    padding: clamp(16px, 3.5vw, 26px);
+    overflow: hidden;
+}

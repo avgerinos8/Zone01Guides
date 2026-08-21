@@ -538,9 +538,9 @@ tree -__flag3__                 # show only directories, no files`,
         code:
           `# you are standing in /home/student/projects/go-project
 # there is a file notes.txt in /home/student/
-cat __path1__/notes.txt       # read the file two levels up, with a relative path (in a single command)
-cd __path2__                  # jump straight to your home folder
-cd __path3__                  # go back to the folder you were in before`,
+cat __path1__/notes.txt   # read the file two levels up, with a relative path
+cd __path2__              # jump straight to your home folder
+cd __path3__              # go back to the folder you were in before`,
         blanks: [
           { id: "path1", answer: "../.." },
           { id: "path2", answer: "~" },
@@ -652,7 +652,7 @@ cd __path3__                  # go back to the folder you were in before`,
 <p>Το <code>--global</code> σημαίνει ότι αυτή η ρύθμιση ισχύει για όλα τα repositories στον υπολογιστή σου, όχι μόνο για ένα.</p>
 
 <h2>Ξεκινώντας ένα repository</h2>
-<pre><code><span class="tok-func">git</span> init                 <span class="tok-com"># turn the current folder into a new Git repository</span>
+<pre><code><span class="tok-func">git</span> init               <span class="tok-com"># turn the current folder into a new Git repository</span>
 <span class="tok-func">git</span> clone <span class="tok-type">url</span>          <span class="tok-com"># download an existing repository from somewhere (e.g. GitHub) to your machine</span>
 </code></pre>
 
@@ -667,10 +667,10 @@ cd __path3__                  # go back to the folder you were in before`,
 
 <h2>Ο βασικός κύκλος: add, commit, push</h2>
 <p>Αυτός είναι ο κύκλος που θα επαναλαμβάνεις κάθε φορά που θέλεις να αποθηκεύσεις πρόοδο:</p>
-<pre><code><span class="tok-func">git</span> add <span class="tok-type">filename</span>       <span class="tok-com"># stage a specific file — mark it as "ready to be committed"</span>
-<span class="tok-func">git</span> add .              <span class="tok-com"># stage EVERY changed file in the current folder and below</span>
-<span class="tok-func">git</span> commit -m <span class="tok-str">"message"</span>  <span class="tok-com"># save the staged changes as a new snapshot, with a description</span>
-<span class="tok-func">git</span> push                <span class="tok-com"># upload your commits to the remote repository (e.g. GitHub)</span>
+<pre><code><span class="tok-func">git</span> add <span class="tok-type">filename</span>          <span class="tok-com"># stage a specific file — mark it as "ready to be committed"</span>
+<span class="tok-func">git</span> add .                 <span class="tok-com"># stage EVERY changed file in the current folder and below</span>
+<span class="tok-func">git</span> commit -m <span class="tok-str">"message"</span>   <span class="tok-com"># save the staged changes as a new snapshot, with a description</span>
+<span class="tok-func">git</span> push                  <span class="tok-com"># upload your commits to the remote repository (e.g. GitHub)</span>
 </code></pre>
 <div class="callout good">
   <span class="tag">Γιατί δύο βήματα (add και commit)</span>
@@ -690,11 +690,11 @@ cd __path3__                  # go back to the folder you were in before`,
   Κράτα το <code>git status</code>. Σου λέει σε ποιο branch είσαι, ποια αρχεία άλλαξες, ποια είναι ήδη staged, και συνήθως προτείνει από μόνο του την εντολή που χρειάζεσαι για το επόμενο βήμα. Τρέξ' το πριν και μετά από κάθε άλλη εντολή Git όσο μαθαίνεις.
 </div>
 
-<h2>Branches, εισαγωγικά</h2>
+<h2>Branches</h2>
 <p>Ένα branch είναι ένα ανεξάρτητο "παράλληλο" αντίγραφο του project, όπου μπορείς να κάνεις αλλαγές χωρίς να επηρεάζεις το κύριο branch (συνήθως ονομάζεται main ή master), μέχρι να είσαι σίγουρος ότι η δουλειά σου είναι έτοιμη. Αυτό είναι ιδιαίτερα χρήσιμο σε ομαδική δουλειά: κάθε άτομο δουλεύει στο δικό του branch, χωρίς κίνδυνο να χαλάσει τη δουλειά των άλλων.</p>
-<pre><code><span class="tok-func">git</span> branch                 <span class="tok-com"># list all branches in this repository</span>
+<pre><code><span class="tok-func">git</span> branch                <span class="tok-com"># list all branches in this repository</span>
 <span class="tok-func">git</span> checkout <span class="tok-type">branch-name</span>  <span class="tok-com"># switch to an existing branch</span>
-<span class="tok-func">git</span> checkout -b <span class="tok-type">new-name</span> <span class="tok-com"># create a NEW branch and switch to it immediately</span>
+<span class="tok-func">git</span> checkout -b <span class="tok-type">new-name</span>  <span class="tok-com"># create a NEW branch and switch to it immediately</span>
 </code></pre>
 
 <h2>fetch, pull, merge, εισαγωγικά</h2>
