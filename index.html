@@ -744,20 +744,28 @@
 
         <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor" id="secretTrigger"></span>
         </p>
-        <p class="section-title" id="sectionTitle">SELECT TARGET MODULE FOR DEPLOYMENT:</p>
+        <p class="section-title main-section">SELECT TARGET MODULE FOR DEPLOYMENT:</p>
 
-        <ul class="module-list" id="mainModuleList">
-            <li><a href="./00-bash.html"><span style="color: #718096;">&gt; ./00_Shell_Bash</span><span
-                        class="tag">[BASH]</span></a></li>
+        <ul class="module-list main-section">
             <li><a href="./01-go-01.html"><span>&gt; ./01_go_part_1</span><span class="tag">[GO]</span></a></li>
+            <li><a href="./02-go-02.html"><span>&gt; ./02_go_part_2</span><span class="tag">[GO]</span></a></li>
             <li><a href="08-Docker.html"><span style="color: #96a2b4;">&gt; ./08_dockerize</span><span
                         class="tag">[DOCKER]</span></a></li>
             <li><a href="10-goroutines-channels.html"><span>&gt; ./10_goroutines_channels</span><span class="tag">[GO] +
                         [CONCURRENCY]</span></a></li>
         </ul>
 
+        <p class="section-title main-section">OPTIONAL EXTRA MODULES:</p>
+        <ul class="module-list main-section">
+            <li><a href="./00-bash.html"><span style="color: #718096;">&gt; ./00_Shell_Bash</span><span
+                        class="tag">[BASH]</span></a></li>
+        </ul>
+
+        <!-- SECRET MENU (Ξεχωριστός τίτλος & λίστα) -->
+        <p class="section-title secret-section" id="secretTitle" style="display: none;">SECRET MENU. NEW GUIDES UNDER
+            DEVELOPMENT</p>
         <ul class="module-list old-lesson" id="oldModuleList" style="display: none;">
-            <li><a href="./02-go-02.html"><span>&gt; ./02_go_part_2</span><span class="tag">[GO]</span></a></li>
+            <li><a href="./03-go-03.html"><span>&gt; ./03_go_part_3</span><span class="tag">[GO]</span></a></li>
             <li><a href="./01-go_networking_theory.html"><span>&gt; ./01_go_networking_theory</span><span
                         class="tag">[NETWORKING] + [CONCURRENCY]</span></a></li>
             <li><a href="./07-Networks.html"><span>&gt; ./07_network_cybersecurity</span><span class="tag">[GO] +
@@ -1044,21 +1052,25 @@ git config --global user.name {{username}}`;
             // 8. TOGGLE HIDDEN LESSONS (cursor)
             // ================================================================
             const trigger = document.getElementById('secretTrigger');
-            const mainList = document.getElementById('mainModuleList');
+            const mainSections = document.querySelectorAll('.main-section'); // Επιλέγει ΟΛΑ τα main sections & lists
+            const secretTitle = document.getElementById('secretTitle');
             const oldList = document.getElementById('oldModuleList');
-            const sectionTitle = document.getElementById('sectionTitle');
             let isOld = false;
 
             function toggleLessons() {
                 if (isOld) {
-                    mainList.style.display = '';
+                    // Εμφάνιση όλων των mainSections (τίτλοι & λίστες)
+                    mainSections.forEach(el => el.style.display = '');
+                    // Απόκρυψη Secret Menu
+                    secretTitle.style.display = 'none';
                     oldList.style.display = 'none';
-                    sectionTitle.textContent = 'SELECT TARGET MODULE FOR DEPLOYMENT:';
                     isOld = false;
                 } else {
-                    mainList.style.display = 'none';
+                    // Απόκρυψη όλων των mainSections
+                    mainSections.forEach(el => el.style.display = 'none');
+                    // Εμφάνιση Secret Menu
+                    secretTitle.style.display = '';
                     oldList.style.display = '';
-                    sectionTitle.textContent = 'SECRET MENU. NEW GUIDES UNDER DEVELOPMENT';
                     isOld = true;
                 }
             }
