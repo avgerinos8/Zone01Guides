@@ -4054,13 +4054,95 @@ fatal error: stack overflow
 </p>
 
 <div class="callout">
-    <span class="tag">Είναι panic, όχι compile error</span>
+    <span class="tag">Είναι runtime error, όχι compile error</span>
     <p>
         Θυμήσου τη διάκριση από το Μέρος 1: το compile error το πιάνει ο compiler πριν καν τρέξει το
         πρόγραμμα. Το stack overflow είναι <strong>runtime</strong> σφάλμα — εμφανίζεται μόνο όταν εκτελεστεί
-        ο κώδικας, και μόνο για τις τιμές που το προκαλούν. Μια αναδρομή μπορεί να δουλεύει μια χαρά για
-        <code>n = 10</code> και να καταρρέει για <code>n = -1</code>.
+        ο κώδικας, και μόνο για τις τιμές που το προκαλούν. Μια recursive function μπορεί να δουλεύει μια
+        χαρά για <code>n = 10</code> και να καταρρέει για <code>n = -1</code>.
     </p>
+    <p>
+        Η Go το ονομάζει <code>fatal error</code> και όχι <code>panic</code>, και η διαφορά είναι
+        ουσιαστική. Ένα panic είναι ανακτήσιμο: υπάρχει μηχανισμός (<code>recover</code>, θα τον δούμε στο
+        error handling) που σου επιτρέπει να το σταματήσεις και το πρόγραμμα να συνεχίσει — γι' αυτό ένας
+        web server δεν πέφτει ολόκληρος επειδή ένα request προκάλεσε index out of range. Το stack overflow
+        δεν είναι ανακτήσιμο: για να τρέξει ο κώδικας που θα το διαχειριζόταν χρειάζεται χώρο στο call
+        stack, και ακριβώς αυτό είναι που δεν υπάρχει. Άρα δεν είναι σφάλμα που «διαχειρίζεσαι» — είναι σφάλμα που
+        πρέπει να προλαμβάνεις μέσω του base case.
+    </p>
+</div>
+
+<h2>Μπορώ να έχω περισσότερα από ένα base cases;</h2>
+
+<p>
+    Ναι, και συνήθως έτσι είναι. Ο κανόνας δεν είναι «ακριβώς ένα base case» — είναι
+    <strong>κάθε πιθανή είσοδος να καταλήγει κάπου που δεν κάνει νέα κλήση</strong>. Πόσα σημεία εξόδου
+    χρειάζονται για να ισχύει αυτό, το ορίζει το πρόβλημα. Άλλοτε φτάνει ένα (<code>Factorial</code>:
+    <code>n &lt;= 1</code>), άλλοτε χρειάζονται δύο ή τρία, όταν υπάρχουν διαφορετικοί λόγοι να σταματήσεις.
+    Ο κανόνας είναι πάντα ο ίδιος: όλα τα base cases μπαίνουν στην <strong>αρχή</strong> της
+    function, ως guard clauses, και μόνο ό,τι περάσει από κάτω τους φτάνει στο recursive case.
+</p>
+
+<p>
+    Ας το δούμε σε ένα παράδειγμα: είναι μια λέξη <strong>palindrome</strong>, δηλαδή διαβάζεται ίδια και
+    ανάποδα; Η ιδέα είναι two pointers, όπως στην Ενότητα 3 — ένας δείκτης στην αρχή, ένας στο τέλος,
+    συγκρίνεις και τους κουνάς προς τα μέσα. Μόνο που εδώ, αντί για loop, κάθε βήμα είναι μια recursive
+    κλήση.
+</p>
+
+<pre><code class="lang-go">// IsPalindrome reports whether s[left:right+1] reads the same backwards.
+func IsPalindrome(s string, left, right int) bool {
+    if left &gt;= right {
+        return true // BASE CASE 1: 0 or 1 characters left - nothing left to compare
+    }
+    if s[left] != s[right] {
+        return false // BASE CASE 2: one mismatch is enough - the answer is already final
+    }
+    return IsPalindrome(s, left+1, right-1) // RECURSIVE CASE: same problem, two chars narrower
+}
+</code></pre>
+
+<p>
+    Τα δύο base cases απαντούν σε διαφορετικές ερωτήσεις. Το πρώτο σημαίνει «τελείωσα»: οι δείκτες
+    συναντήθηκαν, δεν έμεινε ζευγάρι για σύγκριση, άρα όλα όσα έλεγξα ταίριαζαν και η απάντηση είναι
+    <code>true</code>. Το δεύτερο σημαίνει «απάντησα»: μόλις βρω ένα ζευγάρι που δεν ταιριάζει, η λέξη
+    δεν είναι palindrome ό,τι κι αν συμβαίνει παραπέρα μέσα — δεν έχει νόημα να συνεχίσω. Είναι το ίδιο
+    σκεπτικό με το <code>return</code> μέσα σε loop όταν βρεις αυτό που ψάχνεις.
+</p>
+
+<p>
+    Δοκίμασε το <code>IsPalindrome("racecar", 0, 6)</code>: συγκρίνει <code>r</code> με <code>r</code>,
+    <code>a</code> με <code>a</code>, <code>c</code> με <code>c</code>, και μετά οι δείκτες συναντιούνται
+    στο μεσαίο <code>e</code> — base case 1, <code>true</code>. Με το <code>"raceca"</code> όμως, η πρώτη
+    κιόλας σύγκριση είναι <code>r</code> με <code>a</code>: base case 2, <code>false</code>, χωρίς να
+    κοιτάξει καθόλου το υπόλοιπο string.
+</p>
+
+<div class="callout">
+    <span class="tag">Ο έλεγχος που πρέπει να κάνεις μόνος σου</span>
+    <p>
+        Το ερώτημα δεν είναι «πόσα base cases έχω», αλλά <strong>«υπάρχει είσοδος που δεν πιάνεται από
+        κανένα;»</strong>. Γι' αυτό το <code>left &gt;= right</code> είναι <code>&gt;=</code> και όχι
+        <code>==</code>: σε λέξη με ζυγό πλήθος χαρακτήρων (<code>"abba"</code>) οι δείκτες δεν πέφτουν
+        ποτέ πάνω στον ίδιο χαρακτήρα — προσπερνάει ο ένας τον άλλον και γίνεται <code>left &gt; right</code>.
+        Με <code>==</code> η function θα δούλευε τέλεια στο <code>"racecar"</code> (7 γράμματα - μονός αριθμός) και θα έσκαγε στο <code>"abba"</code> (4 γράμματα - ζυγός αριθμός).
+    </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Προσοχή στα ελληνικά</span>
+    <p>
+        Το <code>s[left]</code> επιστρέφει <strong>byte</strong>, όχι rune. Για χαρακτήρες ASCII (αγγλικά,
+        αριθμοί, σημεία στίξης) δεν υπάρχει διαφορά — ένας χαρακτήρας, ένα byte. Έξω από το ASCII όμως
+        κάθε χαρακτήρας πιάνει από 2 έως 4 bytes: π.χ. τα ελληνικά 2, τα emoji 4.
+        Το <code>len("λέξη")</code> επιστρέφει <strong>8</strong>, όχι 4, και το <code>s[0]</code> σου
+        δίνει το πρώτο μισό του <code>λ</code>, όχι το <code>λ</code>. Ο παραπάνω κώδικας δηλαδή δεν
+        συγκρίνει γράμματα, συγκρίνει μισά γράμματα, και δίνει λάθος απάντηση. Η λύση είναι να δουλέψεις
+        πάνω σε <code>[]rune(s)</code> αντί για string — αλλάζει μόνο ο τύπος της παραμέτρου, η λογική
+        μένει ολόιδια.
+    </p>
+</div>
+
 </div><h2>Το ίδιο πράγμα με loop</h2>
 
 <p>
@@ -4249,7 +4331,7 @@ func SumSlice(numbers []int) int {
 <p>
     Η ιδέα:
     διάβασε ΟΛΟ το κείμενο πρώτα (αναδρομικά, μέχρι να βρεις το τέλος), και τύπωσε κάθε λέξη στο unwinding
-    phase — η ίδια ακριβώς λογική με το <code>PrintReversed</code> παραπάνω, απλά με λέξεις αντί για
+    phase — η ίδια ακριβώς λογική με το <code>Countdown</code> παραπάνω, απλά με λέξεις αντί για
     αριθμούς.
 </p>
 
@@ -4456,7 +4538,7 @@ func merge(left, right []int) []int {
 [5]    [2]  [9]    [1]  [7]    [3]  [8]    [4]      επίπεδο 3 (base case)
 </code></pre>
 
-<h3>Η func merge</h3>
+<h3>Κομμάτι 1: Η func <code>merge</code></h3>
 
 <pre><code class="lang-go">result := make([]int, 0, len(left)+len(right))
 i, j := 0, 0 // one pointer per slice</code></pre>
@@ -4629,17 +4711,6 @@ result = append(result, right[j:]...)</code></pre>
         δεσμεύει καθόλου επιπλέον μνήμη για αντίγραφα.
     </p>
 </div>
-
-<div class="callout good">
-    <span class="tag">Πού αλλού θα δεις αυτό το pattern</span>
-    <p>
-        Το divide and conquer δεν είναι τεχνική ταξινόμησης — είναι τρόπος σκέψης. Θα το συναντήσεις σε
-        αναζήτηση (binary search), σε δέντρα (κάθε υποδέντρο είναι ένα μικρότερο δέντρο), σε επεξεργασία
-        εικόνας, ακόμα και στον πολλαπλασιασμό πολύ μεγάλων αριθμών. Το σήμα είναι πάντα το ίδιο:
-        <em>«αν είχα τη λύση για τα δύο μισά, θα ήξερα τι να κάνω;»</em> Αν η απάντηση είναι ναι, έχεις
-        divide and conquer.
-    </p>
-</div>
 `);
 
         // ── §6.5 — Οι παγίδες της αναδρομής ──────────────────────────────────── ⊃
@@ -4647,15 +4718,10 @@ result = append(result, right[j:]...)</code></pre>
 <div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Οι τρεις παγίδες</h1>
 
-<p class="lede">
-    Η αναδρομή είναι κομψή, αλλά υπάρχουν τρεις τρόποι να πάει στραβά. Οι δύο πρώτοι εμφανίζονται αμέσως και
-    με σαφές μήνυμα σφάλματος· ο τρίτος είναι ο επικίνδυνος, γιατί ο κώδικας δουλεύει — απλά δεν τελειώνει ποτέ.
-</p>
-
-<h2>Παγίδα 1: το base case που δεν φτάνει ποτέ</h2>
+<h2>Παγίδα 1: το base case που δεν εκπληρώνεται ποτέ</h2>
 
 <p>
-    Δεν αρκεί να <em>υπάρχει</em> base case — πρέπει και να είναι <strong>φτάσιμο από κάθε είσοδο</strong>.
+    Δεν αρκεί να <em>υπάρχει</em> base case — πρέπει και να είναι <strong>πραγματοποιήσιμο</strong> για όλες τις πιθανές τιμές που μπορεί να δοθούν.
     Δες τη διαφορά:
 </p>
 
@@ -4683,35 +4749,27 @@ func CountdownGood(n int) {
     guard clauses της Ενότητας 3: <em>ποιες εισόδους δεν έχω σκεφτεί;</em>
 </p>
 
-<h2>Παγίδα 2: πολύ βαθιά, ακόμα και σωστά</h2>
+<h2>Παγίδα 2: όταν το βάθος γίνεται το πρόβλημα</h2>
 
 <p>
-    Μια απόλυτα σωστή αναδρομή μπορεί να καταρρεύσει απλά επειδή είναι βαθιά. Το <code>SumSlice</code> που
-    γράψαμε δουλεύει τέλεια για 100 στοιχεία και καταρρέει σε ένα slice με μερικά εκατομμύρια — κάθε στοιχείο
-    δεσμεύει ένα επίπεδο στο call stack.
+    Κάθε ανοιχτή κλήση κρατάει τη δική της θέση στο call stack: τις μεταβλητές της και το σημείο στο οποίο
+    πρέπει να επιστρέψει. Αυτές οι θέσεις ελευθερώνονται μόνο στο unwinding phase — δηλαδή αφού πιάσουμε το
+    base case και αρχίσουν οι κλήσεις να κλείνουν μία-μία. Άρα σε μια αναδρομή που κατεβαίνει ένα επίπεδο ανά
+    στοιχείο, τη στιγμή που φτάνουμε στο τέλος είναι <em>όλα</em> τα επίπεδα ταυτόχρονα ανοιχτά.
 </p>
 
-<div class="callout">
-    <span class="tag">Η Go δεν κάνει tail-call optimization</span>
-    <p>
-        Κάποιες γλώσσες (Scheme, Haskell, εν μέρει η Kotlin) αναγνωρίζουν όταν η αναδρομική κλήση είναι το
-        <em>τελευταίο</em> πράγμα που κάνει μια function, και τη μετατρέπουν αυτόματα σε λούπα, χωρίς να
-        μεγαλώνει η στοίβα. <strong>Η Go δεν το κάνει αυτό, σκόπιμα</strong> — οι σχεδιαστές της προτίμησαν
-        να έχεις πάντα καθαρό stack trace όταν κάτι πάει στραβά. Πρακτικά: μην βασίζεσαι στην αναδρομή για
-        γραμμικά προβλήματα με πολλά δεδομένα. Γράψε λούπα.
-    </p>
-</div>
-
 <p>
-    Η καλή είδηση: στο divide and conquer το βάθος είναι <code>log n</code>, όχι <code>n</code>. Ένα merge
-    sort σε ένα εκατομμύριο στοιχεία φτάνει μόλις 20 επίπεδα βαθιά. Το πρόβλημα εμφανίζεται μόνο όταν
-    χρησιμοποιείς αναδρομή εκεί που θα έπρεπε να έχεις λούπα.
+    Το <code>SumSlice</code> είναι ακριβώς τέτοια περίπτωση. Με 100 στοιχεία κρατάει 100 ανοιχτές κλήσεις και
+    δεν το καταλαβαίνει κανείς. Με 5 εκατομμύρια στοιχεία κρατάει 5 εκατομμύρια ανοιχτές κλήσεις πριν προλάβει
+    να επιστρέψει η πρώτη. Η Go μεγαλώνει το stack δυναμικά, αλλά έχει όριο (της τάξης του 1&nbsp;GB στα
+    64-bit)· όταν το ξεπεράσεις, το πρόγραμμα τερματίζει με <code>fatal error: stack overflow</code>. Η αντίστοιχη λούπα
+    χρησιμοποιεί μία και μόνη θέση, ό,τι κι αν είναι το <code>n</code>.
 </p>
 
 <h2>Παγίδα 3: η ίδια δουλειά, ξανά και ξανά</h2>
 
 <p>
-    Αυτή είναι η σοβαρή. Ας γράψουμε την ακολουθία Fibonacci — κάθε αριθμός είναι το άθροισμα των δύο
+    Αυτή η παγίδα είναι η πιο σοβαρή. Ας γράψουμε την ακολουθία Fibonacci — κάθε αριθμός είναι το άθροισμα των δύο
     προηγούμενων: <code>1, 1, 2, 3, 5, 8, 13, 21…</code>
 </p>
 
@@ -4725,17 +4783,17 @@ func CountdownGood(n int) {
 
 <p>
     Ο κώδικας είναι σωστός και όμορφος. Δοκίμασέ τον με <code>Fib(10)</code> και δουλεύει ακαριαία. Δοκίμασε
-    <code>Fib(45)</code> και ο υπολογιστής σου θα μείνει απασχολημένος για λεπτά. Γιατί;
+    <code>Fib(45)</code> και ο υπολογιστής σου θα μείνει απασχολημένος για αρκετά δευτερόλεπτα. Γιατί;
 </p>
 
 <p>Ας δούμε τι συμβαίνει στο <code>Fib(5)</code>:</p>
 
 <pre><code>                    Fib(5)
-                  /        \
+                  /        \\
              Fib(4)          Fib(3)
-            /      \        /      \
+            /      \\        /      \\
        Fib(3)    Fib(2)  Fib(2)   Fib(1)
-      /      \
+      /      \\
    Fib(2)   Fib(1)
 </code></pre>
 
@@ -4746,9 +4804,9 @@ func CountdownGood(n int) {
 </p>
 
 <table class="glossary-table">
-<tr><td class="gt-term">Fib(10)</td><td class="gt-def">~177 κλήσεις — ακαριαίο</td></tr>
-<tr><td class="gt-term">Fib(30)</td><td class="gt-def">~2.7 εκατομμύρια κλήσεις — αισθητή καθυστέρηση</td></tr>
-<tr><td class="gt-term">Fib(40)</td><td class="gt-def">~331 εκατομμύρια κλήσεις — δευτερόλεπτα αναμονής</td></tr>
+<tr><td class="gt-term">Fib(10)</td><td class="gt-def">~109 κλήσεις — ακαριαίο</td></tr>
+<tr><td class="gt-term">Fib(30)</td><td class="gt-def">~1.66 εκατομμύρια κλήσεις — αισθητή καθυστέρηση</td></tr>
+<tr><td class="gt-term">Fib(40)</td><td class="gt-def">~205 εκατομμύρια κλήσεις — δευτερόλεπτα αναμονής</td></tr>
 <tr><td class="gt-term">Fib(50)</td><td class="gt-def">~25 δισεκατομμύρια κλήσεις — πρακτικά δεν τελειώνει σε λογικό χρόνο</td></tr>
 </table>
 
@@ -4761,27 +4819,254 @@ func CountdownGood(n int) {
     <p>
         Το merge sort κάνει επίσης δύο αναδρομικές κλήσεις, και είναι <code>O(n log n)</code>, όχι
         <code>O(2ⁿ)</code>. Η διαφορά: το merge sort σπάει το πρόβλημα σε δύο μισά που
-        <strong>δεν επικαλύπτονται</strong> — κάθε στοιχείο πάει σε ένα μόνο κλαδί. Το Fibonacci καλεί
-        <code>Fib(n-1)</code> και <code>Fib(n-2)</code>, που μοιράζονται σχεδόν όλη τους τη δουλειά. Το
-        σχήμα φαίνεται ίδιο, η επικάλυψη είναι το παν.
+        <strong>δεν επικαλύπτονται</strong> — κάθε στοιχείο πάει σε ένα μόνο κλαδί. Το Fibonacci καλεί τα
+        <code>Fib(n-1)</code> και <code>Fib(n-2)</code>, που επαναλαμβάνουν τα ίδια ξανά και ξανά.
     </p>
 </div>
 
 <div class="callout good">
-    <span class="tag">Η λύση έχει όνομα, και είναι το επόμενο κεφάλαιο</span>
+    <span class="tag">Η λύση</span>
     <p>
         Αν το <code>Fib(3)</code> υπολογίζεται δύο φορές, γιατί να μην κρατήσουμε το αποτέλεσμα την πρώτη
         φορά και να το ξαναδιαβάσουμε τη δεύτερη; Ένα απλό <code>map[int]int</code> θα αρκούσε — και θα
         έριχνε το κόστος από <code>O(2ⁿ)</code> σε <code>O(n)</code>. Αυτή η ιδέα λέγεται
-        <strong>memoization</strong>, και είναι η μισή Δυναμική Ταξινόμηση (Dynamic Programming), το θέμα της
-        Ενότητας 8. Κράτα το <code>Fib</code> στο μυαλό σου· θα το ξαναδούμε εκεί.
+        <strong>memoization</strong>, και είναι θα το δούμε στο Dynamic Programming της
+        Ενότητας 8. Κράτα το <code>Fib</code> στο μυαλό σου· θα το ξαναδούμε εκεί σαν απλό παράδειγμα.
     </p>
 </div>
-`);
 
+<h1>Υπάρχει break στο recursion;</h1>
+
+<p>
+    Σε ένα loop, το <code>break</code> σε βγάζει έξω αμέσως — μία εντολή, τελείωσε. Σε recursion δεν υπάρχει
+    αντίστοιχο: όταν βρίσκεσαι 12 επίπεδα βαθιά και καταλάβεις ότι βρήκες την απάντηση, δεν υπάρχει τρόπος να
+    "πηδήξεις" κατευθείαν στην αρχική κλήση. Ο λόγος είναι δομικός. Κάθε κλήση περιμένει να επιστρέψει η
+    κλήση που έκανε· δεν έχει καν πρόσβαση στα υπόλοιπα επίπεδα για να τα ακυρώσει. Το <code>return</code>
+    δεν είναι <code>break</code> — επιστρέφει ένα επίπεδο ψηλότερα, όχι έξω από όλα.
+</p>
+
+<div class="callout">
+    <span class="tag">Movie time</span>
+    <p>
+        Είναι σαν το <em>Inception</em> του Christopher Nolan. Μέσα σε κάθε όνειρο μπορούσαν να κοιμηθούν ξανά και ξανά (όνειρο μέσα σε όνειρο)
+        και να πάνε όλο και πιο "βαθιά". Δεν γινόταν όμως να ξυπνήσουν ακαριαία στον πραγματικό κόσμο μόλις
+        έπαιρναν αυτό που ήθελαν από το πιο βαθύ όνειρο. Έπρεπε να ξυπνήσουν στο ακριβώς προηγούμενο όνειρο,
+        ακριβώς στο σημείο που είχαν κοιμηθεί. Και από εκεί στο προηγούμενο, μέχρι την επιφάνεια. Αυτό είναι το
+        unwinding phase, και η ταινία είναι η καλύτερη οπτικοποίηση της recursion που υπάρχει.
+    </p>
+</div>
+<p>
+    Η λύση δεν είναι μηχανισμός της γλώσσας, είναι pattern κώδικα: επιστρέφεις μια τιμή που σημαίνει
+    «βρέθηκε», και <strong>κάθε επίπεδο την ελέγχει μόλις την παραλάβει και την προωθεί αμέσως προς τα
+    πάνω</strong>. Δεν γίνεται ένα άλμα· γίνονται 12 διαδοχικές επιστροφές.
+</p>
+<svg viewBox="0 0 836 418" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; margin:12px auto; color:inherit;">
+  <defs>
+    <filter id="rf" x="-6%" y="-8%" width="112%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="3" seed="9" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor" opacity="0.55"/>
+    </marker>
+
+    <!-- ① gray -->
+    <pattern id="hA" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
+      <rect width="10" height="10" fill="rgba(150,150,160,0.09)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(150,150,160,0.32)" stroke-width="2"/>
+    </pattern>
+    <!-- ② light green -->
+    <pattern id="hB" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
+      <rect width="10" height="10" fill="rgba(139,195,74,0.10)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(139,195,74,0.38)" stroke-width="2"/>
+    </pattern>
+    <!-- ③ teal -->
+    <pattern id="hC" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
+      <rect width="10" height="10" fill="rgba(38,166,154,0.10)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(38,166,154,0.38)" stroke-width="2"/>
+    </pattern>
+    <!-- ④ orange -->
+    <pattern id="hD" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
+      <rect width="10" height="10" fill="rgba(255,167,38,0.11)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(255,167,38,0.40)" stroke-width="2"/>
+    </pattern>
+    <!-- ⑤ deep blue-gray -->
+    <pattern id="hE" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
+      <rect width="10" height="10" fill="rgba(92,107,192,0.11)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(92,107,192,0.42)" stroke-width="2"/>
+    </pattern>
+    <!-- ⑥ deep cypress green -->
+    <pattern id="hF" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
+      <rect width="10" height="10" fill="rgba(46,125,50,0.10)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(46,125,50,0.38)" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <!-- function signature -->
+  <g font-family="var(--font-mono, ui-monospace, 'SF Mono', Menlo, Consolas, monospace)" font-size="14.5" fill="currentColor">
+    <text x="232" y="34" opacity="0.72">func Explore(state) Result {</text>
+    <text x="232" y="410" opacity="0.72">}</text>
+  </g>
+
+  <!-- six regions with updated colors -->
+  <g filter="url(#rf)">
+    <!-- ① calls++ -->
+    <rect x="218" y="46"  width="482" height="30" rx="7" fill="url(#hA)" stroke="#8f9aa6" stroke-width="1.7"/>
+    <!-- ② base case -->
+    <rect x="218" y="88"  width="482" height="80" rx="7" fill="url(#hB)" stroke="#8bc34a" stroke-width="1.7"/>
+    <!-- ③ preparation -->
+    <rect x="218" y="180" width="482" height="56" rx="7" fill="url(#hC)" stroke="#26a69a" stroke-width="1.7"/>
+    <!-- ④ recursive call -->
+    <rect x="218" y="248" width="482" height="30" rx="7" fill="url(#hD)" stroke="#ffa726" stroke-width="1.7"/>
+    <!-- ⑤ unwinding -->
+    <rect x="218" y="290" width="482" height="56" rx="7" fill="url(#hE)" stroke="#5c6bc0" stroke-width="1.7"/>
+    <!-- ⑥ return -->
+    <rect x="218" y="358" width="482" height="30" rx="7" fill="url(#hF)" stroke="#2e7d32" stroke-width="1.7"/>
+  </g>
+
+  <!-- code blocks (mono) -->
+  <g font-family="var(--font-mono, ui-monospace, 'SF Mono', Menlo, Consolas, monospace)" font-size="14.5" fill="currentColor">
+    <text x="238" y="66">    calls++</text>
+    <text x="238" y="110">    if ⟨base case⟩ {</text>
+    <text x="238" y="132">        return ⟨sentinel value⟩</text>
+    <text x="238" y="154">    }</text>
+    <text x="238" y="200">    ⟨προετοιμασία⟩</text>
+    <text x="238" y="224">    ⟨έλεγχοι, mark visited, …⟩</text>
+    <text x="238" y="268">    r := Explore(⟨μικρότερο πρόβλημα⟩)</text>
+    <text x="238" y="310">    ⟨εκτελούνται σε ανάποδη σειρά⟩ από το πιο βαθύ πρώτα</text>
+    <text x="238" y="334">    ⟨δουλειά με το r⟩</text>
+    <text x="238" y="378">    return r</text>
+  </g>
+
+  <!-- numbered circles with updated colors -->
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="64" text-anchor="middle">
+    <text x="202" y="66" fill="#8f9aa6" opacity="1">①</text>
+    <text x="202" y="133" fill="#8bc34a" opacity="1">②</text>
+    <text x="202" y="213" fill="#26a69a" opacity="1">③</text>
+    <text x="202" y="268" fill="#ffa726" opacity="1">④</text>
+    <text x="202" y="323" fill="#5c6bc0" opacity="1">⑤</text>
+    <text x="202" y="378" fill="#2e7d32" opacity="1">⑥</text>
+  </g>
+
+  <!-- left side notes (display font) -->
+  <g font-family="var(--font-display, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)" font-size="15" fill="currentColor" opacity="0.8" text-anchor="end">
+    <text x="192" y="66">τρέχει πάντα —</text>
+    <text x="200" y="84">(rarely used)</text>
+    <text x="185" y="122">base case —</text>
+    <text x="206" y="142">πάντα στην αρχή!</text>
+    <text x="180" y="205">μόνο αν ΔΕΝ</text>
+    <text x="185" y="221">ίσχυσε το ②</text>
+    <text x="186" y="258">recursive call —</text>
+    <text x="188" y="316">unwinding phase —</text>
+    <text x="185" y="368">επιστρέφει —</text>
+    <text x="195" y="384">ένα επίπεδο πάνω</text>
+  </g>
+
+  <!-- side arrows and labels -->
+  <g filter="url(#rf)" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+    <!-- descent arrow -->
+    <path d="M110,48 L67,52 L67,269 L167,271"/>
+    <!-- ascent arrow -->
+    <path d="M770,292 L796,288 L800,386 L772,392"/>
+    <!-- connecting arrow -->
+    <path d="M706,264 C 748,262 760,272 758,282 C 756,296 742,306 710,308" marker-end="url(#ah)"/>
+  </g>
+
+  <!-- labels with display font -->
+  <g font-family="var(--font-display, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)" font-size="15.5" fill="currentColor" opacity="0.75">
+    <text x="56" y="168" text-anchor="middle" transform="rotate(-90 56 168)">ΚΑΤΑΒΑΣΗ</text>
+    <text x="824" y="336" text-anchor="middle" transform="rotate(-90 824 340)">ΑΝΟΔΟΣ</text>
+    <text x="712" y="254">εδώ ξυπνάς</text>
+  </g>
+
+  <!-- base case underline (kept red for contrast) -->
+  <g filter="url(#rf)" fill="none" stroke="rgba(139,195,74,1.00)" stroke-width="2.2" stroke-linecap="round">
+    <path d="M256,116 C 290,122 330,110 366,117"/>
+  </g>
+</svg>
+<p>
+    <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #8f9aa6;">①</span><strong style="color: #8f9aa6;"> Σε αυτό το σημείο ο κώδικας θα τρέξει πάντα.</strong> Συνήθως είναι κενός, δεν βάζουμε κάτι σε αυτό το σημείο. Έχει μια ιδιότητα που καμία άλλη περιοχή δεν έχει: εκτελείται σε <em>κάθε</em> κλήση χωρίς εξαίρεση,
+    ακόμα και σε αυτές που θα σταματήσουν στο base case. Αν θέλεις να μετρήσεις πόσες recursive calls έγιναν συνολικά, ίσως για debugging, εδώ είναι το μόνο σημείο που εκτελείται πάντα ακόμα και αν το base case είναι true.
+</p>
+
+<p>
+    <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #8bc34a;">②</span>
+    <strong style="color: #8bc34a;">Base case.</strong> Είναι πρώτο για έναν πολύ συγκεκριμένο λόγο: ό,τι είναι γραμμένο από κάτω
+    του υποθέτει σιωπηρά ότι το πρόβλημα <em>δεν</em> έχει τελειώσει. Αν το κατέβαζες πιο κάτω, το recursive
+    call θα είχε ήδη γίνει πριν προλάβει να ελεγχθεί η συνθήκη τερματισμού — και τότε δεν θα σταματούσε ποτέ.
+    Ο έλεγχος πρέπει να προηγείται της κλήσης, όχι να την ακολουθεί. Εδώ ακριβώς είναι που η αλυσίδα των
+    κλήσεων παύει να μεγαλώνει και αρχίζει να ξετυλίγεται.
+</p>
+
+<p>
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #26a69a;">③</span>
+    <strong style="color: #26a69a;">Φάση κατάβασης.</strong> Κώδικας που εκτελείται μόνο όταν το base case ΔΕΝ ίσχυσε — και αυτό
+    είναι εγγυημένο από τη ροή: αν είχε ισχύσει, η function θα είχε ήδη επιστρέψει και δεν θα υπήρχε τρόπος να φτάσουμε εδώ.
+</p>
+
+<p>
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #ffa726;">④</span>
+    <strong style="color: #ffa726;">Recursive call.</strong> Η μοναδική γραμμή που ανοίγει καινούριο επίπεδο. Τη στιγμή που
+    εκτελείται, όλα από πάνω της έχουν ήδη γίνει και όλα από κάτω της μπαίνουν σε αναμονή — για όσο χρόνο
+    χρειαστεί ολόκληρο το υποδέντρο κλήσεων που μόλις ξεκίνησε.
+</p>
+
+<p>
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #5c6bc0;">⑤</span>
+    <strong style="color: #5c6bc0;">Unwinding phase.</strong> Εκτελείται τη στιγμή που επιστρέφει η κλήση της ④, δηλαδή αφού έχουν
+    ολοκληρωθεί ΟΛΑ τα βαθύτερα επίπεδα. Επειδή κάθε επίπεδο έχει τη δική του, οι εντολές αυτές τρέχουν με
+    αντίστροφη σειρά από αυτή που έγιναν οι κλήσεις: πρώτα του βαθύτερου επιπέδου, τελευταία της αρχικής
+    κλήσης.
+</p>
+
+<p>
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #2e7d32;">⑥</span>
+    <strong style="color: #2e7d32;">Η επιστροφή. Εδώ "ξυπνάμε",</strong> τελειώνουμε για παράδειγμα με το επίπεδο 4 και επιστρέφουμε στο unwinding phase του επίπεδου 3. Αν η function επιστρέφει τιμή, το <code>return r</code> υπάρχει. Προσοχή όμως, αν δεν επιστρέφεται τίποτα, το τέλος της func δηλαδή το κλείσιμο του αγκίστρου είναι ουσιαστικά σαν να υπήρχε ένα σκέτο <code>return</code>. Σε αυτή την περίπτωση το τέλος της func είναι η στιγμή που το επίπεδο «ξυπνάει» το από πάνω του.
+</p>
+
+<div class="callout">
+    <span class="tag">Αν το recursive call είναι μέσα σε for</span>
+    <p>
+        Στην
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">③</span>
+        μπορεί κάλλιστα να υπάρχει ένα <code>for</code>, με το recursive call μέσα του — έτσι
+        δοκιμάζεις πολλές εναλλακτικές από το ίδιο σημείο. Σε μια τέτοια περίπτωση, κάθε φορά που το επίπεδο «ξυπνάει», δεν φτάνει έτσι απλά στο
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑥</span>
+        — συνεχίζει το <code>for</code> ακριβώς στο <code>i</code> που είχε μείνει, και προχωράει στο επόμενο. (δηλαδή πάει από το
+                <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑤</span> →
+        στο επόμενο iteration της λούπας στο
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">③</span>
+
+        ) Ό,τι είναι γραμμένο ανάμεσα στο recursive call και το τέλος του σώματος του
+        loop είναι κι αυτό unwinding code — απλώς εκτελείται μία φορά ανά επανάληψη, όχι μία φορά συνολικά.
+        Μην σε απασχολεί τόσο τώρα· θα το δούμε αναλυτικά στο backtracking.
+    </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Το πρόωρο return προσπερνά και το unwinding phase</span>
+    <p>
+        Πρόσεξε τι θα σήμαινε εάν υπήρχε ένα <code>return</code> μέσα στην
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">③</span>
+        . Δεν προσπερνά μόνο τις υπόλοιπες recursive κλήσεις — προσπερνά και ολόκληρη την
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑤</span>
+        αυτού του επιπέδου. Ό,τι είχες σκοπό να κάνεις στην άνοδο, δεν θα γίνει. Ουσιαστικά ένα base case ( 
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">②</span> )
+        είναι ακριβώς το παραπάνω. Ένα <code>return</code> στην φάση της καθόδου. Που σημαίνει ότι στο επίπεδο που πετυχαίνουμε το base case, δηλαδή στο πιο βαθύ επίπεδο που θα φτάσουμε, το
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑤</span>
+        (αυτού του επιπέδου) δεν εκτελείται.
+    </p>
+</div>
+
+<h3>Στην πραγματικότητα υπάρχει ένα τρικ για άμεσο άλμα (break), αλλά δεν θέλεις να το χρησιμοποιήσεις</h3>
+
+<p>
+    Η Go έχει έναν μηχανισμό που όντως πηδάει έξω από όλα τα επίπεδα με μία κίνηση: το ζευγάρι
+    <code>panic</code> / <code>recover</code>. Ένα <code>panic</code> στο βαθύτερο επίπεδο ξετυλίγει
+    ολόκληρο το call stack μέχρι να το πιάσει ένα <code>recover</code> στην κορυφή, <strong>χωρίς να εκτελεστεί
+    τίποτα ενδιάμεσα</strong>. Τεχνικά είναι το <code>break</code> που αναρωτηθήκαμε εάν υπάρχει.
+    Δεν χρησιμοποιείται όμως για κάτι τέτοιο, και ο λόγος δεν είναι μόνο θέμα ύφους κώδικα. Το <code>panic</code> στη Go
+    σημαίνει «κάτι πήγε στραβά με τρόπο που δεν προβλέψαμε», όχι «βρήκα την απάντηση».
+</p>
+
+`);
         addQuiz([
             {
-                q: "Τι θα συμβεί σε μια αναδρομική function που δεν έχει καθόλου base case;",
+                q: "Τι θα συμβεί σε μια recursive function που δεν έχει καθόλου base case;",
                 options: [
                     "Θα καλεί τον εαυτό της μέχρι να γεμίσει το call stack και το πρόγραμμα να τερματίσει με stack overflow",
                     "Ο compiler θα αρνηθεί να τη μεταγλωττίσει, εντοπίζοντας ότι λείπει η συνθήκη τερματισμού από το σώμα της πριν καν ξεκινήσει η εκτέλεση",
@@ -4789,18 +5074,18 @@ func CountdownGood(n int) {
                     "Θα τρέξει σωστά, αλλά πιο αργά"
                 ],
                 correct: 0,
-                explain: "Συντακτικά είναι απόλυτα έγκυρο, οπότε ο compiler δεν έχει τίποτα να πει. Το πρόβλημα εμφανίζεται στο runtime: κάθε κλήση δεσμεύει χώρο στη στοίβα και καμία δεν επιστρέφει για να τον ελευθερώσει."
+                explain: "Συντακτικά είναι απόλυτα έγκυρο, οπότε ο compiler δεν έχει τίποτα να πει. Το πρόβλημα εμφανίζεται στο runtime: κάθε κλήση δεσμεύει χώρο στο call stack και καμία δεν επιστρέφει για να τον ελευθερώσει."
             },
             {
-                q: "Ποια δομή δεδομένων χρησιμοποιεί ο υπολογιστής, από κάτω, για να θυμάται ποια αναδρομική κλήση περιμένει ποια;",
+                q: "Ποια δομή δεδομένων χρησιμοποιεί ο υπολογιστής, από κάτω, για να θυμάται ποια recursive κλήση περιμένει ποια;",
                 options: [
                     "Stack",
                     "Queue",
-                    "Ένα map με κλειδί το επίπεδο",
+                    "Ένα map με κλειδί το βάθος της κλήσης",
                     "Deque"
                 ],
                 correct: 0,
-                explain: "Τελευταία κλήση που μπήκε, πρώτη που ολοκληρώνεται — καθαρό LIFO. Λέγεται call stack, και είναι ο λόγος που το DFS γράφεται φυσικά αναδρομικά ενώ το BFS όχι."
+                explain: "Τελευταία κλήση που μπήκε, πρώτη που ολοκληρώνεται — καθαρό LIFO. Λέγεται call stack, και είναι ακριβώς ο λόγος που το unwinding phase βγάζει τα αποτελέσματα με αντίστροφη σειρά από αυτή που έγιναν οι κλήσεις."
             },
             {
                 q: "Στο merge sort, τι ακριβώς κάνει το βήμα merge;",
@@ -4811,54 +5096,116 @@ func CountdownGood(n int) {
                     "Αντιγράφει το slice σε νέα μνήμη"
                 ],
                 correct: 0,
-                explain: "Το κόψιμο στη μέση είναι το divide, που γίνεται στην MergeSort. Το merge είναι το combine: δέχεται δύο ταξινομημένα μισά και τα ενώνει σε ένα, συγκρίνοντας τις κεφαλές τους — δηλαδή two pointers."
+                explain: "Το κόψιμο στη μέση είναι το divide, που γίνεται στην MergeSort. Το merge είναι το combine: δέχεται δύο ταξινομημένα μισά και τα ενώνει σε ένα, συγκρίνοντας τις κεφαλές τους — δηλαδή 2 δείκτες."
             },
             {
                 q: "Γιατί το merge sort είναι O(n log n) και όχι O(n²);",
                 options: [
                     "Υπάρχουν log n επίπεδα διαίρεσης, και κάθε επίπεδο επεξεργάζεται συνολικά n στοιχεία",
-                    "Γιατί το merge είναι O(1), οπότε το συνολικό κόστος προκύπτει αποκλειστικά από το πλήθος των αναδρομικών κλήσεων",
-                    "Γιατί χρησιμοποιεί δύο δείκτες αντί για φωλιασμένες λούπες",
+                    "Γιατί το merge είναι O(1), οπότε το συνολικό κόστος προκύπτει αποκλειστικά από το πλήθος των recursive κλήσεων",
+                    "Γιατί χρησιμοποιεί δύο δείκτες αντί για nested loops",
                     "Γιατί κάθε στοιχείο συγκρίνεται με κάθε άλλο μία μόνο φορά"
                 ],
                 correct: 0,
                 explain: "Δύο ανεξάρτητοι παράγοντες πολλαπλασιάζονται. Το «πόσες φορές μπορώ να κόψω το n στη μέση» δίνει το log n, και το «κάθε merge περνάει από κάθε στοιχείο μία φορά» δίνει το n ανά επίπεδο."
             },
             {
-                q: "Ψάχνεις τη ΣΥΝΤΟΜΟΤΕΡΗ διαδρομή ανάμεσα σε δύο κόμβους ενός γραφήματος, όπου κάθε σύνδεση μετράει το ίδιο. Ποιο διαλέγεις;",
-                options: [
-                    "BFS — εξερευνά επίπεδο-επίπεδο, οπότε φτάνει σε κάθε κόμβο με τα λιγότερα δυνατά βήματα",
-                    "DFS — φτάνει πιο γρήγορα στον στόχο, αφού δεν σπαταλάει χρόνο εξερευνώντας κόμβους που δεν οδηγούν πουθενά",
-                    "Οποιοδήποτε από τα δύο, το αποτέλεσμα είναι ίδιο",
-                    "Binary search πάνω στη λίστα των κόμβων"
+                "q": "Δίνεται ο παρακάτω κώδικας Countdown. Τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    if n == 0 {
+        return
+    }
+    fmt.Println(n)
+    Countdown(n-1)
+}`,
+                "lang": "go",
+                "options": [
+                    "1 2 3 4 5",
+                    "5 4 3 2 1",
+                    "5 4 3 2 1 0",
+                    "0 1 2 3 4 5"
                 ],
-                correct: 0,
-                explain: "Το BFS απλώνεται σαν κύμα: όταν φτάσει για πρώτη φορά σε έναν κόμβο, τον έχει φτάσει με το ελάχιστο πλήθος βημάτων. Το DFS μπορεί να φτάσει στον ίδιο κόμβο μέσα από μια πολύ μακρύτερη διαδρομή και να μην το καταλάβει."
+                "correct": 1,
+                "explain": "Η συνάρτηση τυπώνει το n πριν καλέσει τον εαυτό της με n-1. Για n=5: τυπώνει 5, μετά καλεί Countdown(4) που τυπώνει 4, μετά 3, μετά 2, μετά 1, και τέλος Countdown(0) που κάνει return χωρίς να τυπώσει τίποτα. Η έξοδος είναι \"5 4 3 2 1\"."
             },
             {
-                q: "Γιατί ο απλός αναδρομικός Fib είναι O(2ⁿ), ενώ το merge sort με δύο αναδρομικές κλήσεις είναι O(n log n);",
-                options: [
-                    "Τα δύο κλαδιά του Fib επικαλύπτονται και ξαναϋπολογίζουν τα ίδια πράγματα, ενώ του merge sort όχι",
-                    "Γιατί το merge sort δουλεύει σε slices ενώ ο Fib σε ακέραιους, και οι πράξεις με slices είναι εκ φύσεως ταχύτερες",
-                    "Γιατί ο Fib δεν έχει σωστό base case",
-                    "Γιατί το merge sort χρησιμοποιεί περισσότερη μνήμη"
+                "q": "Δίνεται ο παρακάτω κώδικας Countdown, όπου το fmt.Println(n) τοποθετείται ΜΕΤΑ την αναδρομική κλήση. Τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    if n == 0 {
+        return
+    }
+    Countdown(n-1)
+    fmt.Println(n)
+}`,
+                "lang": "go",
+                "options": [
+                    "1 2 3 4 5",
+                    "5 4 3 2 1",
+                    "5 4 3 2 1 0",
+                    "0 1 2 3 4 5"
                 ],
-                correct: 0,
-                explain: "Το πλήθος των αναδρομικών κλήσεων δεν καθορίζει από μόνο του την πολυπλοκότητα. Στο merge sort κάθε στοιχείο πάει σε ΕΝΑ μόνο κλαδί. Στο Fib, τα Fib(n-1) και Fib(n-2) μοιράζονται σχεδόν όλη τους τη δουλειά."
+                "correct": 0,
+                "explain": "Επειδή το fmt.Println(n) βρίσκεται ΜΕΤΑ την αναδρομική κλήση, κάθε επίπεδο περιμένει να ολοκληρωθεί ολόκληρη η βαθύτερη αναδρομή προτού τυπώσει το δικό του n. Το Countdown(0) είναι base case και απλώς κάνει return χωρίς να τυπώσει τίποτα. Έτσι, η πρώτη εκτύπωση γίνεται στην πιο βαθιά κλήση (n=1), μετά n=2, και φτάνει μέχρι την αρχική (n=5). Η έξοδος είναι \"1 2 3 4 5\" (unwinding phase)."
             },
             {
-                q: "Σε ένα BFS, πότε πρέπει να σημειώνεις έναν κόμβο ως visited;",
+                "q": "Έχεις καταλάβει σίγουρα την σειρά εκτέλεσης των πραγμάτων; Τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    if n <= 0 {
+        return
+    }
+    fmt.Println(n)
+    Countdown(n-1)
+    fmt.Println(n)
+}`,
+                "lang": "go",
+                "options": [
+                    "5 4 3 2 1 1 2 3 4 5",
+                    "5 4 3 2 1 2 3 4 5",
+                    "1 2 3 4 5 4 3 2 1",
+                    "1 2 3 4 5 5 4 3 2 1",
+                    "0 1 2 3 4 5 4 3 2 1 0",
+                    "0 1 2 3 4 5 5 4 3 2 1 0",
+                    "5 4 3 2 1 0 1 2 3 4 5"
+                ],
+                "correct": 0,
+                "explain": "Το base case είναι n <= 0, οπότε όταν φτάσει στο 0 η αναδρομή σταματά χωρίς να εκτελέσει κανένα fmt.Println για το 0 — το πρώτο Println βρίσκεται ΜΕΤΑ τον έλεγχο, άρα καλείται μόνο για n>0. Στην κάθοδο (πριν την αναδρομή) τυπώνει 5,4,3,2,1. Μετά το base case, κατά την άνοδο (μετά την αναδρομή) τυπώνει ξανά 1,2,3,4,5. Η έξοδος είναι \"5 4 3 2 1 1 2 3 4 5\"."
+            },
+            {
+                "q": "Τα πράγματα περιπλέκονται. Τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    fmt.Println(n)
+    if n <= 0 {
+        return
+    }
+    Countdown(n-1)
+    fmt.Println(n)
+}`,
+                "lang": "go",
+                "options": [
+                    "5 4 3 2 1 0 1 2 3 4 5",
+                    "5 4 3 2 1 1 2 3 4 5",
+                    "5 4 3 2 1 2 3 4 5",
+                    "1 2 3 4 5 4 3 2 1",
+                    "1 2 3 4 5 5 4 3 2 1",
+                    "0 1 2 3 4 5 4 3 2 1 0",
+                    "0 1 2 3 4 5 5 4 3 2 1 0"
+                ],
+                "correct": 0,
+                "explain": "Εδώ το fmt.Println(n) βρίσκεται ΠΡΙΝ το base case. Άρα ακόμα και για n=0 θα τυπωθεί το 0, και ΜΕΤΑ θα μπει στο if n <= 0 και θα κάνει return. Στην κάθοδο τυπώνει 5,4,3,2,1,0. Το δεύτερο Println μετά την αναδρομή δεν εκτελείται για n=0 (γιατί έχει ήδη γίνει return), αλλά εκτελείται για n=1,2,3,4,5 κατά την άνοδο. Έτσι η έξοδος είναι \"5 4 3 2 1 0 1 2 3 4 5\"."
+            },
+            {
+                q: "Σε ένα slice 5 εκατομμυρίων στοιχείων, το SumSlice κινδυνεύει με stack overflow ενώ το MergeSort όχι. Γιατί;",
                 options: [
-                    "Τη στιγμή που τον βάζεις στην ουρά",
-                    "Τη στιγμή που τον βγάζεις από την ουρά για επεξεργασία",
-                    "Στο τέλος, αφού ολοκληρωθεί ολόκληρη η εξερεύνηση όλων των κόμβων του γραφήματος",
-                    "Δεν χρειάζεται visited στο BFS"
+                    "Το MergeSort κόβει στη μέση, άρα το βάθος του call stack είναι log n και όχι n",
+                    "Το MergeSort δεσμεύει νέα μνήμη με make για κάθε merge, οπότε το call stack μένει άδειο σε όλη τη διάρκεια",
+                    "Το MergeSort κάνει δύο κλήσεις αντί για μία, οπότε τελειώνει σε λιγότερα βήματα",
+                    "Το SumSlice δεν έχει σωστό base case"
                 ],
                 correct: 0,
-                explain: "Αν περιμένεις να τον βγάλεις, ο ίδιος κόμβος μπορεί να μπει στην ουρά πολλές φορές από διαφορετικούς γείτονες πριν προλάβει να επεξεργαστεί. Σε πυκνά γραφήματα αυτό μεγαλώνει άσκοπα την ουρά."
+                explain: "Δεν μετράει πόσες κλήσεις γίνονται συνολικά, αλλά πόσες είναι ταυτόχρονα ανοιχτές. Το SumSlice κατεβαίνει ένα επίπεδο ανά στοιχείο (5 εκατομμύρια ανοιχτές κλήσεις), ενώ το MergeSort φτάνει μόλις 23 επίπεδα βαθιά — παρόλο που κάνει πολύ περισσότερες κλήσεις συνολικά."
             }
         ], {
-            note: "Ενότητα 6 — αναδρομή, divide and conquer, DFS/BFS."
+            note: "Ενότητα 6 — recursion, unwinding phase, divide and conquer."
         });
 
         addFillBlank([
@@ -4876,7 +5223,7 @@ func SumSlice(numbers []int) int {
                     { id: "baseval", answer: "0" },
                     { id: "smaller", answer: "numbers[1:]" }
                 ],
-                explain: "Οι τρεις ερωτήσεις της αναδρομής, μία ανά blank. Το μικρότερο πρόβλημα είναι το κενό slice και η απάντησή του είναι 0 (η ουδέτερη τιμή της πρόσθεσης — αν το πρόβλημα ήταν γινόμενο, θα ήταν 1). Το πρόβλημα μικραίνει με numbers[1:], ένα στοιχείο λιγότερο κάθε φορά."
+                explain: "Οι τρεις ερωτήσεις της recursion, μία ανά blank. Το μικρότερο πρόβλημα είναι το κενό slice και η απάντησή του είναι 0 (η ουδέτερη τιμή της πρόσθεσης — αν το πρόβλημα ήταν γινόμενο, θα ήταν 1). Το πρόβλημα μικραίνει με numbers[1:], ένα στοιχείο λιγότερο κάθε φορά."
             },
             {
                 code:
@@ -4902,61 +5249,132 @@ func MergeSort(numbers []int) []int {
             },
             {
                 code:
-                    `// DFS visits every node reachable from the starting node.
-func DFS(graph map[string][]string, node string, visited map[string]bool) {
-    if __guard__ {
-        return                   // stop this branch
+                    `// PrintWordsReversed prints words[index:] back-to-front.
+func PrintWordsReversed(words []string, index int) {
+    if index __endcmp__ len(words) {
+        return                              // base case: past the last word
     }
-    __mark__
-
-    for _, neighbour := range graph[node] {
-        DFS(graph, __nextnode__, visited)
-    }
+    PrintWordsReversed(words, __next__)     // go deeper FIRST
+    fmt.Println(__printed__)                // runs during the unwinding phase
 }`,
                 blanks: [
-                    { id: "guard", answer: "visited[node]" },
-                    { id: "mark", answer: "visited[node] = true" },
-                    { id: "nextnode", answer: "neighbour" }
+                    { id: "endcmp", answer: ">=" },
+                    { id: "next", answer: "index+1" },
+                    { id: "printed", answer: "words[index]" }
                 ],
-                explain: "Ο έλεγχος visited είναι το base case εδώ — χωρίς αυτόν, ένας κύκλος στο γράφημα (a δείχνει στο b, b πίσω στο a) κάνει την αναδρομή ατέρμονη. Η σήμανση πρέπει να γίνει ΠΡΙΝ τη λούπα των γειτόνων, αλλιώς ο κόμβος μπορεί να ξαναμπεί μέσα από τον ίδιο του τον γείτονα."
+                explain: "Ο δείκτης προχωράει ΜΠΡΟΣΤΑ (index+1) και το base case πιάνει όταν ξεπεράσει το τελευταίο στοιχείο — γι' αυτό >= και όχι ==, ώστε να καλύπτει και το κενό slice. Η αντιστροφή δεν προκύπτει από κάπου αλλού: το Println είναι ΜΕΤΑ την κλήση, οπότε εκτελείται στο unwinding phase, από τη βαθύτερη κλήση προς την αρχική."
             }
         ]);
 
         addMatching([
             [
-                { term: "base case", def: "η περίπτωση που επιστρέφει χωρίς νέα αναδρομική κλήση" },
+                { term: "base case", def: "η περίπτωση που επιστρέφει χωρίς νέα recursive κλήση" },
                 { term: "recursive case", def: "η κλήση στον εαυτό, με πρόβλημα πιο κοντά στο base case" },
                 { term: "call stack", def: "η στοίβα όπου ο υπολογιστής θυμάται ποια κλήση περιμένει ποια" },
+                { term: "unwinding phase", def: "ο κώδικας μετά την κλήση — εκτελείται με αντίστροφη σειρά" },
                 { term: "stack overflow", def: "runtime κατάρρευση όταν οι κλήσεις δεν τελειώνουν ποτέ" },
                 { term: "memoization", def: "αποθήκευση αποτελεσμάτων για να μην ξαναϋπολογιστούν" }
             ],
             [
                 { term: "<code>divide</code>", def: "σπάσε σε μικρότερα προβλήματα του ίδιου είδους" },
-                { term: "<code>conquer</code>", def: "λύσε το καθένα αναδρομικά, ή απευθείας αν είναι μικρό" },
+                { term: "<code>conquer</code>", def: "λύσε το καθένα recursively, ή απευθείας αν είναι μικρό" },
                 { term: "<code>combine</code>", def: "ένωσε τις επιμέρους απαντήσεις σε μία — το merge" },
-                { term: "<code>DFS</code>", def: "βαθιά σε ένα κλαδί πρώτα — Stack, συνήθως αναδρομικά" },
-                { term: "<code>BFS</code>", def: "όλο το επίπεδο πρώτα — Queue, δίνει συντομότερη διαδρομή" }
+                { term: "<code>binary search</code>", def: "divide χωρίς combine: πετάει το ένα μισό αντί να το λύσει" },
+                { term: "<code>merge sort</code>", def: "απλό divide, έξυπνο combine — O(n log n) και stable" }
             ]
         ], {
             allowHTML: true,
-            note: "Πρώτο σετ: τα μέρη της αναδρομής. Δεύτερο σετ: divide and conquer και εξερεύνηση γραφημάτων."
+            note: "Πρώτο σετ: τα μέρη μιας recursive function. Δεύτερο σετ: divide and conquer."
         });
+        // ── VSCode Challenge — first one, before flood fill ──────────────────── ⊃
+        addContent(`
+<div class="eyebrow">VSCode Challenge — Ενότητα 6</div>
+<h1>Το άθροισμα των ψηφίων</h1>
+
+<p>
+    Γράψε μια function που παίρνει έναν θετικό ακέραιο και επιστρέφει το <strong>άθροισμα των ψηφίων
+    του</strong>.
+</p>
+
+<pre><code class="lang-go">SumDigits(1234) // 1 + 2 + 3 + 4 = 10
+SumDigits(507)  // 5 + 0 + 7 = 12
+SumDigits(8)    // 8
+SumDigits(0)    // 0
+</code></pre>
+
+
+
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
+<div class="callout">
+    <span class="tag">Τα δύο εργαλεία που χρειάζεσαι</span>
+    <p>
+        Το <code>n % 10</code> σου δίνει το <strong>τελευταίο ψηφίο</strong> του <code>n</code>:
+        <code>1234 % 10</code> είναι <code>4</code>. <br> Το <code>n / 10</code> σου δίνει τον
+        <strong>ίδιο αριθμό χωρίς το τελευταίο ψηφίο</strong>, επειδή η ακέραια διαίρεση πετάει το
+        δεκαδικό μέρος: <code>1234 / 10</code> είναι <code>123</code>.
+    </p>
+</div>
+</div>
+
+<br>
+
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
+    <pre><code class="lang-go">// SumDigits returns the sum of the decimal digits of n.
+func SumDigits(n int) int {
+    if /* base case */ {
+        return /* ? */
+    }
+    return /* last digit */ + SumDigits(/* everything but the last digit */)
+}
+
+func main() {
+    fmt.Println(SumDigits(1234)) // expected 10
+}
+</code></pre>
+</div>
+
+<h2>Λύση</h2>
+<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
+
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div>
+<pre><code class="lang-go">// SumDigits returns the sum of the decimal digits of n.
+func SumDigits(n int) int {
+    if n == 0 {
+        return 0 // base case: no digits left to add
+    }
+    return n%10 + SumDigits(n/10) // last digit + the sum of the rest
+}
+
+func main() {
+    fmt.Println(SumDigits(1234)) // 10
+    fmt.Println(SumDigits(507))  // 12
+    fmt.Println(SumDigits(8))    // 8
+    fmt.Println(SumDigits(0))    // 0
+}
+</code></pre></div>
+
+
+<div class="callout">
+    <span class="tag">Πρόσεξε πού γίνεται η πρόσθεση</span>
+    <p>
+        Το <code>+</code> είναι στην ίδια γραμμή με το <code>return</code>, δηλαδή <em>μετά</em> την
+        recursive κλήση: η πρόσθεση δεν μπορεί να γίνει προτού επιστρέψει το
+        <code>SumDigits(n/10)</code>. Άρα το <code>1234</code> σπάει πρώτα ολόκληρο μέχρι το <code>0</code>
+        χωρίς να προστεθεί τίποτα, και οι προσθέσεις γίνονται όλες στην άνοδο (unwinding phase).<br> Το ότι η σειρά των προσθέσεων είναι ανάποδη δεν φαίνεται στο αποτέλεσμα επειδή η πρόσθεση δίνει το ίδιο άθροισμα με όποια σειρά κι αν γίνει.
+    </p>
+</div>
+`);
 
         // ── VSCode Challenge — closes out §6 ─────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 6</div>
-<h1>Πόσο μεγάλο είναι το δωμάτιο;</h1>
-
-<p class="lede">
-    Ένα πρόβλημα που με λούπες γίνεται πολύ δύσκολο, ενώ με αναδρομή λύνεται σε λίγες γραμμές.
-</p>
+<h1>Πόσο μεγάλος είναι ο λαβύρινθος; [HARD]</h1>
 
 <h2>Η αποστολή</h2>
 <p>
     Σου δίνεται ένας λαβύρινθος ως <code>[]string</code>, όπου το <code>#</code> είναι τοίχος και η
-    <code>.</code> είναι ελεύθερο κελί. Δοσμένης μιας θέσης εκκίνησης, γράψε μια function που επιστρέφει
-    <strong>πόσα ελεύθερα κελιά είναι προσβάσιμα</strong> από εκεί, κινούμενος μόνο πάνω, κάτω, αριστερά και
-    δεξιά — ποτέ διαγώνια, ποτέ μέσα από τοίχο.
+    <code>.</code> είναι ελεύθερο κελί. Δοσμένης μιας θέσης εκκίνησης (ως function argument), γράψε μια function που επιστρέφει <strong>πόσα ελεύθερα κελιά είναι προσβάσιμα</strong> από εκεί, κινούμενος μόνο πάνω, κάτω, αριστερά και
+    δεξιά — όχι διαγώνια, και όχι μέσα από τοίχο.
 </p>
 
 <pre><code class="lang-go">grid := []string{
@@ -4970,29 +5388,54 @@ func DFS(graph map[string][]string, node string, visited map[string]bool) {
 </code></pre>
 
 <div class="callout">
-    <span class="tag">Γιατί αυτό είναι γράφημα, χωρίς να το λέει</span>
+    <span class="tag">Τέσσερις κλήσεις αντί για μία</span>
     <p>
-        Δεν υπάρχει πουθενά <code>map[string][]string</code> εδώ — και όμως το πρόβλημα είναι ακριβώς ίδιο με
-        την εξερεύνηση του δικτύου φίλων. Κάθε ελεύθερο κελί είναι κόμβος, και οι «γείτονές» του είναι τα
-        τέσσερα διπλανά κελιά. Το γράφημα είναι <strong>υπονοούμενο</strong> (implicit): δεν το φτιάχνεις,
-        το διαβάζεις από τη δομή του πλέγματος καθώς προχωράς.
+        Μέχρι τώρα κάθε recursive function που έγραψες έκανε μία κλήση στον εαυτό της (ή δύο, στο merge
+        sort). Εδώ κάνει <strong>τέσσερις</strong>, μία για κάθε γειτονικό κελί. Το σχήμα όμως είναι το ίδιο
+        με το <code>SumSlice</code>: «το τρέχον στοιχείο, συν ό,τι επιστρέφουν οι μικρότερες κλήσεις».
+    </p>
+    <p>
+        Υπάρχει μία διαφορά που θα σε δαγκώσει αν την προσπεράσεις: εδώ το πρόβλημα
+        <strong>δεν μικραίνει από μόνο του</strong>. Από το κελί <code>(1,1)</code> πας στο <code>(1,2)</code>,
+        που με τη σειρά του θα ξανακαλέσει το <code>(1,1)</code>, που θα ξανακαλέσει το <code>(1,2)</code>…
+        Χρειάζεσαι κάτι που να κρατάει ποια κελιά έχεις ήδη μετρήσει, αλλιώς δεν φτάνεις ποτέ σε base case.
     </p>
 </div>
 
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
-    <p>Το base case δεν είναι ένα, είναι <strong>τρία</strong>, και όλα επιστρέφουν 0: βγήκα έξω από τα όρια του πλέγματος, πάτησα τοίχο, ή έχω ήδη μετρήσει αυτό το κελί. Γράψ' τα και τα τρία στην αρχή σαν guard clauses, πριν από οτιδήποτε άλλο.</p>
+    <p>Η τιμή που θα επιστρέφεται θα ειναι το count. Στο count θα προστίθενται οι αριθμοί που θα γίνονται return από κάθε αναδρομική κλήση. Σε περίπτωση base case θα επιστρέφεται το 0 ώστε να μην προστεθεί τίποτα.</p>
 </div>
 
 <br>
 
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
-    <p>Χρειάζεσαι <code>visited</code>, αλλά το κλειδί είναι ζευγάρι συντεταγμένων. Στη Go, ένα <strong>array</strong> είναι έγκυρο κλειδί map (είναι comparable), ενώ ένα slice δεν είναι. Άρα το <code>map[[2]int]bool</code> δουλεύει, και το γράφεις ως <code>visited[[2]int{r, c}]</code>.</p>
+    <p>Τα base cases είναι <strong>2</strong>, και όλα επιστρέφουν 0:  πάτησα τοίχο, ή έχω ήδη μετρήσει αυτό το κελί. Αν θέλουμε να υπολογίσουμε και σαν base case το "βγήκα έξω από τα όρια του πλέγματος", τότε είναι <strong>3</strong>, Γράψ' τα και τα τρία στην αρχή σαν guard clauses, πριν από οτιδήποτε άλλο.</p>
 </div>
 
 <br>
 
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 3 — Drag to reveal →</span></div>
-    <p>Το τρέχον κελί μετράει 1, και σε αυτό προσθέτεις τα αποτελέσματα των τεσσάρων γειτονικών κλήσεων. Είναι το ίδιο σχήμα «τρέχον + αναδρομή» με το <code>SumSlice</code> — απλά με τέσσερις κλήσεις αντί για μία.</p>
+    <p>Για να θυμάσαι τα μετρημένα κελιά χρειάζεσαι map, αλλά το κλειδί είναι ζευγάρι συντεταγμένων. Στη Go, ένα <strong>array</strong> είναι έγκυρο κλειδί map (είναι comparable), ενώ ένα slice δεν είναι. Άρα το <code>map[[2]int]bool</code> δουλεύει, και το γράφεις ως <code>visited[[2]int{r, c}]</code>.</p>
+</div>
+
+<br>
+
+<div class="spoiler"><div class="spoiler-lock"><span>HINT 4 — Drag to reveal →</span></div>
+    <pre><code class="lang-go">func main() {
+    grid := []string{
+        "#######",
+        "#..#..#",
+        "#.##..#",
+        "#.....#",
+        "#######",
+    }
+    visited := make(map[[2]int]bool)
+    fmt.Println(CountReachable(grid, 1, 1, visited)) // expected 12
+}
+func CountReachable(grid []string, r, c int, visited map[[2]int]bool) int {
+    // 1 (self) + sum of 4 neighbours, but only if inside, not wall, and unvisited
+}
+</code></pre>
 </div>
 
 <br>
@@ -5011,7 +5454,7 @@ func CountReachable(grid []string, r, c int, visited map[[2]int]bool) int {
     if grid[r][c] == '#' {
         return 0
     }
-    // base case 3: already counted - this is what stops the infinite loop
+    // base case 3: already counted - this is what makes the problem shrink
     key := [2]int{r, c}
     if visited[key] {
         return 0
@@ -5040,22 +5483,94 @@ func main() {
 </code></pre></div>
 
 <div class="callout good">
-    <span class="tag">Τι μόλις έγραψες</span>
+    <span class="tag">Τι έγραψες μόλις!</span>
     <p>
-        Αυτό είναι <strong>DFS σε πλέγμα</strong>, και έχει και δικό του όνομα στα γραφικά:
-        <em>flood fill</em> — ο ίδιος αλγόριθμος που τρέχει όταν πατάς τον κουβά μπογιάς σε ένα πρόγραμμα
-        ζωγραφικής. Το ότι το ίδιο πράγμα λύνει «πόσο μεγάλο είναι το δωμάτιο» και «βάψε αυτή την περιοχή»
-        δεν είναι σύμπτωση: και τα δύο ρωτάνε «τι είναι συνδεδεμένο με τι».
+        Αυτός ο αλγόριθμος έχει όνομα: <strong>flood fill</strong> — ο ίδιος που τρέχει όταν πατάς τον κουβά
+        μπογιάς σε ένα πρόγραμμα ζωγραφικής. Το ότι το ίδιο ακριβώς σχήμα κώδικα απαντάει και στο «πόσο
+        μεγάλο είναι το δωμάτιο» και στο «βάψε αυτή την περιοχή» δεν είναι σύμπτωση: και οι δύο ερωτήσεις
+        είναι στην ουσία «τι είναι συνδεδεμένο με τι».
     </p>
 </div>
 
 <div class="callout">
-    <span class="tag">Αν θες να πας παρακάτω</span>
+    <span class="tag">visited map — χωρίς pointer</span>
     <p>
-        Δύο παραλλαγές, σε αύξουσα δυσκολία. Πρώτη: αντί για πλήθος κελιών, βρες τη
-        <strong>συντομότερη διαδρομή</strong> από ένα σημείο σε ένα άλλο — και θυμήσου ποιο από τα δύο, DFS ή
-        BFS, σου το δίνει χωρίς επιπλέον δουλειά. Δεύτερη: μέτρα πόσα <strong>ξεχωριστά δωμάτια</strong> υπάρχουν συνολικά στο
-        πλέγμα, τρέχοντας την ίδια αναδρομή από κάθε ελεύθερο κελί που δεν έχεις ήδη επισκεφτεί.
+        Στον κώδικα η <code>visited</code> περνιέται ως <code>map[[2]int]bool</code>, όχι ως
+        <code>*map[[2]int]bool</code>. Αυτό δεν είναι λάθος — αντίθετα, είναι ο σωστός τρόπος.
+        Στη Go, τα <strong>maps είναι reference types</strong>, σαν τα slices. Όταν περνάς ένα map
+        σε μια συνάρτηση, περνάς έναν pointer προς την εσωτερική του δομή. Έτσι, οποιαδήποτε αλλαγή
+        (π.χ. <code>visited[key] = true</code>) μέσα στην αναδρομή είναι ορατή σε <em>όλες</em> τις
+        κλήσεις — ακριβώς αυτό χρειαζόμαστε, γιατί το map κρατάει τα κελιά που έχουμε ήδη επισκεφτεί
+        σε όλο το δέντρο της αναδρομής.
+    </p>
+    <p>
+        Αν έβαζες <code>*map[[2]int]bool</code>, ο κώδικας θα δούλευε επίσης, αλλά θα χρειαζόσουν
+        <code>&visited</code> στην κλήση και <code>(*visited)[key]</code> μέσα στη συνάρτηση —
+        περιττή πολυπλοκότητα χωρίς κανένα όφελος. Η Go σου δίνει το map έτοιμο να το τροποποιείς
+        χωρίς pointers. Εμπιστέψου το.
+    </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Αν θες κάτι παραπάνω</span>
+    <p>
+        Δοκίμασε την εξής παραλλαγή: αντί για το πλήθος, επίστρεψε ένα slice <code>[][2]int</code>
+        με τις συντεταγμένες των προσβάσιμων κελιών.
+        Η δομή της αναδρομής μένει ίδια — αλλάζει μόνο το τι «συνδυάζεις»: αντί για αριθμούς, συνδυάζεις
+        slices.
+    </p>
+</div>
+
+<!-- Λύση 1η παραλλαγή: επιστροφή λίστας κελιών -->
+<div class="spoiler">
+    <div class="spoiler-lock"><span>Λύση — Επιστροφή [][2]int (σύρε να δεις) →</span></div>
+    <pre><code class="lang-go">// ReachableCells returns a slice of all reachable cells from (r, c).
+func ReachableCells(grid []string, r, c int, visited map[[2]int]bool) [][2]int {
+    if r &lt; 0 || r &gt;= len(grid) || c &lt; 0 || c &gt;= len(grid[r]) {
+        return nil
+    }
+    if grid[r][c] == '#' {
+        return nil
+    }
+    key := [2]int{r, c}
+    if visited[key] {
+        return nil
+    }
+    visited[key] = true
+
+    cells := [][2]int{{r, c}}
+    cells = append(cells, ReachableCells(grid, r-1, c, visited)...)
+    cells = append(cells, ReachableCells(grid, r+1, c, visited)...)
+    cells = append(cells, ReachableCells(grid, r, c-1, visited)...)
+    cells = append(cells, ReachableCells(grid, r, c+1, visited)...)
+    return cells
+}
+
+func main() {
+    grid := []string{
+        "#######",
+        "#..#..#",
+        "#.##..#",
+        "#.....#",
+        "#######",
+    }
+    visited := make(map[[2]int]bool)
+    cells := ReachableCells(grid, 1, 1, visited)
+    fmt.Println(len(cells), cells) // 12 [[1 1] [2 1] [3 1] ...]
+}</code></pre>
+    <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+        Η μόνη διαφορά από την αρχική λύση είναι ότι αντί να μετράμε το <code>1</code> και να προσθέτουμε
+        αριθμούς, φτιάχνουμε ένα slice με το τρέχον κελί και προσθέτουμε (με <code>append</code>) τα
+        αποτελέσματα των αναδρομικών κλήσεων. Το συνολικό μήκος του slice είναι ο αριθμός των προσβάσιμων
+        κελιών.
+    </p>
+</div>
+<br>
+<div class="callout good">
+    <span class="tag">Η αξία αυτής της παραλλαγής</span>
+    <p>Το slice γεμίζει με τη σειρά που ο αλγόριθμος επισκέπτεται
+        τα κελιά — όπως ακριβώς έτρεξε η αναδρομή σου. Τρέχοντας το παράδειγμα στο VSCode, βλέπεις στο slice τη
+        διαδρομή που χάραξε ο κώδικάς σου: (για start [1, 1]) πρώτα κατεβαίνει όσο μπορεί, μετά εξερευνά δεξιά κλπ. Στο τέλος θα επιστεφτεί το κελί [1, 2] που είχε αφήσει στην αρχή (τουλάχιστον στην λύση που γράφεται σε αυτό το guide όπου η σειρά αναδρομής ήταν up→down→left→right). Μπορείς να πειραματιστείς με το κελί εκκίνησης και με την σειρά που θα γίνονται τα recursion calls.
     </p>
 </div>
 `);
@@ -5063,30 +5578,26 @@ func main() {
         // ── Mini-glossary — Ενότητα 6 ────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 6 / 8</div>
-<h1>Αναδρομή & Divide and Conquer, με μια Ματιά</h1>
+<h1>Recursion & Divide and Conquer, με μια Ματιά</h1>
 <p class="lede">Οι όροι που θα σου χρειαστούν από αυτό το κεφάλαιο.</p>
 
 <table class="glossary-table">
-  <tr><td class="gt-term">αναδρομή (recursion)</td><td class="gt-def">function που καλεί τον εαυτό της σε μικρότερο πρόβλημα</td></tr>
+  <tr><td class="gt-term">recursion</td><td class="gt-def">function που καλεί τον εαυτό της σε μικρότερο πρόβλημα</td></tr>
   <tr><td class="gt-term">base case</td><td class="gt-def">η περίπτωση που επιστρέφει χωρίς νέα κλήση — χωρίς αυτή δεν τερματίζει ποτέ</td></tr>
   <tr><td class="gt-term">recursive case</td><td class="gt-def">η κλήση στον εαυτό, με όρισμα πιο κοντά στο base case</td></tr>
   <tr><td class="gt-term">call stack</td><td class="gt-def">η στοίβα κλήσεων του προγράμματος — LIFO, τη διαχειρίζεται η γλώσσα</td></tr>
-  <tr><td class="gt-term">stack overflow</td><td class="gt-def">panic όταν το call stack γεμίσει — λείπει ή δεν φτάνει το base case</td></tr>
-  <tr><td class="gt-term">το άλμα εμπιστοσύνης</td><td class="gt-def">υπόθεσε ότι η αναδρομική κλήση ήδη δουλεύει· σκέψου μόνο το τρέχον βήμα</td></tr>
-  <tr><td class="gt-term">divide and conquer</td><td class="gt-def">σπάσε στη μέση, λύσε αναδρομικά, ένωσε τα αποτελέσματα</td></tr>
+  <tr><td class="gt-term">unwinding phase</td><td class="gt-def">ό,τι γράφεις ΜΕΤΑ τη recursive κλήση — εκτελείται καθώς οι κλήσεις επιστρέφουν, με αντίστροφη σειρά</td></tr>
+  <tr><td class="gt-term">stack overflow</td><td class="gt-def">fatal error όταν το call stack γεμίσει — δεν πιάνεται με recover, το πρόγραμμα τερματίζει</td></tr>
+  <tr><td class="gt-term">εμπιστοσύνη στη recursive κλήση</td><td class="gt-def">υπόθεσε ότι δουλεύει ήδη σωστά· σκέψου μόνο το τρέχον βήμα</td></tr>
+  <tr><td class="gt-term">βάθος recursion</td><td class="gt-def">πόσες κλήσεις είναι ταυτόχρονα ανοιχτές — n αν μικραίνεις κατά ένα, log n αν κόβεις στη μέση</td></tr>
+  <tr><td class="gt-term">divide and conquer</td><td class="gt-def">σπάσε στη μέση, λύσε recursively, ένωσε τα αποτελέσματα</td></tr>
   <tr><td class="gt-term">merge sort</td><td class="gt-def">divide and conquer με έξυπνο combine — O(n log n), stable</td></tr>
   <tr><td class="gt-term">quicksort</td><td class="gt-def">divide and conquer με έξυπνο divide (pivot) — χωρίς combine, χωρίς επιπλέον μνήμη</td></tr>
-  <tr><td class="gt-term">γράφημα (graph)</td><td class="gt-def">κόμβοι και συνδέσεις — αρκεί ένα map[T][]T, δεν χρειάζεται struct</td></tr>
-  <tr><td class="gt-term">visited map</td><td class="gt-def">υποχρεωτικό σε κάθε εξερεύνηση γραφήματος — αλλιώς οι κύκλοι δεν τελειώνουν</td></tr>
-  <tr><td class="gt-term">DFS</td><td class="gt-def">βαθιά πρώτα — Stack / αναδρομή· «υπάρχει διαδρομή;», λαβύρινθοι</td></tr>
-  <tr><td class="gt-term">BFS</td><td class="gt-def">πλάτος πρώτα — Queue· δίνει τη συντομότερη διαδρομή χωρίς επιπλέον δουλειά</td></tr>
-  <tr><td class="gt-term">implicit graph</td><td class="gt-def">γράφημα που δεν χτίζεις — π.χ. πλέγμα, όπου γείτονες είναι τα διπλανά κελιά</td></tr>
-  <tr><td class="gt-term">flood fill</td><td class="gt-def">DFS σε πλέγμα — ο κουβάς μπογιάς, «τι είναι συνδεδεμένο με τι»</td></tr>
-  <tr><td class="gt-term">O(2ⁿ) εκθετικό</td><td class="gt-def">κάθε επιπλέον στοιχείο διπλασιάζει τη δουλειά — σχεδόν πάντα σημάδι επικάλυψης</td></tr>
+  <tr><td class="gt-term">visited map</td><td class="gt-def">υποχρεωτικό όταν το πρόβλημα μπορεί να σε ξαναφέρει σε σημείο που πέρασες — αλλιώς δεν φτάνεις ποτέ σε base case</td></tr>
+  <tr><td class="gt-term">flood fill</td><td class="gt-def">recursion σε πλέγμα, με τα τέσσερα διπλανά κελιά ως επόμενες κλήσεις — ο κουβάς μπογιάς</td></tr>
   <tr><td class="gt-term">memoization</td><td class="gt-def">κράτα ό,τι υπολόγισες σε map και μην το ξανακάνεις — θέμα της Ενότητας 8</td></tr>
 </table>
 `);
-
 
         // ══ ΕΝΟΤΗΤΑ 7 — Greedy & Backtracking ════════════════════════════════ ⊃
 
@@ -5805,11 +6316,11 @@ func main() {
 </p>
 
 <pre><code>                          στόχος 10, από το 2
-                        /                      \
+                        /                      \\
               πήρα 2 (μένει 8)            χωρίς 2 (μένει 10)
-              /          \                  /            \
+              /          \\                  /            \\
        πήρα 3 (5)     χωρίς 3 (8)     πήρα 3 (7)     χωρίς 3 (10)
-        /      \                        /     \
+        /      \\                        /     \\
    πήρα 5 → 0  χωρίς 5 (5)        πήρα 5 (2)  χωρίς 5 (7)
       ✓ [2 3 5]                                  |
                                             πήρα 7 → 0
