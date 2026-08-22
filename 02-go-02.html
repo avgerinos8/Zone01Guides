@@ -4236,64 +4236,8 @@ func FactorialLoop(n int) int {
     </p>
 </div>
 
-<br>
 
-<h1>Πώς σκέφτεσαι αναδρομικά</h1>
-
-<p>
-    Όταν γράφεις μια αναδρομική function, <strong>μην προσπαθήσεις να τρέξεις όλα τα επίπεδα στο μυαλό
-    σου</strong>. Αντί γι' αυτό, υπόθεσε ότι η κλήση στον εαυτό σου <em>ήδη δουλεύει σωστά</em> για το
-    μικρότερο πρόβλημα, και σκέψου μόνο τι πρέπει να κάνεις εσύ με το αποτέλεσμά της.
-</p>
-
-<p>
-    Ακούγεται σαν να κλέβεις — «πώς μπορώ να υποθέσω ότι δουλεύει, αφού δεν την έχω γράψει ακόμα;» Αλλά είναι
-    ακριβώς το ίδιο πράγμα που κάνεις όταν καλείς μια function που έγραψε κάποιος άλλος: δεν διαβάζεις τον
-    κώδικά της, εμπιστεύεσαι ότι κάνει αυτό που λέει το όνομά της.
-</p>
-
-<h2>Οι τρεις ερωτήσεις</h2>
-
-<p>Για οποιοδήποτε αναδρομικό πρόβλημα, απάντησε αυτές τις τρεις — με αυτή τη σειρά:</p>
-
-<ul>
-    <li><strong>1. Ποιο είναι το μικρότερο πρόβλημα που ξέρω απευθείας;</strong> Αυτό είναι το base case.
-        Συνήθως: κενό slice, κενό string, ο αριθμός 0 ή 1, ένας κόμβος χωρίς γείτονες.</li>
-    <li><strong>2. Πώς μικραίνω το πρόβλημα κατά ένα βήμα;</strong> Ένα στοιχείο λιγότερο, μισό slice,
-        ένας γείτονας παρακάτω.</li>
-    <li><strong>3. Πώς συνδυάζω το αποτέλεσμα της μικρότερης κλήσης με το τρέχον στοιχείο;</strong>
-        Πρόσθεση, γινόμενο, <code>append</code>, σύγκριση.</li>
-</ul>
-
-<h2>Παράδειγμα: άθροισμα ενός slice</h2>
-
-<p>Ας απαντήσουμε τις τρεις ερωτήσεις για το «άθροισε όλους τους αριθμούς ενός slice»:</p>
-
-<div class="grid3">
-    <div class="card">
-        <span class="card-tag">1. Base case</span>
-        <p>Το άθροισμα ενός <strong>κενού</strong> slice είναι 0. Αυτό το ξέρω χωρίς σκέψη.</p>
-    </div>
-    <div class="card">
-        <span class="card-tag">2. Μικραίνω</span>
-        <p>Παίρνω το πρώτο στοιχείο και αφήνω <strong>τα υπόλοιπα</strong> — δηλαδή <code>numbers[1:]</code>,
-           ένα στοιχείο λιγότερο.</p>
-    </div>
-    <div class="card">
-        <span class="card-tag">3. Συνδυάζω</span>
-        <p>Το πρώτο στοιχείο <strong>συν</strong> το άθροισμα των υπολοίπων.</p>
-    </div>
-</div>
-
-<pre><code class="lang-go">// SumSlice adds every number in the slice, recursively.
-func SumSlice(numbers []int) int {
-    if len(numbers) == 0 {
-        return 0 // 1. base case: nothing to add
-    }
-    return numbers[0] + SumSlice(numbers[1:]) // 3. combine  |  2. shrink
-}
-</code></pre>
-<h2>Το unwinding phase — τι γίνεται ΜΕΤΑ την κλήση</h2>
+<h1>Το unwinding phase — τι γίνεται ΜΕΤΑ την κλήση</h1>
 
 <p>
     Μέχρι στιγμής, σε όλες τις αναδρομικές functions που γράψαμε, η κλήση στον εαυτό τους ήταν η
@@ -4332,7 +4276,7 @@ func SumSlice(numbers []int) int {
     αρχική — λέγεται <strong>unwinding phase</strong> (η στοίβα κλήσεων "ξετυλίγεται").
 </p>
 
-<h3>Παράδειγμα: αντιστροφή λέξεων ενός κειμένου</h3>
+<h2>Παράδειγμα: αντιστροφή λέξεων ενός κειμένου</h2>
 
 <p>
     Ας δούμε κάτι πιο χρήσιμο: διάβασε ένα κείμενο λέξη-λέξη, και τύπωσέ το με τις λέξεις σε
@@ -4368,35 +4312,6 @@ func PrintWordsReversed(words []string, index int) {
         μία στο unwinding phase. Τι σειρά αριθμών θα δεις συνολικά;
     </p>
 </div>
-
-<h2>Αναδρομή ή λούπα;</h2>
-
-<table style="width:100%; border-collapse:collapse; margin:16px 0;">
-    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
-        <th style="text-align:left; padding:8px;">Προτίμησε λούπα όταν…</th>
-        <th style="text-align:left; padding:8px;">Προτίμησε αναδρομή όταν…</th>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;">διασχίζεις μια γραμμική δομή (slice, string, map)</td>
-        <td style="padding:8px;">η δομή <strong>διακλαδώνεται</strong> — κάθε βήμα ανοίγει πολλά επόμενα</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;">ξέρεις εκ των προτέρων πόσες επαναλήψεις χρειάζονται</td>
-        <td style="padding:8px;">δεν ξέρεις πόσο <strong>βαθιά</strong> θα χρειαστεί να πας</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;">το πρόβλημα προχωράει «κατά ένα» κάθε φορά</td>
-        <td style="padding:8px;">το πρόβλημα <strong>σπάει σε μικρότερα ίδιου είδους</strong></td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;">η απόδοση και η μνήμη μετράνε</td>
-        <td style="padding:8px;">η αναδρομική εκδοχή είναι δραματικά πιο ευανάγνωστη</td>
-    </tr>
-    <tr>
-        <td style="padding:8px;">χρειάζεσαι τα βήματα με τη σειρά που έγιναν</td>
-        <td style="padding:8px;">χρειάζεσαι τα βήματα με <strong>αντίστροφη</strong> σειρά — το unwinding phase σου το δίνει έτοιμο, χωρίς δική σου στοίβα</td>
-    </tr>
-</table>
 
 <h2>Τα κομμάτια μιας αναδρομικής function, συγκεντρωτικά</h2>
 
@@ -4726,6 +4641,93 @@ result = append(result, right[j:]...)</code></pre>
         // ── §6.5 — Οι παγίδες της αναδρομής ──────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
+
+<h1>Πώς σκέφτεσαι αναδρομικά</h1>
+
+<p>
+    Όταν γράφεις μια αναδρομική function, <strong>μην προσπαθήσεις να τρέξεις όλα τα επίπεδα στο μυαλό
+    σου</strong>. Αντί γι' αυτό, υπόθεσε ότι η κλήση στον εαυτό σου <em>ήδη δουλεύει σωστά</em> για το
+    μικρότερο πρόβλημα, και σκέψου μόνο τι πρέπει να κάνεις εσύ με το αποτέλεσμά της.
+</p>
+
+<p>
+    Ακούγεται σαν να κλέβεις — «πώς μπορώ να υποθέσω ότι δουλεύει, αφού δεν την έχω γράψει ακόμα;» Αλλά είναι
+    ακριβώς το ίδιο πράγμα που κάνεις όταν καλείς μια function που έγραψε κάποιος άλλος: δεν διαβάζεις τον
+    κώδικά της, εμπιστεύεσαι ότι κάνει αυτό που λέει το όνομά της.
+</p>
+
+
+<h2>Αναδρομή ή λούπα;</h2>
+
+<table style="width:100%; border-collapse:collapse; margin:16px 0;">
+    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
+        <th style="text-align:left; padding:8px;">Προτίμησε λούπα όταν…</th>
+        <th style="text-align:left; padding:8px;">Προτίμησε αναδρομή όταν…</th>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;">διασχίζεις μια γραμμική δομή (slice, string, map)</td>
+        <td style="padding:8px;">η δομή <strong>διακλαδώνεται</strong> — κάθε βήμα ανοίγει πολλά επόμενα</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;">ξέρεις εκ των προτέρων πόσες επαναλήψεις χρειάζονται</td>
+        <td style="padding:8px;">δεν ξέρεις πόσο <strong>βαθιά</strong> θα χρειαστεί να πας</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;">το πρόβλημα προχωράει «κατά ένα» κάθε φορά</td>
+        <td style="padding:8px;">το πρόβλημα <strong>σπάει σε μικρότερα ίδιου είδους</strong></td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
+        <td style="padding:8px;">η απόδοση και η μνήμη μετράνε</td>
+        <td style="padding:8px;">η αναδρομική εκδοχή είναι δραματικά πιο ευανάγνωστη</td>
+    </tr>
+    <tr>
+        <td style="padding:8px;">χρειάζεσαι τα βήματα με τη σειρά που έγιναν</td>
+        <td style="padding:8px;">χρειάζεσαι τα βήματα με <strong>αντίστροφη</strong> σειρά — το unwinding phase σου το δίνει έτοιμο, χωρίς δική σου στοίβα</td>
+    </tr>
+</table>
+
+<h2>Οι τρεις ερωτήσεις</h2>
+
+<p>Για οποιοδήποτε αναδρομικό πρόβλημα, απάντησε αυτές τις τρεις — με αυτή τη σειρά:</p>
+
+<ul>
+    <li><strong>1. Ποιο είναι το μικρότερο πρόβλημα που ξέρω απευθείας;</strong> Αυτό είναι το base case.
+        Συνήθως: κενό slice, κενό string, ο αριθμός 0 ή 1, ένας κόμβος χωρίς γείτονες.</li>
+    <li><strong>2. Πώς μικραίνω το πρόβλημα κατά ένα βήμα;</strong> Ένα στοιχείο λιγότερο, μισό slice,
+        ένας γείτονας παρακάτω.</li>
+    <li><strong>3. Πώς συνδυάζω το αποτέλεσμα της μικρότερης κλήσης με το τρέχον στοιχείο;</strong>
+        Πρόσθεση, γινόμενο, <code>append</code>, σύγκριση.</li>
+</ul>
+
+<h2>Παράδειγμα: άθροισμα ενός slice</h2>
+
+<p>Ας απαντήσουμε τις τρεις ερωτήσεις για το «άθροισε όλους τους αριθμούς ενός slice»:</p>
+
+<div class="grid3">
+    <div class="card">
+        <span class="card-tag">1. Base case</span>
+        <p>Το άθροισμα ενός <strong>κενού</strong> slice είναι 0. Αυτό το ξέρω χωρίς σκέψη.</p>
+    </div>
+    <div class="card">
+        <span class="card-tag">2. Μικραίνω</span>
+        <p>Παίρνω το πρώτο στοιχείο και αφήνω <strong>τα υπόλοιπα</strong> — δηλαδή <code>numbers[1:]</code>,
+           ένα στοιχείο λιγότερο.</p>
+    </div>
+    <div class="card">
+        <span class="card-tag">3. Συνδυάζω</span>
+        <p>Το πρώτο στοιχείο <strong>συν</strong> το άθροισμα των υπολοίπων.</p>
+    </div>
+</div>
+
+<pre><code class="lang-go">// SumSlice adds every number in the slice, recursively.
+func SumSlice(numbers []int) int {
+    if len(numbers) == 0 {
+        return 0 // 1. base case: nothing to add
+    }
+    return numbers[0] + SumSlice(numbers[1:]) // 3. combine  |  2. shrink
+}
+</code></pre>
+
 <h1>Οι τρεις παγίδες</h1>
 
 <h2>Παγίδα 1: το base case που δεν εκπληρώνεται ποτέ</h2>
