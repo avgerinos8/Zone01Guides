@@ -171,6 +171,15 @@ function decorateSpoilers(container) {
     if (lock.dataset.wired) return;
     lock.dataset.wired = "1";
 
+    // Randomize this lock's stripe phase so adjacent spoilers don't all
+    // visually start from the exact same origin — purely cosmetic, picked
+    // once per lock and left alone afterward. Set as a custom property
+    // (not lock.style.maskPosition directly) because the actual stripe
+    // pattern lives on ::before in CSS now — JS has no direct handle to a
+    // pseudo-element's own style, but custom properties set on the real
+    // element cascade into it, so style.css reads this back via var().
+    lock.style.setProperty("--stripe-phase", `${Math.floor(Math.random() * 200)}px`);
+
     let dragging = false;
     let startX = 0;
     let width = 0;
