@@ -5669,27 +5669,6 @@ fmt.Println(nums[0]) // reads back the value at index 0, prints 10
     Ένα <strong>slice</strong>, σε αντίθεση με ένα array, <strong>δεν</strong> έχει σταθερό, προκαθορισμένο μέγεθος — μπορεί να "μεγαλώσει" δυναμικά κατά την εκτέλεση του προγράμματος, ανάλογα με τις ανάγκες σου. Τεχνικά, ένα slice δεν είναι μια αυτόνομη δομή δεδομένων από μόνο του — είναι μια "θέα" (view), δηλαδή ένα παράθυρο πρόσβασης πάνω σε ένα υποκείμενο (underlying) array που υπάρχει "από κάτω", κρυμμένο. Αυτή η υποκείμενη δομή είναι κάτι που, ως χρήστης του slice, συνήθως δεν χρειάζεται να διαχειριστείς απευθείας — η Go το κάνει αυτόματα για λογαριασμό σου.
 </p>
 
-<h2>Ανατομία ενός Slice — τρία εσωτερικά κομμάτια</h2>
-
-<p>
-    Εσωτερικά, ένα slice αποτελείται πάντα από τρία κομμάτια πληροφορίας:
-</p>
-
-<div class="grid3">
-    <div class="card">
-        <h3>Pointer</h3>
-        <p>Ένας pointer (θυμήσου την Ενότητα 7) που δείχνει στο πρώτο στοιχείο του υποκείμενου array που "βλέπει" αυτό το slice.</p>
-    </div>
-    <div class="card">
-        <h3>Length (len)</h3>
-        <p>Πόσα στοιχεία περιέχει το slice <em>αυτή τη στιγμή</em> — αυτό δηλαδή που βλέπεις όταν το διασχίζεις ή το τυπώνεις.</p>
-    </div>
-    <div class="card">
-        <h3>Capacity (cap)</h3>
-        <p>Πόσα στοιχεία θα χωρούσαν <em>συνολικά</em> στο υποκείμενο array, πριν χρειαστεί η Go να δημιουργήσει ένα εντελώς νέο, μεγαλύτερο array στο παρασκήνιο.</p>
-    </div>
-</div>
-
 <h2>Οι πέντε τρόποι δημιουργίας Slices</h2>
 
 <p>
@@ -5770,6 +5749,40 @@ func main() {
 sub := nums[1:4] // [20, 30, 40] — indices 1, 2, 3
 </code></pre>
 
+<svg viewBox="0 0 560 228" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="slicing start end" style="width:100%;max-width:960px;height:auto;display:block;margin:1.6rem auto;color:inherit">
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <rect x="90" y="80" width="380" height="46" rx="3" fill="currentColor" fill-opacity="0.04" stroke-opacity="0.7" stroke-width="1.6"/>
+    <g stroke-opacity="0.28" stroke-width="1.1">
+      <line x1="166" y1="80" x2="166" y2="126"/>
+      <line x1="242" y1="80" x2="242" y2="126"/>
+      <line x1="318" y1="80" x2="318" y2="126"/>
+      <line x1="394" y1="80" x2="394" y2="126"/>
+    </g>
+    <rect x="166" y="80" width="228" height="46" fill="currentColor" fill-opacity="0.1" stroke-opacity="0.95" stroke-width="2"/>
+    <g stroke-opacity="0.5" stroke-width="1.3" stroke-dasharray="5 4">
+      <line x1="166" y1="58" x2="166" y2="148"/>
+      <line x1="394" y1="58" x2="394" y2="148"/>
+    </g>
+  </g>
+
+  <g fill="currentColor" text-anchor="middle">
+    <text x="166" y="48" font-size="13" opacity="0.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">start = 1</text>
+    <text x="394" y="48" font-size="13" opacity="0.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">end = 4</text>
+    <g font-size="13" opacity="0.55">
+      <text x="128" y="74">0</text><text x="204" y="74">1</text><text x="280" y="74">2</text>
+      <text x="356" y="74">3</text><text x="432" y="74">4</text>
+    </g>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18">
+      <text x="128" y="111" opacity="0.4">10</text>
+      <text x="204" y="111">20</text><text x="280" y="111">30</text><text x="356" y="111">40</text>
+      <text x="432" y="111" opacity="0.4">50</text>
+    </g>
+    <text x="280" y="172" font-size="15" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">nums[1:4] → [20 30 40]</text>
+    <text x="280" y="198" font-size="14" opacity="0.7">τα start και end είναι όρια ανάμεσα σε κελιά, όχι κελιά</text>
+    <text x="280" y="220" font-size="13" opacity="0.55">το μήκος του νέου slice είναι πάντα end − start</text>
+  </g>
+</svg>
+
 <p>
     Αν παραλείψεις το <code>start</code>, ξεκινά από την αρχή (0): <code>nums[:3]</code> → <code>[10, 20, 30]</code>.<br>
     Αν παραλείψεις το <code>end</code>, φτάνει μέχρι το τέλος: <code>nums[2:]</code> → <code>[30, 40, 50]</code>.
@@ -5784,13 +5797,6 @@ sub := nums[1:4] // [20, 30, 40] — indices 1, 2, 3
 <pre><code class="lang-go">nums := []int{1, 2}
 nums = append(nums, 3) // ALWAYS reassign — append may return a completely NEW slice
 </code></pre>
-
-<div class="callout">
-    <span class="tag">Γιατί πάντα nums = append(nums, ...)</span>
-    <p>
-        Επειδή η <code>append</code> ενδέχεται να χρειαστεί να δημιουργήσει ένα νέο υποκείμενο array (όταν η παλιά capacity δεν αρκεί πια), το slice που σου επιστρέφει μπορεί να "δείχνει" αλλού από ό,τι έδειχνε το αρχικό slice πριν την κλήση. Αν δεν εκχωρήσεις ξανά την επιστρεφόμενη τιμή στη μεταβλητή σου (όπως στο παράδειγμα, <code>nums = append(...)</code>), το πρόγραμμά σου θα μπορούσε να συνεχίσει να χρησιμοποιεί το "παλιό" slice.
-    </p>
-</div>
 
 <p>
     Η <code>append</code> παίρνει ως πρώτο όρισμα το υπάρχον slice και ως δεύτερο όρισμα (και επόμενα, αν χρειαστεί) το στοιχείο που θέλουμε να προσθέσουμε. Το δεύτερο όρισμα είναι <strong>ένα μεμονωμένο στοιχείο</strong>, όχι slice. Για παράδειγμα:
@@ -5813,10 +5819,240 @@ nums = append(nums, more...) // προσθέτει τα 6, 7, 8 — σαν να 
     Οι τρεις τελείες λένε στη Go: "πάρε αυτό το slice και μεταχειρίσου το σαν να ήταν ξεχωριστά ορίσματα, το ένα μετά το άλλο". Εναλλακτικά, μπορείς να το κάνεις και με ένα loop, προσθέτοντας ένα-ένα τα στοιχεία, αλλά η σύνταξη <code>...</code> είναι πιο συνοπτική.
 </p>
 
+
+
+
 <h2>Αντιγραφή Slices με την copy</h2>
 
 <p>
-    Η ενσωματωμένη function <code>copy(dst, src)</code> αντιγράφει στοιχεία από ένα slice (<code>src</code> — source, πηγή) σε ένα άλλο (<code>dst</code> — destination, προορισμός), δημιουργώντας ένα πραγματικά ανεξάρτητο αντίγραφο — τα δύο slices δεν θα μοιράζονται πλέον το ίδιο υποκείμενο array μετά την αντιγραφή, οπότε αλλαγές στο ένα δεν θα επηρεάζουν το άλλο.
+    Πριν δούμε τη <code>copy</code>, αξίζει να δούμε γιατί υπάρχει. Η προφανής κίνηση — ανάθεση με <code>=</code> —
+    δεν αντιγράφει δεδομένα:
+</p>
+
+<pre><code class="lang-go">a := []int{1, 2, 3}
+b := a  // copies the slice header, NOT the data
+
+b[0] = 99
+fmt.Println(a) // [99 2 3] - a changed too
+</code></pre>
+
+<p>
+    Αυτό που αντιγράφηκε είναι το slice header: ο pointer, το <code>len</code> και το <code>cap</code>. Και τα δύο
+    headers δείχνουν στο <em>ίδιο</em> υποκείμενο array, οπότε ό,τι γράφεις μέσω του ενός φαίνεται και από το άλλο.
+</p>
+
+<p>
+    Η ενσωματωμένη function <code>copy(dst, src)</code> αντιγράφει τα ίδια τα στοιχεία από ένα slice
+    (<code>src</code> — source, πηγή) σε ένα άλλο (<code>dst</code> — destination, προορισμός). Ο προορισμός
+    πρέπει να υπάρχει ήδη και να έχει δικό του χώρο, οπότε τον φτιάχνεις πρώτα με <code>make</code>:
+</p>
+
+<pre><code class="lang-go">src := []int{1, 2, 3}
+dst := make([]int, len(src)) // allocate room for 3 elements first
+
+n := copy(dst, src) // returns how many elements were actually copied
+fmt.Println(dst, n) // [1 2 3] 3
+
+dst[0] = 99
+fmt.Println(src) // [1 2 3] - unaffected, the two slices are independent now
+</code></pre>
+
+<h2>Ανατομία ενός Slice — τι πραγματικά συμβαίνει στην μνήμη</h2>
+
+<p>
+    Όταν γράφεις <code>s := []int{10, 20, 30}</code>, η μεταβλητή <code>s</code> <strong>δεν κρατάει τα ίδια τα
+    νούμερα</strong>. Τα νούμερα ζουν στο υποκείμενο array· η <code>s</code> κρατάει μια μικρή εγγραφή που
+    <em>περιγράφει</em> πού είναι και πόσα είναι. Αυτή η εγγραφή λέγεται <strong>slice header</strong> και
+    αποτελείται πάντα από τρία κομμάτια πληροφορίας:
+</p>
+
+<div class="grid3">
+    <div class="card">
+        <h3>Pointer</h3>
+        <p>Ένας pointer (θυμήσου την Ενότητα 7) που δείχνει στο πρώτο στοιχείο του υποκείμενου array που "βλέπει" αυτό το slice. Δεν τον βλέπεις ποτέ και δεν υπάρχει τρόπος να τον διαβάσεις — υπάρχει εσωτερικά.</p>
+    </div>
+    <div class="card">
+        <h3>Length (len)</h3>
+        <p>Τα κανονικά στοιχεία που περιέχει το slice <em>αυτή τη στιγμή</em>. Το ρωτάς με <code>len(s)</code>.</p>
+    </div>
+    <div class="card">
+        <h3>Capacity (cap)</h3>
+        <p>Πόσα στοιχεία θα χωρούσαν <em>συνολικά</em> στο υποκείμενο array, πριν χρειαστεί η Go να δημιουργήσει ένα εντελώς νέο, μεγαλύτερο array στο παρασκήνιο. Το ρωτάς με <code>cap(s)</code>.</p>
+    </div>
+</div>
+
+<svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="anatomia slice: pointer len cap" style="width:100%;max-width:960px;height:auto;display:block;margin:1.6rem auto;color:inherit">
+  <defs>
+    <marker id="fs-a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.75"/>
+    </marker>
+  </defs>
+
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <rect x="30" y="48" width="222" height="44" rx="4" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.7" stroke-width="1.6"/>
+    <g stroke-opacity="0.28" stroke-width="1.1">
+      <line x1="104" y1="48" x2="104" y2="92"/>
+      <line x1="178" y1="48" x2="178" y2="92"/>
+    </g>
+
+    <rect x="150" y="162" width="186" height="44" rx="3" fill="currentColor" fill-opacity="0.06" stroke-opacity="0.75" stroke-width="1.6"/>
+    <rect x="336" y="162" width="124" height="44" rx="3" stroke-opacity="0.35" stroke-width="1.3" stroke-dasharray="5 4"/>
+    <g stroke-opacity="0.28" stroke-width="1.1">
+      <line x1="212" y1="162" x2="212" y2="206"/>
+      <line x1="274" y1="162" x2="274" y2="206"/>
+      <line x1="398" y1="162" x2="398" y2="206"/>
+    </g>
+
+    <path d="M 67 96 C 67 148, 82 184, 140 184" stroke-opacity="0.6" stroke-width="1.4" marker-end="url(#fs-a-arrow)"/>
+
+    <path d="M 150 156 L 150 148 L 336 148 L 336 156" stroke-opacity="0.6" stroke-width="1.4"/>
+    <path d="M 150 212 L 150 220 L 460 220 L 460 212" stroke-opacity="0.45" stroke-width="1.3"/>
+  </g>
+
+  <g fill="currentColor" text-anchor="middle">
+    <text x="30" y="36" text-anchor="start" font-size="14" opacity="0.65">slice header</text>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15">
+      <text x="67" y="76">ptr</text>
+      <text x="141" y="76">len = 3</text>
+      <text x="215" y="76">cap = 5</text>
+    </g>
+    <text x="243" y="140" font-size="14" opacity="0.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">len = 3</text>
+    <text x="305" y="238" font-size="14" opacity="0.6" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">cap = 5</text>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17">
+      <text x="181" y="191">10</text><text x="243" y="191">20</text><text x="305" y="191">30</text>
+      <text x="367" y="191" opacity="0.35">40</text><text x="429" y="191" opacity="0.35">50</text>
+    </g>
+    <text x="280" y="264" font-size="14" opacity="0.7">το header είναι μικρό και σταθερό· τα δεδομένα βρίσκονται στο array</text>
+    <text x="280" y="286" font-size="13" opacity="0.55">τα στοιχεία πέρα από το len υπάρχουν, αλλά δεν φαίνονται μέσω του slice</text>
+  </g>
+</svg>
+
+<div class="callout">
+    <span class="tag">Αυτό συμβαίνει εσωτερικά</span>
+    <p>
+        Τα τρία αυτά κομμάτια είναι η μορφή που έχει το slice μέσα στη μνήμη, και τη δείχνουμε επειδή εξηγεί συμπεριφορές που αλλιώς μοιάζουν αυθαίρετες (όπως το τι πραγματικά συμβαίνει σε ένα append που βλέπουμε ακριβώς παρακάτω).
+    </p>
+    <p>
+        Τα δύο, μπορείς να τα μάθεις έμμεσα με τις <code>len()</code> και <code>cap()</code>. Ο pointer είναι πάντα αόρατος.
+    </p>
+</div>
+
+<h2>Τι συμβαίνει στη μνήμη σε ένα append</h2>
+
+<p>
+    Όταν η capacity του slice αρκεί, η <code>append</code> γράφει απλώς την επόμενη κενή θέση του υπάρχοντος array
+    και αυξάνει το <code>len</code> κατά ένα — τίποτα δεν μετακινείται. Το ενδιαφέρον συμβαίνει όταν
+    <strong>δεν</strong> αρκεί:
+</p>
+
+<svg viewBox="0 0 616 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="epektasi me append" style="width:100%;max-width:960px;height:auto;display:block;margin:1.6rem auto;color:inherit">
+  <defs>
+    <marker id="fs-c-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.75"/>
+    </marker>
+    <marker id="fs-c-arrow-soft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.4"/>
+    </marker>
+  </defs>
+
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <path d="M 46 22 L 38 22 L 38 55 L 30 59 L 38 63 L 38 96 L 46 96" stroke-opacity="0.45" stroke-width="1.4"/>
+    <path d="M 46 176 L 38 176 L 38 209 L 30 213 L 38 217 L 38 250 L 46 250" stroke-opacity="0.45" stroke-width="1.4"/>
+
+    <rect x="90" y="56" width="92" height="28" rx="3" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.6" stroke-width="1.4"/>
+    <line x1="186" y1="70" x2="190" y2="70" stroke-opacity="0.6" stroke-width="1.4" marker-end="url(#fs-c-arrow)"/>
+    <rect x="196" y="48" width="240" height="44" rx="3" fill="currentColor" fill-opacity="0.06" stroke-opacity="0.7" stroke-width="1.6"/>
+    <g stroke-opacity="0.28" stroke-width="1.1">
+      <line x1="256" y1="48" x2="256" y2="92"/>
+      <line x1="316" y1="48" x2="316" y2="92"/>
+      <line x1="376" y1="48" x2="376" y2="92"/>
+    </g>
+
+    <g stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="4 5">
+      <line x1="226" y1="98" x2="221" y2="192" marker-end="url(#fs-c-arrow-soft)"/>
+      <line x1="286" y1="98" x2="271" y2="192" marker-end="url(#fs-c-arrow-soft)"/>
+      <line x1="346" y1="98" x2="321" y2="192" marker-end="url(#fs-c-arrow-soft)"/>
+      <line x1="406" y1="98" x2="371" y2="192" marker-end="url(#fs-c-arrow-soft)"/>
+    </g>
+
+    <rect x="90" y="208" width="92" height="28" rx="3" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.6" stroke-width="1.4"/>
+    <line x1="186" y1="222" x2="190" y2="222" stroke-opacity="0.6" stroke-width="1.4" marker-end="url(#fs-c-arrow)"/>
+    <rect x="196" y="200" width="400" height="44" rx="3" fill="currentColor" fill-opacity="0.06" stroke-opacity="0.7" stroke-width="1.6"/>
+    <g stroke-opacity="0.28" stroke-width="1.1">
+      <line x1="246" y1="200" x2="246" y2="244"/>
+      <line x1="296" y1="200" x2="296" y2="244"/>
+      <line x1="346" y1="200" x2="346" y2="244"/>
+      <line x1="396" y1="200" x2="396" y2="244"/>
+      <line x1="446" y1="200" x2="446" y2="244"/>
+      <line x1="496" y1="200" x2="496" y2="244"/>
+      <line x1="546" y1="200" x2="546" y2="244"/>
+    </g>
+    <rect x="396" y="200" width="50" height="44" fill="currentColor" fill-opacity="0.12" stroke-opacity="0.95" stroke-width="2"/>
+    <rect x="446" y="200" width="150" height="44" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="5 4"/>
+  </g>
+
+  <g fill="currentColor" text-anchor="middle">
+    <text x="20" y="59" font-size="15" opacity="0.8" transform="rotate(-90 20 59)">ΑΡΧΙΚΑ</text>
+    <text x="20" y="213" font-size="15" opacity="0.8" transform="rotate(-90 20 213)">ΜΕΤΑ</text>
+
+    <text x="90" y="34" text-anchor="start" font-size="14" opacity="0.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">len = 4, cap = 4</text>
+    <text x="242" y="34" text-anchor="start" font-size="13" opacity="0.55">— το capacity είναι γεμάτο</text>
+    <text x="136" y="50" font-size="11" opacity="0.5">ptr</text>
+    <text x="136" y="75" font-size="14" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0xC0A8</text>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17">
+      <text x="226" y="77">1</text><text x="286" y="77">2</text><text x="346" y="77">3</text><text x="406" y="77">4</text>
+    </g>
+    <text x="448" y="64" text-anchor="start" font-size="13" opacity="0.55">μετά την επέκταση</text>
+    <text x="448" y="82" text-anchor="start" font-size="13" opacity="0.55">δεν χρησιμοποιείται πια</text>
+
+    <text x="90" y="132" text-anchor="start" font-size="14" opacity="0.8">append(nums, 5) — δεν χωράει → νέο, μεγαλύτερο array</text>
+    <text x="174" y="152" text-anchor="end" font-size="13" opacity="0.55">copy</text>
+
+    <text x="90" y="190" text-anchor="start" font-size="14" opacity="0.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">len = 5, cap = 8</text>
+    <text x="136" y="202" font-size="11" opacity="0.5">ptr</text>
+    <text x="136" y="227" font-size="14" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0x4100</text>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17">
+      <text x="221" y="229">1</text><text x="271" y="229">2</text><text x="321" y="229">3</text><text x="371" y="229">4</text>
+      <text x="421" y="229">5</text>
+    </g>
+    <text x="308" y="282" font-size="14" opacity="0.8">ο pointer δείχνει πλέον αλλού — νέα διεύθυνση (0x4100 αντί 0xC0A8)</text>
+    <text x="308" y="304" font-size="14" opacity="0.55">γι' αυτό η append επιστρέφει νέο slice</text>
+  </g>
+</svg>
+
+<p>
+    Η Go δεσμεύει ένα εντελώς νέο array σε άλλη θέση της μνήμης, αντιγράφει εκεί τα παλιά στοιχεία, γράφει από
+    πίσω το νέο, και επιστρέφει ένα slice header που δείχνει στη νέα διεύθυνση. Το παλιό array μένει πίσω:
+    κανείς δεν το χρησιμοποιεί πια και ο garbage collector θα το ελευθερώσει.
+</p>
+
+<p>
+    Παρατήρησε ότι το νέο <code>cap</code> είναι 8, όχι 5. Η Go δεν δεσμεύει χώρο για ένα στοιχείο κάθε φορά —
+    δίνει με το παραπάνω (σε μικρά slices, τυπικά διπλασιάζει), ώστε τα επόμενα <code>append</code> να γράφουν
+    απευθείας στον υπάρχοντα χώρο χωρίς νέα δέσμευση και νέα αντιγραφή. Οι ακριβείς τιμές δεν είναι μέρος της
+    προδιαγραφής της γλώσσας και μπορεί να αλλάξουν, οπότε μη γράφεις κώδικα που τις προϋποθέτει.
+</p>
+
+<h3>Γιατί πάντα <code>nums = append(nums, ...)</code></h3>
+
+<p>
+    Το σχήμα εξηγεί και τον κανόνα: αφού η <code>append</code> ενδέχεται να επιστρέψει slice που δείχνει σε
+    <em>άλλο</em> array, η μεταβλητή σου πρέπει να ενημερωθεί. Αν αγνοήσεις την επιστρεφόμενη τιμή, η
+    <code>nums</code> συνεχίζει να δείχνει στο παλιό array — αυτό που στο σχήμα δεν χρησιμοποιείται πια — και το
+    νέο στοιχείο δεν φαίνεται πουθενά.
+</p>
+
+<pre><code class="lang-go">nums := []int{1, 2, 3, 4}
+
+append(nums, 5)         // compile error: append(...) evaluated but not used
+nums = append(nums, 5)  // correct
+</code></pre>
+
+<p>
+    Εδώ ο compiler σε προστατεύει: η <code>append</code> είναι από τις λίγες functions που η Go αρνείται να σε
+    αφήσει να καλέσεις αγνοώντας το αποτέλεσμά της. Η πραγματική παγίδα εμφανίζεται όταν αναθέτεις σε
+    <em>άλλη</em> μεταβλητή, οπότε ο compiler δεν έχει λόγο να διαμαρτυρηθεί, και οι δύο μεταβλητές μπορεί πλέον
+    να δείχνουν σε διαφορετικά arrays.
 </p>
 `);
 
@@ -5843,7 +6079,7 @@ nums = append(nums, more...) // προσθέτει τα 6, 7, 8 — σαν να 
 <h2>Με range (index + value)</h2>
 
 <p>
-    Η Go προσφέρει επίσης μια πιο σύντομη, χρησιμοποιώντας τη λέξη-κλειδί <code>range</code> μέσα στην <code>for</code>. Σε κάθε επανάληψη, σου δίνει αυτόματα <em>και</em> το index <em>και</em> την τιμή του στοιχείου σε εκείνη τη θέση, χωρίς να χρειάζεται να τα υπολογίσεις χειροκίνητα:
+    Η Go προσφέρει επίσης μια πιο σύντομη μορφή, χρησιμοποιώντας τη λέξη-κλειδί <code>range</code> μέσα στην <code>for</code>. Σε κάθε επανάληψη, σου δίνει αυτόματα <em>και</em> το index <em>και</em> την τιμή του στοιχείου σε εκείνη τη θέση, χωρίς να χρειάζεται να τα υπολογίσεις χειροκίνητα:
 </p>
 
 <pre><code class="lang-go">for i, v := range nums {
@@ -6070,6 +6306,66 @@ for i := 0; i < len(word); i++ {
 // ...
 </code></pre>
 
+<svg viewBox="0 0 560 264" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="bytes kai runes sto Geia" style="width:100%;max-width:720px;height:auto;display:block;margin:1.6rem auto;color:inherit">
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <rect x="56" y="76" width="448" height="44" rx="3" fill="currentColor" fill-opacity="0.06" stroke-opacity="0.75" stroke-width="1.6"/>
+    <g stroke-opacity="0.4" stroke-width="1.4">
+      <line x1="168" y1="76" x2="168" y2="120"/>
+      <line x1="280" y1="76" x2="280" y2="120"/>
+      <line x1="392" y1="76" x2="392" y2="120"/>
+    </g>
+
+    <g stroke-opacity="0.22" stroke-width="1.1">
+      <line x1="56" y1="122" x2="56" y2="138"/>
+      <line x1="168" y1="122" x2="168" y2="138"/>
+      <line x1="280" y1="122" x2="280" y2="138"/>
+      <line x1="392" y1="122" x2="392" y2="138"/>
+      <line x1="504" y1="122" x2="504" y2="138"/>
+    </g>
+
+    <rect x="56" y="140" width="448" height="44" rx="3" fill="currentColor" fill-opacity="0.03" stroke-opacity="0.6" stroke-width="1.5"/>
+    <g stroke-opacity="0.22" stroke-width="1.1">
+      <line x1="112" y1="140" x2="112" y2="184"/>
+      <line x1="224" y1="140" x2="224" y2="184"/>
+      <line x1="336" y1="140" x2="336" y2="184"/>
+      <line x1="448" y1="140" x2="448" y2="184"/>
+    </g>
+    <g stroke-opacity="0.4" stroke-width="1.4">
+      <line x1="168" y1="140" x2="168" y2="184"/>
+      <line x1="280" y1="140" x2="280" y2="184"/>
+      <line x1="392" y1="140" x2="392" y2="184"/>
+    </g>
+  </g>
+
+  <g fill="currentColor" text-anchor="middle">
+    <text x="280" y="38" font-size="15" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">word := "Γεια"</text>
+    <text x="48" y="103" text-anchor="end" font-size="13" opacity="0.6">runes</text>
+    <text x="48" y="167" text-anchor="end" font-size="13" opacity="0.6">bytes</text>
+    <g font-size="13" opacity="0.55">
+      <text x="112" y="68">i = 0</text><text x="224" y="68">i = 2</text>
+      <text x="336" y="68">i = 4</text><text x="448" y="68">i = 6</text>
+    </g>
+    <g font-size="20">
+      <text x="112" y="107">Γ</text><text x="224" y="107">ε</text>
+      <text x="336" y="107">ι</text><text x="448" y="107">α</text>
+    </g>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" opacity="0.85">
+      <text x="84" y="169">206</text><text x="140" y="169">147</text>
+      <text x="196" y="169">206</text><text x="252" y="169">181</text>
+      <text x="308" y="169">206</text><text x="364" y="169">185</text>
+      <text x="420" y="169">206</text><text x="476" y="169">177</text>
+    </g>
+    <g font-size="12" opacity="0.45">
+      <text x="84" y="202">0</text><text x="140" y="202">1</text>
+      <text x="196" y="202">2</text><text x="252" y="202">3</text>
+      <text x="308" y="202">4</text><text x="364" y="202">5</text>
+      <text x="420" y="202">6</text><text x="476" y="202">7</text>
+    </g>
+    <text x="280" y="230" font-size="14" opacity="0.75">len(word) = 8 — μετράει bytes, όχι χαρακτήρες</text>
+    <text x="280" y="252" font-size="13" opacity="0.55">το i που δίνει το range είναι θέση σε bytes, γι' αυτό πάει 0, 2, 4, 6</text>
+  </g>
+</svg>
+
 <div class="callout">
     <span class="tag">Δύο συνέπειες που θα σε δαγκώσουν αν δεν τις ξέρεις</span>
     <ul>
@@ -6122,7 +6418,7 @@ for i, letter := range word {
 
 <div class="callout">
     <span class="tag">Ανακεφαλαίωση</span>
-    Ένα string είναι, στην πράξη, ένας πίνακας από μεμονωμένα runes (γράμματα) — γι' αυτό το <code>range</code> λειτουργεί
+    Ένα string είναι, στην πράξη, ένας πίνακας από μεμονωμένα γράμματα — γι' αυτό το <code>range</code> λειτουργεί
     πάνω του με τον ίδιο ακριβώς τρόπο όπως σε ένα slice: πρώτη τιμή η θέση, δεύτερη τιμή το ίδιο το στοιχείο. Ό,τι ξέρεις
     ήδη για το <code>for range</code> σε slices, ισχύει αυτούσιο και σε strings.
 </div>
@@ -7396,15 +7692,19 @@ for __i__, row := range matrix {
     {61, 62, 63, 6, 65, 36},
 }</code></pre>
 
-<div class="callout">
-    <span class="tag">HINT 1</span>
-    Η κύρια διαγώνιος ενός matrix είναι τα στοιχεία όπου <code>i == j</code> — δεν χρειάζεται να ελέγξεις κάθε κελί, μόνο αυτά.
+<div class="spoiler">
+    <div class="spoiler-lock"><span>Σύρε για να δεις το HINT 1 →</span></div>
+    <p>Η κύρια διαγώνιος ενός matrix είναι τα στοιχεία όπου <code>i == j</code> — δεν χρειάζεται να ελέγξεις κάθε κελί, μόνο αυτά.</p>
 </div>
 
-<div class="callout">
-    <span class="tag">HINT 2</span>
-    Μία απλή <code>for</code> με έναν μετρητή αρκεί — δεν χρειάζεσαι διπλή loop, αφού ξέρεις ήδη ποια θέση θες σε κάθε γραμμή.
+<br>
+
+<div class="spoiler">
+    <div class="spoiler-lock"><span>Σύρε για να δεις το HINT 2 →</span></div>
+    <p>Μία απλή <code>for</code> με έναν μετρητή αρκεί — δεν χρειάζεσαι διπλή loop, αφού ξέρεις ήδη ποια θέση θες σε κάθε γραμμή.</p>
 </div>
+
+<br>
 
 <div class="spoiler">
     <div class="spoiler-lock"><span>Σύρε για να αποκαλυφθούν οι λύσεις →</span></div>
@@ -7700,6 +8000,68 @@ fmt.Println(codes[5]) // five
 // wasting memory on hundreds of empty positions you'll never use.
 </code></pre>
 
+<svg viewBox="0 0 560 324" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="araia kleidia map vs slice" style="width:100%;max-width:820px;height:auto;display:block;margin:1.6rem auto;color:inherit">
+  <defs>
+    <marker id="fm-a-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" opacity="0.7"/>
+    </marker>
+  </defs>
+
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <rect x="80" y="60" width="150" height="40" rx="3" fill="currentColor" fill-opacity="0.03" stroke-opacity="0.65" stroke-width="1.5"/>
+    <g stroke-opacity="0.25" stroke-width="1.1">
+      <line x1="130" y1="60" x2="130" y2="100"/>
+      <line x1="180" y1="60" x2="180" y2="100"/>
+    </g>
+    <line x1="234" y1="80" x2="326" y2="80" stroke-opacity="0.3" stroke-width="1.2" stroke-dasharray="4 5"/>
+    <rect x="330" y="60" width="150" height="40" rx="3" fill="currentColor" fill-opacity="0.03" stroke-opacity="0.65" stroke-width="1.5"/>
+    <g stroke-opacity="0.25" stroke-width="1.1">
+      <line x1="380" y1="60" x2="380" y2="100"/>
+      <line x1="430" y1="60" x2="430" y2="100"/>
+    </g>
+    <rect x="430" y="60" width="50" height="40" fill="currentColor" fill-opacity="0.12" stroke-opacity="0.95" stroke-width="2"/>
+
+    <rect x="100" y="192" width="64" height="28" rx="3" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.7" stroke-width="1.5"/>
+    <rect x="100" y="226" width="64" height="28" rx="3" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.7" stroke-width="1.5"/>
+    <rect x="100" y="260" width="64" height="28" rx="3" fill="currentColor" fill-opacity="0.08" stroke-opacity="0.7" stroke-width="1.5"/>
+    <g stroke-opacity="0.55" stroke-width="1.3">
+      <line x1="168" y1="206" x2="224" y2="206" marker-end="url(#fm-a-arrow)"/>
+      <line x1="168" y1="240" x2="224" y2="240" marker-end="url(#fm-a-arrow)"/>
+      <line x1="168" y1="274" x2="224" y2="274" marker-end="url(#fm-a-arrow)"/>
+    </g>
+    <rect x="230" y="192" width="210" height="28" rx="3" fill="currentColor" fill-opacity="0.03" stroke-opacity="0.6" stroke-width="1.4"/>
+    <rect x="230" y="226" width="210" height="28" rx="3" fill="currentColor" fill-opacity="0.03" stroke-opacity="0.6" stroke-width="1.4"/>
+    <rect x="230" y="260" width="210" height="28" rx="3" fill="currentColor" fill-opacity="0.03" stroke-opacity="0.6" stroke-width="1.4"/>
+  </g>
+
+  <g fill="currentColor" text-anchor="middle">
+    <text x="80" y="44" text-anchor="start" font-size="15" font-family="Menlo, Consolas, monospace">[]string</text>
+    <text x="156" y="44" text-anchor="start" font-size="13" opacity="0.6">— για να φτάσεις στο 999, πρέπει να υπάρχουν και τα 1000</text>
+    <g font-size="14" opacity="0.35" font-family="Menlo, Consolas, monospace">
+      <text x="105" y="86">""</text><text x="155" y="86">""</text><text x="205" y="86">""</text>
+      <text x="355" y="86">""</text><text x="405" y="86">""</text>
+    </g>
+    <text x="280" y="86" font-size="16" opacity="0.4">. . .</text>
+    <g font-size="13" opacity="0.55">
+      <text x="105" y="118">0</text><text x="155" y="118">1</text><text x="205" y="118">2</text>
+      <text x="355" y="118">997</text><text x="405" y="118">998</text>
+    </g>
+    <text x="455" y="118" font-size="13" opacity="0.9">999</text>
+    <text x="280" y="146" font-size="13" opacity="0.6">997 άδειες θέσεις που δεν χρησιμοποιείς ποτέ</text>
+
+    <text x="100" y="178" text-anchor="start" font-size="15" font-family="Menlo, Consolas, monospace">map[int]string</text>
+    <g font-size="15" font-family="Menlo, Consolas, monospace">
+      <text x="132" y="211">5</text><text x="132" y="245">100</text><text x="132" y="279">999</text>
+    </g>
+    <g font-size="14" font-family="Menlo, Consolas, monospace" opacity="0.85">
+      <text x="335" y="211">"five"</text>
+      <text x="335" y="245">"hundred"</text>
+      <text x="335" y="279">"nearly a thousand"</text>
+    </g>
+    <text x="280" y="314" font-size="14" opacity="0.7">ο map κρατά μόνο τα κλειδιά που υπάρχουν πραγματικά</text>
+  </g>
+</svg>
+
 <p>
     Με απλά λόγια: χρησιμοποίησε <code>[]string</code> όταν οι θέσεις σου είναι φυσικά συνεχόμενες και σου
     ενδιαφέρει η σειρά. Χρησιμοποίησε <code>map[int]string</code> όταν τα "κλειδιά" σου είναι αραιά, τυχαία, ή απλά
@@ -7734,7 +8096,14 @@ fmt.Println(nums) // [10 30 40]
 <h2>Έλεγχος ύπαρξης κλειδιού — το πρόβλημα και η λύση του</h2>
 
 <p>
-    Εδώ προκύπτει ένα ενδιαφέρον πρόβλημα: πώς ξεχωρίζεις την περίπτωση "αυτό το κλειδί υπάρχει στον map, και η τιμή του τυχαίνει να είναι 0" από την περίπτωση "αυτό το κλειδί δεν υπάρχει καθόλου στον map"; Αν έγραφες απλά <code>ages["someone"]</code> για ένα κλειδί που δεν υπάρχει, η Go θα σου επέστρεφε τη zero value του τύπου της τιμής (δηλαδή 0 για int) — ακριβώς την ίδια τιμή που θα έπαιρνες αν το κλειδί υπήρχε πραγματικά με τιμή 0. Χωρίς επιπλέον πληροφορία, δεν θα μπορούσες να ξεχωρίσεις τις δύο περιπτώσεις.
+    Εδώ προκύπτει ένα ενδιαφέρον πρόβλημα: πώς ξεχωρίζεις την περίπτωση:
+    <br>"αυτό το κλειδί υπάρχει στο map, και η τιμή του τυχαίνει να είναι 0"
+    <br>
+    από την περίπτωση:
+    <br>
+    "αυτό το κλειδί δεν υπάρχει <em>καθόλου</em> στο map";
+    <br>
+    Αν έγραφες απλά <code>ages["someone"]</code> για ένα κλειδί που δεν υπάρχει, η Go θα σου επέστρεφε τη zero value του τύπου της τιμής (δηλαδή 0 για int) — ακριβώς την ίδια τιμή που θα έπαιρνες αν το κλειδί υπήρχε πραγματικά με τιμή 0. Χωρίς επιπλέον πληροφορία, δεν θα μπορούσες να ξεχωρίσεις τις δύο περιπτώσεις.
 </p>
 
 <p>
@@ -7749,16 +8118,94 @@ if ok {
 }
 </code></pre>
 
+<svg viewBox="0 0 560 204" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="comma ok pattern" style="width:100%;max-width:820px;height:auto;display:block;margin:1.6rem auto;color:inherit">
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <rect x="180" y="64" width="70" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke-opacity="0.85" stroke-width="1.7"/>
+    <rect x="180" y="120" width="70" height="40" rx="3" fill="currentColor" fill-opacity="0.1" stroke-opacity="0.85" stroke-width="1.7"/>
+    <rect x="290" y="64" width="80" height="40" rx="3" fill="currentColor" fill-opacity="0.05" stroke-opacity="0.6" stroke-width="1.4"/>
+    <rect x="290" y="120" width="80" height="40" rx="3" stroke-opacity="0.4" stroke-width="1.3" stroke-dasharray="5 4"/>
+  </g>
+
+  <g fill="currentColor" text-anchor="middle">
+    <text x="30" y="24" text-anchor="start" font-size="13" opacity="0.8" font-family="Menlo, Consolas, monospace">ages := map[string]int{"Nikos": 34, "Eleni": 0}</text>
+    <text x="215" y="56" font-size="13" opacity="0.6">τιμή</text>
+    <text x="330" y="56" font-size="13" opacity="0.6">ok</text>
+
+    <text x="30" y="90" text-anchor="start" font-size="14" font-family="Menlo, Consolas, monospace">ages["Eleni"]</text>
+    <text x="215" y="91" font-size="18" font-family="Menlo, Consolas, monospace">0</text>
+    <text x="330" y="90" font-size="15" font-family="Menlo, Consolas, monospace">true</text>
+    <text x="386" y="90" text-anchor="start" font-size="13" opacity="0.6">υπάρχει, με τιμή 0</text>
+
+    <text x="30" y="146" text-anchor="start" font-size="14" font-family="Menlo, Consolas, monospace">ages["Giorgos"]</text>
+    <text x="215" y="147" font-size="18" font-family="Menlo, Consolas, monospace">0</text>
+    <text x="330" y="146" font-size="15" font-family="Menlo, Consolas, monospace" opacity="0.6">false</text>
+    <text x="386" y="146" text-anchor="start" font-size="13" opacity="0.6">δεν υπάρχει καθόλου</text>
+
+    <text x="280" y="190" font-size="14" opacity="0.75">η τιμή είναι 0 και στις δύο — μόνο το ok τις ξεχωρίζει</text>
+  </g>
+</svg>
+
 <p>
     Το δεύτερο return value, εδώ ονομασμένο <code>ok</code>, είναι τύπου <code>bool</code>: <code>true</code> αν το κλειδί όντως υπάρχει στον map, <code>false</code> αν δεν υπάρχει. Αυτό σου δίνει ρητή, ξεκάθαρη πληροφορία, χωρίς αμφισημία.
 </p>
 
 <h2>Iteration με for range</h2>
 
-<pre><code class="lang-go">for key, value := range scores {
-    fmt.Println(key, value)
+<p>
+    Η <code>range</code> δουλεύει και σε maps, με την ίδια σύνταξη που ήδη ξέρεις — αλλάζει όμως το τι σου δίνει.
+    Σε ένα slice, η πρώτη μεταβλητή είναι η <strong>θέση</strong>· σε ένα map, είναι το <strong>κλειδί</strong>. Η
+    δεύτερη παραμένει η τιμή:
+</p>
+
+<pre><code class="lang-go">ages := map[string]int{
+    "Nikos": 34,
+    "Eleni": 28,
+}
+
+for name, age := range ages {
+    fmt.Println(name, age)
+}
+// Eleni 28
+// Nikos 34
+</code></pre>
+
+<p>
+    Το <code>name</code> εδώ δεν είναι μετρητής και δεν αυξάνεται — σε κάθε επανάληψη είναι ένα από τα κλειδιά που
+    υπάρχουν πραγματικά μέσα στον map. Ονόμασέ το ανάλογα με το τι κρατάει: <code>name</code>, <code>letter</code>,
+    <code>word</code>. Το <code>key</code> είναι σωστό αλλά λέει λιγότερα.
+</p>
+
+<h3>Μία μεταβλητή αντί για δύο</h3>
+
+<p>
+    Όπως και στα slices, μπορείς να ζητήσεις μόνο την πρώτη μεταβλητή. Εδώ όμως το αποτέλεσμα είναι διαφορετικό
+    από αυτό που ίσως περιμένεις:
+</p>
+
+<pre><code class="lang-go">for name := range ages {
+    fmt.Println(name) // the KEY, not the value
 }
 </code></pre>
+
+<p>
+    Σε ένα slice, το <code>for i := range nums</code> σου δίνει θέσεις — και συνήθως τις θέλεις για να γράψεις
+    <code>nums[i]</code>. Σε ένα map, το <code>for name := range ages</code> σου δίνει κλειδιά, που είναι πολύ πιο
+    συχνά αυτό που χρειάζεσαι από μόνο του: για να μαζέψεις όλα τα ονόματα, ή για να ελέγξεις ποια υπάρχουν. Αν
+    θες και την τιμή, ζητάς και τη δεύτερη μεταβλητή.
+</p>
+
+<p>
+    Και αντίστροφα, όταν σε ενδιαφέρουν μόνο οι τιμές, αγνοείς το κλειδί με <code>_</code> — ακριβώς όπως έκανες
+    στα slices:
+</p>
+
+<pre><code class="lang-go">total := 0
+for _, age := range ages {
+    total += age // we only need the values here
+}
+fmt.Println(total) // 62
+</code></pre>
+
 
 <div class="callout">
     <span class="tag">Προσοχή: μη εγγυημένη σειρά</span>
