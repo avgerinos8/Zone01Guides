@@ -2433,7 +2433,7 @@ func Peek(stack []int) (value int, ok bool) {
 <p style="margin:0.4em 0;">Αυτό όμως είναι <code>false</code> — το <code>(</code> "κλειδιά" κλείνει με <code>]</code> αντί για <code>)</code>, ένα κλασικό λάθος ταίριασμα.</p>
 </div>
 
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal → (HINT 1)</span></div>
+<div class="spoiler"><div class="spoiler-lock"><span>HINT — Drag to reveal →</span></div>
 <p>Χρειάζεσαι μια πραγματική στοίβα αυτή τη φορά, όχι απλό μετρητή — αφού υπάρχουν τρία διαφορετικά είδη παρένθεσης, και πρέπει να θυμάσαι ΠΟΙΟ άνοιγμα περιμένεις να κλείσει επόμενο. Κάθε φορά που βλέπεις ανοιχτή παρένθεση, κάν' την push. Κάθε φορά που βλέπεις κλειστή, τι πρέπει να ελέγξεις στην κορυφή της στοίβας;</p>
 </div>
 
@@ -6234,7 +6234,7 @@ func ToRoman(n int) string {
     <code>0</code> είναι η ώρα που ανοίγει το πρωί και το <code>16</code> τα μεσάνυχτα, που θα κλείσουμε.
 </p>
 
-<svg viewBox="0 0 860 268" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; margin:18px auto; color:inherit;">
+<svg viewBox="0 0 860 268" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:1200px; height:auto; display:block; margin:18px auto; color:inherit;">
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
     <text x="100" y="30">0</text><text x="190" y="30">2</text><text x="280" y="30">4</text>
     <text x="370" y="30">6</text><text x="460" y="30">8</text><text x="550" y="30">10</text>
@@ -6338,8 +6338,8 @@ func ToRoman(n int) string {
 // meetings[i] is [start, end]. The slice IS reordered.
 func MaxMeetings(meetings [][2]int) int {
     // step 1: earliest finishing time first
-    sort.Slice(meetings, func(a, b int) bool {
-        return meetings[a][1] &lt; meetings[b][1]
+    slices.SortFunc(meetings, func(a, b [2]int) int {
+        return cmp.Compare(a[1], b[1])
     })
 
     count := 0
@@ -6358,15 +6358,14 @@ func MaxMeetings(meetings [][2]int) int {
 </code></pre>
 
 <div class="callout">
-    <span class="tag">Το <code>sort.Slice</code></span>
+    <span class="tag">Όλος ο αλγόριθμος σε μία γραμμή</span>
     <p>
-        Δεν μπορούμε να χρησιμοποιήσουμε τη <code>slices.Sort</code> εδώ, γιατί εκείνη ξέρει να συγκρίνει
-        μόνο απλούς αριθμούς ή strings — δεν έχει ιδέα ποιο από δύο ζευγάρια είναι «μικρότερο». Η
-        <code>sort.Slice</code> λύνει ακριβώς αυτό: της δίνεις μια function που απαντάει σε μία μόνο
-        ερώτηση, «πρέπει το στοιχείο <code>a</code> να μπει πριν από το <code>b</code>;». Εδώ η απάντηση
-        είναι «ναι, αν τελειώνει νωρίτερα», δηλαδή <code>meetings[a][1] &lt; meetings[b][1]</code>. Το ότι
-        περνάμε ολόκληρη function ως όρισμα είναι καινούριο και δεν το έχουμε δει αναλυτικά· προς το
-        παρόν αρκεί να δεις ότι <strong>το κριτήριο του greedy γράφεται μέσα σε εκείνη τη μία γραμμή</strong>.
+        Η <code>slices.SortFunc</code> με το <code>cmp.Compare</code> είναι ακριβώς αυτό που είδαμε στην
+        Ενότητα 5: η <code>slices.Sort</code> δεν ξέρει ποιο από δύο ζευγάρια είναι «μικρότερο», οπότε το
+        κριτήριο το γράφεις εσύ. Πρόσεξε τι κρίνεται εδώ: το <code>a[1]</code> είναι η ώρα λήξης, άρα η μία
+        αυτή γραμμή είναι η επιλογή «όποια τελειώνει νωρίτερα». Άλλαξέ τη σε <code>a[0]</code> και ο
+        αλγόριθμος γίνεται «όποια ξεκινάει νωρίτερα» — ο υπόλοιπος κώδικας μένει γραμμή προς γραμμή ίδιος,
+        και η απάντηση βγαίνει λάθος. <strong>Όλο το greedy κρύβεται στο κριτήριο της ταξινόμησης.</strong>
     </p>
 </div>
 
@@ -6389,7 +6388,7 @@ func MaxMeetings(meetings [][2]int) int {
     Και οι τέσσερις που κρατήθηκαν, στην ίδια αίθουσα, χωρίς καμία επικάλυψη:
 </p>
 
-<svg viewBox="0 0 860 110" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; margin:18px auto; color:inherit;">
+<svg viewBox="0 0 860 110" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:1200px; height:auto; display:block; margin:18px auto; color:inherit;">
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
     <text x="100" y="30">0</text><text x="190" y="30">2</text><text x="280" y="30">4</text>
     <text x="370" y="30">6</text><text x="460" y="30">8</text><text x="550" y="30">10</text>
@@ -6434,26 +6433,26 @@ func MaxMeetings(meetings [][2]int) int {
     Πάμε σε ένα καινούριο πιο σύντομο παράδειγμα που δείχνει ακριβώς αυτό. Έχουμε τρία αιτήματα: <code>[1, 5]</code>, <code>[4, 6]</code>, <code>[5, 9]</code>.
 </p>
 
-<svg viewBox="0 0 720 172" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; margin:18px auto; color:inherit;">
+<svg viewBox="0 0 720 172" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:1200px; height:auto; display:block; margin:18px auto; color:inherit;">
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
-    <text x="80" y="30">0</text><text x="200" y="30">2</text><text x="320" y="30">4</text>
-    <text x="440" y="30">6</text><text x="560" y="30">8</text><text x="680" y="30">10</text>
+    <text x="60" y="30">0</text><text x="180" y="30">2</text><text x="300" y="30">4</text>
+    <text x="420" y="30">6</text><text x="540" y="30">8</text><text x="660" y="30">10</text>
   </g>
   <g stroke="currentColor" opacity="0.28" stroke-width="1">
-    <line x1="80" y1="42" x2="680" y2="42"/>
-    <line x1="80" y1="38" x2="80" y2="156"/><line x1="200" y1="38" x2="200" y2="156"/>
-    <line x1="320" y1="38" x2="320" y2="156"/><line x1="440" y1="38" x2="440" y2="156"/>
-    <line x1="560" y1="38" x2="560" y2="156"/><line x1="680" y1="38" x2="680" y2="156"/>
+    <line x1="60" y1="42" x2="660" y2="42"/>
+    <line x1="60" y1="38" x2="60" y2="156"/><line x1="180" y1="38" x2="180" y2="156"/>
+    <line x1="300" y1="38" x2="300" y2="156"/><line x1="420" y1="38" x2="420" y2="156"/>
+    <line x1="540" y1="38" x2="540" y2="156"/><line x1="660" y1="38" x2="660" y2="156"/>
   </g>
   <g fill="rgba(38,166,154,0.28)" stroke="#26a69a" stroke-width="1.6">
-    <rect x="140" y="60" width="240" height="20" rx="5"/>
-    <rect x="380" y="124" width="240" height="20" rx="5"/>
+    <rect x="120" y="60" width="240" height="20" rx="5"/>
+    <rect x="360" y="124" width="240" height="20" rx="5"/>
   </g>
   <g fill="rgba(255,167,38,0.30)" stroke="#ffa726" stroke-width="1.8">
-    <rect x="320" y="92" width="120" height="20" rx="5"/>
+    <rect x="300" y="92" width="120" height="20" rx="5"/>
   </g>
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.85" text-anchor="middle">
-    <text x="260" y="74">1 → 5</text><text x="380" y="106">4 → 6</text><text x="500" y="138">5 → 9</text>
+    <text x="240" y="74">1 → 5</text><text x="360" y="106">4 → 6</text><text x="480" y="138">5 → 9</text>
   </g>
 </svg>
 
@@ -6662,15 +6661,6 @@ func MaxTasks(durations []int, budget int) int {
         προϋπολογισμό — καμία δεν μπλοκάρει καμία άλλη. Ίδια διαίσθηση, διαφορετικό πρόβλημα, αντίθετη
         ετυμηγορία. Αυτό ακριβώς εννοούσαμε λέγοντας ότι η ορθότητα του greedy είναι ιδιότητα του
         προβλήματος.
-    </p>
-</div>
-
-<div class="callout">
-    <span class="tag">Μια παρενέργεια που αξίζει να προσέξεις</span>
-    <p>
-        Η <code>slices.Sort</code> ταξινομεί <strong>επί τόπου</strong>: το slice του καλούντος αλλάζει σειρά
-        μόνιμα. Αν αυτό σε ενοχλεί, αντέγραψέ το πρώτα με
-        <code>local := append([]int{}, durations...)</code> και ταξινόμησε το αντίγραφο.
     </p>
 </div>
 `);
@@ -6907,6 +6897,35 @@ func Arrange(letters []string, used []bool, current []string) {
 <table class="glossary-table">
 <tr><td class="gt-term">επίπεδο</td><td class="gt-term">υποψήφιος</td><td class="gt-term">current</td><td class="gt-def">τι συμβαίνει</td></tr><!-- 2η μετάθεση: ΑΓΒ --><tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Α Γ Β]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΑΓΒ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Α Γ Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [Α Γ] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [Α] · <strong>το loop του επιπέδου 1 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">0</td><td class="gt-term">Α</td><td class="gt-term">[Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [ ] · το loop συνεχίζεται</td></tr><!-- 3η μετάθεση: ΒΑΓ --><tr><td class="gt-term">0</td><td class="gt-term">Β</td><td class="gt-term">[ ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 1</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Β]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Β Α Γ]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΒΑΓ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Β Α Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [Β Α] · <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Β] · το loop συνεχίζεται</td></tr><!-- 4η μετάθεση: ΒΓΑ --><tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Β]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Β Γ Α]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΒΓΑ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Β Γ Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Β Γ] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [Β] · <strong>το loop του επιπέδου 1 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">0</td><td class="gt-term">Β</td><td class="gt-term">[Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [ ] · το loop συνεχίζεται</td></tr><!-- 5η μετάθεση: ΓΑΒ --><tr><td class="gt-term">0</td><td class="gt-term">Γ</td><td class="gt-term">[ ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, κλήση για το επίπεδο 1</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Γ Α Β]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΓΑΒ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Γ Α Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [Γ Α] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Γ] · το loop συνεχίζεται</td></tr><!-- 6η μετάθεση: ΓΒΑ --><tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Γ Β Α]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΓΒΑ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Γ Β Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Γ Β] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [Γ] · <strong>το loop του επιπέδου 1 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">0</td><td class="gt-term">Γ</td><td class="gt-term">[Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [ ] · <strong>το loop του επιπέδου 0 τελείωσε</strong>, return (τέλος όλων των μεταθέσεων)</td></tr></table>
 
+<div class="callout">
+    <span class="tag">Γιατί παραθέσαμε ολόκληρη την εκτέλεση</span>
+    <p>
+        Είναι η μία και μοναδική φορά σε αυτόν τον οδηγό που καταγράφουμε κάθε βήμα μέχρι το τέλος. Ο λόγος
+        δεν είναι να το διαβάσεις ολόκληρο — είναι να φανεί το μέγεθος.
+    </p>
+    <p>
+        Το πρόβλημα ήταν το απλούστερο που μπορούσαμε να διαλέξουμε: <strong>τρία</strong> γράμματα, έξι
+        απαντήσεις, μια function δώδεκα γραμμών. Και μόνο η καταγραφή του τι συμβαίνει χρειάστηκε πάνω από
+        σαράντα γραμμές πίνακα. Με τέσσερα γράμματα οι μεταθέσεις γίνονται 24 και ο πίνακας ξεπερνάει τις
+        διακόσιες γραμμές. Με πέντε, 120 μεταθέσεις. Με δέκα, πάνω από τρεισήμισι εκατομμύρια.
+    </p>
+    <p>
+        Εδώ είναι η ουσιαστική διαφορά από ένα <code>for</code> loop. Ένα loop παρακολουθείται στο μυαλό:
+        κοιτάς τι κάνει σε μία επανάληψη και το γενικεύεις, γιατί όλες οι επαναλήψεις είναι όμοιες μεταξύ
+        τους και η μία δεν εξαρτάται από τη θέση της άλλης. Στο backtracking κάθε επίπεδο έχει διαφορετική
+        κατάσταση από το προηγούμενο, το πλήθος των επιπέδων αλλάζει καθώς προχωράει η εκτέλεση, και η τύχη
+        ενός υποψηφίου εξαρτάται από ό,τι έχει ήδη επιλεγεί από πάνω του. Δεν υπάρχει «μία τυπική
+        επανάληψη» να κοιτάξεις.
+    </p>
+    <p>
+        Πρακτικά αυτό σημαίνει ότι <strong>ένας backtracking αλγόριθμος δεν κατανοείται τρέχοντάς τον στο
+        μυαλό μέχρι το τέλος</strong>, και δεν χρειάζεται. Αντί γι' αυτό κοιτάμε τα τέσσερα σημεία που
+        ήδη ξέρουμε: πότε σταματάει (base case), ποιοι είναι οι υποψήφιοι (loop), ποιος απορρίπτεται
+        (έλεγχος), και τι ξηλώνεται στην επιστροφή (un-choose). Αν αυτά τα τέσσερα είναι σωστά, ο
+        αλγόριθμος δουλεύει — ανεξάρτητα από το πόσο τεράστιο είναι το δέντρο που παράγουν.
+    </p>
+</div>
+
 <h2>Τι γίνεται αν βγάλεις τον έλεγχο</h2>
 
 <p>
@@ -6960,7 +6979,7 @@ func Arrange(letters []string, used []bool, current []string) {
 <h2>Τι θα άλλαζε αν <em>θέλαμε</em> να σταματήσει νωρίτερα;</h2>
 
 <p>
-    Αν θέλαμε, για παράδειγμα, να βρούμε μόνο τις πρώτες 3 λύσεις από τις 6 και μετά να τερματίσουμε,
+    Αν θέλαμε, για παράδειγμα, να βρούμε μόνο τις πρώτες 3 λύσεις (από τις 6) και μετά να τερματίσουμε,
     θα χρειαζόμασταν μία <strong>επιπλέον base case</strong>, πιο ισχυρή από την υπάρχουσα.
     Αυτή η νέα base case θα έπρεπε να μπαίνει <strong>πριν</strong> από την τρέχουσα — ακριβώς
     στην αρχή της function — ώστε να ελέγχεται πρώτη.

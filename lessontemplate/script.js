@@ -141,6 +141,29 @@ function decorateCodeBlocks(container) {
  *   </div>
  * Requires an actual horizontal DRAG past ~40% of the lock's width to
  * reveal — a simple click/tap does nothing, on purpose.
+ *
+ * Every way a drag can end (pointerup, pointercancel, pointerleave, touchend)
+ * runs through the SAME finishDrag() — past the 40% threshold it reveals,
+ * short of it it springs back past 0 with an overshoot/shake proportional
+ * to how far it had traveled. Earlier this file gave pointerleave its own
+ * separate always-snap-back handler, which broke reveals near the far edge:
+ * dragging close to 100% naturally moves the pointer outside the lock's own
+ * bounds, so pointerleave fired (and forced a snap-back) BEFORE pointerup
+ * had a chance to register the reveal. Sharing one function that checks the
+ * threshold first fixes that, and also makes the shake happen on every
+ * short release, not only ones that exit the lock's bounds.
+ *
+ * Also classifies each lock as "thin" (.spoiler-lock.thin, toggled by
+ * updateThinClass()) so style.css can center a one-line-tall label instead
+ * of top-aligning it. This uses a ResizeObserver rather than a one-off
+ * measurement + window "resize" listener: the course template pre-renders
+ * EVERY slide's HTML upfront (see the note in _viz-common.js), so at the
+ * moment decorateSpoilers() first runs for a given slide, that slide is
+ * very likely not the active/visible one yet — offsetHeight would read 0
+ * and wrongly classify it "thin" forever, since a plain resize listener
+ * never re-fires just from switching slides. ResizeObserver fires again the
+ * moment the element actually gets a real box (e.g. once its slide becomes
+ * active), which a one-off offsetHeight check can't do.
  * @param {HTMLElement} container
  */
 function decorateSpoilers(container) {
@@ -153,13 +176,31 @@ function decorateSpoilers(container) {
     let width = 0;
 
     function pointX(e) {
-      return e.touches ? e.touches[0].clientX : e.clientX;
+      if (e.touches && e.touches.length) return e.touches[0].clientX;
+      if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0].clientX; // touchend: e.touches is already empty by then
+      return e.clientX;
+    }
+
+    // A lock under this height can't fit the default top-aligned label
+    // without the text looking cramped against its top edge — below the
+    // threshold, style.css centers it instead (see .spoiler-lock.thin).
+    const THIN_HEIGHT_PX = 64;
+
+    function updateThinClass() {
+      lock.classList.toggle("thin", lock.offsetHeight < THIN_HEIGHT_PX);
+    }
+    updateThinClass();
+    if (window.ResizeObserver) {
+      new ResizeObserver(updateThinClass).observe(lock);
+    } else {
+      window.addEventListener("resize", updateThinClass); // very old browsers only
     }
 
     function onDown(e) {
       dragging = true;
       startX = pointX(e);
       width = lock.offsetWidth;
+      lock.classList.remove("snapping-back");
       lock.style.transition = "none";
       lock.classList.add("dragging");
     }
@@ -170,30 +211,73 @@ function decorateSpoilers(container) {
       lock.style.transform = `translateX(${dx}px)`;
     }
 
-    function onUp(e) {
+    /**
+     * Runs on the FIRST of pointerup/pointercancel/pointerleave/touchend to
+     * fire for the current drag — whichever event triggers it, whether it
+     * REVEALS only depends on how far the drag got (dx), not on which event
+     * ended it. The shake's INTENSITY does still depend on that, though:
+     * releasing while still inside the lock's bounds is subtle, leaving the
+     * bounds mid-drag keeps the original, stronger "slam".
+     * @param {Event} e
+     * @param {boolean} exitedBounds - true only for pointerleave (the pointer
+     *   left the lock's own box while still mid-drag); false for a release
+     *   that happened with the pointer still over the lock.
+     */
+    function finishDrag(e, exitedBounds) {
       if (!dragging) return;
       dragging = false;
       lock.classList.remove("dragging");
+
       const dx = Math.max(0, pointX(e) - startX);
-      lock.style.transition = "transform .25s ease, opacity .25s ease";
-      if (dx > width * 0.4) {
+
+      if (dx > width * 0.5) {
+        lock.style.transition = "transform .25s ease, opacity .25s ease";
         lock.style.transform = `translateX(${width}px)`;
         lock.style.opacity = "0";
         lock.classList.add("revealed");
         setTimeout(() => { lock.style.display = "none"; }, 250);
-      } else {
-        lock.style.transform = "translateX(0)";
+        return;
       }
+
+      // Short of the threshold — spring back past 0 with a shake, scaled to
+      // how far along the drag had gotten. A drag that barely started gets
+      // a small nudge; one that nearly reached the reveal threshold gets a
+      // much harder "slam" back. Intensity itself depends on exitedBounds:
+      // released in place (subtle) vs. dragged out past the lock's edge
+      // (the original, stronger feel).
+      const progress = width > 0 ? Math.min(1, dx / width) : 0;
+      const overshoot = exitedBounds
+        ? -(8 + progress * 92)  // left the bounds — original intensity
+        : -(2 + progress * 12); // released inside — subtle, half intensity
+
+      lock.style.setProperty("--sb-start", dx + "px");
+      lock.style.setProperty("--sb-overshoot", overshoot + "px");
+      lock.style.transition = "none";
+      lock.style.transform = `translateX(${dx}px)`; // animation's 0% picks up from here
+
+      // Force a reflow before re-adding the class so the animation
+      // restarts cleanly even if triggered again before the previous
+      // snap-back finished.
+      lock.classList.remove("snapping-back");
+      void lock.offsetWidth;
+      lock.classList.add("snapping-back");
     }
+
+    lock.addEventListener("animationend", (e) => {
+      if (e.animationName !== "spoiler-snapback") return;
+      lock.classList.remove("snapping-back");
+      lock.style.transform = "translateX(0px)";
+    });
 
     lock.addEventListener("pointerdown", onDown);
     lock.addEventListener("pointermove", onMove);
-    lock.addEventListener("pointerup", onUp);
-    lock.addEventListener("pointercancel", onUp);
+    lock.addEventListener("pointerup", (e) => finishDrag(e, false));
+    lock.addEventListener("pointercancel", (e) => finishDrag(e, false));
+    lock.addEventListener("pointerleave", (e) => finishDrag(e, true));
     // touch fallback for browsers without full Pointer Events support
     lock.addEventListener("touchstart", onDown, { passive: true });
     lock.addEventListener("touchmove", onMove, { passive: true });
-    lock.addEventListener("touchend", onUp);
+    lock.addEventListener("touchend", (e) => finishDrag(e, false));
   });
 }
 
