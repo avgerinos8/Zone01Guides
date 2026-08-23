@@ -3270,32 +3270,458 @@ fmt.Println(slices.Contains(numbers, 100)) // false
 fmt.Println(slices.Max(numbers))           // 88
 </code></pre>
 
+<h2>Όταν η σειρά δεν είναι προφανής: <code>slices.SortFunc</code></h2>
+
+<p>
+    Η <code>slices.Sort</code> δουλεύει επειδή για αριθμούς και strings η σειρά είναι δεδομένη: το
+    <code>3</code> έρχεται πριν από το <code>7</code>, το <code>"apple"</code> πριν από το
+    <code>"banana"</code>. Δεν χρειάζεται να πεις τίποτα, γιατί δεν υπάρχει τίποτα να αποφασιστεί.
+</p>
+
+<p>
+    Υπάρχουν όμως δεδομένα όπου η σειρά <strong>δεν</strong> είναι δεδομένη — και τότε η
+    <code>slices.Sort</code> ούτε καν μεταγλωττίζεται. Ας δούμε ένα τέτοιο παράδειγμα.
+</p>
+
+<h3>Ένα slice από ζευγάρια</h3>
+
+<p>
+    Κράτα μια λίστα με ώρες συσκέψεων. Κάθε σύσκεψη έχει <em>δύο</em> αριθμούς που πάνε πάντα μαζί: ώρα
+    έναρξης και ώρα λήξης. Ο τύπος που τα κρατάει είναι αυτός:
+</p>
+
+<pre><code class="lang-go">meetings := [][2]int{
+    {0, 6},
+    {1, 4},
+    {3, 5},
+}
+</code></pre>
+
+<p>
+    Το <code>[][2]int</code> διαβάζεται από αριστερά προς τα δεξιά και μπερδεύει την πρώτη φορά. Το πρώτο
+    <code>[]</code> χωρίς αριθμό σημαίνει <strong>slice</strong>: όσα στοιχεία θέλεις, μπορεί να μεγαλώσει με
+    <code>append</code>. Το <code>[2]</code> με τον αριθμό μέσα σημαίνει <strong>array σταθερού
+    μεγέθους</strong>: ακριβώς δύο θέσεις, ούτε μία παραπάνω, ούτε μία λιγότερη. Και το <code>int</code>
+    λέει τι υπάρχει μέσα σε αυτές τις θέσεις. Όλο μαζί: <em>ένα slice, του οποίου κάθε στοιχείο είναι ένα
+    array δύο ακεραίων</em>.
+</p>
+
+<svg viewBox="0 0 640 158" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:720px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.65" text-anchor="middle">
+    <text x="135" y="26">meetings[0]</text>
+    <text x="315" y="26">meetings[1]</text>
+    <text x="495" y="26">meetings[2]</text>
+  </g>
+
+  <g fill="rgba(var(--tone-4-rgb), 0.07)" stroke="var(--tone-4)" stroke-width="1.6">
+    <rect x="60"  y="38" width="150" height="60" rx="8"/>
+    <rect x="240" y="38" width="150" height="60" rx="8"/>
+    <rect x="420" y="38" width="150" height="60" rx="8"/>
+  </g>
+
+  <g fill="rgba(var(--tone-5-rgb), 0.12)" stroke="var(--tone-5)" stroke-width="1.4">
+    <rect x="70"  y="48" width="62" height="40" rx="5"/>
+    <rect x="138" y="48" width="62" height="40" rx="5"/>
+    <rect x="250" y="48" width="62" height="40" rx="5"/>
+    <rect x="318" y="48" width="62" height="40" rx="5"/>
+    <rect x="430" y="48" width="62" height="40" rx="5"/>
+    <rect x="498" y="48" width="62" height="40" rx="5"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" fill="currentColor" text-anchor="middle">
+    <text x="101" y="74">0</text><text x="169" y="74">6</text>
+    <text x="281" y="74">1</text><text x="349" y="74">4</text>
+    <text x="461" y="74">3</text><text x="529" y="74">5</text>
+  </g>
+
+  <g stroke="currentColor" stroke-width="1.2" opacity="0.4">
+    <line x1="101" y1="90" x2="101" y2="106"/>
+    <line x1="169" y1="90" x2="169" y2="106"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.7" text-anchor="middle">
+    <text x="101" y="120">[0] έναρξη</text>
+    <text x="169" y="120">[1] λήξη</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="start">
+    <text x="60" y="140">το εξωτερικό slice μεγαλώνει με append</text>
+    <text x="60" y="154">τα εσωτερικά arrays έχουν πάντα 2 θέσεις</text>
+  </g>
+</svg>
+
+<pre><code class="lang-go">fmt.Println(len(meetings))     // 3 - how many meetings
+fmt.Println(meetings[1])       // [1 4] - the whole second meeting
+fmt.Println(meetings[1][0])    // 1 - its start time
+fmt.Println(meetings[1][1])    // 4 - its end time
+
+meetings = append(meetings, [2]int{8, 11}) // the outer slice grows — add meeting from 8 to 11
+</code></pre>
+
+<h3>Γιατί η <code>slices.Sort</code> δεν αρκεί εδώ</h3>
+
+<pre><code class="lang-go">slices.Sort(meetings) // COMPILE ERROR
+</code></pre>
+
+<p>
+    Ο compiler αρνείται, και έχει δίκιο. Ποιο από τα <code>{0, 6}</code> και <code>{1, 4}</code> είναι
+    μικρότερο; Αν κοιτάξεις την έναρξη, το πρώτο. Αν κοιτάξεις τη λήξη, το δεύτερο. Αν κοιτάξεις τη διάρκεια,
+    πάλι το δεύτερο. <strong>Δεν υπάρχει σωστή απάντηση χωρίς να πεις εσύ τι σε ενδιαφέρει</strong> — και η
+    <code>slices.Sort</code> δεν έχει τρόπο να το μαντέψει.
+</p>
+
+<p>
+    Η λύση είναι η <code>slices.SortFunc</code>. Παίρνει δύο ορίσματα: το slice, και μια
+    <strong>συνάρτηση σύγκρισης</strong> (comparison function) που της γράφεις εσύ. Αυτή η function δέχεται
+    δύο στοιχεία, τα λέμε <code>a</code> και <code>b</code>, και απαντάει με έναν ακέραιο:
+</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">αρνητικό</td><td class="gt-def">το <code>a</code> πρέπει να μπει ΠΡΙΝ από το <code>b</code></td></tr>
+  <tr><td class="gt-term">θετικό</td><td class="gt-def">το <code>a</code> πρέπει να μπει ΜΕΤΑ από το <code>b</code></td></tr>
+  <tr><td class="gt-term">μηδέν</td><td class="gt-def">είναι ισοδύναμα — δεν έχει σημασία ποιο θα μπει πρώτο</td></tr>
+</table>
+
+<p>
+    Ταξινόμηση κατά ώρα λήξης, δηλαδή κατά <code>[1]</code>:
+</p>
+
+<pre><code class="lang-go">import (
+    "fmt"
+    "slices"
+)
+
+func main() {
+    meetings := [][2]int{ {0, 6}, {1, 4}, {3, 5} }
+
+    slices.SortFunc(meetings, func(a, b [2]int) int {
+        if a[1] &lt; b[1] {
+            return -1 // a ends earlier - a goes first
+        }
+        if a[1] &gt; b[1] {
+            return 1 // a ends later - a goes after
+        }
+        return 0 // same end time - order does not matter
+    })
+
+    fmt.Println(meetings) // [[1 4] [3 5] [0 6]]
+}
+</code></pre>
+
+<p>
+    Πρόσεξε τι άλλαξε στο αποτέλεσμα: τα ζευγάρια μπήκαν σε σειρά <code>4, 5, 6</code> κοιτώντας τον
+    <em>δεύτερο</em> αριθμό, ενώ ο πρώτος αριθμός βγήκε <code>1, 3, 0</code> — εντελώς ανακατεμένος. Αυτό
+    ακριβώς ζήτησες.
+</p>
+
+<h2>Μια παρένθεση: Anonymous functions</h2>
+
+<p>
+    Το δεύτερο όρισμα της <code>SortFunc</code> είναι κάτι που δεν έχεις ξαναδεί: <strong>ολόκληρη function
+    γραμμένη μέσα στην κλήση, χωρίς όνομα</strong>. Λέγεται <strong>anonymous function</strong>, ή
+    <strong>function literal</strong> στα επίσημα Go docs. «Literal» επειδή είναι κυριολεκτικά η ίδια η
+    function γραμμένη εκεί, όπως το <code>42</code> είναι κυριολεκτικά ο αριθμός και όχι το όνομα μιας
+    μεταβλητής που τον περιέχει.
+</p>
+
+<p>
+    Η πρώτη διαφορά από μια κανονική function φαίνεται με το μάτι: λείπει το όνομα ανάμεσα στο
+    <code>func</code> και στην παρένθεση.
+</p>
+
+<pre><code class="lang-go">// named function - has a name, lives at package level
+func byEndTime(a, b [2]int) int { ... }
+
+// anonymous function - no name, written where it is needed
+func(a, b [2]int) int { ... }
+</code></pre>
+<p>
+    Η δεύτερη διαφορά είναι στο <strong>πού επιτρέπεται να γραφτεί η καθεμία</strong>, και είναι κανόνας της
+    γλώσσας, όχι θέμα ύφους. Μια named function δηλώνεται μόνο σε package level, δηλαδή έξω από κάθε άλλη
+    function. Δεν μπορείς να τη γράψεις μέσα στο block μιας άλλης — ο compiler το απορρίπτει. Η anonymous
+    function κάνει ακριβώς το αντίθετο: δεν στέκει μόνη της, γράφεται πάντα μέσα σε κάτι, είτε ως όρισμα
+    σε κλήση είτε ως τιμή που ανατίθεται σε μεταβλητή.
+</p>
+
+<pre><code class="lang-go">func main() {
+    // COMPILE ERROR: a named function cannot be declared inside another function
+    func endsEarlier(a, b int) bool {
+        return a &lt; b
+    }
+}
+</code></pre>
+
+<p>
+    Και οι δύο έγκυροι τρόποι, με anonymous function εντός μιας άλλης func (της main):
+</p>
+
+<pre><code class="lang-go">func main() {
+    // valid: an anonymous function assigned to a variable
+    endsEarlier := func(a, b int) bool {
+        return a &lt; b
+    }
+    fmt.Println(endsEarlier(4, 6)) // true
+
+    // valid: an anonymous function written straight into a call
+    fmt.Println(func(a, b int) bool {
+        return a &lt; b
+    }(4, 6)) // true
+}
+</code></pre>
+
+<p>
+    Πρόσεξε ότι στον πρώτο από τους δύο έγκυρους τρόπους, το όνομα <code>endsEarlier</code> δεν ανήκει στη
+    function — ανήκει στη <strong>μεταβλητή</strong> που την κρατάει. Η ίδια η function παραμένει ανώνυμη.
+    Η διαφορά δεν είναι λεκτική: το <code>endsEarlier</code> εδώ είναι τοπική μεταβλητή σαν οποιαδήποτε
+    άλλη. Υπάρχει μόνο μέσα στην <code>main</code>, χάνεται μόλις αυτή τελειώσει, και μπορείς να της
+    αναθέσεις αργότερα εντελώς άλλη function — αρκεί να δέχεται και να επιστρέφει τα ίδια πράγματα.
+</p>
+
 <div class="callout">
-    <span class="tag">Θα δεις και το παλιό package <code>sort</code></span>
+    <span class="tag">Οι functions είναι τιμές</span>
     <p>
-        Σε κώδικα γραμμένο πριν το 2023 θα συναντήσεις <code>sort.Ints(numbers)</code> και
-        <code>sort.Strings(words)</code>. Κάνουν το ίδιο πράγμα και εξακολουθούν να δουλεύουν — απλά
-        χρειάζονταν ξεχωριστή function για κάθε τύπο. Για καινούριο κώδικα, προτίμησε το
-        <code>slices</code>. Αν το <code>import "slices"</code> σου βγάλει σφάλμα, δες τη γραμμή
-        <code>go</code> μέσα στο <code>go.mod</code> σου: πρέπει να λέει <code>1.21</code> ή νεότερη.
+        Αυτό που κάνει τα παραπάνω δυνατά είναι ότι στη Go μια function είναι <strong>κανονική
+        τιμή</strong>, όπως ένας αριθμός ή ένα string. Μπορεί να μπει σε μεταβλητή, να περάσει ως όρισμα
+        σε άλλη function, να επιστραφεί ως αποτέλεσμα. Δεν είναι ειδική περίπτωση της γλώσσας για την
+        ταξινόμηση — είναι γενική ιδιότητα, και η <code>SortFunc</code> απλώς την εκμεταλλεύεται. Γι' αυτό
+        έχεις δύο τρόπους να της δώσεις το κριτήριο: γραμμένο επιτόπου μέσα στην κλήση, ή αποθηκευμένο
+        πρώτα σε μεταβλητή.
+    </p>
+</div>
+
+<h2>Επιστροφή στο <code>slices.Sort</code></h2>
+<p>
+    <strong>Πρώτος τρόπος — γράφεις τη function μέσα στην κλήση.</strong> Αυτό είναι το συνηθισμένο όταν το
+    κριτήριο χρησιμοποιείται μία φορά:
+</p>
+
+<pre><code class="lang-go">func main() {
+    meetings := [][2]int{ {0, 6}, {1, 4}, {3, 5} }
+
+    slices.SortFunc(meetings, func(a, b [2]int) int {
+        if a[1] &lt; b[1] {
+            return -1
+        }
+        if a[1] &gt; b[1] {
+            return 1
+        }
+        return 0
+    })
+
+    fmt.Println(meetings) // [[1 4] [3 5] [0 6]]
+}
+</code></pre>
+
+<p>
+    <strong>Δεύτερος τρόπος — την αποθηκεύεις πρώτα σε μεταβλητή.</strong> Το <code>:=</code> είναι το ίδιο
+    που χρησιμοποιείς για αριθμούς· απλώς εδώ η τιμή είναι function:
+</p>
+
+<pre><code class="lang-go">func main() {
+    meetings := [][2]int{ {0, 6}, {1, 4}, {3, 5} }
+
+    byEndTime := func(a, b [2]int) int {
+        if a[1] &lt; b[1] {
+            return -1
+        }
+        if a[1] &gt; b[1] {
+            return 1
+        }
+        return 0
+    }
+
+    slices.SortFunc(meetings, byEndTime) // no parentheses after byEndTime
+
+    fmt.Println(meetings) // [[1 4] [3 5] [0 6]]
+}
+</code></pre>
+<p>
+    Και οι δύο κάνουν ακριβώς το ίδιο. Ο δεύτερος αξίζει όταν το ίδιο κριτήριο χρησιμοποιείται σε
+    περισσότερα από ένα σημεία, ή όταν η κλήση γίνεται δυσανάγνωστη με τη function μέσα της. Το όνομα
+    <code>byEndTime</code> λειτουργεί και σαν σχόλιο.
+</p>
+
+<div class="callout">
+    <span class="tag">Χωρίς παρενθέσεις</span>
+    <p>
+        Στη γραμμή <code>slices.SortFunc(meetings, byEndTime)</code> δεν υπάρχουν παρενθέσεις μετά το
+        <code>byEndTime</code>, και αυτό είναι κρίσιμο. Με παρενθέσεις θα σήμαινε «κάλεσέ την τώρα και δώσε
+        το αποτέλεσμα»· χωρίς παρενθέσεις σημαίνει «δώσε την ίδια τη function». Δεν την καλείς εσύ — τη
+        δίνεις στην <code>SortFunc</code>, και εκείνη θα την καλέσει όσες φορές χρειαστεί κατά την
+        ταξινόμηση, με διαφορετικά ζευγάρια κάθε φορά.
+    </p>
+</div>
+
+<h2>Επόμενο παράδειγμα: strings κατά μήκος</h2>
+
+<p>
+    Το ίδιο εργαλείο δουλεύει και σε απλά δεδομένα, όταν θέλεις άλλη σειρά από την προεπιλεγμένη. Η
+    <code>slices.Sort</code> βάζει τα strings αλφαβητικά.
+</p>
+<p>
+    Στο παρακάτω παράδειγμα θα ταξινομήσουμε ένα slice από strings κατά <strong>μήκος</strong> — ενώ η
+    <code>slices.Sort</code> θα τα έβαζε αλφαβητικά.
+</p>
+<pre><code class="lang-go">words := []string{"banana", "fig", "apple", "kiwi"}
+
+slices.SortFunc(words, func(a, b string) int {
+    if len(a) &lt; len(b) {
+        return -1
+    }
+    if len(a) &gt; len(b) {
+        return 1
+    }
+    return 0
+})
+
+fmt.Println(words) // [fig kiwi apple banana]
+</code></pre>
+
+<p>
+    Δουλεύει, αλλά έξι γραμμές για να πεις «σύγκρινε δύο αριθμούς» είναι πολλές — και είναι το ίδιο
+    ακριβώς σχέδιο που έγραψες και στο προηγούμενο παράδειγμα. Η standard library έχει έτοιμη αυτή τη
+    σύγκριση.
+</p>
+
+<div class="callout good">
+    <span class="tag">Extra: το <code>cmp.Compare</code></span>
+    <p>
+        Το package <code>cmp</code> (από την Go 1.21, όπως και το <code>slices</code>) έχει μία function
+        που κάνει ακριβώς αυτά τα τρία <code>if</code>: η <code>cmp.Compare(x, y)</code> επιστρέφει
+        <code>-1</code>, <code>0</code> ή <code>1</code> ανάλογα με το ποιο από τα δύο είναι μικρότερο.
+        Ολόκληρο το κριτήριο γίνεται μία γραμμή:
+    </p>
+    <pre><code class="lang-go">import (
+    "cmp"
+    "slices"
+)
+
+slices.SortFunc(words, func(a, b string) int {
+    return cmp.Compare(len(a), len(b)) // shortest first
+})
+
+// and the meetings example, in one line as well:
+slices.SortFunc(meetings, func(a, b [2]int) int {
+    return cmp.Compare(a[1], b[1]) // earliest end time first
+})</code></pre>
+    <p>
+        Για <strong>φθίνουσα</strong> σειρά αντιστρέφεις τα ορίσματα: <code>cmp.Compare(len(b), len(a))</code>.
+        Δεν είναι υποχρεωτικό να το χρησιμοποιείς — τα <code>if</code> είναι εξίσου σωστά και πιο ρητά όσο
+        μαθαίνεις. Αλλά θα το δεις παντού σε κώδικα άλλων, και αξίζει να το αναγνωρίζεις.
+    </p>
+    <p>
+        Ένα προειδοποιητικό: θα συναντήσεις και κώδικα που γράφει <code>return len(a) - len(b)</code>. Η
+        αφαίρεση όντως δίνει αρνητικό, θετικό ή μηδέν, οπότε φαίνεται έξυπνη συντόμευση. Με πολύ μεγάλους
+        αριθμούς όμως η αφαίρεση μπορεί να ξεπεράσει τα όρια του <code>int</code> και να γυρίσει με λάθος
+        πρόσημο, οπότε η ταξινόμηση βγαίνει λάθος χωρίς κανένα μήνυμα σφάλματος (overflow). Το
+        <code>cmp.Compare</code> δεν έχει αυτό το πρόβλημα.
+    </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Τι κρατάς από όλο αυτό</span>
+    <p>
+        Ξεκινάς πάντα με <code>slices.Sort</code>. Όταν ο compiler σε σταματήσει, ή όταν θέλεις άλλη σειρά
+        από την προεπιλεγμένη, περνάς σε <code>slices.SortFunc</code> και γράφεις μια function που απαντάει
+        σε μία ερώτηση: <em>ποιο από τα δύο μπαίνει πρώτο;</em> Όλη η δυσκολία της ταξινόμησης βρίσκεται σε
+        εκείνη τη μία απάντηση.
+    </p>
+</div>
+
+<h2><code>slices.Sort</code> vs <code>sort.Slice</code></h2>
+
+<p>
+    Μέχρι τώρα δουλέψαμε αποκλειστικά με το package <code>slices</code>. Υπάρχει όμως και ένα παλαιότερο
+    package με το όνομα <code>sort</code>, που κάνει τα ίδια πράγματα με διαφορετικό τρόπο. Θα το
+    συναντήσεις σε υπάρχοντα projects, και σχεδόν σίγουρα θα σου το προτείνει και ένα AI — συνήθως χωρίς
+    να αναφέρει ότι υπάρχει νεότερος τρόπος που μάλλον θα έπρεπε να χρησιμοποιήσει. Οπότε θα πρέπει να ξέρεις τι είναι και το <code>sort.Slice</code>.
+</p>
+
+<p>
+    Το πακέτο <code>sort</code> υπάρχει από την πρώτη έκδοση της Go. Επειδή τότε η γλώσσα δεν είχε generics, δεν
+    μπορούσε να υπάρξει μία function που να ταξινομεί ό,τι της δώσεις — χρειαζόταν
+    <strong>ξεχωριστή function για κάθε τύπο</strong>:
+</p>
+
+<pre><code class="lang-go">// the old sort package - one function per type
+sort.Ints(numbers)
+sort.Strings(words)
+sort.Float64s(temps)
+
+// the slices package - one function for all of them
+slices.Sort(numbers)
+slices.Sort(words)
+slices.Sort(temps)
+</code></pre>
+
+<p>
+    Το ίδιο ισχύει και για την ταξινόμηση με δικό σου κριτήριο. Η αντίστοιχη της
+    <code>slices.SortFunc</code> λέγεται <code>sort.Slice</code>, και η βασική διαφορά είναι στο τι σου
+    δίνει η function που γράφεις:
+</p>
+
+<pre><code class="lang-go">// sort.Slice gives you POSITIONS - you index into the slice yourself
+sort.Slice(meetings, func(a, b int) bool {
+    return meetings[a][1] &lt; meetings[b][1] // return true if a goes first
+})
+
+// slices.SortFunc gives you the ELEMENTS - and expects an int, not a bool
+slices.SortFunc(meetings, func(a, b [2]int) int {
+    return cmp.Compare(a[1], b[1])
+})
+</code></pre>
+
+<table class="glossary-table">
+<tr><td class="gt-term"></td><td class="gt-term">sort.Slice</td><td class="gt-def">slices.SortFunc</td></tr>
+<tr><td class="gt-term">τα ορίσματα είναι</td><td class="gt-term">θέσεις (int, int)</td><td class="gt-def">τα ίδια τα στοιχεία</td></tr>
+<tr><td class="gt-term">επιστρέφει</td><td class="gt-term">bool — «μπαίνει το a πρώτο;»</td><td class="gt-def">int — αρνητικό, μηδέν ή θετικό</td></tr>
+<tr><td class="gt-term">αναφορά στο slice</td><td class="gt-term">από μέσα, με το όνομά του</td><td class="gt-def">δεν χρειάζεται καθόλου</td></tr>
+<tr><td class="gt-term">διαθέσιμο από</td><td class="gt-term">την αρχή της Go</td><td class="gt-def">Go 1.21</td></tr>
+</table>
+
+<div class="callout">
+    <span class="tag">Θα σου το προτείνει και το AI</span>
+    <p>
+        Το <code>sort.Slice</code> είναι γραμμένο σε εκατομμύρια γραμμές κώδικα εδώ και δέκα χρόνια, ενώ το
+        <code>slices.SortFunc</code> υπάρχει από το 2023. Τα μοντέλα έχουν εκπαιδευτεί σε αυτόν τον κώδικα,
+        οπότε όταν ζητήσεις βοήθεια για ταξινόμηση θα σου δώσουν συνήθως <code>sort.Slice</code>. Δεν είναι
+        λάθος και δεν πρόκειται να καταργηθεί — η Go κρατάει τη συμβατότητα με παλιό κώδικα ως θεμελιώδη
+        αρχή. Απλά να γνωρίζεις ότι υπάρχει και νεότερος τρόπος, και ότι για δικό σου καινούριο κώδικα το
+        <code>slices</code> είναι η προτεινόμενη επιλογή.
+    </p>
+    <p>
+        Πρόσεξε επίσης τη σειρά των λέξεων, γιατί είναι ο πιο συχνός λόγος που δεν μεταγλωττίζεται ο
+        κώδικας: <code>slices.Sort</code> είναι η <code>Sort</code> του package <code>slices</code>, ενώ
+        <code>sort.Slice</code> είναι η <code>Slice</code> του package <code>sort</code>. Δύο διαφορετικά
+        packages, με το όνομα του καθενός να εμφανίζεται μέσα στο άλλο.
+    </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Αν το <code>import "slices"</code> βγάλει σφάλμα</span>
+    <p>
+        Και τα δύο packages, <code>slices</code> και <code>cmp</code>, μπήκαν στη standard library στην Go
+        1.21. Αν ο compiler σου λέει ότι δεν τα βρίσκει, άνοιξε το <code>go.mod</code> του project σου και
+        δες τη γραμμή που ξεκινάει με <code>go</code>: πρέπει να λέει <code>1.21</code> ή νεότερη έκδοση.
     </p>
 </div>
 
 <div class="callout good">
-    <span class="tag">Τότε γιατί συνεχίζουμε;</span>
+    <span class="tag">Αφού υπάρχουν έτοιμα, γιατί συνεχίζουμε;</span>
     <p>
-        Αφού υπάρχει έτοιμη λύση, γιατί να δούμε καθόλου έναν αλγόριθμο ταξινόμησης; Όχι για να τον γράψεις
-        στην πράξη — αλλά επειδή το bubble sort είναι το απλούστερο δυνατό παράδειγμα με δύο φωλιασμένες
-        λούπες, οπότε είναι η πρώτη ευκαιρία να δεις το <code>O(n²)</code> που μόλις έμαθες να ισχύει σε
-        πραγματικό κώδικα, όχι μόνο σε τύπο. Θα δεις επίσης το ίδιο <strong>boolean switch</strong> pattern
-        του προηγούμενου κεφαλαίου να εμφανίζεται ξανά, σε εντελώς διαφορετικό πρόβλημα — απόδειξη ότι δεν
-        ήταν κόλπο μιας χρήσης. Τους υπόλοιπους αλγορίθμους θα τους δεις μόνο ονομαστικά, όσο χρειάζεται για
-        να ξέρεις τι υπάρχει.
+        Αφού υπάρχει έτοιμη λύση, γιατί να δούμε έναν αλγόριθμο ταξινόμησης; Η απάντηση δεν είναι για να μάθεις να τον γράφεις
+        στην πράξη — αλλά επειδή το bubble sort είναι το απλούστερο δυνατό παράδειγμα με δύο nested loops,
+        οπότε είναι η πρώτη ευκαιρία να δεις το <code>O(n²)</code> που μόλις έμαθες να ισχύει σε πραγματικό
+        κώδικα, όχι μόνο σε τύπο. Θα δεις επίσης το ίδιο <strong>boolean switch</strong> pattern του
+        προηγούμενου κεφαλαίου να εμφανίζεται ξανά, σε εντελώς διαφορετικό πρόβλημα — απόδειξη ότι δεν ήταν
+        κόλπο μιας χρήσης. Τους υπόλοιπους αλγορίθμους θα τους δεις μόνο ονομαστικά, όσο χρειάζεται για να
+        ξέρεις τι υπάρχει.
     </p>
 </div>
 
-<br>
-
+`);
+        addContent(`
+<div class="eyebrow">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
 <h1>Bubble Sort</h1>
 
 <p class="lede">
@@ -5616,18 +6042,17 @@ func main() {
         // ── §7.1 — Greedy ────────────────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
-<h1>Greedy: πάρε το καλύτερο τώρα, μη γυρίσεις πίσω</h1>
+<h1>Greedy: Διάλεξε αυτό που φαίνεται ιδανικό αυτή τη στιγμή και προχώρα.</h1>
 
 <p class="lede">
     Η πιο απλή στρατηγική λήψης αποφάσεων που υπάρχει: σε κάθε βήμα, διάλεξε ό,τι φαίνεται καλύτερο
-    <strong>αυτή τη στιγμή</strong>, χωρίς να σκεφτείς τι θα σημάνει αυτό αργότερα. Και ποτέ, μα ποτέ, μην
+    <strong>αυτή τη στιγμή</strong>, χωρίς να σκεφτείς το μέλλον. Και ποτέ, μα ποτέ, μην
     ξανασκεφτείς μια επιλογή που έχεις ήδη κάνει.
 </p>
 
 <p>
     Ακούγεται αφελές — και μερικές φορές είναι. Αλλά για μια ολόκληρη οικογένεια προβλημάτων δίνει
-    <strong>αποδεδειγμένα τη βέλτιστη λύση</strong>, σε ένα μόνο πέρασμα. Η δουλειά σου δεν είναι να μάθεις να
-    γράφεις greedy — είναι πολύ εύκολο. Είναι να μάθεις <em>πότε να το εμπιστεύεσαι</em>.
+    <strong>αποδεδειγμένα τη βέλτιστη λύση</strong>, σε ένα μόνο πέρασμα.
 </p>
 
 <h2>Παράδειγμα 1: ρέστα με τα λιγότερα κέρματα</h2>
@@ -5639,10 +6064,15 @@ func main() {
 
 <p>
     Η greedy στρατηγική είναι αυτό που κάνει κάθε ταμίας χωρίς να το σκεφτεί: <em>δώσε το μεγαλύτερο κέρμα
-    που χωράει ακόμα, και επανάλαβε</em>.
+    που μπορεί να δοθεί αυτή τη στιγμή, και επανάλαβε</em>.
 </p>
 
-<pre><code class="lang-go">// GreedyCoins returns how many coins are needed for the amount.
+
+<pre><code class="lang-go">func main() {
+    coins := []int{200, 100, 50, 20, 10, 5, 2, 1}
+    fmt.Println(GreedyCoins(coins, 87))
+}
+// GreedyCoins returns how many coins are needed for the amount.
 // coins must be sorted from largest to smallest.
 func GreedyCoins(coins []int, amount int) int {
     count := 0
@@ -5670,15 +6100,15 @@ func GreedyCoins(coins []int, amount int) int {
     <code>O(n)</code>, χωρίς να δοκιμάσει ούτε έναν εναλλακτικό συνδυασμό.
 </p>
 
-<h2>Παράδειγμα 2: το ίδιο πρόβλημα, άλλα κέρματα</h2>
+<h2>Παράδειγμα 2: το ίδιο πρόβλημα, σε ένα διαφορετικό νομισματικό σύστημα</h2>
 
 <p>
-    Τώρα φαντάσου ένα νόμισμα με κέρματα <code>4, 3, 1</code>. Πρέπει να δώσεις ρέστα <strong>6</strong>.
+    Φαντάσου ένα νόμισμα που έχει μονάχα κέρματα αξίας <code>4, 3, 1</code>. Δηλαδή: <code class="lang-go">coins := []int{4, 3, 1}</code> Πρέπει να δώσεις ρέστα <strong>6</strong>.
     Ίδιος αλγόριθμος, ίδιος κώδικας:
 </p>
 
 <table class="glossary-table">
-<tr><td class="gt-term">υπόλοιπο</td><td class="gt-term">greedy παίρνει</td><td class="gt-def">σύνολο</td></tr>
+<tr><td class="gt-term">υπόλοιπο</td><td class="gt-term">greedy παίρνει</td><td class="gt-def">πλήθος κερμάτων</td></tr>
 <tr><td class="gt-term">6</td><td class="gt-term">4</td><td class="gt-def">1</td></tr>
 <tr><td class="gt-term">2</td><td class="gt-term">1</td><td class="gt-def">2</td></tr>
 <tr><td class="gt-term">1</td><td class="gt-term">1</td><td class="gt-def"><strong>3</strong> κέρματα: 4 + 1 + 1</td></tr>
@@ -5696,8 +6126,8 @@ func GreedyCoins(coins []int, amount int) int {
 </div>
 
 <p>
-    Αυτό είναι το κεντρικό μάθημα του greedy, και αξίζει να το πεις δυνατά: <strong>ο ίδιος ακριβώς
-    αλγόριθμος είναι σωστός για το ευρώ και λάθος για το νόμισμα {4, 3, 1}</strong>. Η ορθότητα δεν είναι
+    Αυτό είναι το πρόβλημα του greedy: <strong>ο ίδιος ακριβώς
+    αλγόριθμος είναι σωστός για το ευρώ και λάθος για το παράξενο νόμισμα με τα {4, 3, 1}</strong>. Η ορθότητα δεν είναι
     ιδιότητα του κώδικα — είναι ιδιότητα του <em>προβλήματος</em>.
 </p>
 
@@ -5766,118 +6196,357 @@ func ToRoman(n int) string {
     <span class="tag">Δύο παράλληλα slices αντί για ένα struct</span>
     <p>
         Θα ήταν πιο καθαρό να έχεις μία λίστα από ζευγάρια «τιμή + σύμβολο» — και αυτό ακριβώς κάνει ένα
-        <code>struct</code>, που θα δούμε σε επόμενο guide. Μέχρι τότε, δύο slices που κρατάς
-        <strong>ευθυγραμμισμένα</strong> κάνουν τη δουλειά. Ο κανόνας είναι απλός και αυστηρός: ό,τι αλλάζεις
-        στο ένα, το αλλάζεις και στο άλλο, στην ίδια ακριβώς θέση.
+        <code>struct</code>, που θα δούμε σε επόμενο guide. Μέχρι τότε, μπορούμε να το υλοποιήσουμε με δύο slices αρκεί να τα κρατήσουμε πάντα <strong>ευθυγραμμισμένα</strong>. Ό,τι αλλάζεις στο ένα, το αλλάζεις και στο άλλο, στην ίδια ακριβώς θέση.
     </p>
 </div>
 
 <h2>Γιατί εδώ το greedy είναι σωστό</h2>
 
 <p>
-    Είναι το ίδιο ερώτημα που κάναμε στα κέρματα, και η απάντηση είναι η ίδια:
-    <strong>το σύστημα σχεδιάστηκε ώστε να δουλεύει</strong>. Τα έξι αφαιρετικά ζεύγη δεν είναι διακόσμηση —
-    υπάρχουν ακριβώς για να μη χρειάζεται ποτέ να γράψεις τέσσερα ίδια σύμβολα στη σειρά. Μόλις τα βάλεις
-    μέσα στη λίστα, κάθε τιμή «χωράει καθαρά» στην επόμενη, όπως τα κέρματα του ευρώ.
+    Επειδή κάποια προβλήματα είναι φτιαγμένα έτσι ώστε να λύνονται ιδανικά με το greedy. Ή για να πούμε καλύτερα, αυτά τα προβλήματα λύνονται ιδανικά αρκεί να κάνεις κάθε φορά την "καλύτερη" δυνατή επιλογή (εδώ μεγαλύτερη).
+</p>  
+<p>
+    Τα ίδια τα ρωμαϊκά σύμβολα είναι φτιαγμένα να ταιριάζουν με το greedy: τα έξι αφαιρετικά ζεύγη
+    (<code>CM</code>, <code>CD</code>, <code>XC</code>, <code>XL</code>, <code>IX</code>, <code>IV</code>)
+    καλύπτουν ακριβώς τις περιπτώσεις όπου η «πάρε το μεγαλύτερο που χωράει» θα οδηγούσε σε λάθος γραφή. Δεν
+    είναι το greedy που είναι έξυπνο εδώ — είναι το ίδιο το σύστημα αρίθμησης που έχει σχεδιαστεί ώστε η πιο
+    άπληστη επιλογή να είναι πάντα και η σωστή.
+</p>
+
+<h2>Παράδειγμα 4: πόσες συσκέψεις χωράνε στην αίθουσα</h2>
+
+<p>
+    Η εταιρεία σου έχει <strong>μία</strong> αίθουσα συσκέψεων, ανοιχτή από τις 8 το πρωί μέχρι τα
+    μεσάνυχτα — δεκαέξι ώρες συνολικά. Έξι ομάδες ζητάνε να την κρατήσουν, και καθεμία έχει δηλώσει
+    <em>συγκεκριμένη</em> ώρα έναρξης και λήξης: δεν διαπραγματεύεται, ή θα γίνει η σύσκεψή της ακριβώς
+    εκείνη την ώρα ή καθόλου. Επειδή η αίθουσα είναι μία, δύο συσκέψεις που επικαλύπτονται έστω και κατά μία
+    ώρα δεν μπορούν να γίνουν και οι δύο.
 </p>
 
 <p>
-    Δοκίμασε νοερά να αφαιρέσεις το <code>900</code> από τη λίστα. Ο κώδικας θα εξακολουθούσε να τρέχει και
-    να τερματίζει κανονικά — απλά θα έβγαζε <code>DCCCC</code> για το 900. Ίδιο μοτίβο με το νόμισμα
-    <code>{4, 3, 1}</code>: το greedy δεν αποτυγχάνει με εμφανή τρόπο, <strong>δίνει σιωπηλά λάθος απάντηση</strong>.
+    Το ερώτημα: <strong>πόσες συσκέψεις το πολύ μπορείς να εξυπηρετήσεις;</strong> Δεν σε νοιάζει ποιες
+    ομάδες είναι πιο σημαντικές ούτε πόσο διαρκεί η καθεμία — μετράει μόνο το πλήθος. Ούτε σε νοιάζει αν
+    μείνει η αίθουσα άδεια για ώρες ανάμεσα σε δύο συσκέψεις.
 </p>
 
+<p>
+    Ορίστε τα έξι αιτήματα, με τη σειρά που ήρθαν. Οι ώρες μετριούνται <strong>από το άνοιγμα</strong>: το
+    <code>0</code> είναι η ώρα που ανοίγει το πρωί και το <code>16</code> τα μεσάνυχτα, που θα κλείσουμε.
+</p>
+
+<svg viewBox="0 0 860 268" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
+    <text x="100" y="30">0</text><text x="190" y="30">2</text><text x="280" y="30">4</text>
+    <text x="370" y="30">6</text><text x="460" y="30">8</text><text x="550" y="30">10</text>
+    <text x="640" y="30">12</text><text x="730" y="30">14</text><text x="820" y="30">16</text>
+  </g>
+  <g stroke="currentColor" opacity="0.28" stroke-width="1">
+    <line x1="100" y1="42" x2="820" y2="42"/>
+    <line x1="100" y1="38" x2="100" y2="252"/><line x1="190" y1="38" x2="190" y2="252"/>
+    <line x1="280" y1="38" x2="280" y2="252"/><line x1="370" y1="38" x2="370" y2="252"/>
+    <line x1="460" y1="38" x2="460" y2="252"/><line x1="550" y1="38" x2="550" y2="252"/>
+    <line x1="640" y1="38" x2="640" y2="252"/><line x1="730" y1="38" x2="730" y2="252"/>
+    <line x1="820" y1="38" x2="820" y2="252"/>
+  </g>
+
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="14" fill="currentColor" opacity="0.85" text-anchor="end">
+    <text x="88" y="79">Ομάδα Α</text><text x="88" y="111">Ομάδα Β</text><text x="88" y="143">Ομάδα Γ</text>
+    <text x="88" y="175">Ομάδα Δ</text><text x="88" y="207">Ομάδα Ε</text><text x="88" y="239">Ομάδα Ζ</text>
+  </g>
+
+  <g fill="rgba(38,166,154,0.28)" stroke="#26a69a" stroke-width="1.6">
+    <rect x="100" y="64" width="270" height="20" rx="5"/>
+    <rect x="145" y="96" width="135" height="20" rx="5"/>
+    <rect x="235" y="128" width="90"  height="20" rx="5"/>
+    <rect x="325" y="160" width="90"  height="20" rx="5"/>
+    <rect x="460" y="192" width="135" height="20" rx="5"/>
+    <rect x="640" y="224" width="180" height="20" rx="5"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="235" y="78">0 → 6</text><text x="212" y="110">1 → 4</text><text x="280" y="142">3 → 5</text>
+    <text x="370" y="174">5 → 7</text><text x="527" y="206">8 → 11</text><text x="730" y="238">12 → 16</text>
+  </g>
+</svg>
+
+<p>
+    Τώρα το πρόβλημα είναι ορατό. Οι τέσσερις πρώτες μπάρες πατάνε η μία πάνω στην άλλη μέσα στο πρώτο
+    μισό της μέρας — μόνο κάποιες από αυτές μπορούν να γίνουν. Οι δύο τελευταίες δεν ενοχλούν κανέναν, οπότε
+    θα μπουν σίγουρα. Το ζητούμενο είναι <em>ποιες</em> θα κρατήσεις από το μπερδεμένο κομμάτι.
+</p>
+
+<h3>Πώς αναπαρίστανται τα δεδομένα</h3>
+
+<p>
+    Κάθε αίτημα είναι δύο αριθμοί που πάνε πάντα μαζί: έναρξη και λήξη. Το εργαλείο που θα ήθελες κανονικά
+    εδώ είναι το <code>struct</code>, που δεν το έχουμε δει ακόμα. Μέχρι τότε, τα κρατάμε σε ένα
+    <strong>array δύο θέσεων</strong>, <code>[2]int</code>, όπου η θέση <code>0</code> είναι η έναρξη και η
+    θέση <code>1</code> η λήξη. Όλα τα αιτήματα μαζί είναι λοιπόν ένα <code>[][2]int</code>: slice από
+    τέτοια ζευγάρια.
+</p>
+
+<pre><code class="lang-go">meetings := [][2]int{
+    {0, 6},  // Α
+    {1, 4},  // Β
+    {3, 5},  // Γ
+    {5, 7},  // Δ
+    {8, 11}, // Ε
+    {12, 16},// Ζ
+}
+</code></pre>
+
 <div class="callout">
-    <span class="tag">Γιατί το όριο είναι 3999</span>
+    <span class="tag">Γιατί array και όχι δύο ξεχωριστά slices</span>
     <p>
-        Δεν υπάρχει σύμβολο για το 5000. Το μεγαλύτερο που μπορείς να γράψεις με τα κλασικά σύμβολα είναι
-        <code>MMM</code> (3000) συν το μεγαλύτερο τριψήφιο, <code>CMXCIX</code> (999) — δηλαδή
-        <code>MMMCMXCIX</code> = 3999. Πάνω από εκεί οι Ρωμαίοι έβαζαν μια γραμμή πάνω από το σύμβολο για να
-        δηλώσουν πολλαπλασιασμό επί χίλια, κάτι που δεν γράφεται με απλά γράμματα.
+        Θα μπορούσες να κρατήσεις τις ώρες σε δύο slices, <code>starts</code> και <code>ends</code>, με
+        κοινό index. Δουλεύει — μέχρι τη στιγμή που θα χρειαστεί να τα ταξινομήσεις. Τότε κάθε μετακίνηση
+        πρέπει να γίνει <strong>και στα δύο slices ταυτόχρονα</strong>, αλλιώς η έναρξη της μιας σύσκεψης
+        ζευγαρώνει με τη λήξη κάποιας άλλης και τα δεδομένα καταστρέφονται σιωπηλά. Κρατώντας τα δύο νούμερα
+        δεμένα μέσα σε ένα <code>[2]int</code>, η ταξινόμηση κουνάει το ζευγάρι ολόκληρο και η ταξινόμηση είναι εύκολη.
     </p>
 </div>
 
-<h2>Παράδειγμα 4: πόσες συναντήσεις χωράνε σε μια μέρα</h2>
+<h3>Το κριτήριο</h3>
 
 <p>
-    Ένα πρόβλημα όπου το greedy είναι αποδεδειγμένα βέλτιστο. Έχεις μια λίστα από προτεινόμενες συναντήσεις,
-    καθεμία με ώρα έναρξης και λήξης. Δεν μπορούν να επικαλύπτονται. Πόσες <strong>το πολύ</strong> μπορείς
-    να χωρέσεις;
+    Το greedy απαιτεί να αποφασίσεις με ποια σειρά θα εξετάσεις τα αιτήματα, γιατί θα τα πάρεις ένα-ένα και
+    δεν θα ξανασκεφτείς καμία απόφαση. Τρεις υποψήφιες σειρές έρχονται φυσικά στο μυαλό:
 </p>
+
+<ul>
+    <li><strong>Όποια ξεκινάει νωρίτερα.</strong> Εδώ πρώτη είναι η Α (0 → 6), που πιάνει μόνη της έξι ώρες
+        και μπλοκάρει τις Β και Γ. Κακή αρχή.</li>
+    <li><strong>Όποια διαρκεί λιγότερο.</strong> Ακούγεται λογικό — μικρές συσκέψεις, άρα περισσότερες. Θα
+        δούμε αμέσως μετά γιατί αποτυγχάνει.</li>
+    <li><strong>Όποια τελειώνει νωρίτερα.</strong> Αυτό είναι το σωστό, και είναι αποδεδειγμένα βέλτιστο.</li>
+</ul>
 
 <p>
-    Η πρώτη σκέψη είναι συνήθως «πάρε πρώτα τις πιο σύντομες» ή «πάρε πρώτα αυτές που ξεκινούν νωρίτερα».
-    Και οι δύο δίνουν λάθος αποτελέσματα σε κάποιες περιπτώσεις. Το σωστό κριτήριο είναι διαφορετικό:
-    <strong>πάρε πάντα αυτή που τελειώνει νωρίτερα</strong>.
+    Η διαίσθηση πίσω από το τρίτο: κάθε φορά που δέχεσαι μια σύσκεψη, ό,τι σε ενδιαφέρει για τη συνέχεια
+    είναι <strong>πότε ελευθερώνεται η αίθουσα</strong>. Όσο νωρίτερα ελευθερωθεί, τόσο περισσότερος χρόνος
+    μένει για όλες τις υπόλοιπες. Η διάρκεια της σύσκεψης που μόλις δέχτηκες και η ώρα που ξεκίνησε δεν
+    παίζουν κανέναν ρόλο από εκεί και πέρα — μόνο η λήξη της.
 </p>
 
-<pre><code class="lang-go">// MaxMeetings returns how many non-overlapping meetings fit.
-// meetings[i] is [start, end], ALREADY sorted by end time.
+<h3>Ο κώδικας</h3>
+
+<p>
+    Δύο μέρη: πρώτα η ταξινόμηση κατά ώρα λήξης, μετά ένα loop που δέχεται ό,τι χωράει.
+</p>
+
+<pre><code class="lang-go">// MaxMeetings returns how many non-overlapping meetings fit in one room.
+// meetings[i] is [start, end]. The slice IS reordered.
 func MaxMeetings(meetings [][2]int) int {
-    count := 0
-    lastEnd := 0 // when the last accepted meeting finished
+    // step 1: earliest finishing time first
+    sort.Slice(meetings, func(a, b int) bool {
+        return meetings[a][1] &lt; meetings[b][1]
+    })
 
+    count := 0
+    freeFrom := 0 // the room is free from this hour onwards
+
+    // step 2: take everything that still fits
     for _, m := range meetings {
-        if m[0] &gt;= lastEnd { // does it start after the previous one ended?
+        start, end := m[0], m[1]
+        if start &gt;= freeFrom {
             count++
-            lastEnd = m[1] // this one is now the previous
+            freeFrom = end // the room is now busy until this hour
         }
     }
     return count
 }
 </code></pre>
 
+<div class="callout">
+    <span class="tag">Το <code>sort.Slice</code></span>
+    <p>
+        Δεν μπορούμε να χρησιμοποιήσουμε τη <code>slices.Sort</code> εδώ, γιατί εκείνη ξέρει να συγκρίνει
+        μόνο απλούς αριθμούς ή strings — δεν έχει ιδέα ποιο από δύο ζευγάρια είναι «μικρότερο». Η
+        <code>sort.Slice</code> λύνει ακριβώς αυτό: της δίνεις μια function που απαντάει σε μία μόνο
+        ερώτηση, «πρέπει το στοιχείο <code>a</code> να μπει πριν από το <code>b</code>;». Εδώ η απάντηση
+        είναι «ναι, αν τελειώνει νωρίτερα», δηλαδή <code>meetings[a][1] &lt; meetings[b][1]</code>. Το ότι
+        περνάμε ολόκληρη function ως όρισμα είναι καινούριο και δεν το έχουμε δει αναλυτικά· προς το
+        παρόν αρκεί να δεις ότι <strong>το κριτήριο του greedy γράφεται μέσα σε εκείνη τη μία γραμμή</strong>.
+    </p>
+</div>
+
 <p>
-    Με τις συναντήσεις <code>[1,4] [3,5] [0,6] [5,7] [8,11] [12,16]</code> (ήδη ταξινομημένες κατά ώρα λήξης):
+    Μετά την ταξινόμηση η σειρά είναι Β (1→4), Γ (3→5), Α (0→6), Δ (5→7), Ε (8→11), Ζ (12→16). Το loop
+    περνάει μία φορά:
 </p>
 
 <table class="glossary-table">
-<tr><td class="gt-term">συνάντηση</td><td class="gt-term">lastEnd πριν</td><td class="gt-def">απόφαση</td></tr>
-<tr><td class="gt-term">[1, 4]</td><td class="gt-term">0</td><td class="gt-def">1 &gt;= 0 → δεκτή, lastEnd = 4</td></tr>
-<tr><td class="gt-term">[3, 5]</td><td class="gt-term">4</td><td class="gt-def">3 &lt; 4 → επικαλύπτεται, απορρίπτεται</td></tr>
-<tr><td class="gt-term">[0, 6]</td><td class="gt-term">4</td><td class="gt-def">0 &lt; 4 → απορρίπτεται</td></tr>
-<tr><td class="gt-term">[5, 7]</td><td class="gt-term">4</td><td class="gt-def">5 &gt;= 4 → δεκτή, lastEnd = 7</td></tr>
-<tr><td class="gt-term">[8, 11]</td><td class="gt-term">7</td><td class="gt-def">8 &gt;= 7 → δεκτή, lastEnd = 11</td></tr>
-<tr><td class="gt-term">[12, 16]</td><td class="gt-term">11</td><td class="gt-def">12 &gt;= 11 → δεκτή — σύνολο <strong>4</strong></td></tr>
+<tr><td class="gt-term">αίτημα</td><td class="gt-term">freeFrom</td><td class="gt-def">απόφαση</td></tr>
+<tr><td class="gt-term">Β (1 → 4)</td><td class="gt-term">0</td><td class="gt-def">ξεκινάει στη 1, η αίθουσα είναι ελεύθερη από το 0 → <strong>δεκτή</strong>, freeFrom = 4</td></tr>
+<tr><td class="gt-term">Γ (3 → 5)</td><td class="gt-term">4</td><td class="gt-def">ξεκινάει στις 3, η αίθουσα είναι πιασμένη μέχρι τις 4 → απορρίπτεται</td></tr>
+<tr><td class="gt-term">Α (0 → 6)</td><td class="gt-term">4</td><td class="gt-def">ξεκινάει στο 0, ακόμα χειρότερα → απορρίπτεται</td></tr>
+<tr><td class="gt-term">Δ (5 → 7)</td><td class="gt-term">4</td><td class="gt-def">ξεκινάει στις 5, ελεύθερη από τις 4 → <strong>δεκτή</strong>, freeFrom = 7</td></tr>
+<tr><td class="gt-term">Ε (8 → 11)</td><td class="gt-term">7</td><td class="gt-def">ξεκινάει στις 8 → <strong>δεκτή</strong>, freeFrom = 11</td></tr>
+<tr><td class="gt-term">Ζ (12 → 16)</td><td class="gt-term">11</td><td class="gt-def">ξεκινάει στις 12 → <strong>δεκτή</strong> — σύνολο <strong>4</strong></td></tr>
 </table>
+
+<p>
+    Και οι τέσσερις που κρατήθηκαν, στην ίδια αίθουσα, χωρίς καμία επικάλυψη:
+</p>
+
+<svg viewBox="0 0 860 110" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
+    <text x="100" y="30">0</text><text x="190" y="30">2</text><text x="280" y="30">4</text>
+    <text x="370" y="30">6</text><text x="460" y="30">8</text><text x="550" y="30">10</text>
+    <text x="640" y="30">12</text><text x="730" y="30">14</text><text x="820" y="30">16</text>
+  </g>
+  <g stroke="currentColor" opacity="0.28" stroke-width="1">
+    <line x1="100" y1="42" x2="820" y2="42"/>
+    <line x1="100" y1="38" x2="100" y2="96"/><line x1="190" y1="38" x2="190" y2="96"/>
+    <line x1="280" y1="38" x2="280" y2="96"/><line x1="370" y1="38" x2="370" y2="96"/>
+    <line x1="460" y1="38" x2="460" y2="96"/><line x1="550" y1="38" x2="550" y2="96"/>
+    <line x1="640" y1="38" x2="640" y2="96"/><line x1="730" y1="38" x2="730" y2="96"/>
+    <line x1="820" y1="38" x2="820" y2="96"/>
+  </g>
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="14" fill="currentColor" opacity="0.85" text-anchor="end">
+    <text x="88" y="79">η αίθουσα</text>
+  </g>
+  <g fill="rgba(46,125,50,0.30)" stroke="#2e7d32" stroke-width="1.8">
+    <rect x="145" y="64" width="135" height="22" rx="5"/>
+    <rect x="325" y="64" width="90"  height="22" rx="5"/>
+    <rect x="460" y="64" width="135" height="22" rx="5"/>
+    <rect x="640" y="64" width="180" height="22" rx="5"/>
+  </g>
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity="0.9" text-anchor="middle">
+    <text x="212" y="79">Β</text><text x="370" y="79">Δ</text><text x="527" y="79">Ε</text><text x="730" y="79">Ζ</text>
+  </g>
+</svg>
 
 <div class="callout good">
     <span class="tag">Το αναγνωρίζεις;</span>
     <p>
-        Το <code>lastEnd</code> είναι το <strong>previous value</strong> pattern της Ενότητας 3: μια
-        μεταβλητή που κουβαλάει μαζί της την προηγούμενη απόφαση, ώστε η τρέχουσα να μπορεί να συγκριθεί μαζί
-        της. Και το <code>count</code> είναι απλός accumulator. Το greedy δεν είναι νέα τεχνική — είναι μια
-        <em>στρατηγική</em> που υλοποιείται με patterns που ήδη ξέρεις.
+        Το <code>freeFrom</code> είναι το <strong>previous value</strong> pattern της Ενότητας 3: μια
+        μεταβλητή που κουβαλάει την προηγούμενη απόφαση, ώστε η τρέχουσα να μπορεί να συγκριθεί μαζί της.
+        Το <code>count</code> είναι απλός accumulator. Ο ίδιος ο greedy αλγόριθμος δεν εισάγει κανένα
+        καινούριο εργαλείο — εισάγει έναν καινούριο τρόπο να διαλέγεις.
     </p>
 </div>
 
-<h2>Γιατί «η πιο σύντομη πρώτα» δεν δουλεύει</h2>
+<h3>Γιατί «η πιο σύντομη πρώτα» δεν δουλεύει</h3>
 
 <p>
-    Αξίζει να δεις γιατί η διαισθητική επιλογή αποτυγχάνει. Πάρε τρεις συναντήσεις:
-    <code>[1, 5]</code>, <code>[4, 6]</code>, <code>[5, 9]</code>.
+    Αξίζει να δεις γιατί η πιο διαισθητική επιλογή αποτυγχάνει.
+    Πάμε σε ένα καινούριο πιο σύντομο παράδειγμα που δείχνει ακριβώς αυτό. Έχουμε τρία αιτήματα: <code>[1, 5]</code>, <code>[4, 6]</code>, <code>[5, 9]</code>.
 </p>
 
-<ul>
-    <li><strong>Πιο σύντομη πρώτα:</strong> η <code>[4, 6]</code> διαρκεί μόλις 2, οπότε την παίρνεις πρώτη.
-        Αλλά επικαλύπτεται με την <code>[1, 5]</code>, που τελειώνει στις 5 ενώ η <code>[4, 6]</code> έχει ήδη
-        αρχίσει στις 4· και με την <code>[5, 9]</code>, που αρχίζει στις 5 ενώ η <code>[4, 6]</code> δεν έχει
-        ακόμα τελειώσει. Δεν χωράει καμία άλλη. Σύνολο: <strong>1</strong>.</li>
-    <li><strong>Πρώτη λήξη πρώτα:</strong> παίρνεις την <code>[1, 5]</code>, και μετά χωράει και η
-        <code>[5, 9]</code>. Σύνολο: <strong>2</strong>.</li>
-</ul>
+<svg viewBox="0 0 720 172" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
+    <text x="80" y="30">0</text><text x="200" y="30">2</text><text x="320" y="30">4</text>
+    <text x="440" y="30">6</text><text x="560" y="30">8</text><text x="680" y="30">10</text>
+  </g>
+  <g stroke="currentColor" opacity="0.28" stroke-width="1">
+    <line x1="80" y1="42" x2="680" y2="42"/>
+    <line x1="80" y1="38" x2="80" y2="156"/><line x1="200" y1="38" x2="200" y2="156"/>
+    <line x1="320" y1="38" x2="320" y2="156"/><line x1="440" y1="38" x2="440" y2="156"/>
+    <line x1="560" y1="38" x2="560" y2="156"/><line x1="680" y1="38" x2="680" y2="156"/>
+  </g>
+  <g fill="rgba(38,166,154,0.28)" stroke="#26a69a" stroke-width="1.6">
+    <rect x="140" y="60" width="240" height="20" rx="5"/>
+    <rect x="380" y="124" width="240" height="20" rx="5"/>
+  </g>
+  <g fill="rgba(255,167,38,0.30)" stroke="#ffa726" stroke-width="1.8">
+    <rect x="320" y="92" width="120" height="20" rx="5"/>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.85" text-anchor="middle">
+    <text x="260" y="74">1 → 5</text><text x="380" y="106">4 → 6</text><text x="500" y="138">5 → 9</text>
+  </g>
+</svg>
 
 <p>
-    Η μία επιλογή, στο πρώτο κιόλας βήμα, κόστισε τη μισή λύση. Και πρόσεξε ότι η
-    <code>[4, 6]</code> δεν είχε τίποτα κακό από μόνη της — το πρόβλημα ήταν ότι
-    <em>έπιανε το κέντρο</em> του διαθέσιμου χρόνου.
+    Με κριτήριο τη διάρκεια, πρώτη μπαίνει η <code>[4, 6]</code>: κρατάει μόλις δύο ώρες. Κοίτα όμως πού
+    κάθεται στο διάγραμμα — πατάει και στις δύο άλλες. Επικαλύπτεται με την <code>[1, 5]</code>, που
+    τελειώνει στις 5 ενώ η <code>[4, 6]</code> έχει ήδη αρχίσει στις 4, και με την <code>[5, 9]</code>, που
+    αρχίζει στις 5 ενώ η <code>[4, 6]</code> δεν έχει ακόμα τελειώσει. Και οι δύο απορρίπτονται. Σύνολο:
+    <strong>1</strong>.
 </p>
 
 <p>
-    Η διαίσθηση πίσω από το «πρώτη λήξη»: κάθε φορά που διαλέγεις, θέλεις να
-    <strong>ελευθερώσεις όσο περισσότερο χρόνο γίνεται</strong> για τις υπόλοιπες. Η συνάντηση που τελειώνει
-    νωρίτερα αφήνει τη μεγαλύτερη δυνατή συνέχεια — και αυτό ισχύει σε κάθε βήμα, ανεξάρτητα από το τι
-    ακολουθεί. Αυτή ακριβώς η ιδιότητα είναι που κάνει το greedy σωστό εδώ.
+    Με κριτήριο την πρώτη λήξη, μπαίνει η <code>[1, 5]</code>, και μετά χωράει και η <code>[5, 9]</code>.
+    Σύνολο: <strong>2</strong>. Μία απόφαση, στο πρώτο κιόλας βήμα, κόστισε τη μισή λύση — και πρόσεξε ότι
+    η <code>[4, 6]</code> δεν είχε τίποτα κακό από μόνη της· το πρόβλημα ήταν ότι έπιανε το
+    <em>κέντρο</em> του διαθέσιμου χρόνου, εκεί που ενοχλούσε τους πάντες.
+</p>
+
+<h2>Ο σκελετός κάθε greedy αλγορίθμου</h2>
+
+<div style="margin:22px 0; border-radius:10px; overflow:hidden; border:1px solid rgba(var(--ink-rgb),0.16); font-family:var(--font-mono, ui-monospace, Menlo, Consolas, monospace); font-size:0.9em; line-height:1.55;">
+
+  <div style="padding:10px 16px; opacity:0.75;">func Solve(items []Item) Result {</div>
+
+  <div style="display:flex; align-items:flex-start; gap:14px; padding:9px 16px; background:rgba(139,195,74,0.32); border-left:4px solid #8bc34a;">
+    <div style="flex:1; white-space:pre;">    sort.Slice(items, ⟨το κριτήριο⟩)</div>
+    <span style="flex:none; display:flex; align-items:center; font-size:0.72em; letter-spacing:0.03em; padding-top:2px;"><span style="display:inline-block; transform:scale(3.4); transform-origin:center; position:relative; top:-1px; margin:0 0.9em 0 0.7em; line-height:1; color:#8bc34a;">①</span><span style="opacity:0.72;">η σειρά εξέτασης</span></span>
+  </div>
+
+  <div style="display:flex; align-items:flex-start; gap:14px; padding:9px 16px; background:rgba(38,166,154,0.32); border-left:4px solid #26a69a;">
+    <div style="flex:1; white-space:pre;">    result := ⟨κενό⟩
+    state  := ⟨αρχική τιμή⟩</div>
+    <span style="flex:none; display:flex; align-items:center; font-size:0.72em; letter-spacing:0.03em; padding-top:2px;"><span style="display:inline-block; transform:scale(3.4); transform-origin:center; position:relative; top:-1px; margin:0 0.9em 0 0.7em; line-height:1; color:#26a69a;">②</span><span style="opacity:0.72;">τι κουβαλάς μαζί σου</span></span>
+  </div>
+
+  <div style="display:flex; align-items:flex-start; gap:14px; padding:9px 16px; background:rgba(255,167,38,0.32); border-left:4px solid #ffa726;">
+    <div style="flex:1; white-space:pre;">    for _, item := range items {</div>
+    <span style="flex:none; display:flex; align-items:center; font-size:0.72em; letter-spacing:0.03em; padding-top:2px;"><span style="display:inline-block; transform:scale(3.4); transform-origin:center; position:relative; top:-1px; margin:0 0.9em 0 0.7em; line-height:1; color:#ffa726;">③</span><span style="opacity:0.72;">μία φορά, με τη σειρά</span></span>
+  </div>
+
+  <div style="display:flex; align-items:flex-start; gap:14px; padding:9px 16px; background:rgba(92,107,192,0.32); border-left:4px solid #5c6bc0;">
+    <div style="flex:1; white-space:pre;">        if ⟨χωράει με βάση το state;⟩ {
+            result = ⟨πρόσθεσέ το⟩
+            state  = ⟨ενημέρωσε⟩
+        }
+    }</div>
+    <span style="flex:none; display:flex; align-items:center; font-size:0.72em; letter-spacing:0.03em; padding-top:2px;"><span style="display:inline-block; transform:scale(3.4); transform-origin:center; position:relative; top:-1px; margin:0 0.9em 0 0.7em; line-height:1; color:#5c6bc0;">④</span><span style="opacity:0.72;">πάρ' το ή προσπέρασέ το</span></span>
+  </div>
+
+  <div style="display:flex; align-items:flex-start; gap:14px; padding:9px 16px; background:rgba(46,125,50,0.32); border-left:4px solid #2e7d32;">
+    <div style="flex:1; white-space:pre;">    return result</div>
+    <span style="flex:none; display:flex; align-items:center; font-size:0.72em; letter-spacing:0.03em; padding-top:2px;"><span style="display:inline-block; transform:scale(3.4); transform-origin:center; position:relative; top:-1px; margin:0 0.9em 0 0.7em; line-height:1; color:#2e7d32;">⑤</span><span style="opacity:0.72;">ό,τι μαζεύτηκε</span></span>
+  </div>
+
+  <div style="padding:10px 16px; opacity:0.75;">}</div>
+</div>
+
+<p>
+    <span style="display:inline-block; transform:scale(2.4); transform-origin:center; position:relative; top:-10px; margin:0 0.9em 0 0.7em; line-height:1; color:#8bc34a;">①</span><strong style="color:#8bc34a;">Η σειρά εξέτασης.</strong> Εδώ κρύβεται ολόκληρος ο αλγόριθμος. Το
+    υπόλοιπο είναι μηχανική δουλειά που γράφεται σχεδόν πάντα ίδια· η μία γραμμή της ταξινόμησης είναι αυτή
+    που κάνει τη διαφορά ανάμεσα σε σωστή και λάθος απάντηση. Στις συσκέψεις ήταν «πρώτη λήξη πρώτα», και
+    είδες τι γίνεται αν βάλεις «μικρότερη διάρκεια πρώτα». Σε κάποια προβλήματα δεν υπάρχει καν ταξινόμηση:
+    η σειρά είναι ήδη δοσμένη από τη φύση του προβλήματος και η
+    <span style="display:inline-block; transform:scale(1.4); transform-origin:center; position:relative; top:-2px; margin:0 0.5em; line-height:1;">①</span>
+    είναι κενή.
+</p>
+
+<p>
+    <span style="display:inline-block; transform:scale(2.4); transform-origin:center; position:relative; top:-10px; margin:0 0.9em 0 0.7em; line-height:1; color:#26a69a;">②</span><strong style="color:#26a69a;">Το state.</strong> Μία ή δύο μεταβλητές που κουβαλάνε ό,τι πρέπει να
+    ξέρεις για τις προηγούμενες αποφάσεις. Στις συσκέψεις είναι το <code>freeFrom</code>: μία μόνο τιμή, η
+    λήξη της τελευταίας που δέχτηκες. Το ότι <em>αρκεί</em> μία τιμή είναι
+    χαρακτηριστικό των προβλημάτων που λύνονται greedy. Αν χρειάζεσαι ολόκληρο το ιστορικό των αποφάσεων για
+    να πάρεις την επόμενη, το greedy πιθανότατα δεν είναι ο σωστός δρόμος.
+</p>
+
+<p>
+    <span style="display:inline-block; transform:scale(2.4); transform-origin:center; position:relative; top:-10px; margin:0 0.9em 0 0.7em; line-height:1; color:#ffa726;">③</span><strong style="color:#ffa726;">Ένα πέρασμα.</strong> Ακριβώς ένα, ποτέ nested loop, ποτέ επιστροφή σε
+    στοιχείο που προσπέρασες. Αυτός είναι και ο λόγος που τα greedy είναι τυπικά <code>O(n)</code> μετά την
+    ταξινόμηση — και <code>O(n log n)</code> συνολικά, με τη ταξινόμηση να είναι το ακριβό κομμάτι.
+</p>
+
+<p>
+    <span style="display:inline-block; transform:scale(2.4); transform-origin:center; position:relative; top:-10px; margin:0 0.9em 0 0.7em; line-height:1; color:#5c6bc0;">④</span><strong style="color:#5c6bc0;">Η απόφαση.</strong> Ένα <code>if</code> που ρωτάει αν το τρέχον
+    στοιχείο είναι συμβατό με το state. Αν ναι, το παίρνεις και ενημερώνεις· αν όχι, δεν κάνεις τίποτα
+    απολύτως — δεν το κρατάς στην άκρη, δεν το ξαναεξετάζεις αργότερα. Πρόσεξε τι <strong>δεν</strong>
+    υπάρχει εδώ: καμία γραμμή που αφαιρεί κάτι από το <code>result</code>. Μια greedy απόφαση δεν
+    ανακαλείται ποτέ, και αυτό ακριβώς τη διαφοροποιεί από το backtracking.
+</p>
+
+<p>
+    <span style="display:inline-block; transform:scale(2.4); transform-origin:center; position:relative; top:-10px; margin:0 0.9em 0 0.7em; line-height:1; color:#2e7d32;">⑤</span><strong style="color:#2e7d32;">Η επιστροφή.</strong> Ό,τι μαζεύτηκε στο <code>result</code>, χωρίς
+    κανέναν τελικό έλεγχο ή διόρθωση. Αν χρειάζεται πέρασμα διόρθωσης στο τέλος, αυτό που έγραψες δεν είναι
+    greedy.
 </p>
 
 <h2>Πότε να εμπιστευτείς το greedy</h2>
@@ -5910,10 +6579,12 @@ func MaxMeetings(meetings [][2]int) int {
     <p>
         Το greedy είναι πάντα καλή <strong>πρώτη προσπάθεια</strong>, ακριβώς επειδή είναι εύκολο να γραφτεί.
         Γράψ' το, και μετά ψάξε συνειδητά ένα αντιπαράδειγμα — μια είσοδο όπου δίνει λάθος απάντηση. Αν το
-        βρεις, ξέρεις ότι χρειάζεσαι backtracking ή δυναμικό προγραμματισμό. Αν δεν το βρεις μετά από
-        ειλικρινή προσπάθεια, μάλλον είσαι εντάξει.
+        βρεις, ξέρεις ότι χρειάζεσαι κάτι ...άλλο, που θα δούμε σύντομα (backtracking ή δυναμικό προγραμματισμό).
+        Αν δεν το βρεις, μάλλον είσαι εντάξει.
     </p>
 </div>
+
+
 `);
 
         // ── VSCode Challenge (εύκολο) — κλείνει το §7.1 ──────────────────────── ⊃

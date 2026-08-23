@@ -1,0 +1,307 @@
+{
+    "spec_name": "zone01-guides-inline-figures",
+    "version": 2,
+    "scope": "Δημιουργία custom σχημάτων (inline CSS ή inline SVG) μέσα στα slide decks του Zone01Guides",
+    "workflow_contract": {
+        "rule": "Αν ο χρήστης στείλει ένα κομμάτι από κάποιο μάθημα HTML (βρίσκεται μέσα σε JS template literal, αλλά αυτό δεν φαίνεται) και ζητήσει κάτι, τότε επιστρέφεται ΑΚΡΙΒΩΣ αυτό το κομμάτι πίσω, διορθωμένο, ώστε να γίνει paste χειροκίνητα — εκτός αν ζητηθεί κάτι άλλο.",
+        "never": [
+            "present_files / upload ολόκληρου του αρχείου μετά από κάθε edit",
+            "επιστροφή ολόκληρου του section όταν ζητήθηκε ένα callout",
+            "σιωπηλές αλλαγές σε σημεία που δεν ζητήθηκαν",
+            "σταθερά hex χρώματα οπουδήποτε στο output"
+        ],
+        "always": [
+            "Κάθε behavioral change ή απόκλιση επισημαίνεται ρητά πάνω/κάτω από το code block",
+            "Λάθη που εντοπίζονται αλλού στο κείμενο αναφέρονται στη συζήτηση, ΔΕΝ διορθώνονται σιωπηλά",
+            "Το περιεχόμενο ζει μέσα σε JS backtick template literal: κανένα ` και κανένα ${ στο output"
+        ],
+        "escaping": {
+            "context": "addContent(`...`) — JS template literal",
+            "must_escape": [
+                "backslash σε ASCII art → \\\\",
+                "backtick",
+                "${"
+            ],
+            "html_entities_required_inside_pre_code": [
+                "&lt;",
+                "&gt;",
+                "&amp;"
+            ],
+            "note": "Μέσα σε <pre><code> τα < > & πρέπει να είναι entities· σε απλό prose το < του Go (n <= 0) περνάει ως έχει στα υπάρχοντα slides"
+        }
+    },
+    "color_protocol": {
+        "principle": "ΠΟΤΕ σταθερά hex. Όλα τα χρώματα βγαίνουν από CSS custom properties του deck, ώστε ένα theme change να μεταφέρεται αυτόματα στα σχήματα.",
+        "available_tokens": {
+            "note": "Τα ονόματα ΔΕΝ είναι εγγυημένα σταθερά — επιβεβαιώνονται πριν από κάθε σχήμα.",
+            "typical_set": [
+                "--tone-1",
+                "--tone-2",
+                "--tone-3",
+                "--tone-4",
+                "--tone-5",
+                "--tone-text",
+                "--code-bg",
+                "--h1-color"
+            ],
+            "rgb_variants": "Κάθε tone συνήθως έχει και --tone-N-rgb για χρήση σε rgba(var(--tone-N-rgb), alpha)",
+            "ink_fallback": "--ink-rgb χρησιμοποιείται στα υπάρχοντα components για ουδέτερα borders"
+        },
+        "ask_before_building": {
+            "when": "Πριν από ΚΑΘΕ πολυχρωματικό σχήμα (skeleton, timeline με κατηγορίες, οτιδήποτε με χρωματική κωδικοποίηση)",
+            "what_to_ask": [
+                "Ποια tone vars υπάρχουν αυτή τη στιγμή στο deck",
+                "Ποιο tone αντιστοιχεί σε ποια περιοχή, ΑΝ ο αριθμός των περιοχών ξεπερνά τα διαθέσιμα tones",
+                "Αν το deck είναι σε dark ή light mode — επηρεάζει τα alpha values"
+            ],
+            "why": "Μια παλέτα πέντε tones δεν καλύπτει σκελετό έξι περιοχών· η επιλογή ποιο θα επαναληφθεί ή ποιο θα παραλειφθεί είναι σχεδιαστική απόφαση του χρήστη"
+        },
+        "fallback_when_not_specified": {
+            "ink": "currentColor για ό,τι είναι μελάνι: άξονες, γραμμές πλέγματος, κείμενα, βέλη",
+            "single_accent": "var(--tone-4) όταν χρειάζεται ένα και μόνο accent",
+            "neutral_region": "rgba(var(--tone-text-rgb), 0.10) fill με rgba(var(--tone-text-rgb), 0.35) stroke",
+            "rule": "Αν δεν έχει δοθεί αντιστοίχιση, το σχήμα φτιάχνεται μονόχρωμο και επισημαίνεται ρητά ότι περιμένει χρωματική ανάθεση"
+        },
+        "usage_patterns": {
+            "solid_stroke": "stroke=\"var(--tone-4)\"",
+            "translucent_fill": "fill=\"rgba(var(--tone-4-rgb), 0.14)\"",
+            "hatch_pattern": "Και το rect και η line του pattern χρησιμοποιούν rgba(var(--tone-N-rgb), α)",
+            "text_accent": "color: var(--tone-4) σε inline style",
+            "warning": "Τα CSS vars ΔΟΥΛΕΥΟΥΝ μέσα σε inline SVG attributes (fill/stroke), εφόσον το SVG είναι inline στο DOM — όχι σε external file ή background-image"
+        },
+        "opacity_scale": {
+            "gridlines": 0.28,
+            "axis_labels": 0.55,
+            "secondary_notes": 0.75,
+            "primary_labels": 0.85,
+            "code_text": 1.0,
+            "function_signature": 0.72,
+            "region_fill": "0.10–0.16",
+            "hatch_stroke": "0.32–0.42"
+        }
+    },
+    "region_numbering": {
+        "principle": "Οι αριθμοί συνδέουν την παράγραφο με την περιοχή του σχήματος. Πρέπει να διαβάζονται άνετα και να κλιμακώνονται.",
+        "rejected": {
+            "circled_unicode": "① ② ③ — απορρίπτονται: πολύ μικρά, εξαρτώνται από τη γραμματοσειρά, ασυνεπής απόδοση ανά πλατφόρμα"
+        },
+        "preferred_html_badge": {
+            "markup": "<span style=\"display:inline-flex; align-items:center; justify-content:center; width:1.75em; height:1.75em; flex:none; border-radius:50%; background:rgba(var(--tone-N-rgb),0.16); border:1.5px solid var(--tone-N); color:var(--tone-N); font-family:var(--font-mono, ui-monospace, monospace); font-weight:700; font-size:0.9em; line-height:1;\">1</span>",
+            "paragraph_lead": "Το badge σε μεγαλύτερο font-size (1.15em) ακολουθούμενο από <strong style=\"color:var(--tone-N);\">Τίτλος περιοχής.</strong>",
+            "inline_reference": "Ίδιο badge σε font-size 0.8em, με vertical-align:middle, για αναφορά μέσα σε πρόταση",
+            "why": "Κλιμακώνεται με το em, χρωματίζεται από το ίδιο var με την περιοχή, δεν εξαρτάται από γραμματοσειρά"
+        },
+        "preferred_svg_badge": {
+            "markup": "<circle cx=\"CX\" cy=\"CY\" r=\"14\" fill=\"rgba(var(--tone-N-rgb),0.16)\" stroke=\"var(--tone-N)\" stroke-width=\"1.6\"/><text x=\"CX\" y=\"CY+5\" text-anchor=\"middle\" font-family=\"var(--font-mono,...)\" font-size=\"15\" font-weight=\"700\" fill=\"var(--tone-N)\">1</text>",
+            "placement": "Στην αριστερή στήλη του σχήματος, κεντραρισμένο κατακόρυφα στην περιοχή που αριθμεί",
+            "note": "Το roughen filter ΔΕΝ εφαρμόζεται στον κύκλο του badge — πρέπει να διαβάζεται καθαρά"
+        },
+        "alternatives_worth_considering": {
+            "letters": "Α Β Γ σε badge αντί για αριθμούς, όταν οι περιοχές δεν έχουν αυστηρή σειρά εκτέλεσης",
+            "named_tabs": "Μικρή ετικέτα με το όνομα της περιοχής ('base case') αντί για αριθμό, όταν οι περιοχές είναι λίγες και τα ονόματα σύντομα",
+            "no_numbers": "Αν το σχήμα έχει ≤3 περιοχές και οι παράγραφοι τις ονομάζουν ρητά, η αρίθμηση περισσεύει"
+        },
+        "consistency_rule": "Το χρώμα του badge, του bold τίτλου στην παράγραφο, και του stroke της περιοχής στο σχήμα είναι ΠΑΝΤΑ το ίδιο var"
+    },
+    "decide_figure_type": {
+        "inline_css_block": {
+            "use_when": "Ψευδοκώδικας σε στοιβαγμένες περιοχές με χρωματική κωδικοποίηση και ετικέτα δεξιά",
+            "pros": [
+                "Ρέει με το κείμενο",
+                "Δεν σπάει σε μικρές οθόνες",
+                "Επιλέξιμο κείμενο"
+            ],
+            "cons": [
+                "Χωρίς καμπύλες, βέλη, σκιάσεις, χειρόγραφο ύφος"
+            ]
+        },
+        "inline_svg": {
+            "use_when": "Χρειάζονται γεωμετρικές σχέσεις: timelines, βέλη, καμπύλες, hatching, πλευρικές σημειώσεις",
+            "pros": [
+                "Πλήρης έλεγχος",
+                "Θεματικά προσαρμόσιμο μέσω CSS vars και currentColor"
+            ],
+            "cons": [
+                "Δεν είναι responsive από μόνο του: το font-size σμικρύνεται μαζί με το viewBox"
+            ]
+        },
+        "neither": "Αν το ίδιο περιεχόμενο λέγεται εξίσου καλά με glossary-table ή grid2/grid3 cards, χρησιμοποιείται το υπάρχον component"
+    },
+    "svg_conventions": {
+        "root_attributes": {
+            "viewBox": "0 0 W H — σε συντεταγμένες που δουλεύεις άνετα, τυπικά W≈720-980",
+            "xmlns": "http://www.w3.org/2000/svg",
+            "style": "width:100%; height:auto; display:block; margin:18px auto; color:inherit;",
+            "why_color_inherit": "Ενεργοποιεί το currentColor ώστε το μελάνι να ακολουθεί το theme"
+        },
+        "fonts": {
+            "mono": "var(--font-mono, ui-monospace, 'SF Mono', Menlo, Consolas, monospace)",
+            "display": "var(--font-display, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)",
+            "handwritten_optional": "'Bradley Hand','Segoe Print','Comic Sans MS',cursive — ΑΝΑΞΙΟΠΙΣΤΟ σε Linux, χρειάζεται webfont για εγγυημένο αποτέλεσμα",
+            "sizes": {
+                "code": 14.5,
+                "axis_ticks": 12,
+                "row_labels": 14,
+                "side_notes": 15,
+                "rotated_section_labels": 15.5,
+                "badge": 15
+            }
+        },
+        "defs_toolkit": {
+            "roughen_filter": {
+                "id": "rf",
+                "purpose": "Χειρόγραφο/σκιτσαρισμένο περίγραμμα",
+                "code": "<filter id=\"rf\" x=\"-6%\" y=\"-8%\" width=\"112%\" height=\"116%\"><feTurbulence type=\"fractalNoise\" baseFrequency=\"0.022\" numOctaves=\"3\" seed=\"9\" result=\"n\"/><feDisplacementMap in=\"SourceGraphic\" in2=\"n\" scale=\"2.4\" xChannelSelector=\"R\" yChannelSelector=\"G\"/></filter>",
+                "critical_rule": "ΠΟΤΕ σε <text> και ΠΟΤΕ σε badge circles. Μόνο σε <rect>, <path>, <line> περιοχών και βελών.",
+                "tuning": "scale 1.5 = διακριτικό, 2.4 = ισορροπημένο, 4+ = καρτούν"
+            },
+            "hatch_pattern": {
+                "purpose": "Παράλληλες πλάγιες γραμμές που σκιάζουν τον χώρο, σε στυλ σημειώσεων",
+                "template": "<pattern id=\"hX\" patternUnits=\"userSpaceOnUse\" width=\"10\" height=\"10\" patternTransform=\"rotate(-35)\"><rect width=\"10\" height=\"10\" fill=\"rgba(var(--tone-N-rgb),0.10)\"/><line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"10\" stroke=\"rgba(var(--tone-N-rgb),0.38)\" stroke-width=\"2\"/></pattern>",
+                "rules": [
+                    "Ίδια rotate(-35) σε όλα τα patterns του ίδιου σχήματος",
+                    "Ένα pattern ανά tone που χρησιμοποιείται",
+                    "Τα ids ονομάζονται με βάση τον ρόλο, όχι το χρώμα (π.χ. h-base, h-recurse)"
+                ]
+            },
+            "arrowhead": {
+                "code": "<marker id=\"ah\" viewBox=\"0 0 10 10\" refX=\"8\" refY=\"5\" markerWidth=\"7\" markerHeight=\"7\" orient=\"auto-start-reverse\"><path d=\"M0,1 L9,5 L0,9 z\" fill=\"currentColor\" opacity=\"0.55\"/></marker>",
+                "usage": "marker-end=\"url(#ah)\" στο path"
+            },
+            "id_collision_warning": "Τα SVG ids είναι global στη σελίδα. Αν υπάρχουν πολλά σχήματα στο ίδιο deck, τα ids προθεματίζονται (π.χ. rec-rf, greedy-rf)."
+        },
+        "shapes_vocabulary": {
+            "bracket_arrow": {
+                "meaning": "Αγκύλη που περικλείει κατακόρυφα μια ζώνη και δείχνει κατεύθυνση ροής",
+                "path_shape": "M x1,y1 L x2,y2 L x2,y3 L x4,y3 — μικρό γάντζο, κατακόρυφη, μικρό γάντζο",
+                "stroke": "currentColor, width 1.9, linecap/linejoin round, opacity 0.5, με filter rf"
+            },
+            "connector_curve": {
+                "meaning": "Σύνδεση δύο σημείων που δεν είναι σε ευθεία",
+                "path_shape": "C control points που βγαίνουν έξω από το πλαίσιο και ξαναμπαίνουν"
+            },
+            "handwritten_underline": {
+                "meaning": "Υπογράμμιση της πιο σημαντικής γραμμής κώδικα",
+                "path_shape": "M x,y C ... ελαφρώς κυματιστή, stroke-width 2.2, stroke=\"var(--tone-N)\" της περιοχής"
+            },
+            "rotated_section_label": "<text transform=\"rotate(-90 cx cy)\" text-anchor=\"middle\"> για ΚΑΤΑΒΑΣΗ / ΑΝΟΔΟΣ στα πλαϊνά"
+        },
+        "layout_math": {
+            "region_stack": {
+                "description": "Στοιβαγμένες περιοχές ψευδοκώδικα",
+                "x": 218,
+                "width": 482,
+                "row_height_1_line": 30,
+                "row_height_2_lines": 56,
+                "row_height_3_lines": 80,
+                "gap_between_rows": 12,
+                "rx": 7,
+                "text_x": 238,
+                "text_baseline_offset_from_rect_top": 20,
+                "line_height": 22,
+                "badge_column_cx": 190,
+                "badge_r": 14,
+                "side_notes_x": 160,
+                "side_notes_anchor": "end"
+            },
+            "timeline": {
+                "description": "Οριζόντιος χρονοάξονας με μπάρες",
+                "left_margin_for_row_labels": 88,
+                "axis_start_x": 100,
+                "axis_end_x": 820,
+                "unit_width_formula": "(axis_end_x - axis_start_x) / max_value",
+                "example": "16 ώρες σε 720px → 45px/ώρα, tick κάθε 2 ώρες = 90px",
+                "axis_y": 42,
+                "row_pitch": 32,
+                "bar_height": 20,
+                "bar_rx": 5,
+                "bar_x_formula": "axis_start_x + value * unit_width",
+                "verification": "ΥΠΟΧΡΕΩΤΙΚΟΣ έλεγχος: κάθε bar_x και width υπολογίζεται αριθμητικά, δεν εκτιμάται με το μάτι"
+            }
+        },
+        "known_limitations": [
+            "Κάτω από ~700px πλάτος τα 14.5px γίνονται δυσανάγνωστα — χρειάζεται δεύτερο stacked layout ή προειδοποίηση",
+            "Οι handwritten γραμματοσειρές δεν υπάρχουν σε Linux — fallback σε cursive",
+            "Τα <style> media queries ΔΕΝ δουλεύουν μέσα σε injected content — αν χρειαστεί responsive, ResizeObserver + resize listener (όπως στα Big-O γραφήματα)"
+        ]
+    },
+    "css_block_conventions": {
+        "container": "margin:24px 0; border-radius:10px; overflow:hidden; border:1px solid rgba(var(--tone-text-rgb),0.16); font-family:var(--font-mono,...); font-size:0.9em; line-height:1.55;",
+        "row": "display:flex; align-items:flex-start; gap:14px; padding:9px 16px; background:rgba(var(--tone-N-rgb),0.12); border-left:4px solid var(--tone-N);",
+        "code_cell": "flex:1; white-space:pre;",
+        "label_cell": "flex:none; font-size:0.72em; letter-spacing:0.03em; opacity:0.72; padding-top:2px;",
+        "badge_cell": "Το badge μπαίνει ως πρώτο flex child, πριν από το code_cell, με flex:none",
+        "wrapper_lines": "Η υπογραφή της function και το κλείσιμο του αγκίστρου σε απλά div με opacity 0.75"
+    },
+    "prose_pairing": {
+        "structure": [
+            "1. Παράγραφος-εισαγωγή: τι είναι το σχήμα και γιατί υπάρχει",
+            "2. Το σχήμα",
+            "3. Μία παράγραφος ανά αριθμημένη περιοχή, με τη σειρά",
+            "4. Callouts για τις εξαιρέσεις και τις παγίδες"
+        ],
+        "per_region_paragraph": [
+            "Ξεκινάει με το χρωματισμένο badge + bold τίτλο στο ίδιο tone",
+            "Λέει ΤΙ είναι, μετά ΓΙΑΤΙ βρίσκεται σε αυτή τη θέση",
+            "Κλείνει με τη συνέπεια: τι θα πάθαινες αν έλειπε ή αν ήταν αλλού",
+            "3–6 προτάσεις — ούτε μονόλεξη λεζάντα ούτε δοκίμιο"
+        ],
+        "callout_topics_after_a_skeleton": [
+            "Η εξαίρεση που σπάει τον κανόνα (π.χ. recursive call μέσα σε for)",
+            "Τι ΔΕΝ σου λέει ο σκελετός — αν περιγράφει μορφή και όχι μηχανισμό, λέγεται ρητά"
+        ]
+    },
+    "language_rules": {
+        "prose_language": "Ελληνικά",
+        "code_comments_language": "Αγγλικά",
+        "prefer_english_terms": [
+            "recursion",
+            "iterative",
+            "loop",
+            "pattern",
+            "base case",
+            "call stack",
+            "unwinding phase",
+            "slice",
+            "index",
+            "stable",
+            "guard clause"
+        ],
+        "banned_greek": {
+            "διάσχιση": "χρήση αγγλικού όρου (graph traversal / iteration)",
+            "σχήμα κώδικα": "χρήση 'pattern' ή 'pattern κώδικα'",
+            "λούπα": "loop",
+            "αναδρομή (ως κύριος όρος)": "recursion"
+        },
+        "style": [
+            "Καμία ατάκα — κάθε πρόταση κουβαλάει πληροφορία",
+            "Καμία έκφραση μεταφρασμένη κατά λέξη από τα αγγλικά",
+            "Αν κάτι δεν λέγεται φυσικά στα ελληνικά, λέγεται με τον αγγλικό όρο",
+            "Κοφτές προτάσεις αντί για μακριές περιόδους με κόμματα"
+        ]
+    },
+    "correctness_checklist": {
+        "before_delivering": [
+            "Κάθε αριθμητικό αποτέλεσμα στο κείμενο επαληθεύεται με πραγματικό υπολογισμό",
+            "Κάθε trace table εκτελείται νοερά γραμμή-γραμμή και συμφωνεί με το τελικό αποτέλεσμα",
+            "Οι συντεταγμένες SVG ελέγχονται αριθμητικά, όχι οπτικά",
+            "Κανένα σταθερό hex στο output — grep για '#' σε fill/stroke/color",
+            "Κάθε var που χρησιμοποιείται έχει επιβεβαιωθεί ότι υπάρχει στο deck",
+            "Κάθε αναφορά σε άλλη ενότητα υπάρχει πράγματι",
+            "Ο Go κώδικας δεν χρησιμοποιεί έννοιες που δεν έχουν διδαχθεί (structs, copy(), goroutines, generics)"
+        ],
+        "report_separately": "Λάθη σε άλλα σημεία του υλικού αναφέρονται στη συζήτηση με αριθμημένη λίστα, ΔΕΝ διορθώνονται στο επιστρεφόμενο κομμάτι"
+    },
+    "existing_components_to_reuse": {
+        "callout": "<div class=\"callout\"><span class=\"tag\">Τίτλος</span><p>...</p></div>",
+        "callout_good": "class=\"callout good\" για θετικά/επιβεβαιωτικά",
+        "grid2_grid3": "<div class=\"grid2\"><div class=\"card\"><span class=\"card-tag\">...</span><p>...</p></div></div>",
+        "glossary_table": "<table class=\"glossary-table\"><tr><td class=\"gt-term\">...</td><td class=\"gt-def\">...</td></tr></table>",
+        "glossary_strip": "<div class=\"glossary-strip\"><div class=\"gs-pill\"><span class=\"gs-name\">...</span><span class=\"gs-def\">...</span></div></div>",
+        "spoiler": "<div class=\"spoiler\"><div class=\"spoiler-lock\"><span>Drag to reveal →</span></div>...</div>",
+        "eyebrow": "<div class=\"eyebrow\">Ενότητα N / 8 — Τίτλος</div>",
+        "lede": "<p class=\"lede\">...</p>",
+        "rule": "Custom inline styles ΜΟΝΟ όταν κανένα από τα παραπάνω δεν καλύπτει την ανάγκη"
+    },
+    "section_separator": "// ── §X.Y — Τίτλος ────────────────────────────────────────────── ⊃"
+}
