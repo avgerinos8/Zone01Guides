@@ -3372,7 +3372,7 @@ meetings = append(meetings, [2]int{8, 11}) // the outer slice grows — add meet
 
 <p>
     Η λύση είναι η <code>slices.SortFunc</code>. Παίρνει δύο ορίσματα: το slice, και μια
-    <strong>συνάρτηση σύγκρισης</strong> (comparison function) που της γράφεις εσύ. Αυτή η function δέχεται
+    <strong>function σύγκρισης</strong> (comparison function) που της γράφεις εσύ. Αυτή η function δέχεται
     δύο στοιχεία, τα λέμε <code>a</code> και <code>b</code>, και απαντάει με έναν ακέραιο:
 </p>
 
@@ -4285,12 +4285,12 @@ func BinarySearchInsert(numbers []int, target int) (int, bool) {
 
 <div class="callout">
 <p>
-Μέχρι τώρα, καλούσαμε μια συνάρτηση από μια άλλη συνάρτηση. Τι θα συμβεί, όμως, αν μια συνάρτηση αποφασίσει να καλέσει τον εαυτό της; Φαντάσου μια φωτογραφία να τραβάει τον εαυτό της, ή έναν καθρέφτη να κοιτάζει τον καθρέφτη απέναντί του – τι βλέπεις; Άπειρες αντανακλάσεις. Κάτι παρόμοιο συμβαίνει και στον κώδικα, κάτι που είναι δυσνόητο στην αρχή. Θέλεις μήπως να το δοκιμάσεις από περιέργεια, πριν διαβάσεις παρακάτω;
+Μέχρι τώρα, καλούσαμε μια function από μια άλλη function. Τι θα συμβεί, όμως, αν μια function αποφασίσει να καλέσει τον εαυτό της; Φαντάσου μια φωτογραφία να τραβάει τον εαυτό της, ή έναν καθρέφτη να κοιτάζει τον καθρέφτη απέναντί του – τι βλέπεις; Άπειρες αντανακλάσεις. Κάτι παρόμοιο συμβαίνει και στον κώδικα, κάτι που είναι δυσνόητο στην αρχή. Θέλεις μήπως να το δοκιμάσεις από περιέργεια, πριν διαβάσεις παρακάτω;
 </p>
 </div>
 
 <p>
-    Μια συνάρτηση που καλεί τον εαυτό της ονομάζεται <strong>αναδρομική</strong> (recursive):
+    Μια function που καλεί τον εαυτό της ονομάζεται <strong>αναδρομική</strong> (recursive):
 </p>
 <pre><code class="lang-go">func Countdown(n int) {
     fmt.Println(n)
@@ -4315,13 +4315,13 @@ func BinarySearchInsert(numbers []int, target int) (int, bool) {
 ... και συνεχίζει για πάντα</code></pre>
 
 <p>
-    Αυτή η συνάρτηση <strong>δεν σταματάει ποτέ</strong>. Θα τυπώνει όλο και μικρότερους αριθμούς, κατεβαίνοντας
+    Αυτή η function <strong>δεν σταματάει ποτέ</strong>. Θα τυπώνει όλο και μικρότερους αριθμούς, κατεβαίνοντας
     στο <code>-1</code>, <code>-2</code>, ..., <code>-1000</code>, ...  – αν την καλέσουμε από την main, δεν θα σταματήσει ποτέ. Και ότι βρίσκεται κάτω από την κλήση της, δεν θα εκτελεστεί ποτέ. Δεν θα σταματήσει μέχρι να γεμίσει η μνήμη (stack overflow) και το πρόγραμμα να «κρασάρει». Δεν υπάρχει καμία συνθήκη που να της λέει «φτάνει, σταμάτα».
 </p>
 
 <h2>Base case</h2> 
 <p>
-    Για να λειτουργήσει σωστά, κάθε αναδρομική συνάρτηση χρειάζεται μια <strong>base case</strong> – μια συνθήκη
+    Για να λειτουργήσει σωστά, κάθε αναδρομική function χρειάζεται μια <strong>base case</strong> – μια συνθήκη
     που σταματάει την αναδρομή. Ας την προσθέσουμε:
 </p>
 
@@ -4345,7 +4345,7 @@ func BinarySearchInsert(numbers []int, target int) (int, bool) {
 BOOM!!</code></pre>
 
 <p>
-    Δες τι έγινε: η συνάρτηση κάλεσε τον εαυτό της τρεις φορές – με <code>n = 2</code>, μετά <code>n = 1</code>, και τέλος με <code>n = 0</code>. Στο <code>n <= 0</code> σταμάτησε: αυτή είναι η <strong>base case</strong> («οριακή συνθήκη τερματισμού»), μια "έξοδος" που εμποδίζει την ατέρμονη κλήση. Κάθε αναδρομική συνάρτηση χρειάζεται <strong>υποχρεωτικά</strong> μια τέτοια συνθήκη τερματισμού.
+    Δες τι έγινε: η function κάλεσε τον εαυτό της τρεις φορές – με <code>n = 2</code>, μετά <code>n = 1</code>, και τέλος με <code>n = 0</code>. Στο <code>n <= 0</code> σταμάτησε: αυτή είναι η <strong>base case</strong> («οριακή συνθήκη τερματισμού»), μια "έξοδος" που εμποδίζει την ατέρμονη κλήση. Κάθε αναδρομική function χρειάζεται <strong>υποχρεωτικά</strong> μια τέτοια συνθήκη τερματισμού.
     </p>
 <p>
     Η θέση της όμως μετράει όσο και η ύπαρξή της: το base case πρέπει να ελέγχεται <strong>πριν</strong> από
@@ -5308,27 +5308,27 @@ func CountdownGood(n int) {
       <path d="M0,1 L9,5 L0,9 z" fill="currentColor" opacity="0.55"/>
     </marker>
 
-    <!-- ① gray -->
+    <!-- ⓪ gray (was ①) -->
     <pattern id="hA" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
       <rect width="10" height="10" fill="rgba(150,150,160,0.09)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(150,150,160,0.32)" stroke-width="2"/>
     </pattern>
-    <!-- ② light green -->
+    <!-- ① light green (was ②) -->
     <pattern id="hB" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
       <rect width="10" height="10" fill="rgba(139,195,74,0.10)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(139,195,74,0.38)" stroke-width="2"/>
     </pattern>
-    <!-- ③ teal -->
+    <!-- ② teal (was ③) -->
     <pattern id="hC" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
       <rect width="10" height="10" fill="rgba(38,166,154,0.10)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(38,166,154,0.38)" stroke-width="2"/>
     </pattern>
-    <!-- ④ orange -->
+    <!-- ③ orange (was ④) -->
     <pattern id="hD" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
       <rect width="10" height="10" fill="rgba(255,167,38,0.11)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(255,167,38,0.40)" stroke-width="2"/>
     </pattern>
-    <!-- ⑤ deep blue-gray -->
+    <!-- ④ deep blue-gray (was ⑤) -->
     <pattern id="hE" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
       <rect width="10" height="10" fill="rgba(92,107,192,0.11)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(92,107,192,0.42)" stroke-width="2"/>
     </pattern>
-    <!-- ⑥ deep cypress green -->
+    <!-- ⑤ deep cypress green (was ⑥) -->
     <pattern id="hF" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(-35)">
       <rect width="10" height="10" fill="rgba(46,125,50,0.10)"/><line x1="0" y1="0" x2="0" y2="10" stroke="rgba(46,125,50,0.38)" stroke-width="2"/>
     </pattern>
@@ -5342,17 +5342,17 @@ func CountdownGood(n int) {
 
   <!-- six regions with updated colors -->
   <g filter="url(#rf)">
-    <!-- ① calls++ -->
+    <!-- ⓪ calls++ -->
     <rect x="218" y="46"  width="482" height="30" rx="7" fill="url(#hA)" stroke="#8f9aa6" stroke-width="1.7"/>
-    <!-- ② base case -->
+    <!-- ① base case -->
     <rect x="218" y="88"  width="482" height="80" rx="7" fill="url(#hB)" stroke="#8bc34a" stroke-width="1.7"/>
-    <!-- ③ preparation -->
+    <!-- ② preparation -->
     <rect x="218" y="180" width="482" height="56" rx="7" fill="url(#hC)" stroke="#26a69a" stroke-width="1.7"/>
-    <!-- ④ recursive call -->
+    <!-- ③ recursive call -->
     <rect x="218" y="248" width="482" height="30" rx="7" fill="url(#hD)" stroke="#ffa726" stroke-width="1.7"/>
-    <!-- ⑤ unwinding -->
+    <!-- ④ unwinding -->
     <rect x="218" y="290" width="482" height="56" rx="7" fill="url(#hE)" stroke="#5c6bc0" stroke-width="1.7"/>
-    <!-- ⑥ return -->
+    <!-- ⑤ return -->
     <rect x="218" y="358" width="482" height="30" rx="7" fill="url(#hF)" stroke="#2e7d32" stroke-width="1.7"/>
   </g>
 
@@ -5372,12 +5372,12 @@ func CountdownGood(n int) {
 
   <!-- numbered circles with updated colors -->
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="64" text-anchor="middle">
-    <text x="202" y="66" fill="#8f9aa6" opacity="1">①</text>
-    <text x="202" y="133" fill="#8bc34a" opacity="1">②</text>
-    <text x="202" y="213" fill="#26a69a" opacity="1">③</text>
-    <text x="202" y="268" fill="#ffa726" opacity="1">④</text>
-    <text x="202" y="323" fill="#5c6bc0" opacity="1">⑤</text>
-    <text x="202" y="378" fill="#2e7d32" opacity="1">⑥</text>
+    <text x="202" y="66" fill="#8f9aa6" opacity="1">⓪</text>
+    <text x="202" y="133" fill="#8bc34a" opacity="1">①</text>
+    <text x="202" y="213" fill="#26a69a" opacity="1">②</text>
+    <text x="202" y="268" fill="#ffa726" opacity="1">③</text>
+    <text x="202" y="323" fill="#5c6bc0" opacity="1">④</text>
+    <text x="202" y="378" fill="#2e7d32" opacity="1">⑤</text>
   </g>
 
   <!-- left side notes (display font) -->
@@ -5387,7 +5387,7 @@ func CountdownGood(n int) {
     <text x="185" y="122">base case —</text>
     <text x="206" y="142">πάντα στην αρχή!</text>
     <text x="180" y="205">μόνο αν ΔΕΝ</text>
-    <text x="185" y="221">ίσχυσε το ②</text>
+    <text x="185" y="221">ίσχυσε το ①</text>
     <text x="186" y="258">recursive call —</text>
     <text x="188" y="316">unwinding phase —</text>
     <text x="185" y="368">επιστρέφει —</text>
@@ -5417,12 +5417,12 @@ func CountdownGood(n int) {
   </g>
 </svg>
 <p>
-    <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #8f9aa6;">①</span><strong style="color: #8f9aa6;"> Σε αυτό το σημείο ο κώδικας θα τρέξει πάντα.</strong> Συνήθως είναι κενός, δεν βάζουμε κάτι σε αυτό το σημείο. Έχει μια ιδιότητα που καμία άλλη περιοχή δεν έχει: εκτελείται σε <em>κάθε</em> κλήση χωρίς εξαίρεση,
+    <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #8f9aa6;">⓪</span><strong style="color: #8f9aa6;"> Σε αυτό το σημείο ο κώδικας θα τρέξει πάντα.</strong> Συνήθως είναι κενός, δεν βάζουμε κάτι σε αυτό το σημείο. Έχει μια ιδιότητα που καμία άλλη περιοχή δεν έχει: εκτελείται σε <em>κάθε</em> κλήση χωρίς εξαίρεση,
     ακόμα και σε αυτές που θα σταματήσουν στο base case. Αν θέλεις να μετρήσεις πόσες recursive calls έγιναν συνολικά, ίσως για debugging, εδώ είναι το μόνο σημείο που εκτελείται πάντα ακόμα και αν το base case είναι true.
 </p>
 
 <p>
-    <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #8bc34a;">②</span>
+    <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #8bc34a;">①</span>
     <strong style="color: #8bc34a;">Base case.</strong> Είναι πρώτο για έναν πολύ συγκεκριμένο λόγο: ό,τι είναι γραμμένο από κάτω
     του υποθέτει σιωπηρά ότι το πρόβλημα <em>δεν</em> έχει τελειώσει. Αν το κατέβαζες πιο κάτω, το recursive
     call θα είχε ήδη γίνει πριν προλάβει να ελεγχθεί η συνθήκη τερματισμού — και τότε δεν θα σταματούσε ποτέ.
@@ -5431,28 +5431,28 @@ func CountdownGood(n int) {
 </p>
 
 <p>
-        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #26a69a;">③</span>
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #26a69a;">②</span>
     <strong style="color: #26a69a;">Φάση κατάβασης.</strong> Κώδικας που εκτελείται μόνο όταν το base case ΔΕΝ ίσχυσε — και αυτό
     είναι εγγυημένο από τη ροή: αν είχε ισχύσει, η function θα είχε ήδη επιστρέψει και δεν θα υπήρχε τρόπος να φτάσουμε εδώ.
 </p>
 
 <p>
-        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #ffa726;">④</span>
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #ffa726;">③</span>
     <strong style="color: #ffa726;">Recursive call.</strong> Η μοναδική γραμμή που ανοίγει καινούριο επίπεδο. Τη στιγμή που
     εκτελείται, όλα από πάνω της έχουν ήδη γίνει και όλα από κάτω της μπαίνουν σε αναμονή — για όσο χρόνο
     χρειαστεί ολόκληρο το υποδέντρο κλήσεων που μόλις ξεκίνησε.
 </p>
 
 <p>
-        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #5c6bc0;">⑤</span>
-    <strong style="color: #5c6bc0;">Unwinding phase.</strong> Εκτελείται τη στιγμή που επιστρέφει η κλήση της ④, δηλαδή αφού έχουν
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #5c6bc0;">④</span>
+    <strong style="color: #5c6bc0;">Unwinding phase.</strong> Εκτελείται τη στιγμή που επιστρέφει η κλήση της ③, δηλαδή αφού έχουν
     ολοκληρωθεί ΟΛΑ τα βαθύτερα επίπεδα. Επειδή κάθε επίπεδο έχει τη δική του, οι εντολές αυτές τρέχουν με
     αντίστροφη σειρά από αυτή που έγιναν οι κλήσεις: πρώτα του βαθύτερου επιπέδου, τελευταία της αρχικής
     κλήσης.
 </p>
 
 <p>
-        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #2e7d32;">⑥</span>
+        <span style="display: inline-block; transform: scale(2.4); transform-origin: right; position: relative; top: -10px; color: #2e7d32;">⑤</span>
     <strong style="color: #2e7d32;">Η επιστροφή. Εδώ "ξυπνάμε",</strong> τελειώνουμε για παράδειγμα με το επίπεδο 4 και επιστρέφουμε στο unwinding phase του επίπεδου 3. Αν η function επιστρέφει τιμή, το <code>return r</code> υπάρχει. Προσοχή όμως, αν δεν επιστρέφεται τίποτα, το τέλος της func δηλαδή το κλείσιμο του αγκίστρου είναι ουσιαστικά σαν να υπήρχε ένα σκέτο <code>return</code>. Σε αυτή την περίπτωση το τέλος της func είναι η στιγμή που το επίπεδο «ξυπνάει» το από πάνω του.
 </p>
 
@@ -5460,14 +5460,14 @@ func CountdownGood(n int) {
     <span class="tag">Αν το recursive call είναι μέσα σε for</span>
     <p>
         Στην
-        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">③</span>
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">②</span>
         μπορεί κάλλιστα να υπάρχει ένα <code>for</code>, με το recursive call μέσα του — έτσι
         δοκιμάζεις πολλές εναλλακτικές από το ίδιο σημείο. Σε μια τέτοια περίπτωση, κάθε φορά που το επίπεδο «ξυπνάει», δεν φτάνει έτσι απλά στο
-        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑥</span>
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑤</span>
         — συνεχίζει το <code>for</code> ακριβώς στο <code>i</code> που είχε μείνει, και προχωράει στο επόμενο. (δηλαδή πάει από το
-                <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑤</span> →
+                <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">④</span> →
         στο επόμενο iteration της λούπας στο
-        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">③</span>
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">②</span>
 
         ) Ό,τι είναι γραμμένο ανάμεσα στο recursive call και το τέλος του σώματος του
         loop είναι κι αυτό unwinding code — απλώς εκτελείται μία φορά ανά επανάληψη, όχι μία φορά συνολικά.
@@ -5479,13 +5479,13 @@ func CountdownGood(n int) {
     <span class="tag">Το πρόωρο return προσπερνά και το unwinding phase</span>
     <p>
         Πρόσεξε τι θα σήμαινε εάν υπήρχε ένα <code>return</code> μέσα στην
-        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">③</span>
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">②</span>
         . Δεν προσπερνά μόνο τις υπόλοιπες recursive κλήσεις — προσπερνά και ολόκληρη την
-        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑤</span>
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">④</span>
         αυτού του επιπέδου. Ό,τι είχες σκοπό να κάνεις στην άνοδο, δεν θα γίνει. Ουσιαστικά ένα base case ( 
-        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">②</span> )
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">①</span> )
         είναι ακριβώς το παραπάνω. Ένα <code>return</code> στην φάση της καθόδου. Που σημαίνει ότι στο επίπεδο που πετυχαίνουμε το base case, δηλαδή στο πιο βαθύ επίπεδο που θα φτάσουμε, το
-        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">⑤</span>
+        <span style="display: inline-block; transform: scale(1.4); transform-origin: center; position: relative; top: -2px;">④</span>
         (αυτού του επιπέδου) δεν εκτελείται.
     </p>
 </div>
@@ -5936,14 +5936,14 @@ func main() {
         Στον κώδικα η <code>visited</code> περνιέται ως <code>map[[2]int]bool</code>, όχι ως
         <code>*map[[2]int]bool</code>. Αυτό δεν είναι λάθος — αντίθετα, είναι ο σωστός τρόπος.
         Στη Go, τα <strong>maps είναι reference types</strong>, σαν τα slices. Όταν περνάς ένα map
-        σε μια συνάρτηση, περνάς έναν pointer προς την εσωτερική του δομή. Έτσι, οποιαδήποτε αλλαγή
+        σε μια function, περνάς έναν pointer προς την εσωτερική του δομή. Έτσι, οποιαδήποτε αλλαγή
         (π.χ. <code>visited[key] = true</code>) μέσα στην αναδρομή είναι ορατή σε <em>όλες</em> τις
         κλήσεις — ακριβώς αυτό χρειαζόμαστε, γιατί το map κρατάει τα κελιά που έχουμε ήδη επισκεφτεί
         σε όλο το δέντρο της αναδρομής.
     </p>
     <p>
         Αν έβαζες <code>*map[[2]int]bool</code>, ο κώδικας θα δούλευε επίσης, αλλά θα χρειαζόσουν
-        <code>&visited</code> στην κλήση και <code>(*visited)[key]</code> μέσα στη συνάρτηση —
+        <code>&visited</code> στην κλήση και <code>(*visited)[key]</code> μέσα στη function —
         περιττή πολυπλοκότητα χωρίς κανένα όφελος. Η Go σου δίνει το map έτοιμο να το τροποποιείς
         χωρίς pointers. Εμπιστέψου το.
     </p>
@@ -6579,8 +6579,7 @@ func MaxMeetings(meetings [][2]int) int {
     <p>
         Το greedy είναι πάντα καλή <strong>πρώτη προσπάθεια</strong>, ακριβώς επειδή είναι εύκολο να γραφτεί.
         Γράψ' το, και μετά ψάξε συνειδητά ένα αντιπαράδειγμα — μια είσοδο όπου δίνει λάθος απάντηση. Αν το
-        βρεις, ξέρεις ότι χρειάζεσαι κάτι ...άλλο, που θα δούμε σύντομα (backtracking ή δυναμικό προγραμματισμό).
-        Αν δεν το βρεις, μάλλον είσαι εντάξει.
+        βρεις, ξέρεις ότι χρειάζεσαι κάτι διαφορετικό, κάτι που θα δούμε στο επόμενο κεφάλαιο (backtracking).
     </p>
 </div>
 
@@ -6681,46 +6680,29 @@ func MaxTasks(durations []int, budget int) int {
 <div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
 <h1>Backtracking: δοκίμασε, και κάνε πίσω</h1>
 
-<p class="lede">
-    Όταν το greedy δεν αρκεί, η εναλλακτική είναι να <strong>δοκιμάσεις</strong>. Όχι τυφλά όμως: δοκιμάζεις
-    μια επιλογή, προχωράς όσο μπορείς, και μόλις καταλάβεις ότι δεν βγάζει πουθενά, ξηλώνεις την τελευταία
-    απόφαση και δοκιμάζεις την επόμενη.
-</p>
-
-<p>
-    Είναι ακριβώς αυτό που κάνεις όταν λύνεις sudoku με μολύβι: γράφεις ένα 7, προχωράς, βλέπεις ότι κάπου
-    δεν βγαίνει τίποτα, <strong>σβήνεις το 7</strong>, γράφεις 8. Το «σβήνεις» είναι όλη η ουσία της
-    τεχνικής, και έχει όνομα: <em>backtrack</em>.
-</p>
+<p class="lede"> Όταν το greedy δεν αρκεί, η μόνη διέξοδος είναι η <strong>δοκιμή</strong>. Όχι τυφλά όμως — δοκιμάζεις μια διαδρομή, προχωράς όσο μπορείς, και όταν φτάσεις σε αδιέξοδο (ή όταν έχεις βρει μια λύση αλλά θες να δεις και τις υπόλοιπες), <strong>γυρίζεις πίσω</strong> το τελευταίο σου βήμα και δοκιμάζεις την επόμενη επιλογή. Και όλο το παραπάνω, ξανά και ξανά. <br>Αυτή η διαδικασία λέγεται <strong>backtracking</strong> — και είναι ίσως η πιο σημαντική εφαρμογή του recursion.</p>
 
 <h2>Ο σκελετός, τρεις γραμμές</h2>
 
 <p>Κάθε αλγόριθμος backtracking που θα γράψεις ποτέ έχει την ίδια δομή:</p>
 
-<div class="grid3">
-    <div class="card">
-        <span class="card-tag">1. CHOOSE</span>
-        <p>Κάνε μία επιλογή και <strong>κατέγραψέ την</strong> κάπου — σε ένα slice, σε ένα map, σε ένα κελί.</p>
-    </div>
-    <div class="card">
-        <span class="card-tag">2. EXPLORE</span>
-        <p>Κάλεσε αναδρομικά τον εαυτό σου για το <strong>υπόλοιπο</strong> πρόβλημα, με την επιλογή σε ισχύ.</p>
-    </div>
-    <div class="card">
-        <span class="card-tag">3. UN-CHOOSE</span>
-        <p>Όταν η αναδρομή επιστρέψει, <strong>ξήλωσε</strong> την επιλογή, ώστε να δοκιμάσεις καθαρά την επόμενη.</p>
-    </div>
-</div>
-
-<div class="callout good">
-    <span class="tag">Είναι DFS, με ένα επιπλέον βήμα</span>
-    <p>
-        Στην Ενότητα 6 είδαμε DFS σε γράφημα. Το backtracking είναι <strong>DFS πάνω σε ένα δέντρο
-        αποφάσεων</strong> — ένα γράφημα που δεν υπάρχει πουθενά στη μνήμη, αλλά χτίζεται καθώς αποφασίζεις.
-        Η μόνη διαφορά από το DFS που ήδη ξέρεις είναι το τρίτο βήμα: το ξήλωμα. Στο DFS δεν αναιρείς ποτέ τη σήμανση ενός
-        κόμβου· στο backtracking, το ξήλωμα είναι απαραίτητο, γιατί η ίδια επιλογή μπορεί να είναι λάθος
-        σε αυτό το μονοπάτι και σωστή σε ένα άλλο.
-    </p>
+<div class="grid3" style="position:relative;"> 
+  <div class="card" style="position:relative; border:none; overflow:hidden; padding:38px 20px 12px;"> 
+    <span class="card-tag" style="position:absolute; top:-18px; left:20px; font-size:4.2em; letter-spacing: -0.05em; font-family: var(--font-display); font-weight: 700; color:var(--tone-1); line-height:1; white-space:nowrap; z-index:2;">1. Choose</span> 
+    <p style="position:relative; z-index:10; margin-bottom:0;">Κάνε μία επιλογή και <strong>κατέγραψέ την</strong> κάπου — σε ένα slice, σε ένα map, σε ένα κελί.</strong>.</p> 
+  </div> 
+  
+  <div class="card" style="position:relative; border:none; overflow:hidden; padding:38px 20px 12px;"> 
+    <span style="position:absolute; left:-22px; top:50%; transform:translateY(-50%); font-size:1.4em; opacity:0.5;">→</span> 
+    <span class="card-tag" style="position:absolute; top:-18px; left:20px; font-size:4.2em;  letter-spacing: -0.05em; font-family: var(--font-display); font-weight: 700; color:var(--tone-1); line-height:1; white-space:nowrap; z-index:2;">2. Explore</span> 
+    <p style="position:relative; z-index:10; margin-bottom:0;">Κάλεσε αναδρομικά τον εαυτό σου για το <strong>υπόλοιπο</strong> πρόβλημα, με την επιλογή σε ισχύ.</p> 
+  </div> 
+  
+  <div class="card" style="position:relative; border:none; overflow:hidden; padding:38px 20px 12px;"> 
+    <span style="position:absolute; left:-22px; top:50%; transform:translateY(-50%); font-size:1.4em; opacity:0.5;">→</span> 
+    <span class="card-tag" style="position:absolute; top:-18px; left:20px; font-size:4.2em;  letter-spacing: -0.05em; font-family: var(--font-display); font-weight: 700; color:var(--tone-1); line-height:1; white-space:nowrap; z-index:2;">3. Un-Choose</span> 
+    <p style="position:relative; z-index:10; margin-bottom:0;">Όταν η αναδρομή επιστρέψει (unwinding phase), <strong>ξήλωσε</strong> την επιλογή, ώστε να δοκιμάσεις καθαρά την επόμενη.</p> 
+  </div> 
 </div>
 
 <h2>Το απλούστερο δυνατό παράδειγμα</h2>
@@ -6736,7 +6718,7 @@ func MaxTasks(durations []int, budget int) int {
     είναι πώς τις παράγει ένα πρόγραμμα.
 </p>
 
-<h3>Πρώτη σκέψη: φωλιασμένα loops</h3>
+<h3>Εύκολο αλλά λάθος: φωλιασμένα loops</h3>
 
 <p>Τρεις θέσεις, άρα τρία loops. Ένα ανά θέση:</p>
 
@@ -6773,110 +6755,125 @@ for i := 0; i &lt; 3; i++ { // position 0
     </p>
 </div>
 
-<h3>Ο ίδιος κώδικας, αναδρομικά</h3>
-
-<pre><code class="lang-go">// Arrange prints every arrangement of the letters, each used exactly once.
+<pre><code class="lang-go">func main() {
+    letters := []string{"Α", "Β", "Γ"}
+    Arrange(letters, make([]bool, len(letters)), nil)
+    // [Α Β Γ]
+    // [Α Γ Β]
+    // [Β Α Γ]
+    // [Β Γ Α]
+    // [Γ Α Β]
+    // [Γ Β Α]
+}
+    
+// Arrange prints every arrangement of the letters, each used exactly once.
 // used[i] records whether letters[i] is already placed.
 // current holds the letters chosen so far, in order.
 func Arrange(letters []string, used []bool, current []string) {
 
-    // (1) THE END: every position is filled - one complete arrangement
+    // (1) THE END (base case): every position is filled - one complete arrangement
     if len(current) == len(letters) {
         fmt.Println(current)
         return
     }
 
-    // (2) THE LOOP: try every letter as a candidate for the current position
+    // (2A) THE LOOP: try every letter as a candidate for the current position
     for i := 0; i &lt; len(letters); i++ {
 
-        // (3) THE CHECK: is this candidate allowed here?
+        // (2B) THE CHECK: is this candidate allowed here?
         if used[i] {
             continue // no - skip it, do not descend at all
         }
 
-        // (4) CHOOSE: commit to this candidate
+        // (2C) CHOOSE: commit to this candidate
         used[i] = true
         current = append(current, letters[i])
 
-        // (5) EXPLORE: let recursion fill ALL the remaining positions
+        // (3) EXPLORE: let recursion fill ALL the remaining positions
         Arrange(letters, used, current)
 
-        // (6) THE RECURSION WAKES UP HERE - and we UN-CHOOSE
+        // (4A) THE RECURSION WAKES UP HERE - and we UN-CHOOSE
         used[i] = false
         current = current[:len(current)-1]
 
-        // (7) the loop now continues with the next candidate
+        // (4B) the loop will continue with the next candidate
     }
-}
 
-func main() {
-    letters := []string{"Α", "Β", "Γ"}
-    Arrange(letters, make([]bool, len(letters)), nil)
-}
-// [Α Β Γ]
-// [Α Γ Β]
-// [Β Α Γ]
-// [Β Γ Α]
-// [Γ Α Β]
-// [Γ Β Α]
-</code></pre>
+    // (5) return to 4A one level up
+}</code></pre>
 
-<h3>Τα εφτά σημεία, ένα-ένα</h3>
-
-<table style="width:100%; border-collapse:collapse; margin:16px 0;">
-    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
-        <th style="text-align:left; padding:8px;">#</th>
-        <th style="text-align:left; padding:8px;">Τι είναι</th>
-        <th style="text-align:left; padding:8px;">Τι κάνει, και γιατί υπάρχει</th>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>1</strong></td>
-        <td style="padding:8px;">Το base case</td>
-        <td style="padding:8px;">Όταν το <code>current</code> έχει γεμίσει, δεν υπάρχει τίποτα άλλο να αποφασιστεί. Τυπώνουμε και γυρίζουμε πίσω. Χωρίς αυτό, η αναδρομή δεν σταματάει ποτέ.</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>2</strong></td>
-        <td style="padding:8px;">Το loop</td>
-        <td style="padding:8px;">Είναι <em>ένα από τα τρία</em> φωλιασμένα loops της προηγούμενης εκδοχής. Κάθε επίπεδο αναδρομής εκτελεί το δικό του αντίγραφο αυτού του loop.</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>3</strong></td>
-        <td style="padding:8px;">Ο έλεγχος</td>
-        <td style="padding:8px;">Η μόνη γραμμή που ξέρει τι σημαίνει «έγκυρο» σε <em>αυτό</em> το πρόβλημα. Αν αποτύχει, το <code>continue</code> προσπερνά χωρίς καμία αναδρομική κλήση — δεν σπαταλάμε τίποτα.</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>4</strong></td>
-        <td style="padding:8px;">Choose</td>
-        <td style="padding:8px;">Δύο πράγματα μαζί: καταγράφουμε την επιλογή στο αποτέλεσμα (<code>current</code>) και ενημερώνουμε την κατάσταση που διαβάζει ο έλεγχος (<code>used</code>).</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>5</strong></td>
-        <td style="padding:8px;">Explore</td>
-        <td style="padding:8px;">Εδώ γίνεται το άλμα εμπιστοσύνης της Ενότητας 6: <em>υποθέτουμε</em> ότι αυτή η κλήση θα τυπώσει σωστά όλες τις διατάξεις που ξεκινούν με το τρέχον πρόθεμα.</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>6</strong></td>
-        <td style="padding:8px;">Το ξύπνημα και το un-choose</td>
-        <td style="padding:8px;">Όταν η κλήση του (5) τελειώσει, η εκτέλεση επιστρέφει <strong>ακριβώς εδώ</strong>, στην αμέσως επόμενη γραμμή. Ξηλώνουμε την επιλογή, ώστε ο επόμενος υποψήφιος να ξεκινήσει από καθαρή κατάσταση.</td>
-    </tr>
-    <tr>
-        <td style="padding:8px;"><strong>7</strong></td>
-        <td style="padding:8px;">Η συνέχεια του loop</td>
-        <td style="padding:8px;">Το <code>for</code> προχωράει στο επόμενο <code>i</code>. Όταν εξαντληθούν όλοι οι υποψήφιοι, η function τελειώνει και επιστρέφει — και τότε ξυπνάει το <em>δικό της</em> σημείο (6), ένα επίπεδο πιο πάνω.</td>
-    </tr>
+<table style="width:100%; border-collapse:separate; border-spacing:0; margin:16px 0; border-radius:12px; overflow:hidden; box-shadow:0 4px 14px rgba(0,0,0,0.5); background:var(--tone-1); font-family:inherit;">
+    <colgroup>
+        <col style="width:8%;">
+        <col style="width:22%;">
+        <col style="width:70%;">
+    </colgroup>
+    <thead>
+        <tr style="background:var(--tone-3); border-bottom:2px solid var(--tone-5);">
+            <th style="text-align:left; padding:12px 16px; font-weight:600; color:var(--tone-text); font-size:0.9rem; letter-spacing:0.4px;">#</th>
+            <th style="text-align:left; padding:12px 16px; font-weight:600; color:var(--tone-text); font-size:0.9rem; letter-spacing:0.4px;">Τι είναι</th>
+            <th style="text-align:left; padding:12px 16px; font-weight:600; color:var(--tone-text); font-size:0.9rem; letter-spacing:0.4px;">Τι κάνει, και γιατί υπάρχει</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; background:var(--tone-1);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">1</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Το base case</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Όταν το <code style="color:var(--tone-5); background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:4px;">current</code> έχει γεμίσει, δεν υπάρχει τίποτα άλλο να αποφασιστεί. Τυπώνουμε και γυρίζουμε πίσω. Χωρίς αυτό, η αναδρομή δεν σταματάει ποτέ.</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; background:var(--tone-2);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">2A</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Κάθοδος: loop</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Είναι <em>ένα από τα τρία</em> φωλιασμένα loops της προηγούμενης εκδοχής. Κάθε επίπεδο αναδρομής εκτελεί το δικό του αντίγραφο αυτού του loop.</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; background:var(--tone-1);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">2B</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Ο έλεγχος</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Η μόνη γραμμή που ξέρει τι σημαίνει «έγκυρο» σε <em>αυτό</em> το πρόβλημα. Αν αποτύχει, το <code style="color:var(--tone-5); background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:4px;">continue</code> προσπερνά χωρίς καμία αναδρομική κλήση — δεν σπαταλάμε τίποτα.</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; background:var(--tone-2);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">2C</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Choose</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Δύο πράγματα μαζί: καταγράφουμε την επιλογή στο αποτέλεσμα (<code style="color:var(--tone-5); background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:4px;">current</code>) και ενημερώνουμε την κατάσταση που διαβάζει ο έλεγχος (<code style="color:var(--tone-5); background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:4px;">used</code>).</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; background:var(--tone-1);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">3</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Explore (recursive call)</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Εδώ γίνεται η αναδρομική κλήση (recursion call) που μας πάει ένα επίπεδο πιο "βαθιά". Στην περίπτωση του backtracking, εδώ εξερευνούνται αναδρομικά ένα σωρό παρακλάδια· όλο το υπόλοιπο πρόβλημα για την επιλογή που έγινε παραπάνω.</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; background:var(--tone-2);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">4A</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Άνοδος: un‑choose</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Ένα επίπεδο αναδρομής εκτελειώσει, η εκτέλεση επιστρέφει <strong>ακριβώς εδώ</strong>, στην αμέσως επόμενη γραμμή. Ξηλώνουμε την επιλογή, ώστε ο επόμενος υποψήφιος να ξεκινήσει από καθαρή κατάσταση.</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.2s; background:var(--tone-1);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">4B</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Η συνέχεια του loop</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Το <code style="color:var(--tone-5); background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:4px;">for</code> προχωράει στο επόμενο <code style="color:var(--tone-5); background:rgba(255,255,255,0.08); padding:0.1rem 0.4rem; border-radius:4px;">i</code> του βήματος 2A.</td>
+        </tr>
+        <tr style="transition:background 0.2s; background:var(--tone-2);">
+            <td style="padding:12px 16px; color:var(--tone-4); font-weight:700;">5</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Νοητό return</td>
+            <td style="padding:12px 16px; color:var(--tone-text);">Όταν εξαντληθούν όλοι οι υποψήφιοι, η function τελειώνει και επιστρέφει (με φυσικό τρόπο, επειδή τελειώσε και ας μην αναγράφεται το return) — και τότε ξυπνάει το <em>δικό της</em> σημείο (4A), ένα επίπεδο πιο πάνω.</td>
+        </tr>
+    </tbody>
 </table>
+
+<p>Χρησιμοποιήσαμε την ίδια αρίθμηση με την παράγραφο 6 όταν σκιαγραφήσαμε τον σκελετό όλων των recursive functions</p>
 
 <div class="callout">
     <span class="tag">Δύο διαφορετικοί τρόποι να «γυρίσεις πίσω»</span>
     <p>
-        Πρόσεξε ότι υπάρχουν δύο σημεία όπου ένα κλαδί σταματάει, και δεν είναι το ίδιο πράγμα:
+        Πρόσεξε ότι υπάρχουν δύο σημεία όπου ένα παρακλάδι περιπτώσεων σταματάει, και δεν είναι το ίδιο πράγμα:
     </p>
     <ul>
-        <li><strong>Απόρριψη πριν καν κατέβεις (3):</strong> ο έλεγχος αποτυγχάνει, το <code>continue</code>
+        <li><strong>Απόρριψη πριν καν κατέβεις (2B):</strong> ο έλεγχος αποτυγχάνει, το <code>continue</code>
             προσπερνά τον υποψήφιο. Δεν έγινε καμία επιλογή, άρα δεν υπάρχει και τίποτα να ξηλωθεί.</li>
-        <li><strong>Επιστροφή μετά την εξερεύνηση (6):</strong> η επιλογή ήταν έγκυρη, εξερευνήθηκε πλήρως,
+        <li><strong>Επιστροφή μετά την εξερεύνηση (4A):</strong> η επιλογή ήταν έγκυρη, εξερευνήθηκε πλήρως,
             και τώρα ξηλώνεται. <em>Αυτό</em> είναι κυριολεκτικά το backtrack.</li>
     </ul>
+    <p>Επίσης, αξίζει να παρατηρήσεις ότι το (4A) ξηλώνει αυτό που διάλεξε το (2C). Αυτές οι δύο γραμμές κώδικα κάνουν το ακριβώς αντίστροφο πράγμα.
+    <br>Στο backtracking, αυτό το ζευγάρι εμφανίζεται <em>πάντα</em>: το κομμάτι κάτω από το recursive call κάνει undo την επιλογή που έγινε ακριβώς από πάνω του.</p>
 </div>
 
 <h3>Ας το τρέξουμε στο μυαλό μας</h3>
@@ -6885,29 +6882,36 @@ func main() {
 
 <table class="glossary-table">
 <tr><td class="gt-term">επίπεδο</td><td class="gt-term">υποψήφιος</td><td class="gt-term">current</td><td class="gt-def">τι συμβαίνει</td></tr>
-<tr><td class="gt-term">0</td><td class="gt-term">Α</td><td class="gt-term">[ ]</td><td class="gt-def">ελεύθερο → choose Α, κλήση για το επίπεδο 1</td></tr>
-<tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Α]</td><td class="gt-def">used → (3) continue, δοκίμασε τον επόμενο</td></tr>
-<tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Α]</td><td class="gt-def">ελεύθερο → choose Β, κλήση για το επίπεδο 2</td></tr>
-<tr><td class="gt-term">2</td><td class="gt-term">Α, Β</td><td class="gt-term">[Α Β]</td><td class="gt-def">και τα δύο used → continue, continue</td></tr>
-<tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Α Β]</td><td class="gt-def">ελεύθερο → choose Γ, κλήση για το επίπεδο 3</td></tr>
-<tr><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Α Β Γ]</td><td class="gt-def">(1) base case → <strong>τυπώνει ΑΒΓ</strong>, return</td></tr>
-<tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Α Β Γ]</td><td class="gt-def">(6) ξύπνησε → un-choose Γ → [Α Β]· το loop τελείωσε, return</td></tr>
-<tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Α Β]</td><td class="gt-def">(6) ξύπνησε → un-choose Β → [Α]</td></tr>
-<tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Α]</td><td class="gt-def">(7) το loop συνεχίζει → choose Γ → οδηγεί στο ΑΓΒ</td></tr>
+<!-- 1η μετάθεση: ΑΒΓ -->
+<tr><td class="gt-term">0</td><td class="gt-term">Α</td><td class="gt-term">[ ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 1</td></tr>
+<tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue, δοκίμασε τον επόμενο</td></tr>
+<tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Α]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 2</td></tr>
+<tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Α Β]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr>
+<tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Α Β]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr>
+<tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Α Β]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, κλήση για το επίπεδο 3</td></tr>
+<tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Α Β Γ]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΑΒΓ</strong>, return</td></tr>
+<tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Α Β Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [Α Β] · <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr>
+<tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Α Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [Α] · το loop συνεχίζεται</td></tr>
+<tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Α]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, θα συνεχίσει τον επόμενο κύκλο (ΑΓΒ...)</td></tr>
 </table>
 
 <p>
     Παρατήρησε τη γραμμή όπου το <code>current</code> επιστρέφει από <code>[Α Β]</code> σε <code>[Α]</code>.
-    Εκείνη τη στιγμή το πρόγραμμα «ξεχνάει» ότι δοκίμασε ποτέ το Β στη θέση 1 — και ακριβώς γι' αυτό μπορεί
-    να δοκιμάσει καθαρά το Γ. Χωρίς αυτό το ξήλωμα, θα προσπαθούσε να βάλει το Γ σε ένα
-    <code>current</code> που θα ήταν ακόμα <code>[Α Β]</code>, και θα τύπωνε άκυρες ακολουθίες τεσσάρων γραμμάτων.
+    Εκείνη τη στιγμή το πρόγραμμα «αναιρεί» ότι δοκίμασε το Β στη θέση 1 — και ακριβώς γι' αυτό μπορεί και προχωράει
+    να δοκιμάσει σε αυτή τη το Γ. Χωρίς αυτό το ξήλωμα, θα προσπαθούσε να βάλει το Γ σε ένα
+    <code>current</code> που θα ήταν ακόμα <code>[Α Β]</code> (που κακώς δεν έχει αφαιρεθεί το Β, δεν έχει γίνει δηλαδή αυτό το πίσω βήμα), και θα τύπωνε εντελώς άκυρες ακολουθίες γραμμάτων.
 </p>
 
-<h3>Τι γίνεται αν βγάλεις τον έλεγχο</h3>
+<p><strong>Συνέχεια της εκτέλεσης μέχρι το τέλος – όλες οι υπόλοιπες μεταθέσεις (ΑΓΒ, ΒΑΓ, ΒΓΑ, ΓΑΒ, ΓΒΑ):</strong></p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">επίπεδο</td><td class="gt-term">υποψήφιος</td><td class="gt-term">current</td><td class="gt-def">τι συμβαίνει</td></tr><!-- 2η μετάθεση: ΑΓΒ --><tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Α Γ Β]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΑΓΒ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Α Γ Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [Α Γ] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Α Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [Α] · <strong>το loop του επιπέδου 1 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">0</td><td class="gt-term">Α</td><td class="gt-term">[Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [ ] · το loop συνεχίζεται</td></tr><!-- 3η μετάθεση: ΒΑΓ --><tr><td class="gt-term">0</td><td class="gt-term">Β</td><td class="gt-term">[ ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 1</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Β]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Β Α Γ]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΒΑΓ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Β Α Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [Β Α] · <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Β Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Β] · το loop συνεχίζεται</td></tr><!-- 4η μετάθεση: ΒΓΑ --><tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Β]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Β Γ Α]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΒΓΑ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Β Γ Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Β Γ] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Γ</td><td class="gt-term">[Β Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [Β] · <strong>το loop του επιπέδου 1 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">0</td><td class="gt-term">Β</td><td class="gt-term">[Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [ ] · το loop συνεχίζεται</td></tr><!-- 5η μετάθεση: ΓΑΒ --><tr><td class="gt-term">0</td><td class="gt-term">Γ</td><td class="gt-term">[ ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Γ, κλήση για το επίπεδο 1</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Γ Α Β]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΓΑΒ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Γ Α Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [Γ Α] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Α</td><td class="gt-term">[Γ Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Γ] · το loop συνεχίζεται</td></tr><!-- 6η μετάθεση: ΓΒΑ --><tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Γ]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Β, κλήση για το επίπεδο 2</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬊ <code style="background: #1a4f2a; color: #b8f0b8; padding: 0.1rem 0.4rem; border-radius: 4px;">!used</code> → choose Α, κλήση για το επίπεδο 3</td></tr> <tr style="background: var(--tone-2);"><td class="gt-term">3</td><td class="gt-term">—</td><td class="gt-term">[Γ Β Α]</td><td class="gt-def"><strong>(1) base case → τυπώνει ΓΒΑ</strong>, return</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Α</td><td class="gt-term">[Γ Β Α]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Α → [Γ Β] · το loop συνεχίζεται</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Β</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">Γ</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬊ <code style="background: #4f1a1a; color: #f2a0a0; padding: 0.1rem 0.4rem; border-radius: 4px;">used</code> → continue</td></tr> <tr><td class="gt-term">2</td><td class="gt-term">—</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬈ <strong>το loop του επιπέδου 2 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">1</td><td class="gt-term">Β</td><td class="gt-term">[Γ Β]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Β → [Γ] · <strong>το loop του επιπέδου 1 τελείωσε</strong>, return</td></tr> <tr><td class="gt-term">0</td><td class="gt-term">Γ</td><td class="gt-term">[Γ]</td><td class="gt-def">⬈ <strong>(5) ξύπνησε</strong> → un-choose Γ → [ ] · <strong>το loop του επιπέδου 0 τελείωσε</strong>, return (τέλος όλων των μεταθέσεων)</td></tr></table>
+
+<h2>Τι γίνεται αν βγάλεις τον έλεγχο</h2>
 
 <p>
-    Αυτό είναι το πιο διδακτικό πείραμα που μπορείς να κάνεις με αυτόν τον κώδικα. Σβήσε τις τρεις γραμμές
-    του σημείου (3) — το <code>if used[i] { continue }</code> — και τρέξ' τον ξανά.
+    Αυτό είναι ένα ωραίο πείραμα που μπορείς να κάνεις με αυτόν τον κώδικα. Σβήσε τις τρεις γραμμές
+    του σημείου (2B) — το <code>if used[i] { continue }</code> — και τρέξ' τον ξανά.
 </p>
 
 <pre><code>[Α Α Α]
@@ -6929,18 +6933,183 @@ func main() {
     <span class="tag">Το συμπέρασμα που πρέπει να κρατήσεις</span>
     <p>
         Ο σκελετός choose / explore / un-choose <strong>απαριθμεί</strong>. Ο έλεγχος
-        <strong>διαλέγει</strong>. Χωρίς τον έλεγχο, το backtracking δεν είναι απλά «λιγότερο αποδοτικό» —
-        είναι κυριολεκτικά brute force γραμμένο με πιο κομψό τρόπο, και το πρόβλημα που υποτίθεται ότι λύνει
-        δεν λύνεται καθόλου. Η μία εκείνη συνθήκη είναι που μετατρέπει έναν γενικό απαριθμητή σε λύση
-        <em>αυτού</em> του προβλήματος.
+        <strong>διαλέγει</strong>. Χωρίς τον έλεγχο, το backtracking  είναι κυριολεκτικά brute force γραμμένο με πιο κομψό τρόπο,
+        και το πρόβλημα που υποτίθεται ότι λύνει, δεν λύνεται καθόλου.
+        Η μία εκείνη συνθήκη είναι που το μετατρέπει από: <em>καταγραφέα</em> όλων των δυνατών συνδιασμών της λούπας, σε λύση
+        αυτού του προβλήματος.
     </p>
 </div>
 
+<h2>Το base case στο backtracking: έξοδος ή σημείο ελέγχου;</h2>
+    <p>
+        Στο κεφάλαιο με την αναδρομή (recursion), το base case ήταν η έξοδος που ξυπνούσε διαδοχικά όλα τα
+        επίπεδα — επειδή είχαμε βρει την λύση (ή είχαμε φτάσει στο "μικρότερο" πρόβλημα).
+        Στον παραπάνω κώδικα, το base case εξακολουθεί να ξυπνάει τα επίπεδα με τον ίδιο τρόπο, αλλά με μία κρίσιμη διαφορά:
+        <strong>δεν τερματίζει την αναζήτηση</strong>. Απλά "καταγράφει" μία λύση (εδώ την τυπώνει με <code>fmt.Println(current)</code>)
+        και επιστρέφει, ώστε το επίπεδο από πάνω να συνεχίσει το exploration: <code>for</code> loop και να δοκιμάσει την
+        επόμενη υποψήφια επιλογή.
+    </p>
+    <p>
+        Η αιτία αυτής της διαφοράς είναι το <code>for</code> loop που <em>αγκαλιάζει</em> το recursive call (βήμα 3). Χάρη σε αυτό,
+        ο αλγόριθμος <strong>δεν σταματάει στην πρώτη λύση</strong> — εξερευνά <strong>όλα</strong> τα δυνατά
+        μονοπάτια, και η εκτέλεση ολοκληρώνεται μόνο όταν το <code>for</code> του επιπέδου 0 έχει εξαντλήσει
+        όλους τους υποψήφιους. Στον πίνακα που μόλις είδες, το πρόγραμμα τύπωσε και τις <strong>6 μεταθέσεις</strong>
+        των Α, Β, Γ, και σταμάτησε μόνο όταν το loop του επιπέδου 0 τελείωσε φυσιολογικά (ολοκλήρωσε όλα τα iterations του).
+    </p>
+
+<h2>Τι θα άλλαζε αν <em>θέλαμε</em> να σταματήσει νωρίτερα;</h2>
+
 <p>
-    Κράτα αυτή την εικόνα, γιατί ό,τι ακολουθεί είναι το ίδιο πράγμα με διαφορετικό έλεγχο: στο επόμενο
-    παράδειγμα ο έλεγχος θα είναι «ξεπέρασα τον στόχο;», στις βασίλισσες «απειλείται αυτό το τετράγωνο;»,
-    στο sudoku «επιτρέπεται αυτό το ψηφίο εδώ;». Ο σκελετός δεν αλλάζει ποτέ.
+    Αν θέλαμε, για παράδειγμα, να βρούμε μόνο τις πρώτες 3 λύσεις από τις 6 και μετά να τερματίσουμε,
+    θα χρειαζόμασταν μία <strong>επιπλέον base case</strong>, πιο ισχυρή από την υπάρχουσα.
+    Αυτή η νέα base case θα έπρεπε να μπαίνει <strong>πριν</strong> από την τρέχουσα — ακριβώς
+    στην αρχή της function — ώστε να ελέγχεται πρώτη.
 </p>
+
+<p>
+    Όταν η νέα base case ενεργοποιηθεί, η function κάνει <code>return</code> άμεσα, χωρίς να
+    εκτελέσει τον υπόλοιπο κώδικά της. Αυτό σημαίνει ότι <strong>δεν εξερευνούμε νέα μονοπάτια</strong>.
+    Ωστόσο, η εκτέλεση δεν σταματάει απότομα — απλώς ξετυλίγεται φυσιολογικά προς τα πίσω. Κάθε επίπεδο
+    που είχε ήδη μπει στην αναδρομή θα εκτελέσει το <strong>unwinding phase</strong> του:
+    θα αναιρέσει την επιλογή του (un-choose), ορθά· είναι κάτι που θέλουμε να συμβεί για να ξετυλίξουμε το κουβάρι επίπεδο προς επίπεδο προς τα πάνω.
+</p>
+
+<pre><code class="lang-go">var solutionsFound int
+
+func Arrange(letters []string, used []bool, current []string) {
+    // Νέα base case: αν έχουμε βρει όσες λύσεις θέλουμε, σταματάμε άμεσα
+    if solutionsFound >= 3 {
+        return
+    }
+
+    // Αρχική base case: έχουμε γεμίσει το current — μία πλήρης μετάθεση
+    if len(current) == len(letters) {
+        fmt.Println(current)
+        solutionsFound++
+        return
+    }
+
+    for i := 0; i &lt; len(letters); i++ {
+        if used[i] {
+            continue
+        }
+        used[i] = true
+        current = append(current, letters[i])
+        Arrange(letters, used, current)
+        used[i] = false
+        current = current[:len(current)-1]
+    }
+}</code></pre>
+
+<p>
+    Σε αυτή την περίπτωση, το πρόγραμμα θα σταματούσε μετά από 3 λύσεις, χωρίς να εξερευνήσει όλο τον
+    χώρο. Αυτή η <strong>δεύτερη base case</strong> είναι πιο «ισχυρή» γιατί τερματίζει την αναδρομή
+    ακόμα κι αν το <code>current</code> δεν έχει γεμίσει — αρκεί να έχουμε βρει όσες λύσεις χρειαζόμαστε.
+</p>
+
+<div class="callout">
+    <span class="tag">Πώς γίνεται μια base case να επηρρεάζει το for loop μας και νέους συνδιασμούς</span>
+
+    <p>
+    Η νέα base case <strong>δεν εμποδίζει</strong> τις αναδρομικές κλήσεις να γίνουν. Το <code>for</code> loop θα συνεχίσει
+    να τις παράγει κανονικά γιατί θα μπαίνει στο επόμενο iteration. Όμως, κάθε φορά που μία νέα ανδρομική κλήση φτάνει στην αρχή
+    της function, η νέα base case θα την τερματίζει ακαριαία, πριν προλάβει να κάνει οτιδήποτε άλλο. Έτσι, οι κλήσεις γίνονται,
+    αλλά <strong>πεθαίνουν αμέσως</strong> — χωρίς να ανοίγουν νέα επίπεδα, χωρίς να εξερευνούν νέους συνδυασμούς.</p>
+</div>
+
+
+<p>
+    Το πρόγραμμα σταματά να ψάχνει νέες λύσεις, αλλά <strong>δεν πετάει</strong> τα επίπεδα
+    που έχουν ήδη ανοίξει — τα ξετυλίγει με τη σειρά, ακριβώς όπως θα έκανε και σε μια κανονική
+    εκτέλεση. Το μόνο που αλλάζει είναι ότι κάθε νέα αναδρομική κλήση που επιχειρείται από εδώ
+    και πέρα θα τερματίζεται αμέσως από τη νέα base case.
+</p>
+
+<p>
+    <strong>Συμπέρασμα:</strong> Στο backtracking, η base case δεν είναι μόνο η έξοδος — είναι ένα
+    <strong>σημείο ελέγχου</strong> που μπορεί να εμφανιστεί πολλές φορές (μία για κάθε λύση). Το
+    <code>for</code> loop είναι αυτό που δίνει στον αλγόριθμο την ικανότητα να συνεχίζει την αναζήτηση
+    ακόμα και μετά από μία επιτυχία. Χωρίς αυτό, θα είχαμε απλή αναδρομή, όχι backtracking.
+</p>
+
+<div class="callout">
+    <span class="tag">Παρατήρηση για το <code>var solutionsFound int</code></span>
+    <p>
+        Αυτή η μεταβλητή είναι δηλωμένη έξω από τη function <code>Arrange</code>, αλλά και έξω από την <code>main</code>. Είναι δηλωμένη έξω από το σώμα οποιαδήποτε function.
+        <br>Θυμάσαι τι σημαίνει αυτό; Και τι ιδιότητες έχει; Το είχαμε δει στο προηγούμενο guide στο κεφάλαιο των functions.<br>
+        Σημαίνει ότι είναι <strong>global</strong> (package-level)
+        και <strong>κοινή</strong> για όλα τα επίπεδα της αναδρομής. Κάθε φορά που μία κλήση
+        φτάνει στο base case και τυπώνει μία λύση, αυξάνει την τιμή της — και η αλλαγή είναι
+        ορατή σε <em>όλες</em> τις υπόλοιπες κλήσεις, ακόμα και σε αυτές που είναι βαθύτερα ή
+        πιο επιφανειακά.
+    </p>
+    <p>
+        Αυτό το δεύτερο είναι που μας ενδιαφέρει τόσο πολύ. Το πιο επιφανειακά. Διότι αν την περνούσαμε σαν argument
+        στην function <code>Arrange</code>, δεν θα υπήρχε τρόπος να μεταφέρουμε την τιμή της από τα κάτω επίπεδα στα πάνω.
+        Η τιμή της θα ήταν καθορισμένη από την τιμή που είχαμε στην κάθοδο, όταν πρωτοκαλέστηκε το κάθε αναδρομικό αντίγραφο της func
+    </p>
+    <p>
+        Πρόσεξε όμως ότι δεν θα αρκούσε απλώς να τη δηλώσουμε μέσα στη <code>main</code> — η
+        <code>Arrange</code> δεν θα την έβλεπε καν. Μια μεταβλητή δηλωμένη μέσα σε μια function ανήκει
+        αποκλειστικά σε αυτήν· καμία άλλη function δεν έχει πρόσβαση, ακόμα κι αν την καλεί η ίδια. Ο
+        compiler θα σταματούσε αμέσως με <code>undefined: solutionsFound</code>.
+    </p>
+    <p>
+        Ο μόνος τρόπος να φτάσει η μεταβλητή μέσα στην <code>Arrange</code> θα ήταν να την περάσουμε ως
+        argument. Και εδώ ακριβώς εμφανίζεται το πρόβλημα που περιγράψαμε παραπάνω: ένα argument περνιέται
+        <strong>by value</strong>, δηλαδή κάθε κλήση παίρνει το δικό της αντίγραφο. Το επίπεδο 3 θα αύξανε
+        το δικό του, το επίπεδο 2 θα συνέχιζε να βλέπει την παλιά τιμή, και η μέτρηση δεν θα έφτανε ποτέ
+        πίσω στην επιφάνεια. Χειρότερα: κάθε επίπεδο θα ξεκινούσε με την τιμή που ίσχυε τη στιγμή που
+        κλήθηκε, στην κάθοδο — άρα δύο αδελφά κλαδιά δεν θα μάθαιναν ποτέ το ένα τι βρήκε το άλλο.
+    </p>
+    <p>
+        Για να αποφύγουμε την global μεταβλητή (κάποιοι τις θεωρούν «βρώμικες» γιατί παραβαίνουν τον κανόνα του encapsulation),
+        μπορούμε να δηλώσουμε την <code>solutionsFound</code> μέσα στη <code>main</code>
+        και να την περνάμε στην αναδρομή με έναν <strong>pointer</strong> (<code>*int</code>).
+        Θυμίζουμε ότι ο <strong>pointer</strong> κρατάει μια διεύθυνση μνήμης. Όταν περνάμε τον pointer σε μία function, της λέμε:
+        «εδώ είναι η διεύθυνση μνήμης που βρίσκεται η μεταβλητή σου — πήγαινε εκεί και άλλαξέ την απευθείας, χωρίς να χρειάζεται να γινει το value return από την function».
+        Έτσι, κάθε επίπεδο της αναδρομής βλέπει και τροποποιεί την <strong>ίδια</strong> μεταβλητή, σαν να ήταν global — αλλά χωρίς να είναι πραγματικά global.
+    </p>
+    <p>
+    Ουσιαστικά, <strong>μιμούμαστε</strong> τα πλεονεκτήματα που είχε σε αυτή την περίπτωση
+    η global μεταβλητή, αλλά με πιο καθαρό τρόπο: η μεταβλητή ανήκει στη <code>main</code>,
+    και ο δείκτης την «μοιράζει» σε όσες κλήσεις χρειάζεται.
+    </p>
+
+    <pre><code class="lang-go">func main() {
+    letters := []string{"Α", "Β", "Γ"}
+    solutionsFound := 0
+    Arrange(letters, make([]bool, len(letters)), nil, &solutionsFound)
+}
+
+func Arrange(letters []string, used []bool, current []string, solutionsFound *int) {
+    if *solutionsFound >= 3 {
+        return
+    }
+    if len(current) == len(letters) {
+        fmt.Println(current)
+        *solutionsFound++
+        return
+    }
+    for i := 0; i &lt; len(letters); i++ {
+        if used[i] {
+            continue
+        }
+        used[i] = true
+        current = append(current, letters[i])
+        Arrange(letters, used, current, solutionsFound)
+        used[i] = false
+        current = current[:len(current)-1]
+    }
+}</code></pre>
+
+    <p">
+        Ο δείκτης <code>&amp;solutionsFound</code> περνιέται σε κάθε αναδρομική κλήση. Όλες οι
+        κλήσεις βλέπουν το ίδιο κομμάτι μνήμης, οπότε η αύξηση της τιμής είναι ορατή παντού.
+        Αυτός είναι ο τρόπος να έχουμε το ίδιο αποτέλεσμα χωρίς να χρησιμοποιήσουμε global
+        μεταβλητή.
+    </p>
+</div>
 `);
 
         // ── §7.2β — υποσύνολα + το δέντρο αποφάσεων ──────────────────────────── ⊃
