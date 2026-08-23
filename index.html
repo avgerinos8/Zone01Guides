@@ -803,14 +803,14 @@
 
         <div class="ascii-container">
             <pre class="ascii-art">
-   8888888888P                                           .d8888b.    d888                  YP           888P                d88           
-         d88P                                           d88P  Y88b  d8888                 Y88P          888                 888           
-        d88P                                            888    888    888                Y8PY8P         888                               
-       d88P      .d88b.   88888b.    .d88b.             888    888    888               Y8b  d8P    .d88888  88888b.d88b.  "888  88888b.  
-      d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              Y8b    d8P  d88" 888  888 "888 "88b  888  888 "88b 
-     d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  888  888  888 
-    d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888             "8888888888" Y88b 888  888  888  888  888  888  888 
-   d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888            888    888   "Y88888  888  888  888  888  888  888 </pre>
+     YP           888P                d88                     "8888888b.                                 "888" 
+    Y88P          888                 888                      888   Y88b                                 888  
+   Y8PY8P         888                                          888    888                                 888  
+  Y8b  d8P    .d88888  88888b.d88b.  "888  88888b.             888   d88P   8888b.   88888b.    .d88b.    888  
+ Y8b    d8P  d88" 888  888 "888 "88b  888  888 "88b           d8888888P"       "88b  888 "88b  d8P  Y8b   888  
+ 888    888  888  888  888  888  888  888  888  888            888         .d888888  888  888  88888888   888  
+"8888888888" Y88b 888  888  888  888  888  888  888            888         888  888  888  888  Y8b.       888  
+ 888    888   "Y88888  888  888  888  888  888  888            888         "Y888888b 888  888   "Y8888   d888b </pre>
         </div>
 
         <!-- ===== ADMIN ASCII BLOCK ===== -->
@@ -823,7 +823,9 @@
         </div>
 
         <!-- ===== CODE BLOCK ===== -->
+        <p>open <code style="font-size: 1.4em;">konsole</code> and paste the following:</p>
         <div class="code-block">
+
             <button class="copy-btn" id="copyBtn">Copy</button>
             <pre><code id="codeContent"></code></pre>
         </div>
@@ -951,6 +953,47 @@ git config --global user.name {{username}}`;
             let currentUser = null;
             let isSwansong = false; // whether the logged-in user used SWANSONG
 
+            // ── session unlock state ─────────────────────────────────────────────── ⊃
+            // sessionStorage is per-TAB: it survives normal navigation and reloads,
+            // and is wiped automatically the moment the tab (or the browser) closes.
+            // We store only the password that was used and re-resolve it through
+            // findUser() on restore — so if USERS ever changes, a stale entry simply
+            // fails to match and we fall back to the modal.
+            const SESSION_KEY = 'guides01.unlock';
+
+            // ── OPTIONAL: forget the unlock on any page refresh ──────────────────── ⊃
+            // Uncomment to make F5 / Ctrl+F5 lock the page again. Navigating to a
+            // guide and coming back does NOT count as a reload, so that still works.
+            // const navEntry = performance.getEntriesByType('navigation')[0];
+            // if (navEntry && navEntry.type === 'reload') clearSession();
+
+            function saveSession(user) {
+                try {
+                    sessionStorage.setItem(SESSION_KEY, user.password);
+                } catch (e) { /* storage blocked (private mode / file://) — ignore */ }
+            }
+
+            function readSession() {
+                try {
+                    return findUser(sessionStorage.getItem(SESSION_KEY));
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function clearSession() {
+                try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { }
+            }
+
+            // ── unlock path shared by modal submit and restored session ──────────── ⊃
+            function enterAdmin(user, password) {
+                currentUser = user;
+                isSwansong = (password.toUpperCase() === 'SWANSONG');
+                refreshCode();
+                modal.style.display = 'none';
+                mainContent.style.display = 'none';
+                secretContent.style.display = 'block';
+            }
             // ================================================================
             // 6. MODAL LOGIC
             // ================================================================
@@ -961,12 +1004,19 @@ git config --global user.name {{username}}`;
 
             learnerTrigger.addEventListener('click', function (e) {
                 e.stopPropagation();
+
+                // already unlocked in this tab → straight to ADMIN_, no prompt
+                const remembered = readSession();
+                if (remembered) {
+                    enterAdmin(remembered, remembered.password);
+                    return;
+                }
+
                 modal.style.display = 'flex';
                 passwordInput.value = '';
                 errorMsg.textContent = '';
                 passwordInput.focus();
             });
-
             cancelBtn.addEventListener('click', closeModal);
 
             // ---- HOVER: change "I don't know the password" text ----
@@ -1005,12 +1055,8 @@ git config --global user.name {{username}}`;
                 const pwd = passwordInput.value;
                 const user = findUser(pwd);
                 if (user) {
-                    currentUser = user;
-                    isSwansong = (pwd.toUpperCase() === 'SWANSONG');
-                    refreshCode();
-                    modal.style.display = 'none';
-                    mainContent.style.display = 'none';
-                    secretContent.style.display = 'block';
+                    saveSession(user);
+                    enterAdmin(user, pwd);
                 } else {
                     errorMsg.textContent = 'Wrong password. Try again.';
                     passwordInput.value = '';
