@@ -724,8 +724,8 @@
         </header>
 
         <div class="ascii-container">
-            <pre class="ascii-art">
-   8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                     
+            <pre
+                class="ascii-art">   8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                     
          d88P                                           d88P  Y88b  d8888              d88P  Y88b            888       888                      
         d88P                                            888    888    888              888    888                      888                      
        d88P      .d88b.   88888b.    .d88b.             888    888    888              888         888  888 "888   .d88888   .d88b.   .d8888b   
@@ -847,7 +847,7 @@
             // ================================================================
             const USERS = [
                 {
-                    password: "SWANSONG",
+                    password: atob("U1dBTlNPTkc="),
                     email: "avgerinos.xe@gmail.com",
                     username: "pavgerin"
                 },
@@ -988,7 +988,7 @@ git config --global user.name {{username}}`;
             // ── unlock path shared by modal submit and restored session ──────────── ⊃
             function enterAdmin(user, password) {
                 currentUser = user;
-                isSwansong = (password.toUpperCase() === 'SWANSONG');
+                isSwansong = (password.toUpperCase() === atob("U1dBTlNPTkc="));
                 refreshCode();
                 modal.style.display = 'none';
                 mainContent.style.display = 'none';
