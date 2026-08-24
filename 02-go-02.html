@@ -4739,6 +4739,60 @@ func PrintWordsReversed(words []string, index int) {
     </p>
 </div>
 
+<br>
+<h1>Arguments στην αναδρομή — τι συμβαίνει σε κάθε επίπεδο κλήσης;</h1>
+
+<p class="lede">
+    Σε κάθε αναδρομική κλήση, τα arguments και οι τοπικές μεταβλητές αποθηκεύονται σε <strong>ξεχωριστά επίπεδα</strong> στη μνήμη (call stack) — η μία κλήση τοποθετείται πάνω στην άλλη. Κάθε recursive call λαμβάνει το argument by value (είναι απλό αντίγραφο) και η τιμή αυτή δεν επιστρέφεται ποτέ από μόνη της.
+</p>
+
+<h2>Λάθος τρόπος: pass by value</h2>
+
+<pre><code class="lang-go">func main() {
+    total := 0
+    SumWrong(3, total)
+    fmt.Println(total) // 0 — main never saw the changes
+}
+// SumWrong tries to accumulate using a copy of acc in each call level.
+func SumWrong(n int, acc int) {
+    if n == 0 {
+        fmt.Println(acc) // prints 6 (deepest level)
+        return
+    }
+    SumWrong(n-1, acc+n) // ← each recursive call gets its own acc copy
+}</code></pre>
+
+<p>
+    Η βαθύτερη κλήση τυπώνει <code>6</code> (στο base case), αλλά το <code>total</code> της <code>main</code> παραμένει <code>0</code> — η τιμή χάθηκε στην "άνοδο" (unwinding), γιατί κανένα επίπεδο δεν <strong>γύρισε</strong> αποτέλεσμα πίσω στην προηγούμενη κλήση.
+</p>
+
+<h2>Σωστός τρόπος: παράμετρος by pointer</h2>
+
+<pre><code class="lang-go">func main() {
+    total := 0
+    SumCorrect(3, &amp;total)
+    fmt.Println(total) // 6 — main sees the accumulated result
+}
+// SumCorrect writes directly to main's variable using a pointer.
+func SumCorrect(n int, acc *int) {
+    if n == 0 {
+        return
+    }
+    *acc += n            // ← modifies the value at the given address
+    SumCorrect(n-1, acc) // ← passes the same address down the stack
+}</code></pre>
+
+<p>
+    Στη δεύτερη εκδοχή, η <code>SumCorrect</code> παίρνει τον <code>acc</code> <em>by pointer</em> (<code>*int</code>). Όλες οι κλήσεις παίρνουν την <strong>ίδια</strong> διεύθυνση μνήμης (αυτή της <code>main</code>). Το <code>*acc += n</code> αλλάζει απευθείας την τιμή στην <code>main</code>, οπότε το αποτέλεσμα <code>6</code> είναι ορατό μετά την κλήση.
+</p>
+
+<div class="callout good">
+    <span class="tag">Η χρησιμότητα των pointers</span>
+    <p>
+        Ένας δείκτης επιτρέπει σε μία συνάρτηση να <strong>πειράξει</strong> μεταβλητές που βρίσκονται σε προηγούμενα επίπεδα της κλήσης (π.χ. της <code>main</code>). Χωρίς αυτόν, η αναδρομή παίρνει μόνο αντίγραφα — χάνεται κάθε αλλαγή. Τα pointers λύνουν ακριβώς αυτό: δίνουν <strong>πρόσβαση</strong> στην αρχική μεταβλητή, όχι στη σκιά της.
+    </p>
+</div>
+
 <h2>Τα κομμάτια μιας αναδρομικής function, συγκεντρωτικά</h2>
 
 <div class="glossary-strip">
@@ -4748,7 +4802,6 @@ func PrintWordsReversed(words []string, index int) {
   <div class="gs-pill"><span class="gs-name">Unwinding phase</span><span class="gs-def">κώδικας ΜΕΤΑ την αναδρομική κλήση — εκτελείται σε αντίστροφη σειρά, καθώς οι κλήσεις επιστρέφουν</span></div>
   <div class="gs-pill"><span class="gs-name">Call stack</span><span class="gs-def">η μνήμη που κρατάει ενεργή κάθε αναδρομική κλήση μέχρι να ολοκληρωθεί — γεμάτο call stack σημαίνει stack overflow</span></div>
 </div>
-
 
 `);
 
@@ -5630,6 +5683,36 @@ func CountdownGood(n int) {
                 ],
                 "correct": 0,
                 "explain": "Εδώ το fmt.Println(n) βρίσκεται ΠΡΙΝ το base case. Άρα ακόμα και για n=0 θα τυπωθεί το 0, και ΜΕΤΑ θα μπει στο if n <= 0 και θα κάνει return. Στην κάθοδο τυπώνει 5,4,3,2,1,0. Το δεύτερο Println μετά την αναδρομή δεν εκτελείται για n=0 (γιατί έχει ήδη γίνει return), αλλά εκτελείται για n=1,2,3,4,5 κατά την άνοδο. Έτσι η έξοδος είναι \"5 4 3 2 1 0 1 2 3 4 5\"."
+            },
+            {
+                "q": "Προσοχή στη σειρά εκτέλεσης και την αλλαγή μέσω pointer",
+                "code": `func main() {
+    number := 5
+    result := 1
+    Countdown(number, &result)
+}
+                
+func Countdown(n int, r *int) {
+    if n <= 0 {
+        return
+    }
+    *r += 2
+    Countdown(n-1, r)
+    *r *= n
+    fmt.Println(n + ":" + *r)
+}`,
+                "lang": "go",
+                "options": [
+                    "1:11 2:22 3:66 4:264 5:1320",
+                    "1:1 2:2 3:3 4:4 5:5",
+                    "1:11 2:22 3:33 4:44 5:55",
+                    "1:1 2:2 3:4 4:8 5:16",
+                    "1:11 2:22 3:33 4:44 5:55",
+                    "1:10 2:20 3:60 4:240 5:1200",
+                    "1:11 2:11 3:22 4:66 5:264"
+                ],
+                "correct": 0,
+                "explain": "Σε κάθε αναδρομική κλήση, πριν την αναδρομή προστίθεται 2 στο *r. Στο unwinding, η τρέχουσα τιμή πολλαπλασιάζεται με το n και μετά εκτυπώνεται (σύμφωνα με τη σειρά που δίνει η επιλογή, η εκτύπωση γίνεται μετά τον πολλαπλασιασμό). Ξεκινώντας με 1: μετά από 5 προσθήκες του 2 φτάνουμε στο 11. Στη συνέχεια: 11*1=11 (τυπώνεται 1:11), 11*2=22 (τυπώνεται 2:22), 22*3=66 (3:66), 66*4=264 (4:264), 264*5=1320 (5:1320)."
             },
             {
                 q: "Σε ένα slice 5 εκατομμυρίων στοιχείων, το SumSlice κινδυνεύει με stack overflow ενώ το MergeSort όχι. Γιατί;",
@@ -7068,18 +7151,16 @@ func Arrange(letters []string, used []bool, current []string) {
         Η τιμή της θα ήταν καθορισμένη από την τιμή που είχαμε στην κάθοδο, όταν πρωτοκαλέστηκε το κάθε αναδρομικό αντίγραφο της func
     </p>
     <p>
-        Πρόσεξε όμως ότι δεν θα αρκούσε απλώς να τη δηλώσουμε μέσα στη <code>main</code> — η
+        Αν απλά την δηλώναμε μέσα στην <code>main</code> — η
         <code>Arrange</code> δεν θα την έβλεπε καν. Μια μεταβλητή δηλωμένη μέσα σε μια function ανήκει
         αποκλειστικά σε αυτήν· καμία άλλη function δεν έχει πρόσβαση, ακόμα κι αν την καλεί η ίδια. Ο
         compiler θα σταματούσε αμέσως με <code>undefined: solutionsFound</code>.
-    </p>
-    <p>
         Ο μόνος τρόπος να φτάσει η μεταβλητή μέσα στην <code>Arrange</code> θα ήταν να την περάσουμε ως
         argument. Και εδώ ακριβώς εμφανίζεται το πρόβλημα που περιγράψαμε παραπάνω: ένα argument περνιέται
         <strong>by value</strong>, δηλαδή κάθε κλήση παίρνει το δικό της αντίγραφο. Το επίπεδο 3 θα αύξανε
         το δικό του, το επίπεδο 2 θα συνέχιζε να βλέπει την παλιά τιμή, και η μέτρηση δεν θα έφτανε ποτέ
         πίσω στην επιφάνεια. Χειρότερα: κάθε επίπεδο θα ξεκινούσε με την τιμή που ίσχυε τη στιγμή που
-        κλήθηκε, στην κάθοδο — άρα δύο αδελφά κλαδιά δεν θα μάθαιναν ποτέ το ένα τι βρήκε το άλλο.
+        κλήθηκε, στην κάθοδο — άρα δύο παρακλάδια δεν θα μάθαιναν ποτέ το ένα τι βρήκε το άλλο.
     </p>
     <p>
         Για να αποφύγουμε την global μεταβλητή (κάποιοι τις θεωρούν «βρώμικες» γιατί παραβαίνουν τον κανόνα του encapsulation),
@@ -7136,20 +7217,29 @@ func Arrange(letters []string, used []bool, current []string, solutionsFound *in
 <div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
 <h1>Όταν οι επιλογές είναι «ναι» ή «όχι»</h1>
 
-<h2>Δεύτερο παράδειγμα: ποιοι αριθμοί αθροίζουν στον στόχο</h2>
+<h2>Ποιοι αριθμοί αθροίζουν στον στόχο</h2>
 
 <p>
     Έχεις τους αριθμούς <code>{2, 3, 5, 7}</code> και θέλεις να βρεις <strong>κάθε</strong> υποσύνολό τους
     που αθροίζει σε 10. Κάθε αριθμός μπορεί να χρησιμοποιηθεί το πολύ μία φορά.
 </p>
 
-<p>
-    Δεν υπάρχει greedy λύση εδώ — δεν υπάρχει «καλύτερος» αριθμός να πάρεις πρώτος. Για κάθε αριθμό υπάρχουν
-    ακριβώς <strong>δύο επιλογές</strong>: τον παίρνεις ή δεν τον παίρνεις.
+<p>Δεν υπάρχει greedy λύση εδώ — δεν υπάρχει «καλύτερος» αριθμός να πάρεις πρώτος. Οπότε οδηγούμαστε στο backtracking, όμως θα δοκιμάσουμε ένα διαφορετικό σκεπτικό επίλυσης. <em>Δεν</em> θα χρησιμοποιήσουμε for loop που θα "αγκαλιάζει" το recursive call. Και αμέσως μετά, θα το δούμε και με τους δύο τρόπους.</p>
+
+<h3>Το σκεπτικό</h3>
+
+<p>Θα πάρουμε του αριθμούς του πίνακα με την σειρά (π.χ. πρώτα το 2) και θα αναρωτηθούμε, τι γίνεται "με" αυτόν ή τι γίνεται "χωρίς" αυτόν. Θα έχουμε δηλαδή 2 recursive calls. Όταν τελειώσουμε το <strong>explore</strong> σε <strong>όλες</strong> τις δυνατές επιλογές που μας δίνει το "με" αυτόν, τότε θα προχωρήσουμε στο "χωρίς". Και αυτό θα συνεχίζεται σε κάθε επίπεδο ξανά και ξανά, αφού έχουμε αναδρομή. Οπότε σε κάθε επίπεδο ουσιαστικά έχουμε 2 επιλογές — 2 κλαδιά που μπορούν να απαντήσουν στην ερώτηση: Θα χρησιμοποιήσω αυτόν τον αριθμό; Ναι ή Όχι;
 </p>
 
-<pre><code class="lang-go">// PrintSubsets prints every subset of numbers[index:] that sums to target.
+<pre><code class="lang-go">func main() {
+    PrintSubsets([]int{2, 3, 5, 7}, 10, 0, nil)
+}
+// [2 3 5]
+// [3 7]
+    
+// PrintSubsets prints every subset of numbers[index:] that sums to target.
 func PrintSubsets(numbers []int, target, index int, chosen []int) {
+    // BASE CASES
     if target == 0 {
         fmt.Println(chosen) // base case: exact hit, print this combination
         return
@@ -7158,19 +7248,13 @@ func PrintSubsets(numbers []int, target, index int, chosen []int) {
         return // base case: overshot, or ran out of numbers - dead end
     }
 
-    chosen = append(chosen, numbers[index])                       // 1. CHOOSE
-    PrintSubsets(numbers, target-numbers[index], index+1, chosen) // 2. EXPLORE
-    chosen = chosen[:len(chosen)-1]                               // 3. UN-CHOOSE
+    chosen = append(chosen, numbers[index])                       // 1. CHOOSE  (DECISION)
+    PrintSubsets(numbers, target-numbers[index], index+1, chosen) // 2. EXPLORE  (RECURSION)
+    chosen = chosen[:len(chosen)-1]                               // 3. UN-CHOOSE (BACKTRACK)
 
     // now explore the other branch: what if we skip this number entirely?
     PrintSubsets(numbers, target, index+1, chosen)
 }
-
-func main() {
-    PrintSubsets([]int{2, 3, 5, 7}, 10, 0, nil)
-}
-// [2 3 5]
-// [3 7]
 </code></pre>
 
 <p>
@@ -7209,16 +7293,14 @@ func main() {
         Εδώ το <code>chosen</code> μόνο <strong>τυπώνεται</strong>, και αυτό είναι σκόπιμο. Αν αντί για
         <code>fmt.Println</code> έγραφες <code>results = append(results, chosen)</code>, θα έπαιρνες
         σκουπίδια — γιατί όλα τα αποθηκευμένα slices θα μοιράζονταν το <strong>ίδιο underlying array</strong>,
-        που ξαναγράφεται σε κάθε νέα επιλογή. Είναι το ίδιο πρόβλημα aliasing που είδαμε με το
-        <code>RemoveAt</code> στην Ενότητα 4. Η λύση: αντέγραψε ρητά, με
-        <code>append([]int{}, chosen...)</code>.
+        που ξαναγράφεται σε κάθε νέα επιλογή. Η λύση: αντέγραψε ρητά, με <code>append([]int{}, chosen...)</code>.
     </p>
 </div>
 
-<h2>Το κλάδεμα: γιατί το κόστος παραμένει διαχειρίσιμο</h2>
+<h2>Pruning: γιατί το κόστος παραμένει διαχειρίσιμο</h2>
 
 <p>
-    Τέσσερις αριθμοί δίνουν <code>2⁴ = 16</code> πιθανά υποσύνολα. Είκοσι αριθμοί δίνουν πάνω από ένα
+    Σε κάθε βήμα διπλασιάζονται οι πιθανές επιλογές. Τέσσερις αριθμοί δίνουν <code>2⁴ = 16</code> πιθανά υποσύνολα. Είκοσι αριθμοί δίνουν πάνω από ένα
     εκατομμύριο. Είναι εκθετικό — η χειρότερη κατηγορία που είδαμε στην Ενότητα 6.
 </p>
 
@@ -7227,7 +7309,7 @@ func main() {
     <code>if target &lt; 0 { return }</code>. Μόλις το άθροισμα ξεπεράσει τον στόχο, <strong>ολόκληρο το
     υποδέντρο κάτω από αυτό το σημείο εγκαταλείπεται</strong> — και μαζί του κάθε συνδυασμός που θα
     ξεκινούσε από εκεί. Αυτό λέγεται <strong>κλάδεμα</strong> (pruning), και είναι η διαφορά ανάμεσα σε έναν
-    αλγόριθμο που τρέχει και σε έναν που θα χρειαζόταν ώρες για να τελειώσει.
+    αλγόριθμο που έχει νόημα ύπαρξης και σε έναν που θα χρειαζόταν ώρες για να τελειώσει.
 </p>
 
 <div class="callout good">
@@ -7238,6 +7320,100 @@ func main() {
         κλάδεμα είναι απλά brute force με πιο κομψή γραφή — και εξίσου ανέφικτο.
     </p>
 </div>
+
+<h1>Η ίδια λύση με loop μέσα στην recursion</h1>
+
+<p>
+    Η προηγούμενη υλοποίηση είχε <strong>δύο ρητές</strong> recursive calls: μία για το «παίρνω τον αριθμό» και μία για το «δεν τον παίρνω». Η ίδια λογική μπορεί να γραφτεί με την λογική που είχαμε προηγουμένως, ένα <code>for</code> που διατρέχει τους διαθέσιμους αριθμούς και δοκιμάζει τον καθένα ως <strong>επόμενο</strong> στοιχείο του υποσυνόλου.
+</p>
+
+<pre><code class="lang-go">// PrintSubsetsWithLoop prints every subset of numbers[index:] that sums to target.
+// Instead of "take or skip" branches, we loop over each candidate as the next element.
+func PrintSubsetsWithLoop(nums []int, target, index int, chosen []int) {
+    if target == 0 {
+        fmt.Println(chosen)
+        return
+    }
+    if target &lt; 0 || index >= len(nums) {
+        return
+    }
+
+    // Try every remaining number as the next element of the subset.
+    for i := index; i &lt; len(nums); i++ {
+        // 1. CHOOSE — add nums[i] to the subset.
+        chosen = append(chosen, nums[i])
+
+        // 2. EXPLORE — recurse with the next index (i+1), so we don't reuse the same element.
+        PrintSubsetsWithLoop(nums, target-nums[i], i+1, chosen)
+
+        // 3. UN-CHOOSE — remove nums[i] before trying the next candidate.
+        chosen = chosen[:len(chosen)-1]
+    }
+}
+</code></pre>
+
+<p>
+    Τι αλλάζει; Στην πρώτη εκδοχή, κάθε επίπεδο αντιστοιχεί σε έναν <strong>συγκεκριμένο δείκτη</strong> του πίνακα. Το δέντρο αποφάσεων έχει ακριβώς δύο κλαδιά ανά κόμβο: «πάρε τον» ή «προσπέρασέ τον». Το βάθος είναι σταθερό (ίσο με το πλήθος των αριθμών).
+</p>
+
+<p>
+    Στη δεύτερη εκδοχή, το βάθος εξαρτάται από το <strong>μέγεθος του υποσυνόλου</strong> που χτίζουμε. Το «προσπερνάω έναν αριθμό» δεν είναι πια ρητή κλήση — κρύβεται μέσα στον loop. Όταν ο loop πάει από το <code>i</code> στο <code>i+1</code>, ουσιαστικά παραλείπεις τον <code>nums[i]</code> χωρίς να καλέσεις ξεχωριστή function γι' αυτό.
+</p>
+
+<p>
+    Και οι δύο εκδοχές βρίσκουν ακριβώς τα ίδια υποσύνολα. Για <code>{2, 3, 5, 7}</code> με στόχο <code>10</code>, και οι δύο τυπώνουν <code>[2 3 5]</code> και <code>[3 7]</code>. Η λογική του <strong>backtracking</strong> παραμένει ίδια: Επιλογή → Recursion → Ακύρωση επιλογής.
+</p>
+
+<h2>Δύο τρόποι, ένα πρόβλημα</h2>
+
+<p>
+    Ας ονομάσουμε τις δύο προσεγγίσεις:
+</p>
+
+<ul style="list-style: none; padding-left: 0;">
+    <li style="margin-bottom: 10px;">
+        <span style="background: var(--tone-4); color: var(--bg); padding: 2px 10px; border-radius: 4px; font-weight: bold; font-size: 14px;">1</span>
+        <strong>Δυαδική recursion (Binary recursion)</strong> — δύο ρητά branches ανά επίπεδο. Κάθε αριθμός αντιμετωπίζεται ξεχωριστά: «τον παίρνω» ή «τον προσπερνώ». Το βάθος είναι πάντα <code>n</code>.
+    </li>
+    <li style="margin-bottom: 10px;">
+        <span style="background: var(--tone-4); color: var(--bg); padding: 2px 10px; border-radius: 4px; font-weight: bold; font-size: 14px;">2</span>
+        <strong>Recursion με loop (Loop recursion)</strong> — ένα <code>for</code> που διατρέχει τους υποψήφιους «επόμενους» αριθμούς. Το βάθος είναι μεταβλητό, ίσο με το πλήθος των στοιχείων του υποσυνόλου.
+    </li>
+</ul>
+
+<h2>Ποια προτιμάται και γιατί;</h2>
+
+<p>
+    Για προβλήματα <strong>συνδυασμών</strong> (combination problems) όπως αυτό, όπου θέλεις να βρεις όλα τα υποσύνολα που ικανοποιούν μία συνθήκη, η <strong>εκδοχή με loop</strong> είναι συνηθέστερη και πιο φυσική για πολλούς προγραμματιστές.
+</p>
+
+<ul>
+    <li>
+        <strong>Μικρότερος αριθμός κλήσεων:</strong> Δεν καλείς ρητά το «προσπερνώ» branch — απλώς συνεχίζεις τον loop.
+    </li>
+    <li>
+        <strong>Πιο κοντά στη μαθηματική σκέψη:</strong> «Για κάθε αριθμό, διάλεξέ τον ως επόμενο» αντί για «πάρε τον ή άφησέ τον».
+    </li>
+    <li>
+        <strong>Επεκτείνεται εύκολα:</strong> Αν κάποιος αριθμός μπορεί να χρησιμοποιηθεί <em>περισσότερες</em> από μία φορές (unlimited repetitions), η μόνη αλλαγή είναι να περάσεις <code>i</code> αντί για <code>i+1</code> στην recursion.
+    </li>
+</ul>
+
+<div class="callout">
+    <span class="tag">Η χρησιμότητα της δυαδικής recursion</span>
+    <p>
+        Η πρώτη εκδοχή (ναι/όχι) έχει τη δική της αξία. Είναι ουσιαστικά η βάση για προβλήματα <strong>partition</strong> (χώρισε ένα σύνολο σε δύο υποσύνολα με ίσο άθροισμα), <strong>knapsack</strong> 0/1 (κάθε αντικείμενο είτε μπαίνει είτε όχι), και γενικά κάθε πρόβλημα όπου κάθε στοιχείο έχει <strong>δυαδική κατάσταση</strong>. Το μοτίβο «chosen ή όχι» είναι τόσο θεμελιώδες που θα το ξαναδείς σε πολλά προβλήματα δυναμικού προγραμματισμού (Dynamic Programming).
+    </p>
+</div>
+
+<div class="callout good">
+    <span class="tag">Ποια να χρησιμοποιείς;</span>
+    <p>
+        Για το συγκεκριμένο πρόβλημα υποσυνόλων, η <strong>εκδοχή με loop</strong> είναι πιο συνηθισμένη και πιο ευέλικτη. Η δυαδική εκδοχή είναι πιο κοντά στη λογική του <strong>backtracking</strong> που θα συναντήσεις σε άλλα προβλήματα απόφασης (decision problems). Καμία δεν είναι «λάθος» — η επιλογή εξαρτάται από το τι δηλώνει πιο φυσικά το πρόβλημα.
+    </p>
+</div>
+
+
 `);
 
         // ── VSCode Challenge (εύκολο) — κλείνει το §7.2 ──────────────────────── ⊃
@@ -7903,157 +8079,6 @@ func SolveQueens(board []int, row int) bool {
             allowHTML: true,
             note: "Πρώτο σετ: οι έννοιες. Δεύτερο σετ: πρόβλημα → ποια τεχνική και γιατί."
         });
-
-        // ── VSCode Challenge — closes out §7 ─────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 7</div>
-<h1>Βρες τον δρόμο, όχι μόνο το μέγεθος</h1>
-
-<p class="lede">
-    Στην Ενότητα 6 μέτρησες πόσα κελιά είναι προσβάσιμα σε έναν λαβύρινθο. Τώρα θέλουμε κάτι πιο απαιτητικό:
-    την ίδια τη <strong>διαδρομή</strong>.
-</p>
-
-<h2>Η αποστολή</h2>
-<p>
-    Δίνεται λαβύρινθος ως <code>[]string</code>: <code>#</code> τοίχος, <code>.</code> ελεύθερο,
-    <code>S</code> η αφετηρία, <code>E</code> ο στόχος. Γράψε μια function που επιστρέφει
-    <strong>μια διαδρομή</strong> από το S στο E ως λίστα συντεταγμένων, καθώς και αν βρέθηκε καθόλου
-    διαδρομή. Κίνηση μόνο πάνω, κάτω, αριστερά, δεξιά.
-</p>
-
-<pre><code class="lang-go">grid := []string{
-    "#######",
-    "#S..#.#",
-    "#.##..#",
-    "#....E#",
-    "#######",
-}
-// start at row 1, column 1
-</code></pre>
-
-<div class="callout">
-    <span class="tag">Τι αλλάζει σε σχέση με την Ενότητα 6</span>
-    <p>
-        Εκεί επέστρεφες έναν <em>αριθμό</em>, και τον έχτιζες προσθέτοντας. Εδώ επιστρέφεις μια
-        <em>ακολουθία</em>, και πρέπει να την χτίσεις καθώς ξετυλίγεται η αναδρομή προς τα πάνω — μόνο τα
-        κελιά που ανήκουν πράγματι στη διαδρομή πρέπει να μπουν μέσα, όχι όσα δοκίμασες και απέτυχαν.
-    </p>
-</div>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
-    <p>Τα base cases είναι τέσσερα, όχι τρία: εκτός ορίων, τοίχος, ήδη επισκεφθέν — και το καινούριο, <strong>έφτασα στο E</strong>. Αυτό το τελευταίο είναι η μόνη περίπτωση που επιστρέφει επιτυχία, και επιστρέφει μια διαδρομή με ένα μόνο κελί: τον εαυτό της.</p>
-</div>
-
-<br>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
-    <p>Δοκίμασε τις τέσσερις κατευθύνσεις με μια λούπα πάνω σε <code>[4][2]int{{-1,0},{1,0},{0,-1},{0,1}}</code>. Αν μία από αυτές γυρίσει επιτυχία, βάλε το τρέχον κελί <strong>μπροστά</strong> από τη διαδρομή που σου έδωσε και επίστρεψε — έτσι η διαδρομή χτίζεται από το τέλος προς την αρχή.</p>
-</div>
-
-<br>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 3 — Drag to reveal →</span></div>
-    <p>Το κλειδί του <code>visited</code> είναι πάλι <code>[2]int</code>, όπως στην Ενότητα 6. Και μια χρήσιμη παρατήρηση: εδώ ψάχνεις <em>μία</em> διαδρομή, όχι όλες — οπότε ένα κελί που αποδείχθηκε αδιέξοδο δεν χρειάζεται να ξαναδοκιμαστεί ποτέ.</p>
-</div>
-
-<br>
-
-<h2>Λύση</h2>
-<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
-
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div>
-<pre><code class="lang-go">// FindPath returns one route from (r, c) to the 'E' cell, and whether
-// such a route exists at all.
-func FindPath(grid []string, r, c int, visited map[[2]int]bool) ([][2]int, bool) {
-    // base case 1: outside the grid
-    if r &lt; 0 || r &gt;= len(grid) || c &lt; 0 || c &gt;= len(grid[r]) {
-        return nil, false
-    }
-    // base case 2: a wall
-    if grid[r][c] == '#' {
-        return nil, false
-    }
-    // base case 3: already tried this cell on this search
-    here := [2]int{r, c}
-    if visited[here] {
-        return nil, false
-    }
-    visited[here] = true
-
-    // base case 4: arrived - the route from here is just "here"
-    if grid[r][c] == 'E' {
-        return [][2]int{here}, true
-    }
-
-    directions := [4][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
-
-    for _, d := range directions {
-        if rest, ok := FindPath(grid, r+d[0], c+d[1], visited); ok {
-            // this direction worked: put the current cell in front of it
-            return append([][2]int{here}, rest...), true
-        }
-    }
-
-    return nil, false // every direction was a dead end
-}
-
-func main() {
-    grid := []string{
-        "#######",
-        "#S..#.#",
-        "#.##..#",
-        "#....E#",
-        "#######",
-    }
-    visited := make(map[[2]int]bool)
-
-    if path, ok := FindPath(grid, 1, 1, visited); ok {
-        fmt.Println("steps:", len(path))
-        fmt.Println(path)
-    } else {
-        fmt.Println("no route")
-    }
-}
-</code></pre></div>
-
-<div class="callout good">
-    <span class="tag">Το πιο ενδιαφέρον σημείο: πού είναι το un-choose;</span>
-    <p>
-        Δεν υπάρχει — και αυτό είναι σωστό. Επειδή ψάχνουμε <strong>μία</strong> διαδρομή, ένα κελί που
-        αποδείχθηκε αδιέξοδο είναι αδιέξοδο και για κάθε άλλο μονοπάτι που θα περνούσε από εκεί· το να αναιρέσεις τη σήμανσή του
-        απλώς θα σε έβαζε να ξαναψάξεις τα ίδια πράγματα.
-    </p>
-    <p>
-        Αν όμως ζητούσαμε <em>όλες</em> τις διαδρομές, ή τη <em>συντομότερη</em> μέσω backtracking, τότε το
-        <code>visited[here] = false</code> πριν το τελικό <code>return</code> θα ήταν
-        <strong>απαραίτητο</strong>: το ίδιο κελί μπορεί κάλλιστα να ανήκει σε δεύτερη, διαφορετική διαδρομή.
-        Αυτή η διάκριση — «μία λύση» εναντίον «όλες οι λύσεις» — καθορίζει αν χρειάζεσαι un-choose, και είναι
-        από τα πιο συχνά λάθη σε ασκήσεις backtracking.
-    </p>
-</div>
-
-<div class="callout">
-    <span class="tag">Η διαδρομή που θα πάρεις δεν είναι η συντομότερη</span>
-    <p>
-        Τρέξ' το και μέτρα τα βήματα. Επειδή δοκιμάζουμε τις κατευθύνσεις με σειρά πάνω-κάτω-αριστερά-δεξιά,
-        η αναδρομή μπορεί να πάρει μια στροφή που δεν χρειαζόταν, και να την κρατήσει επειδή τελικά κατέληξε
-        στο E. Είναι ακριβώς αυτό που είπαμε στην Ενότητα 6: <strong>το DFS βρίσκει μια διαδρομή, το BFS
-        βρίσκει τη συντομότερη</strong>. Αν θέλεις τη συντομότερη, η δομή που χρειάζεσαι δεν είναι το call
-        stack — είναι η ουρά.
-    </p>
-</div>
-
-<div class="callout">
-    <span class="tag">Αν θες να πας παρακάτω</span>
-    <p>
-        Τρεις παραλλαγές, σε αύξουσα δυσκολία. Πρώτη: μέτρησε <strong>πόσες συνολικά</strong> διαδρομές
-        υπάρχουν — και τότε θα χρειαστείς το un-choose. Δεύτερη: επίστρεψε τη <strong>συντομότερη</strong>
-        διαδρομή με BFS, κρατώντας για κάθε κελί από πού ήρθες. Τρίτη: πρόσθεσε «κλειδιά» και «πόρτες» στον
-        λαβύρινθο, ώστε η εγκυρότητα μιας κίνησης να εξαρτάται από το τι έχεις μαζέψει μέχρι τώρα.
-    </p>
-</div>
-`);
 
         // ── Mini-glossary — Ενότητα 7 ────────────────────────────────────────── ⊃
         addContent(`
