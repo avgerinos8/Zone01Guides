@@ -866,17 +866,14 @@
             // ================================================================
             // 2. DEFAULT SCRIPT (with placeholders)
             // ================================================================
-            const DEFAULT_SCRIPT = `# Open VSCode on ~/Desktop
-code ~/Desktop
+            const DEFAULT_SCRIPT = `code ~/Desktop
 
-# Set Firefox as default browser & Launch with three tabs
 xdg-settings set default-web-browser firefox.desktop
 firefox https://platform.zone01.gr/git/{{username}} https://gemini.google.com/signin https://platform.zone01.gr/ &
 
-# Add Greek keyboard layout to existing English (switch with Alt+Shift)
-setxkbmap -layout us,gr -option grp:alt_shift_toggle,grp:win_space_toggle
+gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'gr')]"
+gsettings set org.gnome.desktop.input-sources xkb-options "['grp:alt_shift_toggle']"
 
-# Configure Git globally
 git config --global credential.helper store
 git config --global user.email {{email}}
 git config --global user.name {{username}}`;
