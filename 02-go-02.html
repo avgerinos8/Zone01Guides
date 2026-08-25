@@ -2102,44 +2102,6 @@ func secondLargest(numbers []int) int {
 `);
 
 
-        // ── §3 interleaved review — pattern recognition, not recall ──────────── ⊃
-        addContent(`
-<div class="eyebrow">Ενότητα 3 / 8 — Ανακεφαλαίωση</div>
-<h1>Ανάμεικτη Εξάσκηση: ποιο pattern ταιριάζει;</h1>
-
-<p class="lede">
-    Μέχρι τώρα κάθε pattern το εξασκήσαμε αμέσως μετά που το είδαμε — ξέροντας ήδη ποιο είναι.
-    Στην πράξη όμως κανείς δεν σου λέει «τώρα χρησιμοποίησε sliding window». Σου δίνει ένα πρόβλημα.
-</p>
-
-<p>
-    Αυτή η διαφορά είναι σημαντικότερη απ' όσο φαίνεται. Το να ξέρεις <em>πώς</em> δουλεύει ένα pattern
-    και το να <em>αναγνωρίζεις</em> ότι το συγκεκριμένο πρόβλημα το χρειάζεται είναι δύο ξεχωριστές
-    δεξιότητες — και μόνο η δεύτερη σε βοηθάει μπροστά σε άγνωστη άσκηση. Οι επόμενες ερωτήσεις είναι
-    σκόπιμα ανακατεμένες: καμία δεν σου λέει σε ποιο κεφάλαιο ανήκει.
-</p>
-
-<div class="callout">
-    <span class="tag">Πώς να τις δουλέψεις</span>
-    Μην ψάχνεις τη σωστή απάντηση ανάμεσα στις επιλογές. Διάβασε πρώτα μόνο την εκφώνηση, κλείσε τα μάτια,
-    και ρώτα τον εαυτό σου: <em>«τι ακριβώς πρέπει να θυμάμαι καθώς προχωράω;»</em> Η απάντηση σε αυτό
-    σχεδόν πάντα ονομάζει το pattern μόνη της.
-</div>
-
-<h2>Ο σκελετός κάθε απόφασης</h2>
-
-<p>Τέσσερις ερωτήσεις ξεκαθαρίζουν τα περισσότερα προβλήματα:</p>
-
-<ul>
-    <li><strong>Χρειάζομαι το προηγούμενο στοιχείο;</strong> → previous value</li>
-    <li><strong>Χρειάζομαι ένα συνεχόμενο κομμάτι;</strong> → sliding window (σταθερό <code>k</code>) ή
-        variable-size (αν το μέγεθος εξαρτάται από συνθήκη)</li>
-    <li><strong>Χρειάζομαι σχέση ανάμεσα σε δύο στοιχεία;</strong> → two pointers αν είναι ταξινομημένα ή
-        συμμετρικά, complement lookup αν ξέρεις τι ακριβώς ψάχνεις</li>
-    <li><strong>Χρειάζομαι να θυμάμαι αν κάτι έχει ήδη συμβεί;</strong> → boolean switch</li>
-</ul>
-`);
-
         addQuiz([
             {
                 q: "Έχεις τις θερμοκρασίες κάθε ώρας μιας ημέρας και θέλεις τη μεγαλύτερη μέση τιμή οποιωνδήποτε 6 συνεχόμενων ωρών. Ποιο pattern ταιριάζει;",
@@ -2220,84 +2182,6 @@ func secondLargest(numbers []int) int {
             allowHTML: true,
             note: "Πρώτο σετ: φράση-σήμα του προβλήματος → pattern. Δεύτερο σετ: pattern → τι κοστίζει."
         });
-
-        // ── VSCode Challenge 2/2 — closes out §3 ─────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow">VSCode Challenge 2/2 — Συνδυαστική Άσκηση</div>
-<h1>Η Μεγαλύτερη Πτώση από Κορυφή</h1>
-<p class="lede">Αυτή τη φορά τρία patterns μαζί — και ένα από αυτά χρησιμοποιείται με τρόπο που δεν έχεις ξαναδεί.</p>
-
-<h2>Η αποστολή</h2>
-<p>
-    Έχεις τις ημερήσιες τιμές μιας μετοχής σε ένα <code>[]int</code>. Γράψε μια function που επιστρέφει τη
-    <strong>μεγαλύτερη πτώση</strong> που σημειώθηκε ποτέ: δηλαδή τη μεγαλύτερη διαφορά ανάμεσα σε μια τιμή και
-    σε οποιαδήποτε <em>προγενέστερη</em> υψηλότερη τιμή. Αν η τιμή δεν έπεσε ποτέ κάτω από κάποια προηγούμενη
-    κορυφή, επίστρεψε 0.
-</p>
-<p>
-    Για <code>{10, 7, 12, 4, 15, 3}</code> η απάντηση είναι <strong>12</strong> — από την κορυφή 15 στην τιμή 3.
-    Πρόσεξε ότι η πτώση 10 → 4 (δηλαδή 6) <em>δεν</em> είναι η απάντηση, παρόλο που το 4 έρχεται νωρίτερα.
-</p>
-
-<div class="callout">
-    <span class="tag">Το λάθος που θα κάνεις αν βιαστείς</span>
-    Η πρώτη σκέψη είναι συνήθως «βρες το μέγιστο, βρες το ελάχιστο, βγάλε τη διαφορά». Δοκίμασέ το νοερά με
-    <code>{3, 20, 1, 25}</code>: το μέγιστο είναι 25 και το ελάχιστο 1, άρα η απάντηση θα ήταν 24 — αλλά το 1
-    έρχεται <strong>πριν</strong> το 25, οπότε αυτή η πτώση δεν συνέβη ποτέ. Η σωστή απάντηση είναι 19 (από το 20 στο 1).
-</div>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
-    <p>Δεν χρειάζεσαι το τελικό μέγιστο — χρειάζεσαι το μέγιστο <strong>μέχρι εκείνο το σημείο</strong>. Αυτή είναι μια χρήση του extremum pattern που δεν έχεις ξαναδεί: η μεταβλητή δεν είναι η απάντηση, είναι εργαλείο που ενημερώνεται καθώς προχωράς.</p>
-</div>
-
-<br>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
-    <p>Σε κάθε πέρασμα ισχύει ακριβώς ένα από τα δύο: ή η τρέχουσα τιμή είναι νέα κορυφή (οπότε δεν υπάρχει πτώση να μετρήσεις — guard clause και <code>continue</code>), ή είναι χαμηλότερη από την κορυφή (οπότε υπολόγισε την πτώση και κράτα τη μεγαλύτερη σε μια result variable).</p>
-</div>
-
-<br>
-
-<h2>Λύση</h2>
-<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
-
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div>
-<pre><code class="lang-go">// maxDropFromPeak returns the largest drop from any running peak
-// to a later price. Returns 0 if the price never dropped.
-func maxDropFromPeak(prices []int) int {
-    if len(prices) == 0 {
-        return 0 // guard clause: nothing to measure
-    }
-
-    peak := prices[0]  // running extremum: highest price seen SO FAR
-    biggestDrop := 0   // result variable: the answer we are building
-
-    for _, p := range prices[1:] {
-        if p &gt; peak {
-            peak = p  // new peak - there is no drop to measure yet
-            continue  // skip the rest of this iteration
-        }
-
-        drop := peak - p
-        if drop &gt; biggestDrop {
-            biggestDrop = drop // a second extremum, over the drops
-        }
-    }
-    return biggestDrop
-}
-// maxDropFromPeak([]int{10, 7, 12, 4, 15, 3}) -&gt; 12
-// maxDropFromPeak([]int{3, 20, 1, 25})        -&gt; 19
-// maxDropFromPeak([]int{1, 2, 3, 4})          -&gt; 0
-</code></pre></div>
-
-<div class="callout good">
-    <span class="tag">Τι έκανε αυτή η άσκηση</span>
-    Δύο ξεχωριστά extremum μέσα στην ίδια λούπα, που κάνουν διαφορετική δουλειά: το <code>peak</code> είναι
-    <em>τρέχουσα κατάσταση</em> (ενημερώνεται και ξεχνιέται), το <code>biggestDrop</code> είναι
-    <em>αποτέλεσμα</em> (μόνο μεγαλώνει, ποτέ δεν μειώνεται). Όταν μπερδεύεις αυτούς τους δύο ρόλους,
-    προκύπτουν τα περισσότερα bugs σε τέτοια προβλήματα.
-</div>
-`);
 
         // ── Mini-glossary — Ενότητα 3 (όλα τα patterns) ──────────────────────── ⊃
         addContent(`
@@ -5930,7 +5814,7 @@ func main() {
 <br>
 
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
-    <p>Τα base cases είναι <strong>2</strong>, και όλα επιστρέφουν 0:  πάτησα τοίχο, ή έχω ήδη μετρήσει αυτό το κελί. Αν θέλουμε να υπολογίσουμε και σαν base case το "βγήκα έξω από τα όρια του πλέγματος", τότε είναι <strong>3</strong>, Γράψ' τα και τα τρία στην αρχή σαν guard clauses, πριν από οτιδήποτε άλλο.</p>
+    <p>Τα base cases είναι <strong>2</strong>, και όλα επιστρέφουν 0:  πάτησα τοίχο, ή έχω ήδη μετρήσει αυτό το κελί. Αν θέλουμε να υπολογίσουμε και σαν base case το "βγήκα έξω από τα όρια του grid", τότε είναι <strong>3</strong>, Γράψ' τα και τα τρία στην αρχή σαν guard clauses, πριν από οτιδήποτε άλλο.</p>
 </div>
 
 <br>
@@ -6115,7 +5999,7 @@ func main() {
   <tr><td class="gt-term">merge sort</td><td class="gt-def">divide and conquer με έξυπνο combine — O(n log n), stable</td></tr>
   <tr><td class="gt-term">quicksort</td><td class="gt-def">divide and conquer με έξυπνο divide (pivot) — χωρίς combine, χωρίς επιπλέον μνήμη</td></tr>
   <tr><td class="gt-term">visited map</td><td class="gt-def">υποχρεωτικό όταν το πρόβλημα μπορεί να σε ξαναφέρει σε σημείο που πέρασες — αλλιώς δεν φτάνεις ποτέ σε base case</td></tr>
-  <tr><td class="gt-term">flood fill</td><td class="gt-def">recursion σε πλέγμα, με τα τέσσερα διπλανά κελιά ως επόμενες κλήσεις — ο κουβάς μπογιάς</td></tr>
+  <tr><td class="gt-term">flood fill</td><td class="gt-def">recursion σε grid, με τα τέσσερα διπλανά κελιά ως επόμενες κλήσεις — ο κουβάς μπογιάς</td></tr>
   <tr><td class="gt-term">memoization</td><td class="gt-def">κράτα ό,τι υπολόγισες σε map και μην το ξανακάνεις — θέμα της Ενότητας 8</td></tr>
 </table>
 `);
@@ -7277,7 +7161,7 @@ func PrintSubsets(numbers []int, target, index int, chosen []int) {
        πήρα 3 (5)     χωρίς 3 (8)     πήρα 3 (7)     χωρίς 3 (10)
         /      \\                        /     \\
    πήρα 5 → 0  χωρίς 5 (5)        πήρα 5 (2)  χωρίς 5 (7)
-      ✓ [2 3 5]                                  |
+   ✓ [2 3 5]                                     |
                                             πήρα 7 → 0
                                               ✓ [3 7]
 </code></pre>
@@ -7412,125 +7296,6 @@ func PrintSubsetsWithLoop(nums []int, target, index int, chosen []int) {
         Για το συγκεκριμένο πρόβλημα υποσυνόλων, η <strong>εκδοχή με loop</strong> είναι πιο συνηθισμένη και πιο ευέλικτη. Η δυαδική εκδοχή είναι πιο κοντά στη λογική του <strong>backtracking</strong> που θα συναντήσεις σε άλλα προβλήματα απόφασης (decision problems). Καμία δεν είναι «λάθος» — η επιλογή εξαρτάται από το τι δηλώνει πιο φυσικά το πρόβλημα.
     </p>
 </div>
-
-
-`);
-
-        // ── VSCode Challenge (εύκολο) — κλείνει το §7.2 ──────────────────────── ⊃
-        addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας το §7.2</div>
-<h1>Διατάξεις με έναν κανόνα παραπάνω</h1>
-
-<p class="lede">
-    Ο ίδιος ακριβώς σκελετός με το <code>Arrange</code> των τριών γραμμάτων. Προσθέτεις μία μόνο γραμμή
-    ελέγχου — και το πρόβλημα αλλάζει εντελώς.
-</p>
-
-<h2>Η αποστολή</h2>
-<p>
-    Έχεις τα γράμματα <strong>Α, Β, Γ, Δ</strong> και θέλεις όλες τις διατάξεις τους, με έναν επιπλέον
-    κανόνα: <strong>το Α δεν επιτρέπεται να βρίσκεται δίπλα στο Β</strong> — ούτε πριν, ούτε μετά. Τύπωσε
-    κάθε έγκυρη διάταξη και επίστρεψε πόσες βρήκες.
-</p>
-<p>
-    Χωρίς τον κανόνα θα υπήρχαν 24 διατάξεις. Με τον κανόνα, πρέπει να βρεις <strong>12</strong>.
-</p>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
-    <p>Ξεκίνα αντιγράφοντας το <code>Arrange</code> ακριβώς όπως είναι, και βεβαιώσου ότι βγάζει 24 διατάξεις για τέσσερα γράμματα. Μόνο μετά πρόσθεσε τον νέο κανόνα — στο σημείο (3), δίπλα στον υπάρχοντα έλεγχο.</p>
-</div>
-
-<br>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
-    <p>Για να ξέρεις αν το Α θα βρεθεί δίπλα στο Β, χρειάζεσαι το γράμμα που μπήκε <strong>αμέσως πριν</strong>. Αυτό είναι το previous-value pattern της Ενότητας 3 — και εδώ δεν χρειάζεται καν ξεχωριστή μεταβλητή, γιατί είναι απλά το τελευταίο στοιχείο του <code>current</code>.</p>
-</div>
-
-<br>
-
-<div class="spoiler"><div class="spoiler-lock"><span>HINT 3 — Drag to reveal →</span></div>
-    <p>Πρόσεξε την πρώτη θέση: εκεί δεν υπάρχει προηγούμενο γράμμα, και το <code>current[len(current)-1]</code> θα προκαλέσει panic. Χρειάζεσαι ένα guard clause <code>if len(current) &gt; 0</code> πριν από τον έλεγχο.</p>
-</div>
-
-<br>
-
-<h2>Λύση</h2>
-<p>Δοκίμασέ το πρώτα μόνος σου. Σύρε παρακάτω μόνο όταν έχεις κολλήσει ή θέλεις να συγκρίνεις.</p>
-
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div>
-<pre><code class="lang-go">// ArrangeNoAB prints every arrangement where A and B are never neighbours,
-// and returns how many it found.
-func ArrangeNoAB(letters []string, used []bool, current []string) int {
-    if len(current) == len(letters) {
-        fmt.Println(current)
-        return 1 // one valid arrangement
-    }
-
-    found := 0 // accumulator, from section 3
-
-    for i := 0; i &lt; len(letters); i++ {
-        if used[i] {
-            continue // rule 1: every letter exactly once
-        }
-
-        // rule 2: A and B may not be neighbours
-        if len(current) &gt; 0 {
-            prev := current[len(current)-1]
-            if (prev == "Α" &amp;&amp; letters[i] == "Β") || (prev == "Β" &amp;&amp; letters[i] == "Α") {
-                continue
-            }
-        }
-
-        used[i] = true
-        current = append(current, letters[i])
-
-        found += ArrangeNoAB(letters, used, current) // EXPLORE
-
-        used[i] = false                     // UN-CHOOSE
-        current = current[:len(current)-1]
-    }
-    return found
-}
-
-func main() {
-    letters := []string{"Α", "Β", "Γ", "Δ"}
-    n := ArrangeNoAB(letters, make([]bool, len(letters)), nil)
-    fmt.Println("total:", n) // 12
-}
-</code></pre></div>
-
-<div class="callout good">
-    <span class="tag">Εδώ εμφανίζεται κάτι που δεν υπήρχε στο Arrange</span>
-    <p>
-        Στο παράδειγμα με τα τρία γράμματα, <em>κάθε</em> μονοπάτι κατέληγε σε έγκυρη διάταξη — δεν υπήρχε
-        ποτέ αδιέξοδο. Εδώ υπάρχει. Δοκίμασε νοερά το πρόθεμα <code>[Γ Δ Α]</code>: μένει μόνο το Β, το Β
-        απορρίπτεται επειδή θα βρισκόταν δίπλα στο Α, και η αναδρομή επιστρέφει
-        <strong>χωρίς να τυπώσει τίποτα</strong>. Τότε ξυπνάει το σημείο (6) ένα επίπεδο πιο πάνω, ξηλώνει το
-        Α, και δοκιμάζει το Β στη θέση του. Αυτή είναι η στιγμή που φαίνεται γιατί το un-choose ονομάζεται έτσι.
-    </p>
-</div>
-
-<div class="callout">
-    <span class="tag">Πώς να επαληθεύσεις ότι δεν έχεις λάθος</span>
-    <p>
-        Το 12 δεν προκύπτει από πουθενά — υπολογίζεται. Οι συνολικές διατάξεις τεσσάρων γραμμάτων είναι
-        4 × 3 × 2 × 1 = 24. Οι <em>άκυρες</em> είναι όσες έχουν το Α και το Β δίπλα-δίπλα: αντιμετώπισε το ζεύγος
-        σαν ένα ενιαίο κομμάτι, οπότε έχεις 3 κομμάτια να διατάξεις (3 × 2 × 1 = 6), επί 2 για τις δύο σειρές
-        μέσα στο ζεύγος (ΑΒ ή ΒΑ) — δηλαδή 12 άκυρες. Μένουν 24 − 12 = 12. Αυτή η δεύτερη, ανεξάρτητη
-        μέτρηση είναι ο μόνος αξιόπιστος τρόπος να ξέρεις ότι ο κώδικάς σου δεν χάνει περιπτώσεις ούτε
-        τις μετράει δύο φορές.
-    </p>
-</div>
-
-<div class="callout">
-    <span class="tag">Αν θες να πας παρακάτω</span>
-    <p>
-        Δύο μικρές παραλλαγές. Πρώτη: άλλαξε τον κανόνα σε «το Α πρέπει να είναι πάντα πριν από το Β»
-        (όχι απαραίτητα δίπλα) — πόσες βγαίνουν, και γιατί ακριβώς οι μισές; Δεύτερη: κάνε τη function να
-        επιστρέφει μόνο το πλήθος, χωρίς να τυπώνει τίποτα, και δοκίμασέ την με πέντε και έξι γράμματα.
-        Πρόσεξε πόσο γρήγορα μεγαλώνει ο αριθμός.
-    </p>
-</div>
 `);
 
         // ── §7.3 — N-Queens ──────────────────────────────────────────────────── ⊃
@@ -7539,51 +7304,230 @@ func main() {
 <h1>Το κλασικό: N βασίλισσες</h1>
 
 <p class="lede">
-    Τοποθέτησε 8 βασίλισσες σε μια σκακιέρα 8×8, έτσι ώστε καμία να μην απειλεί καμία άλλη. Η βασίλισσα
-    απειλεί σε ολόκληρη τη γραμμή, τη στήλη, και τις δύο διαγωνίους της.
+    Τοποθέτησε 8 βασίλισσες σε μια σκακιέρα 8×8, έτσι ώστε καμία να μην απειλεί καμία άλλη. Είναι το πιο
+    διάσημο πρόβλημα backtracking που υπάρχει — και η αξία του δεν είναι η σκακιέρα, αλλά ότι δείχνει
+    καθαρά πώς μία παρατήρηση συρρικνώνει έναν χώρο αναζήτησης που φαινόταν ανέφικτος.
 </p>
+
+<h2>Τι απειλεί μια βασίλισσα</h2>
 
 <p>
-    Είναι το πιο διάσημο πρόβλημα backtracking που υπάρχει, και η αξία του για σένα δεν είναι η σκακιέρα —
-    είναι ότι δείχνει καθαρά πώς <strong>ένας έξυπνος περιορισμός συρρικνώνει έναν χώρο αναζήτησης που
-    φαινόταν ανέφικτος</strong>.
+    Η βασίλισσα χτυπάει σε ολόκληρη τη γραμμή της, ολόκληρη τη στήλη της, και τις δύο διαγωνίους. Με μία
+    μόνο βασίλισσα στη μέση της σκακιέρας, τα απειλούμενα τετράγωνα είναι ήδη 27 από τα 63:
 </p>
 
-<h2>Πόσο μεγάλο είναι το πρόβλημα;</h2>
+<svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:820px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g fill="rgba(var(--tone-5-rgb),0.16)">
+    <rect x="110" y="44" width="32" height="32"/><rect x="206" y="44" width="32" height="32"/><rect x="302" y="44" width="32" height="32"/><rect x="142" y="76" width="32" height="32"/>
+    <rect x="206" y="76" width="32" height="32"/><rect x="270" y="76" width="32" height="32"/><rect x="174" y="108" width="32" height="32"/><rect x="206" y="108" width="32" height="32"/>
+    <rect x="238" y="108" width="32" height="32"/><rect x="110" y="140" width="32" height="32"/><rect x="142" y="140" width="32" height="32"/><rect x="174" y="140" width="32" height="32"/>
+    <rect x="238" y="140" width="32" height="32"/><rect x="270" y="140" width="32" height="32"/><rect x="302" y="140" width="32" height="32"/><rect x="334" y="140" width="32" height="32"/>
+    <rect x="174" y="172" width="32" height="32"/><rect x="206" y="172" width="32" height="32"/><rect x="238" y="172" width="32" height="32"/><rect x="142" y="204" width="32" height="32"/>
+    <rect x="206" y="204" width="32" height="32"/><rect x="270" y="204" width="32" height="32"/><rect x="110" y="236" width="32" height="32"/><rect x="206" y="236" width="32" height="32"/>
+    <rect x="302" y="236" width="32" height="32"/><rect x="206" y="268" width="32" height="32"/><rect x="334" y="268" width="32" height="32"/>
+  </g>
 
-<table class="glossary-table">
-<tr><td class="gt-term">Αφελής προσέγγιση</td><td class="gt-def">διάλεξε 8 τετράγωνα από τα 64 → πάνω από 4 δισεκατομμύρια συνδυασμοί</td></tr>
-<tr><td class="gt-term">Με μία παρατήρηση</td><td class="gt-def">κάθε γραμμή χωράει ακριβώς μία βασίλισσα → 8⁸ ≈ 16,7 εκατομμύρια</td></tr>
-<tr><td class="gt-term">Με backtracking + κλάδεμα</td><td class="gt-def">λίγες χιλιάδες δοκιμές μέχρι την πρώτη λύση</td></tr>
-</table>
+  <rect x="206" y="140" width="32" height="32" rx="4" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="2"/>
+  <text x="222" y="163" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="17" font-weight="700" fill="var(--tone-4)">Q</text>
+
+  <g stroke="currentColor" stroke-opacity="0.3" stroke-width="1" fill="none">
+    <line x1="110" y1="44" x2="110" y2="300"/><line x1="110" y1="44" x2="366" y2="44"/>
+    <line x1="142" y1="44" x2="142" y2="300"/><line x1="110" y1="76" x2="366" y2="76"/>
+    <line x1="174" y1="44" x2="174" y2="300"/><line x1="110" y1="108" x2="366" y2="108"/>
+    <line x1="206" y1="44" x2="206" y2="300"/><line x1="110" y1="140" x2="366" y2="140"/>
+    <line x1="238" y1="44" x2="238" y2="300"/><line x1="110" y1="172" x2="366" y2="172"/>
+    <line x1="270" y1="44" x2="270" y2="300"/><line x1="110" y1="204" x2="366" y2="204"/>
+    <line x1="302" y1="44" x2="302" y2="300"/><line x1="110" y1="236" x2="366" y2="236"/>
+    <line x1="334" y1="44" x2="334" y2="300"/><line x1="110" y1="268" x2="366" y2="268"/>
+    <line x1="366" y1="44" x2="366" y2="300"/><line x1="110" y1="300" x2="366" y2="300"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.5" text-anchor="middle">
+    <text x="126" y="36">0</text><text x="158" y="36">1</text><text x="190" y="36">2</text><text x="222" y="36">3</text>
+    <text x="254" y="36">4</text><text x="286" y="36">5</text><text x="318" y="36">6</text><text x="350" y="36">7</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.5" text-anchor="end">
+    <text x="102" y="64">0</text><text x="102" y="96">1</text><text x="102" y="128">2</text><text x="102" y="160">3</text>
+    <text x="102" y="192">4</text><text x="102" y="224">5</text><text x="102" y="256">6</text><text x="102" y="288">7</text>
+  </g>
+
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="14" fill="currentColor">
+    <text x="410" y="128" opacity="0.85">Η βασίλισσα στο <tspan font-family="var(--font-mono, ui-monospace, monospace)" fill="var(--tone-4)">(3, 3)</tspan></text>
+    <text x="410" y="152" opacity="0.85">απειλεί <tspan font-weight="700" fill="var(--tone-5)">27</tspan> τετράγωνα.</text>
+    <text x="410" y="192" opacity="0.6" font-size="13">Δύο βασίλισσες δεν μπορούν λοιπόν</text>
+    <text x="410" y="212" opacity="0.6" font-size="13">να μοιράζονται ούτε γραμμή, ούτε</text>
+    <text x="410" y="232" opacity="0.6" font-size="13">στήλη, ούτε διαγώνιο.</text>
+  </g>
+</svg>
+
+<h2>Πόσο μεγάλο είναι το πρόβλημα</h2>
 
 <p>
-    Πρόσεξε ότι η πρώτη μεγάλη μείωση δεν ήρθε από τον κώδικα — ήρθε από <strong>σκέψη</strong>. Αν κάθε
-    γραμμή έχει ακριβώς μία βασίλισσα, τότε το μόνο που πρέπει να αποφασίσεις για κάθε γραμμή είναι
-    <em>σε ποια στήλη</em>. Και αυτό αλλάζει και τη δομή δεδομένων:
+    Πριν γράψεις γραμμή κώδικα, μέτρα πόσες πιθανές τοποθετήσεις υπάρχουν. Το νούμερο αλλάζει δραματικά
+    ανάλογα με το πόσο σκέφτηκες πρώτα:
 </p>
 
-<pre><code class="lang-go">// board[row] = the column of the queen in that row, or -1 if the row is empty.
+<svg viewBox="0 0 800 230" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:900px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <rect x="200" y="46" width="528" height="34" rx="6" fill="rgba(var(--tone-5-rgb),0.18)" stroke="var(--tone-5)" stroke-width="1.5"/>
+  <rect x="200" y="104" width="396" height="34" rx="6" fill="rgba(var(--tone-4-rgb),0.18)" stroke="var(--tone-4)" stroke-width="1.5"/>
+  <rect x="200" y="162" width="182" height="34" rx="6" fill="rgba(76,175,80,0.20)" stroke="#4caf50" stroke-width="1.5"/>
+
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="13.5" fill="currentColor" opacity="0.85" text-anchor="end">
+    <text x="188" y="61">brute force</text><text x="188" y="78" font-size="11.5" opacity="0.7">8 από τα 64 τετράγωνα</text>
+    <text x="188" y="119">μία βασίλισσα</text><text x="188" y="136" font-size="11.5" opacity="0.7">ανά γραμμή</text>
+    <text x="188" y="177">+ pruning</text><text x="188" y="194" font-size="11.5" opacity="0.7">κόβω άκυρα κλαδιά νωρίς</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" text-anchor="start">
+    <text x="214" y="69">4.400.000.000 συνδυασμοί</text>
+    <text x="214" y="127">16.700.000 (8⁸)</text>
+    <text x="214" y="185">λίγες χιλιάδες</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="start">
+    <text x="200" y="220">το μήκος των μπαρών είναι ενδεικτικό — αλλιώς η τρίτη θα ήταν αόρατη</text>
+  </g>
+</svg>
+
+<p>
+    Πρόσεξε ότι η πρώτη μεγάλη μείωση <strong>δεν ήρθε από τον κώδικα</strong>. Ήρθε από μια παρατήρηση: αφού
+    δύο βασίλισσες δεν μπορούν να μοιράζονται γραμμή, κάθε γραμμή χωράει ακριβώς μία. Άρα δεν χρειάζεται να
+    διαλέγεις τετράγωνα — αρκεί να απαντήσεις, για κάθε γραμμή, <em>σε ποια στήλη</em>.
+</p>
+
+<h2>Η δομή δεδομένων που προκύπτει</h2>
+
+<p>
+    Αυτή η παρατήρηση αλλάζει και το πώς αποθηκεύεις τη σκακιέρα. Δεν χρειάζεσαι δισδιάστατο πίνακα: χρειάζεσαι έναν
+    αριθμό ανά γραμμή. Ένα απλό slice με τόσες θέσεις όσες οι γραμμές αρκεί:
+</p>
+
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:820px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g fill="rgba(var(--tone-4-rgb),0.30)" stroke="var(--tone-4)" stroke-width="1.6">
+    <rect x="144" y="60" width="46" height="46" rx="4"/>
+    <rect x="236" y="106" width="46" height="46" rx="4"/>
+    <rect x="98" y="152" width="46" height="46" rx="4"/>
+    <rect x="190" y="198" width="46" height="46" rx="4"/>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" font-weight="700" fill="var(--tone-4)" text-anchor="middle">
+    <text x="167" y="91">Q</text><text x="259" y="137">Q</text><text x="121" y="183">Q</text><text x="213" y="229">Q</text>
+  </g>
+
+  <g stroke="currentColor" stroke-opacity="0.3" stroke-width="1" fill="none">
+    <line x1="98" y1="60" x2="98" y2="244"/><line x1="98" y1="60" x2="282" y2="60"/>
+    <line x1="144" y1="60" x2="144" y2="244"/><line x1="98" y1="106" x2="282" y2="106"/>
+    <line x1="190" y1="60" x2="190" y2="244"/><line x1="98" y1="152" x2="282" y2="152"/>
+    <line x1="236" y1="60" x2="236" y2="244"/><line x1="98" y1="198" x2="282" y2="198"/>
+    <line x1="282" y1="60" x2="282" y2="244"/><line x1="98" y1="244" x2="282" y2="244"/>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.5" text-anchor="middle">
+    <text x="121" y="52">0</text><text x="167" y="52">1</text><text x="213" y="52">2</text><text x="259" y="52">3</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.5" text-anchor="end">
+    <text x="88" y="88">0</text><text x="88" y="134">1</text><text x="88" y="180">2</text><text x="88" y="226">3</text>
+  </g>
+  <text x="190" y="272" text-anchor="middle" font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity="0.7">η σκακιέρα, 4×4</text>
+
+  <g stroke="currentColor" stroke-opacity="0.45" stroke-width="1.6" fill="none">
+    <path d="M300,152 L360,152" marker-end="url(#nq-ah)"/>
+  </g>
+  <defs>
+    <marker id="nq-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,1 L9,5 L0,9 z" fill="currentColor" opacity="0.55"/>
+    </marker>
+  </defs>
+
+  <g fill="rgba(var(--tone-4-rgb),0.14)" stroke="var(--tone-4)" stroke-width="1.6">
+    <rect x="400" y="128" width="56" height="48" rx="6"/><rect x="456" y="128" width="56" height="48" rx="6"/>
+    <rect x="512" y="128" width="56" height="48" rx="6"/><rect x="568" y="128" width="56" height="48" rx="6"/>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="currentColor" text-anchor="middle">
+    <text x="428" y="161">1</text><text x="484" y="161">3</text><text x="540" y="161">0</text><text x="596" y="161">2</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.5" text-anchor="middle">
+    <text x="428" y="120">[0]</text><text x="484" y="120">[1]</text><text x="540" y="120">[2]</text><text x="596" y="120">[3]</text>
+  </g>
+  <text x="512" y="272" text-anchor="middle" font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity="0.7">board []int — τέσσερις αριθμοί</text>
+
+  <text x="512" y="200" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.6">board[2] = 0 → γραμμή 2, στήλη 0</text>
+</svg>
+
+<pre><code class="lang-go">// board[row] = the column of the queen in that row, or -1 (sentinel value) if the row is empty.
 // A 1D slice is enough - we never need a full 2D grid.
 board := make([]int, 8)
 </code></pre>
 
-<div class="callout good">
-    <span class="tag">Η δομή δεδομένων ΕΙΝΑΙ μέρος του αλγορίθμου</span>
-    <p>
-        Αν είχες ξεκινήσει με ένα <code>[8][8]bool</code>, θα έγραφες πολύ περισσότερο κώδικα και θα έψαχνες
-        πολύ μεγαλύτερο χώρο. Επειδή κωδικοποίησες τον περιορισμό «μία ανά γραμμή» <em>μέσα στη
-        δομή</em>, ολόκληρη μια κατηγορία λανθασμένων καταστάσεων έγινε αδύνατο να παρασταθεί. Είναι από τις
-        πιο χρήσιμες συνήθειες που μπορείς να αποκτήσεις.
-    </p>
-</div>
 
 <h2>Ο έλεγχος: απειλείται αυτό το τετράγωνο;</h2>
 
 <p>
-    Επειδή τοποθετούμε μία βασίλισσα ανά γραμμή και προχωράμε από πάνω προς τα κάτω, δεν χρειάζεται να
-    ελέγξουμε γραμμές (αδύνατο να συγκρουστούν) ούτε τις γραμμές από κάτω (είναι ακόμα άδειες). Μένουν οι
-    στήλες και οι διαγώνιοι, μόνο για τις γραμμές που έχουμε ήδη γεμίσει:
+    Έχοντας τοποθετήσει μία βασίλισσα θα δούμε την func που ελέγχει αν το τετράγωνο που διαλέξαμε είναι έγκυρο ή όχι.
+    Θα παίρνει ως arguments το board []int και το τετράγωνο που δοκιμάζουμε να τοποθετήσουμε την βασίλισσα row, col int. Δηλαδή πάμε να βάλουμε την βασίλισσα στο board[row] = col.
+    Εάν απειλείται από άλλη βασίλισσα τότε isSafe θα γυρίσει false αλλιώς true.
+    Ο έλεγχος που θα κάνουμε δεν χρειάζεται να ελέγχει τις γραμμές, γιατί λόγω της επιλογής μας για μονοδιάτο πίνακα μπορούμε να βάζουμε μόνο μια βασίλισσα ανά γραμμή. Οπότε μένουν να ελέγξουμε τις στήλες και τις διαγωνίους.
+</p>
+
+<p>
+    Θα κάνουμε loop για όλο το board που έχει βασίλισσες μέχρι στιγμής δηλαδή από 0 μέχρι row (το τετράγωνο που διαλέξαμε).
+    Η σύγκριση της στήλης είναι εύκολη: σύγκριση. Αν υπάρχει ήδη έστω και μια βασίλισσα που είναι σε col θα κάνουμε return false (το τετράγωνο απειλείται) 
+    <br> Οι διαγώνιοι φαίνονται δύσκολες, αλλά δεν είναι — κάθε διαγώνιος έχει
+    μια τιμή που παραμένει σταθερή σε όλα της τα τετράγωνα. Γράψε σε κάθε τετράγωνο την <strong>διαφορά</strong>
+    <code>(γραμμή − στήλη)</code> και το <strong>άθροισμα</strong> <code>(γραμμή + στήλη)</code>, και δες τι γίνεται:
+</p>
+
+<svg viewBox="0 0 700 296" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:820px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <text x="192" y="34" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity="0.85">γραμμή − στήλη</text>
+  <g fill="rgba(var(--tone-4-rgb),0.28)">
+    <rect x="146" y="60" width="46" height="46"/><rect x="192" y="106" width="46" height="46"/><rect x="238" y="152" width="46" height="46"/>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" font-weight="700" fill="var(--tone-4)" text-anchor="middle">
+    <text x="169" y="89">-1</text><text x="215" y="135">-1</text><text x="261" y="181">-1</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity="0.4" text-anchor="middle">
+    <text x="123" y="89">0</text><text x="215" y="89">-2</text><text x="261" y="89">-3</text><text x="123" y="135">1</text>
+    <text x="169" y="135">0</text><text x="261" y="135">-2</text><text x="123" y="181">2</text><text x="169" y="181">1</text>
+    <text x="215" y="181">0</text><text x="123" y="227">3</text><text x="169" y="227">2</text><text x="215" y="227">1</text>
+    <text x="261" y="227">0</text>
+  </g>
+  <g stroke="currentColor" stroke-opacity="0.3" stroke-width="1" fill="none">
+    <line x1="100" y1="60" x2="100" y2="244"/><line x1="100" y1="60" x2="284" y2="60"/>
+    <line x1="146" y1="60" x2="146" y2="244"/><line x1="100" y1="106" x2="284" y2="106"/>
+    <line x1="192" y1="60" x2="192" y2="244"/><line x1="100" y1="152" x2="284" y2="152"/>
+    <line x1="238" y1="60" x2="238" y2="244"/><line x1="100" y1="198" x2="284" y2="198"/>
+    <line x1="284" y1="60" x2="284" y2="244"/><line x1="100" y1="244" x2="284" y2="244"/>
+  </g>
+
+  <text x="512" y="34" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity="0.85">γραμμή + στήλη</text>
+  <g fill="rgba(var(--tone-5-rgb),0.28)">
+    <rect x="558" y="60" width="46" height="46"/><rect x="512" y="106" width="46" height="46"/>
+    <rect x="466" y="152" width="46" height="46"/><rect x="420" y="198" width="46" height="46"/>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" font-weight="700" fill="var(--tone-5)" text-anchor="middle">
+    <text x="581" y="89">3</text><text x="535" y="135">3</text><text x="489" y="181">3</text><text x="443" y="227">3</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity="0.4" text-anchor="middle">
+    <text x="443" y="89">0</text><text x="489" y="89">1</text><text x="535" y="89">2</text><text x="443" y="135">1</text>
+    <text x="489" y="135">2</text><text x="581" y="135">4</text><text x="443" y="181">2</text><text x="535" y="181">4</text>
+    <text x="581" y="181">5</text><text x="489" y="227">4</text><text x="535" y="227">5</text><text x="581" y="227">6</text>
+  </g>
+  <g stroke="currentColor" stroke-opacity="0.3" stroke-width="1" fill="none">
+    <line x1="420" y1="60" x2="420" y2="244"/><line x1="420" y1="60" x2="604" y2="60"/>
+    <line x1="466" y1="60" x2="466" y2="244"/><line x1="420" y1="106" x2="604" y2="106"/>
+    <line x1="512" y1="60" x2="512" y2="244"/><line x1="420" y1="152" x2="604" y2="152"/>
+    <line x1="558" y1="60" x2="558" y2="244"/><line x1="420" y1="198" x2="604" y2="198"/>
+    <line x1="604" y1="60" x2="604" y2="244"/><line x1="420" y1="244" x2="604" y2="244"/>
+  </g>
+
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity="0.7" text-anchor="middle">
+    <text x="192" y="270">η διαφορά μένει σταθερή</text><text x="192" y="288">κατά μήκος της «\\» διαγωνίου</text>
+    <text x="512" y="270">το άθροισμα μένει σταθερό</text><text x="512" y="288">κατά μήκος της «/» διαγωνίου</text>
+  </g>
+</svg>
+
+<p>
+    Δύο τετράγωνα βρίσκονται στην ίδια διαγώνιο ακριβώς όταν έχουν <strong>ίδια διαφορά</strong> ή
+    <strong>ίδιο άθροισμα</strong>. Δεν χρειάζεται να διατρέξεις τη διαγώνιο τετράγωνο-τετράγωνο: δύο
+    συγκρίσεις αρκούν.
 </p>
 
 <pre><code class="lang-go">// isSafe reports whether a queen at (row, col) is attacked by any
@@ -7603,17 +7547,6 @@ func isSafe(board []int, row, col int) bool {
 }
 </code></pre>
 
-<div class="callout">
-    <span class="tag">Πώς ελέγχονται οι διαγώνιοι με μία πράξη</span>
-    <p>
-        Δύο τετράγωνα βρίσκονται στην ίδια διαγώνιο ακριβώς όταν η διαφορά τους
-        <code>γραμμή − στήλη</code> είναι ίδια (η μία διαγώνιος), ή όταν το άθροισμά τους
-        <code>γραμμή + στήλη</code> είναι ίδιο (η άλλη). Δοκίμασέ το: τα <code>(0,0)</code>,
-        <code>(1,1)</code>, <code>(2,2)</code> έχουν όλα διαφορά 0. Τα <code>(0,2)</code>,
-        <code>(1,1)</code>, <code>(2,0)</code> έχουν όλα άθροισμα 2.
-    </p>
-</div>
-
 <h2>Ο αλγόριθμος</h2>
 
 <pre><code class="lang-go">// SolveQueens tries to fill every row from the given row downwards.
@@ -7628,53 +7561,114 @@ func SolveQueens(board []int, row int) bool {
             continue // PRUNE: attacked square, do not even go down this branch
         }
 
-        board[row] = col              // 1. CHOOSE
+        board[row] = col               // 1. CHOOSE
         if SolveQueens(board, row+1) { // 2. EXPLORE
             return true                //    it worked - stop everything
         }
-        board[row] = -1               // 3. UN-CHOOSE
+        board[row] = -1                // 3. UN-CHOOSE
     }
 
     return false // no column in this row works - tell the caller to back up
 }
 </code></pre>
 
+
+<h2>Δες το να τρέχει</h2>
+
 <p>
-    Δώδεκα γραμμές. Και πρόσεξε ότι είναι <strong>ακριβώς ο ίδιος σκελετός</strong> με το
-    <code>PrintSubsets</code>: base case, λούπα πάνω στις επιλογές, choose, explore, un-choose. Το μόνο που
-    άλλαξε είναι τι σημαίνει «επιλογή» και τι σημαίνει «έγκυρη».
+    Σε σκακιέρα 4×4 ολόκληρη η εκτέλεση χωράει σε έξι εικόνες. Ο κώδικας είναι ο ίδιος — μόνο το
+    <code>len(board)</code> αλλάζει.
 </p>
 
-<h2>Τι σημαίνει το <code>return false</code> στο τέλος</h2>
+<svg viewBox="0 0 740 400" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:900px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g fill="rgba(var(--tone-4-rgb),0.30)">
+    <rect x="90" y="64" width="26" height="26"/>
+    <rect x="320" y="64" width="26" height="26"/><rect x="372" y="90" width="26" height="26"/>
+    <rect x="550" y="64" width="26" height="26"/><rect x="602" y="90" width="26" height="26"/>
+    <rect x="90" y="238" width="26" height="26"/><rect x="168" y="264" width="26" height="26"/><rect x="116" y="290" width="26" height="26"/>
+    <rect x="320" y="238" width="26" height="26"/><rect x="398" y="264" width="26" height="26"/><rect x="346" y="290" width="26" height="26"/>
+  </g>
+  <g fill="rgba(76,175,80,0.32)">
+    <rect x="576" y="238" width="26" height="26"/><rect x="628" y="264" width="26" height="26"/>
+    <rect x="550" y="290" width="26" height="26"/><rect x="602" y="316" width="26" height="26"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" font-weight="700" fill="var(--tone-4)" text-anchor="middle">
+    <text x="103" y="83">Q</text>
+    <text x="333" y="83">Q</text><text x="385" y="109">Q</text>
+    <text x="563" y="83">Q</text><text x="615" y="109">Q</text>
+    <text x="103" y="257">Q</text><text x="181" y="283">Q</text><text x="129" y="309">Q</text>
+    <text x="333" y="257">Q</text><text x="411" y="283">Q</text><text x="359" y="309">Q</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" font-weight="700" fill="#4caf50" text-anchor="middle">
+    <text x="589" y="257">Q</text><text x="641" y="283">Q</text><text x="563" y="309">Q</text><text x="615" y="335">Q</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" font-weight="700" fill="#e05252" text-anchor="middle">
+    <text x="563" y="135">✕</text><text x="589" y="135">✕</text><text x="615" y="135">✕</text><text x="641" y="135">✕</text>
+    <text x="333" y="335">✕</text><text x="359" y="335">✕</text><text x="385" y="335">✕</text><text x="411" y="335">✕</text>
+  </g>
+
+  <g stroke="currentColor" stroke-opacity="0.28" stroke-width="1" fill="none">
+    <line x1="90" y1="64" x2="90" y2="168"/><line x1="90" y1="64" x2="194" y2="64"/><line x1="116" y1="64" x2="116" y2="168"/><line x1="90" y1="90" x2="194" y2="90"/><line x1="142" y1="64" x2="142" y2="168"/><line x1="90" y1="116" x2="194" y2="116"/><line x1="168" y1="64" x2="168" y2="168"/><line x1="90" y1="142" x2="194" y2="142"/><line x1="194" y1="64" x2="194" y2="168"/><line x1="90" y1="168" x2="194" y2="168"/>
+    <line x1="320" y1="64" x2="320" y2="168"/><line x1="320" y1="64" x2="424" y2="64"/><line x1="346" y1="64" x2="346" y2="168"/><line x1="320" y1="90" x2="424" y2="90"/><line x1="372" y1="64" x2="372" y2="168"/><line x1="320" y1="116" x2="424" y2="116"/><line x1="398" y1="64" x2="398" y2="168"/><line x1="320" y1="142" x2="424" y2="142"/><line x1="424" y1="64" x2="424" y2="168"/><line x1="320" y1="168" x2="424" y2="168"/>
+    <line x1="550" y1="64" x2="550" y2="168"/><line x1="550" y1="64" x2="654" y2="64"/><line x1="576" y1="64" x2="576" y2="168"/><line x1="550" y1="90" x2="654" y2="90"/><line x1="602" y1="64" x2="602" y2="168"/><line x1="550" y1="116" x2="654" y2="116"/><line x1="628" y1="64" x2="628" y2="168"/><line x1="550" y1="142" x2="654" y2="142"/><line x1="654" y1="64" x2="654" y2="168"/><line x1="550" y1="168" x2="654" y2="168"/>
+    <line x1="90" y1="238" x2="90" y2="342"/><line x1="90" y1="238" x2="194" y2="238"/><line x1="116" y1="238" x2="116" y2="342"/><line x1="90" y1="264" x2="194" y2="264"/><line x1="142" y1="238" x2="142" y2="342"/><line x1="90" y1="290" x2="194" y2="290"/><line x1="168" y1="238" x2="168" y2="342"/><line x1="90" y1="316" x2="194" y2="316"/><line x1="194" y1="238" x2="194" y2="342"/><line x1="90" y1="342" x2="194" y2="342"/>
+    <line x1="320" y1="238" x2="320" y2="342"/><line x1="320" y1="238" x2="424" y2="238"/><line x1="346" y1="238" x2="346" y2="342"/><line x1="320" y1="264" x2="424" y2="264"/><line x1="372" y1="238" x2="372" y2="342"/><line x1="320" y1="290" x2="424" y2="290"/><line x1="398" y1="238" x2="398" y2="342"/><line x1="320" y1="316" x2="424" y2="316"/><line x1="424" y1="238" x2="424" y2="342"/><line x1="320" y1="342" x2="424" y2="342"/>
+    <line x1="550" y1="238" x2="550" y2="342"/><line x1="550" y1="238" x2="654" y2="238"/><line x1="576" y1="238" x2="576" y2="342"/><line x1="550" y1="264" x2="654" y2="264"/><line x1="602" y1="238" x2="602" y2="342"/><line x1="550" y1="290" x2="654" y2="290"/><line x1="628" y1="238" x2="628" y2="342"/><line x1="550" y1="316" x2="654" y2="316"/><line x1="654" y1="238" x2="654" y2="342"/><line x1="550" y1="342" x2="654" y2="342"/>
+  </g>
+
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12.5" fill="currentColor" opacity="0.75" text-anchor="middle">
+    <text x="142" y="190">1 · τοποθετώ στο (0,0)</text>
+    <text x="372" y="190">2 · τοποθετώ στο (1,2)</text>
+    <text x="602" y="190">3 · γραμμή 2: καμία στήλη</text>
+    <text x="142" y="364">4 · πίσω· (1,3) και (2,1)</text>
+    <text x="372" y="364">5 · γραμμή 3: πάλι καμία</text>
+    <text x="602" y="364">6 · πίσω ως τη γραμμή 0</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
+    <text x="142" y="206">board = [0]</text>
+    <text x="372" y="206">board = [0 2]</text>
+    <text x="602" y="206">αδιέξοδο</text>
+    <text x="142" y="380">board = [0 3 1]</text>
+    <text x="372" y="380">αδιέξοδο</text>
+    <text x="602" y="380">board = [1 3 0 2]</text>
+  </g>
+</svg>
 
 <p>
-    Αυτή η γραμμή είναι η καρδιά του backtracking και συχνά παρεξηγείται. Λέει:
-    <em>«δοκίμασα και τις 8 στήλες αυτής της γραμμής, καμία δεν οδηγεί σε λύση — άρα κάποια από τις επιλογές
-    που έκανες ΕΣΥ, πιο πάνω, ήταν λάθος»</em>.
-</p>
-
-<p>
-    Ο καλών παίρνει αυτό το <code>false</code>, εκτελεί το δικό του <code>board[row] = -1</code>, και
-    δοκιμάζει την επόμενη δική του στήλη. Έτσι η ακύρωση των επιλογών μεταδίδεται προς τα πάνω, επίπεδο-επίπεδο, όσο χρειάζεται. Κανείς
-    δεν διαχειρίζεται αυτή τη διαδικασία κεντρικά — προκύπτει από το ότι κάθε επίπεδο κάνει σωστά τα τρία του
-    βήματα.
+    Πρόσεξε τι έγινε ανάμεσα στην εικόνα 5 και την 6. Το αδιέξοδο στη γραμμή 3 ακύρωσε τη γραμμή 2· η γραμμή
+    2 δεν είχε άλλη στήλη, οπότε ακύρωσε τη γραμμή 1· ούτε εκείνη είχε άλλη, οπότε ακύρωσε τη γραμμή 0. Η
+    πρώτη βασίλισσα, που φαινόταν αθώα, ήταν το πραγματικό λάθος — και χρειάστηκαν <strong>τέσσερα
+    επίπεδα</strong> για να αποδειχθεί.
 </p>
 
 <div class="callout">
-    <span class="tag">Γιατί το board[row] = -1 δεν είναι πάντα απαραίτητο</span>
+    <span class="tag">Τι λέει το <code>return false</code> της τελευταίας γραμμής</span>
     <p>
-        Στη συγκεκριμένη υλοποίηση, η επόμενη επανάληψη της λούπας θα γράψει αμέσως
-        <code>board[row] = col</code> με νέα τιμή, οπότε το <code>-1</code> θα σβηστεί ούτως ή άλλως. Το
-        κρατάμε επειδή είναι <strong>ρητό</strong>: κάνει φανερό στον αναγνώστη ότι η κατάσταση επαναφέρεται,
-        και σε προστατεύει όταν αργότερα προσθέσεις κώδικα που διαβάζει τον πίνακα ανάμεσα στις δοκιμές. Σε
-        άλλα προβλήματα — όπως το sudoku αμέσως παρακάτω — το un-choose είναι απολύτως απαραίτητο.
+        Είναι η γραμμή που κάνει δυνατή αυτή την υποχώρηση, και συχνά προσπερνιέται. Σημαίνει:
+        <em>«δοκίμασα κάθε στήλη αυτής της γραμμής, καμία δεν οδηγεί σε λύση»</em>. Ο καλών το παραλαμβάνει
+        ως αποτυχία της δικής του τελευταίας επιλογής, ακυρώνει τη βασίλισσά του, και δοκιμάζει την επόμενη
+        δική του στήλη. Αν εξαντληθούν και οι δικές του, στέλνει με τη σειρά του <code>false</code> ένα
+        επίπεδο πιο πάνω.
+    </p>
+    <p>
+        Δεν υπάρχει πουθενά κώδικας που «διαχειρίζεται την υποχώρηση». Προκύπτει από το ότι κάθε επίπεδο
+        κάνει σωστά τα τρία του βήματα και επιστρέφει ειλικρινά αν τα κατάφερε ή όχι.
     </p>
 </div>
-`);
 
-        // ── §7.4 — Sudoku: ο ίδιος σκελετός ──────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
+<div class="callout">
+    <span class="tag">Γιατί το <code>board[row] = -1</code> δεν είναι πάντα απαραίτητο</span>
+    <p>
+        Στη συγκεκριμένη υλοποίηση, η επόμενη επανάληψη θα γράψει αμέσως <code>board[row] = col</code> με νέα
+        τιμή, οπότε το <code>-1</code> σβήνεται ούτως ή άλλως. Το κρατάμε γιατί κάνει φανερό ότι η κατάσταση
+        επαναφέρεται, και γιατί σε προστατεύει αν αργότερα προσθέσεις κώδικα που διαβάζει τον πίνακα ανάμεσα
+        στις δοκιμές. Στο sudoku που ακολουθεί, το ίδιο βήμα είναι απολύτως υποχρεωτικό — και θα δεις γιατί.
+    </p>
+</div>
+
+<br>
 <h1>Sudoku: ο ίδιος σκελετός, άλλος περιορισμός</h1>
 
 <p class="lede">
@@ -7683,8 +7677,9 @@ func SolveQueens(board []int, row int) bool {
 </p>
 
 <p>
-    Το πλέγμα είναι <code>[][]int</code> 9×9, όπου το <strong>0 σημαίνει κενό κελί</strong>. Κάθε αριθμός
-    1–9 πρέπει να εμφανίζεται ακριβώς μία φορά σε κάθε γραμμή, κάθε στήλη, και κάθε κουτί 3×3.
+    Το grid είναι <code>[][]int</code> 9×9, όπου το <strong>0 σημαίνει κενό κελί</strong>. Κάθε αριθμός
+    1–9 πρέπει να εμφανίζεται ακριβώς μία φορά σε κάθε γραμμή, κάθε στήλη, και κάθε κουτί 3×3. Τρεις
+    έλεγχοι αντί για δύο, αλλά τίποτα καινούριο ως ιδέα.
 </p>
 
 <pre><code class="lang-go">// isValidMove reports whether writing val at (row, col) breaks any rule.
@@ -7709,14 +7704,53 @@ func isValidMove(grid [][]int, row, col, val int) bool {
 }
 </code></pre>
 
-<div class="callout">
-    <span class="tag">Η αριθμητική του κουτιού</span>
-    <p>
-        Το <code>(row/3)*3</code> είναι ακέραια διαίρεση, από την Ενότητα 3 του Μέρους 1. Για γραμμές 0, 1, 2
-        δίνει 0· για 3, 4, 5 δίνει 3· για 6, 7, 8 δίνει 6. Δηλαδή «στρογγυλοποίησε προς τα κάτω στο
-        πλησιέστερο πολλαπλάσιο του 3» — ακριβώς η πάνω-αριστερή γωνία του κουτιού στο οποίο ανήκει το κελί.
-    </p>
-</div>
+<p>
+    Η μόνη γραμμή που θέλει εξήγηση είναι το <code>(row/3)*3</code>. Δεδομένου ενός κελιού, χρειάζεσαι την
+    πάνω-αριστερή γωνία του κουτιού στο οποίο ανήκει — και την υπολογίζεις με ακέραια διαίρεση:
+</p>
+
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:820px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <rect x="356" y="118" width="78" height="78" fill="rgba(var(--tone-5-rgb),0.16)"/>
+  <rect x="382" y="144" width="26" height="26" fill="rgba(var(--tone-4-rgb),0.40)"/>
+
+  <g stroke="currentColor" stroke-opacity="0.22" stroke-width="1" fill="none">
+    <line x1="226" y1="40" x2="226" y2="274"/><line x1="252" y1="40" x2="252" y2="274"/>
+    <line x1="304" y1="40" x2="304" y2="274"/><line x1="330" y1="40" x2="330" y2="274"/>
+    <line x1="382" y1="40" x2="382" y2="274"/><line x1="408" y1="40" x2="408" y2="274"/>
+    <line x1="200" y1="66" x2="434" y2="66"/><line x1="200" y1="92" x2="434" y2="92"/>
+    <line x1="200" y1="144" x2="434" y2="144"/><line x1="200" y1="170" x2="434" y2="170"/>
+    <line x1="200" y1="222" x2="434" y2="222"/><line x1="200" y1="248" x2="434" y2="248"/>
+  </g>
+  <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1.8" fill="none">
+    <line x1="200" y1="40" x2="200" y2="274"/><line x1="278" y1="40" x2="278" y2="274"/>
+    <line x1="356" y1="40" x2="356" y2="274"/><line x1="434" y1="40" x2="434" y2="274"/>
+    <line x1="200" y1="40" x2="434" y2="40"/><line x1="200" y1="118" x2="434" y2="118"/>
+    <line x1="200" y1="196" x2="434" y2="196"/><line x1="200" y1="274" x2="434" y2="274"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="11.5" fill="currentColor" opacity="0.45" text-anchor="middle">
+    <text x="213" y="33">0</text><text x="239" y="33">1</text><text x="265" y="33">2</text><text x="291" y="33">3</text><text x="317" y="33">4</text>
+    <text x="343" y="33">5</text><text x="369" y="33">6</text><text x="395" y="33">7</text><text x="421" y="33">8</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="11.5" fill="currentColor" opacity="0.45" text-anchor="end">
+    <text x="192" y="61">0</text><text x="192" y="87">1</text><text x="192" y="113">2</text><text x="192" y="139">3</text><text x="192" y="165">4</text>
+    <text x="192" y="191">5</text><text x="192" y="217">6</text><text x="192" y="243">7</text><text x="192" y="269">8</text>
+  </g>
+
+  <circle cx="356" cy="118" r="5" fill="var(--tone-5)"/>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" fill="currentColor">
+    <text x="480" y="96" fill="var(--tone-4)">κελί (4, 7)</text>
+    <text x="480" y="130" opacity="0.85">(4/3)*3 = 1*3 = 3</text>
+    <text x="480" y="154" opacity="0.85">(7/3)*3 = 2*3 = 6</text>
+    <text x="480" y="192" fill="var(--tone-5)">γωνία κουτιού (3, 6)</text>
+  </g>
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12.5" fill="currentColor" opacity="0.6">
+    <text x="480" y="226">η ακέραια διαίρεση κόβει το δεκαδικό,</text>
+    <text x="480" y="244">άρα οι γραμμές 3, 4, 5 δίνουν όλες 3 —</text>
+    <text x="480" y="262">δηλαδή δείχνουν στο ίδιο κουτί</text>
+  </g>
+</svg>
 
 <pre><code class="lang-go">// SolveSudoku fills every empty cell. It returns true if the puzzle is solvable.
 func SolveSudoku(grid [][]int) bool {
@@ -7749,56 +7783,96 @@ func SolveSudoku(grid [][]int) bool {
 <div class="callout good">
     <span class="tag">Εδώ το un-choose είναι υποχρεωτικό</span>
     <p>
-        Σε αντίθεση με το N-Queens, εδώ η επόμενη επανάληψη <strong>δεν</strong> ξαναγράφει το κελί — γιατί
-        αν κανένα ψηφίο δεν ταιριάζει, φεύγουμε με <code>return false</code> και το κελί πρέπει να έχει μείνει
-        <code>0</code>. Αν ξεχάσεις το <code>grid[row][col] = 0</code>, αφήνεις πίσω σου ένα ψηφίο που
-        αποδείχθηκε λάθος, και το puzzle γίνεται άλυτο για λόγους που δεν υπάρχουν στα πραγματικά δεδομένα.
+        Στο N-Queens η επόμενη επανάληψη ξανάγραφε το κελί, οπότε η επαναφορά ήταν θέμα καθαρότητας. Εδώ όχι:
+        αν κανένα από τα εννέα ψηφία δεν ταιριάζει, φεύγουμε με <code>return false</code> και δεν υπάρχει
+        επόμενη επανάληψη να διορθώσει τίποτα.
+    </p>
+    <p>
+        Αν παραλείψεις το <code>grid[row][col] = 0</code>, αφήνεις πίσω σου ένα ψηφίο που μόλις αποδείχθηκε
+        λάθος. Τα ανώτερα επίπεδα θα συνεχίσουν να ψάχνουν πάνω σε ένα grid που δεν αντιστοιχεί στο
+        πραγματικό puzzle, και θα καταλήξουν ότι είναι άλυτο — για λόγους που δεν υπάρχουν στα δεδομένα,
+        αλλά στα σκουπίδια που άφησε ο ίδιος ο αλγόριθμος.
     </p>
 </div>
 
 <p>
-    Δύο διαφορετικά προβλήματα, ίδιος σκελετός. Αν παραθέσεις τις δύο functions δίπλα-δίπλα, οι μόνες
-    ουσιαστικές διαφορές είναι: <em>τι θεωρείται επιλογή</em> (στήλη / ψηφίο), <em>τι θεωρείται
-    έγκυρο</em> (<code>isSafe</code> / <code>isValidMove</code>), και <em>πότε τελειώσαμε</em> (όλες οι
-    γραμμές / κανένα κενό κελί). Όλα τα υπόλοιπα είναι το ίδιο μοτίβο.
+    Δύο εντελώς διαφορετικά προβλήματα, ίδιος σκελετός. Βάλε τις δύο functions δίπλα-δίπλα και οι μόνες
+    ουσιαστικές διαφορές είναι τρεις: <em>τι θεωρείται επιλογή</em> (στήλη ή ψηφίο), <em>τι θεωρείται
+    έγκυρο</em> (<code>isSafe</code> ή <code>isValidMove</code>), και <em>πότε τελειώσαμε</em> (γέμισαν οι
+    γραμμές ή δεν έμεινε κενό κελί). Όλα τα υπόλοιπα είναι το ίδιο pattern.
 </p>
-`);
 
-        // ── §7.5 — Πότε ποιο ─────────────────────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
-<h1>Πότε ποιο: το δέντρο αποφάσεων ως εικόνα</h1>
+<br>
+<h1>Πότε ποιο: η εικόνα που τα ενοποιεί</h1>
 
 <p class="lede">
-    Υπάρχει μια εικόνα που ενοποιεί όλα όσα είδαμε σε αυτό το κεφάλαιο. Φαντάσου κάθε πρόβλημα σαν ένα
-    <strong>δέντρο αποφάσεων</strong>: κάθε κόμβος είναι μια επιλογή, κάθε κλαδί μια πιθανή συνέχεια, και
-    κάθε φύλλο μια πλήρη λύση — καλή ή κακή.
+    Φαντάσου κάθε πρόβλημα ως ένα <strong>δέντρο αποφάσεων</strong>: κάθε κόμβος είναι μια επιλογή, κάθε
+    κλαδί μια πιθανή συνέχεια, κάθε φύλλο μια πλήρη λύση. Οι τρεις τεχνικές του κεφαλαίου διαφέρουν μόνο ως
+    προς το <em>πόσο</em> από αυτό το δέντρο επισκέπτονται.
 </p>
 
-<div class="grid3">
-    <div class="card">
-        <span class="card-tag">Greedy</span>
-        <p>
-            Κατεβαίνει <strong>ένα μονοπάτι</strong> από τη ρίζα στο φύλλο, διαλέγοντας πάντα το καλύτερο
-            κλαδί της στιγμής. Δεν γυρίζει ποτέ πίσω. Γρήγορο — και σωστό μόνο αν το «καλύτερο τώρα» οδηγεί
-            πράγματι στο καλύτερο συνολικά.
-        </p>
-    </div>
-    <div class="card">
-        <span class="card-tag">Backtracking</span>
-        <p>
-            Κατεβαίνει <strong>όλα τα μονοπάτια</strong>, αλλά εγκαταλείπει ένα κλαδί μόλις αποδειχθεί άκυρο.
-            Πάντα σωστό. Το κόστος εξαρτάται εξ ολοκλήρου από το πόσο νωρίς προλαβαίνεις να κλαδεύεις.
-        </p>
-    </div>
-    <div class="card">
-        <span class="card-tag">Δυναμικός Προγραμματισμός</span>
-        <p>
-            Παρατηρεί ότι <strong>πολλά κλαδιά ξαναλύνουν το ίδιο υποπρόβλημα</strong>, και κρατάει τα
-            αποτελέσματα ώστε να μην ξαναϋπολογιστούν. Το θέμα της Ενότητας 8.
-        </p>
-    </div>
-</div>
+<svg viewBox="0 0 800 250" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:900px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g stroke="currentColor" stroke-opacity="0.18" stroke-width="1.4" fill="none">
+    <path d="M130,52 L78,104"/><path d="M130,52 L182,104"/>
+    <path d="M78,104 L52,162"/><path d="M78,104 L104,162"/>
+    <path d="M182,104 L156,162"/><path d="M182,104 L208,162"/>
+  </g>
+  <g stroke="var(--tone-4)" stroke-width="2.6" fill="none">
+    <path d="M130,52 L78,104"/><path d="M78,104 L104,162"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.18">
+    <circle cx="182" cy="104" r="9"/><circle cx="52" cy="162" r="9"/><circle cx="156" cy="162" r="9"/><circle cx="208" cy="162" r="9"/>
+  </g>
+  <g fill="var(--tone-4)">
+    <circle cx="130" cy="52" r="10"/><circle cx="78" cy="104" r="10"/><circle cx="104" cy="162" r="10"/>
+  </g>
+  <text x="130" y="204" text-anchor="middle" font-family="var(--font-display, system-ui, sans-serif)" font-size="15" font-weight="700" fill="var(--tone-4)">Greedy</text>
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12" fill="currentColor" opacity="0.65" text-anchor="middle">
+    <text x="130" y="224">ένα μονοπάτι, ποτέ πίσω.</text><text x="130" y="240">γρήγορο, όχι πάντα σωστό.</text>
+  </g>
+
+  <g stroke="currentColor" stroke-opacity="0.45" stroke-width="1.6" fill="none">
+    <path d="M400,52 L348,104"/><path d="M400,52 L452,104"/>
+    <path d="M348,104 L322,162"/><path d="M348,104 L374,162"/>
+    <path d="M452,104 L426,162"/><path d="M452,104 L478,162"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.35">
+    <circle cx="400" cy="52" r="10"/><circle cx="348" cy="104" r="10"/><circle cx="452" cy="104" r="10"/><circle cx="374" cy="162" r="9"/>
+  </g>
+  <g fill="#4caf50">
+    <circle cx="426" cy="162" r="10"/>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" font-weight="700" fill="#e05252" text-anchor="middle">
+    <text x="322" y="168">✕</text><text x="478" y="168">✕</text>
+  </g>
+  <text x="400" y="204" text-anchor="middle" font-family="var(--font-display, system-ui, sans-serif)" font-size="15" font-weight="700" fill="currentColor">Backtracking</text>
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12" fill="currentColor" opacity="0.65" text-anchor="middle">
+    <text x="400" y="224">όλα τα μονοπάτια, με pruning.</text><text x="400" y="240">πάντα σωστό, κόστος = ανάλογα το pruning.</text>
+  </g>
+
+  <g stroke="currentColor" stroke-opacity="0.45" stroke-width="1.6" fill="none">
+    <path d="M670,52 L618,104"/><path d="M670,52 L722,104"/>
+    <path d="M618,104 L592,162"/><path d="M618,104 L670,162"/>
+    <path d="M722,104 L670,162"/><path d="M722,104 L748,162"/>
+  </g>
+  <g fill="currentColor" fill-opacity="0.35">
+    <circle cx="670" cy="52" r="10"/><circle cx="618" cy="104" r="10"/><circle cx="722" cy="104" r="10"/>
+    <circle cx="592" cy="162" r="9"/><circle cx="748" cy="162" r="9"/>
+  </g>
+  <circle cx="670" cy="162" r="13" fill="rgba(var(--tone-5-rgb),0.30)" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="670" y="167" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13" font-weight="700" fill="var(--tone-5)">1</text>
+  <text x="670" y="204" text-anchor="middle" font-family="var(--font-display, system-ui, sans-serif)" font-size="15" font-weight="700" fill="var(--tone-5)">Δυναμικός Προγραμματισμός</text>
+  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12" fill="currentColor" opacity="0.65" text-anchor="middle">
+    <text x="670" y="224">δύο κλαδιά ζητούν το ίδιο</text><text x="670" y="240">υποπρόβλημα — λύνεται μία φορά</text>
+  </g>
+</svg>
+
+<p>
+    Τρία δέντρα, τρεις συμπεριφορές. Το greedy κατεβαίνει ένα μονοπάτι και δεν κοιτάζει ποτέ πίσω. Το
+    backtracking κατεβαίνει παντού, αλλά εγκαταλείπει ένα κλαδί μόλις αποδειχθεί άκυρο. Ο δυναμικός
+    προγραμματισμός παρατηρεί ότι διαφορετικά κλαδιά ζητούν την ίδια απάντηση, και την υπολογίζει μία φορά —
+    το θέμα της Ενότητας 8.
+</p>
 
 <h2>Ο πίνακας απόφασης</h2>
 
@@ -7813,7 +7887,7 @@ func SolveSudoku(grid [][]int) bool {
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;">Χρειάζεσαι <em>μία</em> έγκυρη λύση σε πρόβλημα με περιορισμούς;</td>
-        <td style="padding:8px;"><strong>Ναι</strong> → backtracking με επιθετικό κλάδεμα</td>
+        <td style="padding:8px;"><strong>Ναι</strong> → backtracking με επιθετικό pruning</td>
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;">Χρειάζεσαι <em>όλες</em> τις λύσεις, ή το πλήθος τους;</td>
@@ -7830,9 +7904,9 @@ func SolveSudoku(grid [][]int) bool {
 <ul>
     <li><strong>Ξεκίνα greedy.</strong> Γράφεται σε λίγα λεπτά και συχνά είναι η σωστή απάντηση. Αν
         δουλεύει, τελείωσες με το φθηνότερο δυνατό κόστος.</li>
-    <li><strong>Ψάξε αντιπαράδειγμα.</strong> Μικρές, «περίεργες» είσοδοι — όπως τα κέρματα
+    <li><strong>Ψάξε αντιπαράδειγμα.</strong> Μικρές, ασυνήθιστες είσοδοι — όπως τα κέρματα
         <code>{4, 3, 1}</code>. Αν βρεις μία που σπάει το greedy, ξέρεις ότι χρειάζεσαι κάτι δυνατότερο.</li>
-    <li><strong>Πήγαινε σε backtracking.</strong> Γράψε πρώτα τον σκελετό χωρίς κλάδεμα, βεβαιώσου ότι δίνει
+    <li><strong>Πήγαινε σε backtracking.</strong> Γράψε πρώτα τον σκελετό χωρίς pruning, βεβαιώσου ότι δίνει
         σωστή απάντηση σε μικρή είσοδο, και <em>μετά</em> πρόσθεσε τους ελέγχους που κόβουν κλαδιά.</li>
     <li><strong>Αν είναι ακόμα αργό,</strong> κοίτα αν τα κλαδιά επικαλύπτονται. Αν ναι, το επόμενο κεφάλαιο
         σου το λύνει.</li>
@@ -7841,11 +7915,11 @@ func SolveSudoku(grid [][]int) bool {
 <div class="callout good">
     <span class="tag">Γιατί αυτή η σειρά και όχι η ανάποδη</span>
     <p>
-        Ο πειρασμός είναι να ξεκινήσεις με την «πιο έξυπνη» τεχνική. Είναι λάθος για δύο λόγους. Πρώτον, μια
+        Ο πειρασμός είναι να ξεκινήσεις με την πιο έξυπνη τεχνική. Είναι λάθος για δύο λόγους. Πρώτον, μια
         απλή λύση που δουλεύει είναι πάντα καλύτερη από μια σύνθετη που ίσως δουλεύει. Δεύτερον — και
-        σημαντικότερο — το backtracking και ο δυναμικός προγραμματισμός <strong>χτίζονται πάνω στην αφελή
-        λύση</strong>: το DP της Ενότητας 8 είναι κυριολεκτικά «η αναδρομική λύση, συν ένα map». Αν δεν έχεις
-        γράψει την αφελή, δεν έχεις τι να βελτιώσεις.
+        σημαντικότερο — το backtracking και ο δυναμικός προγραμματισμός <strong>χτίζονται πάνω στην απλή
+        λύση</strong>: το DP της Ενότητας 8 είναι κυριολεκτικά «η recursive λύση, συν ένα map». Αν δεν έχεις
+        γράψει την απλή, δεν έχεις τι να βελτιώσεις.
     </p>
 </div>
 `);
@@ -7951,7 +8025,7 @@ func SolveSudoku(grid [][]int) bool {
                 explain: "Το αντιπαράδειγμα αποδεικνύει ότι μια πρώιμη επιλογή μπορεί να μπλοκάρει την καλύτερη λύση. Ο μόνος τρόπος να το αντιμετωπίσεις είναι να μπορείς να ξηλώσεις επιλογές — και αυτό ακριβώς κάνει το backtracking."
             }
         ], {
-            note: "Ενότητα 7 — greedy, backtracking, κλάδεμα."
+            note: "Ενότητα 7 — greedy, backtracking, pruning."
         });
 
         addFillBlank([
@@ -8054,14 +8128,14 @@ func SolveQueens(board []int, row int) bool {
                     { id: "nextrow", answer: "row+1" },
                     { id: "resetval", answer: "-1" }
                 ],
-                explain: "Το base case είναι row == len(board): έχουμε περάσει και την τελευταία γραμμή, άρα όλες γέμισαν. Το continue είναι το κλάδεμα — προσπερνά ολόκληρο το υποδέντρο αυτής της στήλης χωρίς καμία αναδρομική κλήση. Και το -1 σημαίνει «άδεια γραμμή», η τιμή που δηλώνει ότι η επιλογή ξηλώθηκε."
+                explain: "Το base case είναι row == len(board): έχουμε περάσει και την τελευταία γραμμή, άρα όλες γέμισαν. Το continue είναι το pruning — προσπερνά ολόκληρο το υποδέντρο αυτής της στήλης χωρίς καμία αναδρομική κλήση. Και το -1 σημαίνει «άδεια γραμμή», η τιμή που δηλώνει ότι η επιλογή ξηλώθηκε."
             }
         ]);
 
         addMatching([
             [
                 { term: "greedy", def: "τοπικά βέλτιστη επιλογή, χωρίς ποτέ επιστροφή πίσω" },
-                { term: "backtracking", def: "choose → explore → un-choose, με κλάδεμα άκυρων κλαδιών" },
+                { term: "backtracking", def: "choose → explore → un-choose, με pruning άκυρων κλαδιών" },
                 { term: "pruning (κλάδεμα)", def: "εγκατάλειψη ολόκληρου υποδέντρου μόλις αποδειχθεί άκυρο" },
                 { term: "δέντρο αποφάσεων", def: "κάθε κόμβος μια επιλογή, κάθε φύλλο μια πλήρης λύση" },
                 { term: "αντιπαράδειγμα", def: "μικρή είσοδος που αποδεικνύει ότι το greedy δεν αρκεί" }
@@ -8103,7 +8177,7 @@ func SolveQueens(board []int, row int) bool {
   <div class="gs-pill"><span class="gs-name">αφαιρετικά ζεύγη</span><span class="gs-def">CM, CD, XC, XL, IX, IV — μπαίνουν στη λίστα σαν κέρματα και κάνουν το greedy σωστό</span></div>
   <div class="gs-pill"><span class="gs-name">παράλληλα slices</span><span class="gs-def">δύο slices ευθυγραμμισμένα στο ίδιο index, όσο δεν έχουμε structs</span></div>
   <div class="gs-pill"><span class="gs-name">ο έλεγχος ορίζει το πρόβλημα</span><span class="gs-def">ο σκελετός απαριθμεί· χωρίς συνθήκη ελέγχου το backtracking είναι brute force</span></div>
-  <div class="gs-pill"><span class="gs-name">η σειρά δουλειάς</span><span class="gs-def">greedy → ψάξε αντιπαράδειγμα → backtracking → κλάδεμα → DP αν επικαλύπτονται</span></div>
+  <div class="gs-pill"><span class="gs-name">η σειρά δουλειάς</span><span class="gs-def">greedy → ψάξε αντιπαράδειγμα → backtracking → pruning → DP αν επικαλύπτονται</span></div>
 </div>
 `);
 
@@ -8545,10 +8619,10 @@ func MinCoins(coins []int, amount int) int {
     δισδιάστατος.
 </p>
 
-<h2>Πόσες διαδρομές υπάρχουν σε ένα πλέγμα</h2>
+<h2>Πόσες διαδρομές υπάρχουν σε ένα grid</h2>
 
 <p>
-    Βρίσκεσαι στην πάνω αριστερή γωνία ενός πλέγματος και θέλεις να φτάσεις στην κάτω δεξιά. Μπορείς να
+    Βρίσκεσαι στην πάνω αριστερή γωνία ενός grid και θέλεις να φτάσεις στην κάτω δεξιά. Μπορείς να
     κινηθείς μόνο <strong>δεξιά</strong> ή <strong>κάτω</strong>, ποτέ πίσω. Πόσες διαφορετικές διαδρομές
     υπάρχουν;
 </p>
@@ -8582,7 +8656,7 @@ func CountPaths(rows, cols int) int {
 // CountPaths(3, 7) -&gt; 28
 </code></pre>
 
-<p>Για πλέγμα 3×3, ο πίνακας γεμίζει έτσι:</p>
+<p>Για grid 3×3, ο πίνακας γεμίζει έτσι:</p>
 
 <pre><code>  1   1   1
   1   2   3
@@ -9035,7 +9109,7 @@ func CountWays(n int) int {
     <li><strong>Τι πρέπει να θυμάμαι καθώς προχωράω;</strong> Η απάντηση ονομάζει το pattern της Ενότητας 3.
         Τίποτα; Απλή λούπα. Το προηγούμενο στοιχείο; Previous value. Αν κάτι έχει ήδη συμβεί; Boolean switch.
         Ό,τι έχω δει μέχρι τώρα; Map.</li>
-    <li><strong>Είναι τα δεδομένα γραμμή ή δίκτυο;</strong> Γραμμή σημαίνει λούπα. Δίκτυο ή πλέγμα σημαίνει
+    <li><strong>Είναι τα δεδομένα γραμμή ή δίκτυο;</strong> Γραμμή σημαίνει λούπα. Δίκτυο ή grid σημαίνει
         DFS ή BFS — και η επιλογή ανάμεσά τους εξαρτάται από το αν θέλεις οποιαδήποτε διαδρομή ή τη
         συντομότερη.</li>
     <li><strong>Παίρνω μία απόφαση ή πολλές αλληλεξαρτώμενες;</strong> Μία, και δεν επηρεάζει τις επόμενες;
@@ -9159,7 +9233,7 @@ func CountWays(n int) int {
                 q: "Ποια είναι η μοναδική δομική διαφορά ανάμεσα σε DFS και backtracking;",
                 options: [
                     "Το backtracking ξηλώνει την επιλογή αφού επιστρέψει η αναδρομή, το DFS δεν αναιρεί ποτέ τη σήμανση",
-                    "Το DFS δουλεύει μόνο σε γραφήματα ενώ το backtracking δουλεύει αποκλειστικά σε δισδιάστατα πλέγματα και πίνακες σταθερού μεγέθους",
+                    "Το DFS δουλεύει μόνο σε γραφήματα ενώ το backtracking δουλεύει αποκλειστικά σε δισδιάστατα grids και πίνακες σταθερού μεγέθους",
                     "Το backtracking δεν χρησιμοποιεί αναδρομή",
                     "Το DFS δεν χρειάζεται base case"
                 ],
@@ -9186,7 +9260,7 @@ func CountWays(n int) int {
                     "Είναι αμυντικός κώδικας χωρίς πρακτική επίδραση"
                 ],
                 correct: 0,
-                explain: "Το κλάδεμα είναι ό,τι χωρίζει το backtracking από το brute force. Χωρίς αυτό, ο σκελετός απλώς απαριθμεί τα πάντα."
+                explain: "Το pruning είναι ό,τι χωρίζει το backtracking από το brute force. Χωρίς αυτό, ο σκελετός απλώς απαριθμεί τα πάντα."
             },
             {
                 q: "Τι δείχνει το ότι το ίδιο υποπρόβλημα εμφανίζεται σε δύο διαφορετικά κλαδιά της αναδρομής;",
@@ -9230,7 +9304,7 @@ func CountWays(n int) int {
                 { term: "«μέγιστο άθροισμα <code>k</code> διαδοχικών»", def: "sliding window σταθερού μεγέθους" },
                 { term: "«βρες ζευγάρι που αθροίζει σε X»", def: "complement lookup με map" },
                 { term: "«πόσες φορές ανέβηκε σε σχέση με πριν»", def: "previous value" },
-                { term: "«η συντομότερη διαδρομή στο πλέγμα»", def: "BFS με ουρά" },
+                { term: "«η συντομότερη διαδρομή στο grid»", def: "BFS με ουρά" },
                 { term: "«όλες οι έγκυρες διατάξεις»", def: "backtracking με un-choose" },
                 { term: "«σωστό αλλά πολύ αργό, με επικάλυψη»", def: "δυναμικός προγραμματισμός" }
             ],
