@@ -1384,42 +1384,6 @@ s = s + " world" // Δημιουργείται ΝΕΟ string "hello world"
 
 `);
 
-
-        addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — VSCode Challenge</div>
-
-<h1>Περίμετρος Τετραγώνου</h1>
-
-<p class="lede">
-    Γράψε ένα πρόγραμμα που υπολογίζει την περίμετρο ενός τετραγώνου, χρησιμοποιώντας ό,τι μόλις είδες: δήλωση
-    μεταβλητών, βασικούς τύπους, και <code>fmt.Println</code>.
-</p>
-
-<div class="callout">
-    <span class="tag">Οδηγίες</span>
-    Δήλωσε μια μεταβλητή για το μήκος της πλευράς, υπολόγισε την περίμετρο (πλευρά × 4), και τύπωσέ την. Δοκίμασε και με
-    <code>var</code> και με <code>:=</code>
-    για να δεις με τα ίδια σου τα μάτια τη διαφορά στη σύνταξη — και τα δύο θα δουλέψουν το ίδιο καλά εδώ.
-</div>
-
-<div class="spoiler">
-    <div class="spoiler-lock"><span>Σύρε για να αποκαλυφθεί η λύση →</span></div>
-    <pre><code class="lang-go">package main
-
-import "fmt"
-
-func main() {
-    var side float64 = 4.5
-
-    perimeter := side * 4
-
-    fmt.Println("Perimeter:", perimeter)
-}
-</code></pre>
-</div>
-`);
-
-
         addContent(`
 <div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
 
@@ -1678,171 +1642,181 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 <div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
-  <div class="gc-line"><span class="gc-term">Variable</span><span class="gc-def">ονομασμένο κομμάτι μνήμης όπου αποθηκεύεται μια τιμή</span></div>
+  <div class="gc-line"><span class="gc-term">Variable</span><span class="gc-def">ένα κομμάτι μνήμης με όνομα όπου αποθηκεύεται μια τιμή</span></div>
   <div class="gc-line"><span class="gc-term">Statically typed</span><span class="gc-def">ο τύπος κάθε μεταβλητής καθορίζεται και ελέγχεται κατά τη μεταγλώττιση</span></div>
-  <div class="gc-line"><span class="gc-term">Zero value</span><span class="gc-def">η προεπιλεγμένη τιμή ενός τύπου χωρίς αρχικοποίηση</span></div>
+  <div class="gc-line"><span class="gc-term">Zero value</span><span class="gc-def">η προεπιλεγμένη τιμή ενός τύπου όταν δεν αρχικοποιείται με κάποια τιμή</span></div>
   <div class="gc-line"><span class="gc-term">Type inference</span><span class="gc-def">ο compiler συμπεραίνει τον τύπο από την τιμή, όταν χρησιμοποιείς :=</span></div>
-  <div class="gc-line"><span class="gc-term">Immutable string</span><span class="gc-def">δεν αλλάζει επιτόπου· κάθε "τροποποίηση" δημιουργεί νέο string</span></div>
+  <div class="gc-line"><span class="gc-term">Immutable string</span><span class="gc-def">δεν αλλάζει επιτόπου· κάθε "τροποποίηση" δημιουργεί νέο string. όλα τα strings είναι immutable</span></div>
   <div class="gc-line"><span class="gc-term">rune</span><span class="gc-def">alias για int32, αναπαριστά έναν μεμονωμένο Unicode χαρακτήρα</span></div>
   <div class="gc-line"><span class="gc-term">Explicit conversion</span><span class="gc-def">ρητή μετατροπή τύπου, π.χ. float64(x)</span></div>
-  <div class="gc-line"><span class="gc-term">Untyped constant</span><span class="gc-def">σταθερά που προσαρμόζεται στον τύπο του context χρήσης της</span></div>
+  <div class="gc-line"><span class="gc-term">Untyped constant</span><span class="gc-def">σταθερά που προσαρμόζεται στον τύπο από το context της χρήσης της</span></div>
 </div>
 `);
 
-        addContent(`
-<div class="eyebrow">Ενότητα 3 / 8 — Operators &amp; Εκφράσεις</div>
-<h1>Expressions vs Statements</h1>
-<p class="lede">Αυτή η διάκριση είναι θεμελιώδης για να καταλάβεις πώς δουλεύει μια γλώσσα προγραμματισμού: τι παράγει τιμή και τι κάνει μια ενέργεια.</p>
+addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Operators</div>
+<h1>Operators</h1>
 
-<h2>Τι είναι Expression (Έκφραση)</h2>
-<p>Ένα <strong>Expression</strong> είναι, με απλά λόγια, οτιδήποτε στον κώδικά σου <em>παράγει ή "επιστρέφει" μια τιμή</em> — μια τιμή που μπορείς στη συνέχεια να χρησιμοποιήσεις κάπου αλλού: να την αναθέσεις σε μεταβλητή, να την περάσεις ως όρισμα σε function, να τη συγκρίνεις με κάτι άλλο. Μερικά παραδείγματα:</p>
-<ul>
-  <li><code>5 + 3</code> — είναι expression, γιατί "παράγει" την τιμή 8</li>
-  <li><code>x &gt; 10</code> — είναι expression, γιατί παράγει μια τιμή τύπου bool (είτε true, είτε false)</li>
-  <li><code>myFunc()</code> — αν η <code>myFunc</code> επιστρέφει κάποια τιμή, τότε και η κλήση της είναι expression (περισσότερα στο κεφάλαιο 6)</li>
-</ul>
-<p>Το χαρακτηριστικό γνώρισμα ενός expression είναι ότι μπορείς να το "χρησιμοποιήσεις" εκεί όπου περιμένεται μια τιμή — π.χ. στα δεξιά ενός <code>=</code>, ή μέσα σε παρένθεση μιας συνθήκης.</p>
-
-<h2>Τι είναι Statement (Εντολή)</h2>
-<p>Ένα <strong>Statement</strong> είναι μια πλήρης "μονάδα εκτέλεσης" — κάτι που κάνει μια ενέργεια, αλλά δεν παράγει, από μόνο του, μια τιμή που να μπορεί να χρησιμοποιηθεί κάπου αλλού. Μερικά παραδείγματα:</p>
-<ul>
-  <li><code>var x int</code> — είναι statement: δηλώνει μια μεταβλητή, αλλά η ίδια η δήλωση δεν "παράγει" μια τιμή που να μπορείς να αναθέσεις κάπου</li>
-  <li>Ένα ολόκληρο μπλοκ <code>if { ... }</code> — εκτελεί κάποια ενέργεια υπό συνθήκη, αλλά δεν "επιστρέφει" τιμή (περισσότερα στο κεφάλαιο 4)</li>
-  <li>Ένα ολόκληρο μπλοκ <code>for { ... }</code> — εκτελεί επανάληψη, δεν παράγει τιμή (περισσότερα στο κεφάλαιο 5)</li>
-  <li><code>myFunc()</code> — αν η <code>myFunc</code> ΔΕΝ επιστρέφει κάποια τιμή, τότε και η κλήση της είναι statement (περισσότερα στο κεφάλαιο 6)</li>
-</ul>
-<h2>Κατηγορίες Statements</h2>
-<p>
-  Οι εντολές στη Go χωρίζονται σε διάφορες κατηγορίες (θα δούμε τι σημαίνουν όσα δεν γνωρίζουμε ακόμα σε επόμενες ενότητες):
+<p class="lede">
+    Ένας <strong>operator</strong> είναι ένα σύμβολο που εκτελεί μια πράξη πάνω σε μία ή περισσότερες τιμές.
+    Οι τιμές αυτές λέγονται <strong>operands</strong>: στο <code>5 + 3</code>, το <code>+</code> είναι ο
+    operator και τα <code>5</code>, <code>3</code> τα operands.
 </p>
-<ul>
-    <li>
-        <strong>Declaration statements</strong> — δηλώσεις μεταβλητών, σταθερών, τύπων, functions (π.χ.
-        <code>var x int</code>, <code>const Pi = 3.14</code>, <code>func main() { ... }</code>)
-    </li>
-    <li>
-        <strong>Expression statements</strong> — εκφράσεις που στέκονται μόνες τους (π.χ. <code>myFunc()</code>,
-        <code>x = 5</code>, <code>x++</code>)
-    </li>
-    <li>
-        <strong>Selection statements</strong> — δομές επιλογής βάσει συνθήκης (<code>if</code>, <code>if/else</code>,
-        <code>switch</code>)
-    </li>
-    <li><strong>Iteration statements</strong> — δομές επανάληψης (<code>for</code> σε όλες τις μορφές του)</li>
-    <li>
-        <strong>Jump statements</strong> — αλλαγή ροής εκτέλεσης (<code>break</code>, <code>continue</code>,
-        <code>goto</code>, <code>return</code>)
-    </li>
-    <li><strong>Compound statements</strong> — ένα μπλοκ από statements μέσα σε αγκύλες <code>{ ... }</code></li>
-</ul>
 
-<br>
-<h1>Κατηγορίες operators</h1>
-<p class="lede">Ένας <strong>operator</strong> είναι ένα σύμβολο που εκτελεί μια συγκεκριμένη πράξη πάνω σε μία ή περισσότερες τιμές (που λέγονται operands). Η Go διαθέτει αρκετές κατηγορίες operators, καθεμιά με τον δικό της σκοπό.</p>
+<p>
+    Κάθε τέτοιος συνδυασμός παράγει μια νέα τιμή — και ό,τι παράγει τιμή λέγεται
+    <strong>expression</strong> (έκφραση). Ο όρος θα σου φανεί χρήσιμος παρακάτω: όταν λέμε «η Go
+    αξιολογεί μια έκφραση», εννοούμε ακριβώς αυτό, ότι υπολογίζει σε ποια τιμή καταλήγει.
+</p>
 
 <div class="grid2">
-  <div class="card"><h3>Αριθμητικοί</h3><p><code>+</code> (πρόσθεση) <code>-</code> (αφαίρεση) <code>*</code> (πολλαπλασιασμός) <code>/</code> (διαίρεση) <code>%</code> (modulo — το υπόλοιπο μιας ακέραιας διαίρεσης, π.χ. <code>7 % 2</code> δίνει <code>1</code>)</p></div>
-  <div class="card"><h3>Σύγκρισης / Σχεσιακοί</h3><p><code>==</code> (ίσο με) <code>!=</code> (διαφορετικό από) <code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code> — όλοι αυτοί παράγουν πάντα μια τιμή τύπου <code>bool</code></p></div>
-  <div class="card"><h3>Λογικοί</h3><p><code>&amp;&amp;</code> (λογικό AND — "και") <code>||</code> (λογικό OR — "ή") <code>!</code> (λογικό NOT — άρνηση). Λειτουργούν πάνω σε τιμές <code>bool</code>, παράγοντας νέα τιμή <code>bool</code></p></div>
-  <div class="card"><h3>Bitwise</h3><p><code>&amp;</code> <code>|</code> <code>^</code> <code>&amp;^</code> <code>&lt;&lt;</code> <code>&gt;&gt;</code> — λειτουργούν απευθείας πάνω στα επιμέρους δυαδικά bits ενός ακέραιου αριθμού, όχι στην "αριθμητική" αξία του συνολικά</p></div>
-  <div class="card"><h3>Εκχώρησης</h3><p><code>=</code> (απλή ανάθεση) <code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code> κ.ά. — συνδυάζουν μια πράξη με ανάθεση σε ένα βήμα, π.χ. <code>x += 5</code> ισοδυναμεί με <code>x = x + 5</code></p></div>
-<div class="card"><h3>Αύξησης / Μείωσης</h3><p><code>++</code> (αύξηση κατά 1) <code>--</code> (μείωση κατά 1). Τεχνικά είναι δικά τους statements στη Go, όχι expressions, αλλά συχνά αναφέρονται μαζί με τους operators</p></div>
+  <div class="card"><h3>Αριθμητικοί</h3><p><code>+</code> (πρόσθεση) <code>-</code> (αφαίρεση) <code>*</code> (πολλαπλασιασμός) <code>/</code> (διαίρεση) <code>%</code> (modulo — το υπόλοιπο μιας ακέραιας διαίρεσης)</p></div>
+  <div class="card"><h3>Σύγκρισης</h3><p><code>==</code> (ίσο με) <code>!=</code> (διαφορετικό από)<br><code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code> — παράγουν πάντα τιμή τύπου <code>bool</code>, δηλαδή <code>true</code> ή <code>false</code></p></div>
+  <div class="card"><h3>Λογικοί</h3><p><code>&amp;&amp;</code> (AND — "και") <code>||</code> (OR — "ή") <code>!</code> (NOT — άρνηση). Δέχονται ως operands <code>bool</code> και παράγουν <code>bool</code></p></div>
+  <div class="card"><h3>Bitwise</h3><p><code>&amp;</code> <code>|</code> <code>^</code> <code>&amp;^</code> <code>&lt;&lt;</code> <code>&gt;&gt;</code> — λειτουργούν απευθείας πάνω στα δυαδικά ψηφία ενός ακέραιου.</p></div>
+  <div class="card"><h3>Εκχώρησης</h3><p><code>=</code> (απλή ανάθεση) <code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code> <code>%=</code> — συνδυάζουν πράξη και ανάθεση σε ένα βήμα: το <code>x += 5</code> ισοδυναμεί με <code>x = x + 5</code></p></div>
+  <div class="card"><h3>Αύξησης / Μείωσης</h3><p><code>++</code> (αύξηση κατά 1) <code>--</code> (μείωση κατά 1). Στη Go στέκονται μόνα τους ως εντολή και δεν παράγουν τιμή — το <code>y := x++</code> δεν μεταγλωττίζεται</p></div>
 </div>
+
+<div class="callout">
+    <span class="tag">Δεν χρειάζεται να τους μάθεις όλους τώρα</span>
+    <p>
+        Ο παραπάνω πίνακας είναι αναφορά, όχι ύλη προς απομνημόνευση. Θα δούμε κάθε κατηγορία αναλυτικά
+        στην ενότητα που τη χρειάζεται: τους operators σύγκρισης και τους λογικούς όταν φτάσουμε στις
+        συνθήκες, τους υπόλοιπους καθώς προκύπτουν. Εδώ σταματάμε αναλυτικά μόνο στο <code>%</code>, που
+        είναι το πιο δυσνόητο από όσα θα χρησιμοποιήσεις άμεσα.
+    </p>
+</div>
+
 <h2>Modulo — το υπόλοιπο της διαίρεσης</h2>
+
 <p>
-    Ας σταθούμε λίγο παραπάνω στο <code>%</code> (modulo), αφού είναι ο operator που μπερδεύει περισσότερο τους
-    αρχάριους — και το κλειδί για να τον καταλάβεις είναι να θυμηθείς πρώτα πώς δουλεύει μια "κανονική" διαίρεση. Το
-    <code>19 / 5</code> σου δίνει <code>3.8</code>, έναν αριθμό με δεκαδικό μέρος. Στον προγραμματισμό όμως, όταν και
-    τα δύο ορίσματα ενός <code>a / b</code> είναι τύπου <code>int</code>, το αποτέλεσμα είναι υποχρεωτικά κι αυτό
-    <code>int</code> — και ένα <code>int</code> απλά δεν έχει πού να βάλει δεκαδικά. Η Go δεν στρογγυλοποιεί σε αυτή
-    την περίπτωση· <strong>κόβει</strong> εντελώς το δεκαδικό μέρος και κρατάει μόνο το ακέραιο κομμάτι. Έτσι, το
-    <code>19 / 5</code> με <code>int</code> δίνει <code>3</code> — <strong>όχι</strong> <code>4</code>, παρόλο που το
-    <code>3.8</code> θα στρογγυλοποιούνταν κανονικά προς τα πάνω. Αυτό είναι το πιο σαφές δυνατό σημάδι ότι η Go δεν
-    στρογγυλοποιεί καθόλου· απλά κόβει ό,τι δεκαδικό υπάρχει, ανεξάρτητα από το πόσο κοντά είναι στο επόμενο ακέραιο.
+    Το κλειδί για το <code>%</code> είναι να θυμηθείς πρώτα πώς δουλεύει η διαίρεση με ακεραίους. Το
+    <code>19 / 5</code> στα μαθηματικά δίνει <code>3.8</code>. Όταν όμως και τα δύο operands είναι
+    <code>int</code>, το αποτέλεσμα είναι υποχρεωτικά κι αυτό <code>int</code> — και ένα <code>int</code>
+    δεν έχει πού να βάλει δεκαδικά. Η Go δεν στρογγυλοποιεί: <strong>κόβει</strong> το δεκαδικό μέρος και
+    κρατάει το ακέραιο. Άρα <code>19 / 5</code> δίνει <code>3</code>, όχι <code>4</code>, παρόλο που το
+    <code>3.8</code> θα στρογγυλοποιούνταν προς τα πάνω.
 </p>
 
 <div class="callout">
-    <span class="tag">Τι είναι, ακριβώς, το πηλίκο μιας ακέραιας διαίρεσης</span>
+    <span class="tag">Τι είναι το πηλίκο μιας ακέραιας διαίρεσης</span>
     <p>
-        Το πηλίκο μιας ακέραιας διαίρεσης <code>Δ ÷ δ</code> είναι ο <strong>μεγαλύτερος δυνατός ακέραιος</strong>
-        που, πολλαπλασιαζόμενος με το <code>δ</code>, δεν ξεπερνά το <code>Δ</code>. Με άλλα λόγια: ο μεγαλύτερος
-        αριθμός φορών που το <code>δ</code> "χωράει" ολόκληρο μέσα στο <code>Δ</code>, χωρίς να το ξεπεράσει.
+        Ο μεγαλύτερος αριθμός φορών που ο διαιρέτης χωράει ολόκληρος μέσα στον διαιρετέο, χωρίς να τον
+        ξεπεράσει.
     </p>
 </div>
 
 <p>
-    Το <code>%</code> είναι, ουσιαστικά, ο τρόπος να ανακτήσεις πληροφορία για αυτό που "χάθηκε" — όχι σαν δεκαδικό,
-    αλλά σαν ακέραιο <strong>υπόλοιπο</strong>. Για να το υπολογίσεις νοερά, κάνεις πρώτα την ακέραια διαίρεση όπως θα
-    την έκανε η ίδια η Go, πολλαπλασιάζεις το αποτέλεσμα πίσω με τον δεύτερο αριθμό, και αφαιρείς από τον πρώτο — ό,τι
-    απομένει είναι το υπόλοιπο. Ας το δούμε με το <code>19 % 5</code>:
-</p>
-<ul>
-    <li>Ακέραια διαίρεση: <code>19 / 5 = 3</code> (το <code>.8</code> κόβεται, όπως είδαμε παραπάνω).</li>
-    <li>Πολλαπλασιάζεις το πηλίκο πίσω με το 5: <code>3 × 5 = 15</code>.</li>
-    <li>Αφαιρείς από το αρχικό 19: <code>19 - 15 = 4</code>.</li>
-</ul>
-<p>Άρα <code>19 % 5</code> ισούται με <code>4</code>.</p>
-<p>
-    Υπάρχει μια ειδική περίπτωση που αξίζει προσοχή: τι γίνεται όταν ο πρώτος αριθμός είναι <strong>μικρότερος</strong>
-    από τον δεύτερο; Πάρε το <code>3 % 7</code>. Το 7 δεν χωράει μέσα στο 3 ούτε μία φορά — η ακέραια διαίρεση
-    <code>3 / 7</code> δίνει πηλίκο <code>0</code>. Ακολουθώντας τα ίδια βήματα: πολλαπλασιάζεις το 0 με το 7 (παίρνεις
-    0), και αφαιρείς από το αρχικό 3 — σου μένει ολόκληρο το 3 ανέγγιχτο. Δηλαδή <code>3 % 7 = 3</code>. Αυτό βγάζει
-    απόλυτο νόημα αν το σκεφτείς διαισθητικά: αφού ο δεύτερος αριθμός δεν χωράει καθόλου μέσα στον πρώτο, δεν
-    "αφαιρείται" τίποτα — ολόκληρος ο πρώτος αριθμός παραμένει ως υπόλοιπο.</p>
-<p>Γενικότερα, όποτε ο πρώτος αριθμός είναι
-    μικρότερος από τον δεύτερο, το <code>%</code> επιστρέφει πάντα τον ίδιο τον πρώτο αριθμό, αναλλοίωτο.
+    Το <code>%</code> ανακτά την πληροφορία που χάθηκε στο κόψιμο — όχι ως δεκαδικό, αλλά ως ακέραιο
+    <strong>υπόλοιπο</strong>. Για να το υπολογίσεις νοερά: κάνε την ακέραια διαίρεση, πολλαπλασίασε το
+    πηλίκο πίσω με τον διαιρέτη, και αφαίρεσε από τον αρχικό αριθμό. Στο <code>19 % 5</code>:
+    <code>19 / 5 = 3</code>, μετά <code>3 × 5 = 15</code>, μετά <code>19 - 15 = 4</code>. Άρα
+    <code>19 % 5 = 4</code>.
 </p>
 
 <p>
-    Εδώ βρίσκεται και η πραγματική αξία του <code>%</code>: όταν έχεις μια <strong>επαναλαμβανόμενη ακολουθία</strong>
-    στοιχείων, το <code>%</code> σου δίνει τη θέση σου μέσα σε αυτήν, όσο μακριά κι αν έχεις προχωρήσει. Φαντάσου έναν
-    σηματοδότη με 3 φώτα — κόκκινο, κίτρινο, πράσινο — που επαναλαμβάνονται κυκλικά για πάντα. Αν αριθμήσεις τα
-    βήματα 0, 1, 2, 3, 4, 5, 6..., τότε το <code>step % 3</code> σου λέει πάντα ποιο φως δείχνει: <code>0 % 3 = 0</code>
-    (κόκκινο), <code>1 % 3 = 1</code> (κίτρινο), <code>2 % 3 = 2</code> (πράσινο), και μετά ξανά από την αρχή —
-    <code>3 % 3 = 0</code> (κόκκινο), <code>4 % 3 = 1</code> (κίτρινο), και ούτω καθεξής, όσο μεγάλο κι αν γίνει το
-    <code>step</code>.
+    Μια περίπτωση που ξενίζει: όταν ο πρώτος αριθμός είναι <strong>μικρότερος</strong> από τον δεύτερο. Στο
+    <code>3 % 7</code> το 7 δεν χωράει ούτε μία φορά, άρα το πηλίκο είναι <code>0</code>, δεν αφαιρείται
+    τίποτα, και μένει ολόκληρο το 3. Γενικά, <code>a % b</code> με <code>a &lt; b</code> επιστρέφει πάντα
+    το ίδιο το <code>a</code>.
 </p>
+
+<h3>Πού χρησιμεύει: οι κύκλοι</h3>
+
 <p>
-    Το πιο γνωστό παράδειγμα αυτής ακριβώς της ιδέας το χρησιμοποιείς ήδη καθημερινά, χωρίς να το σκέφτεσαι: το
-    δεκαδικό μας σύστημα αριθμών. Για <strong>οποιονδήποτε</strong> αριθμό <code>x</code>, το <code>x % 10</code> σου
-    δίνει πάντα το τελευταίο του ψηφίο — το <code>47 % 10</code> δίνει <code>7</code>, το <code>123 % 10</code> δίνει
-    <code>3</code> — επειδή τα ψηφία στο δεκαδικό σύστημα επαναλαμβάνονται κυκλικά 0 έως 9 και μετά ξανά από την
-    αρχή, ακριβώς όπως ο σηματοδότης μας. Αυτός είναι κι ο λόγος που το σύστημά μας λέγεται <strong>base 10</strong>
-    (δεκαδικό σύστημα) — μετράει σε κύκλους μήκους 10.
+    Η πραγματική αξία του <code>%</code> είναι ότι σου δίνει τη θέση σου μέσα σε μια
+    <strong>επαναλαμβανόμενη ακολουθία</strong>, όσο μακριά κι αν έχεις προχωρήσει. Φαντάσου έναν
+    σηματοδότη με τρία φώτα που εναλλάσσονται κυκλικά. Αν αριθμήσεις τα βήματα από το 0, το
+    <code>step % 3</code> σου λέει πάντα ποιο φως δείχνει:
+</p>
+
+<svg viewBox="0 0 860 172" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:920px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" fill="currentColor" opacity="0.75" text-anchor="end">
+    <text x="88" y="64">n</text>
+    <text x="88" y="124">n % 3</text>
+  </g>
+
+  <g fill="rgba(var(--tone-3-rgb),0.30)" stroke="var(--tone-3)" stroke-width="1.5">
+    <rect x="100" y="40" width="52" height="36" rx="6"/><rect x="280" y="40" width="52" height="36" rx="6"/>
+    <rect x="460" y="40" width="52" height="36" rx="6"/><rect x="640" y="40" width="52" height="36" rx="6"/>
+    <rect x="100" y="100" width="52" height="36" rx="6"/><rect x="280" y="100" width="52" height="36" rx="6"/>
+    <rect x="460" y="100" width="52" height="36" rx="6"/><rect x="640" y="100" width="52" height="36" rx="6"/>
+  </g>
+
+  <g fill="rgba(var(--tone-4-rgb),0.22)" stroke="var(--tone-4)" stroke-width="1.5">
+    <rect x="160" y="40" width="52" height="36" rx="6"/><rect x="340" y="40" width="52" height="36" rx="6"/>
+    <rect x="520" y="40" width="52" height="36" rx="6"/><rect x="700" y="40" width="52" height="36" rx="6"/>
+    <rect x="160" y="100" width="52" height="36" rx="6"/><rect x="340" y="100" width="52" height="36" rx="6"/>
+    <rect x="520" y="100" width="52" height="36" rx="6"/><rect x="700" y="100" width="52" height="36" rx="6"/>
+  </g>
+
+  <g fill="rgba(var(--tone-5-rgb),0.20)" stroke="var(--tone-5)" stroke-width="1.5">
+    <rect x="220" y="40" width="52" height="36" rx="6"/><rect x="400" y="40" width="52" height="36" rx="6"/>
+    <rect x="580" y="40" width="52" height="36" rx="6"/><rect x="760" y="40" width="52" height="36" rx="6"/>
+    <rect x="220" y="100" width="52" height="36" rx="6"/><rect x="400" y="100" width="52" height="36" rx="6"/>
+    <rect x="580" y="100" width="52" height="36" rx="6"/><rect x="760" y="100" width="52" height="36" rx="6"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" fill="currentColor" text-anchor="middle">
+    <text x="126" y="64">0</text><text x="186" y="64">1</text><text x="246" y="64">2</text>
+    <text x="306" y="64">3</text><text x="366" y="64">4</text><text x="426" y="64">5</text>
+    <text x="486" y="64">6</text><text x="546" y="64">7</text><text x="606" y="64">8</text>
+    <text x="666" y="64">9</text><text x="726" y="64">10</text><text x="786" y="64">11</text>
+
+    <text x="126" y="124">0</text><text x="186" y="124">1</text><text x="246" y="124">2</text>
+    <text x="306" y="124">0</text><text x="366" y="124">1</text><text x="426" y="124">2</text>
+    <text x="486" y="124">0</text><text x="546" y="124">1</text><text x="606" y="124">2</text>
+    <text x="666" y="124">0</text><text x="726" y="124">1</text><text x="786" y="124">2</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.6" text-anchor="start">
+    <text x="100" y="162">το n μεγαλώνει χωρίς όριο· το n % 3 μένει πάντα μέσα στο 0-2 και ξαναρχίζει κάθε τρία βήματα</text>
+  </g>
+</svg>
+
+<p>
+    Το πιο γνωστό παράδειγμα αυτής της ιδέας το χρησιμοποιείς ήδη καθημερινά: το
+    <code>x % 10</code> δίνει πάντα το τελευταίο ψηφίο ενός αριθμού (<code>47 % 10</code> είναι
+    <code>7</code>, <code>123 % 10</code> είναι <code>3</code>), επειδή τα ψηφία στο δεκαδικό σύστημα
+    επαναλαμβάνονται κυκλικά από 0 έως 9 — ακριβώς όπως ο σηματοδότης. Γι' αυτό λέγεται
+    <strong>base 10</strong>: μετράει σε κύκλους μήκους 10.
 </p>
 
 <p>
-    Η ίδια ακριβώς λογική δουλεύει με <strong>οποιαδήποτε</strong> βάση αρίθμησης, όχι μόνο τη δεκαδική. Πάρε το
-    <strong>δεκαεξαδικό</strong> σύστημα (base 16 — hexadecimal) — ίσως το έχεις ήδη συναντήσει σε χρώματα
-    ιστοσελίδων (κάτι σαν <code>#ff5733</code>) ή σε ρυθμίσεις υπολογιστών. Εκεί, τα "ψηφία" δεν επαναλαμβάνονται 0
-    έως 9, αλλά 0 έως 15 (γραμμένα ως <code>0-9</code> και μετά <code>a-f</code> για τα 10 έως 15) — δηλαδή κύκλοι
-    μήκους 16 αντί για 10. Αν λοιπόν είχες την αριθμητική τιμή ενός hex ψηφίου, το <code>x % 16</code> θα σου έδινε
-    ακριβώς αυτό το τελευταίο "ψηφίο" στο δεκαεξαδικό σύστημα — με τον ίδιο ακριβώς τρόπο που το <code>x % 10</code>
-    σου δίνει το τελευταίο ψηφίο στο δικό μας, καθημερινό δεκαδικό σύστημα. Θα το ξανασυναντήσουμε αυτό αργότερα σε
-    αυτόν τον οδηγό, όταν μιλήσουμε για pointers και διευθύνσεις μνήμης — εκεί το hex είναι πανταχού παρόν. Το
-    <code>%</code> δεν "ξέρει" τίποτα για ψηφία ή συστήματα αρίθμησης από μόνο του — απλά μετράει κύκλους όποιου
-    μήκους του ζητήσεις.
+    Η ίδια λογική ισχύει σε οποιαδήποτε βάση. Στο <strong>δεκαεξαδικό</strong> (base 16, hexadecimal) — που
+    ίσως έχεις δει σε αριθμούς όπως ο <code>ff5733</code> — τα ψηφία είναι 0 έως 15 (γραμμένα <code>0-9</code> και μετά <code>a-f</code>), δηλαδή κύκλοι μήκους 16, και το <code>x % 16</code> δίνει το τελευταίο τους ψηφίο. Το <code>%</code> δεν ξέρει τίποτα για ψηφία ή συστήματα αρίθμησης — απλά μετράει κύκλους όποιου μήκους του ζητήσεις.
 </p>
+
+<div class="callout">
+    <span class="tag">Δύο παγίδες με τη διαίρεση</span>
+    <p>
+        <strong>Διαίρεση με το μηδέν.</strong> Αν ο διαιρέτης είναι σταθερά (<code>x / 0</code>), ο
+        compiler σε σταματάει. Αν είναι μεταβλητή που τυχαίνει να έχει την τιμή 0, το πρόγραμμα
+        μεταγλωττίζεται κανονικά και σκάει κατά την εκτέλεση με
+        <code>panic: runtime error: integer divide by zero</code>. Το ίδιο ισχύει και για το
+        <code>%</code>.
+    </p>
+    <p>
+        <strong>Αρνητικοί αριθμοί.</strong> Στη Go το πρόσημο του υπολοίπου ακολουθεί τον
+        <em>πρώτο</em> αριθμό: <code>-7 % 3</code> δίνει <code>-1</code>, όχι <code>2</code>. Αν
+        χρησιμοποιείς το <code>%</code> για κύκλους και οι τιμές σου μπορεί να γίνουν αρνητικές, θα πάρεις
+        αρνητικές θέσεις — κάτι που σπάνια είναι αυτό που θέλεις.
+    </p>
+</div>
 
 <br>
-<h1>Σειρά Εκτέλεσης &amp; Προτεραιότητα operators</h1>
+<h1>Προτεραιότητα operators</h1>
 
 <p class="lede">
-    Όταν μια έκφραση περιέχει πολλαπλούς operators, η σειρά υπολογισμού καθορίζεται από
-    <strong>προτεραιότητα</strong> (ακριβώς όπως στα μαθηματικά: πρώτα πολλαπλασιασμός, μετά πρόσθεση) και από
-    <strong>παρενθέσεις</strong>, που μπορούν να την αλλάξουν ρητά.
+    Όταν μια έκφραση περιέχει πολλούς operators, η σειρά υπολογισμού καθορίζεται από την
+    <strong>προτεραιότητα</strong> — ακριβώς όπως στα μαθηματικά, πρώτα ο πολλαπλασιασμός, μετά η πρόσθεση
+    — και από τις <strong>παρενθέσεις</strong>, που την αλλάζουν ρητά.
 </p>
 
 <p>
-    Για παράδειγμα, στην έκφραση <code>2 + 3 * 4</code>, ο πολλαπλασιασμός γίνεται πρώτος (3*4=12), και μετά προστίθεται
-    το 2, δίνοντας 14. <br> Με τις εξής παρενθέσεις: <code>(2 + 3) * 4</code> δίνει 20.
-</p>
-
-<h2>Τα επίπεδα προτεραιότητας της Go</h2>
-
-<p>
-    Η Go ορίζει <strong>έξι επίπεδα προτεραιότητας</strong> για τους τελεστές της. Όσο πιο ψηλά στον πίνακα, τόσο
-    <em>νωρίτερα</em> εκτελείται ο τελεστής:
+    Στο <code>2 + 3 * 4</code> γίνεται πρώτος ο πολλαπλασιασμός (<code>3*4=12</code>) και μετά η πρόσθεση,
+    δίνοντας <code>14</code>. Το <code>(2 + 3) * 4</code> δίνει <code>20</code>.
 </p>
 
 <table style="width:100%; border-collapse:collapse; margin:16px 0;">
@@ -1853,7 +1827,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>6</strong> (πρώτα)</td>
-        <td style="padding:8px;"><code>!</code> <code>-</code> (πρόσημο) <code>&amp;</code> (διεύθυνση)</td>
+        <td style="padding:8px;"><code>!</code> <code>-</code> (πρόσημο) <code>^</code> <code>&amp;</code> <code>*</code></td>
         <td style="padding:8px;">Μονομελείς (unary)</td>
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
@@ -1883,66 +1857,174 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
     </tr>
 </table>
 
-<div class="callout">
-    <span class="tag">Μην ανησυχείς για όλους αυτούς τους operators τώρα</span>
-    <p>
-        Είναι νωρίς ακόμα στο ταξίδι σου. Ο παραπάνω πίνακας είναι απλώς μια επιγραμματική αναφορά —
-        <strong>δεν χρειάζεται να τον αποστηθίσεις</strong>. Θα δούμε τον καθένα από αυτούς τους operators
-        αναλυτικά στις επόμενες ενότητες, όταν θα τους χρειαστούμε. Για την ώρα, αρκεί να ξέρεις ότι υπάρχουν
-        και ότι η Go έχει μια σαφή σειρά προτεραιότητας.
-    </p>
-</div>
-
-<h2>Σύντομη παρένθεση: τι κάνουν οι bitwise operators</h2>
-
 <p>
-    Στον πίνακα των κατηγοριών παραπάνω αναφέραμε τους bitwise operators
-    (<code>&amp;</code> <code>|</code> <code>^</code> <code>&amp;^</code> <code>&lt;&lt;</code>
-    <code>&gt;&gt;</code>) χωρίς εξήγηση, αλλά αξίζει να ξέρεις τι
-    είναι, ώστε να μην τους μπερδεύεις με τους λογικούς <code>&amp;&amp;</code> και <code>||</code>.
+    Πρόσεξε ότι το <code>%</code> κάθεται στο ίδιο επίπεδο με το <code>*</code> και το <code>/</code>, πάνω
+    από την πρόσθεση. Γι' αυτό το <code>2 + 9 % 4</code> δίνει <code>3</code> και όχι <code>11 % 4</code>:
+    πρώτα υπολογίζεται το <code>9 % 4 = 1</code>, μετά το <code>2 + 1</code>.
 </p>
 
+<br>
+<h1>Σύντομη αναφορά: bitwise και δυαδικό</h1>
+
 <p>
-    Οι λογικοί operators δουλεύουν πάνω σε <code>bool</code> τιμές (<code>true</code> or <code>false</code>). Οι bitwise δουλεύουν πάνω στα
-    <strong>επιμέρους bits ενός ακέραιου</strong>. Θυμήσου από την Ενότητα 1 ότι κάθε αριθμός αποθηκεύεται ως
-    ακολουθία από 0 και 1 — οι bitwise operators αγγίζουν αυτά τα ψηφία ένα προς ένα:
+    Οι bitwise operators δεν θα σου χρειαστούν άμεσα, αλλά αξίζει να ξέρεις τι είναι — και κυρίως να μην
+    τους μπερδεύεις με τους λογικούς. Οι λογικοί (<code>&amp;&amp;</code>, <code>||</code>) δουλεύουν πάνω
+    σε <code>bool</code>. Οι bitwise (<code>&amp;</code>, <code>|</code>) δουλεύουν πάνω στα
+    <strong>επιμέρους δυαδικά ψηφία</strong> ενός ακέραιου.
 </p>
 
-<pre><code class="lang-go">a := 12 // in binary: 1100
-b := 10 // in binary: 1010
+<h2>Πώς γράφεται ένας αριθμός σε δυαδικό (optional)</h2>
 
-fmt.Println(a & b)  // 8  -> 1000 : a 1 only where BOTH have a 1
-fmt.Println(a | b)  // 14 -> 1110 : a 1 where EITHER has a 1
-fmt.Println(a &lt;&lt; 1) // 24 -> 11000: shift left one place = multiply by 2
-fmt.Println(a &gt;&gt; 1) // 6  -> 110  : shift right one place = divide by 2
+<p>
+    Στο δεκαδικό σύστημα κάθε θέση αξίζει δέκα φορές περισσότερο από τη διπλανή της δεξιά: μονάδες,
+    δεκάδες, εκατοντάδες. Στο δυαδικό ισχύει το ίδιο με βάση το 2 — κάθε θέση αξίζει
+    <strong>διπλάσια</strong> από τη διπλανή της. Και επειδή τα μόνα διαθέσιμα ψηφία είναι <code>0</code>
+    και <code>1</code>, κάθε θέση απαντάει σε μία μόνο ερώτηση: <em>μπαίνει αυτή η δύναμη του 2 στο
+    άθροισμα ή όχι;</em>
+</p>
+
+<svg viewBox="0 0 720 196" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:760px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13" fill="currentColor" opacity="0.55" text-anchor="middle">
+    <text x="176" y="30">2⁴</text><text x="268" y="30">2³</text><text x="360" y="30">2²</text>
+    <text x="452" y="30">2¹</text><text x="544" y="30">2⁰</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity="0.8" text-anchor="middle">
+    <text x="176" y="54">16</text><text x="268" y="54">8</text><text x="360" y="54">4</text>
+    <text x="452" y="54">2</text><text x="544" y="54">1</text>
+  </g>
+
+  <g fill="rgba(var(--tone-text-rgb),0.05)" stroke="currentColor" stroke-opacity="0.35" stroke-width="1.5">
+    <rect x="136" y="64" width="80" height="64" rx="8"/>
+    <rect x="412" y="64" width="80" height="64" rx="8"/>
+  </g>
+  <g fill="rgba(var(--tone-4-rgb),0.22)" stroke="var(--tone-4)" stroke-width="2">
+    <rect x="228" y="64" width="80" height="64" rx="8"/>
+    <rect x="320" y="64" width="80" height="64" rx="8"/>
+    <rect x="504" y="64" width="80" height="64" rx="8"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="30" text-anchor="middle">
+    <text x="176" y="108" fill="currentColor" opacity="0.35">0</text>
+    <text x="268" y="108" fill="var(--tone-4)">1</text>
+    <text x="360" y="108" fill="var(--tone-4)">1</text>
+    <text x="452" y="108" fill="currentColor" opacity="0.35">0</text>
+    <text x="544" y="108" fill="var(--tone-4)">1</text>
+  </g>
+
+  <g stroke="var(--tone-4)" stroke-width="1.5" opacity="0.6">
+    <line x1="268" y1="134" x2="268" y2="146"/>
+    <line x1="360" y1="134" x2="360" y2="146"/>
+    <line x1="544" y1="134" x2="544" y2="146"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="17" fill="currentColor" text-anchor="middle">
+    <text x="360" y="168">8 + 4 + 1 = 13</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.6" text-anchor="middle">
+    <text x="360" y="190">01101 σε δυαδικό είναι το 13 σε δεκαδικό</text>
+  </g>
+</svg>
+
+<pre><code class="lang-go">a := 12 // in binary: 01100
+b := 10 // in binary: 01010
+
+fmt.Println(a & b)  // 8  -> 01000 : a 1 only where BOTH have a 1
+fmt.Println(a | b)  // 14 -> 01110 : a 1 where EITHER has a 1
+fmt.Println(a &lt;&lt; 1) // 24 -> 11000 : shift left one place = multiply by 2
+fmt.Println(a &gt;&gt; 1) // 6  -> 00110 : shift right one place = divide by 2
 </code></pre>
 
 <p>
-    Πρόσεξε τη διαφορά που μπερδεύει τους περισσότερους αρχάριους: το <code>&amp;</code> (ένα) είναι bitwise
-    AND πάνω σε αριθμούς, ενώ το <code>&amp;&amp;</code> (δύο) είναι λογικό AND πάνω σε <code>bool</code>. Δεν
-    είναι εναλλάξιμα, και η Go δεν σε αφήνει να τα μπερδέψεις: το <code>true &amp; false</code> δεν
-    μεταγλωττίζεται καν.
+    Με πέντε θέσεις καλύπτεις όλους τους αριθμούς από το 0 μέχρι το 31. Ορίστε ολόκληρη η λίστα — κοίταξε
+    πώς αλλάζει η τελευταία στήλη σε κάθε γραμμή, η προτελευταία κάθε δύο, η επόμενη κάθε τέσσερις:
 </p>
 
+<table style="width:100%; max-width:760px; margin:16px auto; border-collapse:collapse; font-family:var(--font-mono, ui-monospace, Menlo, monospace); font-size:0.95em;">
+    <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
+        <th style="text-align:right; padding:6px 8px; font-weight:600; opacity:0.7;">Dec</th><th style="text-align:left; padding:6px 14px; font-weight:600; opacity:0.7;">Binary</th>
+        <th style="text-align:right; padding:6px 8px; font-weight:600; opacity:0.7; border-left:1px solid rgba(var(--ink-rgb),0.18);">Dec</th><th style="text-align:left; padding:6px 14px; font-weight:600; opacity:0.7;">Binary</th>
+        <th style="text-align:right; padding:6px 8px; font-weight:600; opacity:0.7; border-left:1px solid rgba(var(--ink-rgb),0.18);">Dec</th><th style="text-align:left; padding:6px 14px; font-weight:600; opacity:0.7;">Binary</th>
+        <th style="text-align:right; padding:6px 8px; font-weight:600; opacity:0.7; border-left:1px solid rgba(var(--ink-rgb),0.18);">Dec</th><th style="text-align:left; padding:6px 14px; font-weight:600; opacity:0.7;">Binary</th>
+    </tr>
+
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.1);">
+        <td style="padding:4px 8px; text-align:right;">0</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">00000</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18); color:var(--tone-5); font-weight:700;">8</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">1</span>000</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18); color:var(--tone-5); font-weight:700;">16</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>0000</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">24</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">11</span>000</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.1);">
+        <td style="padding:4px 8px; text-align:right; color:var(--tone-5); font-weight:700;">1</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0000<span style="color:var(--tone-4); opacity:1;">1</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">9</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">1</span>00<span style="color:var(--tone-4); opacity:1;">1</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">17</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>000<span style="color:var(--tone-4); opacity:1;">1</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">25</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">11</span>00<span style="color:var(--tone-4); opacity:1;">1</span></td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.1);">
+        <td style="padding:4px 8px; text-align:right; color:var(--tone-5); font-weight:700;">2</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">000<span style="color:var(--tone-4); opacity:1;">1</span>0</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">10</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">1</span>0</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">18</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>00<span style="color:var(--tone-4); opacity:1;">1</span>0</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">26</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">11</span>0<span style="color:var(--tone-4); opacity:1;">1</span>0</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.1);">
+        <td style="padding:4px 8px; text-align:right;">3</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">000<span style="color:var(--tone-4); opacity:1;">11</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">11</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">11</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">19</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>00<span style="color:var(--tone-4); opacity:1;">11</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">27</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">11</span>0<span style="color:var(--tone-4); opacity:1;">11</span></td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.1);">
+        <td style="padding:4px 8px; text-align:right; color:var(--tone-5); font-weight:700;">4</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">00<span style="color:var(--tone-4); opacity:1;">1</span>00</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">12</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">11</span>00</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">20</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">1</span>00</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">28</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">111</span>00</td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.1);">
+        <td style="padding:4px 8px; text-align:right;">5</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">00<span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">1</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">13</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">11</span>0<span style="color:var(--tone-4); opacity:1;">1</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">21</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">1</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">29</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">111</span>0<span style="color:var(--tone-4); opacity:1;">1</span></td>
+    </tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.1);">
+        <td style="padding:4px 8px; text-align:right;">6</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">00<span style="color:var(--tone-4); opacity:1;">11</span>0</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">14</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">111</span>0</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">22</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">11</span>0</td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">30</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1111</span>0</td>
+    </tr>
+    <tr>
+        <td style="padding:4px 8px; text-align:right;">7</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">00<span style="color:var(--tone-4); opacity:1;">111</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">15</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;">0<span style="color:var(--tone-4); opacity:1;">1111</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">23</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">1</span>0<span style="color:var(--tone-4); opacity:1;">111</span></td>
+        <td style="padding:4px 8px; text-align:right; border-left:1px solid rgba(var(--ink-rgb),0.18);">31</td><td style="padding:4px 14px; letter-spacing:0.28em; opacity:0.25;"><span style="color:var(--tone-4); opacity:1;">11111</span></td>
+    </tr>
+</table>
+
+<p style="text-align:center; font-size:0.88em; opacity:0.65; margin-top:-8px;">
+    Με <span style="color:var(--tone-5); font-weight:700;">κίτρινο</span> οι δυνάμεις του 2 — οι μόνοι αριθμοί με ακριβώς ένα "αναμμένο" ψηφίο (1).
+</p>
+
+<div class="callout good">
+    <span class="tag">Γιατί οι δυνάμεις του 2 ξεχωρίζουν</span>
+    <p>
+        Ψάξε στον πίνακα τα <code>1</code>, <code>2</code>, <code>4</code>, <code>8</code>,
+        <code>16</code>. Είναι οι μόνοι αριθμοί με <strong>ακριβώς ένα</strong> <code>1</code>, και αυτό
+        μετακινείται μία θέση αριστερά κάθε φορά. Λογικό: κάθε θέση <em>είναι</em> μια δύναμη του 2, οπότε
+        μια σκέτη δύναμη του 2 ανάβει μία μόνο θέση. Κάθε άλλος αριθμός χρειάζεται άθροισμα από
+        περισσότερες.
+    </p>
+    <p>
+        Από εδώ βγαίνει και ο λόγος που τα <code>&lt;&lt;</code> και <code>&gt;&gt;</code> είναι
+        πολλαπλασιασμός και διαίρεση με το 2: το να σπρώξεις όλα τα ψηφία μία θέση αριστερά σημαίνει ότι
+        κάθε ένα αξίζει πλέον διπλάσια. Είναι η ίδια ιδέα με το να κολλήσεις ένα μηδενικό στο τέλος ενός
+        δεκαδικού αριθμού και να τον δεκαπλασιάσεις.
+    </p>
+</div>
+
 <p>
-    <strong>Σημείωση:</strong> Οι bitwise τελεστές είναι χρήσιμοι σε ειδικές περιπτώσεις (π.χ. εργασία με
-    δυαδικά πρωτόκολλα, συμπίεση, κρυπτογραφία). Στον καθημερινό προγραμματισμό εφαρμογών, σπάνια θα τους
-    χρειαστείς — αλλά είναι καλό να ξέρεις ότι υπάρχουν.
+Στον καθημερινό προγραμματισμό εφαρμογών σπάνια θα χρειαστείς bitwise — είναι
+    εργαλεία για δυαδικά πρωτόκολλα, συμπίεση και κρυπτογραφία.
 </p>
 `);
 
         addQuiz([
-            {
-                q: "Γιατί το var x int θεωρείται statement και όχι expression;",
-                options: [
-                    "Δηλώνει μια μεταβλητή, αλλά δεν παράγει καμία τιμή που να μπορείς να χρησιμοποιήσεις αλλού",
-                    "Επειδή περιέχει τη λέξη-κλειδί var, και στη Go κάθε γραμμή που ξεκινά με λέξη-κλειδί θεωρείται αυτόματα statement",
-                    "Επειδή δεν έχει operator ίσον = μέσα του",
-                    "Επειδή είναι πολύ μικρό σε μήκος για να είναι expression"
-                ],
-                correct: 0,
-                explain: "Το χαρακτηριστικό ενός statement είναι ακριβώς αυτό: κάνει κάτι (εδώ, δηλώνει μια μεταβλητή) χωρίς να παράγει τιμή που να μπορείς να αναθέσεις ή να χρησιμοποιήσεις αλλού."
-            },
             {
                 q: "Σε ποια κατηγορία operators ανήκει το %;",
                 options: [
@@ -2015,7 +2097,7 @@ fmt.Println(a &gt;&gt; 1) // 6  -> 110  : shift right one place = divide by 2
                     "Το τελευταίο ψηφίο του x",
                     "Το πρώτο ψηφίο του x",
                     "Το πλήθος των ψηφίων του x",
-                    "Πάντα τον αριθμό 10 μείον το x"
+                    "Τον x στρογγυλοποιημένο στην πλησιέστερη δεκάδα προς τα κάτω"
                 ],
                 correct: 0,
                 explain: "Το δεκαδικό σύστημα επαναλαμβάνεται κυκλικά σε κύκλους μήκους 10 (0 έως 9) — γι' αυτό το % 10 σου δίνει πάντα το τελευταίο ψηφίο, όσο μεγάλος κι αν είναι ο αριθμός."
@@ -2049,20 +2131,42 @@ func main() {
                 ],
                 correct: 0,
                 explain: "17 % 7: το 7 χωράει 2 φορές ακέραια μέσα στο 17 (2×7=14), και 17-14=3. Το day % 7 = 3 σημαίνει Πέμπτη (index 3, ξεκινώντας από Δευτέρα=0). Ο κώδικας παραπάνω (const, iota) είναι απλά μια ματιά σε κάτι που θα μάθεις αρκετά αργότερα — δεν χρειάζεται να τον καταλαβαίνεις ακόμα, μόνο ότι κάθε μέρα αντιστοιχεί σε έναν αριθμό 0-6, με τη σειρά."
+            },
+            {
+                q: "Ποιον αριθμό παριστάνει το 10110 σε δεκαδικό;",
+                options: [
+                    "22",
+                    "26",
+                    "11",
+                    "44"
+                ],
+                correct: 0,
+                explain: "Οι θέσεις από αριστερά αξίζουν 16, 8, 4, 2, 1. Άναψαν οι θέσεις 16, 4 και 2, άρα 16+4+2 = 22."
+            },
+            {
+                q: "Τι κοινό έχουν στη δυαδική τους μορφή οι αριθμοί 1, 2, 4, 8, 16;",
+                options: [
+                    "Έχουν ακριβώς ένα 1, σε διαφορετική θέση ο καθένας",
+                    "Τελειώνουν όλοι σε 1",
+                    "Έχουν όλοι τον ίδιο αριθμό από άσσους και μηδενικά, απλώς σε ανακατεμένη σειρά μεταξύ τους",
+                    "Είναι όλοι παλινδρομικοί — διαβάζονται ίδια και ανάποδα"
+                ],
+                correct: 0,
+                explain: "Κάθε θέση στο δυαδικό ΕΙΝΑΙ μια δύναμη του 2, οπότε μια σκέτη δύναμη του 2 ανάβει ακριβώς μία θέση: 00001, 00010, 00100, 01000, 10000. Κάθε άλλος αριθμός χρειάζεται άθροισμα από περισσότερες."
             }
         ]);
 
         addFillBlank([
             {
-                code: `result:= 7 __op1__ 2   // result is 1
-isEqual:= x __op2__ y  // true if x and y are equal, nothing changes
-isBigger:= x __op4__ y // true if x is strictly greater than y`,
+                code: `result := 7 __op1__ 2   // result is 1
+count += 1              // shorthand for count = count __op2__ 1
+half := 9 __op3__ 2     // half is 4 - integer division truncates`,
                 blanks: [
                     { id: "op1", answer: "%" },
-                    { id: "op2", answer: "==" },
-                    { id: "op4", answer: ">" }
+                    { id: "op2", answer: "+" },
+                    { id: "op3", answer: "/" }
                 ],
-                explain: "% δίνει το υπόλοιπο, == συγκρίνει χωρίς να αλλάζει τίποτα, += συνδυάζει πράξη+ανάθεση, > συγκρίνει μέγεθος.",
+                explain: "Το % δίνει το υπόλοιπο (7 = 3×2 + 1). Το += είναι συντομογραφία για πράξη και ανάθεση μαζί. Η / με δύο int κόβει το δεκαδικό μέρος: 9/2 είναι 4.5, μένει 4.",
                 lang: "go"
             },
             {
@@ -2090,7 +2194,7 @@ result3 := 2 + 9 % 4    // result3 is __val3__ (% has the same precedence as *, 
                 lang: "go"
             },
             {
-                code: `result1 := 5 % 12    // result1 is __val1__ (12 doesn't fit into 5 at all — quotient is 0)
+                code: `result1 := 5 % 12    // result1 is __val1__ (12 doesn't fit into 5 at all - quotient is 0)
 result2 := 938 % 10  // result2 is __val2__ (the last digit)
 result3 := 50 % 7    // result3 is __val3__`,
                 blanks: [
@@ -2102,7 +2206,7 @@ result3 := 50 % 7    // result3 is __val3__`,
                 lang: "go"
             }
         ], {
-            note: "Συμπλήρωσε τα κενά με βάση όσα είδαμε για expressions, statements, και operators."
+            note: "Συμπλήρωσε τα κενά με βάση όσα είδαμε για τους operators."
         });
 
 
@@ -2110,11 +2214,13 @@ result3 := 50 % 7    // result3 is __val3__`,
 <div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <table class="glossary-table">
-  <tr><td class="gt-term">Operator / Operand</td><td class="gt-def">operator (σύμβολο πράξης) και operand (η τιμή πάνω στην οποία εφαρμόζεται)</td></tr>
-  <tr><td class="gt-term">Expression</td><td class="gt-def">παράγει τιμή που μπορεί να χρησιμοποιηθεί περαιτέρω</td></tr>
-  <tr><td class="gt-term">Statement</td><td class="gt-def">εκτελεί ενέργεια, δεν παράγει επαναχρησιμοποιήσιμη τιμή</td></tr>
-  <tr><td class="gt-term">Expression Statement</td><td class="gt-def">μια έκφραση που στέκεται μόνη της ως εντολή — η τιμή της πετιέται, αλλά εκτελείται το side effect της</td></tr>
-  <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι operators σε μια έκφραση</td></tr>
+  <tr><td class="gt-term">Operator / Operand</td><td class="gt-def">operator το σύμβολο της πράξης, operand η τιμή πάνω στην οποία εφαρμόζεται</td></tr>
+  <tr><td class="gt-term">Expression</td><td class="gt-def">συνδυασμός τιμών και operators που παράγει μια νέα τιμή</td></tr>
+  <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι operators μέσα σε μια έκφραση</td></tr>
+  <tr><td class="gt-term">Ακέραια διαίρεση</td><td class="gt-def">/ με δύο int — κόβει το δεκαδικό μέρος, δεν στρογγυλοποιεί</td></tr>
+  <tr><td class="gt-term">Modulo (%)</td><td class="gt-def">το υπόλοιπο της ακέραιας διαίρεσης — δίνει τη θέση μέσα σε έναν κύκλο</td></tr>
+  <tr><td class="gt-term">Base 10 / base 16</td><td class="gt-def">το μήκος του κύκλου των ψηφίων: 0-9 στο δεκαδικό, 0-f στο δεκαεξαδικό</td></tr>
+  <tr><td class="gt-term">Bit</td><td class="gt-def">ένα δυαδικό ψηφίο· κάθε θέση αξίζει διπλάσια από τη διπλανή της δεξιά</td></tr>
 </table>
 `);
 
