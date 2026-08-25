@@ -1722,36 +1722,37 @@ addContent(`
     το ίδιο το <code>a</code>.
 </p>
 
-<h3>Πού χρησιμεύει: οι κύκλοι</h3>
+<h3>Πού χρησιμεύει: οι "κύκλοι"</h3>
 
 <p>
     Η πραγματική αξία του <code>%</code> είναι ότι σου δίνει τη θέση σου μέσα σε μια
     <strong>επαναλαμβανόμενη ακολουθία</strong>, όσο μακριά κι αν έχεις προχωρήσει. Φαντάσου έναν
-    σηματοδότη με τρία φώτα που εναλλάσσονται κυκλικά. Αν αριθμήσεις τα βήματα από το 0, το
-    <code>step % 3</code> σου λέει πάντα ποιο φως δείχνει:
+    σηματοδότη με τρία φώτα που εναλλάσσονται κυκλικά: 🟢🟡🔴🟢🟡🔴🟢🟡🔴 και ούτω καθεξής. Αν αριθμήσεις τα
+    βήματα από το 0 (0-🟢, 1-🟡, 2-🔴), το <code>step % 3</code> σου λέει πάντα ποιο φως δείχνει:
 </p>
 
-<svg viewBox="0 0 860 172" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:920px; height:auto; display:block; margin:18px auto; color:inherit;">
+<svg viewBox="0 0 860 216" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:920px; height:auto; display:block; margin:18px auto; color:inherit;">
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" fill="currentColor" opacity="0.75" text-anchor="end">
     <text x="88" y="64">n</text>
     <text x="88" y="124">n % 3</text>
+    <text x="88" y="176">φως</text>
   </g>
 
-  <g fill="rgba(var(--tone-3-rgb),0.30)" stroke="var(--tone-3)" stroke-width="1.5">
+  <g fill="rgba(76,175,80,0.22)" stroke="#4caf50" stroke-width="1.5">
     <rect x="100" y="40" width="52" height="36" rx="6"/><rect x="280" y="40" width="52" height="36" rx="6"/>
     <rect x="460" y="40" width="52" height="36" rx="6"/><rect x="640" y="40" width="52" height="36" rx="6"/>
     <rect x="100" y="100" width="52" height="36" rx="6"/><rect x="280" y="100" width="52" height="36" rx="6"/>
     <rect x="460" y="100" width="52" height="36" rx="6"/><rect x="640" y="100" width="52" height="36" rx="6"/>
   </g>
 
-  <g fill="rgba(var(--tone-4-rgb),0.22)" stroke="var(--tone-4)" stroke-width="1.5">
+  <g fill="rgba(var(--tone-5-rgb),0.24)" stroke="var(--tone-5)" stroke-width="1.5">
     <rect x="160" y="40" width="52" height="36" rx="6"/><rect x="340" y="40" width="52" height="36" rx="6"/>
     <rect x="520" y="40" width="52" height="36" rx="6"/><rect x="700" y="40" width="52" height="36" rx="6"/>
     <rect x="160" y="100" width="52" height="36" rx="6"/><rect x="340" y="100" width="52" height="36" rx="6"/>
     <rect x="520" y="100" width="52" height="36" rx="6"/><rect x="700" y="100" width="52" height="36" rx="6"/>
   </g>
 
-  <g fill="rgba(var(--tone-5-rgb),0.20)" stroke="var(--tone-5)" stroke-width="1.5">
+  <g fill="rgba(224,82,82,0.22)" stroke="#e05252" stroke-width="1.5">
     <rect x="220" y="40" width="52" height="36" rx="6"/><rect x="400" y="40" width="52" height="36" rx="6"/>
     <rect x="580" y="40" width="52" height="36" rx="6"/><rect x="760" y="40" width="52" height="36" rx="6"/>
     <rect x="220" y="100" width="52" height="36" rx="6"/><rect x="400" y="100" width="52" height="36" rx="6"/>
@@ -1770,11 +1771,25 @@ addContent(`
     <text x="666" y="124">0</text><text x="726" y="124">1</text><text x="786" y="124">2</text>
   </g>
 
+  <g fill="#4caf50">
+    <circle cx="126" cy="170" r="13"/><circle cx="306" cy="170" r="13"/>
+    <circle cx="486" cy="170" r="13"/><circle cx="666" cy="170" r="13"/>
+  </g>
+  <g fill="var(--tone-5)">
+    <circle cx="186" cy="170" r="13"/><circle cx="366" cy="170" r="13"/>
+    <circle cx="546" cy="170" r="13"/><circle cx="726" cy="170" r="13"/>
+  </g>
+  <g fill="#e05252">
+    <circle cx="246" cy="170" r="13"/><circle cx="426" cy="170" r="13"/>
+    <circle cx="606" cy="170" r="13"/><circle cx="786" cy="170" r="13"/>
+  </g>
+
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.6" text-anchor="start">
-    <text x="100" y="162">το n μεγαλώνει χωρίς όριο· το n % 3 μένει πάντα μέσα στο 0-2 και ξαναρχίζει κάθε τρία βήματα</text>
+    <text x="100" y="206">το n μεγαλώνει χωρίς όριο· το n % 3 μένει πάντα μέσα στο 0-2 και ξαναρχίζει κάθε τρία βήματα</text>
   </g>
 </svg>
 
+<h3>Decimal</h3>
 <p>
     Το πιο γνωστό παράδειγμα αυτής της ιδέας το χρησιμοποιείς ήδη καθημερινά: το
     <code>x % 10</code> δίνει πάντα το τελευταίο ψηφίο ενός αριθμού (<code>47 % 10</code> είναι
@@ -1782,10 +1797,148 @@ addContent(`
     επαναλαμβάνονται κυκλικά από 0 έως 9 — ακριβώς όπως ο σηματοδότης. Γι' αυτό λέγεται
     <strong>base 10</strong>: μετράει σε κύκλους μήκους 10.
 </p>
-
+<h3>Hex</h3>
 <p>
     Η ίδια λογική ισχύει σε οποιαδήποτε βάση. Στο <strong>δεκαεξαδικό</strong> (base 16, hexadecimal) — που
     ίσως έχεις δει σε αριθμούς όπως ο <code>ff5733</code> — τα ψηφία είναι 0 έως 15 (γραμμένα <code>0-9</code> και μετά <code>a-f</code>), δηλαδή κύκλοι μήκους 16, και το <code>x % 16</code> δίνει το τελευταίο τους ψηφίο. Το <code>%</code> δεν ξέρει τίποτα για ψηφία ή συστήματα αρίθμησης — απλά μετράει κύκλους όποιου μήκους του ζητήσεις.
+</p>
+
+<p>
+    Δες τον κύκλο να ξαναρχίζει, ακριβώς όπως στον σηματοδότη — απλά εδώ έχει μήκος 16 αντί για 3:
+</p>
+
+<svg viewBox="0 0 900 414" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:960px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <g stroke="currentColor" stroke-opacity="0.22" stroke-width="1" fill="none">
+    <rect x="130" y="28"  width="754" height="70" rx="8"/>
+    <rect x="130" y="120" width="754" height="70" rx="8"/>
+    <rect x="130" y="212" width="754" height="70" rx="8"/>
+    <rect x="130" y="304" width="754" height="70" rx="8"/>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.7" text-anchor="end">
+    <text x="116" y="48">Dec — base10</text><text x="116" y="84">Hex — base16</text>
+    <text x="116" y="140">Dec — base10</text><text x="116" y="176">Hex — base16</text>
+    <text x="116" y="232">Dec — base10</text><text x="116" y="268">Hex — base16</text>
+    <text x="116" y="324">Dec — base10</text><text x="116" y="360">Hex — base16</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" fill="currentColor" text-anchor="middle">
+    <text x="154" y="48">0</text><text x="201" y="48">1</text><text x="248" y="48">2</text><text x="295" y="48">3</text>
+    <text x="342" y="48">4</text><text x="389" y="48">5</text><text x="436" y="48">6</text><text x="483" y="48">7</text>
+    <text x="530" y="48">8</text><text x="577" y="48">9</text><text x="624" y="48">10</text><text x="671" y="48">11</text>
+    <text x="718" y="48">12</text><text x="765" y="48">13</text><text x="812" y="48">14</text><text x="859" y="48">15</text>
+
+    <text x="154" y="140">16</text><text x="201" y="140">17</text><text x="248" y="140">18</text><text x="295" y="140">19</text>
+    <text x="342" y="140">20</text><text x="389" y="140">21</text><text x="436" y="140">22</text><text x="483" y="140">23</text>
+    <text x="530" y="140">24</text><text x="577" y="140">25</text><text x="624" y="140">26</text><text x="671" y="140">27</text>
+    <text x="718" y="140">28</text><text x="765" y="140">29</text><text x="812" y="140">30</text><text x="859" y="140">31</text>
+
+    <text x="154" y="232">32</text><text x="201" y="232">33</text><text x="248" y="232">34</text><text x="295" y="232">35</text>
+    <text x="342" y="232">36</text><text x="389" y="232">37</text><text x="436" y="232">38</text><text x="483" y="232">39</text>
+    <text x="530" y="232">40</text><text x="577" y="232">41</text><text x="624" y="232">42</text><text x="671" y="232">43</text>
+    <text x="718" y="232">44</text><text x="765" y="232">45</text><text x="812" y="232">46</text><text x="859" y="232">47</text>
+
+    <text x="154" y="324">48</text><text x="201" y="324">49</text><text x="248" y="324">50</text><text x="295" y="324">51</text>
+    <text x="342" y="324">52</text><text x="389" y="324">53</text><text x="436" y="324">54</text><text x="483" y="324">55</text>
+    <text x="530" y="324">56</text><text x="577" y="324">57</text><text x="624" y="324">58</text><text x="671" y="324">59</text>
+    <text x="718" y="324">60</text><text x="765" y="324">61</text><text x="812" y="324">62</text><text x="859" y="324">63</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="var(--tone-4)" text-anchor="middle">
+    <text x="154" y="84">0</text><text x="201" y="84">1</text><text x="248" y="84">2</text><text x="295" y="84">3</text>
+    <text x="342" y="84">4</text><text x="389" y="84">5</text><text x="436" y="84">6</text><text x="483" y="84">7</text>
+    <text x="530" y="84">8</text><text x="577" y="84">9</text>
+  </g>
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="var(--tone-5)" font-weight="700" text-anchor="middle">
+    <text x="624" y="84">a</text><text x="671" y="84">b</text><text x="718" y="84">c</text>
+    <text x="765" y="84">d</text><text x="812" y="84">e</text><text x="859" y="84">f</text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" text-anchor="middle">
+    <text x="154" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">0</tspan></text>
+    <text x="201" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">1</tspan></text>
+    <text x="248" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">2</tspan></text>
+    <text x="295" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">3</tspan></text>
+    <text x="342" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">4</tspan></text>
+    <text x="389" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">5</tspan></text>
+    <text x="436" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">6</tspan></text>
+    <text x="483" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">7</tspan></text>
+    <text x="530" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">8</tspan></text>
+    <text x="577" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">9</tspan></text>
+    <text x="624" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">a</tspan></text>
+    <text x="671" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">b</tspan></text>
+    <text x="718" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">c</tspan></text>
+    <text x="765" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">d</tspan></text>
+    <text x="812" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">e</tspan></text>
+    <text x="859" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">f</tspan></text>
+
+    <text x="154" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">0</tspan></text>
+    <text x="201" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">1</tspan></text>
+    <text x="248" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">2</tspan></text>
+    <text x="295" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">3</tspan></text>
+    <text x="342" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">4</tspan></text>
+    <text x="389" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">5</tspan></text>
+    <text x="436" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">6</tspan></text>
+    <text x="483" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">7</tspan></text>
+    <text x="530" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">8</tspan></text>
+    <text x="577" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">9</tspan></text>
+    <text x="624" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">a</tspan></text>
+    <text x="671" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">b</tspan></text>
+    <text x="718" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">c</tspan></text>
+    <text x="765" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">d</tspan></text>
+    <text x="812" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">e</tspan></text>
+    <text x="859" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">f</tspan></text>
+
+    <text x="154" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">0</tspan></text>
+    <text x="201" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">1</tspan></text>
+    <text x="248" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">2</tspan></text>
+    <text x="295" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">3</tspan></text>
+    <text x="342" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">4</tspan></text>
+    <text x="389" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">5</tspan></text>
+    <text x="436" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">6</tspan></text>
+    <text x="483" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">7</tspan></text>
+    <text x="530" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">8</tspan></text>
+    <text x="577" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">9</tspan></text>
+    <text x="624" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">a</tspan></text>
+    <text x="671" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">b</tspan></text>
+    <text x="718" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">c</tspan></text>
+    <text x="765" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">d</tspan></text>
+    <text x="812" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">e</tspan></text>
+    <text x="859" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">f</tspan></text>
+  </g>
+
+  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.6" text-anchor="start">
+    <text x="130" y="400">το τονισμένο ψηφίο είναι το x % 16 · κάθε σειρά προσθέτει ένα ψηφίο μπροστά, ο κύκλος συνεχίζεται</text>
+  </g>
+</svg>
+
+<h3>Δεκάδες, εκατοντάδες και ψηφία σε Decimal</h3>
+<p>
+    Επιστρέφοντας στο δεκαδικό "κανονικό" σύστημα αρίθμησης (decimal), το ίδιο ισχύει και για μεγαλύτερους κύκλους: το <code>x % 100</code> κρατάει τα
+    <strong>δύο</strong> τελευταία ψηφία (<code>4265 % 100</code> είναι <code>65</code>), το
+    <code>x % 1000</code> <strong>τρία</strong> τελευταία ψηφία (<code>4265 % 100</code> είναι <code>265</code>).
+</p>
+
+<p>
+    Αν θέλεις όχι τα τελευταία ψηφία αλλά ένα <strong>συγκεκριμένο</strong> ψηφίο, το <code>%</code> από
+    μόνο του δεν φτάνει — χρειάζεται πρώτα ακέραια διαίρεση, που σπρώχνει τα ψηφία δεξιά και πετάει όσα
+    περισσεύουν. Το <code>472 / 10</code> δίνει <code>47</code>: το <code>2</code> έφυγε και οι δεκάδες
+    βρέθηκαν στη θέση των μονάδων. Από εκεί, το <code>% 10</code> τις απομονώνει:
+</p>
+
+<pre><code class="lang-go">x := 472
+
+units := x % 10           // 2   - last digit, nothing to shift
+tens := x / 10 % 10       // 7   - shift one place right, then take the last digit
+hundreds := x / 100 % 10  // 4   - shift two places right, then take the last digit
+</code></pre>
+
+<p>
+    Ο κανόνας γενικεύεται: <strong>διαιρείς με <code>10</code> τόσες φορές όσες θέσεις θέλεις να
+    μετακινηθείς, και μετά παίρνεις <code>% 10</code></strong>. Πρόσεξε ότι το <code>/</code> και το
+    <code>%</code> έχουν την ίδια προτεραιότητα και εκτελούνται από αριστερά προς τα δεξιά, οπότε το
+    <code>x / 10 % 10</code> διαβάζεται ως <code>(x / 10) % 10</code> — δεν χρειάζονται παρενθέσεις, αλλά
+    δεν βλάπτουν αν σε βοηθούν να το διαβάζεις.
 </p>
 
 <div class="callout">
@@ -2159,7 +2312,7 @@ func main() {
         addFillBlank([
             {
                 code: `result := 7 __op1__ 2   // result is 1
-count += 1              // shorthand for count = count __op2__ 1
+count += 1           // shorthand for count = count __op2__ 1
 half := 9 __op3__ 2     // half is 4 - integer division truncates`,
                 blanks: [
                     { id: "op1", answer: "%" },
@@ -2184,7 +2337,7 @@ result3 := 20 - 3 * 4    // result3 is __val3__`,
             {
                 code: `result1 := 7 % 3        // result1 is __val1__
 result2 := 10 % 5       // result2 is __val2__
-result3 := 2 + 9 % 4    // result3 is __val3__ (% has the same precedence as *, before +)`,
+result3 := 2 + 9 % 4    // result3 is __val3__`,
                 blanks: [
                     { id: "val1", answer: "1" },
                     { id: "val2", answer: "0" },
@@ -2194,8 +2347,8 @@ result3 := 2 + 9 % 4    // result3 is __val3__ (% has the same precedence as *, 
                 lang: "go"
             },
             {
-                code: `result1 := 5 % 12    // result1 is __val1__ (12 doesn't fit into 5 at all - quotient is 0)
-result2 := 938 % 10  // result2 is __val2__ (the last digit)
+                code: `result1 := 5 % 12    // result1 is __val1__
+result2 := 938 % 10  // result2 is __val2__
 result3 := 50 % 7    // result3 is __val3__`,
                 blanks: [
                     { id: "val1", answer: "5" },
@@ -2219,8 +2372,9 @@ result3 := 50 % 7    // result3 is __val3__`,
   <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι operators μέσα σε μια έκφραση</td></tr>
   <tr><td class="gt-term">Ακέραια διαίρεση</td><td class="gt-def">/ με δύο int — κόβει το δεκαδικό μέρος, δεν στρογγυλοποιεί</td></tr>
   <tr><td class="gt-term">Modulo (%)</td><td class="gt-def">το υπόλοιπο της ακέραιας διαίρεσης — δίνει τη θέση μέσα σε έναν κύκλο</td></tr>
-  <tr><td class="gt-term">Base 10 / base 16</td><td class="gt-def">το μήκος του κύκλου των ψηφίων: 0-9 στο δεκαδικό, 0-f στο δεκαεξαδικό</td></tr>
-  <tr><td class="gt-term">Bit</td><td class="gt-def">ένα δυαδικό ψηφίο· κάθε θέση αξίζει διπλάσια από τη διπλανή της δεξιά</td></tr>
+  <tr><td class="gt-term">Base 10 / base 16</td><td class="gt-def">διαφορετικά συστήματα αρίθμησης με τα εξής ψηφία: 0-9 στο δεκαδικό, 0-f στο δεκαεξαδικό</td></tr>
+  <tr><td class="gt-term">Binary (base 2)</td><td class="gt-def">σύστημα αρίθμησης με ψηφία μόνο 0 και 1 — το χρησιμοποιούν οι υπολογιστές γιατί κάθε transistor στη μνήμη τους ή άγει ρεύμα (1) ή όχι (0)</td></tr>
+  <tr><td class="gt-term">Bit</td><td class="gt-def">ένα μεμονωμένο 0 ή 1 — ένα ψηφίο του δυαδικού</td></tr>
 </table>
 `);
 
