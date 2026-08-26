@@ -2,6 +2,12 @@
 <html lang="el">
 
 <head>
+  <script>
+    window.__initialHash = location.hash;
+    if (location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Δίκτυα, TCP/UDP &amp; Cybersecurity</title>
