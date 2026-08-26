@@ -1292,7 +1292,8 @@ function getDotPreviewText(contentEl, type, idx, total, isFinalQuiz) {
   return { eyebrow, title };
 }
 
-let deckEl, dotsEl, dotsTrackEl, counterEl, fillEl, prevBtn, nextBtn, resetBtn;
+let deckEl, dotsEl, dotsTrackEl, counterEl, fillEl, prevBtn, nextBtn;
+let tocSidebarEl, tocBackdropEl, tocOpenBtn, tocCloseBtn, tocResetBtn, tocCloseFooterBtn;
 let slideEls, dotEls;
 let notifyUrl = null; // set via initSlideDeck({ notifyUrl: "..." }); null = feature off
 
@@ -1580,6 +1581,15 @@ function goTo(i) {
   slideEls[current].classList.add("active");
   dotEls[current].classList.add("active");
   slideEls[current].scrollTop = 0;
+  // This site has no intentional horizontal scrolling anywhere — a bug
+  // elsewhere (scrollIntoView reacting to a too-wide slide) once left the
+  // whole page shoved sideways with no way back, since nothing reset it.
+  // goTo() is the one place every navigation path (Next/Back, dots, hash
+  // links) always passes through, so resetting it here unconditionally on
+  // every slide switch is the most reliable fix — even if the underlying
+  // width issue on some slide isn't found/fixed, this can't get stuck again.
+  window.scrollTo({ left: 0 });
+  slideEls[current].scrollLeft = 0;
   centerDotsOn(current); // re-center the windowed dots track on the new active dot
   updateGroupBadge(current);
 
@@ -1604,10 +1614,320 @@ function performHardReset() {
 }
 
 /**
+ * Wires up the left-hand Contents sidebar: open/close via its own trigger
+ * button (#btn-toc, formerly "Reset Progress" — that action now lives
+ * inside the sidebar itself, see #btn-reset-inner below), the backdrop,
+ * clicking the backdrop, and Escape. Called once from initSlideDeck().
+ *
+ * Defensive on purpose: this course template is shared across every course
+ * HTML file, but the sidebar's own markup is added to each file one at a
+ * time by hand. A file that hasn't been patched yet simply won't have
+ * #toc-sidebar etc. in its DOM — rather than throwing (which would abort
+ * the REST of initSlideDeck() too, breaking slide rendering entirely on
+ * any not-yet-patched file), this checks for the elements first and skips
+ * wiring quietly if they're missing. Old files keep working exactly as
+ * before; the sidebar just isn't there until that file gets the markup.
+ *
+ * This wires the open/close SHELL only. #toc-list (the heading list) and
+ * #toc-search (client-side search) are inert placeholders in the markup
+ * for now — populated by later additions to this same file, so index.html
+ * doesn't need touching again for those.
+ */
+/**
+ * Inline "press again to confirm" pattern for Reset Progress — no popup.
+ * First click turns the button red with a confirming label for 3s; a
+ * SECOND click within that window actually resets. No second click in
+ * time, and it just reverts back to normal on its own.
+ * @param {MouseEvent} e
+ */
+let resetConfirmTimeout = null;
+function handleResetClick(e) {
+  const btn = e.currentTarget;
+  if (btn.classList.contains("confirming")) {
+    clearTimeout(resetConfirmTimeout);
+    performHardReset();
+    return;
+  }
+  const originalText = btn.textContent;
+  const originalTitle = btn.title;
+  btn.classList.add("confirming");
+  btn.textContent = "Confirm Reset";
+  btn.title = "Σίγουρα; Πάτα ξανά";
+  resetConfirmTimeout = setTimeout(() => {
+    btn.classList.remove("confirming");
+    btn.textContent = originalText;
+    btn.title = originalTitle;
+  }, 3000);
+}
+
+function initTocSidebar() {
+  tocSidebarEl = document.getElementById("toc-sidebar");
+  tocBackdropEl = document.getElementById("toc-backdrop");
+  tocOpenBtn = document.getElementById("btn-toc");
+  tocCloseBtn = document.getElementById("toc-close");
+  tocResetBtn = document.getElementById("btn-reset-inner");
+  tocCloseFooterBtn = document.getElementById("btn-toc-close-footer"); // optional — see below
+
+  // Any one of these missing means this file hasn't been patched with the
+  // sidebar markup yet — bail out quietly, nothing else in this function runs.
+  if (!tocSidebarEl || !tocBackdropEl || !tocOpenBtn || !tocCloseBtn || !tocResetBtn) {
+    return;
+  }
+
+  function openToc() {
+    tocSidebarEl.classList.add("open");
+    tocBackdropEl.classList.add("open");
+  }
+
+  function closeToc() {
+    tocSidebarEl.classList.remove("open");
+    tocBackdropEl.classList.remove("open");
+  }
+
+  tocOpenBtn.addEventListener("click", openToc);
+  tocCloseBtn.addEventListener("click", closeToc);
+  tocBackdropEl.addEventListener("click", closeToc);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeToc();
+  });
+
+  // Navigating anywhere (e.g. clicking a .toc-link — see the shared
+  // "hashchange" listener elsewhere in this file for the actual jump
+  // logic) should close the sidebar ONLY on mobile — there, it covers the
+  // whole screen, so you can't see where you landed until it closes. On
+  // desktop it's a side drawer that doesn't block the content, so it stays
+  // open — lets you click through several TOC entries in a row without
+  // reopening it each time. Same breakpoint the rest of the nav uses.
+  window.addEventListener("hashchange", () => {
+    const isMobile = window.matchMedia("(max-width: 920px)").matches;
+    if (isMobile && tocSidebarEl.classList.contains("open")) closeToc();
+  });
+
+  tocResetBtn.addEventListener("click", handleResetClick);
+
+  // Soft-checked on its own, separately from the required set above: a file
+  // that only has the ORIGINAL sidebar footer (just the Reset button, no
+  // close-styled-like-Contents button yet) still works fine — it just won't
+  // have this specific extra close affordance until it's patched for it too.
+  if (tocCloseFooterBtn) {
+    tocCloseFooterBtn.addEventListener("click", closeToc);
+  }
+
+  // ── search ──────────────────────────────────────────────────────────
+  // Also soft-checked: #toc-search / #toc-list existing is what earlier
+  // steps already require, but this stays defensive/consistent with the
+  // rest of this function rather than assuming.
+  const tocSearchEl = document.getElementById("toc-search");
+  const tocListEl = document.getElementById("toc-list");
+  if (tocSearchEl && tocListEl) {
+    // Built ONCE from the live DOM — every slide already exists (see the
+    // note at the top of decorateSpoilers() for why), so there's nothing
+    // to fetch or wait for. Indexes by "content leaf" elements rather than
+    // raw text nodes: a <p> containing "some <strong>bold</strong> text"
+    // is one entry with the FULL merged text ("some bold text"), not three
+    // separate fragments a query could fall between the cracks of. Each
+    // entry's own element doubles as the jump target — no ids needed here,
+    // unlike the static extract_toc.go-generated heading links.
+    const SEARCH_SELECTOR = "p, h1, h2, h3, li, td, .lede, pre code, blockquote";
+    const MAX_RESULTS = 50; // defensive cap for a very short/common query, not a normal case
+
+    const searchIndex = [];
+    document.querySelectorAll(".slide").forEach((slide) => {
+      slide.querySelectorAll(SEARCH_SELECTOR).forEach((el) => {
+        const text = el.textContent.trim();
+        if (!text) return;
+        searchIndex.push({ el, text, textLower: text.toLowerCase() });
+      });
+    });
+
+    const originalTocListHTML = tocListEl.innerHTML; // browse mode — restored when the search box is cleared
+
+    function renderResults(query) {
+      const q = query.trim().toLowerCase();
+      if (!q) {
+        tocListEl.innerHTML = originalTocListHTML;
+        return;
+      }
+
+      const matches = searchIndex.filter((entry) => entry.textLower.includes(q)).slice(0, MAX_RESULTS);
+      tocListEl.innerHTML = "";
+
+      if (matches.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "toc-search-empty";
+        empty.textContent = "Καμία αντιστοιχία";
+        tocListEl.appendChild(empty);
+        return;
+      }
+
+      matches.forEach((entry) => {
+        const a = document.createElement("a");
+        a.className = "toc-link toc-search-result";
+        a.textContent = entry.text;
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          jumpToElement(entry.el);
+          const isMobile = window.matchMedia("(max-width: 920px)").matches;
+          if (isMobile) closeToc();
+        });
+        tocListEl.appendChild(a);
+      });
+    }
+
+    let searchDebounce = null;
+    tocSearchEl.addEventListener("input", () => {
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => renderResults(tocSearchEl.value), 200);
+    });
+  }
+}
+
+/**
  * Initializes slide deck engine with optional course configuration.
  * @param {Object} [config] - Configuration object containing course version string.
  * @param {string} [config.version="1.0.0"] - Active version string of this lesson.
  */
+/**
+ * The actual "jump to this hash" logic, shared by both the cold-load path
+ * and ongoing in-app navigation (see below) — finds the element, works out
+ * which slide it's in, switches to it, and scrolls to the exact spot.
+ * @param {string} hash - includes the leading '#', e.g. "#@some-slug".
+ */
+/**
+ * Animates container.scrollTop from its current value to targetTop, eased
+ * out (fast start, slows into the landing spot) — never touches horizontal
+ * scroll at all, which is exactly why this exists instead of
+ * scrollIntoView({behavior:"smooth"}): that also has its own horizontal
+ * positioning logic (see jumpToHash()'s own comment for the bug that
+ * caused), animated or not.
+ * @param {HTMLElement} container
+ * @param {number} targetTop
+ * @param {number} duration - ms
+ */
+function smoothScrollTop(container, targetTop, duration) {
+  const startTop = container.scrollTop;
+  const delta = targetTop - startTop;
+  const startTime = performance.now();
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function step(now) {
+    const t = Math.min(1, (now - startTime) / duration);
+    container.scrollTop = startTop + delta * easeOutCubic(t);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/**
+ * The actual "go to this element" logic — switches to its slide and
+ * smooth-scrolls to it, with a brief highlight flash so it's obvious where
+ * you landed. Shared by jumpToHash() (deep-links, TOC clicks) and search
+ * result clicks below — search matches are arbitrary paragraphs/list
+ * items/code blocks that usually don't have an id at all, so this takes
+ * the element directly instead of looking one up.
+ * @param {HTMLElement} targetEl
+ */
+function jumpToElement(targetEl) {
+  const targetSlide = targetEl.closest(".slide");
+  if (!targetSlide) return;
+
+  const slideIndex = parseInt(targetSlide.dataset.index, 10);
+  if (isNaN(slideIndex)) return;
+
+  goTo(slideIndex);
+
+  // Wait a frame so goTo()'s active-class switch (display:none -> visible)
+  // has actually applied before measuring/scrolling within it.
+  requestAnimationFrame(() => {
+    // Deliberately NOT scrollIntoView() — it also adjusts HORIZONTAL scroll
+    // position based on the target's bounding box, and some slide content
+    // here is wider than the viewport (e.g. a wide code block). That
+    // combination made scrollIntoView shove the whole PAGE sideways to
+    // "reveal" the target — with no way back, since nothing in this design
+    // has a horizontal scrollbar or any logic that resets it. Computing
+    // and setting scrollTop by hand never touches horizontal position at
+    // all, so this can't happen from here again.
+    const slideRect = targetSlide.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+    const targetTop = targetSlide.scrollTop + (targetRect.top - slideRect.top) - 12;
+    smoothScrollTop(targetSlide, targetTop, 500);
+
+    // Defensive, unconditional reset — this site has no intentional
+    // horizontal scrolling ANYWHERE, so if anything (this bug or a future
+    // one) ever nudges it sideways, undo that every time we navigate,
+    // rather than only fixing the one path that caused it once.
+    window.scrollTo({ left: 0 });
+    targetSlide.scrollLeft = 0;
+
+    // Brief flash so landing somewhere in a long slide is obvious, not just
+    // "the page moved somewhere". Force a reflow before re-adding the class
+    // so it re-triggers even if you jump to the same spot twice in a row.
+    targetEl.classList.remove("toc-jump-highlight");
+    void targetEl.offsetWidth;
+    targetEl.classList.add("toc-jump-highlight");
+    setTimeout(() => targetEl.classList.remove("toc-jump-highlight"), 1600);
+  });
+}
+
+/**
+ * Thin wrapper around jumpToElement() for hash-based callers (deep-links,
+ * static .toc-link entries with href="#@slug") — resolves the id first.
+ * @param {string} hash - includes the leading '#', e.g. "#@some-slug".
+ */
+function jumpToHash(hash) {
+  if (!hash || hash.length < 2) return;
+  const targetEl = document.getElementById(hash.slice(1)); // drop the leading '#'
+  if (!targetEl) return; // no heading/slug on this page matches
+  jumpToElement(targetEl);
+}
+
+/**
+ * Handles a fresh page load that arrives with a URL hash pointing at a
+ * specific heading (e.g. from a link like "00-bash.html#@some-slug",
+ * clicked from outside this page — another course, another site,
+ * anywhere). Called once, right after the normal localStorage-continuation
+ * goTo() in initSlideDeck(), so it overrides "resume where I left off"
+ * when a hash is present — a direct deep-link is a more specific intent.
+ *
+ * Reads window.__initialHash (set by the inline <script> at the very top
+ * of <head>) rather than location.hash — that inline script strips the
+ * hash from the address bar immediately on load, specifically so the
+ * browser's own native scroll-to-fragment attempt never fires at all. That
+ * native attempt is guaranteed broken here (the target heading doesn't
+ * exist in the static HTML — it's only created once this function's
+ * caller, initSlideDeck(), finishes building slides[]), and on top of
+ * that, some browsers retry the native attempt once the target DOES
+ * appear, landing on a still display:none element with undefined (and
+ * inconsistent — hence "only some of the time") scroll behavior. Once this
+ * function is done, it puts the hash back in the address bar via
+ * replaceState (not a normal assignment — that would re-trigger a
+ * hashchange and this whole function again), so the URL still reflects
+ * where you are, for bookmarking/sharing.
+ */
+function handleInitialHashNavigation() {
+  const hash = window.__initialHash;
+  if (!hash || hash.length < 2) return;
+
+  jumpToHash(hash);
+  history.replaceState(null, "", location.pathname + location.search + hash);
+}
+
+// Ongoing in-app navigation — e.g. clicking a .toc-link in the sidebar,
+// which is a completely plain <a href="#@slug">, no click handler of its
+// own. Clicking it is what makes the browser fire "hashchange" (this is
+// the browser's own event, not something wired to the link directly), so
+// listening for that one event covers every such link on the page, without
+// needing any click-delegation code at all. No race to worry about here —
+// unlike the cold-load case above, the page (and every slide) already
+// fully exists by the time this can possibly fire.
+window.addEventListener("hashchange", () => {
+  jumpToHash(location.hash);
+});
+
+
 function initSlideDeck(config) {
   const opts = config || {};
   const courseVersion = opts.version || "1.0.0";
@@ -1622,7 +1942,6 @@ function initSlideDeck(config) {
   fillEl = document.getElementById("progress-fill");
   prevBtn = document.getElementById("btn-prev");
   nextBtn = document.getElementById("btn-next");
-  resetBtn = document.getElementById("btn-reset");
 
   slides.forEach((s, i) => {
     if (s.type === "quiz") {
@@ -1771,8 +2090,12 @@ function initSlideDeck(config) {
   }
 
   slideEls = Array.from(document.querySelectorAll(".slide"));
+  // Moved here (not earlier, near the other DOM-query lines) specifically
+  // because initTocSidebar() builds its search index by walking every
+  // .slide's content — that only works once slides actually exist, and
+  // they don't until the forEach() loops above finish building them.
+  initTocSidebar();
 
-  resetBtn.addEventListener("click", performHardReset);
   document.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.shiftKey && e.key === "F5") {
       e.preventDefault();
@@ -1791,6 +2114,7 @@ function initSlideDeck(config) {
 
   if (current >= slides.length) current = 0;
   goTo(current);
+  handleInitialHashNavigation(); // overrides the line above if the URL has a matching #hash
   // On first load, #dots/#dots-track may not have a finalized layout yet
   // at this exact synchronous point (no paint has happened yet) —
   // clientWidth/scrollWidth/getBoundingClientRect can read 0 or stale

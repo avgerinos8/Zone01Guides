@@ -1121,6 +1121,236 @@ pre code {
 
 /* ── nav ───────────────────────────────────────────────────────────────── ⊃ */
 
+/* ── TOC sidebar ──────────────────────────────────────────────────────── ⊃ */
+/* Markup: #toc-backdrop + #toc-sidebar (header/search/list/footer) — see
+   index.html and initTocSidebar() in script.js. Desktop: slides in from
+   the left. Mobile (<=920px, same breakpoint the rest of the nav uses):
+   drops from the top instead, full width/height — a left-edge drawer
+   would be too cramped on a phone. #toc-list stays empty here; it's
+   populated by later JS (heading list, then search results). */
+#toc-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .2s ease, visibility 0s linear .2s;
+}
+
+#toc-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .2s ease, visibility 0s linear 0s;
+}
+
+#toc-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(420px, 90vw);
+  background: var(--tone-2);
+  border-right: 1px solid rgba(var(--ink-rgb), 0.18);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform .25s ease;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+#toc-sidebar.open {
+  transform: translateX(0);
+}
+
+#toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(var(--ink-rgb), 0.15);
+  flex: none;
+}
+
+#toc-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.toc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toc-icon-btn {
+  background: none;
+  border: 1px solid rgba(var(--ink-rgb), 0.3);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  white-space: nowrap;
+}
+
+#btn-reset-inner {
+  min-width: 128px; /* fits "Reset Progress" / "Confirm Reset" without resizing between states */
+}
+
+/* Close: neutral highlight — it's not a destructive action. */
+#toc-close:hover {
+  background: rgba(var(--ink-rgb), 0.1);
+}
+
+/* Reset: hints red on hover too, ahead of the confirming state below —
+   it's the one action here that's actually destructive. */
+#btn-reset-inner:hover {
+  border-color: var(--wrong);
+  color: var(--wrong);
+}
+
+#toc-search {
+  margin: 14px 20px;
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  background: var(--tone-1);
+  border: 1px solid rgba(var(--ink-rgb), 0.22);
+  border-radius: 7px;
+  color: var(--ink);
+  flex: none;
+}
+
+#toc-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+#toc-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0 20px 20px;
+  scrollbar-width: none; /* Firefox — hide the bar, keep it scrollable */
+}
+
+#toc-list::-webkit-scrollbar {
+  display: none; /* Chrome/Edge/Safari — same */
+}
+
+/* Prep for the next step (populating #toc-list with real heading links) —
+   not used by anything yet, just ready. Each link is single-line and
+   scrolls HORIZONTALLY on its own if its text is too wide for the
+   sidebar, rather than wrapping — with its own visible, styled scrollbar
+   (unlike the vertical one above, which stays hidden). */
+.toc-link {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--tone-text);
+  text-decoration: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  padding: 6px 0;
+}
+
+.toc-link:hover {
+  color: var(--tone-5);
+  cursor: pointer;
+}
+
+.toc-link.toc-h1 {
+  padding-left: 0;
+}
+
+.toc-link.toc-h2 {
+  padding-left: 2ch;
+}
+
+.toc-link.toc-h3 {
+  padding-left: 4ch;
+}
+
+/* Brief flash on whatever you just jumped to (TOC click, deep-link, or a
+   search result) — makes landing somewhere in a long slide obvious. See
+   jumpToElement() in script.js. */
+@keyframes toc-jump-flash {
+  0% {
+    background: rgba(var(--accent-rgb), 0.35);
+  }
+
+  100% {
+    background: transparent;
+  }
+}
+
+.toc-jump-highlight {
+  animation: toc-jump-flash 1.6s ease-out;
+}
+
+.toc-search-empty {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: rgba(var(--ink-rgb), 0.5);
+  padding: 10px 0;
+}
+
+#toc-footer {
+  flex: none;
+  padding: 16px 20px;
+  border-top: 1px solid rgba(var(--ink-rgb), 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#toc-footer .nav-btn {
+  background: var(--tone-3);
+  width: 100%;
+  justify-content: center;
+}
+
+/* The header reset icon is small/compact — tone-3 as a background would
+   look like a full block on a 30px square, so it stays transparent by
+   default (see .toc-icon-btn) and only tints on hover/confirming. */
+
+/* Inline "press again to confirm" state — see the reset-click handler in
+   script.js. Turns red on the first click; a second click within the
+   window actually resets, otherwise it reverts on its own. */
+#btn-reset-inner.confirming {
+  background: var(--wrong);
+  border-color: var(--wrong);
+  color: var(--ink);
+}
+
+@media (max-width: 920px) {
+  #toc-sidebar {
+    left: 0;
+    right: 0;
+    width: 100%;
+    top: 0;
+    bottom: auto;
+    height: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(var(--ink-rgb), 0.18);
+    transform: translateY(-100%);
+  }
+
+  #toc-sidebar.open {
+    transform: translateY(0);
+  }
+}
+
 #nav-bar {
   position: fixed;
   bottom: 0;

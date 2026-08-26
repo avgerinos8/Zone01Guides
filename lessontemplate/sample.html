@@ -65,6 +65,26 @@
 -->
 
 <head>
+  <!-- Must be the very first thing in <head>, inline (not an external
+       file — no time for an extra network round-trip): captures the URL's
+       #hash and immediately strips it from the address bar, BEFORE the
+       browser gets any chance to attempt its own native scroll-to-fragment.
+       That native attempt is guaranteed broken here (the target heading
+       doesn't exist until static/script.js builds all the slides later),
+       and worse, some browsers RETRY it once the target appears — landing
+       on a still-hidden (display:none) element, which produces exactly the
+       "scrolled somewhere wrong" symptom, and only intermittently since the
+       retry timing itself isn't consistent. Stripping the hash here removes
+       every native attempt entirely — see handleHashNavigation() in
+       script.js, which reads window.__initialHash (not location.hash,
+       that's been cleared) and does the whole thing itself, deterministically,
+       once slides actually exist. -->
+  <script>
+    window.__initialHash = location.hash;
+    if (location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>[TOPIC] — Θεωρητικό Υλικό</title>
