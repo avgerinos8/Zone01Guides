@@ -21,14 +21,10 @@
 
     <div id="nav-bar">
         <div class="nav-group">
-            <button class="nav-btn" id="btn-reset">
-                <span class="desktop-text">Reset Progress</span>
-                <span class="mobile-text">Reset</span>
+            <button class="nav-btn" id="btn-toc">
+                <span class="desktop-text">☰</span>
+                <span class="mobile-text">☰</span>
             </button>
-            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
-                <span class="desktop-text">Return</span>
-                <span class="mobile-text">Home</span>
-            </a>
             <button class="nav-btn" id="btn-prev">
                 <span class="desktop-text">←Back</span>
                 <span class="mobile-text">←</span>
@@ -49,12 +45,47 @@
         </div>
     </div>
 
+    <!-- ── Contents sidebar ─────────────────────────────────────────────────
+       Opened by #btn-toc. Reset Progress lives in the header now (compact
+       icon, #btn-reset-inner); Return (Home) moved to the footer. #toc-list
+       is populated by JS (heading list); #toc-search is wired in a later
+       step. See initTocSidebar() in static/script.js. -->
+    <div id="toc-backdrop"></div>
+    <div id="toc-sidebar">
+        <div id="toc-header">
+            <span id="toc-title">Contents</span>
+            <div class="toc-header-actions">
+                <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress"
+                    aria-label="Reset Progress">Reset Progress</button>
+                <button id="toc-close" class="toc-icon-btn" aria-label="Κλείσιμο">✕</button>
+            </div>
+        </div>
+
+        <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+
+        <div id="toc-list">
+            <!-- populated by JS -->
+        </div>
+
+        <div id="toc-footer">
+            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
+                <span class="desktop-text">Return Home</span>
+                <span class="mobile-text">Home</span>
+            </a>
+            <button class="nav-btn" id="btn-toc-close-footer">
+                <span class="desktop-text">Close</span>
+                <span class="mobile-text">Close</span>
+            </button>
+        </div>
+    </div>
+
     <script src="static/script.js?v=20260801"></script>
     <script src="static/notify-progress.js?v=20260818"></script>
     <script src="static/highlighter.js?v=20260801"></script>
-    <script src="static/viz-common.js"></script>
-    <script src="static/viz-sliding-window.js"></script>
-    <script src="static/viz-merge-sort.js"></script>
+    <script src="static/vizJS/viz-common.js?v=20260826"></script>
+    <script src="static/vizJS/viz-sliding-window.js?v=20260826"></script>
+    <script src="static/vizJS/viz-merge-sort.js?v=20260826"></script>
+    <script src="static/vizJS/viz-sudoku.js?v=20260826"></script>
     <script>
         // Course content below.
 
@@ -6548,8 +6579,6 @@ func MaxMeetings(meetings [][2]int) int {
         βρεις, ξέρεις ότι χρειάζεσαι κάτι διαφορετικό, κάτι που θα δούμε στο επόμενο κεφάλαιο (backtracking).
     </p>
 </div>
-
-
 `);
 
         // ── VSCode Challenge (εύκολο) — κλείνει το §7.1 ──────────────────────── ⊃
@@ -7457,22 +7486,32 @@ func PrintSubsetsWithLoop(nums []int, target, index int, chosen []int) {
 board := make([]int, 8)
 </code></pre>
 
-
 <h2>Ο έλεγχος: απειλείται αυτό το τετράγωνο;</h2>
 
 <p>
-    Έχοντας τοποθετήσει μία βασίλισσα θα δούμε την func που ελέγχει αν το τετράγωνο που διαλέξαμε είναι έγκυρο ή όχι.
-    Θα παίρνει ως arguments το board []int και το τετράγωνο που δοκιμάζουμε να τοποθετήσουμε την βασίλισσα row, col int. Δηλαδή πάμε να βάλουμε την βασίλισσα στο board[row] = col.
-    Εάν απειλείται από άλλη βασίλισσα τότε isSafe θα γυρίσει false αλλιώς true.
-    Ο έλεγχος που θα κάνουμε δεν χρειάζεται να ελέγχει τις γραμμές, γιατί λόγω της επιλογής μας για μονοδιάτο πίνακα μπορούμε να βάζουμε μόνο μια βασίλισσα ανά γραμμή. Οπότε μένουν να ελέγξουμε τις στήλες και τις διαγωνίους.
+    Πριν τοποθετήσουμε οποιαδήποτε βασίλισσα, χρειαζόμαστε μια function που απαντάει σε μία ερώτηση: <em>αν
+    βάλω βασίλισσα εδώ, την απειλεί κάποια από όσες έχω ήδη τοποθετήσει;</em> Θα τη λέμε
+    <code>isSafe</code> και θα δέχεται τρία πράγματα: το <code>board</code> με ό,τι έχει τοποθετηθεί μέχρι
+    στιγμής, και τη γραμμή <code>row</code> με τη στήλη <code>col</code> του τετραγώνου που εξετάζουμε —
+    δηλαδή τη θέση που θα γραφόταν ως <code>board[row] = col</code>. Επιστρέφει <code>true</code> αν το
+    τετράγωνο είναι ελεύθερο, <code>false</code> αν απειλείται.
 </p>
 
 <p>
-    Θα κάνουμε loop για όλο το board που έχει βασίλισσες μέχρι στιγμής δηλαδή από 0 μέχρι row (το τετράγωνο που διαλέξαμε).
-    Η σύγκριση της στήλης είναι εύκολη: σύγκριση. Αν υπάρχει ήδη έστω και μια βασίλισσα που είναι σε col θα κάνουμε return false (το τετράγωνο απειλείται) 
-    <br> Οι διαγώνιοι φαίνονται δύσκολες, αλλά δεν είναι — κάθε διαγώνιος έχει
-    μια τιμή που παραμένει σταθερή σε όλα της τα τετράγωνα. Γράψε σε κάθε τετράγωνο την <strong>διαφορά</strong>
-    <code>(γραμμή − στήλη)</code> και το <strong>άθροισμα</strong> <code>(γραμμή + στήλη)</code>, και δες τι γίνεται:
+    Δύο πράγματα μας γλιτώνουν από πολλή δουλειά. Πρώτον, δεν ελέγχουμε ποτέ <strong>γραμμές</strong>: η
+    επιλογή του μονοδιάστατου slice κάνει αδύνατο να υπάρχουν δύο βασίλισσες στην ίδια γραμμή, οπότε δεν
+    υπάρχει τίποτα να ελεγχθεί. Δεύτερον, δεν ελέγχουμε <strong>μετά</strong> από την
+    <code>row</code>: γεμίζουμε από πάνω προς τα κάτω, άρα είναι ακόμα άδειο. Επομένως θα ελέγξουμε τις στήλες και
+    τις διαγώνιους, και μόνο για τις γραμμές <code>0</code> έως <code>row-1</code>.
+</p>
+
+<p>
+    Η στήλη ελέγχεται με μία σύγκριση: αν κάποια από τις ήδη τοποθετημένες βασίλισσες κάθεται στη στήλη
+    <code>col</code>, έχουμε βασίλισσα στην ίδια στήλη, το τετράγωνο απειλείται.
+    <br> Οι διαγώνιοι φαίνονται δυσκολότερες, αλλά δεν είναι — κάθε
+    διαγώνιος έχει μια τιμή που παραμένει <strong>σταθερή</strong> σε όλα της τα τετράγωνα. Γράψε σε κάθε
+    τετράγωνο τη <strong>διαφορά</strong> <code>(γραμμή − στήλη)</code> και το <strong>άθροισμα</strong>
+    <code>(γραμμή + στήλη)</code>, και δες τι γίνεται:
 </p>
 
 <svg viewBox="0 0 700 296" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:820px; height:auto; display:block; margin:18px auto; color:inherit;">
@@ -7526,8 +7565,8 @@ board := make([]int, 8)
 
 <p>
     Δύο τετράγωνα βρίσκονται στην ίδια διαγώνιο ακριβώς όταν έχουν <strong>ίδια διαφορά</strong> ή
-    <strong>ίδιο άθροισμα</strong>. Δεν χρειάζεται να διατρέξεις τη διαγώνιο τετράγωνο-τετράγωνο: δύο
-    συγκρίσεις αρκούν.
+    <strong>ίδιο άθροισμα</strong>. Δεν χρειάζεται λοιπόν να περπατήσεις τη διαγώνιο τετράγωνο-τετράγωνο —
+    δύο συγκρίσεις απαντούν και για τις δύο κατευθύνσεις.
 </p>
 
 <pre><code class="lang-go">// isSafe reports whether a queen at (row, col) is attacked by any
@@ -7547,13 +7586,81 @@ func isSafe(board []int, row, col int) bool {
 }
 </code></pre>
 
+<h3>Τι κάνει, γραμμή προς γραμμή</h3>
+
+<p>
+    Το <code>for r := 0; r &lt; row; r++</code> περνάει από <strong>κάθε ήδη τοποθετημένη</strong>
+    βασίλισσα, και μόνο από αυτές: το <code>r &lt; row</code> σταματάει ακριβώς πριν από τη γραμμή που
+    εξετάζουμε. Το <code>c := board[r]</code> είναι απλώς ένα σύντομο όνομα για τη στήλη της βασίλισσας
+    εκείνης της γραμμής — έτσι, μέσα στο loop, το ζευγάρι <code>(r, c)</code> είναι μια υπάρχουσα βασίλισσα
+    και το ζευγάρι <code>(row, col)</code> είναι το τετράγωνο που δοκιμάζουμε. Οι δύο έλεγχοι συγκρίνουν
+    πάντα αυτά τα δύο ζευγάρια μεταξύ τους.
+</p>
+
+<p>
+    Πρόσεξε ότι και οι δύο έλεγχοι κάνουν <code>return false</code> <strong>αμέσως</strong>. Δεν μας
+    ενδιαφέρει πόσες βασίλισσες απειλούν το τετράγωνο — μία αρκεί για να το απορρίψουμε, οπότε δεν έχει
+    νόημα να συνεχίσουμε το loop. Είναι το ίδιο pattern με το «βγες μόλις βρεις αυτό που ψάχνεις» της
+    Ενότητας 3.
+</p>
+
+<p>
+    Το <code>return true</code> στο τέλος έχει νόημα ακριβώς επειδή βρίσκεται <em>μετά</em> το loop:
+    φτάνουμε εκεί μόνο αν εξετάστηκαν όλες οι υπάρχουσες βασίλισσες και καμία δεν διαμαρτυρήθηκε. Σημαίνει
+    δηλαδή «επέζησε από κάθε έλεγχο», όχι «δεν βρέθηκε τίποτα να ελέγξω».
+</p>
+
+<div class="callout">
+    <span class="tag">Η ειδική περίπτωση της πρώτης γραμμής</span>
+    <p>
+        Όταν <code>row</code> είναι <code>0</code>, η συνθήκη <code>0 &lt; 0</code> είναι ψευδής και το loop
+        δεν εκτελείται ούτε μία φορά. Η function πηγαίνει κατευθείαν στο <code>return true</code>, που είναι
+        και το σωστό: στην πρώτη γραμμή δεν υπάρχει τίποτα από πάνω, άρα κάθε στήλη είναι ελεύθερη. Δεν
+        χρειάστηκε ειδικός χειρισμός — προέκυψε από μόνο του, επειδή η συνθήκη του loop είναι σωστά
+        διατυπωμένη.
+    </p>
+</div>
+
+<h3>Ένα πραγματικό παράδειγμα</h3>
+
+<p>
+    Πάρε την κατάσταση της τρίτης εικόνας παραπάνω: <code>board = [0, 2]</code>, δηλαδή βασίλισσα στο
+    <code>(0,0)</code> και στο <code>(1,2)</code>. Δοκιμάζουμε το τετράγωνο <code>(2, 3)</code> — άρα
+    <code>row = 2</code>, <code>col = 3</code>, με <code>row-col = -1</code> και <code>row+col = 5</code>:
+</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">r</td><td class="gt-term">βασίλισσα</td><td class="gt-def">έλεγχοι</td></tr>
+<tr><td class="gt-term">0</td><td class="gt-term">(0, 0)</td><td class="gt-def">στήλη: <code>0 ≠ 3</code> · διαφορά: <code>0 ≠ -1</code> · άθροισμα: <code>0 ≠ 5</code> → περνάει, συνεχίζουμε</td></tr>
+<tr><td class="gt-term">1</td><td class="gt-term">(1, 2)</td><td class="gt-def">στήλη: <code>2 ≠ 3</code> · διαφορά: <code>1-2 = -1</code>, ίδια με το <code>-1</code> → <strong>return false</strong></td></tr>
+</table>
+
+<p>
+    Η βασίλισσα του <code>(1,2)</code> και το τετράγωνο <code>(2,3)</code> έχουν και τα δύο διαφορά
+    <code>-1</code>, δηλαδή κάθονται στην ίδια «\» διαγώνιο — και πράγματι, το <code>(2,3)</code> είναι
+    ακριβώς κάτω-δεξιά από το <code>(1,2)</code>. Ο έλεγχος το εντόπισε χωρίς να κοιτάξει καθόλου τη
+    σκακιέρα: με δύο αφαιρέσεις.
+</p>
+
+<div class="callout good">
+    <span class="tag">Γιατί έχει σημασία που είναι φθηνός</span>
+    <p>
+        Η <code>isSafe</code> κάνει το πολύ <code>row</code> επαναλήψεις — σε σκακιέρα 8×8, το πολύ επτά.
+        Αυτό δεν είναι λεπτομέρεια απόδοσης: είναι ο λόγος που το pruning αξίζει. Κάθε φορά που η
+        <code>isSafe</code> λέει <code>false</code>, γλιτώνεις ολόκληρο το υποδέντρο κλήσεων που θα ξεκινούσε
+        από εκείνο το τετράγωνο. Πληρώνεις επτά συγκρίσεις για να μην ψάξεις χιλιάδες τοποθετήσεις.
+    </p>
+</div>
+
 <h2>Ο αλγόριθμος</h2>
 
-<pre><code class="lang-go">// SolveQueens tries to fill every row from the given row downwards.
-// It returns true as soon as one full solution is found.
-func SolveQueens(board []int, row int) bool {
+<pre><code class="lang-go">// SolveQueens fills every row from the given row downwards.
+// It returns the finished board, or nil if this branch leads nowhere.
+func SolveQueens(board []int, row int) []int {
     if row == len(board) {
-        return true // base case: every row has a queen - solved
+        // base case: every row has a queen.
+        // board keeps changing after we return, so hand back a snapshot.
+        return append([]int{}, board...)
     }
 
     for col := 0; col &lt; len(board); col++ {
@@ -7561,128 +7668,208 @@ func SolveQueens(board []int, row int) bool {
             continue // PRUNE: attacked square, do not even go down this branch
         }
 
-        board[row] = col               // 1. CHOOSE
-        if SolveQueens(board, row+1) { // 2. EXPLORE
-            return true                //    it worked - stop everything
+        board[row] = col                        // 1. CHOOSE
+        solution := SolveQueens(board, row+1)   // 2. EXPLORE
+        if solution != nil {
+            return solution                     //    it worked - pass it up unchanged
         }
-        board[row] = -1                // 3. UN-CHOOSE
+        board[row] = -1                         // 3. UN-CHOOSE
     }
 
-    return false // no column in this row works - tell the caller to back up
+    return nil // no column in this row works - tell the caller to back up
+}
+
+func main() {
+    board := make([]int, 4)
+    solution := SolveQueens(board, 0)
+    fmt.Println(solution) // [1 3 0 2]
 }
 </code></pre>
 
-
-<h2>Δες το να τρέχει</h2>
+<div class="callout">
+    <span class="tag">Γιατί αντίγραφο και όχι σκέτο <code>return board</code></span>
+    <p>
+        Ολόκληρη η αναδρομή δουλεύει πάνω στο <em>ίδιο</em> slice — κάθε choose και κάθε un-choose γράφει
+        εκεί. Αν επέστρεφες το <code>board</code> αυτούσιο, θα επέστρεφες έναν δείκτη σε κάτι που συνεχίζει
+        να αλλάζει. Το <code>append([]int{}, board...)</code> φτιάχνει καινούριο slice και αντιγράφει μέσα
+        του τις τιμές, οπότε η λύση παγώνει τη στιγμή που βρέθηκε.
+    </p>
+    <p>
+        Εδώ, επειδή σταματάμε στην πρώτη λύση, το αντίγραφο δεν είναι απολύτως απαραίτητο. Γίνεται
+        απαραίτητο τη στιγμή που θα θελήσεις να μαζέψεις <strong>όλες</strong> τις λύσεις σε ένα
+        <code>[][]int</code> — τότε χωρίς αντίγραφο θα κατέληγες με ένα slice γεμάτο δείκτες προς το ίδιο
+        πράγμα.
+    </p>
+</div>
 
 <p>
-    Σε σκακιέρα 4×4 ολόκληρη η εκτέλεση χωράει σε έξι εικόνες. Ο κώδικας είναι ο ίδιος — μόνο το
+    Σε σκακιέρα 4×4 ολόκληρη η εκτέλεση χωράει σε εννέα εικόνες. Ο κώδικας είναι ο ίδιος — μόνο το
     <code>len(board)</code> αλλάζει.
 </p>
 
-<svg viewBox="0 0 740 400" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:900px; height:auto; display:block; margin:18px auto; color:inherit;">
+<svg viewBox="0 0 740 520" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:900px; height:auto; display:block; margin:18px auto; color:inherit;">
   <g fill="rgba(var(--tone-4-rgb),0.30)">
-    <rect x="90" y="64" width="26" height="26"/>
-    <rect x="320" y="64" width="26" height="26"/><rect x="372" y="90" width="26" height="26"/>
-    <rect x="550" y="64" width="26" height="26"/><rect x="602" y="90" width="26" height="26"/>
-    <rect x="90" y="238" width="26" height="26"/><rect x="168" y="264" width="26" height="26"/><rect x="116" y="290" width="26" height="26"/>
-    <rect x="320" y="238" width="26" height="26"/><rect x="398" y="264" width="26" height="26"/><rect x="346" y="290" width="26" height="26"/>
+    <rect x="90" y="14" width="26" height="26"/><rect x="320" y="14" width="26" height="26"/><rect x="372" y="40" width="26" height="26"/>
+    <rect x="550" y="14" width="26" height="26"/><rect x="602" y="40" width="26" height="26"/><rect x="90" y="188" width="26" height="26"/>
+    <rect x="168" y="214" width="26" height="26"/><rect x="116" y="240" width="26" height="26"/><rect x="320" y="188" width="26" height="26"/>
+    <rect x="398" y="214" width="26" height="26"/><rect x="346" y="240" width="26" height="26"/><rect x="576" y="188" width="26" height="26"/>
+    <rect x="116" y="362" width="26" height="26"/><rect x="168" y="388" width="26" height="26"/><rect x="346" y="362" width="26" height="26"/>
+    <rect x="398" y="388" width="26" height="26"/><rect x="320" y="414" width="26" height="26"/>
   </g>
   <g fill="rgba(76,175,80,0.32)">
-    <rect x="576" y="238" width="26" height="26"/><rect x="628" y="264" width="26" height="26"/>
-    <rect x="550" y="290" width="26" height="26"/><rect x="602" y="316" width="26" height="26"/>
+    <rect x="576" y="362" width="26" height="26"/><rect x="628" y="388" width="26" height="26"/><rect x="550" y="414" width="26" height="26"/>
+    <rect x="602" y="440" width="26" height="26"/>
   </g>
 
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" font-weight="700" fill="var(--tone-4)" text-anchor="middle">
-    <text x="103" y="83">Q</text>
-    <text x="333" y="83">Q</text><text x="385" y="109">Q</text>
-    <text x="563" y="83">Q</text><text x="615" y="109">Q</text>
-    <text x="103" y="257">Q</text><text x="181" y="283">Q</text><text x="129" y="309">Q</text>
-    <text x="333" y="257">Q</text><text x="411" y="283">Q</text><text x="359" y="309">Q</text>
+    <text x="103" y="33">Q</text><text x="333" y="33">Q</text><text x="385" y="59">Q</text>
+    <text x="563" y="33">Q</text><text x="615" y="59">Q</text><text x="103" y="207">Q</text>
+    <text x="181" y="233">Q</text><text x="129" y="259">Q</text><text x="333" y="207">Q</text>
+    <text x="411" y="233">Q</text><text x="359" y="259">Q</text><text x="589" y="207">Q</text>
+    <text x="129" y="381">Q</text><text x="181" y="407">Q</text><text x="359" y="381">Q</text>
+    <text x="411" y="407">Q</text><text x="333" y="433">Q</text>
   </g>
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" font-weight="700" fill="#4caf50" text-anchor="middle">
-    <text x="589" y="257">Q</text><text x="641" y="283">Q</text><text x="563" y="309">Q</text><text x="615" y="335">Q</text>
+    <text x="589" y="381">Q</text><text x="641" y="407">Q</text><text x="563" y="433">Q</text><text x="615" y="459">Q</text>
   </g>
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" font-weight="700" fill="#e05252" text-anchor="middle">
-    <text x="563" y="135">✕</text><text x="589" y="135">✕</text><text x="615" y="135">✕</text><text x="641" y="135">✕</text>
-    <text x="333" y="335">✕</text><text x="359" y="335">✕</text><text x="385" y="335">✕</text><text x="411" y="335">✕</text>
+    <text x="563" y="85">✕</text><text x="589" y="85">✕</text><text x="615" y="85">✕</text><text x="641" y="85">✕</text>
+    <text x="333" y="285">✕</text><text x="359" y="285">✕</text><text x="385" y="285">✕</text><text x="411" y="285">✕</text>
   </g>
 
   <g stroke="currentColor" stroke-opacity="0.28" stroke-width="1" fill="none">
-    <line x1="90" y1="64" x2="90" y2="168"/><line x1="90" y1="64" x2="194" y2="64"/><line x1="116" y1="64" x2="116" y2="168"/><line x1="90" y1="90" x2="194" y2="90"/><line x1="142" y1="64" x2="142" y2="168"/><line x1="90" y1="116" x2="194" y2="116"/><line x1="168" y1="64" x2="168" y2="168"/><line x1="90" y1="142" x2="194" y2="142"/><line x1="194" y1="64" x2="194" y2="168"/><line x1="90" y1="168" x2="194" y2="168"/>
-    <line x1="320" y1="64" x2="320" y2="168"/><line x1="320" y1="64" x2="424" y2="64"/><line x1="346" y1="64" x2="346" y2="168"/><line x1="320" y1="90" x2="424" y2="90"/><line x1="372" y1="64" x2="372" y2="168"/><line x1="320" y1="116" x2="424" y2="116"/><line x1="398" y1="64" x2="398" y2="168"/><line x1="320" y1="142" x2="424" y2="142"/><line x1="424" y1="64" x2="424" y2="168"/><line x1="320" y1="168" x2="424" y2="168"/>
-    <line x1="550" y1="64" x2="550" y2="168"/><line x1="550" y1="64" x2="654" y2="64"/><line x1="576" y1="64" x2="576" y2="168"/><line x1="550" y1="90" x2="654" y2="90"/><line x1="602" y1="64" x2="602" y2="168"/><line x1="550" y1="116" x2="654" y2="116"/><line x1="628" y1="64" x2="628" y2="168"/><line x1="550" y1="142" x2="654" y2="142"/><line x1="654" y1="64" x2="654" y2="168"/><line x1="550" y1="168" x2="654" y2="168"/>
-    <line x1="90" y1="238" x2="90" y2="342"/><line x1="90" y1="238" x2="194" y2="238"/><line x1="116" y1="238" x2="116" y2="342"/><line x1="90" y1="264" x2="194" y2="264"/><line x1="142" y1="238" x2="142" y2="342"/><line x1="90" y1="290" x2="194" y2="290"/><line x1="168" y1="238" x2="168" y2="342"/><line x1="90" y1="316" x2="194" y2="316"/><line x1="194" y1="238" x2="194" y2="342"/><line x1="90" y1="342" x2="194" y2="342"/>
-    <line x1="320" y1="238" x2="320" y2="342"/><line x1="320" y1="238" x2="424" y2="238"/><line x1="346" y1="238" x2="346" y2="342"/><line x1="320" y1="264" x2="424" y2="264"/><line x1="372" y1="238" x2="372" y2="342"/><line x1="320" y1="290" x2="424" y2="290"/><line x1="398" y1="238" x2="398" y2="342"/><line x1="320" y1="316" x2="424" y2="316"/><line x1="424" y1="238" x2="424" y2="342"/><line x1="320" y1="342" x2="424" y2="342"/>
-    <line x1="550" y1="238" x2="550" y2="342"/><line x1="550" y1="238" x2="654" y2="238"/><line x1="576" y1="238" x2="576" y2="342"/><line x1="550" y1="264" x2="654" y2="264"/><line x1="602" y1="238" x2="602" y2="342"/><line x1="550" y1="290" x2="654" y2="290"/><line x1="628" y1="238" x2="628" y2="342"/><line x1="550" y1="316" x2="654" y2="316"/><line x1="654" y1="238" x2="654" y2="342"/><line x1="550" y1="342" x2="654" y2="342"/>
+    <line x1="90" y1="14" x2="90" y2="118"/><line x1="90" y1="14" x2="194" y2="14"/>
+    <line x1="116" y1="14" x2="116" y2="118"/><line x1="90" y1="40" x2="194" y2="40"/>
+    <line x1="142" y1="14" x2="142" y2="118"/><line x1="90" y1="66" x2="194" y2="66"/>
+    <line x1="168" y1="14" x2="168" y2="118"/><line x1="90" y1="92" x2="194" y2="92"/>
+    <line x1="194" y1="14" x2="194" y2="118"/><line x1="90" y1="118" x2="194" y2="118"/>
+    <line x1="320" y1="14" x2="320" y2="118"/><line x1="320" y1="14" x2="424" y2="14"/>
+    <line x1="346" y1="14" x2="346" y2="118"/><line x1="320" y1="40" x2="424" y2="40"/>
+    <line x1="372" y1="14" x2="372" y2="118"/><line x1="320" y1="66" x2="424" y2="66"/>
+    <line x1="398" y1="14" x2="398" y2="118"/><line x1="320" y1="92" x2="424" y2="92"/>
+    <line x1="424" y1="14" x2="424" y2="118"/><line x1="320" y1="118" x2="424" y2="118"/>
+    <line x1="550" y1="14" x2="550" y2="118"/><line x1="550" y1="14" x2="654" y2="14"/>
+    <line x1="576" y1="14" x2="576" y2="118"/><line x1="550" y1="40" x2="654" y2="40"/>
+    <line x1="602" y1="14" x2="602" y2="118"/><line x1="550" y1="66" x2="654" y2="66"/>
+    <line x1="628" y1="14" x2="628" y2="118"/><line x1="550" y1="92" x2="654" y2="92"/>
+    <line x1="654" y1="14" x2="654" y2="118"/><line x1="550" y1="118" x2="654" y2="118"/>
+    <line x1="90" y1="188" x2="90" y2="292"/><line x1="90" y1="188" x2="194" y2="188"/>
+    <line x1="116" y1="188" x2="116" y2="292"/><line x1="90" y1="214" x2="194" y2="214"/>
+    <line x1="142" y1="188" x2="142" y2="292"/><line x1="90" y1="240" x2="194" y2="240"/>
+    <line x1="168" y1="188" x2="168" y2="292"/><line x1="90" y1="266" x2="194" y2="266"/>
+    <line x1="194" y1="188" x2="194" y2="292"/><line x1="90" y1="292" x2="194" y2="292"/>
+    <line x1="320" y1="188" x2="320" y2="292"/><line x1="320" y1="188" x2="424" y2="188"/>
+    <line x1="346" y1="188" x2="346" y2="292"/><line x1="320" y1="214" x2="424" y2="214"/>
+    <line x1="372" y1="188" x2="372" y2="292"/><line x1="320" y1="240" x2="424" y2="240"/>
+    <line x1="398" y1="188" x2="398" y2="292"/><line x1="320" y1="266" x2="424" y2="266"/>
+    <line x1="424" y1="188" x2="424" y2="292"/><line x1="320" y1="292" x2="424" y2="292"/>
+    <line x1="550" y1="188" x2="550" y2="292"/><line x1="550" y1="188" x2="654" y2="188"/>
+    <line x1="576" y1="188" x2="576" y2="292"/><line x1="550" y1="214" x2="654" y2="214"/>
+    <line x1="602" y1="188" x2="602" y2="292"/><line x1="550" y1="240" x2="654" y2="240"/>
+    <line x1="628" y1="188" x2="628" y2="292"/><line x1="550" y1="266" x2="654" y2="266"/>
+    <line x1="654" y1="188" x2="654" y2="292"/><line x1="550" y1="292" x2="654" y2="292"/>
+    <line x1="90" y1="362" x2="90" y2="466"/><line x1="90" y1="362" x2="194" y2="362"/>
+    <line x1="116" y1="362" x2="116" y2="466"/><line x1="90" y1="388" x2="194" y2="388"/>
+    <line x1="142" y1="362" x2="142" y2="466"/><line x1="90" y1="414" x2="194" y2="414"/>
+    <line x1="168" y1="362" x2="168" y2="466"/><line x1="90" y1="440" x2="194" y2="440"/>
+    <line x1="194" y1="362" x2="194" y2="466"/><line x1="90" y1="466" x2="194" y2="466"/>
+    <line x1="320" y1="362" x2="320" y2="466"/><line x1="320" y1="362" x2="424" y2="362"/>
+    <line x1="346" y1="362" x2="346" y2="466"/><line x1="320" y1="388" x2="424" y2="388"/>
+    <line x1="372" y1="362" x2="372" y2="466"/><line x1="320" y1="414" x2="424" y2="414"/>
+    <line x1="398" y1="362" x2="398" y2="466"/><line x1="320" y1="440" x2="424" y2="440"/>
+    <line x1="424" y1="362" x2="424" y2="466"/><line x1="320" y1="466" x2="424" y2="466"/>
+    <line x1="550" y1="362" x2="550" y2="466"/><line x1="550" y1="362" x2="654" y2="362"/>
+    <line x1="576" y1="362" x2="576" y2="466"/><line x1="550" y1="388" x2="654" y2="388"/>
+    <line x1="602" y1="362" x2="602" y2="466"/><line x1="550" y1="414" x2="654" y2="414"/>
+    <line x1="628" y1="362" x2="628" y2="466"/><line x1="550" y1="440" x2="654" y2="440"/>
+    <line x1="654" y1="362" x2="654" y2="466"/><line x1="550" y1="466" x2="654" y2="466"/>
   </g>
 
   <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12.5" fill="currentColor" opacity="0.75" text-anchor="middle">
-    <text x="142" y="190">1 · τοποθετώ στο (0,0)</text>
-    <text x="372" y="190">2 · τοποθετώ στο (1,2)</text>
-    <text x="602" y="190">3 · γραμμή 2: καμία στήλη</text>
-    <text x="142" y="364">4 · πίσω· (1,3) και (2,1)</text>
-    <text x="372" y="364">5 · γραμμή 3: πάλι καμία</text>
-    <text x="602" y="364">6 · πίσω ως τη γραμμή 0</text>
+    <text x="142" y="140">1 · τοποθετώ στο (0,0)</text>
+    <text x="372" y="140">2 · τοποθετώ στο (1,2)</text>
+    <text x="602" y="140">3 · γραμμή 2: καμία στήλη</text>
+    <text x="142" y="314">4 · πίσω· (1,3) και (2,1)</text>
+    <text x="372" y="314">5 · γραμμή 3: πάλι καμία</text>
+    <text x="602" y="314">6 · πίσω ως τη γραμμή 0</text>
+    <text x="142" y="488">7 · τοποθετώ στο (1,3)</text>
+    <text x="372" y="488">8 · τοποθετώ στο (2,0)</text>
+    <text x="602" y="488">9 · τοποθετώ στο (3,2)</text>
   </g>
-
   <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
-    <text x="142" y="206">board = [0]</text>
-    <text x="372" y="206">board = [0 2]</text>
-    <text x="602" y="206">αδιέξοδο</text>
-    <text x="142" y="380">board = [0 3 1]</text>
-    <text x="372" y="380">αδιέξοδο</text>
-    <text x="602" y="380">board = [1 3 0 2]</text>
+    <text x="142" y="156">board = [0]</text>
+    <text x="372" y="156">board = [0 2]</text>
+    <text x="602" y="156">αδιέξοδο</text>
+    <text x="142" y="330">board = [0 3 1]</text>
+    <text x="372" y="330">αδιέξοδο</text>
+    <text x="602" y="330">board = [1]</text>
+    <text x="142" y="504">board = [1 3]</text>
+    <text x="372" y="504">board = [1 3 0]</text>
   </g>
+  <text x="602" y="504" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" font-weight="700" fill="#4caf50">[1 3 0 2] — λύση</text>
 </svg>
 
 <p>
-    Πρόσεξε τι έγινε ανάμεσα στην εικόνα 5 και την 6. Το αδιέξοδο στη γραμμή 3 ακύρωσε τη γραμμή 2· η γραμμή
-    2 δεν είχε άλλη στήλη, οπότε ακύρωσε τη γραμμή 1· ούτε εκείνη είχε άλλη, οπότε ακύρωσε τη γραμμή 0. Η
-    πρώτη βασίλισσα, που φαινόταν αθώα, ήταν το πραγματικό λάθος — και χρειάστηκαν <strong>τέσσερα
-    επίπεδα</strong> για να αποδειχθεί.
-</p>
-
-<div class="callout">
-    <span class="tag">Τι λέει το <code>return false</code> της τελευταίας γραμμής</span>
-    <p>
-        Είναι η γραμμή που κάνει δυνατή αυτή την υποχώρηση, και συχνά προσπερνιέται. Σημαίνει:
-        <em>«δοκίμασα κάθε στήλη αυτής της γραμμής, καμία δεν οδηγεί σε λύση»</em>. Ο καλών το παραλαμβάνει
-        ως αποτυχία της δικής του τελευταίας επιλογής, ακυρώνει τη βασίλισσά του, και δοκιμάζει την επόμενη
-        δική του στήλη. Αν εξαντληθούν και οι δικές του, στέλνει με τη σειρά του <code>false</code> ένα
-        επίπεδο πιο πάνω.
-    </p>
-    <p>
-        Δεν υπάρχει πουθενά κώδικας που «διαχειρίζεται την υποχώρηση». Προκύπτει από το ότι κάθε επίπεδο
-        κάνει σωστά τα τρία του βήματα και επιστρέφει ειλικρινά αν τα κατάφερε ή όχι.
-    </p>
-</div>
-
-<div class="callout">
-    <span class="tag">Γιατί το <code>board[row] = -1</code> δεν είναι πάντα απαραίτητο</span>
-    <p>
-        Στη συγκεκριμένη υλοποίηση, η επόμενη επανάληψη θα γράψει αμέσως <code>board[row] = col</code> με νέα
-        τιμή, οπότε το <code>-1</code> σβήνεται ούτως ή άλλως. Το κρατάμε γιατί κάνει φανερό ότι η κατάσταση
-        επαναφέρεται, και γιατί σε προστατεύει αν αργότερα προσθέσεις κώδικα που διαβάζει τον πίνακα ανάμεσα
-        στις δοκιμές. Στο sudoku που ακολουθεί, το ίδιο βήμα είναι απολύτως υποχρεωτικό — και θα δεις γιατί.
-    </p>
-</div>
-
-<br>
-<h1>Sudoku: ο ίδιος σκελετός, άλλος περιορισμός</h1>
-
-<p class="lede">
-    Αν το N-Queens σου φάνηκε εξειδικευμένο, δες τι γίνεται όταν αλλάξεις μόνο τον έλεγχο εγκυρότητας. Ο
-    σκελετός μένει γραμμή προς γραμμή ο ίδιος.
+    Η καρδιά της εκτέλεσης βρίσκεται ανάμεσα στην εικόνα 5 και την 6. Το αδιέξοδο στη γραμμή 3 ακύρωσε τη
+    βασίλισσα της γραμμής 2· η γραμμή 2 δεν είχε άλλη στήλη να δοκιμάσει, οπότε ακύρωσε τη γραμμή 1· ούτε
+    εκείνη είχε άλλη, οπότε ακύρωσε τη γραμμή 0. Η πρώτη βασίλισσα, που φαινόταν αθώα για οκτώ ολόκληρα
+    βήματα, ήταν το πραγματικό λάθος — και χρειάστηκαν <strong>τέσσερα επίπεδα υποχώρησης</strong> για να
+    αποδειχθεί.
 </p>
 
 <p>
-    Το grid είναι <code>[][]int</code> 9×9, όπου το <strong>0 σημαίνει κενό κελί</strong>. Κάθε αριθμός
-    1–9 πρέπει να εμφανίζεται ακριβώς μία φορά σε κάθε γραμμή, κάθε στήλη, και κάθε κουτί 3×3. Τρεις
-    έλεγχοι αντί για δύο, αλλά τίποτα καινούριο ως ιδέα.
+    Από την εικόνα 6 και μετά τα πράγματα κυλάνε χωρίς εμπόδιο: με τη βασίλισσα στο <code>(0,1)</code>, κάθε
+    επόμενη γραμμή βρίσκει αμέσως έγκυρη στήλη και δεν χρειάζεται καμία δεύτερη δοκιμή. Έτσι δουλεύει
+    συνήθως το backtracking — δεν ψάχνει ομοιόμορφα, αλλά εναλλάσσει μεγάλα διαστήματα ομαλής προόδου με
+    απότομες υποχωρήσεις.
+</p>
+
+<div class="callout">
+    <span class="tag">Τι λέει το <code>return nil</code> της τελευταίας γραμμής</span>
+    <p>
+        Είναι η γραμμή που κάνει δυνατή αυτή την υποχώρηση. Σημαίνει:
+        <em>«δοκίμασα κάθε στήλη αυτής της γραμμής, καμία δεν οδηγεί σε λύση»</em>. Ο καλών παίρνει
+        <code>nil</code>, το ερμηνεύει ως αποτυχία της δικής του τελευταίας επιλογής, ακυρώνει τη βασίλισσά
+        του, και δοκιμάζει την επόμενη δική του στήλη. Αν εξαντληθούν και οι δικές του, στέλνει με τη σειρά
+        του <code>nil</code> ένα επίπεδο πιο πάνω.
+    </p>
+    <p>
+        Δεν υπάρχει πουθενά κώδικας που «διαχειρίζεται την υποχώρηση». Προκύπτει από το ότι κάθε επίπεδο
+        κάνει σωστά τα τρία του βήματα και επιστρέφει ειλικρινά είτε τη λύση είτε <code>nil</code>.
+    </p>
+</div>
+
+<h1>Sudoku: ένα πολύ παρόμοιο πρόβλημα</h1>
+
+<p class="lede">
+    Ένα πλέγμα 9×9, χωρισμένο σε εννέα κουτιά 3×3. Κάποια κελιά είναι ήδη συμπληρωμένα και δεν αλλάζουν·
+    τα υπόλοιπα πρέπει να γεμίσουν με ψηφία 1–9, έτσι ώστε <strong>κάθε γραμμή, κάθε στήλη και κάθε
+    κουτί 3×3 να περιέχουν και τα εννέα ψηφία ακριβώς μία φορά</strong>. Το ίδιο πρόβλημα με τις
+    βασίλισσες, με άλλα ρούχα: γεμίζεις θέσεις μία-μία, και κάθε επιλογή περιορίζει τις επόμενες.
+</p>
+
+<p>
+    Αν το N-Queens σου φάνηκε εξειδικευμένο, εδώ θα δεις ότι δεν ήταν. Αλλάζει μόνο ο έλεγχος
+    εγκυρότητας — ο σκελετός choose / explore / un-choose μένει γραμμή προς γραμμή ο ίδιος.
+</p>
+
+<p>
+    Το grid το κρατάμε ως <code>[][]int</code> 9×9, όπου το <strong>0 σημαίνει κενό κελί</strong>. Έτσι
+    δεν χρειάζεται δεύτερη δομή για να θυμόμαστε ποια κελιά μένουν: η ίδια η τιμή το λέει.
+</p>
+
+<h2>Ο έλεγχος</h2>
+
+<p>
+    Χρειαζόμαστε το αντίστοιχο της <code>isSafe</code>: μια function που απαντάει <em>αν γράψω αυτό το
+    ψηφίο εδώ, σπάει κάποιος κανόνας;</em> Υπάρχει όμως μια διαφορά από το N-Queens. Εκεί δεν ελέγχαμε
+    ποτέ γραμμές, γιατί η δομή δεδομένων τις είχε ήδη εγγυηθεί. Εδώ δεν υπάρχει τέτοια εγγύηση — το
+    πλέγμα δέχεται οποιοδήποτε ψηφίο σε οποιοδήποτε κελί, οπότε <strong>και οι τρεις κανόνες πρέπει να
+    ελεγχθούν ρητά</strong>: γραμμή, στήλη, κουτί.
 </p>
 
 <pre><code class="lang-go">// isValidMove reports whether writing val at (row, col) breaks any rule.
+// Cost: 9 row reads + 9 column reads + 9 box reads = 27, always.
 func isValidMove(grid [][]int, row, col, val int) bool {
     for i := 0; i &lt; 9; i++ {
         if grid[row][i] == val || grid[i][col] == val {
@@ -7704,53 +7891,47 @@ func isValidMove(grid [][]int, row, col, val int) bool {
 }
 </code></pre>
 
+<h3>Τι κάνει</h3>
+
 <p>
-    Η μόνη γραμμή που θέλει εξήγηση είναι το <code>(row/3)*3</code>. Δεδομένου ενός κελιού, χρειάζεσαι την
-    πάνω-αριστερή γωνία του κουτιού στο οποίο ανήκει — και την υπολογίζεις με ακέραια διαίρεση:
+    Το πρώτο loop κάνει <strong>δύο δουλειές ταυτόχρονα</strong> με έναν μόνο μετρητή. Το
+    <code>grid[row][i]</code> κρατάει τη γραμμή σταθερή και σαρώνει τις στήλες· το
+    <code>grid[i][col]</code> κρατάει τη στήλη σταθερή και σαρώνει τις γραμμές. Επειδή και τα δύο
+    χρειάζονται ακριβώς εννέα βήματα, χωράνε στο ίδιο loop αντί για δύο ξεχωριστά.
 </p>
 
-<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:820px; height:auto; display:block; margin:18px auto; color:inherit;">
-  <rect x="356" y="118" width="78" height="78" fill="rgba(var(--tone-5-rgb),0.16)"/>
-  <rect x="382" y="144" width="26" height="26" fill="rgba(var(--tone-4-rgb),0.40)"/>
+<p>
+    Το δεύτερο κομμάτι είναι το κουτί. Δεδομένου ενός κελιού, χρειάζεσαι την πάνω-αριστερή του γωνία, και
+    την υπολογίζεις με ακέραια διαίρεση: το <code>(row/3)*3</code> στρογγυλοποιεί προς τα κάτω στο
+    πλησιέστερο πολλαπλάσιο του 3. Οι γραμμές 3, 4 και 5 δίνουν όλες <code>3</code> — δηλαδή δείχνουν στο
+    ίδιο κουτί, που είναι ακριβώς το ζητούμενο. Από εκεί, δύο nested loops σαρώνουν τα εννέα κελιά του.
+</p>
 
-  <g stroke="currentColor" stroke-opacity="0.22" stroke-width="1" fill="none">
-    <line x1="226" y1="40" x2="226" y2="274"/><line x1="252" y1="40" x2="252" y2="274"/>
-    <line x1="304" y1="40" x2="304" y2="274"/><line x1="330" y1="40" x2="330" y2="274"/>
-    <line x1="382" y1="40" x2="382" y2="274"/><line x1="408" y1="40" x2="408" y2="274"/>
-    <line x1="200" y1="66" x2="434" y2="66"/><line x1="200" y1="92" x2="434" y2="92"/>
-    <line x1="200" y1="144" x2="434" y2="144"/><line x1="200" y1="170" x2="434" y2="170"/>
-    <line x1="200" y1="222" x2="434" y2="222"/><line x1="200" y1="248" x2="434" y2="248"/>
-  </g>
-  <g stroke="currentColor" stroke-opacity="0.55" stroke-width="1.8" fill="none">
-    <line x1="200" y1="40" x2="200" y2="274"/><line x1="278" y1="40" x2="278" y2="274"/>
-    <line x1="356" y1="40" x2="356" y2="274"/><line x1="434" y1="40" x2="434" y2="274"/>
-    <line x1="200" y1="40" x2="434" y2="40"/><line x1="200" y1="118" x2="434" y2="118"/>
-    <line x1="200" y1="196" x2="434" y2="196"/><line x1="200" y1="274" x2="434" y2="274"/>
-  </g>
+<p>
+    Και εδώ, όπως στην <code>isSafe</code>, κάθε αποτυχία κάνει <code>return false</code> αμέσως: μία
+    σύγκρουση αρκεί για να απορριφθεί το ψηφίο, δεν έχει νόημα να μετρήσουμε πόσες υπάρχουν. Το
+    <code>return true</code> στο τέλος σημαίνει «πέρασε και από τους τρεις ελέγχους».
+</p>
 
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="11.5" fill="currentColor" opacity="0.45" text-anchor="middle">
-    <text x="213" y="33">0</text><text x="239" y="33">1</text><text x="265" y="33">2</text><text x="291" y="33">3</text><text x="317" y="33">4</text>
-    <text x="343" y="33">5</text><text x="369" y="33">6</text><text x="395" y="33">7</text><text x="421" y="33">8</text>
-  </g>
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="11.5" fill="currentColor" opacity="0.45" text-anchor="end">
-    <text x="192" y="61">0</text><text x="192" y="87">1</text><text x="192" y="113">2</text><text x="192" y="139">3</text><text x="192" y="165">4</text>
-    <text x="192" y="191">5</text><text x="192" y="217">6</text><text x="192" y="243">7</text><text x="192" y="269">8</text>
-  </g>
+<div class="callout">
+    <span class="tag">Το κόστος του ελέγχου</span>
+    <p>
+        Το πλέγμα είναι πάντα 9×9, οπότε ο έλεγχος διαβάζει πάντα το πολύ 27 κελιά, ανεξάρτητα από το
+        πόσο γεμάτο ή άδειο είναι. Είναι δηλαδή <code>O(1)</code> — σταθερός χρόνος. Δεν είναι
+        γενικά χαρακτηριστικό της ιδέας, είναι χαρακτηριστικό του μεγέθους: σε γενικευμένο Sudoku
+        πλέγματος <code>n²×n²</code>, ο ίδιος έλεγχος γίνεται <code>O(n²)</code>. Το κρατάμε στο μυαλό
+        μας, γιατί ο έλεγχος θα κληθεί <em>χιλιάδες</em> φορές και το σταθερό του κόστος πολλαπλασιάζεται.
+    </p>
+</div>
 
-  <circle cx="356" cy="118" r="5" fill="var(--tone-5)"/>
+<h2>Ο αλγόριθμος</h2>
 
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" fill="currentColor">
-    <text x="480" y="96" fill="var(--tone-4)">κελί (4, 7)</text>
-    <text x="480" y="130" opacity="0.85">(4/3)*3 = 1*3 = 3</text>
-    <text x="480" y="154" opacity="0.85">(7/3)*3 = 2*3 = 6</text>
-    <text x="480" y="192" fill="var(--tone-5)">γωνία κουτιού (3, 6)</text>
-  </g>
-  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12.5" fill="currentColor" opacity="0.6">
-    <text x="480" y="226">η ακέραια διαίρεση κόβει το δεκαδικό,</text>
-    <text x="480" y="244">άρα οι γραμμές 3, 4, 5 δίνουν όλες 3 —</text>
-    <text x="480" y="262">δηλαδή δείχνουν στο ίδιο κουτί</text>
-  </g>
-</svg>
+<p>
+    Ο σκελετός είναι ο ίδιος, αλλά με μία διαφορά στην είσοδο. Στο N-Queens ξέραμε πάντα ποια γραμμή
+    γεμίζουμε, γιατί την περνούσαμε ως όρισμα. Εδώ τα κενά κελιά είναι σκορπισμένα, οπότε κάθε κλήση
+    <strong>ψάχνει πρώτη το επόμενο κενό</strong> και δουλεύει πάνω σε αυτό. Δεν χρειάζεται όρισμα
+    θέσης: το ίδιο το grid κουβαλάει την πληροφορία.
+</p>
 
 <pre><code class="lang-go">// SolveSudoku fills every empty cell. It returns true if the puzzle is solvable.
 func SolveSudoku(grid [][]int) bool {
@@ -7776,31 +7957,491 @@ func SolveSudoku(grid [][]int) bool {
             return false // no digit fits here - the caller must change something
         }
     }
-    return true // no empty cell found anywhere - solved
+    return true // base case: no empty cell found anywhere - solved
 }
 </code></pre>
 
-<div class="callout good">
-    <span class="tag">Εδώ το un-choose είναι υποχρεωτικό</span>
+<h3>Τι κάναμε</h3>
+
+<p>
+    Τα δύο εξωτερικά loops δεν είναι εξερεύνηση — είναι <strong>αναζήτηση του πρώτου κενού κελιού</strong>.
+    Το <code>continue</code> προσπερνά ό,τι είναι ήδη συμπληρωμένο, είτε ήταν δοσμένο από την αρχή είτε το
+    γράψαμε εμείς σε προηγούμενο επίπεδο. Μόλις βρεθεί κενό, η αναζήτηση σταματάει εκεί: το εσωτερικό loop
+    δοκιμάζει τα ψηφία 1 έως 9, και ό,τι κι αν συμβεί, η function δεν θα επιστρέψει ποτέ στα εξωτερικά
+    loops.
+</p>
+
+<p>
+    Το εσωτερικό loop είναι ο γνωστός σκελετός. Το <code>continue</code> του κόβει τα ψηφία που σπάνε
+    κανόνα — αυτό είναι το pruning, και είναι ο λόγος που ο αλγόριθμος τελειώνει σε λογικό χρόνο. Ό,τι
+    περνάει τον έλεγχο γράφεται στο κελί (choose), και η αναδρομική κλήση αναλαμβάνει
+    <strong>ολόκληρο</strong> το υπόλοιπο puzzle (explore). Αν επιστρέψει <code>true</code>, το puzzle
+    λύθηκε και η επιτυχία μεταδίδεται προς τα πάνω χωρίς άλλη δουλειά. Αν επιστρέψει <code>false</code>,
+    το ψηφίο σβήνεται (un-choose) και δοκιμάζεται το επόμενο.
+</p>
+
+<p>
+    Μένουν δύο <code>return</code> που είναι εύκολο να μπερδευτούν, επειδή βρίσκονται σε διαφορετικό βάθος
+    και σημαίνουν αντίθετα πράγματα:
+</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">return false</td><td class="gt-def">μέσα στα loops, αφού εξαντληθούν και τα εννέα ψηφία για <em>αυτό</em> το κενό κελί — «δεν χωράει τίποτα εδώ, κάποια προηγούμενη επιλογή ήταν λάθος»</td></tr>
+<tr><td class="gt-term">return true</td><td class="gt-def">στο τέλος της function, όταν τα δύο loops τελείωσαν χωρίς να βρουν κανένα κενό — «δεν έμεινε τίποτα να συμπληρωθεί, το puzzle λύθηκε»</td></tr>
+</table>
+
+<p>
+    Πρόσεξε ότι το <code>return true</code> είναι το base case, και είναι διατυπωμένο ως
+    <strong>απουσία δουλειάς</strong>, όχι ως μέτρημα. Δεν ρωτάμε πουθενά «γέμισαν 81 κελιά;» — ρωτάμε
+    «υπάρχει έστω ένα κενό;», και αν όχι, τελειώσαμε. Είναι η ίδια ιδέα με το <code>row == len(board)</code>
+    του N-Queens: το base case δεν μετράει προόδο, αναγνωρίζει ότι δεν υπάρχει άλλη απόφαση να παρθεί.
+</p>
+
+<h3>Πόσο κοστίζει</h3>
+
+<p>
+    Ας το μετρήσουμε με <code>m</code> = πλήθος κενών κελιών. Κάθε κενό κελί είναι μία απόφαση με το
+    πολύ 9 επιλογές, και οι αποφάσεις στοιβάζονται η μία πάνω στην άλλη σε βάθος <code>m</code>. Άρα
+    το πάνω φράγμα είναι <strong><code>O(9<sup>m</sup>)</code></strong> — εκθετικό, και μάλιστα με
+    τρομακτική βάση. Για <code>m = 44</code> κενά κελιά αυτό είναι ένας αριθμός με 42 ψηφία.
+</p>
+
+<p>
+    Ο λόγος που ο κώδικας παρ' όλα αυτά τελειώνει σε μικροδευτερόλεπτα είναι <strong>αποκλειστικά</strong>
+    το pruning. Το <code>isValidMove</code> δεν αλλάζει το φράγμα — το χειρότερο σενάριο παραμένει
+    <code>O(9<sup>m</sup>)</code> — αλλά στην πράξη σβήνει συντριπτικά μεγαλύτερο μέρος του δέντρου από
+    όσο αφήνει. Το γενικευμένο Sudoku (<code>n²×n²</code>) είναι αποδεδειγμένα
+    <strong>NP-complete</strong>, οπότε κανένας αλγόριθμος γνωστός σήμερα δεν το λύνει σε πολυωνυμικό
+    χρόνο· ό,τι κερδίζουμε από εδώ και πέρα, το κερδίζουμε σε σταθερές και σε πρακτική συμπεριφορά,
+    όχι στην τάξη μεγέθους.
+</p>
+
+<h3>Και αν θέλαμε να ξέρουμε αν η λύση είναι μοναδική;</h3>
+
+<p>
+    Ένα σωστά φτιαγμένο Sudoku έχει <strong>ακριβώς μία</strong> λύση. Ο κώδικας παραπάνω δεν μπορεί
+    να το ελέγξει αυτό: σταματάει στην πρώτη λύση που θα βρει και δεν κοιτάει ποτέ αν υπάρχει δεύτερη.
+    Η αλλαγή είναι μικρότερη απ' ό,τι φαντάζεσαι — αντί για <code>bool</code>, μετράμε:
+</p>
+
+<pre><code class="lang-go">// CountSolutions counts how many ways the grid can be completed, but stops
+// as soon as it has found limit of them. Call it with limit = 2 to answer
+// "is this puzzle well formed?" without exploring the whole search space:
+// 0 = unsolvable, 1 = unique solution, 2 = at least two solutions exist.
+func CountSolutions(grid [][]int, limit int) int {
+    for row := 0; row &lt; 9; row++ {
+        for col := 0; col &lt; 9; col++ {
+            if grid[row][col] != 0 {
+                continue // already filled
+            }
+
+            total := 0
+            for val := 1; val &lt;= 9; val++ {
+                if !isValidMove(grid, row, col, val) {
+                    continue // PRUNE
+                }
+
+                grid[row][col] = val                       // 1. CHOOSE
+                total += CountSolutions(grid, limit-total) // 2. EXPLORE
+                grid[row][col] = 0                         // 3. UN-CHOOSE - ALWAYS
+
+                if total &gt;= limit {
+                    return total // enough answers - no reason to keep looking
+                }
+            }
+
+            // all nine digits tried: total is everything this branch can reach
+            return total
+        }
+    }
+
+    // base case: no empty cell left anywhere, so the grid in front of us IS a
+    // finished solution - and it counts as exactly one
+    return 1
+}
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Το un-choose εκτελείται τώρα και μετά από επιτυχία</span>
     <p>
-        Στο N-Queens η επόμενη επανάληψη ξανάγραφε το κελί, οπότε η επαναφορά ήταν θέμα καθαρότητας. Εδώ όχι:
-        αν κανένα από τα εννέα ψηφία δεν ταιριάζει, φεύγουμε με <code>return false</code> και δεν υπάρχει
-        επόμενη επανάληψη να διορθώσει τίποτα.
+        Στην <code>SolveSudoku</code>, το <code>return true</code> πηδούσε πάνω από το
+        <code>grid[row][col] = 0</code>: αφού είχαμε τελειώσει, το πλέγμα (grid) έμενε επίτηδες γεμάτο με τη
+        λύση. Εδώ δεν γίνεται αυτό. Επειδή ψάχνουμε <em>και</em> δεύτερη λύση, πρέπει να επαναφέρουμε
+        το κελί ακόμα κι όταν η αναδρομική κλήση βρήκε λύση — αλλιώς η αναζήτηση θα συνέχιζε πάνω σε
+        ένα πλέγμα μολυσμένο από την προηγούμενη απάντηση. Το un-choose πέρασε από «καλή πρακτική» σε
+        «απολύτως υποχρεωτικό», με μία μόνο αλλαγή στις προδιαγραφές.
     </p>
     <p>
-        Αν παραλείψεις το <code>grid[row][col] = 0</code>, αφήνεις πίσω σου ένα ψηφίο που μόλις αποδείχθηκε
-        λάθος. Τα ανώτερα επίπεδα θα συνεχίσουν να ψάχνουν πάνω σε ένα grid που δεν αντιστοιχεί στο
-        πραγματικό puzzle, και θα καταλήξουν ότι είναι άλυτο — για λόγους που δεν υπάρχουν στα δεδομένα,
-        αλλά στα σκουπίδια που άφησε ο ίδιος ο αλγόριθμος.
+        Το <code>limit-total</code> είναι κι αυτό pruning, απλώς σε άλλο επίπεδο: λέει στην κλήση από
+        κάτω «μη μου φέρεις παραπάνω απ' όσα μου λείπουν». Έτσι ο έλεγχος μοναδικότητας κοστίζει
+        συνήθως λίγο περισσότερο από την απλή επίλυση, όχι διπλάσιο — αν και το χειρότερο σενάριο
+        παραμένει το ίδιο <code>O(9<sup>m</sup>)</code>. Με αυτή ακριβώς τη function επαληθεύτηκε ότι
+        το grid της οπτικοποίησης παρακάτω έχει μοναδική λύση.
     </p>
 </div>
 
 <p>
-    Δύο εντελώς διαφορετικά προβλήματα, ίδιος σκελετός. Βάλε τις δύο functions δίπλα-δίπλα και οι μόνες
-    ουσιαστικές διαφορές είναι τρεις: <em>τι θεωρείται επιλογή</em> (στήλη ή ψηφίο), <em>τι θεωρείται
-    έγκυρο</em> (<code>isSafe</code> ή <code>isValidMove</code>), και <em>πότε τελειώσαμε</em> (γέμισαν οι
-    γραμμές ή δεν έμεινε κενό κελί). Όλα τα υπόλοιπα είναι το ίδιο pattern.
+    Ώρα να τον δεις να δουλεύει. Το grid παρακάτω έχει 44 κενά κελιά και μοναδική λύση. Πάτα
+    «next step» μερικές φορές για να δεις τον μηχανισμό, και μετά «autoplay» με ταχύτητα ×20 ή ×50
+    για να δεις το συνολικό μέγεθος της δουλειάς. Πρόσεξε ιδιαίτερα το πρώτο κιόλας ψηφίο που θα
+    γραφτεί: είναι λάθος, και θα ξηλωθεί αρκετά αργότερα. Το χοντρό περίγραμμα δείχνει πού
+    <em>στέκεται</em> ο αλγόριθμος· το λεπτό κόκκινο, ποιο υπάρχον ψηφίο προκάλεσε την απόρριψη.
 </p>
+
+<div id="sudoku-naive-viz">
+    <span class="vz-tag">backtracking — πρώτο κενό κελί — algorithm visualization</span>
+    <div class="vz-controls">
+        <button class="reset-quiz-btn" data-vzs="prev">← prev step</button>
+        <button class="reset-quiz-btn" data-vzs="next">next step →</button>
+        <button class="reset-quiz-btn" data-vzs="reset">⟲ reset</button>
+        <button class="reset-quiz-btn vz-btn-stable" data-vzs="play">▶ autoplay ×1 ↕</button>
+        <button class="reset-quiz-btn vz-btn-stable" data-vzs="speed">speed ×1 ⟳</button>
+        <span class="vzs-counter" data-vzs="counter"></span>
+    </div>
+
+    <div class="quiz-code-block">
+        <div class="vzs-layout">
+            <div>
+                <div class="vzs-panel-label">το grid</div>
+                <div class="vz-grid vzs-board" style="--vz-grid-cols:9" data-vzs="board"></div>
+                <div class="vzs-digits" data-vzs="digits"></div>
+            </div>
+            <div>
+                <div class="vzs-panel-label">η γραμμή που εκτελείται</div>
+                <div class="vzs-code" data-vzs="code"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glossary-group">
+        <div class="glossary-strip">
+            <span class="gs-pill"><span class="gs-name">δοκιμές</span><span class="gs-def" data-vzs="stat-att">0</span></span>
+            <span class="gs-pill"><span class="gs-name">τοποθετήσεις</span><span class="gs-def" data-vzs="stat-placed">0</span></span>
+            <span class="gs-pill"><span class="gs-name">backtracks</span><span class="gs-def" data-vzs="stat-back">0</span></span>
+            <span class="gs-pill"><span class="gs-name">βάθος recursion</span><span class="gs-def" data-vzs="stat-depth">0</span></span>
+        </div>
+    </div>
+
+    <p class="vzs-note" data-vzs="note"></p>
+</div>
+
+<h2>Το επόμενο κελί δεν είναι αδιάφορο</h2>
+
+<p>
+    Κοίτα ξανά τα δύο εξωτερικά loops. Διαλέγουν το <strong>πρώτο</strong> κενό κελί που θα συναντήσουν
+    σαρώνοντας από πάνω αριστερά. Γιατί αυτό; Για κανέναν λόγο — απλώς ήταν το πρώτο. Ο αλγόριθμος
+    είναι σωστός με οποιαδήποτε σειρά, οπότε διαλέξαμε την πιο βολική να γραφτεί.
+</p>
+
+<p>
+    Σκέψου όμως δύο κενά κελιά σε ένα μισογεμάτο grid. Στο πρώτο, οι κανόνες αφήνουν
+    <strong>ένα μόνο</strong> ψηφίο να χωρέσει. Στο δεύτερο, χωράνε επτά. Αν ξεκινήσεις από το πρώτο,
+    δεν παίρνεις ρίσκο: η επιλογή είναι υποχρεωτική, δεν υπάρχει τίποτα να αναιρέσεις. Αν ξεκινήσεις
+    από το δεύτερο, κάνεις ένα στοίχημα ένα-στα-επτά, και οι έξι στις επτά φορές θα το ξηλώσεις —
+    αφού πρώτα έχεις χτίσει από πάνω του δεκάδες άλλες αποφάσεις που ξηλώνονται κι αυτές.
+</p>
+
+<p>
+    Αυτή η ιδέα έχει όνομα: <strong>MRV</strong> — <em>Minimum Remaining Values</em>, δηλαδή
+    «ελάχιστες εναπομείνασες τιμές». Θα τη δεις και ως <em>most-constrained-variable</em> ή ως
+    <strong>fail-first</strong>: αν πρόκειται να αποτύχεις, απότυχε όσο πιο νωρίς και όσο πιο ψηλά
+    στο δέντρο γίνεται, γιατί εκεί κάθε αποτυχία ακυρώνει τεράστιο όγκο δουλειάς που δεν θα κάνεις ποτέ.
+</p>
+
+<h3>Ο κώδικας</h3>
+
+<p>
+    Χρειάζεται πρώτα μια function που δεν απαντάει «χωράει αυτό το ψηφίο;» αλλά
+    «<strong>ποια</strong> ψηφία χωράνε;». Είναι η <code>isValidMove</code> γυρισμένη ανάποδα, και
+    κοστίζει το ίδιο <code>O(1)</code>: μία σάρωση της γραμμής, της στήλης και του κουτιού. Η διαφορά
+    είναι ότι απαντάει για <em>και τα εννέα</em> ψηφία μαζί, αντί για ένα κάθε φορά.
+</p>
+
+<pre><code class="lang-go">// candidates returns every digit that may legally go into (row, col).
+// Same 27 cell reads as isValidMove, but it answers for all nine digits.
+func candidates(grid [][]int, row, col int) []int {
+    var used [10]bool
+
+    for i := 0; i &lt; 9; i++ {
+        used[grid[row][i]] = true
+        used[grid[i][col]] = true
+    }
+
+    boxRow, boxCol := (row/3)*3, (col/3)*3
+    for r := boxRow; r &lt; boxRow+3; r++ {
+        for c := boxCol; c &lt; boxCol+3; c++ {
+            used[grid[r][c]] = true
+        }
+    }
+
+    options := make([]int, 0, 9)
+    for val := 1; val &lt;= 9; val++ {
+        if !used[val] {
+            options = append(options, val)
+        }
+    }
+    return options
+}
+</code></pre>
+
+<p>
+    Το <code>used</code> είναι πίνακας 10 θέσεων και όχι 9, ώστε το ψηφίο <code>val</code> να δείχνει
+    κατευθείαν στη θέση <code>used[val]</code> χωρίς αφαιρέσεις. Η θέση 0 απλώς αγνοείται — τη
+    γράφουμε κάθε φορά που συναντάμε κενό κελί, και δεν μας πειράζει.
+</p>
+
+<p>
+    Τώρα η επιλογή του κελιού. Αντί για «το πρώτο κενό», γίνεται «το κενό με τους λιγότερους
+    υποψηφίους»:
+</p>
+
+<pre><code class="lang-go">// findBestCell returns the empty cell with the fewest candidates (MRV).
+// found is false only when there is no empty cell left at all.
+func findBestCell(grid [][]int) (row, col int, options []int, found bool) {
+    fewest := 10
+
+    for r := 0; r &lt; 9; r++ {
+        for c := 0; c &lt; 9; c++ {
+            if grid[r][c] != 0 {
+                continue
+            }
+
+            opts := candidates(grid, r, c)
+            if len(opts) &lt; fewest {
+                row, col, options, fewest, found = r, c, opts, len(opts), true
+                if fewest &lt;= 1 {
+                    return // nothing can beat a single option - stop looking
+                }
+            }
+        }
+    }
+    return
+}
+
+// SolveSudokuMRV fills every empty cell, always starting with the most
+// constrained one. Same three-step skeleton, different cell order.
+func SolveSudokuMRV(grid [][]int) bool {
+    row, col, options, found := findBestCell(grid)
+    if !found {
+        return true // base case: no empty cell left - solved
+    }
+
+    for _, val := range options {
+        grid[row][col] = val      // 1. CHOOSE
+        if SolveSudokuMRV(grid) { // 2. EXPLORE
+            return true
+        }
+        grid[row][col] = 0        // 3. UN-CHOOSE
+    }
+    return false // every candidate failed - the caller must change something
+}
+</code></pre>
+
+<h3>Τι άλλαξε και τι όχι</h3>
+
+<p>
+    Ο σκελετός choose / explore / un-choose είναι <strong>γράμμα προς γράμμα ο ίδιος</strong>. Το base
+    case είναι πάλι απουσία δουλειάς — μόνο που τώρα το λέει η <code>findBestCell</code> με το
+    <code>found == false</code> αντί για δύο loops που τελείωσαν άκαρπα. Ακόμα και το
+    <code>isValidMove</code> δεν χάθηκε: ζει μέσα στην <code>candidates</code>, απλώς απαντάει σε
+    όλα τα ψηφία μαζί αντί για ένα κάθε φορά.
+</p>
+
+<p>
+    Δύο λεπτομέρειες αξίζουν προσοχή. Πρώτον, το <code>if fewest &lt;= 1 { return }</code>: μόλις βρεις
+    κελί με έναν υποψήφιο, δεν υπάρχει καλύτερο, οπότε σταματάς τη σάρωση. Δεύτερον — και είναι δώρο —
+    το ίδιο <code>return</code> πιάνει και την περίπτωση <strong>μηδέν</strong> υποψηφίων. Τότε το
+    <code>options</code> είναι άδειο, το <code>range</code> δεν εκτελείται ούτε μία φορά, και η function
+    επιστρέφει <code>false</code> αμέσως. Ο naive αλγόριθμος θα το ανακάλυπτε κι αυτός, αλλά αφού πρώτα
+    δοκίμαζε και τα εννέα ψηφία σε άλλα κελιά και έχτιζε από πάνω τους.
+</p>
+
+<p>
+    Και ο ίδιος μετρητής λύσεων, με τη νέα επιλογή κελιού — ίδιο base case, ίδιο υποχρεωτικό
+    un-choose:
+</p>
+
+<pre><code class="lang-go">// CountSolutionsMRV is CountSolutions with the MRV cell choice.
+// Same contract: pass limit = 2 to test for a unique solution.
+func CountSolutionsMRV(grid [][]int, limit int) int {
+    row, col, options, found := findBestCell(grid)
+    if !found {
+        // base case: nothing left to decide - this grid is one solution
+        return 1
+    }
+
+    total := 0
+    for _, val := range options {
+        grid[row][col] = val                          // 1. CHOOSE
+        total += CountSolutionsMRV(grid, limit-total) // 2. EXPLORE
+        grid[row][col] = 0                            // 3. UN-CHOOSE - ALWAYS
+
+        if total &gt;= limit {
+            return total // enough answers - no reason to keep looking
+        }
+    }
+    return total // 0 here means this branch cannot be completed at all
+}
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Heuristic δεν είναι pruning</span>
+    <p>
+        Είναι εύκολο να μπερδευτούν, γιατί και τα δύο κάνουν την αναζήτηση φθηνότερη — αλλά με
+        τελείως διαφορετικό μηχανισμό.
+    </p>
+    <table class="glossary-table">
+    <tr><td class="gt-term">pruning — <code>isValidMove</code></td><td class="gt-def"><strong>κόβει κλαδιά.</strong> Υπάρχουν διαδρομές που ο αλγόριθμος δεν κατεβαίνει ποτέ, γιατί αποδεδειγμένα δεν οδηγούν σε λύση. Το δέντρο αναζήτησης γίνεται μικρότερο.</td></tr>
+    <tr><td class="gt-term">heuristic — MRV</td><td class="gt-def"><strong>αλλάζει σειρά.</strong> Δεν κόβει τίποτα: κάθε κλαδί που υπήρχε, υπάρχει ακόμα. Απλώς οι αποφάσεις παίρνονται με τέτοια σειρά ώστε τα κοψίματα που θα γίνονταν ούτως ή άλλως να γίνονται ψηλότερα, όπου το καθένα πετάει εκθετικά περισσότερη δουλειά.</td></tr>
+    </table>
+    <p>
+        Στη notation αυτό φαίνεται καθαρά: το χειρότερο σενάριο και των δύο εκδοχών παραμένει
+        <code>O(9<sup>m</sup>)</code>. Καμία heuristic δεν κατεβάζει την τάξη μεγέθους ενός
+        NP-complete προβλήματος — αλλάζει μόνο πόσο συχνά συναντάς το χειρότερο σενάριο.
+    </p>
+    <p>
+        Το επόμενο σκαλί σε αυτή τη σκάλα λέγεται <strong>constraint propagation</strong> (ή
+        <em>forward checking</em>): μετά από κάθε τοποθέτηση, ενημερώνεις τους υποψηφίους όλων των
+        επηρεαζόμενων κελιών, και αν κάποιο μείνει με μηδέν, γυρνάς πίσω πριν καν δοκιμάσεις. Αυτό
+        είναι πάλι pruning — και δουλεύει ιδανικά μαζί με το MRV, επειδή το MRV χρειάζεται ούτως ή
+        άλλως να ξέρει πόσοι υποψήφιοι έχουν μείνει παντού.
+    </p>
+</div>
+
+<p>
+    Ίδιο πλέγμα, ίδιος σκελετός, μία μόνο αλλαγή: ποιο κελί διαλέγεται κάθε φορά. Κοίτα πρώτα ποιο
+    κελί πιάνει το πρώτο βήμα — δεν είναι το πάνω αριστερά.
+</p>
+
+<div id="sudoku-mrv-viz">
+    <span class="vz-tag">backtracking + MRV — algorithm visualization</span>
+    <div class="vz-controls">
+        <button class="reset-quiz-btn" data-vzs="prev">← prev step</button>
+        <button class="reset-quiz-btn" data-vzs="next">next step →</button>
+        <button class="reset-quiz-btn" data-vzs="reset">⟲ reset</button>
+        <button class="reset-quiz-btn vz-btn-stable" data-vzs="play">▶ autoplay ×1 ↕</button>
+        <button class="reset-quiz-btn vz-btn-stable" data-vzs="speed">speed ×1 ⟳</button>
+        <span class="vzs-counter" data-vzs="counter"></span>
+    </div>
+
+    <div class="quiz-code-block">
+        <div class="vzs-layout">
+            <div>
+                <div class="vzs-panel-label">το πλέγμα</div>
+                <div class="vz-grid vzs-board" style="--vz-grid-cols:9" data-vzs="board"></div>
+                <div class="vzs-digits" data-vzs="digits"></div>
+            </div>
+            <div>
+                <div class="vzs-panel-label">η γραμμή που εκτελείται</div>
+                <div class="vzs-code" data-vzs="code"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="glossary-group">
+        <div class="glossary-strip">
+            <span class="gs-pill"><span class="gs-name">δοκιμές</span><span class="gs-def" data-vzs="stat-att">0</span></span>
+            <span class="gs-pill"><span class="gs-name">τοποθετήσεις</span><span class="gs-def" data-vzs="stat-placed">0</span></span>
+            <span class="gs-pill"><span class="gs-name">backtracks</span><span class="gs-def" data-vzs="stat-back">0</span></span>
+            <span class="gs-pill"><span class="gs-name">βάθος recursion</span><span class="gs-def" data-vzs="stat-depth">0</span></span>
+        </div>
+    </div>
+
+    <p class="vzs-note" data-vzs="note"></p>
+</div>
+
+<h3>Με και χωρίς heuristic, στο ίδιο puzzle</h3>
+
+<p>
+    Και οι δύο οπτικοποιήσεις παραπάνω λύνουν <strong>το ίδιο ακριβώς</strong> πλέγμα (grid) των 44 κενών
+    κελιών, με τον ίδιο σκελετό, και σταματούν στην πρώτη λύση. Η μόνη διαφορά είναι ποιο κελί
+    διαλέγεται κάθε φορά:
+</p>
+
+<table class="glossary-table">
+<tr><td class="gt-term">&nbsp;</td><td class="gt-def">πρώτο κενό (scan order) &nbsp;→&nbsp; MRV</td></tr>
+<tr><td class="gt-term">δοκιμές ψηφίων</td><td class="gt-def">1.620 &nbsp;→&nbsp; <strong>44</strong></td></tr>
+<tr><td class="gt-term">ψηφία που απορρίφθηκαν</td><td class="gt-def">1.421 &nbsp;→&nbsp; <strong>0</strong></td></tr>
+<tr><td class="gt-term">τοποθετήσεις</td><td class="gt-def">199 &nbsp;→&nbsp; <strong>44</strong></td></tr>
+<tr><td class="gt-term">αδιέξοδα κελιά</td><td class="gt-def">155 &nbsp;→&nbsp; <strong>0</strong></td></tr>
+<tr><td class="gt-term">backtracks (un-choose)</td><td class="gt-def">155 &nbsp;→&nbsp; <strong>0</strong></td></tr>
+<tr><td class="gt-term">χρόνος εκτέλεσης</td><td class="gt-def">0,0150 ms &nbsp;→&nbsp; <strong>0,0054 ms</strong> (×2,8 ταχύτερο)</td></tr>
+</table>
+
+<p>
+    Το <code>0</code> στα backtracks δεν είναι λάθος. Σε αυτό το puzzle το MRV
+    <strong>δεν χρειάστηκε να αναιρέσει τίποτα ούτε μία φορά</strong>: κάθε κελί που διάλεξε είχε
+    ακριβώς έναν νόμιμο υποψήφιο, οπότε κάθε τοποθέτηση ήταν αναγκαστική, όχι στοίχημα. Ο ίδιος
+    κώδικας, το ίδιο puzzle, 44 αποφάσεις αντί για 199 — και καμία από αυτές δεν ήταν λάθος.
+</p>
+
+<p>
+    Πρόσεξε ότι το <code>grid[row][col] = 0</code> εξακολουθεί να είναι εκεί και εξακολουθεί να είναι
+    υποχρεωτικό. Το ότι δεν εκτελέστηκε <em>σε αυτό</em> το puzzle δεν σημαίνει ότι μπορεί να λείψει:
+    σε δυσκολότερα πλέγματα (grids) το MRV φτάνει κι αυτό σε αδιέξοδο, απλώς σπανιότερα.
+</p>
+
+<div class="callout">
+    <span class="tag">Κάθε heuristic έχει τιμή</span>
+    <p>
+        Το MRV δεν είναι δωρεάν, και το κόστος του φαίνεται αν μετρήσεις <em>ανά κόμβο</em> αντί για
+        συνολικά. Ο naive αλγόριθμος βρίσκει το επόμενο κελί σε <code>O(1)</code> — είναι το επόμενο
+        στη σάρωση. Το MRV καλεί την <code>candidates</code> για κάθε κενό κελί πριν από κάθε
+        τοποθέτηση: μέχρι 81 κλήσεις των 27 αναγνώσεων η καθεμία, δηλαδή περίπου 2.200 πράξεις εκεί
+        που ο naive έκανε λίγες δεκάδες. Ίδια τάξη μεγέθους, <strong>δύο τάξεις μεγαλύτερη σταθερά</strong>.
+    </p>
+    <p>
+        Γι' αυτό η heuristic κερδίζει μόνο όταν ο naive αλγόριθμος καταρρέει αρκετά ώστε να την
+        πληρώσει. Σε πολύ εύκολα puzzles, όπου ο naive σχεδόν δεν κάνει backtracking, το MRV βγαίνει
+        και <strong>πιο αργό</strong>, παρόλο που κάνει λιγότερα βήματα — λιγότερα βήματα δεν σημαίνει
+        αυτόματα λιγότερος χρόνος.
+    </p>
+    <p>
+        Οι πραγματικοί solvers το λύνουν κρατώντας τα σύνολα υποψηφίων <em>incrementally</em> — ως
+        bitmask ανά γραμμή, στήλη και κουτί, που ενημερώνεται με μία πράξη στο choose και μία στο
+        un-choose, αντί να ξαναϋπολογίζεται από την αρχή. Τότε η επιλογή κελιού πέφτει από
+        ~2.200 πράξεις σε <code>O(1)</code> αμορτισμένα, η σταθερά εξαφανίζεται, και η heuristic
+        κερδίζει σε κάθε περίπτωση. Ο κανόνας γενικεύεται: μια heuristic αξίζει μόνο όταν αυτό που
+        γλιτώνει είναι μεγαλύτερο από αυτό που κοστίζει να υπολογιστεί.
+    </p>
+</div>
+
+<h3>Και το γρηγορότερο απ' όλα: το DLX του Knuth</h3>
+
+<p>
+    Το Sudoku ανήκει σε μια οικογένεια προβλημάτων που λέγονται <strong>exact cover</strong>:
+    σου δίνεται ένα σύνολο απαιτήσεων και μια συλλογή από διαθέσιμες
+    επιλογές, όπου κάθε επιλογή καλύπτει μερικές από τις απαιτήσεις. Ζητούμενο είναι να διαλέξεις
+    υποσύνολο επιλογών ώστε κάθε απαίτηση να καλύπτεται <strong>ακριβώς μία φορά</strong> — ούτε
+    καμία, ούτε δύο.
+</p>
+
+<p>
+    Το Sudoku μεταφράζεται σε exact cover σχεδόν αυτούσιο. Οι απαιτήσεις είναι τεσσάρων ειδών: κάθε
+    κελί να έχει ένα ψηφίο, κάθε γραμμή να έχει κάθε ψηφίο, κάθε στήλη να έχει κάθε ψηφίο, κάθε κουτί
+    να έχει κάθε ψηφίο — συνολικά 324 απαιτήσεις. Οι επιλογές είναι «βάλε το ψηφίο <em>v</em> στο κελί
+    (<em>r</em>, <em>c</em>)», δηλαδή 9×9×9 = 729 το πολύ, και η καθεμιά καλύπτει ακριβώς τέσσερις
+    απαιτήσεις. Λύνεις το exact cover, έλυσες το Sudoku.
+</p>
+
+<p>
+    Ο Donald Knuth έδειξε πώς λύνεται αυτό με τον <strong>Algorithm X</strong>, τον οποίο υλοποίησε με μια
+    τεχνική που ονόμασε <strong>Dancing Links</strong> (DLX): φτιάχνουμε ένα ξεχωριστό πλέγμα (grid) όπου
+    οι στήλες είναι οι απαιτήσεις και οι γραμμές οι επιλογές. Και όλο αυτό ζει μέσα σε μια συγκεκριμένη
+    δομή δεδομένων, τις διπλά συνδεδεμένες λίστες, όπου η αφαίρεση μιας γραμμής και η <em>επαναφορά</em>
+    της κοστίζουν <code>O(1)</code> η καθεμία. Το un-choose παύει έτσι να είναι επανεγγραφή δεδομένων:
+    μέσω pointers, η κατάργηση και η επαναφορά ολόκληρων ομάδων επιλογών γίνεται φυσικά και ανέξοδα.
+</p>
+
+<div class="callout good">
+    <span class="tag">Είναι το ίδιο πράγμα από κάτω</span>
+    <p>
+        Το DLX δεν είναι κάποιος άλλος αλγόριθμος: είναι backtracking με τον ίδιο σκελετό choose /
+        explore / un-choose που έγραψες μόλις τώρα. Και η στρατηγική επιλογής του είναι — κυριολεκτικά
+        — MRV: διαλέγει την απαίτηση που καλύπτεται από τις <strong>λιγότερες</strong> διαθέσιμες
+        επιλογές. Αυτό που αλλάζει είναι μόνο η δομή δεδομένων, και μαζί της το κόστος ανά κόμβο.
+    </p>
+</div>
 
 <br>
 <h1>Πότε ποιο: η εικόνα που τα ενοποιεί</h1>

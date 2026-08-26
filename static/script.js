@@ -254,21 +254,19 @@ function decorateSpoilers(container) {
     if (lock.dataset.wired) return;
     lock.dataset.wired = "1";
 
-    // Randomize the stripe's starting position either way (any pixel value
-    // works — it tiles infinitely) so adjacent spoilers don't all visually
-    // start from the same origin — applies regardless of which background
-    // technique ends up active below.
-    lock.style.backgroundPosition =
-      `${Math.floor(Math.random() * 200)}px ${Math.floor(Math.random() * 200)}px`;
-
-    // Only override the background when there's no real GPU to composite
-    // the live CSS gradient correctly (see hasGpuAcceleration() — this is
-    // what fixed the Linux/software-rendering drag glitch). With a GPU,
-    // leave style.css's own repeating-linear-gradient(45deg, ...) in place
-    // untouched — it's the nicer-looking one (soft blended alpha) and
-    // renders correctly once real compositing is available.
+    // Only override anything when there's no real GPU to composite the live
+    // CSS gradient correctly (see hasGpuAcceleration() — this fixed the
+    // Linux/software-rendering drag glitch). With a GPU, leave EVERYTHING
+    // — including background-position — completely untouched: this is the
+    // same repeating-linear-gradient(45deg, ...) that was never robust to a
+    // non-zero position in the first place (that's the original tiling-seam
+    // bug from earlier in this feature). The random-origin cosmetic only
+    // applies where it's actually safe: on the SVG tile, which handles any
+    // offset cleanly (verified separately).
     if (!hasGpuAcceleration()) {
       lock.style.backgroundImage = getStripeTileUrl();
+      lock.style.backgroundPosition =
+        `${Math.floor(Math.random() * 200)}px ${Math.floor(Math.random() * 200)}px`;
     }
 
     let dragging = false;
@@ -1294,7 +1292,8 @@ function getDotPreviewText(contentEl, type, idx, total, isFinalQuiz) {
   return { eyebrow, title };
 }
 
-let deckEl, dotsEl, dotsTrackEl, counterEl, fillEl, prevBtn, nextBtn, resetBtn;
+let deckEl, dotsEl, dotsTrackEl, counterEl, fillEl, prevBtn, nextBtn;
+let tocSidebarEl, tocBackdropEl, tocOpenBtn, tocCloseBtn, tocResetBtn, tocCloseFooterBtn;
 let slideEls, dotEls;
 let notifyUrl = null; // set via initSlideDeck({ notifyUrl: "..." }); null = feature off
 
@@ -1606,6 +1605,95 @@ function performHardReset() {
 }
 
 /**
+ * Wires up the left-hand Contents sidebar: open/close via its own trigger
+ * button (#btn-toc, formerly "Reset Progress" — that action now lives
+ * inside the sidebar itself, see #btn-reset-inner below), the backdrop,
+ * clicking the backdrop, and Escape. Called once from initSlideDeck().
+ *
+ * Defensive on purpose: this course template is shared across every course
+ * HTML file, but the sidebar's own markup is added to each file one at a
+ * time by hand. A file that hasn't been patched yet simply won't have
+ * #toc-sidebar etc. in its DOM — rather than throwing (which would abort
+ * the REST of initSlideDeck() too, breaking slide rendering entirely on
+ * any not-yet-patched file), this checks for the elements first and skips
+ * wiring quietly if they're missing. Old files keep working exactly as
+ * before; the sidebar just isn't there until that file gets the markup.
+ *
+ * This wires the open/close SHELL only. #toc-list (the heading list) and
+ * #toc-search (client-side search) are inert placeholders in the markup
+ * for now — populated by later additions to this same file, so index.html
+ * doesn't need touching again for those.
+ */
+/**
+ * Inline "press again to confirm" pattern for Reset Progress — no popup.
+ * First click turns the button red with a confirming label for 3s; a
+ * SECOND click within that window actually resets. No second click in
+ * time, and it just reverts back to normal on its own.
+ * @param {MouseEvent} e
+ */
+let resetConfirmTimeout = null;
+function handleResetClick(e) {
+  const btn = e.currentTarget;
+  if (btn.classList.contains("confirming")) {
+    clearTimeout(resetConfirmTimeout);
+    performHardReset();
+    return;
+  }
+  const originalText = btn.textContent;
+  const originalTitle = btn.title;
+  btn.classList.add("confirming");
+  btn.textContent = "Confirm Reset";
+  btn.title = "Σίγουρα; Πάτα ξανά";
+  resetConfirmTimeout = setTimeout(() => {
+    btn.classList.remove("confirming");
+    btn.textContent = originalText;
+    btn.title = originalTitle;
+  }, 3000);
+}
+
+function initTocSidebar() {
+  tocSidebarEl = document.getElementById("toc-sidebar");
+  tocBackdropEl = document.getElementById("toc-backdrop");
+  tocOpenBtn = document.getElementById("btn-toc");
+  tocCloseBtn = document.getElementById("toc-close");
+  tocResetBtn = document.getElementById("btn-reset-inner");
+  tocCloseFooterBtn = document.getElementById("btn-toc-close-footer"); // optional — see below
+
+  // Any one of these missing means this file hasn't been patched with the
+  // sidebar markup yet — bail out quietly, nothing else in this function runs.
+  if (!tocSidebarEl || !tocBackdropEl || !tocOpenBtn || !tocCloseBtn || !tocResetBtn) {
+    return;
+  }
+
+  function openToc() {
+    tocSidebarEl.classList.add("open");
+    tocBackdropEl.classList.add("open");
+  }
+
+  function closeToc() {
+    tocSidebarEl.classList.remove("open");
+    tocBackdropEl.classList.remove("open");
+  }
+
+  tocOpenBtn.addEventListener("click", openToc);
+  tocCloseBtn.addEventListener("click", closeToc);
+  tocBackdropEl.addEventListener("click", closeToc);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeToc();
+  });
+
+  tocResetBtn.addEventListener("click", handleResetClick);
+
+  // Soft-checked on its own, separately from the required set above: a file
+  // that only has the ORIGINAL sidebar footer (just the Reset button, no
+  // close-styled-like-Contents button yet) still works fine — it just won't
+  // have this specific extra close affordance until it's patched for it too.
+  if (tocCloseFooterBtn) {
+    tocCloseFooterBtn.addEventListener("click", closeToc);
+  }
+}
+
+/**
  * Initializes slide deck engine with optional course configuration.
  * @param {Object} [config] - Configuration object containing course version string.
  * @param {string} [config.version="1.0.0"] - Active version string of this lesson.
@@ -1624,7 +1712,7 @@ function initSlideDeck(config) {
   fillEl = document.getElementById("progress-fill");
   prevBtn = document.getElementById("btn-prev");
   nextBtn = document.getElementById("btn-next");
-  resetBtn = document.getElementById("btn-reset");
+  initTocSidebar();
 
   slides.forEach((s, i) => {
     if (s.type === "quiz") {
@@ -1774,7 +1862,6 @@ function initSlideDeck(config) {
 
   slideEls = Array.from(document.querySelectorAll(".slide"));
 
-  resetBtn.addEventListener("click", performHardReset);
   document.addEventListener("keydown", (e) => {
     if (e.ctrlKey && e.shiftKey && e.key === "F5") {
       e.preventDefault();
