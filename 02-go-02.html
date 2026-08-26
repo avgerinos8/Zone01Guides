@@ -71,6 +71,12 @@
 
         <div id="toc-list">
             <!-- populated by JS -->
+            <div style="margin: 5px;">Ενότητα 1</div>
+            <a href="#@chapter1modules" data-slide="1" class="toc-link toc-h2">Go Modules</a>
+            <a href="#@chapter1packages" data-slide="1" class="toc-link toc-h2">Packages</a>
+            <a href="#@chapter1layout" data-slide="1" class="toc-link toc-h2">Οργάνωση Project</a>
+            <div style="margin: 5px;">Ενότητα 2</div>
+            <div style="margin: 5px;">Ενότητα 3</div>
         </div>
 
         <div id="toc-footer">
@@ -107,7 +113,7 @@
 
         // ── Section 1.1 — Go Modules ─────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
+<div class="eyebrow" id="@chapter1modules">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
 <h1>Go Modules</h1>
 <p class="lede">Μέχρι τώρα γράφαμε κώδικα σε ένα μόνο αρχείο. Αλλά τι γίνεται όταν το project μεγαλώνει, ή όταν θέλουμε να χρησιμοποιήσουμε κώδικα που έγραψε κάποιος άλλος; Χρειαζόμαστε έναν τρόπο να ορίσουμε "αυτό εδώ είναι ένα ξεχωριστό project" και να διαχειριστούμε τι εξαρτάται από τι. Αυτός ο τρόπος στη Go λέγεται <strong>module</strong>.</p>
 
@@ -190,7 +196,7 @@ go 1.22
 
         // ── Section 1.2 — Packages ───────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
+<div class="eyebrow" id="@chapter1packages">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
 <h1>Packages (Πακέτα)</h1>
 <p class="lede">Ένα module μπορεί να περιέχει πολλά packages. Ένα package είναι η μονάδα οργάνωσης κώδικα μέσα σε ένα module — μια ομάδα από αρχεία <code>.go</code> που μοιράζονται τον ίδιο σκοπό και "βλέπουν" το ένα τα identifiers του άλλου χωρίς να χρειάζεται import μεταξύ τους.</p>
 
@@ -364,7 +370,7 @@ func Avg(numbers __sliceint__) __int__ {
 
         // ── Section 1.3 — Project Structure & Organization ──────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
+<div class="eyebrow" id="@chapter1layout">Ενότητα 1 / 8 — Packages & Οργάνωση Project</div>
 <h1>Δομή και Οργάνωση Go Projects</h1>
 <p class="lede">Ένα module δεν χρειάζεται να έχει όλο τον κώδικά του σε έναν φάκελο. Καθώς ένα project μεγαλώνει, το χωρίζουμε σε πολλά packages — καθένα σε δικό του υποφάκελο — ώστε κάθε κομμάτι της λογικής να έχει τον δικό του χώρο, το δικό του όνομα, και σαφή όρια με τα υπόλοιπα.</p>
 
