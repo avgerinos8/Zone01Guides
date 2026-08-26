@@ -483,3 +483,223 @@
     padding: clamp(16px, 3.5vw, 26px);
     overflow: hidden;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SUDOKU BACKTRACKING VISUALIZERS (.vzs-*) — additive only.
+   Two roots share this block: #sudoku-naive-viz (scan order) and
+   #sudoku-mrv-viz (MRV). Builds on the .vz-grid/.vz-grid-cell classes that
+   were written for exactly this and had never been used until now.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+#sudoku-naive-viz button:disabled,
+#sudoku-mrv-viz button:disabled {
+    opacity: .3;
+    cursor: default;
+}
+
+/* ── layout: board and code side by side, stacking on narrow slides ───── ⊃ */
+.vzs-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: clamp(14px, 3vw, 28px);
+    align-items: start;
+}
+
+.vzs-panel-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(var(--ink-rgb), .45);
+    margin-bottom: 8px;
+}
+
+/* ── the 9x9 board ───────────────────────────────────────────────────── ⊃ */
+/* Overrides the fixed 36px sizing of .vz-grid-cell with a fluid square
+   board, so the same shared classes work on a phone and on a projector. */
+.vzs-board {
+    grid-template-rows: repeat(9, 1fr);
+    gap: 0;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    border: 2px solid rgba(var(--ink-rgb), .3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Inner rules stay faint so the 3x3 seams below can carry the structure. */
+.vzs-board .vz-grid-cell {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    font-size: clamp(12px, 3.2vw, 19px);
+    border-right: 1px solid rgba(var(--ink-rgb), .07);
+    border-bottom: 1px solid rgba(var(--ink-rgb), .07);
+    transition: background .12s linear, color .12s linear;
+}
+
+/* The 3x3 seams: three times the width and much stronger contrast than the
+   inner rules, so the nine boxes read as boxes at a glance. */
+.vzs-box-right {
+    border-right: 3px solid rgba(var(--ink-rgb), .5);
+}
+
+.vzs-box-bottom {
+    border-bottom: 3px solid rgba(var(--ink-rgb), .5);
+}
+
+/* ── cell states ─────────────────────────────────────────────────────── ⊃ */
+.vzs-given {
+    /* clue from the original puzzle          */
+    color: rgba(var(--ink-rgb), .38);
+    font-weight: 700;
+}
+
+.vzs-filled {
+    /* written by the algorithm               */
+    color: var(--ink);
+}
+
+.vzs-active {
+    /* cell currently under consideration     */
+    background: rgba(var(--accent-rgb), .22);
+    color: var(--accent);
+}
+
+.vzs-good {
+    /* value just placed                      */
+    background: rgba(var(--correct-rgb), .28);
+    color: var(--correct);
+}
+
+.vzs-bad {
+    /* digit rejected, or value just erased   */
+    background: rgba(var(--wrong-rgb), .26);
+    color: var(--wrong);
+}
+
+.vzs-conflict {
+    /* the cell that caused the rejection     */
+    background: rgba(var(--wrong-rgb), .14);
+    box-shadow: inset 0 0 0 2px var(--wrong);
+}
+
+.vzs-focus {
+    box-shadow: inset 0 0 0 3px var(--tone-5);
+}
+
+.vzs-solved .vz-grid-cell {
+    background: rgba(var(--correct-rgb), .12);
+}
+
+/* ── digit strip: which of 1..9 have been tried at the current cell ───── ⊃ */
+.vzs-digits {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: clamp(2px, .8vw, 6px);
+    max-width: 400px;
+    margin: 12px auto 0;
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 2.4vw, 15px);
+}
+
+.vzs-digit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(3px, 1vw, 7px) 0;
+    border-radius: 5px;
+    background: rgba(var(--ink-rgb), .06);
+    color: rgba(var(--ink-rgb), .7);
+}
+
+.vzs-digit.is-pending {
+    opacity: .55;
+}
+
+.vzs-digit.is-illegal {
+    /* not even a candidate (MRV only)        */
+    opacity: .2;
+    text-decoration: line-through;
+}
+
+.vzs-digit.is-tried {
+    /* already attempted at this cell         */
+    opacity: .35;
+    text-decoration: line-through;
+}
+
+.vzs-digit.is-current-bad {
+    background: rgba(var(--wrong-rgb), .26);
+    color: var(--wrong);
+}
+
+.vzs-digit.is-current-good {
+    background: rgba(var(--correct-rgb), .26);
+    color: var(--correct);
+}
+
+/* ── the code panel ──────────────────────────────────────────────────── ⊃ */
+.vzs-code {
+    font-family: var(--font-mono);
+    font-size: clamp(9.5px, 1.9vw, 12.5px);
+    line-height: 1.7;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+.vzs-line {
+    display: block;
+    padding: 0 8px 0 10px;
+    border-left: 2px solid transparent;
+    color: rgba(var(--ink-rgb), .5);
+    border-radius: 0 4px 4px 0;
+    transition: background .12s linear, color .12s linear;
+}
+
+.vzs-line.is-active {
+    background: rgba(var(--accent-rgb), .14);
+    border-left-color: var(--accent);
+    color: var(--ink);
+}
+
+.vzs-code-comment {
+    color: rgba(var(--ink-rgb), .35);
+}
+
+.vzs-line.is-active .vzs-code-comment {
+    color: var(--accent);
+}
+
+/* ── narration + counters ────────────────────────────────────────────── ⊃ */
+.vzs-note {
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 2.2vw, 13px);
+    line-height: 1.65;
+    color: rgba(var(--ink-rgb), .8);
+    margin: 16px 0 0;
+    min-height: 3.4em;
+}
+
+.vzs-note b {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.vzs-note .is-good {
+    color: var(--correct);
+}
+
+.vzs-note .is-bad {
+    color: var(--wrong);
+}
+
+.vzs-counter {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: rgba(var(--ink-rgb), .5);
+}

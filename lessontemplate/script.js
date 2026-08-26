@@ -133,6 +133,89 @@ function decorateCodeBlocks(container) {
 }
 
 /**
+ * Best-effort check for real GPU/hardware-accelerated rendering, via the
+ * standard WEBGL_debug_renderer_info technique: create a throwaway WebGL
+ * context and read back the actual renderer string. Software fallback
+ * renderers (SwiftShader, llvmpipe/Mesa, "Microsoft Basic Render Driver",
+ * ...) identify themselves in that string — anything else is treated as a
+ * real GPU. No WebGL context at all is treated the same as "no GPU".
+ * Cached after the first call — this doesn't change during a page's life.
+ * @returns {boolean}
+ */
+let cachedHasGpu = null;
+function hasGpuAcceleration() {
+  if (cachedHasGpu !== null) return cachedHasGpu;
+  try {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+    if (!gl) {
+      cachedHasGpu = false;
+      return false;
+    }
+    const info = gl.getExtension("WEBGL_debug_renderer_info");
+    const renderer = String(info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)).toLowerCase();
+    const softwareSignatures = ["swiftshader", "llvmpipe", "software", "microsoft basic render", "mesa"];
+    cachedHasGpu = !softwareSignatures.some((sig) => renderer.includes(sig));
+  } catch (e) {
+    cachedHasGpu = false; // any failure — assume no reliable GPU, prefer the safe fallback
+  }
+  return cachedHasGpu;
+}
+
+/**
+ * Builds (once, cached) a small SVG data-URI tile with the diagonal stripe
+ * pattern already "baked in" as three explicit diagonal lines — the robust
+ * fallback for when hasGpuAcceleration() is false. See decorateSpoilers()
+ * for how this is applied only in that case; when a real GPU is detected,
+ * style.css's own repeating-linear-gradient(45deg, ...) is used instead
+ * (untouched, left as the prettier default — see the .spoiler-lock rule).
+ *
+ * NOT a patternTransform:rotate(45) on a square tile of stacked rects,
+ * which looked fine as a single isolated tile but did NOT seamlessly
+ * repeat once actually tiled via background-repeat (verified by rendering
+ * both approaches head-to-head): rotating a square tile's content produces
+ * a "brick"/chevron artifact at every tile boundary once repeated at scale.
+ *
+ * The fix: draw the diagonal directly, as a line with stroke-width, in a
+ * PLAIN axis-aligned tile — no rotation at all. One line through the tile,
+ * plus two more copies shifted by exactly HALF the tile size, perpendicular
+ * to the line's own direction (not a full tile-size shift — that also
+ * produces a "checkerboard" artifact instead) so the corners a single
+ * diagonal line would otherwise miss are covered too.
+ *
+ * Reads --tone-2-rgb / --tone-1-rgb from the page at call time (not
+ * hardcoded hex) so it still follows the live theme; cached after the first
+ * call since every lock shares the same two colors.
+ * @returns {string} a `url("data:image/svg+xml,...")` value.
+ */
+let cachedStripeTileUrl = null;
+function getStripeTileUrl() {
+  if (cachedStripeTileUrl) return cachedStripeTileUrl;
+
+  const root = getComputedStyle(document.documentElement);
+  const tone2 = root.getPropertyValue("--tone-2-rgb").trim() || "35, 6, 14";
+  const tone1 = root.getPropertyValue("--tone-1-rgb").trim() || "18, 4, 1";
+
+  const T = 40; // tile size (px) — also the stripe repeat period
+  const W = 20; // stroke width (px) — the band's own visual thickness
+  const H = T / 2; // perpendicular shift for the two corner-covering copies — HALF the tile, not a full T
+
+  // Main line runs top-left -> bottom-right ("\"); the two extra copies are
+  // genuine parallel translates of it — verified by checking the SAME shift
+  // vector applies to both of a copy's endpoints, not just picked to "look"
+  // shifted (an earlier attempt got this subtly wrong and broke tiling).
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${T}' height='${T}'>
+    <rect width='${T}' height='${T}' fill='rgba(${tone2}, 1)'/>
+    <line x1='0' y1='0' x2='${T}' y2='${T}' stroke='rgba(${tone1}, 0.92)' stroke-width='${W}'/>
+    <line x1='${H}' y1='${-H}' x2='${T + H}' y2='${T - H}' stroke='rgba(${tone1}, 0.92)' stroke-width='${W}'/>
+    <line x1='${-H}' y1='${H}' x2='${T - H}' y2='${T + H}' stroke='rgba(${tone1}, 0.92)' stroke-width='${W}'/>
+  </svg>`;
+
+  cachedStripeTileUrl = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  return cachedStripeTileUrl;
+}
+
+/**
  * Wires up drag-to-reveal "spoiler" blocks. Markup pattern (write this by
  * hand inside addContent()'s HTML):
  *   <div class="spoiler">
@@ -171,14 +254,20 @@ function decorateSpoilers(container) {
     if (lock.dataset.wired) return;
     lock.dataset.wired = "1";
 
-    // Randomize this lock's stripe phase so adjacent spoilers don't all
-    // visually start from the exact same origin — purely cosmetic, picked
-    // once per lock and left alone afterward. Set as a custom property
-    // (not lock.style.maskPosition directly) because the actual stripe
-    // pattern lives on ::before in CSS now — JS has no direct handle to a
-    // pseudo-element's own style, but custom properties set on the real
-    // element cascade into it, so style.css reads this back via var().
-    lock.style.setProperty("--stripe-phase", `${Math.floor(Math.random() * 200)}px`);
+    // Only override anything when there's no real GPU to composite the live
+    // CSS gradient correctly (see hasGpuAcceleration() — this fixed the
+    // Linux/software-rendering drag glitch). With a GPU, leave EVERYTHING
+    // — including background-position — completely untouched: this is the
+    // same repeating-linear-gradient(45deg, ...) that was never robust to a
+    // non-zero position in the first place (that's the original tiling-seam
+    // bug from earlier in this feature). The random-origin cosmetic only
+    // applies where it's actually safe: on the SVG tile, which handles any
+    // offset cleanly (verified separately).
+    if (!hasGpuAcceleration()) {
+      lock.style.backgroundImage = getStripeTileUrl();
+      lock.style.backgroundPosition =
+        `${Math.floor(Math.random() * 200)}px ${Math.floor(Math.random() * 200)}px`;
+    }
 
     let dragging = false;
     let startX = 0;

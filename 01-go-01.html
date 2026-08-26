@@ -19,14 +19,10 @@
 
     <div id="nav-bar">
         <div class="nav-group">
-            <button class="nav-btn" id="btn-reset">
-                <span class="desktop-text">Reset Progress</span>
-                <span class="mobile-text">Reset</span>
+            <button class="nav-btn" id="btn-toc">
+                <span class="desktop-text">☰</span>
+                <span class="mobile-text">☰</span>
             </button>
-            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
-                <span class="desktop-text">Return</span>
-                <span class="mobile-text">Home</span>
-            </a>
             <button class="nav-btn" id="btn-prev">
                 <span class="desktop-text">←Back</span>
                 <span class="mobile-text">←</span>
@@ -43,6 +39,40 @@
             <button class="nav-btn" id="btn-next">
                 <span class="desktop-text">Next→</span>
                 <span class="mobile-text">→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Contents sidebar ─────────────────────────────────────────────────
+       Opened by #btn-toc. Reset Progress lives in the header now (compact
+       icon, #btn-reset-inner); Return (Home) moved to the footer. #toc-list
+       is populated by JS (heading list); #toc-search is wired in a later
+       step. See initTocSidebar() in static/script.js. -->
+    <div id="toc-backdrop"></div>
+    <div id="toc-sidebar">
+        <div id="toc-header">
+            <span id="toc-title">Contents</span>
+            <div class="toc-header-actions">
+                <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress"
+                    aria-label="Reset Progress">Reset Progress</button>
+                <button id="toc-close" class="toc-icon-btn" aria-label="Κλείσιμο">✕</button>
+            </div>
+        </div>
+
+        <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+
+        <div id="toc-list">
+            <!-- populated by JS -->
+        </div>
+
+        <div id="toc-footer">
+            <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
+                <span class="desktop-text">Return Home</span>
+                <span class="mobile-text">Home</span>
+            </a>
+            <button class="nav-btn" id="btn-toc-close-footer">
+                <span class="desktop-text">Close</span>
+                <span class="mobile-text">Close</span>
             </button>
         </div>
     </div>
@@ -1653,7 +1683,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 </div>
 `);
 
-addContent(`
+        addContent(`
 <div class="eyebrow">Ενότητα 3 / 8 — Operators</div>
 <h1>Operators</h1>
 
@@ -1667,6 +1697,14 @@ addContent(`
     Κάθε τέτοιος συνδυασμός παράγει μια νέα τιμή — και ό,τι παράγει τιμή λέγεται
     <strong>expression</strong> (έκφραση). Ο όρος θα σου φανεί χρήσιμος παρακάτω: όταν λέμε «η Go
     αξιολογεί μια έκφραση», εννοούμε ακριβώς αυτό, ότι υπολογίζει σε ποια τιμή καταλήγει.
+</p>
+
+<p>
+    Αντίθετα, μια <strong>statement</strong> (εντολή) <em>δεν</em> παράγει τιμή — εκτελεί μια ενέργεια.
+    Το <code>fmt.Println("hello")</code> είναι statement: τυπώνει κάτι, αλλά δεν επιστρέφει τίποτα που να
+    μπορείς να το αποθηκεύσεις σε μεταβλητή. Ένα expression μπορεί να σταθεί μέσα σε ένα statement, αλλά
+    ένα statement δεν μπορεί να σταθεί στη θέση ενός expression. Για παράδειγμα, το <code>x := 5 + 3</code>
+    είναι statement που περιέχει το expression <code>5 + 3</code>.
 </p>
 
 <div class="grid2">
@@ -2369,6 +2407,7 @@ result3 := 50 % 7    // result3 is __val3__`,
 <table class="glossary-table">
   <tr><td class="gt-term">Operator / Operand</td><td class="gt-def">operator το σύμβολο της πράξης, operand η τιμή πάνω στην οποία εφαρμόζεται</td></tr>
   <tr><td class="gt-term">Expression</td><td class="gt-def">συνδυασμός τιμών και operators που παράγει μια νέα τιμή</td></tr>
+  <tr><td class="gt-term">Statement</td><td class="gt-def">εντολή που εκτελεί μια ενέργεια, αλλά δεν παράγει τιμή (π.χ. fmt.Println, var declaration, assignment)</td></tr>
   <tr><td class="gt-term">Operator precedence</td><td class="gt-def">η σειρά με την οποία αξιολογούνται οι operators μέσα σε μια έκφραση</td></tr>
   <tr><td class="gt-term">Ακέραια διαίρεση</td><td class="gt-def">/ με δύο int — κόβει το δεκαδικό μέρος, δεν στρογγυλοποιεί</td></tr>
   <tr><td class="gt-term">Modulo (%)</td><td class="gt-def">το υπόλοιπο της ακέραιας διαίρεσης — δίνει τη θέση μέσα σε έναν κύκλο</td></tr>
@@ -2448,21 +2487,17 @@ if temp > 30 {
 <ul>
     <li>Μια μεταβλητή τύπου <code>bool</code></li>
     <li>Μια σύγκριση (<code>&gt;</code>, <code>==</code>, <code>!=</code>, κ.λπ.) ή τον συνδιασμό πολλών</li>
-    <li>Το αποτέλεσμα μιας function που επιστρέφει <code>bool</code> (θα το δούμε σε επόμενη ενότητα)</li>
+    <li>Το αποτέλεσμα μιας function που επιστρέφει <code>bool</code> (περισσότερα σε επόμενη ενότητα)</li>
 </ul>
-
-<p>
-    Μπορείς να χρησιμοποιήσεις μια μεταβλητή <code>bool</code> απευθείας ως συνθήκη:
-</p>
 
 <pre><code class="lang-go">isWeekend := true
 isHoliday := false
 
-if isWeekend {
+if isWeekend == true {
     fmt.Println("Sleep in! It's the weekend")
 }
 
-if isHoliday {
+if isHoliday == true {
     fmt.Println("No work today!")
 } else {
     fmt.Println("Time to do some work")
@@ -2470,11 +2505,40 @@ if isHoliday {
 </code></pre>
 
 <p>
-    Στο πρώτο <code>if</code>, η συνθήκη είναι η ίδια η μεταβλητή <code>isWeekend</code> — η Go αξιολογεί την τιμή της (εδώ <code>true</code>) και μπαίνει μέσα. Αυτό είναι μια έκφραση (expression) που παράγει τιμή <code>bool</code>.
+    Στο πρώτο <code>if</code>, η συνθήκη είναι <code>isWeekend == true</code> — η Go αξιολογεί την τιμή της (εδώ <code>true</code>) και μπαίνει μέσα. Αυτό είναι μια έκφραση (expression) που παράγει τιμή <code>bool</code>.
 </p>
 <p>
-    Στο δεύτερο <code>if</code>, ελέγχουμε την <code>isHoliday</code> — αφού είναι <code>false</code>, το πρόγραμμα πηγαίνει στο <code>else</code>.
+    Στο δεύτερο <code>if</code>, ελέγχουμε αν <code>isHoliday == true</code> — αφού είναι <code>false</code>, το πρόγραμμα πηγαίνει στο <code>else</code> και θα τυπώσει <em>"Time to do some work"</em>.
 </p>
+
+
+<div class="callout">
+    <span class="tag">Ένας πιο σύντομος τρόπος να το γράψεις</span>
+    <p>
+        Όταν γράφεις <code class="lang-go">if isHoliday == true {}</code>, μπορείς πιο σύντομα να χρησιμοποιήσεις το <code class="lang-go">if isHoliday {}</code>. Η μεταβλητή από μόνη της είναι ήδη boolean έκφραση.
+    </p>
+
+    <table style="width:100%; border-collapse:collapse; margin:12px 0; font-size:14px;">
+        <thead>
+            <tr style="border-bottom:2px solid var(--tone-4);">
+                <th style="padding:8px 12px; text-align:left;">Μακροσκελής μορφή</th>
+                <th style="padding:8px 12px; text-align:left;">Ισοδυναμεί με</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="border-bottom:1px solid var(--tone-5);">
+                <td style="padding:8px 12px;"><code class="lang-go">if isHoliday == true {}</code></td>
+                <td style="padding:8px 12px;"><code class="lang-go">if isHoliday {}</code></td>
+            </tr>
+            <tr>
+                <td style="padding:8px 12px;"><code class="lang-go">if isHoliday == false {}</code></td>
+                <td style="padding:8px 12px;"><code class="lang-go">if !isHoliday {}</code></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
 <h2>Συνθήκες if / else if / else</h2>
 <p>
     Όπως είδαμε στο προηγούμενο παράδειγμα, το <code>if</code> μπορεί να συνδυαστεί με το προαιρετικό <code>else</code> για να ορίσει τι θα συμβεί όταν η συνθήκη είναι <code>false</code>.
@@ -2716,11 +2780,64 @@ if score := a + b + c; score >= 75 {
     εξαφανίζεται. Χρήσιμο όταν μια τιμή χρειάζεται μόνο για τη συνθήκη.
 </p>
 
+<!-- SVG Diagram: Short Statement Anatomy -->
+<div style="margin: 2rem 0; text-align: center;">
+    <svg viewBox="0 0 780 230" style="width: 100%; max-width: 780px; height: auto; font-family: var(--font-mono, monospace); color: currentColor;">
+        <defs>
+            <!-- Drop Shadow for code elements -->
+            <filter id="block-shadow" x="-5%" y="-10%" width="110%" height="130%">
+                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.25" />
+            </filter>
+            <!-- Marker Arrowhead -->
+            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.6" />
+            </marker>
+        </defs>
+
+        <!-- Base Background Box (Go if statement line) -->
+        <rect x="20" y="70" width="740" height="60" rx="8" fill="var(--tone-1, rgba(255,255,255,0.05))" stroke="var(--tone-4, #444)" stroke-width="1.5" filter="url(#block-shadow)" />
+
+        <!-- 1. Keyword "if" -->
+        <text x="45" y="107" font-size="20" font-weight="bold" fill="var(--tone-3, #ff79c6)">if</text>
+
+        <!-- 2. Short Statement Box -->
+        <rect x="80" y="80" width="280" height="40" rx="6" fill="rgba(80, 250, 123, 0.15)" stroke="#50fa7b" stroke-width="2" />
+        <text x="95" y="106" font-size="18" fill="currentColor">score := a + b + c</text>
+
+        <!-- 3. Semicolon Separator -->
+        <text x="370" y="107" font-size="22" font-weight="bold" fill="var(--tone-3, #ffb86c)">;</text>
+
+        <!-- 4. Condition Box -->
+        <rect x="390" y="80" width="165" height="40" rx="6" fill="rgba(189, 147, 249, 0.15)" stroke="#bd93f9" stroke-width="2" />
+        <text x="405" y="106" font-size="18" fill="currentColor">score &gt;= 75</text>
+
+        <!-- 5. Opening Brace -->
+        <text x="568" y="107" font-size="20" font-weight="bold" fill="var(--tone-5, #f8f8f2)">{</text>
+
+        <!-- ANNOTATIONS & POINTERS -->
+
+        <!-- Annotation 1: Short Statement -->
+        <path d="M 220 80 L 220 35" stroke="#50fa7b" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+        <rect x="120" y="5" width="200" height="30" rx="4" fill="var(--tone-2, #282a36)" stroke="#50fa7b" stroke-width="1" />
+        <text x="220" y="25" font-size="13" text-anchor="middle" fill="#50fa7b" font-weight="bold">1. Short Statement</text>
+
+        <!-- Annotation 2: Semicolon -->
+        <path d="M 374 120 L 374 170" stroke="var(--tone-3, #ffb86c)" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+        <rect x="284" y="175" width="180" height="30" rx="4" fill="var(--tone-2, #282a36)" stroke="var(--tone-3, #ffb86c)" stroke-width="1" />
+        <text x="374" y="195" font-size="13" text-anchor="middle" fill="var(--tone-3, #ffb86c)" font-weight="bold">2. Διαχωριστής ( ; )</text>
+
+        <!-- Annotation 3: Condition -->
+        <path d="M 472 80 L 472 35" stroke="#bd93f9" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)" />
+        <rect x="402" y="5" width="140" height="30" rx="4" fill="var(--tone-2, #282a36)" stroke="#bd93f9" stroke-width="1" />
+        <text x="472" y="25" font-size="13" text-anchor="middle" fill="#bd93f9" font-weight="bold">3. Συνθήκη</text>
+    </svg>
+</div>
+
+
 <h2>VSCode Challenge</h2>
 
 <p class="lede">
-    Ένα πρόγραμμα που ελέγχει αν ένας αριθμός είναι θετικός, αρνητικός ή μηδέν. Δοκίμασε να το γράψεις μόνος σου πριν
-    δεις τη λύση.
+    Ένα πρόγραμμα που ελέγχει αν ένας αριθμός είναι θετικός, αρνητικός ή μηδέν. Δήλωσε στην αρχή <code>num := -5</code> και δοκίμασε να αλλάξεις την τιμή, αφού γράψεις τις συνθήκες.
 </p>
 
 <div class="spoiler">
@@ -3009,7 +3126,7 @@ if score >= 13 {
                 { term: "Shadowing", def: "Νέα μεταβλητή με := κρύβει άλλη με το ίδιο όνομα σε εσωτερικό scope" },
                 { term: "Short statement", def: "if err := doX(); err != nil — η μεταβλητή err ζει μόνο μέσα στο if/else" },
                 { term: "Block scope", def: "Κάθε ζεύγος { } δημιουργεί το δικό του, ξεχωριστό scope" },
-                { term: "Comma-ok pattern", def: "value, ok := m[\"key\"] — το δεύτερο return value δείχνει αν το κλειδί υπάρχει στον map" }
+                { term: "Fallthrough", def: "Δίνει εντολή να συνεχιστεί η εκτέλεση στο επόμενο case χωρίς να ελεγχθεί η συνθήκη του" }
             ],
             [
                 { term: "&&", def: "Επιστρέφει true μόνο αν όλες οι συνθήκες είναι true" },
@@ -3095,26 +3212,90 @@ if score >= 13 {
     </div>
 </div>
 
+<!-- SVG Diagram 1: For Loop Flow & Anatomy (Updated Exit Flow) -->
+<div style="margin: 2rem 0; text-align: center;">
+    <svg viewBox="0 0 780 300" style="width: 100%; max-width: 780px; height: auto; font-family: var(--font-mono, monospace); color: currentColor;">
+        <defs>
+            <filter id="loop-shadow" x="-5%" y="-10%" width="110%" height="130%">
+                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.25" />
+            </filter>
+            <marker id="arrow-flow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.7" />
+            </marker>
+            <marker id="arrow-red" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#ff5555" />
+            </marker>
+        </defs>
+
+        <!-- CODE HEADER DISPLAY -->
+        <rect x="20" y="10" width="740" height="50" rx="8" fill="var(--tone-1, rgba(255,255,255,0.05))" stroke="var(--tone-4, #444)" stroke-width="1.5" filter="url(#loop-shadow)" />
+        <text x="40" y="41" font-size="20" font-weight="bold" fill="var(--tone-3, #ff79c6)">for</text>
+        
+        <!-- Init Box -->
+        <rect x="85" y="20" width="105" height="30" rx="4" fill="rgba(80, 250, 123, 0.15)" stroke="#50fa7b" stroke-width="1.5" />
+        <text x="98" y="41" font-size="16" fill="#50fa7b">i := 0</text>
+        <text x="196" y="41" font-size="18" fill="var(--tone-4, #888)">;</text>
+
+        <!-- Condition Box -->
+        <rect x="210" y="20" width="95" height="30" rx="4" fill="rgba(189, 147, 249, 0.15)" stroke="#bd93f9" stroke-width="1.5" />
+        <text x="225" y="41" font-size="16" fill="#bd93f9">i &lt; 5</text>
+        <text x="311" y="41" font-size="18" fill="var(--tone-4, #888)">;</text>
+
+        <!-- Step Box -->
+        <rect x="325" y="20" width="70" height="30" rx="4" fill="rgba(141, 233, 253, 0.15)" stroke="#8be9fd" stroke-width="1.5" />
+        <text x="340" y="41" font-size="16" fill="#8be9fd">i++</text>
+
+        <text x="405" y="41" font-size="20" font-weight="bold" fill="var(--tone-5, #f8f8f2)">{ ... }</text>
+
+        <!-- FLOW DIAGRAM BELOW -->
+        <!-- 1. Start / Init -->
+        <rect x="20" y="110" width="130" height="45" rx="6" fill="var(--tone-2, #282a36)" stroke="#50fa7b" stroke-width="2" filter="url(#loop-shadow)" />
+        <text x="85" y="130" font-size="12" fill="#50fa7b" font-weight="bold" text-anchor="middle">1. Αρχικοποίηση</text>
+        <text x="85" y="146" font-size="13" fill="currentColor" text-anchor="middle">i := 0 (1 φορά)</text>
+
+        <path d="M 150 132 L 210 132" stroke="currentColor" stroke-width="2" marker-end="url(#arrow-flow)" opacity="0.6" />
+
+        <!-- 2. Condition Check -->
+        <polygon points="280,95 350,132 280,170 210,132" fill="var(--tone-2, #282a36)" stroke="#bd93f9" stroke-width="2" filter="url(#loop-shadow)" />
+        <text x="280" y="130" font-size="12" fill="#bd93f9" font-weight="bold" text-anchor="middle">2. Συνθήκη</text>
+        <text x="280" y="144" font-size="12" fill="currentColor" text-anchor="middle">i &lt; 5 ;</text>
+
+        <!-- True Path to Body -->
+        <path d="M 350 132 L 430 132" stroke="#50fa7b" stroke-width="2" marker-end="url(#arrow-flow)" />
+        <text x="385" y="123" font-size="11" fill="#50fa7b" font-weight="bold">true</text>
+
+        <!-- 3. Body Execution -->
+        <rect x="435" y="110" width="140" height="45" rx="6" fill="var(--tone-2, #282a36)" stroke="var(--tone-5, #f8f8f2)" stroke-width="1.5" filter="url(#loop-shadow)" />
+        <text x="505" y="130" font-size="12" fill="var(--tone-5, #f8f8f2)" font-weight="bold" text-anchor="middle">3. Σώμα Loop</text>
+        <text x="505" y="146" font-size="12" fill="currentColor" text-anchor="middle">fmt.Println(i)</text>
+
+        <path d="M 575 132 L 625 132" stroke="currentColor" stroke-width="2" marker-end="url(#arrow-flow)" opacity="0.6" />
+
+        <!-- 4. Step -->
+        <rect x="630" y="110" width="120" height="45" rx="6" fill="var(--tone-2, #282a36)" stroke="#8be9fd" stroke-width="2" filter="url(#loop-shadow)" />
+        <text x="690" y="130" font-size="12" fill="#8be9fd" font-weight="bold" text-anchor="middle">4. Βήμα</text>
+        <text x="690" y="146" font-size="13" fill="currentColor" text-anchor="middle">i++</text>
+
+        <!-- Loop Back Path -->
+        <path d="M 690 155 L 690 195 L 310 195 L 310 148" fill="none" stroke="#8be9fd" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow-flow)" />
+        <text x="500" y="188" font-size="11" fill="#8be9fd" text-anchor="middle">Επιστροφή για έλεγχο συνθήκης</text>
+
+        <!-- False Path to Exit (Downward Flow) -->
+        <path d="M 280 170 L 280 240" fill="none" stroke="#ff5555" stroke-width="2" marker-end="url(#arrow-red)" />
+        <text x="290" y="210" font-size="11" fill="#ff5555" font-weight="bold">false</text>
+
+        <!-- Exit Node Box -->
+        <rect x="205" y="245" width="150" height="40" rx="6" fill="rgba(255, 85, 85, 0.15)" stroke="#ff5555" stroke-width="1.5" filter="url(#loop-shadow)" />
+        <text x="280" y="270" font-size="12" fill="#ff5555" font-weight="bold" text-anchor="middle">Έξοδος από τη λούπα</text>
+    </svg>
+</div>
+
 <p>
     Στο συγκεκριμένο παράδειγμα, η λούπα τυπώνει τους αριθμούς 0, 1, 2, 3, 4 — παρατήρησε ότι το 5
     <em>δεν</em> τυπώνεται, αφού μόλις το <code>i</code> γίνει 5, η συνθήκη <code>i < 5</code> γίνεται
     <code>false</code> και η λούπα σταματά πριν εκτελεστεί άλλη μία φορά.
 </p>
 
-<h3>Παράδειγμα: Εκτύπωση αριθμών με το for</h3>
-
-<pre><code class="lang-go">package main
-
-import "fmt"
-
-func main() {
-    for i := 1; i <= 10; i++ {
-        fmt.Println(i)
-    }
-}
-</code></pre>
-
-<p>Αυτό το πρόγραμμα τυπώνει τους αριθμούς 1, 2, 3, 4, 5, 6, 7, 8, 9, 10.</p>
 
 <h2>Το βήμα και οι συντομογραφίες του</h2>
 
@@ -3189,6 +3370,14 @@ fmt.Println(i) // 2 (το υπόλοιπο της 2 / 3)
 }
 </code></pre>
 
+<div style="margin:1.5rem 0;overflow-x:auto;text-align:center"><svg viewBox="0 0 1130 135" style="width:100%;min-width:950px;max-width:1130px;height:auto;font-family:var(--font-mono, monospace);color:currentColor"><defs><marker id="b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="m0 1 10 4L0 9z" fill="#8be9fd"/></marker><filter id="a" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity=".3"/></filter></defs><g transform="translate(0 8)"><rect x="425" width="280" height="34" rx="6" fill="var(--tone-1, rgba(255,255,255,0.05))" stroke="var(--tone-4, #444)" stroke-width="1.5" filter="url(#a)"/><text x="440" y="22" font-size="12">
+                <tspan fill="#ff79c6" font-weight="bold">for </tspan>
+                <tspan fill="#50fa7b">i := 0</tspan>
+                <tspan fill="#888">; </tspan>
+                <tspan fill="#bd93f9">i &lt;= 90</tspan>
+                <tspan fill="#888">; </tspan>
+            </text><rect x="620" y="6" width="70" height="22" rx="4" fill="rgba(141, 233, 253, 0.15)" stroke="#8be9fd" stroke-width="1.5"/><text x="655" y="21" font-size="12" fill="#8be9fd" font-weight="bold" text-anchor="middle">i += 9</text></g><g transform="translate(6 56)"><rect width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#50fa7b" stroke-width="1.5" filter="url(#a)"/><text x="38" y="18" font-size="11" fill="#50fa7b" font-weight="bold" text-anchor="middle">i = 0</text><text x="38" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">0 &lt;= 90</text><text x="38" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M76 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="94" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="132" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 9</text><text x="132" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">9 &lt;= 90</text><text x="132" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M170 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="188" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="226" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 18</text><text x="226" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">18 &lt;= 90</text><text x="226" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M264 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="282" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="320" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 27</text><text x="320" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">27 &lt;= 90</text><text x="320" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M358 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="376" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="414" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 36</text><text x="414" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">36 &lt;= 90</text><text x="414" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M452 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="470" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="508" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 45</text><text x="508" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">45 &lt;= 90</text><text x="508" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M546 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="564" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="602" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 54</text><text x="602" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">54 &lt;= 90</text><text x="602" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M640 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="658" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="696" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 63</text><text x="696" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">63 &lt;= 90</text><text x="696" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M734 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="752" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="790" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 72</text><text x="790" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">72 &lt;= 90</text><text x="790" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M828 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="846" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="884" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 81</text><text x="884" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">81 &lt;= 90</text><text x="884" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M922 32h14" stroke="#8be9fd" stroke-width="1.5" marker-end="url(#b)"/><rect x="940" width="76" height="64" rx="6" fill="rgba(80, 250, 123, 0.12)" stroke="#50fa7b" stroke-width="1.5" filter="url(#a)"/><text x="978" y="18" font-size="11" fill="#50fa7b" font-weight="bold" text-anchor="middle">i = 90</text><text x="978" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">90 &lt;= 90</text><text x="978" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M1016 32h14" stroke="#f55" stroke-width="1.5"/><rect x="1034" width="84" height="64" rx="6" fill="rgba(255, 85, 85, 0.12)" stroke="#f55" stroke-width="1.5" filter="url(#a)"/><text x="1076" y="18" font-size="11" fill="#f55" font-weight="bold" text-anchor="middle">i = 99</text><text x="1076" y="36" font-size="10" fill="#f55" text-anchor="middle">99 &lt;= 90</text><text x="1076" y="52" font-size="10" fill="#f55" font-weight="bold" text-anchor="middle">✗ false</text></g></svg></div>
+
 <p>
     Αντίστοιχα, αν θέλεις να τυπώσεις τους αριθμούς από το 10 μέχρι το 0 (αντίστροφα), μπορείς να χρησιμοποιήσεις
     αρνητικό βήμα:
@@ -3199,12 +3388,28 @@ fmt.Println(i) // 2 (το υπόλοιπο της 2 / 3)
 }
 </code></pre>
 
+<div style="margin:1.5rem 0;overflow-x:auto;text-align:center"><svg viewBox="0 0 1130 135" style="width:100%;min-width:950px;max-width:1130px;height:auto;font-family:var(--font-mono, monospace);color:currentColor"><defs><marker id="b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="m0 1 10 4L0 9z" fill="#ffb86c"/></marker><filter id="a" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity=".3"/></filter></defs><g transform="translate(0 8)"><rect x="440" width="250" height="34" rx="6" fill="var(--tone-1, rgba(255,255,255,0.05))" stroke="var(--tone-4, #444)" stroke-width="1.5" filter="url(#a)"/><text x="455" y="22" font-size="12">
+                <tspan fill="#ff79c6" font-weight="bold">for </tspan>
+                <tspan fill="#50fa7b">i := 10</tspan>
+                <tspan fill="#888">; </tspan>
+                <tspan fill="#bd93f9">i &gt;= 0</tspan>
+                <tspan fill="#888">; </tspan>
+            </text><rect x="625" y="6" width="50" height="22" rx="4" fill="rgba(255, 184, 108, 0.15)" stroke="#ffb86c" stroke-width="1.5"/><text x="650" y="21" font-size="12" fill="#ffb86c" font-weight="bold" text-anchor="middle">i--</text></g><g transform="translate(6 56)"><rect width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#50fa7b" stroke-width="1.5" filter="url(#a)"/><text x="38" y="18" font-size="11" fill="#50fa7b" font-weight="bold" text-anchor="middle">i = 10</text><text x="38" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">10 &gt;= 0</text><text x="38" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M76 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="94" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="132" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 9</text><text x="132" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">9 &gt;= 0</text><text x="132" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M170 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="188" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="226" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 8</text><text x="226" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">8 &gt;= 0</text><text x="226" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M264 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="282" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="320" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 7</text><text x="320" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">7 &gt;= 0</text><text x="320" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M358 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="376" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="414" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 6</text><text x="414" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">6 &gt;= 0</text><text x="414" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M452 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="470" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="508" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 5</text><text x="508" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">5 &gt;= 0</text><text x="508" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M546 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="564" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="602" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 4</text><text x="602" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">4 &gt;= 0</text><text x="602" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M640 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="658" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="696" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 3</text><text x="696" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">3 &gt;= 0</text><text x="696" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M734 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="752" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="790" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 2</text><text x="790" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">2 &gt;= 0</text><text x="790" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M828 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="846" width="76" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="884" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 1</text><text x="884" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">1 &gt;= 0</text><text x="884" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M922 32h14" stroke="#ffb86c" stroke-width="1.5" marker-end="url(#b)"/><rect x="940" width="76" height="64" rx="6" fill="rgba(80, 250, 123, 0.12)" stroke="#50fa7b" stroke-width="1.5" filter="url(#a)"/><text x="978" y="18" font-size="11" fill="#50fa7b" font-weight="bold" text-anchor="middle">i = 0</text><text x="978" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">0 &gt;= 0</text><text x="978" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M1016 32h14" stroke="#f55" stroke-width="1.5"/><rect x="1034" width="84" height="64" rx="6" fill="rgba(255, 85, 85, 0.12)" stroke="#f55" stroke-width="1.5" filter="url(#a)"/><text x="1076" y="18" font-size="11" fill="#f55" font-weight="bold" text-anchor="middle">i = -1</text><text x="1076" y="36" font-size="10" fill="#f55" text-anchor="middle">-1 &gt;= 0</text><text x="1076" y="52" font-size="10" fill="#f55" font-weight="bold" text-anchor="middle">✗ false</text></g></svg></div>
+
 <p>Ή ακόμα και να τυπώσεις τις δυνάμεις του 2 (1, 2, 4, 8, 16, 32, ...) πολλαπλασιάζοντας τον μετρητή:</p>
 
 <pre><code class="lang-go">for i := 1; i < 1000; i *= 2 {
     fmt.Println(i) // 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
 }
 </code></pre>
+
+<div style="margin:1.5rem 0;overflow-x:auto;text-align:center"><svg viewBox="0 0 1100 135" style="width:100%;min-width:900px;max-width:1100px;height:auto;font-family:var(--font-mono, monospace);color:currentColor"><defs><marker id="b" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="m0 1 10 4L0 9z" fill="#bd93f9"/></marker><filter id="a" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#000" flood-opacity=".3"/></filter></defs><g transform="translate(0 8)"><rect x="410" width="280" height="34" rx="6" fill="var(--tone-1, rgba(255,255,255,0.05))" stroke="var(--tone-4, #444)" stroke-width="1.5" filter="url(#a)"/><text x="425" y="22" font-size="12">
+                <tspan fill="#ff79c6" font-weight="bold">for </tspan>
+                <tspan fill="#50fa7b">i := 1</tspan>
+                <tspan fill="#888">; </tspan>
+                <tspan fill="#bd93f9">i &lt; 1000</tspan>
+                <tspan fill="#888">; </tspan>
+            </text><rect x="605" y="6" width="75" height="22" rx="4" fill="rgba(189, 147, 249, 0.15)" stroke="#bd93f9" stroke-width="1.5"/><text x="642" y="21" font-size="12" fill="#bd93f9" font-weight="bold" text-anchor="middle">i *= 2</text></g><g transform="translate(4 56)"><rect width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#50fa7b" stroke-width="1.5" filter="url(#a)"/><text x="41" y="18" font-size="11" fill="#50fa7b" font-weight="bold" text-anchor="middle">i = 1</text><text x="41" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">1 &lt; 1000</text><text x="41" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M82 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="100" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="141" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 2</text><text x="141" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">2 &lt; 1000</text><text x="141" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M182 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="200" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="241" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 4</text><text x="241" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">4 &lt; 1000</text><text x="241" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M282 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="300" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="341" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 8</text><text x="341" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">8 &lt; 1000</text><text x="341" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M382 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="400" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="441" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 16</text><text x="441" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">16 &lt; 1000</text><text x="441" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M482 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="500" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="541" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 32</text><text x="541" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">32 &lt; 1000</text><text x="541" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M582 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="600" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="641" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 64</text><text x="641" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">64 &lt; 1000</text><text x="641" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M682 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="700" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="741" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 128</text><text x="741" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">128 &lt; 1000</text><text x="741" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M782 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="800" width="82" height="64" rx="6" fill="var(--tone-2, #282a36)" stroke="#444" filter="url(#a)"/><text x="841" y="18" font-size="11" fill="currentColor" font-weight="bold" text-anchor="middle">i = 256</text><text x="841" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">256 &lt; 1000</text><text x="841" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M882 32h14" stroke="#bd93f9" stroke-width="1.5" marker-end="url(#b)"/><rect x="900" width="82" height="64" rx="6" fill="rgba(80, 250, 123, 0.12)" stroke="#50fa7b" stroke-width="1.5" filter="url(#a)"/><text x="941" y="18" font-size="11" fill="#50fa7b" font-weight="bold" text-anchor="middle">i = 512</text><text x="941" y="36" font-size="10" fill="#bd93f9" text-anchor="middle">512 &lt; 1000</text><text x="941" y="52" font-size="10" fill="#50fa7b" font-weight="bold" text-anchor="middle">✓ true</text><path d="M982 32h14" stroke="#f55" stroke-width="1.5"/><rect x="1000" width="92" height="64" rx="6" fill="rgba(255, 85, 85, 0.12)" stroke="#f55" stroke-width="1.5" filter="url(#a)"/><text x="1046" y="18" font-size="11" fill="#f55" font-weight="bold" text-anchor="middle">i = 1024</text><text x="1046" y="36" font-size="10" fill="#f55" text-anchor="middle">1024 &lt; 1000</text><text x="1046" y="52" font-size="10" fill="#f55" font-weight="bold" text-anchor="middle">✗ false</text></g></svg></div>
 
 <h2>for μόνο με συνθήκη</h2>
 
@@ -3273,6 +3478,7 @@ for i < 5 {
         λούπα.
     </li>
 </ul>
+
 
 <h3>Παράδειγμα: break</h3>
 
@@ -7158,7 +7364,7 @@ func evens(nums []int) []int {
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
+        <div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
 
 <h1>Δισδιάστατοι Πίνακες</h1>
 
@@ -7172,7 +7378,10 @@ func evens(nums []int) []int {
 
 <p>
     Φαντάσου ένα σκάκι, ή ένα λογιστικό φύλλο: κάθε κελί προσδιορίζεται από <strong>δύο</strong> συντεταγμένες — τη
-    γραμμή (row) και τη στήλη (column), όχι μόνο μία θέση όπως σε ένα απλό slice.
+    γραμμή (row) και τη στήλη (column), όχι μόνο μία θέση όπως σε ένα απλό slice. Επειδή ακριβώς οι δισδιάστατες
+    δομές απεικονίζουν συνήθως έναν δισδιάστατο χώρο — μια σκακιέρα, έναν λαβύρινθο, μια οθόνη από pixel — τις θα
+    τις συναντήσεις πολύ συχνά και με το όνομα <strong>πλέγμα</strong> (grid). Είναι το ίδιο πράγμα, απλώς ο όρος
+    τονίζει τη χωρική ερμηνεία αντί για τη δομή.
 </p>
 
 <p>
@@ -7234,7 +7443,7 @@ fmt.Println(literal[0][1]) // γραμμή 0, στήλη 1 → 2
 <p>
     Όταν φτιάχνεις ένα <code>[][]T</code> με <code>make</code>, πρέπει να προσέξεις: η <code>make</code> δεσμεύει
     μόνο το <strong>εξωτερικό</strong> slice. Κάθε εσωτερικό slice (κάθε "γραμμή") ξεκινά ως <code>nil</code>, μέχρι να
-    το δεσμεύσεις ξεχωριστά:
+    το δεσμεύσεις ξεχωριστά — δηλαδή το πλέγμα σου έχει προς το παρόν γραμμές, αλλά καμία στήλη:
 </p>
 
 <pre><code class="lang-go">grid := make([][]int, 3) // δεσμεύει ΜΟΝΟ τις 3 γραμμές
