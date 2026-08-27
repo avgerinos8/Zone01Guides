@@ -65,6 +65,14 @@
   --font-display: "Iowan Old Style", "Georgia", "Times New Roman", serif;
   --font-body: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", "Consolas", "Menlo", monospace;
+
+  /* Desktop-only: how far the main content shifts right while the sidebar
+     is docked open (see body.toc-pushed further down). Stays 0px on
+     mobile, where the sidebar is a full-screen overlay instead. 420px
+     matches #toc-sidebar's own width: min(420px, 90vw) — that min() only
+     ever matters below the 920px breakpoint, where this rule doesn't
+     apply anyway, so 420px is always the right constant here. */
+  --toc-offset: 0px;
 }
 
 * {
@@ -87,11 +95,12 @@ body {
 #progress-track {
   position: fixed;
   top: 0;
-  left: 0;
+  left: var(--toc-offset);
   right: 0;
   height: 6px;
   background: rgba(var(--ink-rgb), 0.12);
   z-index: 50;
+  transition: left .25s ease;
 }
 
 #progress-fill {
@@ -102,10 +111,13 @@ body {
 }
 
 #deck {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: var(--toc-offset);
   z-index: 1;
+  transition: left .25s ease;
 }
 
 .slide {
@@ -129,7 +141,10 @@ body {
    its image + shows/hides it in goTo() based on the active slide's opts. */
 #slide-bg-layer {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: var(--toc-offset);
   z-index: 0;
   pointer-events: none;
   display: none;
@@ -137,6 +152,7 @@ body {
   --slide-bg-size: auto;
   --slide-bg-repeat: no-repeat;
   --slide-bg-position: top left;
+  transition: left .25s ease;
 }
 
 #slide-bg-layer.active {
@@ -1295,7 +1311,7 @@ pre code {
 }
 
 .toc-jump-highlight {
-  animation: toc-jump-flash 1.6s ease-out;
+  animation: toc-jump-flash 8s ease-out;
 }
 
 .toc-search-empty {
@@ -1303,6 +1319,18 @@ pre code {
   font-size: 13px;
   color: rgba(var(--ink-rgb), 0.5);
   padding: 10px 0;
+}
+
+/* The nav-bar's own ☰ toggle — hidden while the sidebar is open (desktop
+   or mobile), since closing it is always reachable from inside the
+   sidebar itself (X, Close button, backdrop click, or the S key). */
+#btn-toc.toc-open-btn-hidden {
+  display: none;
+}
+
+.toc-search-result strong {
+  color: var(--tone-5);
+  font-weight: 700;
 }
 
 #toc-footer {
@@ -1351,10 +1379,25 @@ pre code {
   }
 }
 
+@media (min-width: 921px) {
+  /* Desktop only — the mobile block right above is untouched and still
+     takes over completely under 921px. */
+  body.toc-pushed {
+    --toc-offset: 420px;
+  }
+
+  /* No dimming/backdrop on desktop — the rest of the page stays fully
+     visible and interactive while the sidebar is docked open, exactly
+     like the viewport itself got narrower. */
+  #toc-backdrop {
+    display: none !important;
+  }
+}
+
 #nav-bar {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: var(--toc-offset);
   right: 0;
   height: 74px;
   display: flex;
@@ -1363,6 +1406,7 @@ pre code {
   padding: 0 28px;
   background: linear-gradient(0deg, rgba(var(--tone-1-rgb), 0.98) 80%, rgba(var(--tone-1-rgb), 0) 100%);
   z-index: 50;
+  transition: left .25s ease;
 }
 
 .nav-group {

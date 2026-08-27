@@ -1677,18 +1677,42 @@ function initTocSidebar() {
   function openToc() {
     tocSidebarEl.classList.add("open");
     tocBackdropEl.classList.add("open");
+    document.body.classList.add("toc-pushed"); // CSS only acts on this above 920px
+    tocOpenBtn.classList.add("toc-open-btn-hidden");
   }
 
   function closeToc() {
     tocSidebarEl.classList.remove("open");
     tocBackdropEl.classList.remove("open");
+    document.body.classList.remove("toc-pushed");
+    tocOpenBtn.classList.remove("toc-open-btn-hidden");
   }
 
   tocOpenBtn.addEventListener("click", openToc);
   tocCloseBtn.addEventListener("click", closeToc);
   tocBackdropEl.addEventListener("click", closeToc);
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeToc();
+    if (e.key === "Escape") {
+      closeToc();
+      return;
+    }
+
+    // A/D navigate slides, W opens the sidebar, S closes it — but never
+    // while the user is actually typing (search box, fill-in-the-blank
+    // inputs, the feedback form, anywhere), and never alongside a
+    // modifier key (Ctrl/Cmd/Alt), so this doesn't fight with browser or
+    // OS shortcuts that happen to use the same letters.
+    const activeTag = document.activeElement ? document.activeElement.tagName : "";
+    const isTyping = activeTag === "INPUT" || activeTag === "TEXTAREA" ||
+      (document.activeElement && document.activeElement.isContentEditable);
+    if (isTyping || e.ctrlKey || e.metaKey || e.altKey) return;
+
+    switch (e.key.toLowerCase()) {
+      case "a": goTo(current - 1); break;
+      case "d": goTo(current + 1); break;
+      case "w": openToc(); break;
+      case "s": closeToc(); break;
+    }
   });
 
   // Navigating anywhere (e.g. clicking a .toc-link — see the shared
@@ -1729,7 +1753,7 @@ function initTocSidebar() {
     // entry's own element doubles as the jump target — no ids needed here,
     // unlike the static extract_toc.go-generated heading links.
     const SEARCH_SELECTOR = "p, h1, h2, h3, li, td, .lede, pre code, blockquote";
-    const MAX_RESULTS = 50; // defensive cap for a very short/common query, not a normal case
+    // no result cap — every match shows; search only runs at 3+ characters (see renderResults)
 
     const searchIndex = [];
     document.querySelectorAll(".slide").forEach((slide) => {
@@ -1742,14 +1766,61 @@ function initTocSidebar() {
 
     const originalTocListHTML = tocListEl.innerHTML; // browse mode — restored when the search box is cleared
 
+    /**
+     * Builds a "…3-4 words… **match** …3-4 words…" snippet around the
+     * first occurrence of query in text — word-boundary-aware (splits on
+     * whitespace, finds which word(s) the match falls inside, takes N
+     * words of context on each side), with ellipses only where there
+     * genuinely wasn't enough text on that side to show. HTML is already
+     * out of the picture — text here always comes from .textContent, never
+     * innerHTML, both when the index was built and here.
+     * @param {string} text
+     * @param {string} query
+     * @param {number} contextWords
+     * @returns {{before: string, match: string, after: string}|null}
+     */
+    function buildSnippet(text, query, contextWords) {
+      const lowerText = text.toLowerCase();
+      const matchStart = lowerText.indexOf(query.toLowerCase());
+      if (matchStart === -1) return null;
+      const matchEnd = matchStart + query.length;
+
+      const words = [];
+      const wordRe = /\S+/g;
+      let m;
+      while ((m = wordRe.exec(text)) !== null) {
+        words.push({ text: m[0], start: m.index, end: m.index + m[0].length });
+      }
+
+      let firstWordIdx = words.findIndex((w) => w.end > matchStart);
+      if (firstWordIdx === -1) firstWordIdx = 0;
+      let lastWordIdx = firstWordIdx;
+      while (lastWordIdx + 1 < words.length && words[lastWordIdx].end < matchEnd) {
+        lastWordIdx++;
+      }
+
+      const startIdx = Math.max(0, firstWordIdx - contextWords);
+      const endIdx = Math.min(words.length - 1, lastWordIdx + contextWords);
+
+      const before = words.slice(startIdx, firstWordIdx).map((w) => w.text).join(" ");
+      const match = words.slice(firstWordIdx, lastWordIdx + 1).map((w) => w.text).join(" ");
+      const after = words.slice(lastWordIdx + 1, endIdx + 1).map((w) => w.text).join(" ");
+
+      return {
+        before: (startIdx > 0 ? "… " : "") + before,
+        match,
+        after: after + (endIdx < words.length - 1 ? " …" : ""),
+      };
+    }
+
     function renderResults(query) {
       const q = query.trim().toLowerCase();
-      if (!q) {
+      if (!q || q.length < 3) {
         tocListEl.innerHTML = originalTocListHTML;
         return;
       }
 
-      const matches = searchIndex.filter((entry) => entry.textLower.includes(q)).slice(0, MAX_RESULTS);
+      const matches = searchIndex.filter((entry) => entry.textLower.includes(q));
       tocListEl.innerHTML = "";
 
       if (matches.length === 0) {
@@ -1763,7 +1834,22 @@ function initTocSidebar() {
       matches.forEach((entry) => {
         const a = document.createElement("a");
         a.className = "toc-link toc-search-result";
-        a.textContent = entry.text;
+
+        const snippet = buildSnippet(entry.text, q, 4);
+        if (snippet) {
+          // Built with real DOM nodes (createTextNode/createElement), not an
+          // HTML string — the query and the matched content are both
+          // arbitrary text, so this avoids any injection risk entirely,
+          // not just "escaped enough".
+          a.appendChild(document.createTextNode(snippet.before + " "));
+          const strong = document.createElement("strong");
+          strong.textContent = snippet.match;
+          a.appendChild(strong);
+          a.appendChild(document.createTextNode(" " + snippet.after));
+        } else {
+          a.textContent = entry.text; // shouldn't happen — entry only matched because it contains q
+        }
+
         a.addEventListener("click", (e) => {
           e.preventDefault();
           jumpToElement(entry.el);
@@ -1804,6 +1890,11 @@ function initTocSidebar() {
  * @param {number} targetTop
  * @param {number} duration - ms
  */
+// Shared with the drift-watcher IIFE further down — true only while
+// smoothScrollTop()'s own animation is actively running, so that watcher
+// can pause during it (see that IIFE's own comment for why).
+let ourScrollAnimating = false;
+
 function smoothScrollTop(container, targetTop, duration) {
   const startTop = container.scrollTop;
   const delta = targetTop - startTop;
@@ -1813,10 +1904,15 @@ function smoothScrollTop(container, targetTop, duration) {
     return 1 - Math.pow(1 - t, 3);
   }
 
+  ourScrollAnimating = true;
   function step(now) {
     const t = Math.min(1, (now - startTime) / duration);
     container.scrollTop = startTop + delta * easeOutCubic(t);
-    if (t < 1) requestAnimationFrame(step);
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      ourScrollAnimating = false;
+    }
   }
   requestAnimationFrame(step);
 }
@@ -1852,7 +1948,7 @@ function jumpToElement(targetEl) {
     // all, so this can't happen from here again.
     const slideRect = targetSlide.getBoundingClientRect();
     const targetRect = targetEl.getBoundingClientRect();
-    const targetTop = targetSlide.scrollTop + (targetRect.top - slideRect.top) - 12;
+    const targetTop = targetSlide.scrollTop + (targetRect.top - slideRect.top) - 10;
     smoothScrollTop(targetSlide, targetTop, 500);
 
     // Defensive, unconditional reset — this site has no intentional
@@ -1868,7 +1964,7 @@ function jumpToElement(targetEl) {
     targetEl.classList.remove("toc-jump-highlight");
     void targetEl.offsetWidth;
     targetEl.classList.add("toc-jump-highlight");
-    setTimeout(() => targetEl.classList.remove("toc-jump-highlight"), 1600);
+    setTimeout(() => targetEl.classList.remove("toc-jump-highlight"), 8000);
   });
 }
 
@@ -1907,6 +2003,30 @@ function jumpToHash(hash) {
  * hashchange and this whole function again), so the URL still reflects
  * where you are, for bookmarking/sharing.
  */
+// Defensive, real-time safety net for the first couple seconds after load.
+// html/body already have overflow-x:hidden (see that rule's own comment),
+// and every .slide does too — this site has NO intentional horizontal
+// scrolling anywhere. Despite that, some browsers' native "scroll to
+// fragment" behavior can still force a scroll position programmatically,
+// bypassing CSS overflow rules the same way user-driven scrolling can't —
+// and it does so inconsistently: sometimes immediately, sometimes on a
+// delayed retry well after our own one-time corrections elsewhere already
+// ran (that's the "works sometimes" symptom). Watching the scroll event
+// itself and correcting INSTANTLY, for a generous window rather than only
+// at fixed points, catches it no matter when it fires.
+(function () {
+  let watching = true;
+  function correctDrift() {
+    if (!watching || ourScrollAnimating) return; // don't fight our own vertical animation — see smoothScrollTop()
+    if (window.scrollX !== 0) window.scrollTo({ left: 0 });
+    if (document.documentElement.scrollLeft !== 0) document.documentElement.scrollLeft = 0;
+    if (document.body.scrollLeft !== 0) document.body.scrollLeft = 0;
+  }
+  window.addEventListener("scroll", correctDrift, { passive: true });
+  document.addEventListener("scroll", correctDrift, { passive: true, capture: true });
+  setTimeout(() => { watching = false; }, 2500);
+})();
+
 function handleInitialHashNavigation() {
   const hash = window.__initialHash;
   if (!hash || hash.length < 2) return;
