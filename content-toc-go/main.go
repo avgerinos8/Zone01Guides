@@ -23,7 +23,7 @@ import (
 // ── CLI ──────────────────────────────────────────────────────────────────
 
 func main() {
-	mode := flag.Int("mode", 3, "which heading levels to include: 1 = h1 only, 2 = h1+h2, 3 = h1+h2+h3")
+	mode := flag.Int("mode", 3, "which heading levels to include: 0 = eyebrows only, 1 = h1 only, 2 = h1+h2, 3 = h1+h2+h3")
 	dryRun := flag.Bool("dry-run", false, "preview everything without writing any changes to the HTML file")
 	flag.Usage = printUsage
 	flag.Parse()
@@ -32,8 +32,8 @@ func main() {
 		printUsage()
 		os.Exit(1)
 	}
-	if *mode < 1 || *mode > 3 {
-		fatal("mode must be 1, 2, or 3 (got %d)", *mode)
+	if *mode < 0 || *mode > 3 {
+		fatal("mode must be 0, 1, 2, or 3 (got %d)", *mode)
 	}
 
 	path := flag.Arg(0)
@@ -52,12 +52,13 @@ Usage:
   extract_toc [flags] <course.html>
 
 Flags:
-  -mode int      1 = h1 only, 2 = h1+h2, 3 = h1+h2+h3  (default 3)
+  -mode int      0 = eyebrows only, 1 = h1 only, 2 = h1+h2, 3 = h1+h2+h3  (default 3)
   -dry-run       preview everything, write nothing
 
 Examples:
   extract_toc 01-go-01.html                 # mode 3, writes ids + the .md
   extract_toc -mode=2 01-go-01.html
+  extract_toc -mode=0 01-go-01.html         # section eyebrows only
   extract_toc -dry-run -mode=1 01-go-01.html
 `)
 }
@@ -67,36 +68,63 @@ func fatal(format string, args ...interface{}) {
 	os.Exit(1)
 }
 
+// inScope decides whether a heading counts for the given mode.
+//   - mode 0: ONLY h1s that found a qualifying eyebrow — everything else
+//     (h2/h3, and h1s that fell back to their own tag because no eyebrow
+//     matched) is excluded entirely. Slides without a qualifying eyebrow
+//     get NOTHING in this mode — no fallback, unlike modes 1-3.
+//   - modes 1-3: the existing behavior — every heading at or below that
+//     level, h1 included either via its eyebrow or (if no eyebrow
+//     qualified) directly on itself.
+func inScope(h heading, mode int) bool {
+	if mode == 0 {
+		return h.level == 1 && h.redirectedToEyebrow
+	}
+	return h.level <= mode
+}
+
 // ── data model ───────────────────────────────────────────────────────────
 
 // heading is one h1/h2/h3 found inside a slide's template-literal HTML.
 type heading struct {
-	level       int    // 1, 2, or 3
-	text        string // decoded, tag-stripped inner text
-	id          string // existing id, or "" if none yet
-	slideIndex  int    // 0-based, same order as slides[] at runtime
-	attrsStart  int    // absolute byte offset: right after "<hN", where a new id="" gets spliced in
-	hadIDBefore bool
+	level               int    // 1, 2, or 3
+	text                string // decoded, tag-stripped inner text
+	id                  string // existing id, or "" if none yet
+	slideIndex          int    // 0-based, same order as slides[] at runtime
+	attrsStart          int    // absolute byte offset: right after "<hN" (or the eyebrow's "<div"), where a new id="" gets spliced in
+	hadIDBefore         bool
+	redirectedToEyebrow bool // set by applyEyebrowRedirect — only true for h1s that actually found a qualifying eyebrow; see mode 0
 }
 
 // ── slide-call scanning (mirrors the earlier Python approach: slides
 // aren't literal HTML in the file, they're built at runtime from
 // addContent(`...`) / addQuiz(`...`) / etc calls) ──────────────────────
 
-var slideCallRe = regexp.MustCompile(`(?:addContent|addQuiz|addFillBlank|addMatching)\s*\(\s*` + "`")
+// slideCall is one addContent()/addQuiz()/addFillBlank()/addMatching() call
+// found in the file — its function name (needed to scope the eyebrow-slug
+// feature to addContent only, see applyEyebrowRedirect) plus its
+// template-literal's [start,end) byte range.
+type slideCall struct {
+	callName string
+	start    int
+	end      int
+}
 
-// slideLiteralRanges returns the [start,end) byte range of each call's
-// template-literal INNER content, in file order (= slide index order),
+var slideCallRe = regexp.MustCompile(`(addContent|addQuiz|addFillBlank|addMatching)\s*\(\s*` + "`")
+
+// slideCalls returns each call's function name and its template-literal
+// INNER content's byte range, in file order (= slide index order),
 // respecting backtick-escaping (\`) so an escaped backtick inside the
 // content doesn't end the match early.
-func slideLiteralRanges(source string) [][2]int {
-	var ranges [][2]int
+func slideCalls(source string) []slideCall {
+	var calls []slideCall
 	pos := 0
 	for {
-		loc := slideCallRe.FindStringIndex(source[pos:])
+		loc := slideCallRe.FindStringSubmatchIndex(source[pos:])
 		if loc == nil {
 			break
 		}
+		name := source[pos+loc[2] : pos+loc[3]]
 		start := pos + loc[1] // just after the opening backtick
 		i := start
 		for i < len(source) {
@@ -109,10 +137,10 @@ func slideLiteralRanges(source string) [][2]int {
 			}
 			i++
 		}
-		ranges = append(ranges, [2]int{start, i})
+		calls = append(calls, slideCall{callName: name, start: start, end: i})
 		pos = i + 1
 	}
-	return ranges
+	return calls
 }
 
 // ── heading scanning within one slide's byte range ──────────────────────
@@ -125,10 +153,10 @@ var headingOpenRe = regexp.MustCompile(`<h([123])((?:\s[^>]*)?)>`)
 var idAttrRe = regexp.MustCompile(`\bid\s*=\s*(?:"([^"]*)"|'([^']*)')`)
 var tagStripRe = regexp.MustCompile(`<[^>]*>`)
 
-func scanHeadings(source string, slideRanges [][2]int) []heading {
+func scanHeadings(source string, calls []slideCall) []heading {
 	var out []heading
-	for slideIndex, r := range slideRanges {
-		slideText := source[r[0]:r[1]]
+	for slideIndex, call := range calls {
+		slideText := source[call.start:call.end]
 		for _, m := range headingOpenRe.FindAllStringSubmatchIndex(slideText, -1) {
 			level, _ := strconv.Atoi(slideText[m[2]:m[3]])
 			attrsStartLocal := m[2] // start of the level-digit; we splice right after "<hN"
@@ -167,12 +195,95 @@ func scanHeadings(source string, slideRanges [][2]int) []heading {
 				text:        text,
 				id:          existingID,
 				slideIndex:  slideIndex,
-				attrsStart:  r[0] + spliceLocal, // absolute offset, right after "<hN"
+				attrsStart:  call.start + spliceLocal, // absolute offset, right after "<hN"
 				hadIDBefore: existingID != "",
 			})
 		}
 	}
 	return out
+}
+
+// Matches <div class="eyebrow" ...> specifically — capturing everything
+// from right after "<div" (group 1), so its start position is exactly
+// where a new id="" gets spliced in, same convention as headingOpenRe.
+var divOpenRe = regexp.MustCompile(`<div((?:\s[^>]*)?)>`)
+var eyebrowClassRe = regexp.MustCompile(`\bclass\s*=\s*"eyebrow"`)
+
+// findEyebrowDiv finds the first <div ...> in slideText whose attributes
+// contain class="eyebrow" ANYWHERE — not assuming it's the first attribute,
+// specifically so this keeps matching on a second run after an id="..."
+// has been inserted before class="eyebrow" in the tag.
+func findEyebrowDiv(slideText string) (whole, attrs [2]int, found bool) {
+	for _, m := range divOpenRe.FindAllStringSubmatchIndex(slideText, -1) {
+		attrsRaw := slideText[m[2]:m[3]]
+		if eyebrowClassRe.MatchString(attrsRaw) {
+			return [2]int{m[0], m[1]}, [2]int{m[2], m[3]}, true
+		}
+	}
+	return [2]int{}, [2]int{}, false
+}
+
+// applyEyebrowRedirect looks, for every h1-level heading belonging to an
+// addContent() call (never addQuiz/addFillBlank/addMatching — those don't
+// use this eyebrow+h1 pattern, they're built by buildInteractiveHeader()
+// at runtime instead, not literal HTML in the source), for that slide's
+// <div class="eyebrow">...Ενότητα...</div>. If one exists, the h1 heading
+// entry's insertion target is REDIRECTED to that eyebrow div instead of
+// the h1 tag itself — the h1's own text is still what's shown in the TOC
+// (this only changes WHERE the id physically lives), and the slug text is
+// still generated from that same h1 text later in assignSlugs().
+//
+// A slide with no matching eyebrow (no eyebrow at all, or one that exists
+// but doesn't say "Ενότητα") is left completely alone — this is how
+// glossary/vscodechallenge-style slides end up excluded, structurally,
+// without needing an explicit denylist of slide "kinds" to maintain.
+func applyEyebrowRedirect(source string, headings []heading, calls []slideCall) {
+	for i := range headings {
+		if headings[i].level != 1 {
+			continue
+		}
+		call := calls[headings[i].slideIndex]
+		if call.callName != "addContent" {
+			continue
+		}
+		slideText := source[call.start:call.end]
+
+		whole, attrs, found := findEyebrowDiv(slideText)
+		if !found {
+			continue // no eyebrow in this slide at all
+		}
+
+		ebCloseIdx := strings.Index(slideText[whole[1]:], "</div>")
+		ebText := ""
+		if ebCloseIdx >= 0 {
+			ebText = slideText[whole[1] : whole[1]+ebCloseIdx]
+		}
+		if !strings.Contains(strings.ToLower(ebText), "ενότητα") {
+			continue // has an eyebrow, but not a "Ενότητα N" one
+		}
+
+		// Sanity check: the eyebrow found must actually be the one right
+		// before THIS h1 (should always be true given the established
+		// authoring convention, but guard against the edge case anyway).
+		if call.start+whole[0] >= headings[i].attrsStart {
+			continue
+		}
+
+		attrsRaw := slideText[attrs[0]:attrs[1]]
+		existingID := ""
+		if idm := idAttrRe.FindStringSubmatch(attrsRaw); idm != nil {
+			if idm[1] != "" {
+				existingID = idm[1]
+			} else {
+				existingID = idm[2]
+			}
+		}
+
+		headings[i].attrsStart = call.start + attrs[0]
+		headings[i].id = existingID
+		headings[i].hadIDBefore = existingID != ""
+		headings[i].redirectedToEyebrow = true
+	}
 }
 
 // ── slug generation ──────────────────────────────────────────────────────
@@ -207,8 +318,8 @@ func slugify(text string) string {
 	s := strings.ToLower(b.String())
 	s = nonSlugCharsRe.ReplaceAllString(s, "-")
 	s = strings.Trim(s, "-")
-	if len(s) > 24 {
-		s = strings.Trim(s[:24], "-")
+	if len(s) > 16 {
+		s = strings.Trim(s[:16], "-")
 	}
 	if s == "" {
 		s = "untitled"
@@ -253,7 +364,7 @@ type insertion struct {
 func applyInsertions(source string, headings []heading, mode int) string {
 	var ins []insertion
 	for _, h := range headings {
-		if h.level > mode || h.hadIDBefore {
+		if !inScope(h, mode) || h.hadIDBefore {
 			continue
 		}
 		ins = append(ins, insertion{pos: h.attrsStart, text: ` id="` + h.id + `"`})
@@ -272,7 +383,7 @@ func applyInsertions(source string, headings []heading, mode int) string {
 func buildMarkdown(fileName string, headings []heading, mode int, insertedCount, existingCount int) string {
 	var lines []string
 	for _, h := range headings {
-		if h.level > mode {
+		if !inScope(h, mode) {
 			continue
 		}
 		safeText := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;").Replace(truncate(h.text, 45))
@@ -293,17 +404,18 @@ func buildMarkdown(fileName string, headings []heading, mode int, insertedCount,
 // ── run ──────────────────────────────────────────────────────────────────
 
 func run(path, source string, mode int, dryRun bool) {
-	ranges := slideLiteralRanges(source)
-	if len(ranges) == 0 {
+	calls := slideCalls(source)
+	if len(calls) == 0 {
 		fatal("no addContent()/addQuiz()/addFillBlank()/addMatching() calls found in %s — wrong file?", path)
 	}
 
-	headings := scanHeadings(source, ranges)
+	headings := scanHeadings(source, calls)
+	applyEyebrowRedirect(source, headings, calls) // must run BEFORE assignSlugs — it doesn't touch .id itself except to reset hadIDBefore correctly for the new target
 	assignSlugs(headings)
 
 	insertedCount, existingCount := 0, 0
 	for _, h := range headings {
-		if h.level > mode {
+		if !inScope(h, mode) {
 			continue
 		}
 		if h.hadIDBefore {
@@ -314,14 +426,14 @@ func run(path, source string, mode int, dryRun bool) {
 	}
 
 	fmt.Printf("Scanned %d slide calls, found %d headings (h1:%d h2:%d h3:%d).\n",
-		len(ranges), len(headings), countLevel(headings, 1), countLevel(headings, 2), countLevel(headings, 3))
+		len(calls), len(headings), countLevel(headings, 1), countLevel(headings, 2), countLevel(headings, 3))
 	fmt.Printf("Mode %d: %d headings in scope — %d already had an id, %d will get a new one.\n",
 		mode, insertedCount+existingCount, existingCount, insertedCount)
 
 	if insertedCount > 0 {
 		fmt.Println("\nNew ids:")
 		for _, h := range headings {
-			if h.level <= mode && !h.hadIDBefore {
+			if inScope(h, mode) && !h.hadIDBefore {
 				fmt.Printf("  slide %2d  h%d  %-50s  id=%q\n", h.slideIndex, h.level, truncate(h.text, 50), h.id)
 			}
 		}

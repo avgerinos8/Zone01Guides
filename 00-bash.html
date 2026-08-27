@@ -69,21 +69,15 @@
 
     <div id="toc-list">
       <!-- <a href="#@shell-bash" data-slide="0" class="toc-link toc-h1">Shell &amp; Bash</a> -->
-      <a href="#@hardware-software-kai-le" data-slide="1" class="toc-link toc-h1">Hardware, Software και Λειτουργικό
-        Σύστημα (…</a>
-      <a href="#@poio-shell-tha-chrisimop" data-slide="3" class="toc-link toc-h1">Ποιο shell θα χρησιμοποιήσεις</a>
-      <a href="#@ploigisoy-sto-systima-ar" data-slide="5" class="toc-link toc-h1">Πλοηγήσου στο σύστημα αρχείων</a>
-      <a href="#@to-ergaleio-poy-thymatai" data-slide="7" class="toc-link toc-h1">Το εργαλείο που θυμάται κάθε αλλαγή
-        στον κώδ…</a>
-      <a href="#@stdin-stdout-stderr-kai" data-slide="9" class="toc-link toc-h1">stdin, stdout, stderr, και πώς τα
-        ενώνουμε</a>
-      <a href="#@ta-ergaleia-poy-kovoyn-f" data-slide="11" class="toc-link toc-h1">Τα εργαλεία που κόβουν, φιλτράρουν
-        και μετρά…</a>
-      <a href="#@pos-to-shell-thymatai-pr" data-slide="13" class="toc-link toc-h1">Πώς το shell θυμάται πράγματα και
-        ελέγχει αν…</a>
-      <a href="#@ti-trechei-tora-kai-pos" data-slide="15" class="toc-link toc-h1">Τι τρέχει τώρα, και πώς μιλάει το
-        μηχάνημά σ…</a>
-      <a href="#@oles-oi-entoles-se-ena-s" data-slide="17" class="toc-link toc-h1">Όλες οι εντολές, σε ένα σημείο</a>
+      <a href="#@hardware-software" data-slide="1" class="toc-link toc-h1">Hardware, Software και OS</a>
+      <a href="#@poio-shell" data-slide="3" class="toc-link toc-h1">Ποιο shell θα χρησιμοποιήσεις</a>
+      <a href="#@filesystem" data-slide="5" class="toc-link toc-h1">Πλοηγήσου στο Filesystem</a>
+      <a href="#@git" data-slide="7" class="toc-link toc-h1">Git</a>
+      <a href="#@stdin-stdout-stderr" data-slide="9" class="toc-link toc-h1">stdin, stdout, stderr</a>
+      <a href="#@bash-text" data-slide="11" class="toc-link toc-h1">Text manipulation</a>
+      <a href="#@env-variables" data-slide="13" class="toc-link toc-h1">Shell/Environment Variables</a>
+      <a href="#@processManagement" data-slide="15" class="toc-link toc-h1">Process Management</a>
+      <a href="#@bash-cheatsheet" data-slide="17" class="toc-link toc-h1">Συγκεντρωτικό Cheatsheet</a>
     </div>
 
     <div id="toc-footer">
@@ -116,8 +110,8 @@
 
     // ── Section 1 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 7 — Τα Βασικά</div>
-<h1 id="@hardware-software-kai-le">Hardware, Software και Λειτουργικό Σύστημα (OS)</h1>
+<div class="eyebrow" id="@hardware-software">Ενότητα 1 / 7 — Τα Βασικά</div>
+<h1>Hardware, Software και Λειτουργικό Σύστημα (OS)</h1>
 <p>Το hardware είναι το φυσικό μηχάνημα: cpu, memory, storage. Το software είναι οι οδηγίες που εκτελεί το hardware. Ανάμεσά τους βρίσκεται το Λειτουργικό Σύστημα (OS), ένα πρόγραμμα που διαχειρίζεται τους πόρους του υπολογιστή (μνήμη, αρχεία, διεργασίες, συσκευές) και δίνει σε όλα τα υπόλοιπα προγράμματα έναν τρόπο να τους χρησιμοποιήσουν, χωρίς αυτά να χρειάζεται να μιλούν απευθείας στο hardware. Linux, macOS και Windows είναι τρία διαφορετικά λειτουργικά συστήματα, με διαφορετική φιλοσοφία αλλά κοινό σκοπό.</p>
 
 <h2>Γιατί Linux</h2>
@@ -245,8 +239,8 @@
 
     // ── Section 2 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 2 / 7 — Shells &amp; WSL</div>
-<h1 id="@poio-shell-tha-chrisimop">Ποιο shell θα χρησιμοποιήσεις</h1>
+<div class="eyebrow" id="@poio-shell">Ενότητα 2 / 7 — Shells &amp; WSL</div>
+<h1>Ποιο shell θα χρησιμοποιήσεις</h1>
 <p class="lede">Υπάρχουν πολλά shells. Δεν χρειάζεται να τα ξέρεις όλα, αλλά είναι καλό να ξέρεις ότι υπάρχουν και τι τα ξεχωρίζει, γιατί θα τα συναντήσεις σε διαφορετικά συστήματα.</p>
 
 <h2>Δημοφιλή shells, επιγραμματικά</h2>
@@ -365,8 +359,8 @@
 
     // ── Section 3 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 3 / 7 — Files &amp; Directories</div>
-<h1 id="@ploigisoy-sto-systima-ar">Πλοηγήσου στο σύστημα αρχείων</h1>
+<div class="eyebrow" id="@filesystem">Ενότητα 3 / 7 — Files &amp; Directories</div>
+<h1>Πλοηγήσου στο σύστημα αρχείων</h1>
 <p class="lede">Το filesystem είναι μια δενδρική δομή φακέλων και αρχείων. Οι παρακάτω εντολές είναι αυτές που θα χρησιμοποιείς κάθε μέρα, πολλαπλές φορές την ημέρα.</p>
 
 <h2>Ποιος είσαι και πού βρίσκεσαι</h2>
@@ -679,8 +673,8 @@ cd __path3__              # go back to the folder you were in before`,
 
     // ── Section 3.5 (Git) ───────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 3.5 / 7 — Git</div>
-<h1 id="@to-ergaleio-poy-thymatai">Το εργαλείο που θυμάται κάθε αλλαγή στον κώδικά σου</h1>
+<div class="eyebrow" id="@git">Ενότητα 3.5 / 7 — Git</div>
+<h1>Το εργαλείο που θυμάται κάθε αλλαγή στον κώδικά σου</h1>
 <p class="lede">Πριν προχωρήσουμε στο επόμενο κομμάτι του shell, ας δούμε ένα εργαλείο που θα χρησιμοποιείς σε κάθε project από εδώ και πέρα: το Git.</p>
 
 <h2>Τι είναι το Git</h2>
@@ -907,8 +901,8 @@ git checkout __flag__ feature   # create a new branch and switch to it`,
 
     // ── Section 4 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 4 / 7 — Ροές &amp; Σωλήνες</div>
-<h1 id="@stdin-stdout-stderr-kai">stdin, stdout, stderr, και πώς τα ενώνουμε</h1>
+<div class="eyebrow" id="@stdin-stdout-stderr">Ενότητα 4 / 7 — Ροές &amp; Σωλήνες</div>
+<h1>stdin, stdout, stderr, και πώς τα ενώνουμε</h1>
 <p class="lede">Αυτό είναι ένα από τα πιο δυνατά χαρακτηριστικά της φιλοσοφίας του Unix: κάθε πρόγραμμα έχει τρεις ροές επικοινωνίας, και μπορούμε να τις συνδέσουμε μεταξύ τους ή με αρχεία.</p>
 
 <h2>Οι τρεις standard streams</h2>
@@ -1062,8 +1056,8 @@ ls /nope > all.txt __redir__        # send stderr wherever stdout is already goi
 
     // ── Section 5 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 5 / 7 — Επεξεργασία Κειμένου</div>
-<h1 id="@ta-ergaleia-poy-kovoyn-f">Τα εργαλεία που κόβουν, φιλτράρουν και μετράνε κείμενο</h1>
+<div class="eyebrow" id="@bash-text">Ενότητα 5 / 7 — Επεξεργασία Κειμένου</div>
+<h1>Τα εργαλεία που κόβουν, φιλτράρουν και μετράνε κείμενο</h1>
 <p class="lede">Η φιλοσοφία του Unix λέει ότι κάθε εργαλείο κάνει μία δουλειά καλά, και τα συνδυάζεις με pipes για να λύσεις πολύπλοκα προβλήματα. Εδώ βρίσκονται τα πιο χρησιμοποιούμενα εργαλεία επεξεργασίας κειμένου, όπως το grep που αναφέραμε στην προηγούμενη ενότητα.</p>
 
 <h2>Προβολή αρχείων</h2>
@@ -1309,8 +1303,8 @@ sed 's/foo/bar/__flag5__' notes.txt  # replace EVERY occurrence on each line`,
 
     // ── Section 6 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 6 / 7 — Variables, Exit Codes &amp; Permissions</div>
-<h1 id="@pos-to-shell-thymatai-pr">Πώς το shell θυμάται πράγματα και ελέγχει αν πέτυχε</h1>
+<div class="eyebrow" id="@env-variables">Ενότητα 6 / 7 — Variables, Exit Codes &amp; Permissions</div>
+<h1>Πώς το shell θυμάται πράγματα και ελέγχει αν πέτυχε</h1>
 <p class="lede">Εδώ αρχίζουμε να βλέπουμε δομές που θα ξανασυναντήσεις σε κάθε γλώσσα προγραμματισμού: μεταβλητές και έλεγχος επιτυχίας ή αποτυχίας.</p>
 
 <h2>Shell Variables εναντίον Environment Variables</h2>
@@ -1566,8 +1560,8 @@ echo "Hello, $name!"`,
 
     // ── Section 7 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 7 / 7 — Processes, Δίκτυο &amp; Συστήματα</div>
-<h1 id="@ti-trechei-tora-kai-pos">Τι τρέχει τώρα, και πώς μιλάει το μηχάνημά σου με τον έξω κόσμο</h1>
+<div class="eyebrow" id="@processManagement">Ενότητα 7 / 7 — Processes, Δίκτυο &amp; Συστήματα</div>
+<h1>Τι τρέχει τώρα, και πώς μιλάει το μηχάνημά σου με τον έξω κόσμο</h1>
 <p class="lede">Πώς διαχειρίζεσαι προγράμματα που τρέχουν, πώς επικοινωνείς με άλλα μηχανήματα, και πώς παρακολουθείς την υγεία του συστήματός σου.</p>
 
 <h2>Process Management</h2>
@@ -1821,8 +1815,8 @@ echo "Hello, $name!"`,
 
     // ── Final cheatsheet glossary ───────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Συγκεντρωτικό Cheatsheet</div>
-<h1 id="@oles-oi-entoles-se-ena-s">Όλες οι εντολές, σε ένα σημείο</h1>
+<div class="eyebrow" id="@bash-cheatsheet">Συγκεντρωτικό Cheatsheet</div>
+<h1>Όλες οι εντολές, σε ένα σημείο</h1>
 <p class="lede">Γρήγορη αναφορά, όχι νέα εξήγηση. Αν ξεχάσεις κάτι, γύρνα εδώ.</p>
 
 <div class="glossary-group">
