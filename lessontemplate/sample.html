@@ -85,6 +85,82 @@
       history.replaceState(null, "", location.pathname + location.search);
     }
   </script>
+  <!-- Separate, deliberately self-contained inline script — no dependency on
+       static/script.js's own functions or variables, since the whole point
+       is to still work if THAT script is what's broken (a future syntax
+       error there fires as a window "error" event too, same as a runtime
+       exception during initSlideDeck()). Registered here, before that
+       script is even requested, so it's guaranteed to already be listening
+       no matter how early things go wrong.
+
+       Concretely, this exists for: a course author edits quiz/fill-blank/
+       matching content after a learner has already saved progress against
+       the OLD shape (e.g. removes one matching pair — the learner's saved
+       progress records answers by INDEX into that pairs array, so a saved
+       index that's now out of bounds throws when the exercise tries to
+       render it). That renderMatching()-specific case is now guarded
+       directly (see script.js), but this is the general backstop for
+       "broke some other way nobody anticipated" — shows a plain, honest
+       screen instead of the blank page that an uncaught error during
+       initSlideDeck()'s single synchronous build pass would otherwise
+       leave behind (that pass aborts entirely partway through on any
+       uncaught exception, so nothing after that point ever renders). -->
+  <script>
+    (function () {
+      var shown = false;
+      window.addEventListener("error", function () {
+        if (shown) return;
+        // The critical check: only a failure BEFORE the page ever finished
+        // its first successful render counts as "broken" here. That flag
+        // is set as the very last line of initSlideDeck() in script.js —
+        // if we get this far while it's still unset, the deck's one
+        // synchronous build pass aborted partway through and never
+        // finished, which is the actual blank-page failure mode this
+        // exists for. An error AFTER that flag is set means the page
+        // already rendered successfully and is visibly working — showing
+        // this takeover for something later (e.g. a click handler
+        // throwing) would break a page that wasn't actually broken.
+        if (window.__pageInitialized) return;
+        shown = true;
+        showContentChangedFallback();
+      });
+
+      function showContentChangedFallback() {
+        var overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:999999;background:#1a1a1a;" +
+          "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+          "gap:20px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#e0e0e0;" +
+          "text-align:center;padding:24px;";
+
+        var msg = document.createElement("div");
+        msg.textContent = "Internal Error";
+        msg.style.cssText = "font-size:22px;font-weight:600;letter-spacing:.02em;";
+        overlay.appendChild(msg);
+
+        var btn = document.createElement("button");
+        btn.textContent = "Reset Progress";
+        btn.style.cssText = "font-family:inherit;font-size:15px;padding:10px 22px;" +
+          "border-radius:7px;border:1px solid #888;background:transparent;" +
+          "color:#ccc;cursor:pointer;";
+        btn.addEventListener("click", function () {
+          // Self-contained on purpose — mirrors getStoragePrefix()/
+          // performHardReset() in script.js exactly, but doesn't call them:
+          // if THIS is running, we can't assume anything in that file is
+          // actually intact.
+          var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+          localStorage.removeItem(prefix + "current_slide");
+          localStorage.removeItem(prefix + "answers");
+          localStorage.removeItem(prefix + "scores");
+          localStorage.removeItem(prefix + "notified_100");
+          localStorage.removeItem(prefix + "version");
+          window.location.reload();
+        });
+        overlay.appendChild(btn);
+
+        document.body.appendChild(overlay);
+      }
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>[TOPIC] — Θεωρητικό Υλικό</title>
@@ -119,7 +195,7 @@
       <div id="dots-track"></div>
       <div class="dots-arrow dots-arrow-right" id="dots-arrow-right"><span class="dots-arrow-triangle"></span></div>
     </div>
-    <div style="display:flex; align-items:center; gap:16px;">
+    <div class="nav-group-right">
       <span id="slide-counter"></span>
       <button class="nav-btn" id="btn-next">
         <span class="desktop-text">Next→</span>
@@ -143,7 +219,9 @@
       </div>
     </div>
 
-    <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+    <div id="toc-search-wrap">
+      <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+    </div>
 
     <div id="toc-list">
       <!-- populated by JS -->

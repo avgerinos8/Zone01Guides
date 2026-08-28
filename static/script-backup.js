@@ -1591,6 +1591,34 @@ function wireDotsArrows() {
  * simply finds nothing in either case, which is fine).
  * @param {number} slideIndex
  */
+/**
+ * Marks whichever .toc-link's target actually lives on the given slide as
+ * the "you are here" entry, clearing that mark from any other. Resolves
+ * each link's own href="#@slug" to find its real target element and
+ * checks whether the CURRENT slide element contains it — the same
+ * resolution jumpToHash() already does for clicks — rather than comparing
+ * against a stored slide-number attribute. That number would need
+ * recomputing by hand every time a slide gets added/removed/reordered
+ * anywhere earlier in the file; reading it live from the DOM here can
+ * never go stale, because there's nothing stored to go stale.
+ * @param {number} slideIndex
+ */
+function updateActiveTocLink(slideIndex) {
+  document.querySelectorAll(".toc-link.toc-link-active").forEach((el) => {
+    el.classList.remove("toc-link-active");
+  });
+
+  const currentSlideEl = slideEls[slideIndex];
+  if (!currentSlideEl) return;
+
+  document.querySelectorAll(".toc-link[href^='#']").forEach((link) => {
+    const targetEl = document.getElementById(link.getAttribute("href").slice(1));
+    if (targetEl && currentSlideEl.contains(targetEl)) {
+      link.classList.add("toc-link-active");
+    }
+  });
+}
+
 function goTo(i) {
   if (i < 0 || i >= slides.length) return;
   const goingBack = i < current;
@@ -1616,6 +1644,7 @@ function goTo(i) {
   window.scrollTo({ left: 0 });
   slideEls[current].scrollLeft = 0;
   centerDotsOn(current); // re-center the windowed dots track on the new active dot
+  updateActiveTocLink(current);
   updateGroupBadge(current);
 
   counterEl.textContent = (current + 1) + " / " + slides.length;
@@ -1849,6 +1878,7 @@ function initTocSidebar() {
       const q = query.trim().toLowerCase();
       if (!q || q.length < 3) {
         tocListEl.innerHTML = originalTocListHTML;
+        updateActiveTocLink(current);
         return;
       }
 

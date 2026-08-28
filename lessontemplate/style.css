@@ -65,6 +65,14 @@
   --font-display: "Iowan Old Style", "Georgia", "Times New Roman", serif;
   --font-body: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", "Consolas", "Menlo", monospace;
+
+  /* Desktop-only: how far the main content shifts right while the sidebar
+     is docked open (see body.toc-pushed further down). Stays 0px on
+     mobile, where the sidebar is a full-screen overlay instead. 420px
+     matches #toc-sidebar's own width: min(420px, 90vw) — that min() only
+     ever matters below the 920px breakpoint, where this rule doesn't
+     apply anyway, so 420px is always the right constant here. */
+  --toc-offset: 0px;
 }
 
 * {
@@ -87,11 +95,12 @@ body {
 #progress-track {
   position: fixed;
   top: 0;
-  left: 0;
+  left: var(--toc-offset);
   right: 0;
   height: 6px;
   background: rgba(var(--ink-rgb), 0.12);
   z-index: 50;
+  transition: left .25s ease;
 }
 
 #progress-fill {
@@ -102,10 +111,13 @@ body {
 }
 
 #deck {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: var(--toc-offset);
   z-index: 1;
+  transition: left .25s ease;
 }
 
 .slide {
@@ -129,7 +141,10 @@ body {
    its image + shows/hides it in goTo() based on the active slide's opts. */
 #slide-bg-layer {
   position: fixed;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: var(--toc-offset);
   z-index: 0;
   pointer-events: none;
   display: none;
@@ -137,6 +152,7 @@ body {
   --slide-bg-size: auto;
   --slide-bg-repeat: no-repeat;
   --slide-bg-position: top left;
+  transition: left .25s ease;
 }
 
 #slide-bg-layer.active {
@@ -1150,14 +1166,27 @@ pre code {
   left: 0;
   bottom: 0;
   width: min(420px, 90vw);
-  background: var(--tone-2);
+  background: linear-gradient(165deg, rgba(var(--tone-2-rgb), 1) 0%, rgba(var(--tone-1-rgb), 1) 100%);
   border-right: 1px solid rgba(var(--ink-rgb), 0.18);
   z-index: 999;
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);
   transition: transform .25s ease;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+}
+
+/* A thin glowing seam along the top edge — echoes #progress-track's own
+   accent line, so the sidebar reads as part of the same visual language
+   rather than a bolted-on panel. */
+#toc-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, rgba(var(--accent-rgb), 0) 85%);
 }
 
 #toc-sidebar.open {
@@ -1168,9 +1197,12 @@ pre code {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px;
-  border-bottom: 1px solid rgba(var(--ink-rgb), 0.15);
+  padding: 20px 20px 18px;
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.18);
+  box-shadow: 0 1px 16px -4px rgba(var(--accent-rgb), 0.25);
   flex: none;
+  position: relative;
+  z-index: 1;
 }
 
 #toc-title {
@@ -1179,6 +1211,19 @@ pre code {
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#toc-title::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px 1px rgba(var(--accent-rgb), 0.7);
+  flex: none;
 }
 
 .toc-header-actions {
@@ -1201,6 +1246,7 @@ pre code {
   justify-content: center;
   flex: none;
   white-space: nowrap;
+  transition: border-color .15s ease, color .15s ease, background-color .15s ease, transform .15s ease;
 }
 
 #btn-reset-inner {
@@ -1210,6 +1256,7 @@ pre code {
 /* Close: neutral highlight — it's not a destructive action. */
 #toc-close:hover {
   background: rgba(var(--ink-rgb), 0.1);
+  transform: translateY(-1px);
 }
 
 /* Reset: hints red on hover too, ahead of the confirming state below —
@@ -1217,30 +1264,52 @@ pre code {
 #btn-reset-inner:hover {
   border-color: var(--wrong);
   color: var(--wrong);
+  transform: translateY(-1px);
+}
+
+#toc-search-wrap {
+  position: relative;
+  margin: 16px 20px 14px;
+  flex: none;
+}
+
+#toc-search-wrap::before {
+  content: "⌕";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-52%);
+  font-size: 15px;
+  color: rgba(var(--ink-rgb), 0.4);
+  pointer-events: none;
 }
 
 #toc-search {
-  margin: 14px 20px;
-  padding: 10px 12px;
+  width: 100%;
+  padding: 10px 12px 10px 32px;
   font-family: var(--font-body);
   font-size: 14px;
-  background: var(--tone-1);
+  background: rgba(var(--tone-1-rgb), 0.6);
   border: 1px solid rgba(var(--ink-rgb), 0.22);
-  border-radius: 7px;
+  border-radius: 8px;
   color: var(--ink);
-  flex: none;
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
 }
 
 #toc-search:focus {
   outline: none;
   border-color: var(--accent);
+  background: rgba(var(--tone-1-rgb), 0.9);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.18);
 }
 
 #toc-list {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: 0 20px 20px;
+  padding: 8px 20px 20px;
   scrollbar-width: none; /* Firefox — hide the bar, keep it scrollable */
+  mask-image: linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
 }
 
 #toc-list::-webkit-scrollbar {
@@ -1261,24 +1330,28 @@ pre code {
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 14px;
-  padding: 6px 0;
+  padding: 7px 10px;
+  margin: 1px 0;
+  border-radius: 6px;
+  transition: color .15s ease, background-color .15s ease;
 }
 
 .toc-link:hover {
   color: var(--tone-5);
+  background: rgba(var(--accent-rgb), 0.08);
   cursor: pointer;
 }
 
 .toc-link.toc-h1 {
-  padding-left: 0;
+  padding-left: 10px;
 }
 
 .toc-link.toc-h2 {
-  padding-left: 2ch;
+  padding-left: calc(10px + 2ch);
 }
 
 .toc-link.toc-h3 {
-  padding-left: 4ch;
+  padding-left: calc(10px + 4ch);
 }
 
 /* Brief flash on whatever you just jumped to (TOC click, deep-link, or a
@@ -1295,7 +1368,7 @@ pre code {
 }
 
 .toc-jump-highlight {
-  animation: toc-jump-flash 1.6s ease-out;
+  animation: toc-jump-flash 8s ease-out;
 }
 
 .toc-search-empty {
@@ -1303,6 +1376,18 @@ pre code {
   font-size: 13px;
   color: rgba(var(--ink-rgb), 0.5);
   padding: 10px 0;
+}
+
+/* The nav-bar's own ☰ toggle — hidden while the sidebar is open (desktop
+   or mobile), since closing it is always reachable from inside the
+   sidebar itself (X, Close button, backdrop click, or the S key). */
+#btn-toc.toc-open-btn-hidden {
+  display: none;
+}
+
+.toc-search-result strong {
+  color: var(--tone-5);
+  font-weight: 700;
 }
 
 #toc-footer {
@@ -1318,6 +1403,13 @@ pre code {
   background: var(--tone-3);
   width: 100%;
   justify-content: center;
+  transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+#toc-footer .nav-btn:hover {
+  background: var(--tone-4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.5);
 }
 
 /* The header reset icon is small/compact — tone-3 as a background would
@@ -1351,10 +1443,25 @@ pre code {
   }
 }
 
+@media (min-width: 921px) {
+  /* Desktop only — the mobile block right above is untouched and still
+     takes over completely under 921px. */
+  body.toc-pushed {
+    --toc-offset: 420px;
+  }
+
+  /* No dimming/backdrop on desktop — the rest of the page stays fully
+     visible and interactive while the sidebar is docked open, exactly
+     like the viewport itself got narrower. */
+  #toc-backdrop {
+    display: none !important;
+  }
+}
+
 #nav-bar {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: var(--toc-offset);
   right: 0;
   height: 74px;
   display: flex;
@@ -1363,12 +1470,22 @@ pre code {
   padding: 0 28px;
   background: linear-gradient(0deg, rgba(var(--tone-1-rgb), 0.98) 80%, rgba(var(--tone-1-rgb), 0) 100%);
   z-index: 50;
+  transition: left .25s ease;
 }
 
 .nav-group {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 0 0 auto; /* fixed to its own content width — #dots is the only element that should grow/shrink when nav-bar's available width changes (sidebar push) */
+}
+
+.nav-group-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 0 0 auto;
+  justify-content: flex-end;
 }
 
 .nav-btn {

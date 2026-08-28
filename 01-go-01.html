@@ -8,6 +8,50 @@
             history.replaceState(null, "", location.pathname + location.search);
         }
     </script>
+
+    <script>
+        (function () {
+            var shown = false;
+            window.addEventListener("error", function () {
+                if (shown) return;
+                if (window.__pageInitialized) return;
+                shown = true;
+                showContentChangedFallback();
+            });
+
+            function showContentChangedFallback() {
+                var overlay = document.createElement("div");
+                overlay.style.cssText = "position:fixed;inset:0;z-index:999999;background:#1a1a1a;" +
+                    "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+                    "gap:20px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#e0e0e0;" +
+                    "text-align:center;padding:24px;";
+
+                var msg = document.createElement("div");
+                msg.textContent = "Internal Error";
+                msg.style.cssText = "font-size:22px;font-weight:600;letter-spacing:.02em;";
+                overlay.appendChild(msg);
+
+                var btn = document.createElement("button");
+                btn.textContent = "Reset Progress";
+                btn.style.cssText = "font-family:inherit;font-size:15px;padding:10px 22px;" +
+                    "border-radius:7px;border:1px solid #888;background:transparent;" +
+                    "color:#ccc;cursor:pointer;";
+                btn.addEventListener("click", function () {
+                    var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+                    localStorage.removeItem(prefix + "current_slide");
+                    localStorage.removeItem(prefix + "answers");
+                    localStorage.removeItem(prefix + "scores");
+                    localStorage.removeItem(prefix + "notified_100");
+                    localStorage.removeItem(prefix + "version");
+                    window.location.reload();
+                });
+                overlay.appendChild(btn);
+
+                document.body.appendChild(overlay);
+            }
+        })();
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go — Μέρος 1</title>
@@ -68,7 +112,72 @@
         <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
 
         <div id="toc-list">
-            <!-- populated by JS -->
+            <a href="#@ti-einai-stin-pr" data-slide="1" class="toc-link toc-h1">Εισαγωγή</a>
+            <a href="#@giati-dimioyrgit" data-slide="2" class="toc-link toc-h2">Γιατί δημιουργήθηκε η Go</a>
+            <a href="#@egkatastasi-setu" data-slide="3" class="toc-link toc-h2">Εγκατάσταση &amp; Setup</a>
+            <a href="#@to-proto-soy-pro" data-slide="3" class="toc-link toc-h2">Το Πρώτο σου Πρόγραμμα</a>
+            <a href="#@to-go-cli-doyley" data-slide="3" class="toc-link toc-h2">Go CLI</a>
+            <a href="#@ti-einai-mia-met" data-slide="5" class="toc-link toc-h1">Τι είναι μια Μεταβλητή;</a>
+            <a href="#@dilosi-metavlito" data-slide="6" class="toc-link toc-h1">Δήλωση Μεταβλητών στην Go</a>
+            <a href="#@syntomi-dilosi-m" data-slide="6" class="toc-link toc-h2">Σύντομη δήλωση με τον operator :=</a>
+            <a href="#@dilosi-pollaplon" data-slide="6" class="toc-link toc-h2">Δήλωση πολλαπλών μεταβλητών</a>
+            <a href="#@vasikoi-typoi-de" data-slide="7" class="toc-link toc-h2">Int</a>
+            <a href="#@float" data-slide="7" class="toc-link toc-h2">Float</a>
+            <a href="#@strings-mia-akol" data-slide="7" class="toc-link toc-h2">Strings</a>
+            <a href="#@metatropes-typon" data-slide="8" class="toc-link toc-h1">Μετατροπές Τύπων (Casting /
+                Type Conversion)</a>
+            <a href="#@statheres-consta" data-slide="8" class="toc-link toc-h2">Σταθερές (Constants)</a>
+            <a href="#@operators" data-slide="11" class="toc-link toc-h1">Operators</a>
+            <a href="#@modulo-to-ypoloi" data-slide="11" class="toc-link toc-h2">Modulo — το υπόλοιπο της διαίρεσης</a>
+            <a href="#@proteraiotita-op" data-slide="11" class="toc-link toc-h2">Προτεραιότητα operators</a>
+            <a href="#@syntomi-anafora" data-slide="11" class="toc-link toc-h2">bitwise και δυαδικό</a>
+            <a href="#@pos-grafetai-ena" data-slide="11" class="toc-link toc-h2">Πώς γράφεται ένας αριθμός σε
+                δυαδικό</a>
+            <a href="#@control-flow" data-slide="13" class="toc-link toc-h1">Control Flow</a>
+            <a href="#@synthikes-if-els" data-slide="13" class="toc-link toc-h2">Συνθήκες if / else if / else</a>
+            <a href="#@logikoi-operator" data-slide="13" class="toc-link toc-h2">Λογικοί Operators &amp;&amp;, || και
+                !</a>
+            <a href="#@i-pagida-toy-sha" data-slide="13" class="toc-link toc-h2">Η παγίδα του Shadowing</a>
+            <a href="#@pollapli-epilogi" data-slide="14" class="toc-link toc-h1">Πολλαπλή Επιλογή με switch</a>
+            <a href="#@ti-einai-mia-epa" data-slide="16" class="toc-link toc-h1">Τι είναι μια επανάληψη</a>
+            <a href="#@standard-for-loo" data-slide="16" class="toc-link toc-h2">Standard for loop — η πλήρης μορφή</a>
+            <a href="#@break-kai-contin" data-slide="16" class="toc-link toc-h2">break και continue</a>
+            <a href="#@labels-gia-diako" data-slide="17" class="toc-link toc-h2">Labels για διακοπή εξωτερικών loops</a>
+            <a href="#@fizzbuzz" data-slide="18" class="toc-link toc-h3">VSCode Challenge: FizzBuzz</a>
+            <a href="#@ti-einai-mia-fun" data-slide="20" class="toc-link toc-h1">Τι είναι μια function;</a>
+            <a href="#@pos-orizoyme-mia" data-slide="20" class="toc-link toc-h2">Πώς ορίζουμε μια function</a>
+            <a href="#@i-main-einai-i-e" data-slide="20" class="toc-link toc-h2">Η main() είναι η είσοδος του
+                προγράμματος</a>
+            <a href="#@parametroi-kai-o" data-slide="20" class="toc-link toc-h1">Παράμετροι και Ορίσματα</a>
+            <a href="#@times-epistrofis" data-slide="20" class="toc-link toc-h1">Τιμές Επιστροφής (Return Values)</a>
+            <a href="#@pollaples-times" data-slide="20" class="toc-link toc-h2">Πολλαπλές τιμές επιστροφής</a>
+            <a href="#@seira-ektelesis" data-slide="20" class="toc-link toc-h1">Σειρά Εκτέλεσης: Πολλαπλές Κλήσεις
+                Functions</a>
+            <a href="#@emveleia-scope-d" data-slide="21" class="toc-link toc-h1">Εμβέλεια (Scope) &amp; Διάρκεια Ζωής
+                Μεταβλητών</a>
+            <a href="#@ti-simainei-kath" data-slide="22" class="toc-link toc-h2">Τι Σημαίνει Κάθε Χρώμα στον Κώδικα</a>
+            <a href="#@eisagogi-stoys-p" data-slide="25" class="toc-link toc-h1">Εισαγωγή στους Pointers</a>
+            <a href="#@perasma-parametr" data-slide="26" class="toc-link toc-h2">Pass by Value, Reference, Address</a>
+            <a href="#@pinakes-arrays" data-slide="28" class="toc-link toc-h1">Πίνακες (Arrays)</a>
+            <a href="#@oi-periorismoi-t" data-slide="28" class="toc-link toc-h2">Οι περιορισμοί των Arrays</a>
+            <a href="#@slices-dynamikoi" data-slide="28" class="toc-link toc-h2">Slices (Δυναμικοί Πίνακες)</a>
+            <a href="#@i-syntaxi-slicin" data-slide="28" class="toc-link toc-h2">Η σύνταξη slicing: s[start:end]</a>
+            <a href="#@anatomia-enos-sl" data-slide="28" class="toc-link toc-h2">Slice και μνήμη</a>
+            <a href="#@iterating-se-sli" data-slide="29" class="toc-link toc-h1">Iterating σε Slices</a>
+            <a href="#@sygkrisi-ton-dyo" data-slide="29" class="toc-link toc-h2">Σύγκριση των δύο προσεγγίσεων</a>
+            <a href="#@iterating-strings" data-slide="29" class="toc-link toc-h2">Iterating σε strings</a>
+            <a href="#@variadic-functio" data-slide="29" class="toc-link toc-h2">Variadic functions — μεταβλητό πλήθος
+                arguments</a>
+            <a href="#@disdiastatoi-pin" data-slide="31" class="toc-link toc-h1">Δισδιάστατοι Πίνακες (grids)</a>
+            <a href="#@dimioyrgia-me-ma" data-slide="31" class="toc-link toc-h2">Δημιουργία με make</a>
+            <a href="#@iteration-me-dip" data-slide="31" class="toc-link toc-h2">Iteration με διπλή for range</a>
+            <a href="#@len-se-dyo-diast" data-slide="31" class="toc-link toc-h2">len() σε δύο διαστάσεις</a>
+            <a href="#@maps" data-slide="33" class="toc-link toc-h1">Maps</a>
+            <a href="#@pente-tropoi-dim" data-slide="33" class="toc-link toc-h2">Τρόποι δημιουργίας ενός Map</a>
+            <a href="#@map-int-string-v" data-slide="33" class="toc-link toc-h2">map[int]string vs []string — μοιάζουν
+                όμως...</a>
+            <a href="#@elegchos-yparxis" data-slide="33" class="toc-link toc-h2">Έλεγχος ύπαρξης κλειδιού σε map</a>
+            <a href="#@o-ti-emathes-eno" data-slide="36" class="toc-link toc-h1">Συγκεντρωτικό Glossary</a>
         </div>
 
         <div id="toc-footer">
@@ -93,13 +202,13 @@
 <div class="title-slide">
   <div class="title-badge"><img src="./icons/go-one.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
   <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
-  <h1>Go — Μέρος 1</h1>
+  <h1 id="@go-meros-1">Go — Μέρος 1</h1>
   <p class="lede">Εισαγωγή, Μεταβλητές, Operators, If, Loops, Scope, Pointers, Slices, Maps</p>
   <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
 </div>
 `);
 
-        addContent(`<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
+        addContent(`<div id="@ti-einai-stin-pr" class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
 
 <h1>Τι είναι, στην πραγματικότητα, ένα πρόγραμμα;</h1>
 
@@ -284,7 +393,7 @@
 
 
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
+<div id="@giati-dimioyrgit" class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
 
 <h1>Γιατί δημιουργήθηκε η Go</h1>
 
@@ -400,7 +509,7 @@
             "note": "Αντιστοίχισε τους όρους."
         });
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
+<div id="@egkatastasi-setu" class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή &amp; Περιβάλλον</div>
 
 <h1>Εγκατάσταση &amp; Setup</h1>
 
@@ -441,7 +550,7 @@
 </p>
 
 <br>
-<h1>Το Πρώτο σου Πρόγραμμα — Ανατομία του main.go</h1>
+<h1 id="@to-proto-soy-pro">Το Πρώτο σου Πρόγραμμα — Ανατομία του main.go</h1>
 
 <p class="lede">
     Ήρθε η ώρα να δούμε πραγματικό κώδικα Go για πρώτη φορά. Θα εξηγήσουμε κυριολεκτικά κάθε λέξη — τίποτα δεν θεωρείται
@@ -552,7 +661,7 @@ main()
 </div>
 
 <br>
-<h1>Το Go CLI — Δουλεύοντας από τη γραμμή εντολών</h1>
+<h1 id="@to-go-cli-doyley">Το Go CLI — Δουλεύοντας από τη γραμμή εντολών</h1>
 
 <p class="lede"> Για να τρέξεις Go κώδικα, θα χρησιμοποιείς το <code>terminal</code> (τη γραμμή εντολών) — εκεί πληκτρολογείς εντολές που ξεκινούν με τη λέξη <code>go</code>, ακολουθούμενη από το τι θέλεις να κάνεις. </p>
 
@@ -656,7 +765,7 @@ main()
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<div id="@ti-einai-mia-met" class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
 <h1>Τι είναι μια Μεταβλητή;</h1>
 <p class="lede">Πριν δούμε τη σύνταξη της Go, ας καταλάβουμε πλήρως τι σημαίνει η ίδια η έννοια "μεταβλητή" — γιατί θα τη χρησιμοποιείς κυριολεκτικά σε κάθε γραμμή κώδικα που θα γράψεις από εδώ και πέρα.</p>
 
@@ -675,7 +784,7 @@ main()
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<div id="@dilosi-metavlito" class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
 <h1>Δήλωση Μεταβλητών στην Go</h1>
 <p class="lede">Ας δούμε τώρα πώς γράφεις πραγματικά μια δήλωση μεταβλητής στη Go, ξεκινώντας από τον πιο ρητό, "μεγαλόφωνο" τρόπο.</p>
 
@@ -747,7 +856,7 @@ fmt.Println(age) // 31
 </div>
 
 
-<h2>Σύντομη δήλωση με τον operator :=</h2>
+<h2 id="@syntomi-dilosi-m">Σύντομη δήλωση με τον operator :=</h2>
 <p>Μέσα σε functions (όχι στο επίπεδο του package, εκτός κάθε function — θα δούμε τη διάκριση αναλυτικά στην Ενότητα 6), η Go σού προσφέρει έναν πιο σύντομο τρόπο να δηλώσεις <em>και</em> να αρχικοποιήσεις μια μεταβλητή σε ένα μόνο βήμα, με τον operator <code>:=</code>:</p>
 <pre><code>age <span class="tok-kw">:=</span> <span class="tok-num">25</span>
 name <span class="tok-kw">:=</span> <span class="tok-str">"Unknown"</span>
@@ -820,7 +929,7 @@ var func int       // reserved keyword
     </p>
 </div>
 
-<h2>Δήλωση πολλαπλών μεταβλητών</h2>
+<h2 id="@dilosi-pollaplon">Δήλωση πολλαπλών μεταβλητών</h2>
 
 <p>
   Η Go επιτρέπει να δηλώσεις πολλές μεταβλητές μαζί,
@@ -1028,7 +1137,7 @@ func main() {
         });
 
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<div id="@vasikoi-typoi-de" class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
 
 <h1>Βασικοί Τύποι Δεδομένων</h1>
 
@@ -1102,7 +1211,7 @@ func main() {
     αδύνατο να συμβεί σε κανονικά προγράμματα.
 </p>
 
-<h2>Float</h2>
+<h2 id="@float">Float</h2>
 
 <p>
     Για αριθμούς με δεκαδικό μέρος (π.χ. <code>3.14</code>, <code>-0.5</code>), η Go διαθέτει τους τύπους
@@ -1238,7 +1347,7 @@ fmt.Println(char4) // 129428 (ο αριθμός του '🪄')
 </p>
 
 
-<h2>Strings — μια ακολουθία από χαρακτήρες</h2>
+<h2 id="@strings-mia-akol">Strings — μια ακολουθία από χαρακτήρες</h2>
 
 <p>
     Ένα <code>string</code> είναι μια <strong>ακολουθία από χαρακτήρες</strong> — δηλαδή μια σειρά από
@@ -1421,7 +1530,7 @@ s = s + " world" // Δημιουργείται ΝΕΟ string "hello world"
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
+<div id="@metatropes-typon" class="eyebrow">Ενότητα 2 / 8 — Μεταβλητές &amp; Τύποι</div>
 
 <h1>Μετατροπές Τύπων (Type Casting / Conversion)</h1>
 
@@ -1597,7 +1706,7 @@ fmt.Println(string(char))    // C
     ακόμα κι αν μοιάζουν πανομοιότυποι.
 </p>
 <br>
-<h1>Σταθερές (Constants)</h1>
+<h1 id="@statheres-consta">Σταθερές (Constants)</h1>
 <p class="lede">Μέχρι τώρα είδαμε μεταβλητές — δεδομένα που μπορούν να αλλάξουν τιμή κατά την εκτέλεση. Η Go διαθέτει επίσης έναν τρόπο να δηλώνεις τιμές που δεν πρόκειται <em>ποτέ</em> να αλλάξουν.</p>
 
 <p>Μια <strong>σταθερά</strong> (constant) δηλώνεται με τη λέξη-κλειδί <code>const</code>, και η τιμή της καθορίζεται κατά τη μεταγλώττιση — δεν μπορεί να αλλάξει κατά την εκτέλεση του προγράμματος..</p>
@@ -1614,7 +1723,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 <p>Γιατί να χρησιμοποιήσεις σταθερά αντί για απλή μεταβλητή που απλά "δεν αλλάζεις ποτέ" στην πράξη; Δύο λόγοι: πρώτον, επικοινωνεί ξεκάθαρα την πρόθεσή σου σε όποιον διαβάσει τον κώδικα αργότερα (συμπεριλαμβανομένου του εαυτού σου, σε μερικούς μήνες) — "αυτή η τιμή δεν πρέπει ποτέ να αλλάξει". Δεύτερον, ο compiler ενεργά σε προστατεύει, αρνούμενος να μεταγλωττίσει αν κάπου, κατά λάθος, προσπαθήσεις να την τροποποιήσεις.</p>
 `);
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — VSCode Challenge</div>
+<div id="@type-casting-se" class="eyebrow">Ενότητα 2 / 8 — VSCode Challenge</div>
 <h1>Type Casting σε πράξη</h1>
 <p class="lede">Δημιούργησε ένα αρχείο <code>main.go</code> που δηλώνει έναν ακέραιο <code>x = 42</code> και ένα float <code>y = 3.14</code>. Προσπάθησε πρώτα να τα προσθέσεις απευθείας (<code>x + y</code>) για να δεις με τα ίδια σου τα μάτια το μήνυμα σφάλματος του compiler, και μετά διόρθωσέ το χρησιμοποιώντας ρητή μετατροπή τύπου.</p>
 <div class="callout">
@@ -1690,7 +1799,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 3 / 8 — Operators</div>
+<div id="@operators" class="eyebrow">Ενότητα 3 / 8 — Operators</div>
 <h1>Operators</h1>
 
 <p class="lede">
@@ -1732,7 +1841,7 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
     </p>
 </div>
 
-<h2>Modulo — το υπόλοιπο της διαίρεσης</h2>
+<h2 id="@modulo-to-ypoloi">Modulo — το υπόλοιπο της διαίρεσης</h2>
 
 <p>
     Το κλειδί για το <code>%</code> είναι να θυμηθείς πρώτα πώς δουλεύει η διαίρεση με ακεραίους. Το
@@ -2003,7 +2112,7 @@ hundreds := x / 100 % 10  // 4   - shift two places right, then take the last di
 </div>
 
 <br>
-<h1>Προτεραιότητα operators</h1>
+<h1 id="@proteraiotita-op">Προτεραιότητα operators</h1>
 
 <p class="lede">
     Όταν μια έκφραση περιέχει πολλούς operators, η σειρά υπολογισμού καθορίζεται από την
@@ -2061,7 +2170,7 @@ hundreds := x / 100 % 10  // 4   - shift two places right, then take the last di
 </p>
 
 <br>
-<h1>Σύντομη αναφορά: bitwise και δυαδικό</h1>
+<h1 id="@syntomi-anafora">Σύντομη αναφορά: bitwise και δυαδικό</h1>
 
 <p>
     Οι bitwise operators δεν θα σου χρειαστούν άμεσα, αλλά αξίζει να ξέρεις τι είναι — και κυρίως να μην
@@ -2070,7 +2179,7 @@ hundreds := x / 100 % 10  // 4   - shift two places right, then take the last di
     <strong>επιμέρους δυαδικά ψηφία</strong> ενός ακέραιου.
 </p>
 
-<h2>Πώς γράφεται ένας αριθμός σε δυαδικό (optional)</h2>
+<h2 id="@pos-grafetai-ena">Πώς γράφεται ένας αριθμός σε δυαδικό (optional)</h2>
 
 <p>
     Στο δεκαδικό σύστημα κάθε θέση αξίζει δέκα φορές περισσότερο από τη διπλανή της δεξιά: μονάδες,
@@ -2424,7 +2533,7 @@ result3 := 50 % 7    // result3 is __val3__`,
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
+<div id="@control-flow" class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
 
 <h1>Control Flow</h1>
 
@@ -2545,7 +2654,7 @@ if isHoliday == true {
 </div>
 
 
-<h2>Συνθήκες if / else if / else</h2>
+<h2 id="@synthikes-if-els">Συνθήκες if / else if / else</h2>
 <p>
     Όπως είδαμε στο προηγούμενο παράδειγμα, το <code>if</code> μπορεί να συνδυαστεί με το προαιρετικό <code>else</code> για να ορίσει τι θα συμβεί όταν η συνθήκη είναι <code>false</code>.
     Επιπλέον, μπορείς να προσθέσεις ενδιάμεσα έναν ή περισσότερους <code>else if</code> για να ελέγξεις επιπλέον συνθήκες πριν καταλήξεις στο τελικό <code>else</code>.
@@ -2634,7 +2743,7 @@ if x = 0 { // ΣΦΑΛΜΑ: δεν μεταγλωττίζεται!
 }
 </code></pre>
 
-<h2>Λογικοί Operators &amp;&amp;, || και !</h2>
+<h2 id="@logikoi-operator">Λογικοί Operators &amp;&amp;, || και !</h2>
 
 <p>Μπορείς να συνδυάσεις πολλές συνθήκες με λογικούς operators:</p>
 
@@ -2866,7 +2975,7 @@ func main() {
 </code></pre>
 </div>
 
-<h2>Η παγίδα του Shadowing</h2>
+<h2 id="@i-pagida-toy-sha">Η παγίδα του Shadowing</h2>
 
 <p>Θυμήσου: το <code>:=</code> δηλώνει πάντα μια <strong>νέα</strong> μεταβλητή. Αυτό μπορεί να δημιουργήσει ένα πολύ ύπουλο bug: αν μέσα σε ένα block (π.χ. μέσα σε ένα if) χρησιμοποιήσεις <code>:=</code> με ένα όνομα μεταβλητής που υπάρχει <em>ήδη</em> σε ένα εξωτερικό (ευρύτερο) scope, δεν κάνεις ανάθεση στην υπάρχουσα μεταβλητή — δημιουργείς μια εντελώς <strong>νέα, ξεχωριστή</strong> μεταβλητή, η οποία απλά "επισκιάζει" (shadows), δηλαδή κρύβει προσωρινά, την παλιά, αλλά μόνο μέσα στο τρέχον block. Έξω από αυτό το block, η αρχική εξωτερική μεταβλητή παραμένει εντελώς ανεπηρέαστη από ό,τι συνέβη μέσα.</p>
 
@@ -2890,7 +2999,7 @@ fmt.Println(score) // prints 10 (the ORIGINAL score, completely unchanged)
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
+<div id="@pollapli-epilogi" class="eyebrow">Ενότητα 4 / 8 — Έλεγχος Ροής</div>
 <h1>Πολλαπλή Επιλογή με switch</h1>
 <p class="lede">Όταν έχεις πολλές πιθανές τιμές να συγκρίνεις με μία μεταβλητή, η γραφή πολλών διαδοχικών <code>if</code>/<code>else if</code> γίνεται γρήγορα δυσανάγνωστη. Η <code>switch</code> προσφέρει έναν πιο καθαρό τρόπο να εκφράσεις ακριβώς αυτό.</p>
 
@@ -3157,7 +3266,7 @@ if score >= 13 {
 </div>
 `);
         addContent(`
-<div class="eyebrow">Ενότητα 5 / 8 — Επαναλήψεις &amp; Loops</div>
+<div id="@ti-einai-mia-epa" class="eyebrow">Ενότητα 5 / 8 — Επαναλήψεις &amp; Loops</div>
 
 <h1>Τι είναι μια επανάληψη</h1>
 
@@ -3179,7 +3288,7 @@ if score >= 13 {
     τους αριθμούς από το 1 μέχρι αυτόν τον αριθμό; Εδώ χρειάζεσαι ένα loop.
 </p>
 
-<h2>Standard for loop — η πλήρης μορφή</h2>
+<h2 id="@standard-for-loo">Standard for loop — η πλήρης μορφή</h2>
 
 <p>
     Η πλήρης μορφή της <code>for</code> έχει τρία ξεχωριστά μέρη, χωρισμένα με άνω-κάτω τελείες (<code>;</code>) — χωρίς
@@ -3469,7 +3578,7 @@ for i < 5 {
     </p>
 </div>
 
-<h2>break και continue</h2>
+<h2 id="@break-kai-contin">break και continue</h2>
 
 <p>Δύο ειδικές λέξεις-κλειδιά σου δίνουν επιπλέον έλεγχο μέσα σε μια λούπα:</p>
 
@@ -3703,7 +3812,7 @@ func main() {
     </p>
 </div>
 
-<h2>Labels για διακοπή εξωτερικών loops</h2>
+<h2 id="@labels-gia-diako">Labels για διακοπή εξωτερικών loops</h2>
 
 <p>
     Όταν έχεις φωλιασμένα (nested) loops — δηλαδή ένα loop μέσα σε άλλο loop — και θες να διακόψεις το
@@ -3822,7 +3931,7 @@ fmt.Println(result)
     </p>
 </div>
 
-<h3>Λάθος 4: Shadowing μεταβλητών</h3>
+<h3 id="@lathos-4-shadowi">Λάθος 4: Shadowing μεταβλητών</h3>
 
 <p>
     Αν χρησιμοποιήσεις <code>:=</code> μέσα σε ένα loop με το ίδιο όνομα που υπάρχει ήδη έξω, δημιουργείς νέα μεταβλητή
@@ -3995,7 +4104,7 @@ fmt.Println(sum, count) // 6, 2
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 5 / 8 — VSCode Challenge</div>
+<div id="@fizzbuzz" class="eyebrow">Ενότητα 5 / 8 — VSCode Challenge</div>
 
 <h1>FizzBuzz</h1>
 <p class="lede">Γράψε το κλασικό παιχνίδι "FizzBuzz" χρησιμοποιώντας <code>for</code> loop για τους αριθμούς από το <strong>1 έως το 100</strong>:</p>
@@ -4330,7 +4439,7 @@ for count < 3 {
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Functions &amp; Scope</div>
+<div id="@ti-einai-mia-fun" class="eyebrow">Ενότητα 6 / 8 — Functions &amp; Scope</div>
 
 <h1>Τι είναι μια function;</h1>
 
@@ -4422,7 +4531,7 @@ Back to main
     </p>
 </div>
 
-<h2>Πώς ορίζουμε μια function</h2>
+<h2 id="@pos-orizoyme-mia">Πώς ορίζουμε μια function</h2>
 
 <p>
     Μια function ορίζεται με τη λέξη-κλειδί <code>func</code>, ακολουθούμενη από το όνομά της, παρενθέσεις <code>()</code> που μπορεί να περιέχουν παραμέτρους ή όχι, και ένα σώμα μέσα σε άγκιστρα <code>{}</code>:
@@ -4496,7 +4605,7 @@ func helper() {
     </p>
 </div>
 
-<h2>Η <code>main()</code> είναι η είσοδος του προγράμματος</h2>
+<h2 id="@i-main-einai-i-e">Η <code>main()</code> είναι η είσοδος του προγράμματος</h2>
 
 <p>
     Κάθε εκτελέσιμο πρόγραμμα Go χρειάζεται ακριβώς μία function <code>main()</code>, μέσα σε
@@ -4538,7 +4647,7 @@ func neverCalled() {
 
 <br>
 
-<h1>Παράμετροι και Ορίσματα</h1>
+<h1 id="@parametroi-kai-o">Παράμετροι και Ορίσματα</h1>
 
 <p class="lede">
     Μια function γίνεται πραγματικά χρήσιμη όταν μπορεί να δέχεται δεδομένα από τον καλούντα — έτσι μπορεί να κάνει διαφορετικά πράγματα κάθε φορά που καλείται, ανάλογα με τα δεδομένα που της δίνουμε.
@@ -4625,7 +4734,7 @@ func add(x, y int) { // συμπτυγμένη γραφή
 
 <br>
 
-<h1>Τιμές Επιστροφής (Return Values)</h1>
+<h1 id="@times-epistrofis">Τιμές Επιστροφής (Return Values)</h1>
 
 <p class="lede">
     Μια function μπορεί όχι μόνο να κάνει κάτι, αλλά και να επιστρέψει ένα αποτέλεσμα πίσω στον καλούντα.
@@ -4696,7 +4805,7 @@ func addWithPrint(a, b int) int {
     </p>
 </div>
 
-<h2>Πολλαπλές τιμές επιστροφής</h2>
+<h2 id="@pollaples-times">Πολλαπλές τιμές επιστροφής</h2>
 
 <p>
     Η Go επιτρέπει σε μια function να επιστρέφει <strong>περισσότερες από μία</strong> τιμές ταυτόχρονα. Οι τύποι επιστροφής μπαίνουν μέσα σε παρένθεση, χωρισμένοι με κόμμα:
@@ -4773,7 +4882,7 @@ func max(a, b int) int {
     </p>
 </div>
 
-<h1>Σειρά Εκτέλεσης: Πολλαπλές Κλήσεις Functions</h1>
+<h1 id="@seira-ektelesis">Σειρά Εκτέλεσης: Πολλαπλές Κλήσεις Functions</h1>
 
 <p class="lede">
     Μέχρι τώρα είδαμε τη <code>main()</code> να καλεί μία function κάθε φορά. Στην πράξη, ένα πρόγραμμα καλεί
@@ -4938,7 +5047,7 @@ fmt.Println(finalPrice) // 90
 </div>
 `);
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Functions &amp; Scope</div>
+<div id="@emveleia-scope-d" class="eyebrow">Ενότητα 6 / 8 — Functions &amp; Scope</div>
 <h1>Εμβέλεια (Scope) &amp; Διάρκεια Ζωής Μεταβλητών</h1>
 
 <p class="lede">
@@ -5118,7 +5227,7 @@ func AvoidNuclearWar(redSwitch bool) {
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Γλωσσάρι Χρωμάτων Συντακτικού</div>
+<div id="@ti-simainei-kath" class="eyebrow">Ενότητα 6 / 8 — Γλωσσάρι Χρωμάτων Συντακτικού</div>
 
 <h1>Τι Σημαίνει Κάθε Χρώμα στον Κώδικα</h1>
 
@@ -5353,7 +5462,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
         ]);
 
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — VSCode Challenge</div>
+<div id="@asfalis-diairesi" class="eyebrow">Ενότητα 6 / 8 — VSCode Challenge</div>
 
 <h1>Ασφαλής Διαίρεση</h1>
 
@@ -5382,7 +5491,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
 
 <div class="callout">
     <span class="tag">NOTE</span>
-    Η παραπάνω λύση χρησιμοποιεί το μοτίβο <em>comma ok</em> <strong>if με short statement</strong> (το είδαμε στην Ενότητα 4 — If με short statement). Το δεύτερο return value (τύπου bool) λειτουργεί σαν "σημαία επιτυχίας" (success flag) — ένα εξαιρετικά συχνό μοτίβο στη Go. Προφανώς είναι οκ αν δεν το έγραψες με αυτό τον τρόπο!
+    Η παραπάνω λύση χρησιμοποιεί το μοτίβο <em>comma ok</em> <strong>if με short statement</strong>. Το δεύτερο return value (τύπου bool) λειτουργεί σαν "σημαία επιτυχίας" (success flag) — ένα εξαιρετικά συχνό μοτίβο στη Go. Προφανώς είναι οκ αν δεν το έγραψες με αυτό τον τρόπο!
 </div>
 </div>
 `);
@@ -5402,7 +5511,7 @@ func add(a, b int) int { // <span class="tok-com">function with parameters and r
 </div>
 `);
         addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Pointers &amp; Μνήμη</div>
+<div id="@eisagogi-stoys-p" class="eyebrow">Ενότητα 7 / 8 — Pointers &amp; Μνήμη</div>
 
 <h1>Εισαγωγή στους Pointers</h1>
 
@@ -5614,7 +5723,8 @@ fmt.Println(x) // 100
 `);
 
         addContent(`
-<h1>Πέρασμα Παραμέτρων: Value, Reference, και Address</h1>
+        <div id="@perasma-parametr" class="eyebrow">Ενότητα 7 / 8 — Pointers &amp; Μνήμη</div>
+<h1 >Πέρασμα Παραμέτρων: Value, Reference, και Address</h1>
 
 <p class="lede">
     Τώρα που καταλαβαίνεις τι είναι ένας pointer, ήρθε η ώρα να δούμε πώς περνάμε δεδομένα σε functions και τι ακριβώς συμβαίνει με τις τιμές τους.
@@ -6083,7 +6193,7 @@ fmt.Println(__deref2__q) // 5, two dereferences reach x`,
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
+<div id="@data-structures" class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
 
 <h1>Data Structures</h1>
 
@@ -6091,7 +6201,7 @@ fmt.Println(__deref2__q) // 5, two dereferences reach x`,
     Μέχρι τώρα, κάθε μεταβλητή που είδαμε κρατούσε <em>μία</em> μεμονωμένη τιμή — έναν αριθμό, ένα string, ένα bool. Στην πράξη, πολύ συχνά χρειάζεσαι να αποθηκεύσεις <em>πολλές</em> σχετικές τιμές μαζί, οργανωμένες κάτω από ένα ενιαίο όνομα — π.χ. μια λίστα με ονόματα, ή τους βαθμούς όλων των μαθητών μιας τάξης. Αυτό ακριβώς προσφέρουν οι <strong>data structures</strong>, και σε αυτή την τελευταία ενότητα του Μέρους 1 θα δούμε τις τρεις βασικές που προσφέρει η Go: arrays, slices, και maps.
 </p>
 
-<h1>Πίνακες (Arrays)</h1>
+<h1 id="@pinakes-arrays">Πίνακες (Arrays)</h1>
 
 <p class="lede">
     Θα ξεκινήσουμε με το πιο βασικό data structure, που είναι ο πίνακας σταθερού μεγέθους. Θα δούμε αμέσως γιατί, στην πράξη, οι προγραμματιστές της Go χρησιμοποιούν σχεδόν πάντα κάτι πιο ευέλικτο αντ' αυτού.
@@ -6121,7 +6231,7 @@ letters := [3]string{"a", "b", "c"}
 fmt.Println(nums[0]) // reads back the value at index 0, prints 10
 </code></pre>
 
-<h2>Οι περιορισμοί των Arrays</h2>
+<h2 id="@oi-periorismoi-t">Οι περιορισμοί των Arrays</h2>
 
 <p>
     Επειδή το μέγεθος είναι μέρος του ίδιου του τύπου ενός array, ένα <code>[3]int</code> και ένα <code>[5]int</code> θεωρούνται από τον compiler <strong>εντελώς διαφορετικοί τύποι</strong> — δεν μπορείς να αναθέσεις το ένα στο άλλο, ούτε να περάσεις σε μια function που περιμένει συγκεκριμένο μέγεθος array ένα array διαφορετικού μεγέθους. Αυτή η ακαμψία είναι ο κύριος λόγος για τον οποίο τα arrays χρησιμοποιούνται σπάνια απευθείας στην καθημερινή δουλειά με Go· στη θέση τους, οι προγραμματιστές χρησιμοποιούν σχεδόν πάντα <strong>slices</strong>, τα οποία θα δούμε αμέσως παρακάτω.
@@ -6129,7 +6239,7 @@ fmt.Println(nums[0]) // reads back the value at index 0, prints 10
 
 <br>
 
-<h1>Slices (Δυναμικοί Πίνακες)</h1>
+<h1 id="@slices-dynamikoi">Slices (Δυναμικοί Πίνακες)</h1>
 
 <p class="lede">
     Το slice είναι η δομή δεδομένων που πραγματικά χρησιμοποιείς όταν θες μια "λίστα" στη Go — ευέλικτο σε μέγεθος, χτισμένο εσωτερικά πάνω από ένα array, αλλά χωρίς τους περιορισμούς του.
@@ -6211,7 +6321,7 @@ func main() {
 // Nil slice: [] Is nil? true
 </code></pre>
 
-<h2>Η σύνταξη slicing: s[start:end]</h2>
+<h2 id="@i-syntaxi-slicin">Η σύνταξη slicing: s[start:end]</h2>
 
 <p>
     Μπορείς να δημιουργήσεις ένα νέο slice από ένα υπάρχον slice ή array χρησιμοποιώντας τη σύνταξη <code>s[start:end]</code>. Αυτό δημιουργεί ένα νέο slice που "βλέπει" τα στοιχεία από το <code>start</code> (συμπεριλαμβανομένου) μέχρι το <code>end</code> (μη συμπεριλαμβανομένου):
@@ -6329,7 +6439,7 @@ dst[0] = 99
 fmt.Println(src) // [1 2 3] - unaffected, the two slices are independent now
 </code></pre>
 
-<h2>Ανατομία ενός Slice — τι πραγματικά συμβαίνει στην μνήμη</h2>
+<h2 id="@anatomia-enos-sl">Ανατομία ενός Slice — τι πραγματικά συμβαίνει στην μνήμη</h2>
 
 <p>
     Όταν γράφεις <code>s := []int{10, 20, 30}</code>, η μεταβλητή <code>s</code> <strong>δεν κρατάει τα ίδια τα
@@ -6529,7 +6639,7 @@ nums = append(nums, 5)  // correct
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
+<div id="@iterating-se-sli" class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
 
 <h1>Iterating σε Slices</h1>
 
@@ -6602,7 +6712,7 @@ for i, v := range nums {
     </tr>
 </table>
 
-<h2>Σύγκριση των δύο προσεγγίσεων</h2>
+<h2 id="@sygkrisi-ton-dyo">Σύγκριση των δύο προσεγγίσεων</h2>
 
 <div class="grid2">
     <div class="card">
@@ -6653,7 +6763,7 @@ for i, v := range fruits {
 // 2 cherry
 </code></pre>
 
-<h2>Το for range δουλεύει και σε strings</h2>
+<h2 id="@iterating-strings">Το for range δουλεύει και σε strings</h2>
 
 <p>
     Κάτι που ίσως δεν περίμενες: το <code>range</code> δουλεύει και πάνω σε <code>string</code>. Αυτό συμβαίνει επειδή ένα
@@ -6720,7 +6830,7 @@ for i := 0; i < len(word); i++ {
 
 <p>Ίδιο αποτέλεσμα, απλά πιο "φλύαρος" τρόπος να το πετύχεις — ακριβώς όπως είδαμε στη σύγκριση για τα slices παραπάνω. <strong>Με μία σοβαρή προϋπόθεση, όμως</strong>, που αξίζει τη δική της ενότητα.</p>
 
-<h2>Η κρυφή παγίδα: το word[i] δεν σου δίνει rune, σου δίνει byte</h2>
+<h2 id="@i-kryfi-pagida-t">Η κρυφή παγίδα: το word[i] δεν σου δίνει rune, σου δίνει byte</h2>
 
 <p>
     Τα δύο παραδείγματα παραπάνω έβγαλαν ίδιο αποτέλεσμα — αλλά <em>μόνο</em> επειδή η λέξη ήταν
@@ -6870,7 +6980,7 @@ for i := 0; i < len(word); i++ {
     χρησιμοποίησε <code>range</code>.
 </p>
 
-<h2>Ξαναγυρνάμε στο range με το e — αυτή τη φορά κρατάμε τη θέση</h2>
+<h2 id="@xanagyrname-sto">Ξαναγυρνάμε στο range με το e — αυτή τη φορά κρατάμε τη θέση</h2>
 
 <p>
     Πριν αγνοήσαμε τη θέση με <code>_</code>. Ας δούμε τι κερδίζουμε αν την κρατήσουμε: μπορούμε να τυπώσουμε
@@ -6896,7 +7006,7 @@ for i, letter := range word {
 </div>
 
 <br>
-<h1>Variadic functions — μεταβλητό πλήθος ορισμάτων</h1>
+<h1 id="@variadic-functio">Variadic functions — μεταβλητό πλήθος ορισμάτων</h1>
 
 <p>
     Στην ενότητα με τις functions δεν αναφερθήκαμε σε μια πολύ χρήσιμη δυνατότητα: το να δηλώνουμε μια παράμετρο που δέχεται <strong>μεταβλητό αριθμό ορισμάτων</strong>. Τότε όμως δεν είχαμε μιλήσει ακόμα για slices και για τη <code>for range</code> — και η υλοποίησή τους στηρίζεται ακριβώς σε αυτές τις έννοιες. Τώρα που τα ξέρουμε, μπορούμε να δούμε πώς δουλεύουν.
@@ -7328,7 +7438,7 @@ fmt.Println(count)`,
         });
 
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
+<div id="@filtrarisma-zygo" class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
 
 <h1>Φιλτράρισμα Ζυγών Αριθμών</h1>
 
@@ -7370,7 +7480,7 @@ func evens(nums []int) []int {
 `);
 
         addContent(`
-        <div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
+        <div id="@disdiastatoi-pin" class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
 
 <h1>Δισδιάστατοι Πίνακες</h1>
 
@@ -7444,7 +7554,7 @@ fmt.Println(literal[0][1]) // γραμμή 0, στήλη 1 → 2
     </p>
 </div>
 
-<h2>Δημιουργία με make — μια παγίδα που αξίζει προσοχή</h2>
+<h2 id="@dimioyrgia-me-ma">Δημιουργία με make — μια παγίδα που αξίζει προσοχή</h2>
 
 <p>
     Όταν φτιάχνεις ένα <code>[][]T</code> με <code>make</code>, πρέπει να προσέξεις: η <code>make</code> δεσμεύει
@@ -7657,7 +7767,7 @@ matrix[1][0] = 99         // αλλάζει τη γραμμή 1, στήλη 0
 fmt.Println(matrix[1][0]) // 99
 </code></pre>
 
-<h2>Iteration με διπλή for range</h2>
+<h2 id="@iteration-me-dip">Iteration με διπλή for range</h2>
 
 <p>
     Ακριβώς όπως έκανες iterate σε λέξεις μέσα σε ένα slice από strings και μετά σε γράμματα μέσα σε κάθε λέξη
@@ -7883,7 +7993,7 @@ func main() {
     <code>cols × rows</code> αντί για <code>rows × cols</code>.
 </p>
 
-<h2>len() σε δύο διαστάσεις</h2>
+<h2 id="@len-se-dyo-diast">len() σε δύο διαστάσεις</h2>
 
 <div class="grid2">
     <div class="card">
@@ -8152,7 +8262,7 @@ for __i__, row := range matrix {
         });
 
         addContent(`
-            <div class="eyebrow"> Ενότητα 8 / 8 — VSCode Challenge</div>
+            <div id="@athroisma-kyrias" class="eyebrow"> Ενότητα 8 / 8 — VSCode Challenge</div>
 
 <h1>Άθροισμα Κύριας Διαγωνίου</h1>
 
@@ -8245,7 +8355,7 @@ func diagonalSum(matrix [][]int) int {
         `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
+<div id="@maps" class="eyebrow">Ενότητα 8 / 8 — Data Structures</div>
 <h1>Maps</h1>
 
 <p class="lede">
@@ -8277,7 +8387,7 @@ func diagonalSum(matrix [][]int) int {
     </p>
 </div>
 
-<h2>Πέντε τρόποι δημιουργίας ενός Map</h2>
+<h2 id="@pente-tropoi-dim">Πέντε τρόποι δημιουργίας ενός Map</h2>
 
 <p>
     Ακριβώς όπως και στα slices, υπάρχουν αρκετοί διαφορετικοί τρόποι να δημιουργήσεις/δηλώσεις έναν map, ο καθένας με τη
@@ -8436,7 +8546,7 @@ func main() {
 }
 </code></pre>
 
-<h2>map[int]string vs []string — μοιάζουν, αλλά διαφέρουν ουσιαστικά</h2>
+<h2 id="@map-int-string-v">map[int]string vs []string — μοιάζουν, αλλά διαφέρουν ουσιαστικά</h2>
 
 <p>
     Στην επιφάνεια, ένα <code>map[int]string</code> και ένα <code>[]string</code> μοιάζουν παρόμοια — και τα δύο
@@ -8568,7 +8678,7 @@ fmt.Println(nums) // [10 30 40]
 </code></pre>
 </div>
 
-<h2>Έλεγχος ύπαρξης κλειδιού — το πρόβλημα και η λύση του</h2>
+<h2 id="@elegchos-yparxis">Έλεγχος ύπαρξης κλειδιού — το πρόβλημα και η λύση του</h2>
 
 <p>
     Εδώ προκύπτει ένα ενδιαφέρον πρόβλημα: πώς ξεχωρίζεις την περίπτωση:
@@ -8906,7 +9016,7 @@ fmt.Println(quantity) // 0`,
         });
 
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
+<div id="@metritis-sychnot" class="eyebrow">Ενότητα 8 / 8 — VSCode Challenge</div>
 <h1>Μετρητής Συχνότητας Λέξεων</h1>
 <p class="lede">Δημιούργησε έναν map που μετράει τη συχνότητα εμφανίσεων λέξεων σε ένα slice από strings: <code>words := []string{"apple", "orange", "pear", "orange", "apple", "apple", "pear", "pear", "apple"}</code>. Κάνε iterate το slice με loop, ενημερώνοντας τον map, και στη συνέχεια τύπωσε τα αποτελέσματα.</p>
 
@@ -9483,7 +9593,7 @@ __del__(m, "a")`,
 
         addContent(`
 <div class="eyebrow">Συγκεντρωτικό Λεξιλόγιο</div>
-<h1>Ό,τι Έμαθες, Ενότητα προς Ενότητα</h1>
+<h1 id="@o-ti-emathes-eno">Ό,τι Έμαθες, Ενότητα προς Ενότητα</h1>
 <p class="lede">Απλή λίστα — keyword ή σύμβολο, και τι σημαίνει. Για γρήγορη ανάκληση, όχι νέα εξήγηση.</p>
 
 <div class="glossary-group">
@@ -9503,7 +9613,7 @@ __del__(m, "a")`,
 </div>
 
 <div class="glossary-group">
-  <h2>Ενότητα 2 — Μεταβλητές &amp; Τύποι</h2>
+  <h2 id="@enotita-2-metavl">Ενότητα 2 — Μεταβλητές &amp; Τύποι</h2>
   <table class="glossary-table">
     <tr><td class="gt-term">var</td><td class="gt-def">keyword για δήλωση μεταβλητής</td></tr>
     <tr><td class="gt-term">:=</td><td class="gt-def">δήλωση + αρχικοποίηση μαζί</td></tr>
@@ -9543,7 +9653,7 @@ __del__(m, "a")`,
 </div>
 
 <div class="glossary-group">
-  <h2>Ενότητα 5 — Loops</h2>
+  <h2 id="@enotita-5-loops">Ενότητα 5 — Loops</h2>
   <div class="glossary-strip">
     <div class="gs-pill"><span class="gs-name">for</span><span class="gs-def">η μοναδική λούπα της Go</span></div>
     <div class="gs-pill"><span class="gs-name">i := 0</span><span class="gs-def">αρχικοποίηση — εκτελείται μία φορά, στην αρχή</span></div>
@@ -9579,7 +9689,7 @@ __del__(m, "a")`,
 </div >
 
 <div class="glossary-group">
-  <h2>Ενότητα 8 — Arrays &amp; Slices &amp; Maps</h2>
+  <h2 id="@enotita-8-arrays">Ενότητα 8 — Arrays &amp; Slices &amp; Maps</h2>
   <div class="glossary-columns">
     <div class="gc-line"><span class="gc-term">array</span><span class="gc-def">συλλογή σταθερού μεγέθους</span></div>
     <div class="gc-line"><span class="gc-term">slice</span><span class="gc-def">συλλογή δυναμικού μεγέθους</span></div>

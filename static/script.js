@@ -686,7 +686,13 @@ function renderQuestion(box, q, storeKey, onScored) {
   box.appendChild(optsDiv);
   box.appendChild(explainDiv);
 
-  if (savedAnswers[storeKey] !== undefined) {
+  // Bounds-checked: a saved index from before the author edited q.options
+  // (removed/reordered choices) could now be out of range. isCorrect()
+  // itself is a plain numeric comparison so this doesn't currently crash
+  // either way, but skipping an out-of-range restore here is harmless and
+  // guards against any future change that indexes q.options[selectedIndex]
+  // directly.
+  if (savedAnswers[storeKey] !== undefined && savedAnswers[storeKey] < q.options.length) {
     handleSelection(savedAnswers[storeKey], null);
   }
 }
@@ -963,7 +969,18 @@ function renderMatching(wrap, pairs, seed, storeKey, onScored, setLabel, allowHT
   const leftOrder = shuffleSeed(pairs.map((_, i) => i), seed);
   const rightOrder = shuffleSeed(pairs.map((_, i) => i), seed + 101);
 
-  const matchedPairs = new Set(savedAnswers[storeKey] || []);
+  // Filters out any saved index that no longer has a matching entry in
+  // pairs[] — e.g. the course author removed one matching pair after a
+  // learner had already matched it. Without this, that stale index would
+  // reach createMatchedRow() below, which does pairs[pairIndex].term —
+  // undefined.term throws, and since all slides build in one synchronous
+  // pass in initSlideDeck(), that uncaught exception would abort
+  // everything after it, leaving a blank page (see the inline fallback
+  // script in <head> for the general backstop; this is the specific fix
+  // for this specific, anticipated cause).
+  const matchedPairs = new Set(
+    (savedAnswers[storeKey] || []).filter(i => i >= 0 && i < pairs.length)
+  );
   if (matchedPairs.size > 0) {
     savedScores[storeKey] = Math.round((matchedPairs.size / pairs.length) * 100);
   }
@@ -1566,6 +1583,14 @@ function wireDotsArrows() {
  * Navigates to target slide index updating state, progress bar, and transitions.
  * @param {number} i - Target slide index to display.
  */
+/**
+ * Marks whichever .toc-link has data-slide matching the given index as the
+ * "you are here" entry, clearing that mark from any other. Safe to call
+ * even when the sidebar has never been opened yet (#toc-list may be empty,
+ * or showing search results instead of the browse list — querySelectorAll
+ * simply finds nothing in either case, which is fine).
+ * @param {number} slideIndex
+ */
 function goTo(i) {
   if (i < 0 || i >= slides.length) return;
   const goingBack = i < current;
@@ -1679,6 +1704,12 @@ function initTocSidebar() {
     tocBackdropEl.classList.add("open");
     document.body.classList.add("toc-pushed"); // CSS only acts on this above 920px
     tocOpenBtn.classList.add("toc-open-btn-hidden");
+    // #dots's own width changes on desktop (--toc-offset pushes #nav-bar
+    // narrower) — centerDotsOn() reads that width live, but only ever gets
+    // called from goTo(); without this, the dots stay positioned for the
+    // OLD width until the next slide change. Timed to land after the CSS
+    // "left .25s ease" transition on #nav-bar finishes, not before.
+    setTimeout(() => centerDotsOn(current), 260);
   }
 
   function closeToc() {
@@ -1686,6 +1717,7 @@ function initTocSidebar() {
     tocBackdropEl.classList.remove("open");
     document.body.classList.remove("toc-pushed");
     tocOpenBtn.classList.remove("toc-open-btn-hidden");
+    setTimeout(() => centerDotsOn(current), 260);
   }
 
   tocOpenBtn.addEventListener("click", openToc);
@@ -2247,4 +2279,15 @@ function initSlideDeck(config) {
   requestAnimationFrame(() => { centerDotsOn(current); updateGroupBadge(current); });
   setTimeout(() => { centerDotsOn(current); updateGroupBadge(current); }, 300);
   updateTotalScoreDisplay();
+
+  // Signals to the inline fallback script in <head> that the page reached a
+  // genuinely working state. That script only shows its "something's wrong"
+  // takeover for an error that happens BEFORE this line ever runs — i.e.
+  // the deck never finished building in the first place (the actual
+  // failure mode it exists for: a stale saved answer whose data no longer
+  // matches the current exercise, throwing partway through the single
+  // synchronous build pass). An error AFTER this point means the page is
+  // already visibly working — nuking it over something later and likely
+  // minor would do more harm than the error itself.
+  window.__pageInitialized = true;
 }
