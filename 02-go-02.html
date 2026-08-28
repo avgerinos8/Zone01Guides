@@ -114,13 +114,121 @@
         <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
 
         <div id="toc-list">
-            <!-- populated by JS -->
-            <div style="margin: 5px;">Ενότητα 1</div>
-            <a href="#@chapter1modules" data-slide="1" class="toc-link toc-h2">Go Modules</a>
-            <a href="#@chapter1packages" data-slide="1" class="toc-link toc-h2">Packages</a>
-            <a href="#@chapter1layout" data-slide="1" class="toc-link toc-h2">Οργάνωση Project</a>
-            <div style="margin: 5px;">Ενότητα 2</div>
-            <div style="margin: 5px;">Ενότητα 3</div>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 1 — PACKAGES &amp; PROJECT</div>
+            <a href="#@chapter1modules" class="toc-link toc-h1">Go Modules</a>
+            <a href="#@go-mod-init" class="toc-link toc-h2">go mod init</a>
+            <a href="#@go-mod-file" class="toc-link toc-h2">Το αρχείο go.mod</a>
+            <a href="#@deps" class="toc-link toc-h2">Εξωτερικές εξαρτήσεις</a>
+            <a href="#@chapter1packages" class="toc-link toc-h1">Packages</a>
+            <a href="#@import" class="toc-link toc-h2">Import και alias</a>
+            <a href="#@own-package" class="toc-link toc-h2">Το δικό μας package</a>
+            <a href="#@exported" class="toc-link toc-h2">Exported vs unexported</a>
+            <a href="#@init-func" class="toc-link toc-h2">Η function init()</a>
+            <a href="#@glossary1" class="toc-link toc-h1">Μίνι γλωσσάριο §1.1–§1.2</a>
+            <a href="#@chapter1layout" class="toc-link toc-h1">Οργάνωση project</a>
+            <a href="#@subpackages" class="toc-link toc-h2">Sub-packages</a>
+            <a href="#@circular-deps" class="toc-link toc-h2">Κυκλικές εξαρτήσεις</a>
+            <a href="#@std-layout" class="toc-link toc-h2">Standard project layout</a>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 2 — CLI</div>
+            <a href="#@os-args" class="toc-link toc-h1">os.Args</a>
+            <a href="#@args-slice" class="toc-link toc-h2">Iteration στα ορίσματα</a>
+            <a href="#@flag-package" class="toc-link toc-h1">Το package flag</a>
+            <a href="#@flag-define" class="toc-link toc-h2">Ορισμός flag</a>
+            <a href="#@flag-detect" class="toc-link toc-h2">Ανίχνευση flags</a>
+            <a href="#@flag-args" class="toc-link toc-h1">flag.Args()</a>
+            <a href="#@str-to-number" class="toc-link toc-h1">Από string σε αριθμό</a>
+            <a href="#@glossary2" class="toc-link toc-h1">Μίνι γλωσσάριο Ενότητας 2</a>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 3 — PATTERNS</div>
+            <a href="#@patterns-intro" class="toc-link toc-h1">Γιατί χρειαζόμαστε patterns</a>
+            <a href="#@accumulator" class="toc-link toc-h1">Result variable — accumulator</a>
+            <a href="#@boolean-switch" class="toc-link toc-h1">Boolean switch</a>
+            <a href="#@break-continue" class="toc-link toc-h1">Break, continue, early return</a>
+            <a href="#@sentinel" class="toc-link toc-h1">Sentinel value</a>
+            <a href="#@patterns-value" class="toc-link toc-h1">Η αξία των patterns</a>
+            <a href="#@extremum" class="toc-link toc-h1">Extremum</a>
+            <a href="#@prev-value" class="toc-link toc-h1">Προηγούμενη τιμή</a>
+            <a href="#@two-pointers" class="toc-link toc-h1">Two pointers</a>
+            <a href="#@sliding-window" class="toc-link toc-h1">Sliding window</a>
+            <a href="#@var-window" class="toc-link toc-h1">Variable-size window</a>
+            <a href="#@complement" class="toc-link toc-h1">Complement lookup</a>
+            <a href="#@challenge3" class="toc-link toc-h1">Challenge: δεύτερος μεγαλύτερος</a>
+            <a href="#@patterns-recap" class="toc-link toc-h1">Όλα τα patterns</a>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 4 — ΔΟΜΕΣ ΔΕΔΟΜΕΝΩΝ</div>
+            <a href="#@data-structures" class="toc-link toc-h1">Βασικές δομές δεδομένων</a>
+            <a href="#@stack" class="toc-link toc-h1">Stack — LIFO</a>
+            <a href="#@brackets" class="toc-link toc-h2">Challenge: ισορροπημένες παρενθέσεις</a>
+            <a href="#@queue" class="toc-link toc-h1">Queue — FIFO</a>
+            <a href="#@deque" class="toc-link toc-h1">Deque</a>
+            <a href="#@remove-middle" class="toc-link toc-h2">Αφαίρεση από τη μέση</a>
+            <a href="#@map-set-heap" class="toc-link toc-h1">Hash map, set, heap</a>
+            <a href="#@middle-insert" class="toc-link toc-h1">Εισαγωγή στη μέση</a>
+            <a href="#@struct-recap" class="toc-link toc-h1">Όλες οι δομές</a>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 5 — ΑΝΑΖΗΤΗΣΗ &amp; ΤΑΞΙΝΟΜΗΣΗ</div>
+            <a href="#@big-o" class="toc-link toc-h1">Big-O</a>
+            <a href="#@big-o-cases" class="toc-link toc-h2">Οι έξι περιπτώσεις</a>
+            <a href="#@measure-big-o" class="toc-link toc-h2">Μέτρηση σε δικό σου κώδικα</a>
+            <a href="#@search" class="toc-link toc-h1">Αναζήτηση</a>
+            <a href="#@binary-search" class="toc-link toc-h2">Binary search</a>
+            <a href="#@sorting" class="toc-link toc-h1">Ταξινόμηση</a>
+            <a href="#@slices-package" class="toc-link toc-h2">Το package slices</a>
+            <a href="#@sortfunc" class="toc-link toc-h2">slices.SortFunc</a>
+            <a href="#@anon-func" class="toc-link toc-h2">Anonymous functions</a>
+            <a href="#@sort-vs-slice" class="toc-link toc-h2">slices.Sort vs sort.Slice</a>
+            <a href="#@bubble-sort" class="toc-link toc-h1">Bubble sort</a>
+            <a href="#@other-sorts" class="toc-link toc-h1">Οι υπόλοιποι αλγόριθμοι</a>
+            <a href="#@challenge4" class="toc-link toc-h1">Challenge: binary search</a>
+            <a href="#@sort-recap" class="toc-link toc-h1">Αναζήτηση &amp; ταξινόμηση</a>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 6 — RECURSION</div>
+            <a href="#@recursion" class="toc-link toc-h1">Recursion</a>
+            <a href="#@base-case" class="toc-link toc-h2">Base case</a>
+            <a href="#@call-stack" class="toc-link toc-h2">Το call stack</a>
+            <a href="#@two-parts" class="toc-link toc-h2">Τα δύο υποχρεωτικά μέρη</a>
+            <a href="#@unwinding" class="toc-link toc-h1">Unwinding phase</a>
+            <a href="#@rec-args" class="toc-link toc-h1">Arguments στην αναδρομή</a>
+            <a href="#@divide-conquer" class="toc-link toc-h1">Divide and conquer</a>
+            <a href="#@merge-sort" class="toc-link toc-h2">Merge sort</a>
+            <a href="#@why-nlogn" class="toc-link toc-h2">Γιατί βγαίνει O(n log n)</a>
+            <a href="#@think-recursive" class="toc-link toc-h1">Πώς σκέφτεσαι αναδρομικά</a>
+            <a href="#@rec-pitfalls" class="toc-link toc-h1">Οι τρεις παγίδες</a>
+            <a href="#@rec-break" class="toc-link toc-h1">Υπάρχει break στο recursion;</a>
+            <a href="#@challenge5" class="toc-link toc-h1">Challenge: άθροισμα ψηφίων</a>
+            <a href="#@challenge6" class="toc-link toc-h1">Challenge: λαβύρινθος</a>
+            <a href="#@recursion-recap" class="toc-link toc-h1">Recursion, με μια ματιά</a>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 7 — GREEDY &amp; BACKTRACKING</div>
+            <a href="#@greedy" class="toc-link toc-h1">Greedy</a>
+            <a href="#@roman" class="toc-link toc-h2">Ρωμαϊκοί αριθμοί</a>
+            <a href="#@meetings" class="toc-link toc-h2">Συσκέψεις στην αίθουσα</a>
+            <a href="#@greedy-skeleton" class="toc-link toc-h2">Ο σκελετός ενός greedy</a>
+            <a href="#@greedy-when" class="toc-link toc-h2">Πότε να το εμπιστευτείς</a>
+            <a href="#@challenge7" class="toc-link toc-h1">Challenge: πόσες εργασίες</a>
+            <a href="#@backtracking" class="toc-link toc-h1">Backtracking</a>
+            <a href="#@bt-skeleton" class="toc-link toc-h2">Ο σκελετός σε τρεις γραμμές</a>
+            <a href="#@bt-base-case" class="toc-link toc-h2">Το base case</a>
+            <a href="#@subset-sum" class="toc-link toc-h1">Επιλογές «ναι» ή «όχι»</a>
+            <a href="#@decision-tree" class="toc-link toc-h2">Το δέντρο αποφάσεων</a>
+            <a href="#@pruning" class="toc-link toc-h2">Pruning</a>
+            <a href="#@bt-loop" class="toc-link toc-h1">Loop μέσα στο recursion</a>
+            <a href="#@n-queens" class="toc-link toc-h1">N βασίλισσες</a>
+            <a href="#@queen-check" class="toc-link toc-h2">Ο έλεγχος απειλής</a>
+            <a href="#@queens-algo" class="toc-link toc-h2">Ο αλγόριθμος</a>
+            <a href="#@sudoku" class="toc-link toc-h1">Sudoku</a>
+            <a href="#@strategy-map" class="toc-link toc-h1">Πότε ποιο</a>
+            <a href="#@decision-table" class="toc-link toc-h2">Ο πίνακας απόφασης</a>
+            <a href="#@greedy-bt-recap" class="toc-link toc-h1">Greedy &amp; backtracking</a>
+            <div class="toc-section">ΕΝΟΤΗΤΑ 8 — DYNAMIC PROGRAMMING</div>
+            <a href="#@memoization" class="toc-link toc-h1">Memoization</a>
+            <a href="#@tabulation" class="toc-link toc-h1">Tabulation</a>
+            <a href="#@dp-space" class="toc-link toc-h2">Πετάμε και τον πίνακα</a>
+            <a href="#@dp-when" class="toc-link toc-h1">Πότε λύνεται με DP</a>
+            <a href="#@dp-coins" class="toc-link toc-h1">Τα ρέστα, σωστά αυτή τη φορά</a>
+            <a href="#@dp-grid" class="toc-link toc-h1">Δύο διαστάσεις</a>
+            <a href="#@dp-more" class="toc-link toc-h2">Τι άλλο υπάρχει</a>
+            <a href="#@challenge8" class="toc-link toc-h1">Challenge: πόσοι τρόποι</a>
+            <a href="#@dp-recap" class="toc-link toc-h1">Δυναμικός προγραμματισμός</a>
+            <div class="toc-section">ΕΠΙΛΟΓΟΣ</div>
+            <a href="#@final-review" class="toc-link toc-h1">Όλα όσα είδαμε</a>
+            <a href="#@all-decisions" class="toc-link toc-h2">Το δέντρο αποφάσεων</a>
+            <a href="#@cheatsheet" class="toc-link toc-h1">Τελικό glossary</a>
         </div>
 
         <div id="toc-footer">
@@ -149,7 +257,7 @@
 <div class="title-slide">
   <div class="title-badge"><img src="./icons/go_two.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
   <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
-  <h1>Go — Μέρος 2</h1>
+  <h1 id="@intro">Go — Μέρος 2</h1>
   <p class="lede">Μοτίβα λύσης προβλημάτων, αλγόριθμοι αναζήτησης και ταξινόμησης, αναδρομή, και θεμελιώδεις τεχνικές πίσω από δύσκολα προβλήματα προγραμματισμού.</p>
   <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
 </div>
@@ -164,7 +272,7 @@
 <h2>Τι είναι ένα module</h2>
 <p>Ένα module είναι απλά μια συλλογή από Go packages που ζουν μαζί σε έναν φάκελο (και τους υποφακέλους του) και εκδίδονται/διαχειρίζονται μαζί ως μία μονάδα. Κάθε φορά που ξεκινάς ένα καινούριο, ανεξάρτητο project σε Go, το πρώτο πράγμα που κάνεις είναι να το "δηλώσεις" ως module. Αυτό δεν είναι απλά τυπικότητα — χωρίς αυτό το βήμα, ο compiler δεν ξέρει πώς να ονομάσει το project σου ώστε άλλος κώδικας (δικός σου ή τρίτου) να μπορεί να το εισάγει (import) αργότερα.</p>
 
-<h2>Δημιουργία module με <code>go mod init</code></h2>
+<h2 id="@go-mod-init">Δημιουργία module με <code>go mod init</code></h2>
 <p>Η εντολή που δηλώνει έναν φάκελο ως module τρέχει στο terminal, μέσα στον φάκελο του project:</p>
 
 <pre><code class="lang-go">go mod init example.com/myproject</code></pre>
@@ -176,7 +284,7 @@
   Το <code>go mod init</code> τρέχει ΜΙΑ φορά, στην αρχή του project. Δεν το ξανατρέχεις κάθε φορά που προσθέτεις αρχεία ή packages — μόνο όταν φτιάχνεις το project από την αρχή.
 </div>
 
-<h2>Το αρχείο <code>go.mod</code></h2>
+<h2 id="@go-mod-file">Το αρχείο <code>go.mod</code></h2>
 <p>Η εντολή <code>go mod init</code> δημιουργεί ένα αρχείο με όνομα <code>go.mod</code> στη ρίζα του project. Αυτό το αρχείο είναι η "ταυτότητα" του module — περιέχει το όνομά του, την έκδοση της Go που χρησιμοποιείται, και (καθώς προσθέτεις εξωτερικές βιβλιοθήκες) τη λίστα των εξαρτήσεών του.</p>
 
 <pre><code class="lang-go">module example.com/myproject
@@ -194,7 +302,7 @@ go 1.22
   Και τα δύο αρχεία, <code>go.mod</code> ΚΑΙ <code>go.sum</code>, πρέπει να μπαίνουν σε version control (π.χ. Git). Δεν είναι προσωρινά ή "παραγόμενα" αρχεία που αγνοούνται — είναι μέρος του project.
 </div>
 
-<h2>Διαχείριση εξωτερικών εξαρτήσεων</h2>
+<h2 id="@deps">Διαχείριση εξωτερικών εξαρτήσεων</h2>
 <p>Όταν θέλεις να χρησιμοποιήσεις μια βιβλιοθήκη τρίτου στο project σου, απλά την εισάγεις (<code>import</code>) στον κώδικά σου και μετά τρέχεις:</p>
 
 <pre><code class="lang-go">go mod tidy</code></pre>
@@ -256,7 +364,7 @@ func main() {
 
 <p>Το <code>package main</code> είναι ειδικό: δηλώνει ότι αυτό το package παράγει ένα εκτελέσιμο πρόγραμμα (όχι μια βιβλιοθήκη), και πρέπει να περιέχει μια function <code>main()</code> — αυτή είναι το σημείο εκκίνησης όταν τρέχεις το πρόγραμμα. Ένα module μπορεί να έχει το πολύ ένα package main ανά εκτελέσιμο που παράγει, αλλά μπορεί να έχει όσα άλλα (non-main) packages χρειάζεται για να οργανώσει τη λογική του.</p>
 
-<h2>Εισαγωγή packages (<code>import</code>) και alias</h2>
+<h2 id="@import">Εισαγωγή packages (<code>import</code>) και alias</h2>
 <p>Για να χρησιμοποιήσεις κώδικα από άλλο package (είτε δικό σου, είτε της standard library, είτε τρίτου), το εισάγεις με <code>import</code> στην κορυφή του αρχείου, αμέσως μετά τη δήλωση package:</p>
 
 <pre><code class="lang-go">package main
@@ -280,7 +388,7 @@ func main() {
     fmt.Println(m.Sqrt(16)) // same package, shorter name
 }</code></pre>
 
-<h2>Φτιάχνοντας το δικό μας package</h2>
+<h2 id="@own-package">Φτιάχνοντας το δικό μας package</h2>
 <p>Ας δούμε ένα πλήρες, μικρό παράδειγμα από την αρχή: πώς φτιάχνουμε ένα δικό μας package, τι μπαίνει μέσα του, και πώς το χρησιμοποιούμε από αλλού. Ας υποθέσουμε ότι έχουμε ένα module με όνομα <code>learngo</code>, και θέλουμε ένα ξεχωριστό package με βοηθητικές functions πάνω σε αριθμούς.</p>
 
 <p><strong>Βήμα 1:</strong> Φτιάχνουμε έναν υποφάκελο με το όνομα του package — εδώ <code>mathutil/</code> — και μέσα του ένα αρχείο <code>.go</code>:</p>
@@ -339,7 +447,7 @@ func main() {
 
 <p>Αν το <code>mathutil.go</code> είχε επιπλέον μια βοηθητική function με πεζό πρώτο γράμμα (π.χ. <code>func clamp(n int) int</code>), αυτή θα ήταν χρησιμοποιήσιμη μόνο μέσα στο ίδιο το package <code>mathutil</code> — το <code>main.go</code> δεν θα μπορούσε καν να τη δει, πόσο μάλλον να την καλέσει.</p>
 
-<h2>Ορατότητα και Προσβασιμότητα: Exported vs Unexported</h2>
+<h2 id="@exported">Ορατότητα και Προσβασιμότητα: Exported vs Unexported</h2>
 <p>Η Go δεν έχει keywords όπως <code>public</code> ή <code>private</code> για να ελέγξει ποιος βλέπει τι — αντί αυτού, χρησιμοποιεί έναν πολύ απλό κανόνα βασισμένο στο <strong>πρώτο γράμμα</strong> του ονόματος:</p>
 
 <div class="grid2">
@@ -354,7 +462,7 @@ func main() {
   Το κεφαλαίο/πεζό γράμμα δεν είναι απλά σύμβαση στυλ — είναι το ίδιο το μηχανισμό ελέγχου προσβασιμότητας της γλώσσας. Αν ξεχάσεις να κάνεις κεφαλαίο το πρώτο γράμμα μιας function που θες να χρησιμοποιήσει άλλο package, θα πάρεις σφάλμα μεταγλώττισης σε εκείνο το άλλο package, όχι εδώ.
 </div>
 
-<h2>Η ειδική function αρχικοποίησης <code>init()</code></h2>
+<h2 id="@init-func">Η ειδική function αρχικοποίησης <code>init()</code></h2>
 <p>Κάθε package μπορεί προαιρετικά να ορίσει μία ή περισσότερες functions με το ειδικό όνομα <code>init()</code>. Αυτές οι functions δεν καλούνται από εσένα ρητά — η Go τις τρέχει <strong>αυτόματα</strong>, μία φορά, πριν εκτελεστεί η <code>main()</code>, αφού πρώτα έχουν αρχικοποιηθεί όλες οι package-level μεταβλητές. Χρησιμοποιείται για setup που πρέπει να τρέξει πριν ξεκινήσει οτιδήποτε άλλο (π.χ. έλεγχος ρυθμίσεων, προετοιμασία δεδομένων).</p>
 
 <pre><code class="lang-go">package main
@@ -375,7 +483,7 @@ func main() {
         // ── Mini-glossary — §1.1-1.2 ─────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Μίνι Γλωσσάρι — §1.1 &amp; §1.2</div>
-<h2>Όροι που μόλις είδαμε</h2>
+<h2 id="@glossary1">Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
   <div class="gc-line"><span class="gc-term">module</span><span class="gc-def">συλλογή packages που διαχειρίζονται μαζί ως μία μονάδα</span></div>
   <div class="gc-line"><span class="gc-term">go.mod</span><span class="gc-def">αρχείο ταυτότητας module: όνομα, έκδοση Go, εξαρτήσεις</span></div>
@@ -418,7 +526,7 @@ func Avg(numbers __sliceint__) __int__ {
 <h1>Δομή και Οργάνωση Go Projects</h1>
 <p class="lede">Ένα module δεν χρειάζεται να έχει όλο τον κώδικά του σε έναν φάκελο. Καθώς ένα project μεγαλώνει, το χωρίζουμε σε πολλά packages — καθένα σε δικό του υποφάκελο — ώστε κάθε κομμάτι της λογικής να έχει τον δικό του χώρο, το δικό του όνομα, και σαφή όρια με τα υπόλοιπα.</p>
 
-<h2>Οργάνωση κώδικα σε υποπακέτα (sub-packages)</h2>
+<h2 id="@subpackages">Οργάνωση κώδικα σε υποπακέτα (sub-packages)</h2>
 <p>Ένα "sub-package" δεν είναι κάτι ειδικό συντακτικά — είναι απλά ένας υποφάκελος μέσα στο module, με δικά του αρχεία <code>.go</code> που δηλώνουν το δικό τους <code>package</code> name (συνήθως ίδιο με το όνομα του φακέλου, από σύμβαση, όχι υποχρέωση). Έτσι ένα project μπορεί να μοιάζει έτσι:</p>
 
 <pre><code>myproject/
@@ -446,7 +554,7 @@ func main() {
 
 <p>Πρόσεξε: το import path χρησιμοποιεί το <strong>module path</strong>, όχι κάποιο relative path τύπου <code>"./shapes"</code> — αυτού του είδους τα relative imports δεν υπάρχουν στη Go. Το module path είναι πάντα το σημείο αναφοράς, ό,τι κι αν λέει το <code>go.mod</code> στη ρίζα του project.</p>
 
-<h2>Αποφυγή κυκλικών εξαρτήσεων (Circular Dependencies)</h2>
+<h2 id="@circular-deps">Αποφυγή κυκλικών εξαρτήσεων (Circular Dependencies)</h2>
 <p>Η Go απαγορεύει ρητά τις <strong>κυκλικές εξαρτήσεις</strong>: αν το package A κάνει import το package B, τότε το B δεν επιτρέπεται να κάνει import (άμεσα ή έμμεσα, μέσω κάποιου τρίτου package) το A. Αν προσπαθήσεις, ο compiler αρνείται να χτίσει το project και σου δείχνει ολόκληρο τον κύκλο εξάρτησης.</p>
 
 <div class="grid2">
@@ -454,7 +562,7 @@ func main() {
   <div class="card"><h3>Πώς αποφεύγεται</h3><p>Συνήθως λύνεται είτε συγχωνεύοντας τα δύο packages σε ένα, είτε εξάγοντας το κοινό κομμάτι που χρειάζονται και τα δύο σε ένα τρίτο, ανεξάρτητο package που δεν εξαρτάται από κανέναν από τους δύο.</p></div>
 </div>
 
-<h2>Standard Project Layout — awareness</h2>
+<h2 id="@std-layout">Standard Project Layout — awareness</h2>
 <p>Σε μεγάλα, πραγματικά (real-world) Go repositories θα συναντήσεις συχνά μια οικογένεια συμβάσεων για το πώς ονομάζονται οι φάκελοι ενός project. Δεν είναι κανόνας της ίδιας της γλώσσας — είναι σύμβαση της κοινότητας — αλλά είναι πολύ διαδεδομένη, οπότε αξίζει να την αναγνωρίζεις όταν την βλέπεις:</p>
 
 <div class="glossary-strip">
@@ -512,7 +620,7 @@ func main() {
 
         // ── VSCode Challenge — closes out §1 ─────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 1</div>
+<div class="eyebrow" id="@challenge1">VSCode Challenge — Κλείνοντας την Ενότητα 1</div>
 <h1>Φτιάξε το δικό σου πρώτο multi-package project</h1>
 
 <p>Χρειαζόμαστε μια function που δέχεται δύο <code>int</code> (πλάτος και ύψος) και επιστρέφει το εμβαδόν τους — αλλά η function αυτή πρέπει να ανήκει στο δικό της sub-package, με όνομα <code>shapes</code>, ξεχωριστό από το <code>main</code>. Από ένα <code>main.go</code>, κάνε import το <code>shapes</code> και τύπωσε το αποτέλεσμα μιας κλήσης της.</p>
@@ -567,7 +675,7 @@ func main() {
 
         // ── Section 2.1 — os.Args ────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
+<div class="eyebrow" id="@os-args">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
 <h1>Ορίσματα Γραμμής Εντολών (os.Args)</h1>
 <p class="lede">Μέχρι τώρα, κάθε πρόγραμμά μας έπαιρνε δεδομένα μέσω hardcoded τιμών στον κώδικα ή input από το πληκτρολόγιο κατά την εκτέλεση. Υπάρχει όμως κι ένας τρίτος τρόπος: να δώσεις δεδομένα στο πρόγραμμα τη στιγμή που το ξεκινάς, μέσα από το ίδιο το terminal. Αυτά λέγονται <strong>ορίσματα γραμμής εντολών</strong> (command-line arguments), και είναι θεμελιώδη για κάθε εργαλείο που τρέχει από terminal — από το <code>ls</code> μέχρι το <code>git</code>.</p>
 
@@ -598,7 +706,7 @@ func main() {
   Το <code>os.Args[0]</code> ΔΕΝ είναι το πρώτο πραγματικό όρισμα — είναι το όνομα/διαδρομή του ίδιου του εκτελέσιμου προγράμματος. Αυτό ισχύει πάντα, σε κάθε γλώσσα προγραμματισμού που ακολουθεί αυτή τη σύμβαση, όχι μόνο στη Go. Τα πραγματικά ορίσματα που έδωσε ο χρήστης ξεκινούν από το index 1.
 </div>
 
-<h2>Iteration και επεξεργασία των ορισμάτων: os.Args[1:]</h2>
+<h2 id="@args-slice">Iteration και επεξεργασία των ορισμάτων: os.Args[1:]</h2>
 <p>Επειδή το index 0 δεν είναι ποτέ χρήσιμο όρισμα, σχεδόν πάντα δουλεύουμε με το slice <code>os.Args[1:]</code> — δηλαδή, "όλα τα στοιχεία από το index 1 και μετά" (θυμήσου το slicing από το Μέρος 1). Αυτό μας δίνει μόνο τα ορίσματα που έδωσε ο χρήστης, χωρίς το όνομα του προγράμματος να μπλέκεται στη μέση.</p>
 
 <pre><code class="lang-go">package main
@@ -656,14 +764,14 @@ func main() {
 
         // ── Section 2.2 — the flag package ───────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
+<div class="eyebrow" id="@flag-package">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
 <h1>Ειδικές Εντολές με Παύλα: το package flag</h1>
 <p class="lede">Σίγουρα έχεις δει προγράμματα του terminal να παίρνουν ορίσματα με παύλα μπροστά, όπως <code>ls -l</code>, ή <code>git commit --message "κείμενο"</code>. Αυτά λέγονται <strong>flags</strong> (ή "options"/"switches"), και είναι διαφορετικά από τα απλά, θεσιακά ορίσματα του <code>os.Args</code>: έχουν όνομα, μπορεί να έχουν default τιμή, και δεν εξαρτώνται από τη σειρά που τα γράφεις.</p>
 
 <h2>Γιατί όχι απλά os.Args για αυτό</h2>
 <p>Θα μπορούσες, θεωρητικά, να διασχίσεις εσύ το <code>os.Args</code> με το χέρι, ψάχνοντας για strings που ξεκινούν με <code>-</code> ή <code>--</code>. Αλλά αυτό γρήγορα γίνεται δύσκολο να διαβαστεί και επιρρεπές σε λάθη: τι γίνεται αν το flag δεν δοθεί καθόλου; Τι default τιμή παίρνει; Τι γίνεται αν δοθεί σε διαφορετική σειρά από τα υπόλοιπα; Το package <code>flag</code> της standard library λύνει ακριβώς αυτό το πρόβλημα, με έτοιμο, δοκιμασμένο κώδικα.</p>
 
-<h2>Ορισμός και ανάγνωση ενός flag</h2>
+<h2 id="@flag-define">Ορισμός και ανάγνωση ενός flag</h2>
 <p>Η πιο απλή μορφή είναι το <code>flag.String(name, defaultValue, usageText)</code> (υπάρχουν αντίστοιχα και για <code>Int</code>, <code>Bool</code>, κ.λπ.) — ορίζει ένα flag με το δοσμένο όνομα, και επιστρέφει έναν <strong>pointer</strong> προς την τιμή του (θυμήσου τους pointers από το Μέρος 1). Μετά τον ορισμό όλων των flags, καλείς <code>flag.Parse()</code> ΜΙΑ φορά, η οποία διαβάζει το πραγματικό <code>os.Args</code> και γεμίζει τις τιμές πίσω από αυτούς τους pointers.</p>
 
 <pre><code class="lang-go">package main
@@ -711,7 +819,7 @@ func main() {
 
 <p>Τρέχοντας <code>go run main.go -name=Ana -times=3 -loud</code> ορίζει και τα τρία flags — πρόσεξε ότι το <code>-loud</code> (τύπου <code>Bool</code>) δεν χρειάζεται τιμή μετά του· η απλή του παρουσία σημαίνει <code>true</code>. Η σειρά με την οποία γράφεις τα flags στο terminal δεν έχει σημασία — μπορείς να γράψεις <code>-loud -times=3 -name=Ana</code> και θα δουλέψει ακριβώς το ίδιο.</p>
 
-<h2>Ανίχνευση flags: πώς ξεχωρίζουν από τα κανονικά ορίσματα</h2>
+<h2 id="@flag-detect">Ανίχνευση flags: πώς ξεχωρίζουν από τα κανονικά ορίσματα</h2>
 <p>Το πρόγραμμα ξέρει ότι κάτι είναι flag επειδή ξεκινάει με μία ή δύο παύλες (<code>-name</code> ή <code>--name</code> — το package <code>flag</code> δέχεται και τα δύο ισοδύναμα) ΚΑΙ ταιριάζει με κάποιο όνομα flag που έχεις ορίσει με <code>flag.String</code>/<code>flag.Int</code>/<code>flag.Bool</code>. Οτιδήποτε στο <code>os.Args</code> δεν ταιριάζει με γνωστό flag name θεωρείται κανονικό, θεσιακό όρισμα — αυτά είναι διαθέσιμα μετά το <code>flag.Parse()</code> μέσω του <code>flag.Args()</code> (το ισοδύναμο του <code>os.Args[1:]</code>, αλλά χωρίς τα flags που ήδη αναγνωρίστηκαν).</p>
 
 <div class="callout good">
@@ -759,7 +867,7 @@ func main() {
 
         // ── §2.3 — flag.Args() and turning a string argument into a number ───── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
+<div class="eyebrow" id="@flag-args">Ενότητα 2 / 8 — Εισαγωγή-Έξοδος & Ορίσματα CLI</div>
 <h1>Τα ορίσματα που περισσεύουν: <code>flag.Args()</code></h1>
 
 <p class="lede"> Τα περισσότερα πραγματικά εργαλεία δέχονται <strong>και τα δύο</strong> μαζί: flags <em>και</em> απλά ορίσματα. Σκέψου το <code>git commit -m "μήνυμα" file1.go file2.go</code> — το <code>-m</code> είναι flag, τα δύο αρχεία στο τέλος όχι. </p>
@@ -808,7 +916,7 @@ how many files: 2
 
 <br>
 
-<h1>Το όρισμα είναι πάντα string — τι κάνεις αν θες αριθμό;</h1>
+<h1 id="@str-to-number">Το όρισμα είναι πάντα string — τι κάνεις αν θες αριθμό;</h1>
 
 <p class="lede"> Είπαμε νωρίτερα ότι κάθε στοιχείο του <code>os.Args</code> είναι <code>string</code>, ακόμα κι όταν ο χρήστης γράψει <code>123</code>. Ας δούμε γιατί αυτό είναι πραγματικό πρόβλημα, και όχι λεπτομέρεια. </p>
 
@@ -917,7 +1025,7 @@ func toInt(s string) (value int, ok bool) {
 
         // ── Mini-glossary — §2 ───────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2</div>
+<div class="eyebrow" id="@glossary2">Μίνι Γλωσσάρι — Ενότητα 2</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <table class="glossary-table">
   <tr><td class="gt-term">os.Args</td><td class="gt-def">slice από strings με όλα τα ορίσματα εκκίνησης, index 0 = όνομα προγράμματος</td></tr>
@@ -972,7 +1080,7 @@ func main() {
 
         // ── VSCode Challenge — closes out §2 ─────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 2</div>
+<div class="eyebrow" id="@challenge2">VSCode Challenge — Κλείνοντας την Ενότητα 2</div>
 <h1>Φτιάξε το δικό σου εργαλείο γραμμής εντολών</h1>
 <p class="lede">Ένα ακόμα hands-on challenge, αυτή τη φορά πάνω σε ορίσματα και flags.</p>
 
@@ -1018,11 +1126,11 @@ func main() {
         // SECTION 3 — Θεμελιώδη Λογικά & Δομικά Μοτίβα Κώδικα (v2, χειρόγραφη ροή)
         // ══════════════════════════════════════════════════════════════════════
 
-        addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
+        addContent(`<div class="eyebrow" id="@patterns-intro">Ενότητα 3 / 8 — Patterns</div>
 <h1>Γιατί χρειαζόμαστε "patterns"</h1>
 <p>Μέχρι τώρα έμαθες τα "γράμματα" της Go: syntax, τύπους, functions, packages. Αυτή η ενότητα είναι διαφορετική — δεν μαθαίνεις νέα syntax, μαθαίνεις <strong>τρόπους σκέψης</strong>. Κάθε δύσκολο πρόβλημα προγραμματισμού, όσο περίπλοκο κι αν φαίνεται, συνήθως λύνεται συνδυάζοντας 2-3 από ένα μικρό σύνολο επαναλαμβανόμενων μοτίβων (patterns). Μόλις τα αναγνωρίζεις, το "δεν ξέρω από πού να ξεκινήσω" γίνεται "α, αυτό είναι sliding window + accumulator".</p>
 <br>
-<h1>Result Variable — accumulator</h1>
+<h1 id="@accumulator">Result Variable — accumulator</h1>
 <p>Το πρώτο και πιο βασικό pattern απ' όλα: μια μεταβλητή που θα κρατήσει μια τιμή που θέλουμε να "μετρήσουμε" ή να καταγράφουμε καθώς τρέχει μια loop. Τη δηλώνουμε <strong>έξω</strong> από τη loop — μία φορά — και μέσα στη loop απλά την ενημερώνουμε, ξανά και ξανά, μέχρι να τελειώσει η επανάληψη.</p>
 
 <p><strong>Παράδειγμα 1:</strong> μέτρα πόσα στοιχεία έχει ένας πίνακας.</p>
@@ -1159,7 +1267,7 @@ func WordLengths(input string) []int {
 
 <div class="callout"><span class="tag">Το πρόβλημα</span>Χρειαζόμαστε κάτι που να θυμάται: "βρίσκομαι <em>μέσα</em> σε λέξη αυτή τη στιγμή, ή όχι;" — και να κάνει <code>append</code> μόνο στην πρώτη περίπτωση.</div>
 <br>
-<h1>Boolean Switch / Boolean State</h1>
+<h1 id="@boolean-switch">Boolean Switch / Boolean State</h1>
 <p>Η λύση: μια δεύτερη μεταβλητή, τύπου <code>bool</code>, που απλά καταγράφει μια κατάσταση — <strong>true</strong> ή <strong>false</strong> — και ελέγχεται πριν από κάθε ενέργεια.</p>
 <pre><code class="lang-go">func WordLengths(input string) []int {
     var result []int
@@ -1272,7 +1380,7 @@ func CountLetters(input string) int {
 
 <div class="callout"><span class="tag">Γιατί "switch" / διακόπτης</span>Λειτουργεί σαν διακόπτης που μπορεί να αλλάζει "κατάσταση" ξανά και ξανά καθ' όλη τη διάρκεια του iteration (<code>true</code>→<code>false</code>→<code>true</code>...), και κάθε φορά που αλλάζει, αλλάζει μαζί του και η συμπεριφορά του κώδικα μέσα στη loop. Είδαμε και τις δύο περιπτώσεις: μπορεί να γίνει <code>true</code> μία φορά και να μείνει έτσι (σχόλιο), ή να αλλάζει κατεύθυνση συνέχεια (παρένθεση) — ο κώδικας γύρω από το switch είναι αυτός που καθορίζει ποια συμπεριφορά θα έχει, όχι το ίδιο το <code>bool</code>.</div>
 `);
-        addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
+        addContent(`<div class="eyebrow" id="@break-continue">Ενότητα 3 / 8 — Patterns</div>
 <h1>Break, Continue, Early Return</h1>
 <p>Ένα pattern που μοιάζει πολύ με το boolean switch — μερικές φορές αντί να <em>θυμόμαστε</em> κατάσταση, απλά <strong>σταματάμε</strong> ή <strong>παραλείπουμε</strong> τη στιγμή που δεν χρειάζεται να συνεχίσουμε. Τρεις παραλλαγές της ίδιας ιδέας:</p>
 
@@ -1363,7 +1471,7 @@ func PrintValid(numbers []int) {
 }</code></pre>
 <br>
 
-<h1>Sentinel Value</h1>
+<h1 id="@sentinel">Sentinel Value</h1>
 <p>Μερικές φορές μια function πρέπει να επιστρέψει ΕΝΑ πράγμα (π.χ. έναν <code>int</code>), αλλά χρειάζεται και έναν τρόπο να πει "κάτι πήγε στραβά" — μια ειδική περίπτωση διαφορετική από κάθε κανονική τιμή. Λύση: επιστρέφουμε μια ειδική, προσυμφωνημένη τιμή που ΔΕΝ θα μπορούσε ποτέ να είναι πραγματικό αποτέλεσμα. Αυτή η ειδική τιμή λέγεται <strong>sentinel value</strong>.</p>
 
 <p>Πρόβλημα: άθροισε τους αριθμούς μέσα σε ένα string, χωρισμένους με κενό — π.χ. <code>"3 15 7"</code> → <code>25</code>. Δεν έχουμε δει ακόμα το πακέτο <code>strconv</code> της standard library που κάνει ακριβώς αυτή τη μετατροπή string→int, οπότε θα γράψουμε τη δική μας απλή βοηθητική function, <code>Atoi</code> — και, για τους σκοπούς αυτού του παραδείγματος, θα υποθέσουμε ότι δεν εμφανίζονται αρνητικοί αριθμοί:</p>
@@ -1594,11 +1702,11 @@ func SumNumbers(input string) (sum int, __okname__ bool) {
 
 
         // ── Section 3 more patterns ──────────────────────────────────────────── ⊃
-        addContent(`<div class="eyebrow">Ενότητα 3 / 8 — Patterns</div>
+        addContent(`<div class="eyebrow" id="@patterns-value">Ενότητα 3 / 8 — Patterns</div>
 <h1>Η αξία των patterns</h1>
 <p>Δεν χρειάζεται να απομνημονεύσεις τα παρακάτω patterns. Όσα περισσότερα patterns γνωρίζεις, τόσες περισσότερες ιδέες θα έχεις διαθέσιμες όταν σκέφτεσαι πώς να λύσεις ένα πρόβλημα — είτε πρόκειται για ένα εντελώς άσχετο πρόβλημα που απλά «μοιάζει» με κάτι που έχεις ξαναδεί, είτε για ένα πιο σύνθετο πρόβλημα που χρειάζεται να συνδυάσεις δύο ή περισσότερα patterns μαζί. Οπότε απλά κατανόησε πώς δουλεύουν.</p>
 
-<h1>Extremum: Εύρεση Μεγίστου/Ελαχίστου</h1>
+<h1 id="@extremum">Extremum: Εύρεση Μεγίστου/Ελαχίστου</h1>
 <p>Ένα από τα πιο συχνά ερωτήματα πάνω σε δεδομένα: ποιο είναι το μεγαλύτερο (ή μικρότερο) στοιχείο;</p>
 
 <pre><code class="lang-go">// looks reasonable... but is it?
@@ -1656,7 +1764,7 @@ func MaxEven(numbers []int) int {
 <p>Στην πραγματικότητα, το extremum pattern από μόνο του δεν έχει ιδιαίτερο ενδιαφέρον — υπάρχουν αρκετές καλύτερες εναλλακτικές, ανάλογα με το πρόβλημα. Το παρουσιάσαμε εδώ κυρίως για να μπεις στη διαδικασία να σκέφτεσαι πόσο σημαντικό ρόλο παίζει η αρχικοποίηση μιας μεταβλητής — και, ένα βήμα παραπέρα, ότι η καλύτερη λύση συχνά δεν είναι ούτε το <code>numbers[0]</code> ούτε το <code>math.MinInt</code>, αλλά ένα <strong>τυχαίο στοιχείο από το ίδιο το δείγμα</strong> σου.</p>
 
 <br>
-<h1>Παρακολούθηση Προηγούμενης Τιμής</h1>
+<h1 id="@prev-value">Παρακολούθηση Προηγούμενης Τιμής</h1>
 <p>Πολλά προβλήματα χρειάζονται σύγκριση <em>διαδοχικών</em> στοιχείων — "είναι το τρέχον μεγαλύτερο από το προηγούμενο;" Το <code>range</code> από μόνο του δεν σου δίνει το προηγούμενο στοιχείο· χρειάζεσαι μια ξεχωριστή μεταβλητή που το "κουβαλάει" μαζί σου.</p>
 
 <p>Πρόβλημα: έχεις τις τιμές μιας μετοχής ανά ημέρα. Βρες το μήκος της μεγαλύτερης <em>συνεχόμενης ανοδικής πορείας</em> — πόσες ημέρες στη σειρά η τιμή ανέβαινε σε σχέση με την προηγούμενη:</p>
@@ -1714,7 +1822,7 @@ func MaxEven(numbers []int) int {
 
 <br>
 
-<h1>Two Pointers</h1>
+<h1 id="@two-pointers">Two Pointers</h1>
 <p>Αντί για μία μεταβλητή δείκτη (index) που διασχίζει ένα slice, χρησιμοποιούμε <strong>δύο ταυτόχρονα</strong> — συνήθως ξεκινώντας από τις δύο άκρες και κινούμενοι προς το κέντρο. Είναι εξαιρετικά χρήσιμο όταν ψάχνεις σχέσεις ανάμεσα σε στοιχεία, ειδικά σε <strong>ταξινομημένα</strong> δεδομένα.</p>
 
 <h2>Παράδειγμα 1: Palindrome check</h2>
@@ -1748,7 +1856,7 @@ func MaxEven(numbers []int) int {
 
 <br>
 
-<h1>Sliding Window</h1>
+<h1 id="@sliding-window">Sliding Window</h1>
 <p>Πρόβλημα: στο ίδιο slice τιμών, βρες το <strong>μέγιστο άθροισμα οποιωνδήποτε 3 διαδοχικών ημερών</strong> — δηλαδή το καλύτερο δυνατό "παράθυρο" τριών τιμών στη σειρά.</p>
 
 <pre><code class="lang-go">prices := []int{3, 5, 8, 4, 9, 12, 15, 2}</code></pre>
@@ -1799,7 +1907,7 @@ func MaxWindowSum(prices []int, k int) int {
 
 <div class="callout"><span class="tag">Θα το ξαναδούμε</span>Υπάρχει και μια διαφορετική μορφή sliding window: αντί για ήδη υπάρχον slice με γνωστό index (όπως εδώ), τα δεδομένα έρχονται <em>streaming</em> — ένα-ένα, χωρίς να ξέρεις εκ των προτέρων πόσα θα έρθουν. Εκεί χρειάζεσαι να θυμάσαι τα k πιο πρόσφατα στοιχεία κάπου, ώστε να ξέρεις ποιο να αφαιρέσεις όταν έρθει νέο — και αυτό ταιριάζει φυσικά με τη δομή <strong>Queue</strong> που θα δούμε στην Ενότητα 4. Θα το ξαναδούμε τότε.</div>
 
-<h1>Variable-Size Sliding Window</h1>
+<h1 id="@var-window">Variable-Size Sliding Window</h1>
 <p>Το sliding window που είδαμε παραπάνω είχε σταθερό μέγεθος — πάντα ακριβώς <code>k</code> στοιχεία. Υπάρχει όμως και μια δεύτερη, εξίσου συχνή μορφή: το window <strong>μεγαλώνει και μικραίνει</strong> δυναμικά, ανάλογα με μια συνθήκη — δεν ξέρεις εκ των προτέρων πόσο μεγάλο θα είναι.</p>
 
 <p>Πρόβλημα: στο ίδιο slice τιμών, βρες το <strong>μεγαλύτερο συνεχόμενο διάστημα ημερών</strong> του οποίου το άθροισμα δεν ξεπερνάει ένα όριο <code>limit</code>:</p>
@@ -1871,7 +1979,7 @@ limit := 20</code></pre>
 <div class="callout good"><span class="tag">Το σχήμα expand-then-shrink</span>Πρόσεξε τη δομή: το <code>right</code> ΠΑΝΤΑ επεκτείνεται πρώτα (εξωτερική λούπα). Μετά, μια ΕΣΩΤΕΡΙΚΗ λούπα συρρικνώνει από αριστερά ΟΣΟ χρειάζεται, μέχρι η συνθήκη να ξαναϊσχύσει. Αυτό το σχήμα είναι σχεδόν πάντα το ίδιο σε κάθε variable sliding window πρόβλημα, όποιο κι αν είναι το ακριβές κριτήριο εγκυρότητας — και το <code>start</code>/<code>end</code> είναι απλά μια δεύτερη «καταγραφή θέσης» πάνω στο ήδη γνωστό extremum pattern, ώστε να θυμόμαστε ΠΟΥ ήταν το καλύτερο, όχι μόνο πόσο μεγάλο.</div>
 <br>
 
-<h1>Complement Lookup</h1>
+<h1 id="@complement">Complement Lookup</h1>
   <p class="lede">Ένα ακόμα pattern για να ψάχνεις σχέσεις ανάμεσα σε στοιχεία ενός slice.</p>
 
   <h2>Το πρόβλημα</h2>
@@ -2097,7 +2205,7 @@ func findPairs(arr []int, targetSum int) [][]int {
 
         addContent(`
 <div class="eyebrow">VSCode Challenge 1/2 — Συνδυαστική Άσκηση</div>
-<h1>Το Πρόβλημα του "Δεύτερου Μεγαλύτερου"</h1>
+<h1 id="@challenge3">Το Πρόβλημα του "Δεύτερου Μεγαλύτερου"</h1>
 <p class="lede">Χρόνος να συνδυάσεις δύο patterns στην ίδια function.</p>
 
 <h2>Η αποστολή</h2>
@@ -2221,7 +2329,7 @@ func secondLargest(numbers []int) int {
 
         // ── Mini-glossary — Ενότητα 3 (όλα τα patterns) ──────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3 / 8</div>
+<div class="eyebrow" id="@patterns-recap">Μίνι Γλωσσάρι — Ενότητα 3 / 8</div>
 <h1>Όλα τα Patterns, με μια Ματιά</h1>
 <p class="lede">Ένα σύντομο "πότε το χρησιμοποιείς" για κάθε pattern που είδαμε σε αυτό το κεφάλαιο.</p>
 
@@ -2248,7 +2356,7 @@ func secondLargest(numbers []int) int {
 
         // ── Section 4.1 — append mechanics + Stack ───────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
+<div class="eyebrow" id="@data-structures">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
 <h1>Βασικές Δομές Δεδομένων</h1>
 <p class="lede">Θα φτιάξουμε δύο από τις πιο θεμελιώδεις δομές δεδομένων στον προγραμματισμό — τη Στοίβα (Stack) και την Ουρά (Queue) — χρησιμοποιώντας ΜΟΝΟ ό,τι ξέρουμε ήδη: slices και functions. Δεν έχουμε δει ακόμα structs ή methods, οπότε θα υλοποιήσουμε αυτές τις δομές με τον πιο απλό δυνατό τρόπο: ένα slice που αντιπροσωπεύει τη δομή, και functions που το χειρίζονται.</p>
 
@@ -2262,7 +2370,7 @@ numbers = append(numbers, 4) // numbers is now [1, 2, 3, 4]</code></pre>
 numbers = numbers[:2] // numbers is now [1, 2]</code></pre>
 
 <br>
-<h1>Στοίβα (Stack) — LIFO</h1>
+<h1 id="@stack">Στοίβα (Stack) — LIFO</h1>
 <p class="lede">Μια στοίβα είναι μια δομή δεδομένων όπου το τελευταίο στοιχείο που μπήκε είναι το πρώτο που βγαίνει — <strong>LIFO: Last-In, First-Out</strong>. Σκέψου μια στοίβα από πιάτα: βάζεις νέα πιάτα από πάνω, και όταν παίρνεις ένα, παίρνεις πάντα αυτό που είναι στην κορυφή — το πιο πρόσφατο.</p>
 
 <h2>Οι τρεις βασικές λειτουργίες</h2>
@@ -2332,7 +2440,7 @@ func Peek(stack []int) (value int, ok bool) {
     fmt.Println(value, ok) // 3 true
     fmt.Println(stack)     // [1, 2]
 }</code></pre>
-<h2>VSCode Challenge — Έλεγχος Ισορροπημένων Παρενθέσεων</h2>
+<h2 id="@brackets">VSCode Challenge — Έλεγχος Ισορροπημένων Παρενθέσεων</h2>
 <p class="lede">Ένα κλασικό πρόβλημα που λύνεται με στοίβα: δοσμένου ενός string κειμένου με παρενθέσεις <code>( ) [ ] { }</code>, είναι σωστά "ζευγαρωμένες";</p>
 
 <p>Γράψε μια function <code>isBalanced(input string) bool</code> που δέχεται ένα <code>string</code> και επιστρέφει <code>true</code> αν κάθε άνοιγμα παρένθεσης <code>( [ {</code> έχει αντίστοιχο, σωστά ταιριασμένο κλείσιμο <code>) ] }</code> με τη σωστή σειρά. Αγνόησε κάθε άλλο χαρακτήρα στο string.</p>
@@ -2398,7 +2506,7 @@ func isBalanced(input string) bool {
 `);
         // ── Section 4.2 — Queue + Deque + append tricks ──────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
+<div class="eyebrow" id="@queue">Ενότητα 4 / 8 — Βασικές Δομές Δεδομένων</div>
 <h1>Ουρά (Queue) — FIFO</h1>
 <p class="lede">Η αντίστροφη λογική από τη στοίβα: το ΠΡΩΤΟ στοιχείο που μπήκε είναι το ΠΡΩΤΟ που βγαίνει — <strong>FIFO: First-In, First-Out</strong>. Σκέψου μια ουρά ανθρώπων σε ταμείο: όποιος μπήκε πρώτος στην ουρά, εξυπηρετείται πρώτος.</p>
 
@@ -2445,7 +2553,7 @@ func Dequeue(queue []int) (value int, updatedQueue []int, ok bool) {
 }</code></pre>
 
 <br>
-<h1>Διπλή Ουρά (Double-Ended Queue)</h1>
+<h1 id="@deque">Διπλή Ουρά (Double-Ended Queue)</h1>
 <p>Μια <strong>deque</strong> (Double-Ended Queue) επιτρέπει προσθήκη/αφαίρεση ΚΑΙ από τις δύο άκρες — μπροστά ΚΑΙ πίσω. Είναι γενίκευση τόσο του Stack όσο και του Queue ταυτόχρονα:</p>
 
 <pre><code class="lang-go">func PushFront(deque []int, value int) []int {
@@ -2477,7 +2585,7 @@ func PopBack(deque []int) (value int, updated []int, ok bool) {
   <br>το <code>append([]int{value}, deque...)</code> δημιουργεί ένα ΚΑΙΝΟΥΡΙΟ slice ξεκινώντας με το <code>value</code>, και μετά "ξεδιπλώνει" (<code>...</code>) όλα τα στοιχεία του παλιού deque πίσω από αυτό. Δεν υπάρχει φθηνός τρόπος να προσθέσεις στην ΑΡΧΗ ενός slice στη Go — πάντα χρειάζεται να αντιγραφούν όλα τα υπόλοιπα στοιχεία σε νέες θέσεις μνήμης, σε αντίθεση με το <code>append</code> στο τέλος που είναι συνήθως πολύ φθηνότερο (συχνά δεν χρειάζεται καν νέο array, αν υπάρχει ήδη ελεύθερη χωρητικότητα).
 </div>
 
-<h2>Αφαίρεση από τη ΜΕΣΗ ενός slice</h2>
+<h2 id="@remove-middle">Αφαίρεση από τη ΜΕΣΗ ενός slice</h2>
 <p>Έχουμε δει πώς αφαιρούμε από την αρχή (<code>slice[1:]</code>) και από το τέλος (<code>slice[:len-1]</code>). Τι γίνεται αν θες να αφαιρέσεις το στοιχείο στη θέση <code>n</code>, κάπου στη ΜΕΣΗ;</p>
 
 <pre><code class="lang-go">// RemoveAt removes the element at index n and returns the updated slice.
@@ -2497,7 +2605,7 @@ func RemoveAt(slice []int, n int) []int {
 </div>
 
 <br>
-<h1>Απλή αναφορά: Hash Map, Set, Heap</h1>
+<h1 id="@map-set-heap">Απλή αναφορά: Hash Map, Set, Heap</h1>
 <p class="lede">Οι τρεις παρακάτω δομές βασίζονται, όλες πάνω στο ίδιο εργαλείο που ήδη ξέρεις — το <code>map</code> και την ιδιότητα του να σου δίνει άμεσο, στιγμιαίο έλεγχο "υπάρχει ήδη αυτό;" χωρίς να χρειάζεται να ψάξεις.</p>
 <div class="grid3">
   <div class="card">
@@ -2518,7 +2626,7 @@ _, exists := seen["apple"] // check membership</code></pre>
 </div>
 
 <br>
-<h1>Το πρόβλημα: εισαγωγή/αφαίρεση στη ΜΕΣΗ</h1>
+<h1 id="@middle-insert">Το πρόβλημα: εισαγωγή/αφαίρεση στη ΜΕΣΗ</h1>
 <p class="lede">Είδαμε ότι το να πειράζεις στοιχεία στην αρχή ή στη μέση ενός slice είναι ακριβό — χρειάζεται να μετακινηθούν όλα τα υπόλοιπα στοιχεία, γιατί κάθε slice "ζει" σε ένα συνεχόμενο κομμάτι μνήμης.</p>
 
 <p>Σκέψου μια <strong>playlist τραγουδιών</strong>: θες να μπορείς ανά πάσα στιγμή να αφαιρέσεις ΟΠΟΙΟΔΗΠΟΤΕ τραγούδι (όχι μόνο το πρώτο ή το τελευταίο), ή να προσθέσεις ένα νέο τραγούδι στη ΜΕΣΗ της λίστας — ανάμεσα σε δύο υπάρχοντα. Με slice, αυτό μοιάζει έτσι:</p>
@@ -2705,7 +2813,7 @@ func RemoveAt(slice []int, n int) []int {
 
         // ── Mini-glossary — Ενότητα 4 ─────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 4 / 8</div>
+<div class="eyebrow" id="@struct-recap">Μίνι Γλωσσάρι — Ενότητα 4 / 8</div>
 <h1>Όλες οι Δομές, με μια Ματιά</h1>
 <p class="lede">Ένα σύντομο "πότε το χρησιμοποιείς" για κάθε δομή δεδομένων που είδαμε σε αυτό το κεφάλαιο.</p>
 
@@ -2725,7 +2833,7 @@ func RemoveAt(slice []int, n int) []int {
 
         // ── §5.1 — Big-O: η γλώσσα για να συγκρίνεις αλγορίθμους ─────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
+<div class="eyebrow" id="@big-o">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
 <h1>Πόσο "γρήγορος" είναι ένας αλγόριθμος;</h1>
 
 <p class="lede"> Πριν μιλήσουμε για ταξινόμηση, χρειαζόμαστε έναν τρόπο να λέμε ότι ένας τρόπος επίλυσης είναι καλύτερος από έναν άλλο. Το "καλύτερος" εδώ σημαίνει σχεδόν πάντα ένα πράγμα: <strong>πώς μεγαλώνει ο χρόνος εκτέλεσης καθώς μεγαλώνουν τα δεδομένα</strong>. </p>
@@ -2734,7 +2842,7 @@ func RemoveAt(slice []int, n int) []int {
 
 <p> Ο συμβολισμός που το εκφράζει αυτό λέγεται <strong>Big-O</strong>, και τον έχεις ήδη συναντήσει: στο Complement Lookup είπαμε ότι η brute force λύση είναι <code>O(n²)</code> ενώ η λύση με map είναι <code>O(n)</code>. </p>
 
-<h2>Οι έξι περιπτώσεις που θα συναντήσεις</h2>
+<h2 id="@big-o-cases">Οι έξι περιπτώσεις που θα συναντήσεις</h2>
 
 <table style="width:100%; border-collapse:collapse; margin:16px 0;">
     <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
@@ -2903,7 +3011,7 @@ func RemoveAt(slice []int, n int) []int {
     <p> Ένας συνηθισμένος υπολογιστής κάνει περίπου ένα δισεκατομμύριο απλές πράξεις το δευτερόλεπτο. Για ένα εκατομμύριο στοιχεία, λοιπόν: ο <code>O(n log n)</code> αλγόριθμος τελειώνει σε λιγότερο από <strong>ένα εκατοστό του δευτερολέπτου</strong>. Ο <code>O(n²)</code> θέλει περίπου <strong>δεκαεπτά λεπτά</strong>. Ίδιο πρόβλημα, ίδιο μηχάνημα, ίδια δεδομένα — μόνο ο κώδικας αλλάζει. Και η διαφορά είναι ασύλληπτη (0.01 δευτ. vs 17 λεπτά). </p>
 </div>
 
-<h2>Πώς μετράς το Big-O ενός δικού σου κώδικα</h2>
+<h2 id="@measure-big-o">Πώς μετράς το Big-O ενός δικού σου κώδικα</h2>
 
 <p>Για τα προβλήματα που θα συναντήσεις τώρα, φτάνει ένας πολύ απλός κανόνας: <strong>μέτρα τις φωλιασμένες λούπες</strong>.</p>
 
@@ -2961,7 +3069,7 @@ func RemoveAt(slice []int, n int) []int {
 
         // ── §5.2 — Αναζήτηση ─────────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
+<div class="eyebrow" id="@search">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
 <h1>Αναζήτηση: γραμμική και δυαδική</h1>
 
 <p class="lede"> Το πιο απλό ερώτημα πάνω σε μια συλλογή δεδομένων: <em>υπάρχει το X μέσα;</em> Υπάρχουν δύο εντελώς διαφορετικές απαντήσεις, και η επιλογή ανάμεσά τους εξαρτάται από ένα μόνο πράγμα. </p>
@@ -2983,7 +3091,7 @@ func LinearSearch(numbers []int, target int) (index int, found bool) {
 
 <p> Δουλεύει πάντα, σε οποιαδήποτε δεδομένα, ταξινομημένα ή όχι. Το κόστος του είναι <code>O(n)</code>: στη χειρότερη περίπτωση (το στοιχείο λείπει, ή είναι τελευταίο) διαβάζεις ολόκληρη τη συλλογή. </p>
 
-<h2>Δυαδική αναζήτηση (binary search)</h2>
+<h2 id="@binary-search">Δυαδική αναζήτηση (binary search)</h2>
 
 <p> Τώρα φαντάσου ένα τηλεφωνικό κατάλογο. Ψάχνεις το "Παπαδόπουλος". Θα ξεκινήσεις από την πρώτη σελίδα και θα διαβάσεις κάθε όνομα; Προφανώς όχι — θα ανοίξεις κάπου στη μέση, θα δεις ότι είσαι στο "Μ", και θα αγνοήσεις <strong>ολόκληρο το πρώτο μισό</strong> του καταλόγου με μία κίνηση. </p>
 
@@ -3061,12 +3169,12 @@ func BinarySearch(numbers []int, target int) (index int, found bool) {
 
         // ── §5.3 — Η έτοιμη λύση της Go ──────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
+<div class="eyebrow" id="@sorting">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
 <h1>Ταξινόμηση: η έτοιμη λύση πρώτα</h1>
 
 <p class="lede"> Ας ξεκαθαρίσουμε κάτι από την αρχή: <strong>δεν πρόκειται να γράψεις ποτέ δικό σου sort σε πραγματικό πρόγραμμα.</strong> Η Go έχει έτοιμο, δοκιμασμένο, και πολύ ταχύτερο από ό,τι θα γράψεις εσύ. </p>
 
-<h2>Το <code>slices</code> package — αυτό θα χρησιμοποιείς</h2>
+<h2 id="@slices-package">Το <code>slices</code> package — αυτό θα χρησιμοποιείς</h2>
 
 <p> Από την έκδοση Go 1.21 και μετά, η standard library περιλαμβάνει το package <code>slices</code>, που κάνει ακριβώς αυτό που λέει το όνομά του: χρήσιμες λειτουργίες πάνω σε slices. Η ταξινόμηση είναι μία γραμμή: </p>
 
@@ -3118,7 +3226,7 @@ fmt.Println(slices.Contains(numbers, 100)) // false
 fmt.Println(slices.Max(numbers))           // 88
 </code></pre>
 
-<h2>Όταν η σειρά δεν είναι προφανής: <code>slices.SortFunc</code></h2>
+<h2 id="@sortfunc">Όταν η σειρά δεν είναι προφανής: <code>slices.SortFunc</code></h2>
 
 <p> Η <code>slices.Sort</code> δουλεύει επειδή για αριθμούς και strings η σειρά είναι δεδομένη: το <code>3</code> έρχεται πριν από το <code>7</code>, το <code>"apple"</code> πριν από το <code>"banana"</code>. Δεν χρειάζεται να πεις τίποτα, γιατί δεν υπάρχει τίποτα να αποφασιστεί. </p>
 
@@ -3230,7 +3338,7 @@ func main() {
 
 <p> Πρόσεξε τι άλλαξε στο αποτέλεσμα: τα ζευγάρια μπήκαν σε σειρά <code>4, 5, 6</code> κοιτώντας τον <em>δεύτερο</em> αριθμό, ενώ ο πρώτος αριθμός βγήκε <code>1, 3, 0</code> — εντελώς ανακατεμένος. Αυτό ακριβώς ζήτησες. </p>
 
-<h2>Μια παρένθεση: Anonymous functions</h2>
+<h2 id="@anon-func">Μια παρένθεση: Anonymous functions</h2>
 
 <p> Το δεύτερο όρισμα της <code>SortFunc</code> είναι κάτι που δεν έχεις ξαναδεί: <strong>ολόκληρη function γραμμένη μέσα στην κλήση, χωρίς όνομα</strong>. Λέγεται <strong>anonymous function</strong>, ή <strong>function literal</strong> στα επίσημα Go docs. «Literal» επειδή είναι κυριολεκτικά η ίδια η function γραμμένη εκεί, όπως το <code>42</code> είναι κυριολεκτικά ο αριθμός και όχι το όνομα μιας μεταβλητής που τον περιέχει. </p>
 
@@ -3368,7 +3476,7 @@ slices.SortFunc(meetings, func(a, b [2]int) int {
     <p> Ξεκινάς πάντα με <code>slices.Sort</code>. Όταν ο compiler σε σταματήσει, ή όταν θέλεις άλλη σειρά από την προεπιλεγμένη, περνάς σε <code>slices.SortFunc</code> και γράφεις μια function που απαντάει σε μία ερώτηση: <em>ποιο από τα δύο μπαίνει πρώτο;</em> Όλη η δυσκολία της ταξινόμησης βρίσκεται σε εκείνη τη μία απάντηση. </p>
 </div>
 
-<h2><code>slices.Sort</code> vs <code>sort.Slice</code></h2>
+<h2 id="@sort-vs-slice"><code>slices.Sort</code> vs <code>sort.Slice</code></h2>
 
 <p> Μέχρι τώρα δουλέψαμε αποκλειστικά με το package <code>slices</code>. Υπάρχει όμως και ένα παλαιότερο package με το όνομα <code>sort</code>, που κάνει τα ίδια πράγματα με διαφορετικό τρόπο. Θα το συναντήσεις σε υπάρχοντα projects, και σχεδόν σίγουρα θα σου το προτείνει και ένα AI — συνήθως χωρίς να αναφέρει ότι υπάρχει νεότερος τρόπος που μάλλον θα έπρεπε να χρησιμοποιήσει. Οπότε θα πρέπει να ξέρεις τι είναι και το <code>sort.Slice</code>. </p>
 
@@ -3424,7 +3532,7 @@ slices.SortFunc(meetings, func(a, b [2]int) int {
 
 `);
         addContent(`
-<div class="eyebrow">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
+<div class="eyebrow" id="@bubble-sort">Ενότητα 5 / 8 — Αναζήτηση & Ταξινόμηση</div>
 <h1>Bubble Sort</h1>
 
 <p class="lede"> Ο πιο απλός αλγόριθμος ταξινόμησης που υπάρχει, και ο πιο αργός από τους γνωστούς. Διδάσκεται ακριβώς επειδή είναι απλός: μπορείς να τον κρατήσεις ολόκληρο στο μυαλό σου και να δεις καθαρά <em>γιατί</em> κοστίζει όσο κοστίζει. </p>
@@ -3531,7 +3639,7 @@ func BubbleSort(numbers []int) {
 
 <br>
 
-<h1>Οι υπόλοιποι αλγόριθμοι, με μια ματιά</h1>
+<h1 id="@other-sorts">Οι υπόλοιποι αλγόριθμοι, με μια ματιά</h1>
 
 <p class="lede"> Δεν θα δούμε υλοποιήσεις εδώ. Ο στόχος είναι να <strong>αναγνωρίζεις τα ονόματα</strong> και να ξέρεις πού προτιμάται ο καθένας — όχι να μπορείς να τους γράψεις από μνήμης. </p>
 
@@ -3759,7 +3867,7 @@ func BubbleSort(numbers []int) {
 
         // ── VSCode Challenge — closes out §5 ─────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 5</div>
+<div class="eyebrow" id="@challenge4">VSCode Challenge — Κλείνοντας την Ενότητα 5</div>
 <h1>Γράψε τη δική σου δυαδική αναζήτηση</h1>
 
 <p class="lede"> Η <code>slices.BinarySearch</code> υπάρχει και θα τη χρησιμοποιείς. Αλλά αυτή είναι μία από τις λίγες περιπτώσεις όπου αξίζει να τη γράψεις μια φορά μόνος σου — γιατί τα λάθη που θα κάνεις είναι ακριβώς τα λάθη που κάνουν όλοι. </p>
@@ -3860,7 +3968,7 @@ func BinarySearchInsert(numbers []int, target int) (int, bool) {
 
         // ── Mini-glossary — Ενότητα 5 ────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 5 / 8</div>
+<div class="eyebrow" id="@sort-recap">Μίνι Γλωσσάρι — Ενότητα 5 / 8</div>
 <h1>Αναζήτηση & Ταξινόμηση, με μια Ματιά</h1>
 <p class="lede">Οι όροι που θα σου χρειαστούν από αυτό το κεφάλαιο.</p>
 
@@ -3887,7 +3995,7 @@ func BinarySearchInsert(numbers []int, target int) (int, bool) {
 
         // ── §6.1 — Τι είναι η αναδρομή ───────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
+<div class="eyebrow" id="@recursion">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Αναδρομή: μια function που καλεί τον εαυτό της</h1>
 
 <p class="lede"> Κάθε επανάληψη, που γράψαμε μέχρι στιγμής, ήταν λούπα. Υπάρχει όμως και δεύτερος τρόπος να κάνεις κάτι ξανά και ξανά — ένας τρόπος που στην αρχή μοιάζει με τέχνασμα, και μόλις το καταλάβεις γίνεται εργαλείο για μια ολόκληρη κατηγορία προβλημάτων. </p>
@@ -3919,7 +4027,7 @@ func BinarySearchInsert(numbers []int, target int) (int, bool) {
 
 <p> Αυτή η function <strong>δεν σταματάει ποτέ</strong>. Θα τυπώνει όλο και μικρότερους αριθμούς, κατεβαίνοντας στο <code>-1</code>, <code>-2</code>, ..., <code>-1000</code>, ... – αν την καλέσουμε από την main, δεν θα σταματήσει ποτέ. Και ότι βρίσκεται κάτω από την κλήση της, δεν θα εκτελεστεί ποτέ. Δεν θα σταματήσει μέχρι να γεμίσει η μνήμη (stack overflow) και το πρόγραμμα να «κρασάρει». Δεν υπάρχει καμία συνθήκη που να της λέει «φτάνει, σταμάτα». </p>
 
-<h2>Base case</h2> 
+<h2 id="@base-case">Base case</h2> 
 <p> Για να λειτουργήσει σωστά, κάθε αναδρομική function χρειάζεται μια <strong>base case</strong> – μια συνθήκη που σταματάει την αναδρομή. Ας την προσθέσουμε: </p>
 
 <pre><code class="lang-go">func Countdown(n int) {
@@ -3962,7 +4070,7 @@ func Factorial(n int) int {
 
 <p> Πέντε γραμμές, καμία λούπα. Και όμως υπολογίζει σωστά ένα γινόμενο οσοδήποτε πολλών αριθμών. Πώς; </p>
 
-<h2>Τι πραγματικά συμβαίνει: το call stack</h2>
+<h2 id="@call-stack">Τι πραγματικά συμβαίνει: το call stack</h2>
 
 <p> Θυμήσου από το Μέρος 1 ότι κάθε κλήση function δεσμεύει τον δικό της χώρο στη μνήμη, με τις δικές της τοπικές μεταβλητές. Αυτό δεν αλλάζει επειδή η function καλεί τον εαυτό της — <strong>κάθε κλήση είναι ξεχωριστή</strong>, με το δικό της <code>n</code>. Ας δούμε το <code>Factorial(4)</code> βήμα-βήμα: </p>
 
@@ -3984,7 +4092,7 @@ func Factorial(n int) int {
     <p> Τελευταία κλήση που μπήκε, πρώτη που βγαίνει. Αυτό είναι <strong>LIFO</strong> — ακριβώς του <em>stack</em> της Ενότητας 4. Και δεν το λέμε μεταφορικά: ο υπολογιστής χρησιμοποιεί κυριολεκτικά μια δομή που λέγεται <strong>call stack</strong> για να θυμάται ποια κλήση περιμένει ποια. Όταν γράφεις αναδρομή, δεν αποφεύγεις την έννοια της στοίβας (stack) — απλά αφήνεις τη γλώσσα να τη διαχειριστεί για σένα, αντί να τη φτιάξεις μόνος σου με ένα slice. </p>
 </div>
 
-<h2>Τα δύο υποχρεωτικά μέρη</h2>
+<h2 id="@two-parts">Τα δύο υποχρεωτικά μέρη</h2>
 
 <p>Κάθε αναδρομική function πρέπει να έχει και τα δύο. Αν λείπει ένα από τα δύο, δεν δουλεύει.</p>
 
@@ -4124,7 +4232,7 @@ func FactorialLoop(n int) int {
 </div>
 
 
-<h1>Το unwinding phase — τι γίνεται ΜΕΤΑ την κλήση</h1>
+<h1 id="@unwinding">Το unwinding phase — τι γίνεται ΜΕΤΑ την κλήση</h1>
 
 <p> Μέχρι στιγμής, σε όλες τις αναδρομικές functions που γράψαμε, η κλήση στον εαυτό τους ήταν η <strong>τελευταία</strong> πράξη — είτε σκέτη γραμμή (<code>Countdown(n - 1)</code>), είτε μέσα σε ένα <code>return</code> (<code>return n * Factorial(n-1)</code>). Σε καμία περίπτωση δεν υπήρχε κάτι <em>μετά</em> την αναδρομική κλήση. </p>
 
@@ -4166,7 +4274,7 @@ func PrintWordsReversed(words []string, index int) {
 </div>
 
 <br>
-<h1>Arguments στην αναδρομή — τι συμβαίνει σε κάθε επίπεδο κλήσης;</h1>
+<h1 id="@rec-args">Arguments στην αναδρομή — τι συμβαίνει σε κάθε επίπεδο κλήσης;</h1>
 
 <p class="lede"> Σε κάθε αναδρομική κλήση, τα arguments και οι τοπικές μεταβλητές αποθηκεύονται σε <strong>ξεχωριστά επίπεδα</strong> στη μνήμη (call stack) — η μία κλήση τοποθετείται πάνω στην άλλη. Κάθε recursive call λαμβάνει το argument by value (είναι απλό αντίγραφο) και η τιμή αυτή δεν επιστρέφεται ποτέ από μόνη της. </p>
 
@@ -4225,7 +4333,7 @@ func SumCorrect(n int, acc *int) {
 
         // ── §6.3 — Divide and Conquer ────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
+<div class="eyebrow" id="@divide-conquer">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 <h1>Divide and Conquer: σπάσε, λύσε, ένωσε</h1>
 
 <p class="lede"> Θυμάσαι τους αλγόριθμους που έριχναν την πολυπλοκότητα σε <code>O(log n)</code>; Έπαιρναν τα δεδομένα, και σε κάθε βήμα πετούσαν τα μισά — κοιτούσαν μόνο το ένα κομμάτι, ξανά και ξανά, μέχρι να μείνει ένα μόνο στοιχείο.<br>Αυτό που έκανες εκεί έχει όνομα: <strong>Divide and Conquer</strong> — "διαίρει και βασίλευε". Και ταιριάζει εξαιρετικά με την αναδρομή, ακριβώς επειδή το πρόβλημα δεν μικραίνει <em>κατά ένα</em> κάθε φορά, αλλά κόβεται <strong>στη μέση</strong> — το είδος του "μικρότερου προβλήματος του ίδιου τύπου" που ήδη ξέρεις να αναγνωρίζεις ως base case/recursive case. Αυτή η διαφορά είναι που ρίχνει το κόστος από <code>O(n)</code> σε <code>O(log n)</code>, και από <code>O(n²)</code> σε <code>O(n log n)</code>. </p>
@@ -4279,7 +4387,7 @@ func BinarySearchRec(numbers []int, target, left, right int) (int, bool) {
     <p> Είναι όμως η recursive εκδοχή <strong>καλύτερη</strong> από την iterative που ήδη ξέρεις; Όχι εδώ — η recursive εκδοχή χτίζει call stack σε κάθε κλήση (μέχρι <code>log n</code> επίπεδα βάθος), ενώ η iterative δουλεύει με δύο απλές μεταβλητές, χωρίς καμία επιπλέον μνήμη. Το κόστος σε χρόνο παραμένει το ίδιο (<code>O(log n)</code> και στις δύο), αλλά η iterative είναι ελαφρώς πιο οικονομική σε μνήμη. Την είδαμε με την recursive μορφή εδώ, σαν <strong>ανακεφαλαίωση</strong>: για να δούμε με recursion κάτι που έχεις ήδη χτίσει και ξέρεις καλά — και για να του δώσουμε επιτέλους το όνομά του, <strong>divide and conquer</strong>. </p>
 </div>
 
-<h2>Το πλήρες παράδειγμα: merge sort</h2>
+<h2 id="@merge-sort">Το πλήρες παράδειγμα: merge sort</h2>
 
 <p> Στην Ενότητα 5 υποσχεθήκαμε ότι το merge sort θα επιστρέψει εδώ. Όχι για να το γράφεις σε πραγματικό κώδικα — για αυτό υπάρχει η <code>slices.Sort</code> — αλλά επειδή είναι το πιο καθαρό παράδειγμα divide and conquer που θα δεις. Ορίστε ολόκληρο το πρόγραμμα: </p>
 
@@ -4438,7 +4546,7 @@ result = append(result, right[j:]...)</code></pre>
     <p> Όταν τα δύο στοιχεία είναι <strong>ίσα</strong>, ο κώδικας παίρνει αυτό του <code>left</code>. Δεν είναι τυχαίο: το <code>left</code> κρατάει πάντα τα στοιχεία που βρίσκονταν πιο μπροστά στην αρχική λίστα, άρα δύο ίσες τιμές διατηρούν τη σχετική τους σειρά. Αυτό ακριβώς σημαίνει <strong>stable</strong> ταξινόμηση, που είδαμε ονομαστικά στην Ενότητα 5. Άλλαξε το <code>&lt;=</code> σε <code>&lt;</code> και το merge sort συνεχίζει να ταξινομεί σωστά — αλλά παύει να είναι stable. Ένας χαρακτήρας. </p>
 </div>
 
-<h2>Γιατί βγαίνει <code>O(n log n)</code></h2>
+<h2 id="@why-nlogn">Γιατί βγαίνει <code>O(n log n)</code></h2>
 
 <p> Κάθε φορά που καλείς <code>MergeSort</code> σε ένα slice μεγέθους <code>n</code>, αυτό χωρίζεται σε δύο μισά (<code>log n</code> φορές συνολικά, μέχρι να φτάσεις σε base case), και σε ΚΑΘΕ ένα από αυτά τα <code>log n</code> "επίπεδα" διαίρεσης, το σύνολο της δουλειάς που κάνουν όλα τα <code>merge</code> μαζί είναι <code>n</code> (κάθε στοιχείο περνάει ακριβώς μία φορά μέσα από κάποιο merge, σε κάθε επίπεδο). <code>n</code> δουλειά, <code>log n</code> φορές → <strong><code>O(n log n)</code></strong>. Αυτό είναι όλο — και τώρα ξέρεις γιατί το <code>log</code> εμφανίζεται στον τύπο: δεν είναι αυθαίρετο σύμβολο, είναι απλώς «πόσες φορές μπορώ να κόψω στη μέση». </p>
 
@@ -4450,7 +4558,7 @@ result = append(result, right[j:]...)</code></pre>
 
         // ── §6.5 — Οι παγίδες της αναδρομής ──────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
+<div class="eyebrow" id="@think-recursive">Ενότητα 6 / 8 — Recursion & Divide and Conquer</div>
 
 <h1>Πώς σκέφτεσαι αναδρομικά</h1>
 
@@ -4529,7 +4637,7 @@ func SumSlice(numbers []int) int {
 }
 </code></pre>
 
-<h1>Οι τρεις παγίδες</h1>
+<h1 id="@rec-pitfalls">Οι τρεις παγίδες</h1>
 
 <h2>Παγίδα 1: το base case που δεν εκπληρώνεται ποτέ</h2>
 
@@ -4608,7 +4716,7 @@ func CountdownGood(n int) {
     <p> Αν το <code>Fib(3)</code> υπολογίζεται δύο φορές, γιατί να μην κρατήσουμε το αποτέλεσμα την πρώτη φορά και να το ξαναδιαβάσουμε τη δεύτερη; Ένα απλό <code>map[int]int</code> θα αρκούσε — και θα έριχνε το κόστος από <code>O(2ⁿ)</code> σε <code>O(n)</code>. Αυτή η ιδέα λέγεται <strong>memoization</strong>, και είναι θα το δούμε στο Dynamic Programming της Ενότητας 8. Κράτα το <code>Fib</code> στο μυαλό σου· θα το ξαναδούμε εκεί σαν απλό παράδειγμα. </p>
 </div>
 
-<h1>Υπάρχει break στο recursion;</h1>
+<h1 id="@rec-break">Υπάρχει break στο recursion;</h1>
 
 <p> Σε ένα loop, το <code>break</code> σε βγάζει έξω αμέσως — μία εντολή, τελείωσε. Σε recursion δεν υπάρχει αντίστοιχο: όταν βρίσκεσαι 12 επίπεδα βαθιά και καταλάβεις ότι βρήκες την απάντηση, δεν υπάρχει τρόπος να "πηδήξεις" κατευθείαν στην αρχική κλήση. Ο λόγος είναι δομικός. Κάθε κλήση περιμένει να επιστρέψει η κλήση που έκανε· δεν έχει καν πρόσβαση στα υπόλοιπα επίπεδα για να τα ακυρώσει. Το <code>return</code> δεν είναι <code>break</code> — επιστρέφει ένα επίπεδο ψηλότερα, όχι έξω από όλα. </p>
 
@@ -5016,7 +5124,7 @@ func PrintWordsReversed(words []string, index int) {
         });
         // ── VSCode Challenge — first one, before flood fill ──────────────────── ⊃
         addContent(`
-<div class="eyebrow">VSCode Challenge — Ενότητα 6</div>
+<div class="eyebrow" id="@challenge5">VSCode Challenge — Ενότητα 6</div>
 <h1>Το άθροισμα των ψηφίων</h1>
 
 <p> Γράψε μια function που παίρνει έναν θετικό ακέραιο και επιστρέφει το <strong>άθροισμα των ψηφίων του</strong>. </p>
@@ -5082,7 +5190,7 @@ func main() {
 
         // ── VSCode Challenge — closes out §6 ─────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 6</div>
+<div class="eyebrow" id="@challenge6">VSCode Challenge — Κλείνοντας την Ενότητα 6</div>
 <h1>Πόσο μεγάλος είναι ο λαβύρινθος; [HARD]</h1>
 
 <h2>Η αποστολή</h2>
@@ -5248,7 +5356,7 @@ func main() {
 
         // ── Mini-glossary — Ενότητα 6 ────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 6 / 8</div>
+<div class="eyebrow" id="@recursion-recap">Μίνι Γλωσσάρι — Ενότητα 6 / 8</div>
 <h1>Recursion & Divide and Conquer, με μια Ματιά</h1>
 <p class="lede">Οι όροι που θα σου χρειαστούν από αυτό το κεφάλαιο.</p>
 
@@ -5274,7 +5382,7 @@ func main() {
 
         // ── §7.1 — Greedy ────────────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
+<div class="eyebrow" id="@greedy">Ενότητα 7 / 8 — Greedy & Backtracking</div>
 <h1>Greedy: Διάλεξε αυτό που φαίνεται ιδανικό αυτή τη στιγμή και προχώρα.</h1>
 
 <p class="lede"> Η πιο απλή στρατηγική λήψης αποφάσεων που υπάρχει: σε κάθε βήμα, διάλεξε ό,τι φαίνεται καλύτερο <strong>αυτή τη στιγμή</strong>, χωρίς να σκεφτείς το μέλλον. Και ποτέ, μα ποτέ, μην ξανασκεφτείς μια επιλογή που έχεις ήδη κάνει. </p>
@@ -5335,7 +5443,7 @@ func GreedyCoins(coins []int, amount int) int {
 
 <p> Αυτό είναι το πρόβλημα του greedy: <strong>ο ίδιος ακριβώς αλγόριθμος είναι σωστός για το ευρώ και λάθος για το παράξενο νόμισμα με τα {4, 3, 1}</strong>. Η ορθότητα δεν είναι ιδιότητα του κώδικα — είναι ιδιότητα του <em>προβλήματος</em>. </p>
 
-<h2>Παράδειγμα 3: ρωμαϊκοί αριθμοί</h2>
+<h2 id="@roman">Παράδειγμα 3: ρωμαϊκοί αριθμοί</h2>
 
 <p> Μετάτρεψε έναν αριθμό από 1 έως 3999 σε ρωμαϊκή γραφή. Το 1994 γίνεται <code>MCMXCIV</code>, το 2024 γίνεται <code>MMXXIV</code>. Τα βασικά σύμβολα: </p>
 
@@ -5393,7 +5501,7 @@ func ToRoman(n int) string {
 <p> Επειδή κάποια προβλήματα είναι φτιαγμένα έτσι ώστε να λύνονται ιδανικά με το greedy. Ή για να πούμε καλύτερα, αυτά τα προβλήματα λύνονται ιδανικά αρκεί να κάνεις κάθε φορά την "καλύτερη" δυνατή επιλογή (εδώ μεγαλύτερη). </p>  
 <p> Τα ίδια τα ρωμαϊκά σύμβολα είναι φτιαγμένα να ταιριάζουν με το greedy: τα έξι αφαιρετικά ζεύγη (<code>CM</code>, <code>CD</code>, <code>XC</code>, <code>XL</code>, <code>IX</code>, <code>IV</code>) καλύπτουν ακριβώς τις περιπτώσεις όπου η «πάρε το μεγαλύτερο που χωράει» θα οδηγούσε σε λάθος γραφή. Δεν είναι το greedy που είναι έξυπνο εδώ — είναι το ίδιο το σύστημα αρίθμησης που έχει σχεδιαστεί ώστε η πιο άπληστη επιλογή να είναι πάντα και η σωστή. </p>
 
-<h2>Παράδειγμα 4: πόσες συσκέψεις χωράνε στην αίθουσα</h2>
+<h2 id="@meetings">Παράδειγμα 4: πόσες συσκέψεις χωράνε στην αίθουσα</h2>
 
 <p> Η εταιρεία σου έχει <strong>μία</strong> αίθουσα συσκέψεων, ανοιχτή από τις 8 το πρωί μέχρι τα μεσάνυχτα — δεκαέξι ώρες συνολικά. Έξι ομάδες ζητάνε να την κρατήσουν, και καθεμία έχει δηλώσει <em>συγκεκριμένη</em> ώρα έναρξης και λήξης: δεν διαπραγματεύεται, ή θα γίνει η σύσκεψή της ακριβώς εκείνη την ώρα ή καθόλου. Επειδή η αίθουσα είναι μία, δύο συσκέψεις που επικαλύπτονται έστω και κατά μία ώρα δεν μπορούν να γίνουν και οι δύο. </p>
 
@@ -5581,7 +5689,7 @@ func MaxMeetings(meetings [][2]int) int {
 
 <p> Με κριτήριο την πρώτη λήξη, μπαίνει η <code>[1, 5]</code>, και μετά χωράει και η <code>[5, 9]</code>. Σύνολο: <strong>2</strong>. Μία απόφαση, στο πρώτο κιόλας βήμα, κόστισε τη μισή λύση — και πρόσεξε ότι η <code>[4, 6]</code> δεν είχε τίποτα κακό από μόνη της· το πρόβλημα ήταν ότι έπιανε το <em>κέντρο</em> του διαθέσιμου χρόνου, εκεί που ενοχλούσε τους πάντες. </p>
 
-<h2>Ο σκελετός κάθε greedy αλγορίθμου</h2>
+<h2 id="@greedy-skeleton">Ο σκελετός κάθε greedy αλγορίθμου</h2>
 
 <div style="margin:22px 0; border-radius:10px; overflow:hidden; border:1px solid rgba(var(--ink-rgb),0.16); font-family:var(--font-mono, ui-monospace, Menlo, Consolas, monospace); font-size:0.9em; line-height:1.55;">
 
@@ -5630,7 +5738,7 @@ func MaxMeetings(meetings [][2]int) int {
 
 <p> <span style="display:inline-block; transform:scale(2.4); transform-origin:center; position:relative; top:-10px; margin:0 0.9em 0 0.7em; line-height:1; color:#2e7d32;">⑤</span><strong style="color:#2e7d32;">Η επιστροφή.</strong> Ό,τι μαζεύτηκε στο <code>result</code>, χωρίς κανέναν τελικό έλεγχο ή διόρθωση. Αν χρειάζεται πέρασμα διόρθωσης στο τέλος, αυτό που έγραψες δεν είναι greedy. </p>
 
-<h2>Πότε να εμπιστευτείς το greedy</h2>
+<h2 id="@greedy-when">Πότε να εμπιστευτείς το greedy</h2>
 
 <p> Δεν υπάρχει απλός κανόνας που να το αποφασίζει πάντα — η αυστηρή απόδειξη ότι ένα greedy είναι βέλτιστο είναι μαθηματική δουλειά. Αλλά υπάρχει μια ερώτηση που καλύπτει τις περισσότερες περιπτώσεις: </p>
 
@@ -5651,7 +5759,7 @@ func MaxMeetings(meetings [][2]int) int {
         // ── VSCode Challenge (εύκολο) — κλείνει το §7.1 ──────────────────────── ⊃
         addContent(`
 <div class="eyebrow">VSCode Challenge — Κλείνοντας το §7.1</div>
-<h1>Πόσες εργασίες προλαβαίνεις;</h1>
+<h1 id="@challenge7">Πόσες εργασίες προλαβαίνεις;</h1>
 
 <p class="lede"> Ένα μικρό, καθαρά greedy πρόβλημα. Δεν χρειάζεται τίποτα πέρα από ό,τι είδες μόλις τώρα. </p>
 
@@ -5714,12 +5822,12 @@ func MaxTasks(durations []int, budget int) int {
 
         // ── §7.2 — Backtracking ──────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
+<div class="eyebrow" id="@backtracking">Ενότητα 7 / 8 — Greedy & Backtracking</div>
 <h1>Backtracking: δοκίμασε, και κάνε πίσω</h1>
 
 <p class="lede"> Όταν το greedy δεν αρκεί, η μόνη διέξοδος είναι η <strong>δοκιμή</strong>. Όχι τυφλά όμως — δοκιμάζεις μια διαδρομή, προχωράς όσο μπορείς, και όταν φτάσεις σε αδιέξοδο (ή όταν έχεις βρει μια λύση αλλά θες να δεις και τις υπόλοιπες), <strong>γυρίζεις πίσω</strong> το τελευταίο σου βήμα και δοκιμάζεις την επόμενη επιλογή. Και όλο το παραπάνω, ξανά και ξανά. <br>Αυτή η διαδικασία λέγεται <strong>backtracking</strong> — και είναι ίσως η πιο σημαντική εφαρμογή του recursion.</p>
 
-<h2>Ο σκελετός, τρεις γραμμές</h2>
+<h2 id="@bt-skeleton">Ο σκελετός, τρεις γραμμές</h2>
 
 <p>Κάθε αλγόριθμος backtracking που θα γράψεις ποτέ έχει την ίδια δομή:</p>
 
@@ -5947,7 +6055,7 @@ func Arrange(letters []string, used []bool, current []string) {
     <p> Ο σκελετός choose / explore / un-choose <strong>απαριθμεί</strong>. Ο έλεγχος <strong>διαλέγει</strong>. Χωρίς τον έλεγχο, το backtracking είναι κυριολεκτικά brute force γραμμένο με πιο κομψό τρόπο, και το πρόβλημα που υποτίθεται ότι λύνει, δεν λύνεται καθόλου. Η μία εκείνη συνθήκη είναι που το μετατρέπει από: <em>καταγραφέα</em> όλων των δυνατών συνδιασμών της λούπας, σε λύση αυτού του προβλήματος. </p>
 </div>
 
-<h2>Το base case στο backtracking: έξοδος ή σημείο ελέγχου;</h2>
+<h2 id="@bt-base-case">Το base case στο backtracking: έξοδος ή σημείο ελέγχου;</h2>
     <p> Στο κεφάλαιο με την αναδρομή (recursion), το base case ήταν η έξοδος που ξυπνούσε διαδοχικά όλα τα επίπεδα — επειδή είχαμε βρει την λύση (ή είχαμε φτάσει στο "μικρότερο" πρόβλημα). Στον παραπάνω κώδικα, το base case εξακολουθεί να ξυπνάει τα επίπεδα με τον ίδιο τρόπο, αλλά με μία κρίσιμη διαφορά: <strong>δεν τερματίζει την αναζήτηση</strong>. Απλά "καταγράφει" μία λύση (εδώ την τυπώνει με <code>fmt.Println(current)</code>) και επιστρέφει, ώστε το επίπεδο από πάνω να συνεχίσει το exploration: <code>for</code> loop και να δοκιμάσει την επόμενη υποψήφια επιλογή. </p>
     <p> Η αιτία αυτής της διαφοράς είναι το <code>for</code> loop που <em>αγκαλιάζει</em> το recursive call (βήμα 3). Χάρη σε αυτό, ο αλγόριθμος <strong>δεν σταματάει στην πρώτη λύση</strong> — εξερευνά <strong>όλα</strong> τα δυνατά μονοπάτια, και η εκτέλεση ολοκληρώνεται μόνο όταν το <code>for</code> του επιπέδου 0 έχει εξαντλήσει όλους τους υποψήφιους. Στον πίνακα που μόλις είδες, το πρόγραμμα τύπωσε και τις <strong>6 μεταθέσεις</strong> των Α, Β, Γ, και σταμάτησε μόνο όταν το loop του επιπέδου 0 τελείωσε φυσιολογικά (ολοκλήρωσε όλα τα iterations του). </p>
 
@@ -6038,7 +6146,7 @@ func Arrange(letters []string, used []bool, current []string, solutionsFound *in
 
         // ── §7.2β — υποσύνολα + το δέντρο αποφάσεων ──────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
+<div class="eyebrow" id="@subset-sum">Ενότητα 7 / 8 — Greedy & Backtracking</div>
 <h1>Όταν οι επιλογές είναι «ναι» ή «όχι»</h1>
 
 <h2>Ποιοι αριθμοί αθροίζουν στον στόχο</h2>
@@ -6079,7 +6187,7 @@ func PrintSubsets(numbers []int, target, index int, chosen []int) {
 
 <p> Πρόσεξε τι κάνει η γραμμή του un-choose. Χωρίς αυτήν, όταν προχωρήσουμε στο δεύτερο κλαδί («τι γίνεται αν <em>δεν</em> πάρω αυτόν τον αριθμό»), το <code>chosen</code> θα περιείχε ακόμα τον αριθμό που μόλις απορρίψαμε. Θα τυπώναμε συνδυασμούς που δεν αθροίζουν καν στο σωστό νούμερο. </p>
 
-<h2>Το δέντρο αποφάσεων</h2>
+<h2 id="@decision-tree">Το δέντρο αποφάσεων</h2>
 
 <p> Ας δούμε τι εξερευνά ο κώδικας. Κάθε επίπεδο είναι ένας αριθμός, και κάθε κόμβος διακλαδώνεται σε δύο: «τον παίρνω» αριστερά, «τον προσπερνώ» δεξιά. </p>
 
@@ -6102,7 +6210,7 @@ func PrintSubsets(numbers []int, target, index int, chosen []int) {
     <p> Εδώ το <code>chosen</code> μόνο <strong>τυπώνεται</strong>, και αυτό είναι σκόπιμο. Αν αντί για <code>fmt.Println</code> έγραφες <code>results = append(results, chosen)</code>, θα έπαιρνες σκουπίδια — γιατί όλα τα αποθηκευμένα slices θα μοιράζονταν το <strong>ίδιο underlying array</strong>, που ξαναγράφεται σε κάθε νέα επιλογή. Η λύση: αντέγραψε ρητά, με <code>append([]int{}, chosen...)</code>. </p>
 </div>
 
-<h2>Pruning: γιατί το κόστος παραμένει διαχειρίσιμο</h2>
+<h2 id="@pruning">Pruning: γιατί το κόστος παραμένει διαχειρίσιμο</h2>
 
 <p> Σε κάθε βήμα διπλασιάζονται οι πιθανές επιλογές. Τέσσερις αριθμοί δίνουν <code>2⁴ = 16</code> πιθανά υποσύνολα. Είκοσι αριθμοί δίνουν πάνω από ένα εκατομμύριο. Είναι εκθετικό — η χειρότερη κατηγορία που είδαμε στην Ενότητα 6. </p>
 
@@ -6113,7 +6221,7 @@ func PrintSubsets(numbers []int, target, index int, chosen []int) {
     <p> Έλεγξε την εγκυρότητα <strong>όσο πιο νωρίς γίνεται</strong>, ιδανικά πριν καν κάνεις την επιλογή. Κάθε κλαδί που κόβεις στο επίπεδο 3 σου γλιτώνει όλα τα κλαδιά κάτω από αυτό. Ένα backtracking χωρίς κλάδεμα είναι απλά brute force με πιο κομψή γραφή — και εξίσου ανέφικτο. </p>
 </div>
 
-<h1>Η ίδια λύση με loop μέσα στην recursion</h1>
+<h1 id="@bt-loop">Η ίδια λύση με loop μέσα στην recursion</h1>
 
 <p> Η προηγούμενη υλοποίηση είχε <strong>δύο ρητές</strong> recursive calls: μία για το «παίρνω τον αριθμό» και μία για το «δεν τον παίρνω». Η ίδια λογική μπορεί να γραφτεί με την λογική που είχαμε προηγουμένως, ένα <code>for</code> που διατρέχει τους διαθέσιμους αριθμούς και δοκιμάζει τον καθένα ως <strong>επόμενο</strong> στοιχείο του υποσυνόλου. </p>
 
@@ -6192,7 +6300,7 @@ func PrintSubsetsWithLoop(nums []int, target, index int, chosen []int) {
 
         // ── §7.3 — N-Queens ──────────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 7 / 8 — Greedy & Backtracking</div>
+<div class="eyebrow" id="@n-queens">Ενότητα 7 / 8 — Greedy & Backtracking</div>
 <h1>Το κλασικό: N βασίλισσες</h1>
 
 <p class="lede"> Τοποθέτησε 8 βασίλισσες σε μια σκακιέρα 8×8, έτσι ώστε καμία να μην απειλεί καμία άλλη. Είναι το πιο διάσημο πρόβλημα backtracking που υπάρχει — και η αξία του δεν είναι η σκακιέρα, αλλά ότι δείχνει καθαρά πώς μία παρατήρηση συρρικνώνει έναν χώρο αναζήτησης που φαινόταν ανέφικτος. </p>
@@ -6332,7 +6440,7 @@ func PrintSubsetsWithLoop(nums []int, target, index int, chosen []int) {
 board := make([]int, 8)
 </code></pre>
 
-<h2>Ο έλεγχος: απειλείται αυτό το τετράγωνο;</h2>
+<h2 id="@queen-check">Ο έλεγχος: απειλείται αυτό το τετράγωνο;</h2>
 
 <p> Πριν τοποθετήσουμε οποιαδήποτε βασίλισσα, χρειαζόμαστε μια function που απαντάει σε μία ερώτηση: <em>αν βάλω βασίλισσα εδώ, την απειλεί κάποια από όσες έχω ήδη τοποθετήσει;</em> Θα τη λέμε <code>isSafe</code> και θα δέχεται τρία πράγματα: το <code>board</code> με ό,τι έχει τοποθετηθεί μέχρι στιγμής, και τη γραμμή <code>row</code> με τη στήλη <code>col</code> του τετραγώνου που εξετάζουμε — δηλαδή τη θέση που θα γραφόταν ως <code>board[row] = col</code>. Επιστρέφει <code>true</code> αν το τετράγωνο είναι ελεύθερο, <code>false</code> αν απειλείται. </p>
 
@@ -6494,7 +6602,7 @@ func isSafe(board []int, row, col int) bool {
     <p> Η <code>isSafe</code> κάνει το πολύ <code>row</code> επαναλήψεις — σε σκακιέρα 8×8, το πολύ επτά. Αυτό δεν είναι λεπτομέρεια απόδοσης: είναι ο λόγος που το pruning αξίζει. Κάθε φορά που η <code>isSafe</code> λέει <code>false</code>, γλιτώνεις ολόκληρο το υποδέντρο κλήσεων που θα ξεκινούσε από εκείνο το τετράγωνο. Πληρώνεις επτά συγκρίσεις για να μην ψάξεις χιλιάδες τοποθετήσεις. </p>
 </div>
 
-<h2>Ο αλγόριθμος</h2>
+<h2 id="@queens-algo">Ο αλγόριθμος</h2>
 
 <p> Κάθε κλήση αναλαμβάνει μία μόνο σειρά: δοκιμάζει τις στήλες της με τη σειρά και αφήνει όλες τις επόμενες σειρές στις (αναδρομικές) κλήσεις που ακολουθούν. Η τιμή επιστροφής κουβαλάει δύο διαφορετικά μηνύματα: ένα γεμάτο <code>[]int</code> σημαίνει ότι κάπου βαθύτερα βρέθηκε λύση και ταξιδεύει αυτούσιο προς τα πάνω, ενώ το <code>nil</code> σημαίνει ότι αυτό το branch δεν οδηγεί πουθενά και ο caller πρέπει να δοκιμάσει την επόμενη στήλη του. </p>
 
@@ -6650,7 +6758,7 @@ func main() {
     <p> Δεν υπάρχει πουθενά κώδικας που «διαχειρίζεται την υποχώρηση». Προκύπτει από το ότι κάθε επίπεδο κάνει σωστά τα τρία του βήματα και επιστρέφει ειλικρινά είτε τη λύση είτε <code>nil</code>. </p>
 </div>
 
-<h1>Sudoku: ένα πολύ παρόμοιο πρόβλημα</h1>
+<h1 id="@sudoku">Sudoku: ένα πολύ παρόμοιο πρόβλημα</h1>
 
 <p class="lede"> Ένα πλέγμα 9×9, χωρισμένο σε εννέα κουτιά 3×3. Κάποια κελιά είναι ήδη συμπληρωμένα και δεν αλλάζουν· τα υπόλοιπα πρέπει να γεμίσουν με ψηφία 1–9, έτσι ώστε <strong>κάθε γραμμή, κάθε στήλη και κάθε κουτί 3×3 να περιέχουν και τα εννέα ψηφία ακριβώς μία φορά</strong>. Το ίδιο πρόβλημα με τις βασίλισσες, με άλλα ρούχα: γεμίζεις θέσεις μία-μία, και κάθε επιλογή περιορίζει τις επόμενες. </p>
 
@@ -7042,7 +7150,7 @@ func CountSolutionsMRV(grid [][]int, limit int) int {
 </div>
 
 <br>
-<h1>Πότε ποιο: η εικόνα που τα ενοποιεί</h1>
+<h1 id="@strategy-map">Πότε ποιο: η εικόνα που τα ενοποιεί</h1>
 
 <p class="lede"> Φαντάσου κάθε πρόβλημα ως ένα <strong>δέντρο αποφάσεων</strong>: κάθε κόμβος είναι μια επιλογή, κάθε κλαδί μια πιθανή συνέχεια, κάθε φύλλο μια πλήρη λύση. Οι τρεις τεχνικές του κεφαλαίου διαφέρουν μόνο ως προς το <em>πόσο</em> από αυτό το δέντρο επισκέπτονται. </p>
 
@@ -7104,7 +7212,7 @@ func CountSolutionsMRV(grid [][]int, limit int) int {
 
 <p> Τρία δέντρα, τρεις συμπεριφορές. Το greedy κατεβαίνει ένα μονοπάτι και δεν κοιτάζει ποτέ πίσω. Το backtracking κατεβαίνει παντού, αλλά εγκαταλείπει ένα κλαδί μόλις αποδειχθεί άκυρο. Ο δυναμικός προγραμματισμός παρατηρεί ότι διαφορετικά κλαδιά ζητούν την ίδια απάντηση, και την υπολογίζει μία φορά — το θέμα της Ενότητας 8. </p>
 
-<h2>Ο πίνακας απόφασης</h2>
+<h2 id="@decision-table">Ο πίνακας απόφασης</h2>
 
 <table style="width:100%; border-collapse:collapse; margin:16px 0;">
     <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
@@ -7161,7 +7269,7 @@ func CountSolutionsMRV(grid [][]int, limit int) int {
                 explain: "Δύο χαρακτηριστικά μαζί: τοπικά βέλτιστη επιλογή, και καμία επιστροφή. Το δεύτερο είναι που το κάνει γρήγορο, και ταυτόχρονα που το κάνει επικίνδυνο σε προβλήματα όπου μια πρώιμη επιλογή μπλοκάρει την καλύτερη λύση."
             },
             {
-                q: "Με κέρματα {4, 3, 1} και στόχο το 6, η greedy λύση δίνει 3 κέρματα ενώ η βέλτιστη είναι 2. Τι δείχνει αυτό;",
+                q: "Με κέρματα αξίας {4, 3, 1} και στόχο το 6, η greedy λύση δίνει 3 κέρματα ενώ η βέλτιστη είναι 2. Τι δείχνει αυτό;",
                 options: [
                     "Ότι η ορθότητα του greedy εξαρτάται από το πρόβλημα, όχι από τον κώδικα — ο ίδιος κώδικας είναι σωστός για το ευρώ",
                     "Ότι ο αλγόριθμος έχει bug στην εσωτερική του λούπα και χρειάζεται διόρθωση στη συνθήκη τερματισμού της, ώστε να δουλεύει σωστά με οποιοδήποτε σύνολο διαθέσιμων κερμάτων",
@@ -7183,17 +7291,6 @@ func CountSolutionsMRV(grid [][]int, limit int) int {
                 explain: "Χωρίς το un-choose, η κατάσταση από ένα αποτυχημένο κλαδί μεταφέρεται στο επόμενο. Είναι η μοναδική δομική διαφορά ανάμεσα στο backtracking και ένα απλό DFS."
             },
             {
-                q: "Στο PrintSubsets, τι κάνει η γραμμή if target < 0 { return };",
-                options: [
-                    "Κλαδεύει — εγκαταλείπει ολόκληρο το υποδέντρο μόλις το άθροισμα ξεπεράσει τον στόχο",
-                    "Ελέγχει αν ο χρήστης έδωσε αρνητικό στόχο στην αρχική κλήση της function, ώστε να αποφευχθεί λανθασμένη είσοδος",
-                    "Διορθώνει το πρόσημο του αποτελέσματος πριν την εκτύπωση",
-                    "Δεν κάνει τίποτα ουσιαστικό — είναι απλά αμυντικός κώδικας"
-                ],
-                correct: 0,
-                explain: "Είναι το κλάδεμα (pruning), και είναι ό,τι κάνει το backtracking πρακτικά χρήσιμο. Κόβοντας ένα κλαδί στο επίπεδο 3, γλιτώνεις κάθε πιθανό συνδυασμό που θα ξεκινούσε από εκεί και κάτω."
-            },
-            {
                 q: "Στο N-Queens, γιατί ο πίνακας είναι ένα απλό []int και όχι ένα 2D [8][8]bool;",
                 options: [
                     "Επειδή κάθε γραμμή χωράει ακριβώς μία βασίλισσα, οπότε αρκεί να αποθηκεύσουμε τη στήλη της",
@@ -7203,39 +7300,6 @@ func CountSolutionsMRV(grid [][]int, limit int) int {
                 ],
                 correct: 0,
                 explain: "Ο περιορισμός κωδικοποιείται μέσα στη δομή δεδομένων. Έτσι ολόκληρη μια κατηγορία άκυρων καταστάσεων — δύο βασίλισσες στην ίδια γραμμή — γίνεται αδύνατο να παρασταθεί, και ο χώρος αναζήτησης πέφτει από δισεκατομμύρια σε εκατομμύρια."
-            },
-            {
-                q: "Στο SolveSudoku, τι θα συμβεί αν ξεχάσεις τη γραμμή grid[row][col] = 0;",
-                options: [
-                    "Θα μένουν πίσω ψηφία που αποδείχθηκαν λάθος, και το puzzle θα φαίνεται άλυτο χωρίς πραγματικό λόγο",
-                    "Θα τρέχει σωστά αλλά πιο αργά, επειδή ο αλγόριθμος θα χρειαστεί να ξαναδοκιμάσει από την αρχή ορισμένα κελιά",
-                    "Θα προκαλέσει αμέσως panic",
-                    "Τίποτα — η επόμενη επανάληψη το ξαναγράφει ούτως ή άλλως"
-                ],
-                correct: 0,
-                explain: "Στο N-Queens η επόμενη επανάληψη πράγματι ξαναγράφει το κελί. Στο sudoku όχι: όταν κανένα ψηφίο δεν ταιριάζει, φεύγουμε με return false και το κελί μένει γραμμένο με τιμή που ήδη απορρίφθηκε."
-            },
-            {
-                q: "Γιατί το greedy δίνει σωστή ρωμαϊκή γραφή, ενώ με μόνο τα εφτά βασικά σύμβολα θα έβγαζε DCCCC για το 900;",
-                options: [
-                    "Επειδή βάζουμε στη λίστα και τα έξι αφαιρετικά ζεύγη (CM, CD, XC, XL, IX, IV) σαν να ήταν κανονικά σύμβολα",
-                    "Επειδή οι ρωμαϊκοί αριθμοί είναι πάντα σε φθίνουσα σειρά, οπότε οποιαδήποτε άπληστη επιλογή δίνει σωστό αποτέλεσμα ανεξάρτητα από τη λίστα συμβόλων που θα χρησιμοποιήσεις",
-                    "Επειδή το όριο 3999 είναι αρκετά μικρό",
-                    "Επειδή κάθε ρωμαϊκό σύμβολο είναι πολλαπλάσιο του δέκα"
-                ],
-                correct: 0,
-                explain: "Ίδιο μοτίβο με τα κέρματα του ευρώ: το σύστημα σχεδιάστηκε ώστε το greedy να δουλεύει. Τα αφαιρετικά ζεύγη μπαίνουν στη λίστα σαν επιπλέον κέρματα, και το πρόβλημα γίνεται πανομοιότυπο με τα ρέστα."
-            },
-            {
-                q: "Τι θα συνέβαινε στο Arrange αν έσβηνες τη γραμμή if used[i] { continue };",
-                options: [
-                    "Θα τύπωνε και τους 27 συνδυασμούς, όπως ΑΑΑ και ΑΒΑ, αντί για τις 6 μεταθέσεις",
-                    "Θα σταματούσε αμέσως, αφού καμία επιλογή δεν θα θεωρούνταν έγκυρη",
-                    "Θα έμπαινε σε ατέρμονη αναδρομή, αφού καμία επιλογή δεν θα αφαιρούνταν ποτέ από τη λίστα των διαθέσιμων γραμμάτων",
-                    "Δεν θα άλλαζε τίποτα στην έξοδο"
-                ],
-                correct: 0,
-                explain: "Ο σκελετός choose/explore/un-choose θα εκτελούνταν κανονικά, αλλά χωρίς κανέναν έλεγχο δεν θα απορριπτόταν ποτέ καμία επιλογή — άρα δεν θα υπήρχε και κανένα κλαδί να εγκαταλειφθεί. Ο έλεγχος είναι που μετατρέπει τον απαριθμητή σε λύση του συγκεκριμένου προβλήματος."
             },
             {
                 q: "Έχεις γράψει μια greedy λύση και βρήκες μια είσοδο όπου δίνει λάθος απάντηση. Ποιο είναι το επόμενο λογικό βήμα;",
@@ -7379,7 +7443,7 @@ func SolveQueens(board []int, row int) bool {
 
         // ── Mini-glossary — Ενότητα 7 ────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 7 / 8</div>
+<div class="eyebrow" id="@greedy-bt-recap">Μίνι Γλωσσάρι — Ενότητα 7 / 8</div>
 <h1>Greedy & Backtracking, με μια Ματιά</h1>
 <p class="lede">Οι όροι που θα σου χρειαστούν από αυτό το κεφάλαιο.</p>
 
@@ -7409,7 +7473,7 @@ func SolveQueens(board []int, row int) bool {
 
         // ── §8.1 — Memoization ───────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
+<div class="eyebrow" id="@memoization">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
 <h1>Memoization: κράτα ό,τι έχεις ήδη υπολογίσει</h1>
 
 <p class="lede"> Στην Ενότητα 6 αφήσαμε ένα πρόβλημα ανοιχτό. Ο αναδρομικός <code>Fib</code> ήταν σωστός και σύντομος, αλλά για <code>n = 50</code> χρειαζόταν περίπου 25 δισεκατομμύρια κλήσεις. Ας δούμε γιατί, και ας το διορθώσουμε με μία μεταβλητή παραπάνω. </p>
@@ -7495,7 +7559,7 @@ func main() {
 
         // ── §8.2 — Tabulation ────────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
+<div class="eyebrow" id="@tabulation">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
 <h1>Tabulation: η ίδια ιδέα, από την άλλη κατεύθυνση</h1>
 
 <p class="lede"> Το memoization ξεκινάει από το μεγάλο πρόβλημα και κατεβαίνει προς τα μικρά. Υπάρχει και η αντίθετη διαδρομή: ξεκίνα από τα μικρά, και χτίσε προς τα πάνω μέχρι να φτάσεις σε αυτό που ζητήθηκε. </p>
@@ -7560,7 +7624,7 @@ func FibTable(n int) int {
     <p> Στην πράξη, ξεκίνα με <strong>memoization</strong>: έχεις ήδη γράψει την αναδρομική λύση, οπότε το μόνο που προσθέτεις είναι το σημειωματάριο. Πήγαινε σε <strong>tabulation</strong> όταν το <code>n</code> είναι πολύ μεγάλο και ανησυχείς για το βάθος της αναδρομής, ή όταν θέλεις να μειώσεις και τη μνήμη — κάτι που, όπως θα δούμε αμέσως, γίνεται μόνο με τη bottom-up μορφή. </p>
 </div>
 
-<h2>Ένα τελευταίο σκαλί: πετάμε και τον πίνακα</h2>
+<h2 id="@dp-space">Ένα τελευταίο σκαλί: πετάμε και τον πίνακα</h2>
 
 <p> Κοίταξε ξανά τη λούπα του <code>FibTable</code>. Για να υπολογίσει το <code>table[i]</code> χρειάζεται μόνο τα δύο αμέσως προηγούμενα. Ό,τι υπάρχει πιο πίσω στον πίνακα δεν ξαναδιαβάζεται ποτέ. Άρα γιατί να το κρατάμε; </p>
 
@@ -7589,7 +7653,7 @@ func FibTwoVars(n int) int {
 
         // ── §8.3 — Πότε εφαρμόζεται ──────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
+<div class="eyebrow" id="@dp-when">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
 <h1>Πότε ένα πρόβλημα λύνεται με DP</h1>
 
 <p class="lede"> Ο δυναμικός προγραμματισμός δεν εφαρμόζεται παντού. Χρειάζεται δύο ιδιότητες, και αν λείπει έστω μία από τις δύο, το memo δεν βοηθάει σε τίποτα. </p>
@@ -7635,7 +7699,7 @@ func FibTwoVars(n int) int {
 
         // ── §8.4 — Ρέστα: η εκδίκηση του §7 ─────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
+<div class="eyebrow" id="@dp-coins">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
 <h1>Τα ρέστα, σωστά αυτή τη φορά</h1>
 
 <p class="lede"> Στην Ενότητα 7 αφήσαμε ένα πρόβλημα άλυτο. Με κέρματα <code>{4, 3, 1}</code> και στόχο το 6, το greedy έδωσε τρία κέρματα (<code>4 + 1 + 1</code>) ενώ η σωστή απάντηση είναι δύο (<code>3 + 3</code>). Τώρα έχουμε το εργαλείο που το λύνει. </p>
@@ -7716,7 +7780,7 @@ func MinCoins(coins []int, amount int) int {
 
         // ── §8.5 — DP σε δύο διαστάσεις ──────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
+<div class="eyebrow" id="@dp-grid">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
 <h1>Όταν το υποπρόβλημα χρειάζεται δύο αριθμούς</h1>
 
 <p class="lede"> Μέχρι τώρα κάθε υποπρόβλημα οριζόταν από έναν αριθμό: το <code>Fib(n)</code> από το <code>n</code>, τα ρέστα από το ποσό. Υπάρχουν όμως προβλήματα όπου χρειάζονται δύο — και τότε ο πίνακας γίνεται δισδιάστατος. </p>
@@ -7769,7 +7833,7 @@ func CountPaths(rows, cols int) int {
     <p> Το <code>grid[r][c]</code> διαβάζει το <code>grid[r-1][c]</code> και το <code>grid[r][c-1]</code>. Επειδή προχωράμε γραμμή προς γραμμή και μέσα σε κάθε γραμμή από αριστερά προς τα δεξιά, και τα δύο είναι ήδη συμπληρωμένα όταν τα χρειαστούμε. Αν άλλαζες τη σειρά των λούπων, θα διάβαζες κελιά που είναι ακόμα μηδέν. Στο bottom-up DP, <strong>το να βρεις τη σωστή σειρά είναι μέρος της λύσης</strong>. </p>
 </div>
 
-<h2>Τι άλλο υπάρχει, ονομαστικά</h2>
+<h2 id="@dp-more">Τι άλλο υπάρχει, ονομαστικά</h2>
 
 <p> Ο δυναμικός προγραμματισμός είναι ολόκληρη οικογένεια προβλημάτων, και δεν θα τα δούμε εδώ. Αξίζει όμως να ξέρεις τα ονόματα, γιατί θα τα συναντήσεις παντού: </p>
 
@@ -8007,7 +8071,7 @@ func MinCoins(coins []int, amount int) int {
 
         // ── VSCode Challenge (εύκολο) — κλείνει την Ενότητα 8 ────────────────── ⊃
         addContent(`
-<div class="eyebrow">VSCode Challenge — Κλείνοντας την Ενότητα 8</div>
+<div class="eyebrow" id="@challenge8">VSCode Challenge — Κλείνοντας την Ενότητα 8</div>
 <h1>Πόσοι τρόποι να ανέβεις τη σκάλα;</h1>
 
 <p class="lede"> Το πιο κλασικό εισαγωγικό πρόβλημα δυναμικού προγραμματισμού, και ένα από τα λίγα που μπορείς να λύσεις με το χαρτί πριν γράψεις κώδικα. </p>
@@ -8070,7 +8134,7 @@ func CountWays(n int) int {
 
         // ── Mini-glossary — Ενότητα 8 ────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 8 / 8</div>
+<div class="eyebrow" id="@dp-recap">Μίνι Γλωσσάρι — Ενότητα 8 / 8</div>
 <h1>Δυναμικός Προγραμματισμός, με μια Ματιά</h1>
 <p class="lede">Οι όροι που θα σου χρειαστούν από αυτό το κεφάλαιο.</p>
 
@@ -8096,7 +8160,7 @@ func CountWays(n int) int {
 
         addContent(`
 <div class="eyebrow">Τελική Επανάληψη — Μέρος 2</div>
-<h1>Όλα όσα είδαμε, σε μία εικόνα</h1>
+<h1 id="@final-review">Όλα όσα είδαμε, σε μία εικόνα</h1>
 
 <p class="lede"> Οκτώ ενότητες, και ένα νήμα που τις διαπερνά όλες: <strong>πώς σκέφτεσαι μπροστά σε ένα πρόβλημα που δεν έχεις ξαναδεί</strong>. Πριν από τις τελικές ερωτήσεις, ας τα βάλουμε στη σειρά. </p>
 
@@ -8141,7 +8205,7 @@ func CountWays(n int) int {
     </tr>
 </table>
 
-<h2>Το δέντρο αποφάσεων για οποιοδήποτε πρόβλημα</h2>
+<h2 id="@all-decisions">Το δέντρο αποφάσεων για οποιοδήποτε πρόβλημα</h2>
 
 <p> Αν έπρεπε να κρατήσεις ένα μόνο πράγμα από ολόκληρο το Μέρος 2, θα ήταν αυτή η σειρά ερωτήσεων. Δεν δίνει πάντα τη λύση, αλλά σχεδόν πάντα δίνει την <em>κατεύθυνση</em>: </p>
 
@@ -8359,7 +8423,7 @@ func CountWays(n int) int {
         // ── Τελικό γλωσσάρι — όλο το Μέρος 2 ─────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow">Τελικό Γλωσσάρι — Μέρος 2</div>
-<h1>Ολόκληρο το Μέρος 2 σε μία σελίδα</h1>
+<h1 id="@cheatsheet">Ολόκληρο το Μέρος 2 σε μία σελίδα</h1>
 <p class="lede"> Οι όροι που θα θέλεις να έχεις πρόχειρους. Κράτησέ το ανοιχτό όσο λύνεις ασκήσεις. </p>
 
 <h2>Δομή project</h2>
@@ -8426,7 +8490,7 @@ func CountWays(n int) int {
 
         // ── Κλείσιμο ─────────────────────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Έφτασες στο τέλος</div>
+<div class="eyebrow" id="@the-end">Έφτασες στο τέλος</div>
 
 <p class="lede"> Στο Μέρος 1 έμαθες τη γλώσσα. Εδώ έμαθες τι να την κάνεις. </p>
 

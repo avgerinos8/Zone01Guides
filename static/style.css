@@ -476,13 +476,13 @@ pre code {
 
 .grid2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 28px;
 }
 
 .grid3 {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
 }
 
@@ -490,7 +490,7 @@ pre code {
 
   .grid2,
   .grid3 {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -1250,7 +1250,8 @@ pre code {
 }
 
 #btn-reset-inner {
-  min-width: 128px; /* fits "Reset Progress" / "Confirm Reset" without resizing between states */
+  min-width: 128px;
+  /* fits "Reset Progress" / "Confirm Reset" without resizing between states */
 }
 
 /* Close: neutral highlight — it's not a destructive action. */
@@ -1307,13 +1308,34 @@ pre code {
   flex: 1 1 auto;
   overflow-y: auto;
   padding: 8px 20px 20px;
-  scrollbar-width: none; /* Firefox — hide the bar, keep it scrollable */
+  scrollbar-width: none;
+  /* Firefox — hide the bar, keep it scrollable */
   mask-image: linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 16px, black calc(100% - 16px), transparent 100%);
 }
 
 #toc-list::-webkit-scrollbar {
-  display: none; /* Chrome/Edge/Safari — same */
+  display: none;
+  /* Chrome/Edge/Safari — same */
+}
+
+/* ── TOC section dividers (not clickable) ────────────────────────────────── ⊃ */
+#toc-list .toc-section {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: #8b9398;
+  border-top: 1px solid rgba(139, 147, 152, 0.28);
+  padding: 5px 0 1px;
+  margin: 6px 0 1px;
+  line-height: 1.2;
+  user-select: none;
+  cursor: default;
+}
+
+#toc-list .toc-section:first-child {
+  border-top: none;
+  margin-top: 0;
 }
 
 /* Prep for the next step (populating #toc-list with real heading links) —
@@ -1444,6 +1466,7 @@ pre code {
 }
 
 @media (min-width: 921px) {
+
   /* Desktop only — the mobile block right above is untouched and still
      takes over completely under 921px. */
   body.toc-pushed {
@@ -1477,7 +1500,8 @@ pre code {
   display: flex;
   align-items: center;
   gap: 16px;
-  flex: 0 0 auto; /* fixed to its own content width — #dots is the only element that should grow/shrink when nav-bar's available width changes (sidebar push) */
+  flex: 0 0 auto;
+  /* fixed to its own content width — #dots is the only element that should grow/shrink when nav-bar's available width changes (sidebar push) */
 }
 
 .nav-group-right {
