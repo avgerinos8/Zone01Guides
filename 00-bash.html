@@ -453,19 +453,8 @@ projects/notes.txt
 
 <div class="callout">
   <span class="tag">Αρχεία, Φάκελοι &amp; Επεκτάσεις</span>
-  <p><strong>Πώς τα ξεχωρίζουμε:</strong>
-  <ul>
-    <li><strong>Αρχείο (File):</strong> Περιέχει δεδομένα (κείμενο, κώδικα, εικόνα). Συνήθως τελειώνει σε κατάληξη (extension) όπως <code>.go</code>, <code>.txt</code>, <code>.sh</code> (π.χ. <code>main.go</code>, <code>notes.txt</code>).</li>
-    <li><strong>Φάκελος (Directory):</strong> Περιέχει άλλα αρχεία ή φακέλους (π.χ. <code>projects</code>, <code>go-project</code>). Συχνά προσθέτουμε ένα <code>/</code> στο τέλος (<code>projects/</code>) για να δηλώσουμε ρητά ότι πρόκειται για φάκελο.</li>
-  </ul>
-  <p>
-  Όταν βλέπεις μια τελεία σε ένα όνομα, η θέση της αλλάζει εντελώς τη σημασία της:
-</p>
-<p>
-  Αν η τελεία βρίσκεται στο τέλος, όπως στο <code>name.something</code> (π.χ. <code>main.go</code>, <code>script.sh</code>), το τμήμα μετά την τελεία είναι η επέκταση (extension) που δηλώνει τον τύπο του αρχείου — για παράδειγμα, το <code>.go</code> φανερώνει πηγαίο κώδικα Go και το <code>.txt</code> απλό κείμενο. 
-  Αντίθετα, όταν η τελεία βρίσκεται στην αρχή του ονόματος (π.χ. <code>.git</code>, <code>.env</code>, <code>.bashrc</code>), δηλώνει ότι το αρχείο ή ο φάκελος είναι <strong>κρυφός</strong>. Το σύστημα αποκρύπτει αυτά τα στοιχεία από την απλή εντολή <code>ls</code> (απαιτείται <code>ls -a</code> για να εμφανιστούν) και χρησιμοποιούνται συνήθως για αρχεία ρυθμίσεων (configuration).
-  Σημείωσε ότι στο Linux η επέκταση δεν είναι υποχρεωτική για να αναγνωριστεί ένα αρχείο, σε αντίθεση με τα Windows όπου το extension καθορίζει με ποιο πρόγραμμα θα ανοίξει (αν και εξ ορισμού είναι κρυμμένο από τον χρήστη).
-</p>
+  <p><strong>Πώς τα ξεχωρίζουμε:</strong> <ul> <li><strong>Αρχείο (File):</strong> Περιέχει δεδομένα (κείμενο, κώδικα, εικόνα). Συνήθως τελειώνει σε κατάληξη (extension) όπως <code>.go</code>, <code>.txt</code>, <code>.sh</code> (π.χ. <code>main.go</code>, <code>notes.txt</code>).</li> <li><strong>Φάκελος (Directory):</strong> Περιέχει άλλα αρχεία ή φακέλους (π.χ. <code>projects</code>, <code>go-project</code>). Συχνά προσθέτουμε ένα <code>/</code> στο τέλος (<code>projects/</code>) για να δηλώσουμε ρητά ότι πρόκειται για φάκελο.</li> </ul> <p> Όταν βλέπεις μια τελεία σε ένα όνομα, η θέση της αλλάζει εντελώς τη σημασία της: </p>
+<p> Αν η τελεία βρίσκεται στο τέλος, όπως στο <code>name.something</code> (π.χ. <code>main.go</code>, <code>script.sh</code>), το τμήμα μετά την τελεία είναι η επέκταση (extension) που δηλώνει τον τύπο του αρχείου — για παράδειγμα, το <code>.go</code> φανερώνει πηγαίο κώδικα Go και το <code>.txt</code> απλό κείμενο. Αντίθετα, όταν η τελεία βρίσκεται στην αρχή του ονόματος (π.χ. <code>.git</code>, <code>.env</code>, <code>.bashrc</code>), δηλώνει ότι το αρχείο ή ο φάκελος είναι <strong>κρυφός</strong>. Το σύστημα αποκρύπτει αυτά τα στοιχεία από την απλή εντολή <code>ls</code> (απαιτείται <code>ls -a</code> για να εμφανιστούν) και χρησιμοποιούνται συνήθως για αρχεία ρυθμίσεων (configuration). Σημείωσε ότι στο Linux η επέκταση δεν είναι υποχρεωτική για να αναγνωριστεί ένα αρχείο, σε αντίθεση με τα Windows όπου το extension καθορίζει με ποιο πρόγραμμα θα ανοίξει (αν και εξ ορισμού είναι κρυμμένο από τον χρήστη). </p>
 <p><strong>Παραδείγματα:</strong></p>
   <ul>
     <li><code>main.go</code> &rarr; Αρχείο κειμένου που περιέχει πηγαίο κώδικα Go.</li>
@@ -2035,9 +2024,7 @@ echo "Hello, $name!"`,
   <a href="https://github.com/RehanSaeed/Bash-Cheat-Sheet" target="_blank" rel="noopener">Bash Cheat Sheet (RehanSaeed)</a>
 </div>
 <div id="final-score"></div>
-<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
-  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
-</p>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;"> Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8. </p>
 
 <div class="feedback-box">
   <span class="tag">Feedback</span>
