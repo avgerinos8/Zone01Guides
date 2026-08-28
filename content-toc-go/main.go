@@ -110,35 +110,77 @@ type slideCall struct {
 	end      int
 }
 
-var slideCallRe = regexp.MustCompile(`(addContent|addQuiz|addFillBlank|addMatching)\s*\(\s*` + "`")
+var slideCallNameRe = regexp.MustCompile(`\b(addContent|addQuiz|addFillBlank|addMatching)\s*\(`)
 
-// slideCalls returns each call's function name and its template-literal
-// INNER content's byte range, in file order (= slide index order),
-// respecting backtick-escaping (\`) so an escaped backtick inside the
-// content doesn't end the match early.
+// findCallEnd expects pos to point right after a call's opening '(' and
+// returns the index right after its matching closing ')' — correctly
+// skipping over nested brackets/braces AND string/template literals (so a
+// ')' or '`' inside a quoted string doesn't confuse the depth count).
+func findCallEnd(source string, pos int) int {
+	depth := 1
+	i := pos
+	n := len(source)
+	for i < n && depth > 0 {
+		c := source[i]
+		if c == '\\' {
+			i += 2
+			continue
+		}
+		if c == '"' || c == '\'' {
+			quote := c
+			i++
+			for i < n && source[i] != quote {
+				if source[i] == '\\' {
+					i += 2
+				} else {
+					i++
+				}
+			}
+			i++
+			continue
+		}
+		if c == '`' {
+			i++
+			for i < n && source[i] != '`' {
+				if source[i] == '\\' {
+					i += 2
+				} else {
+					i++
+				}
+			}
+			i++
+			continue
+		}
+		if c == '(' || c == '[' || c == '{' {
+			depth++
+		} else if c == ')' || c == ']' || c == '}' {
+			depth--
+		}
+		i++
+	}
+	return i
+}
+
+// slideCalls returns each call's function name and its argument's byte
+// range, in file order (= slide index order) — regardless of whether that
+// argument is a backtick template literal (addContent) or a JS
+// array/object literal (addQuiz/addFillBlank/addMatching all take one of
+// those, never a template literal). The other three never contain HTML
+// headings, so their range is only ever used to skip past them correctly
+// when counting; addContent's range is what actually gets scanned.
 func slideCalls(source string) []slideCall {
 	var calls []slideCall
 	pos := 0
 	for {
-		loc := slideCallRe.FindStringSubmatchIndex(source[pos:])
+		loc := slideCallNameRe.FindStringSubmatchIndex(source[pos:])
 		if loc == nil {
 			break
 		}
 		name := source[pos+loc[2] : pos+loc[3]]
-		start := pos + loc[1] // just after the opening backtick
-		i := start
-		for i < len(source) {
-			if source[i] == '\\' && i+1 < len(source) {
-				i += 2
-				continue
-			}
-			if source[i] == '`' {
-				break
-			}
-			i++
-		}
-		calls = append(calls, slideCall{callName: name, start: start, end: i})
-		pos = i + 1
+		argStart := pos + loc[1] // just after the opening '('
+		argEnd := findCallEnd(source, argStart) - 1
+		calls = append(calls, slideCall{callName: name, start: argStart, end: argEnd})
+		pos = argEnd + 1
 	}
 	return calls
 }
@@ -238,6 +280,8 @@ func findEyebrowDiv(slideText string) (whole, attrs [2]int, found bool) {
 // glossary/vscodechallenge-style slides end up excluded, structurally,
 // without needing an explicit denylist of slide "kinds" to maintain.
 func applyEyebrowRedirect(source string, headings []heading, calls []slideCall) {
+	claimed := map[int]bool{} // absolute eyebrow attrs-start position -> already redirected to by an earlier h1
+
 	for i := range headings {
 		if headings[i].level != 1 {
 			continue
@@ -265,7 +309,19 @@ func applyEyebrowRedirect(source string, headings []heading, calls []slideCall) 
 		// Sanity check: the eyebrow found must actually be the one right
 		// before THIS h1 (should always be true given the established
 		// authoring convention, but guard against the edge case anyway).
-		if call.start+whole[0] >= headings[i].attrsStart {
+		absoluteEbStart := call.start + whole[0]
+		if absoluteEbStart >= headings[i].attrsStart {
+			continue
+		}
+
+		// A "dense" slide can have several h1 sub-topics under ONE shared
+		// eyebrow (only the first one is introduced by it) — without this
+		// check, every one of those h1s would redirect to the SAME eyebrow
+		// div, and applyInsertions would splice multiple id="..." onto it,
+		// producing invalid duplicate-attribute HTML. Only the first h1 to
+		// reach a given eyebrow claims it; later ones in the same slide
+		// fall through untouched, keeping their own direct h1 fallback.
+		if claimed[absoluteEbStart] {
 			continue
 		}
 
@@ -283,6 +339,7 @@ func applyEyebrowRedirect(source string, headings []heading, calls []slideCall) 
 		headings[i].id = existingID
 		headings[i].hadIDBefore = existingID != ""
 		headings[i].redirectedToEyebrow = true
+		claimed[absoluteEbStart] = true
 	}
 }
 
@@ -387,8 +444,8 @@ func buildMarkdown(fileName string, headings []heading, mode int, insertedCount,
 			continue
 		}
 		safeText := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;").Replace(truncate(h.text, 45))
-		lines = append(lines, fmt.Sprintf(`<a href="#%s" data-slide="%d" class="toc-link toc-h%d">%s</a>`,
-			h.id, h.slideIndex, h.level, safeText))
+		lines = append(lines, fmt.Sprintf(`<a href="#%s" class="toc-link toc-h%d">%s</a>`,
+			h.id, h.level, safeText))
 	}
 
 	var b strings.Builder

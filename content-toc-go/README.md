@@ -17,7 +17,7 @@ order the site uses at runtime), and scans each one's content for headings.
 No external dependencies — standard library only.
 
 ```
-go run -o extract_toc .
+go build -o extract_toc .
 ```
 
 That produces a single `extract_toc` binary. Copy it anywhere convenient.
@@ -92,7 +92,7 @@ mode 0 regardless of anything else.
 4. Inserts `id="@that-slug"` at that exact spot — see **Safety**, below.
 5. Writes `<file>-toc.md` next to the HTML file: a short summary plus a
    fenced ` ```html ` block of ready-to-paste `<a>` tags — one per heading
-   in scope, each `href="#@its-slug"`, `data-slide="N"`, and
+   in scope, each `href="#@its-slug"` and
    `class="toc-link toc-hX"` (X = 1/2/3) — matching the CSS already in
    `static/style.css`. Link text is the heading's own text, capped at 45
    characters (with a `…` where it's cut). Paste the block into

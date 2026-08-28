@@ -8,6 +8,50 @@
             history.replaceState(null, "", location.pathname + location.search);
         }
     </script>
+
+    <script>
+        (function () {
+            var shown = false;
+            window.addEventListener("error", function () {
+                if (shown) return;
+                if (window.__pageInitialized) return;
+                shown = true;
+                showContentChangedFallback();
+            });
+
+            function showContentChangedFallback() {
+                var overlay = document.createElement("div");
+                overlay.style.cssText = "position:fixed;inset:0;z-index:999999;background:#1a1a1a;" +
+                    "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+                    "gap:20px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#e0e0e0;" +
+                    "text-align:center;padding:24px;";
+
+                var msg = document.createElement("div");
+                msg.textContent = "Internal Error";
+                msg.style.cssText = "font-size:22px;font-weight:600;letter-spacing:.02em;";
+                overlay.appendChild(msg);
+
+                var btn = document.createElement("button");
+                btn.textContent = "Reset Progress";
+                btn.style.cssText = "font-family:inherit;font-size:15px;padding:10px 22px;" +
+                    "border-radius:7px;border:1px solid #888;background:transparent;" +
+                    "color:#ccc;cursor:pointer;";
+                btn.addEventListener("click", function () {
+                    var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+                    localStorage.removeItem(prefix + "current_slide");
+                    localStorage.removeItem(prefix + "answers");
+                    localStorage.removeItem(prefix + "scores");
+                    localStorage.removeItem(prefix + "notified_100");
+                    localStorage.removeItem(prefix + "version");
+                    window.location.reload();
+                });
+                overlay.appendChild(btn);
+
+                document.body.appendChild(overlay);
+            }
+        })();
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Go — Μέρος 2: Αλγοριθμική Σκέψη</title>
@@ -8790,8 +8834,7 @@ func SolveQueens(board []int, row int) bool {
                 { term: "greedy", def: "τοπικά βέλτιστη επιλογή, χωρίς ποτέ επιστροφή πίσω" },
                 { term: "backtracking", def: "choose → explore → un-choose, με pruning άκυρων κλαδιών" },
                 { term: "pruning (κλάδεμα)", def: "εγκατάλειψη ολόκληρου υποδέντρου μόλις αποδειχθεί άκυρο" },
-                { term: "δέντρο αποφάσεων", def: "κάθε κόμβος μια επιλογή, κάθε φύλλο μια πλήρης λύση" },
-                { term: "αντιπαράδειγμα", def: "μικρή είσοδος που αποδεικνύει ότι το greedy δεν αρκεί" }
+                { term: "δέντρο αποφάσεων", def: "κάθε κόμβος μια επιλογή, κάθε φύλλο μια πλήρης λύση" }
             ],
             [
                 { term: "ρέστα με κέρματα ευρώ", def: "greedy — κάθε κέρμα χωράει καθαρά στο επόμενο μεγαλύτερο" },
