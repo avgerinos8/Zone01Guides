@@ -1,0 +1,58 @@
+{
+  "slugs": {
+    "format": "@ + kebab-case, max 16 chars after the @, ASCII only (Greek is transliterated, e.g. θ→th, χ→ch)",
+    "collision_rule": "if two headings would produce the same slug, append -2, -3, ... to the later ones",
+    "insertion_rule": "ONLY inserted if the element doesn't already have an id — never overwrite an existing one",
+
+    "where_it_goes": {
+      "h1": "on that slide's <div class=\"eyebrow\">Ενότητα N / M — ...</div>, NOT on the h1 itself — unless the slide has no eyebrow, or has one that doesn't contain the word 'Ενότητα' (title slide, closing cheatsheet/glossary slide), in which case it falls back to going directly on the h1",
+      "h2_h3": "directly on the tag itself: <h2 id=\"@slug\">...</h2> or <h3 id=\"@slug\">...</h3>"
+    },
+
+    "h2_h3_selection": "not automatic/mechanical — only added in slides that are genuinely large, and only on pieces that are actually important (a named gotcha, a rule of thumb, an explicitly-flagged 'most important concept here' — not just any subheading). Roughly 1-4 slugs total per slide, spaced apart rather than clustered on adjacent headings.",
+
+    "how_to_generate": {
+      "tool": "extract_toc (Go, in the tocgen/ project — build with `go build -o extract_toc .`)",
+      "usage": "./extract_toc -mode=N course.html",
+      "modes": {
+        "0": "eyebrows only — one slug per slide that has a qualifying 'Ενότητα' eyebrow, nothing else, no fallback",
+        "1": "h1 only (eyebrow-redirected where possible, direct-on-h1 fallback otherwise)",
+        "2": "h1 + h2",
+        "3": "h1 + h2 + h3 (default)"
+      },
+      "note": "the tool only ever inserts ids on h1/h2/h3 (mode-dependent) automatically — it does NOT pick 'important' h2/h3 for you; that selection is manual judgment, done by hand-editing specific headings' text to add id=\"@slug\" before running the tool, or by picking them separately and inserting by hand"
+    }
+  },
+
+  "toc_entries": {
+    "format": "<a href=\"#@slug\" class=\"toc-link toc-hN\">Text</a>",
+    "N": "1, 2, or 3 — matches the heading level, drives CSS indentation",
+    "text": "the heading's own text, truncated to 45 characters (with … if cut)",
+    "no_data_slide": "deliberately removed — navigation and everything else resolves via the href's id directly, never a stored slide number. Do not add one back."
+  },
+
+  "toc_section_dividers": {
+    "what": "plain, non-clickable visual dividers grouping the <a> entries in the sidebar into sections — separate from and unrelated to slugs/navigation",
+    "format": "<div class=\"toc-section\">SECTION LABEL</div>",
+    "example": "<div class=\"toc-section\">ΕΙΣΑΓΩΓΗ</div> <div class=\"toc-section\">ΕΝΟΤΗΤΑ 1 — PACKAGES &amp; PROJECT</div> <div class=\"toc-section\">ΕΝΟΤΗΤΑ 2 — CLI</div>",
+    "not_generated": "extract_toc never produces these — no href, no @slug, not tied to any heading. Added by hand, interspersed among the <a> entries wherever a visual break between sections is wanted",
+    "css_class": ".toc-section (scoped under #toc-list), styled small-caps-ish: ~0.62rem, 600 weight, wide letter-spacing, dim color, a top border as the actual dividing line (removed on the first one via :first-child so the list doesn't open with a stray line)",
+    "css_lives_in": "style.css — not part of this project's tracked copy; added directly by the user in their own working file"
+  },
+
+  "where_toc_entries_go": {
+    "location": "inside <div id=\"toc-list\"> ... </div>, in the sidebar markup near the top of the HTML file (inside <body>, before the deck)",
+    "action": "paste the generated <a> tags (and any hand-placed toc-section dividers) directly inside that div, replacing whatever's currently there",
+    "order": "should follow document order (top to bottom, matching the order headings appear in the file) — not required by the code, but keeps the sidebar sensible"
+  },
+
+  "click_behavior": {
+    "mechanism": "plain hash links — href=\"#@slug\". Clicking fires the browser's native hashchange event, which script.js listens for globally and resolves via document.getElementById(hash) — no per-link JS needed, no click handlers, no data attributes",
+    "sidebar_highlighting": "none — sidebar TOC entries are never highlighted or marked as 'active', on purpose. Do not reintroduce this."
+  },
+
+  "safety": {
+    "principle": "every id insertion is a surgical text splice at an exact byte position — never a re-serialization through an HTML parser",
+    "verification": "strip every ` id=\"@...\"` from the edited file and diff against the original — should be byte-identical"
+  }
+}

@@ -728,16 +728,18 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
     inp.style.width = Math.max(4, inp.value.length + 2) + "ch";
   }
 
-  // Optional syntax coloring (v2, opt-in via item.lang, e.g. "go"/"js"/
-  // "generic"): only static text segments between blanks are colored, via
-  // highlighter.js's exported window.Zone01Highlight(lang, text). The blank
-  // <input> elements themselves are never touched by this — unlike putting
-  // a class="lang-*" directly on <code> (which would wipe them out, since
-  // the highlighter normally rewrites a code element's whole innerHTML from
-  // its textContent). When item.lang is omitted, this is a no-op and the
-  // exact original text-node behavior below runs unchanged.
-  if (item.lang && window.Zone01Highlight) {
-    codeEl.classList.add("lang-" + item.lang, "fb-code-colored");
+  // Syntax coloring: defaults to "go" when item.lang isn't set (this is a
+  // Go course — most fill-blank code is Go), overridable per-item via
+  // item.lang: "js" | "html" | "css" | "go". Only the static text segments
+  // between blanks are colored, via highlighter.js's exported
+  // window.Zone01Highlight(lang, text) — the blank <input> elements
+  // themselves are never touched by this, unlike putting a class="lang-*"
+  // directly on <code> (which would wipe them out, since the highlighter
+  // normally rewrites a code element's whole innerHTML from its
+  // textContent).
+  const lang = item.lang || "go";
+  if (window.Zone01Highlight) {
+    codeEl.classList.add("lang-" + lang, "fb-code-colored");
     // Pre-mark as highlighted so highlighter.js's MutationObserver (which
     // would otherwise see this class-"lang-*" <code> get inserted and try
     // to rewrite its whole innerHTML from textContent) skips it entirely —
@@ -748,9 +750,9 @@ function renderFillBlank(wrap, item, storeKey, onScored) {
   const parts = item.code.split(/__([a-zA-Z0-9]+)__/g);
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 0) {
-      if (item.lang && window.Zone01Highlight) {
+      if (window.Zone01Highlight) {
         const span = document.createElement("span");
-        span.innerHTML = window.Zone01Highlight(item.lang, parts[i]);
+        span.innerHTML = window.Zone01Highlight(lang, parts[i]);
         codeEl.appendChild(span);
       } else {
         codeEl.appendChild(document.createTextNode(parts[i]));
@@ -1927,9 +1929,27 @@ function initTocSidebar() {
 // can pause during it (see that IIFE's own comment for why).
 let ourScrollAnimating = false;
 
-function smoothScrollTop(container, targetTop, duration) {
+function smoothScrollTop(container, targetTop, maxDuration) {
   const startTop = container.scrollTop;
   const delta = targetTop - startTop;
+  const distance = Math.abs(delta);
+
+  // Close enough that any animation would be imperceptible anyway — e.g.
+  // clicking a TOC/search link for something already near the current
+  // scroll position on the same slide. Jump straight there, no motion.
+  if (distance < 24) {
+    container.scrollTop = targetTop;
+    ourScrollAnimating = false;
+    return;
+  }
+
+  // Duration scales with distance, clamped to maxDuration at the top end
+  // and a floor at the bottom so even a short hop still reads as a
+  // deliberate, smooth motion rather than a jerky snap. A short same-slide
+  // hop lands well under maxDuration; a genuinely long scroll (or a jump to
+  // a different slide) uses closer to the full duration.
+  const duration = Math.min(maxDuration, Math.max(120, distance * 0.35));
+
   const startTime = performance.now();
 
   function easeOutCubic(t) {
