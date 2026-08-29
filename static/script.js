@@ -1751,19 +1751,19 @@ function initTocSidebar() {
       (document.activeElement && document.activeElement.isContentEditable);
     if (isTyping || e.ctrlKey || e.metaKey || e.altKey) return;
 
-    switch (e.key.toLowerCase()) {
-      case "a": goTo(current - 1); break;
-      case "d": goTo(current + 1); break;
-      case "q":
+    switch (e.code) {
+      case "KeyA": goTo(current - 1); break;
+      case "KeyD": goTo(current + 1); break;
+      case "KeyQ":
         if (tocSidebarEl.classList.contains("open")) closeToc(); else openToc();
         break;
-      case "w": {
+      case "KeyW": {
         const container = slideEls[current];
         const step = container.clientHeight * 0.8;
         smoothScrollTop(container, Math.max(0, container.scrollTop - step), 400);
         break;
       }
-      case "s": {
+      case "KeyS": {
         const container = slideEls[current];
         const step = container.clientHeight * 0.8;
         const maxScroll = container.scrollHeight - container.clientHeight;
@@ -1823,6 +1823,7 @@ function initTocSidebar() {
     });
 
     const originalTocListHTML = tocListEl.innerHTML; // browse mode — restored when the search box is cleared
+    let searchHitIdCounter = 0;
 
     /**
      * Builds a "…3-4 words… **match** …3-4 words…" snippet around the
@@ -1910,7 +1911,19 @@ function initTocSidebar() {
 
         a.addEventListener("click", (e) => {
           e.preventDefault();
-          jumpToElement(entry.el);
+          // Route through the hash — same path a real TOC link takes —
+          // rather than calling jumpToElement directly, so the browser's
+          // Back/Forward buttons work for search results too (a plain
+          // function call creates no history entry at all; setting
+          // location.hash does, automatically, via the native browser
+          // behavior the hashchange listener elsewhere already handles).
+          // Search hits are arbitrary paragraphs/list items/code blocks
+          // that usually don't have their own id — give it one, once,
+          // the first time it's ever clicked; reused after that.
+          if (!entry.el.id) {
+            entry.el.id = "@search-hit-" + (searchHitIdCounter++);
+          }
+          location.hash = "#" + entry.el.id;
           const isMobile = window.matchMedia("(max-width: 920px)").matches;
           if (isMobile) closeToc();
         });
@@ -2119,8 +2132,25 @@ function handleInitialHashNavigation() {
 // needing any click-delegation code at all. No race to worry about here —
 // unlike the cold-load case above, the page (and every slide) already
 // fully exists by the time this can possibly fire.
+// Remembers which slide you were on right before the FIRST hash-jump in a
+// chain of them, so that pressing the browser's Back button all the way
+// past every hash entry (hash goes back to "") correctly returns you to
+// where you actually started — not just the URL, but the visible slide.
+// Native <a href="#slug"> clicks push their own history entries
+// automatically; going back through them re-fires "hashchange" each time,
+// but with an EMPTY new hash on the last one (since that's what preceded
+// the first click), and jumpToHash("") is deliberately a no-op — nothing
+// to jump to. This is what actually handles that specific case.
+let preHashJumpSlide = null;
+
 window.addEventListener("hashchange", () => {
-  jumpToHash(location.hash);
+  if (location.hash) {
+    if (preHashJumpSlide === null) preHashJumpSlide = current;
+    jumpToHash(location.hash);
+  } else if (preHashJumpSlide !== null) {
+    goTo(preHashJumpSlide, { fromHash: true });
+    preHashJumpSlide = null;
+  }
 });
 
 
@@ -2302,6 +2332,11 @@ function initSlideDeck(config) {
   prevBtn.addEventListener("click", () => goTo(current - 1));
   nextBtn.addEventListener("click", () => goTo(current + 1));
   document.addEventListener("keydown", (e) => {
+    const activeTag = document.activeElement ? document.activeElement.tagName : "";
+    const isTyping = activeTag === "INPUT" || activeTag === "TEXTAREA" ||
+      (document.activeElement && document.activeElement.isContentEditable);
+    if (isTyping) return; // let the cursor move normally instead of changing slides
+
     if (e.key === "ArrowRight") goTo(current + 1);
     if (e.key === "ArrowLeft") goTo(current - 1);
   });
