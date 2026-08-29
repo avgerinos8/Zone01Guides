@@ -2,7 +2,6 @@
   "spec_name": "zone01guides-lesson-generator",
   "spec_version": "2.0",
   "purpose": "Complete, self-contained instruction set for generating an interactive HTML slide-deck guide on ANY topic, at a quality level that requires no manual review. Every rule here was derived from a real correction made during the Go Part 1, Go Part 2 and Bash guides. Follow all of it; nothing here is optional unless marked optional.",
-
   "how_to_use": {
     "step_1": "Fill in every field of `guide_config`. Anything left null must be asked about before writing starts.",
     "step_2": "Produce `curriculum_plan` (section list + per-section learning objectives + prerequisite ledger) and get it approved before writing prose.",
@@ -11,7 +10,6 @@
     "step_5": "Deliver per `delivery_protocol`.",
     "non_negotiable": "If a rule in `hard_rules` conflicts with anything else in this file, `hard_rules` wins."
   },
-
   "guide_config": {
     "_comment": "Per-guide configuration. Fill this in before generating.",
     "topic": null,
@@ -35,7 +33,6 @@
     "_will_be_taught_later_note": "Used for forward hand-offs and for honestly naming what is deliberately awkward in this part.",
     "author_credit": null
   },
-
   "hard_rules": [
     "NEVER place a raw backtick character inside addContent/addFillBlank content — it silently terminates the JS template literal and breaks the entire script block. Use <code>x</code> in prose, or plain words in code comments.",
     "NEVER place ${ inside addContent content — it is interpreted as template interpolation.",
@@ -47,13 +44,35 @@
     "Exactly one initSlideDeck({...}) call, at the very end of the script block.",
     "Never solve an exercise in the open. The full solution is always inside a drag-to-reveal spoiler."
   ],
-
   "language_rules": {
     "prose": "Written in `prose_language`. Natural, plain, correct. Explanatory register, not journalistic.",
     "code_comments": "Written in `code_comment_language`, always.",
     "technical_terms_stay_in_source_language": {
       "rule": "Keep the English technical term inside the prose whenever the translation would be unnatural, ambiguous, or would hide the term the student will actually meet in documentation.",
-      "examples": ["slice", "array", "map", "function", "pointer", "iteration", "package", "module", "struct", "interface", "compile error", "panic", "base case", "call stack", "memo", "pruning", "in place", "stable sort", "sentinel value", "guard clause", "accumulator", "aliasing"]
+      "examples": [
+        "slice",
+        "array",
+        "map",
+        "function",
+        "pointer",
+        "iteration",
+        "package",
+        "module",
+        "struct",
+        "interface",
+        "compile error",
+        "panic",
+        "base case",
+        "call stack",
+        "memo",
+        "pruning",
+        "in place",
+        "stable sort",
+        "sentinel value",
+        "guard clause",
+        "accumulator",
+        "aliasing"
+      ]
     },
     "forced_terminology": {
       "_comment": "Absolute substitutions. Scan for the left side; it must never appear.",
@@ -113,7 +132,6 @@
       "Feminine plural accusative of -ος nouns: 'τις διαγωνίους' / rewrite to avoid."
     ]
   },
-
   "pedagogy": {
     "core_philosophy": "Extremely detailed, from-zero explanation. Explain what a thing IS and WHY it exists before showing syntax. learncpp.com level of depth, not a quick reference. Slide length is never a concern; skipping an explanation is.",
     "mandatory_patterns": [
@@ -185,10 +203,23 @@
       "Claiming a language behaviour without checking it (order of declaration, conversion rules, vet warnings)."
     ]
   },
-
   "deck_anatomy": {
-    "template_files": ["index.html", "static/style.css", "static/script.js", "static/highlighter.js", "static/theme-<name>.css", "static/notify-progress.js", "./icons/<name>.png"],
-    "generation_api": ["addContent(`...`)", "addQuiz([...], opts?)", "addFillBlank([...])", "addMatching([[...],[...]], opts?)", "initSlideDeck({version, notifyUrl})"],
+    "template_files": [
+      "index.html",
+      "static/style.css",
+      "static/script.js",
+      "static/highlighter.js",
+      "static/theme-<name>.css",
+      "static/notify-progress.js",
+      "./icons/<name>.png"
+    ],
+    "generation_api": [
+      "addContent(`...`)",
+      "addQuiz([...], opts?)",
+      "addFillBlank([...])",
+      "addMatching([[...],[...]], opts?)",
+      "initSlideDeck({version, notifyUrl})"
+    ],
     "slide_header": "Every content slide opens with <div class=\"eyebrow\">…</div> then <h1>…</h1>, optionally followed by <p class=\"lede\">…</p>.",
     "eyebrow_conventions": {
       "section_slide": "Ενότητα N / TOTAL — <Section Title>",
@@ -200,7 +231,14 @@
       "closing": "Έφτασες στο τέλος"
     },
     "section_required_blocks": {
-      "order": ["one or more addContent teaching slides", "addQuiz", "addFillBlank", "addMatching", "VSCode Challenge slide", "mini-glossary slide"],
+      "order": [
+        "one or more addContent teaching slides",
+        "addQuiz",
+        "addFillBlank",
+        "addMatching",
+        "VSCode Challenge slide",
+        "mini-glossary slide"
+      ],
       "rule": "EVERY numbered section ends with its own fillBlank + matching + VSCode Challenge + mini-glossary. Hands-on practice happens per section, not only in the final review."
     },
     "deck_tail": {
@@ -222,17 +260,31 @@
       ]
     },
     "html_vocabulary": {
-      "structure": ["eyebrow", "lede", "grid2", "grid3", "card", "card-tag"],
-      "emphasis": ["callout", "callout good", "tag (inside callout)"],
+      "structure": [
+        "eyebrow",
+        "lede",
+        "grid2",
+        "grid3",
+        "card",
+        "card-tag"
+      ],
+      "emphasis": [
+        "callout",
+        "callout good",
+        "tag (inside callout)"
+      ],
       "code": "<pre><code class=\"lang-<language>\">…</code></pre>",
       "spoiler": "<div class=\"spoiler\"><div class=\"spoiler-lock\"><span>LABEL — Drag to reveal →</span></div> …content… </div>",
-      "glossary_styles": ["glossary-table with gt-term/gt-def cells", "gs-wrap with gs-pill / gs-name / gs-def", "glossary-columns"],
+      "glossary_styles": [
+        "glossary-table with gt-term/gt-def cells",
+        "gs-wrap with gs-pill / gs-name / gs-def",
+        "glossary-columns"
+      ],
       "glossary_style_rule": "Deliberately vary the glossary style across sections rather than using one everywhere.",
       "tables": "Plain <table> with inline style for borders is acceptable for comparison/decision tables; glossary-table for term lists.",
       "links": "<div class=\"sources-list\"> with <a target=\"_blank\" rel=\"noopener\">"
     }
   },
-
   "block_specs": {
     "addContent": {
       "signature": "addContent(`<html>`)",
@@ -308,7 +360,6 @@
       ]
     }
   },
-
   "prerequisite_ledger": {
     "purpose": "Prevent using a construct the reader has not met, and prevent teaching something twice.",
     "maintain": [
@@ -317,7 +368,6 @@
     ],
     "on_violation": "Either teach the concept properly, or remove it from the exercise."
   },
-
   "authoring_pipeline": {
     "1_plan": "Write the section outline with learning objectives and the prerequisite ledger. Confirm before writing prose.",
     "2_write_chunks": "Write each content chunk into its own .js file (e.g. s5a.js, s5b.js). Do not edit the large HTML directly with a text-replace tool.",
@@ -326,46 +376,130 @@
     "5_targeted_edits": "For later corrections, use a Python script with a list of (label, exact_old, exact_new) triples, asserting each old string matches EXACTLY ONCE. Abort and write nothing if any assertion fails.",
     "6_structural_edits": "For edits addressed by position rather than text (e.g. 'replace option 3 of question 7 of quiz block 5'), parse the blocks by paren-matching and edit by index. Apply from last to first so offsets stay valid."
   },
-
   "verification_protocol": {
     "must_all_pass": true,
     "checks": [
-      {"id": "syntax", "what": "Extract the <script> body, prepend stubs for addContent/addQuiz/addFillBlank/addMatching/initSlideDeck, run `node --check` AND actually execute it."},
-      {"id": "backtick_parity", "what": "Count backticks in the script body. Must be even. An odd count means a stray backtick inside content."},
-      {"id": "quiz_correct_in_range", "what": "Every `correct` index is an integer within 0..len(options)-1."},
-      {"id": "quiz_single_answer", "what": "No alsoCorrect field anywhere. No two options that are semantically both correct (manual read of any question whose explain hedges)."},
-      {"id": "quiz_length_rule", "what": "For every question: at least one wrong option is 2–8 words longer than the correct one, unless an exception applies. Report exceptions separately rather than silently passing them."},
-      {"id": "quiz_length_ceiling", "what": "No question has 3 or more wrong options in the 2–8 band."},
-      {"id": "quiz_correct_not_longest", "what": "Deck-wide, the number of questions where the correct answer is the longest option must be 0 (ignoring questions where the correct answer is 3 words or fewer)."},
-      {"id": "quiz_duplicates", "what": "No duplicate question stems deck-wide; no duplicate option strings within a question."},
-      {"id": "fillblank_placeholders", "what": "Every blank id has a matching __id__ placeholder and vice versa."},
-      {"id": "banned_words", "what": "Scan for every key of language_rules.banned_expressions_with_replacements, forced_terminology, and any personal name. Zero hits allowed."},
-      {"id": "grammar_heuristics", "what": "Scan for proparoxytone imperative + clitic pronoun without a second accent; 'ένα' before a masculine accusative noun; 'πόσα X υπάρχει'."},
-      {"id": "structural_diff", "what": "Compare counts of addContent / addQuiz / addFillBlank / addMatching / initSlideDeck against the previous version. An unexplained drop means content was lost during a splice."},
-      {"id": "prerequisite_audit", "what": "Every term used in a quiz, glossary or matching block appears in prose somewhere earlier."},
-      {"id": "hint_labels", "what": "Inside each challenge, HINT labels are sequential and the label matches the content."},
-      {"id": "promise_audit", "what": "Every 'θα το δούμε σε επόμενη ενότητα' promise is either fulfilled later in this guide or explicitly deferred to a named future guide."}
+      {
+        "id": "syntax",
+        "what": "Extract the <script> body, prepend stubs for addContent/addQuiz/addFillBlank/addMatching/initSlideDeck, run `node --check` AND actually execute it."
+      },
+      {
+        "id": "backtick_parity",
+        "what": "Count backticks in the script body. Must be even. An odd count means a stray backtick inside content."
+      },
+      {
+        "id": "quiz_correct_in_range",
+        "what": "Every `correct` index is an integer within 0..len(options)-1."
+      },
+      {
+        "id": "quiz_single_answer",
+        "what": "No alsoCorrect field anywhere. No two options that are semantically both correct (manual read of any question whose explain hedges)."
+      },
+      {
+        "id": "quiz_length_rule",
+        "what": "For every question: at least one wrong option is 2–8 words longer than the correct one, unless an exception applies. Report exceptions separately rather than silently passing them."
+      },
+      {
+        "id": "quiz_length_ceiling",
+        "what": "No question has 3 or more wrong options in the 2–8 band."
+      },
+      {
+        "id": "quiz_correct_not_longest",
+        "what": "Deck-wide, the number of questions where the correct answer is the longest option must be 0 (ignoring questions where the correct answer is 3 words or fewer)."
+      },
+      {
+        "id": "quiz_duplicates",
+        "what": "No duplicate question stems deck-wide; no duplicate option strings within a question."
+      },
+      {
+        "id": "fillblank_placeholders",
+        "what": "Every blank id has a matching __id__ placeholder and vice versa."
+      },
+      {
+        "id": "banned_words",
+        "what": "Scan for every key of language_rules.banned_expressions_with_replacements, forced_terminology, and any personal name. Zero hits allowed."
+      },
+      {
+        "id": "grammar_heuristics",
+        "what": "Scan for proparoxytone imperative + clitic pronoun without a second accent; 'ένα' before a masculine accusative noun; 'πόσα X υπάρχει'."
+      },
+      {
+        "id": "structural_diff",
+        "what": "Compare counts of addContent / addQuiz / addFillBlank / addMatching / initSlideDeck against the previous version. An unexplained drop means content was lost during a splice."
+      },
+      {
+        "id": "prerequisite_audit",
+        "what": "Every term used in a quiz, glossary or matching block appears in prose somewhere earlier."
+      },
+      {
+        "id": "hint_labels",
+        "what": "Inside each challenge, HINT labels are sequential and the label matches the content."
+      },
+      {
+        "id": "promise_audit",
+        "what": "Every 'θα το δούμε σε επόμενη ενότητα' promise is either fulfilled later in this guide or explicitly deferred to a named future guide."
+      }
     ],
     "reference_implementation": "verify_deck.py — supplied alongside this spec. Run it after every splice."
   },
-
   "delivery_protocol": {
     "default": "Deliver the complete HTML file.",
     "review_passes": "When making corrections to an existing deck, ALSO deliver a separate markdown file listing every individual change as Πριν/Μετά pairs, generated with difflib against a pre-change backup, so the user can approve or reject them one by one.",
     "per_project_override": "Some projects want snippets in chat instead of the whole file (the user copy-pastes manually). Honour guide_config if it specifies this.",
     "summary_message": "Report: file size, structural counts, every verification check with its result, and a short prose account of the substantive decisions made — not a list of everything written."
   },
-
   "known_failure_modes": [
-    {"symptom": "Entire script block breaks with 'missing ) after argument list'", "cause": "A raw backtick inside addContent content.", "fix": "Replace with <code>…</code> or plain words."},
-    {"symptom": "Correct answer is the longest option in ~90% of questions", "cause": "Writing the correct answer fully and precisely, then dashing off short distractors.", "fix": "Extend a distractor with a misconception clause. Measure deck-wide."},
-    {"symptom": "The same question appears twice in a section", "cause": "Copy-paste during a section rewrite.", "fix": "Deduplicate by stem before delivery."},
-    {"symptom": "A worked example proves nothing", "cause": "Both compared strategies happen to give the same result on the chosen input.", "fix": "Choose an input where they diverge, and verify by hand."},
-    {"symptom": "Exercise blanks feel trivial", "cause": "Blanking language keywords instead of decisions.", "fix": "Move blanks onto seed values, operators, index arithmetic, undo steps."},
-    {"symptom": "A term is quizzed but the student has never seen it", "cause": "Glossary and quiz written from the curriculum outline rather than from the prose actually written.", "fix": "Run the prerequisite audit."},
-    {"symptom": "Hint 1 contains hint 2's content", "cause": "Nested callout tags not updated when reordering.", "fix": "Check hint labels against content."},
-    {"symptom": "A factual claim about the language is wrong", "cause": "Writing from memory instead of checking.", "fix": "Verify any claim about declaration order, conversion rules, tooling warnings, or version availability before writing it."}
+    {
+      "symptom": "Entire script block breaks with 'missing ) after argument list'",
+      "cause": "A raw backtick inside addContent content.",
+      "fix": "Replace with <code>…</code> or plain words."
+    },
+    {
+      "symptom": "Correct answer is the longest option in ~90% of questions",
+      "cause": "Writing the correct answer fully and precisely, then dashing off short distractors.",
+      "fix": "Extend a distractor with a misconception clause. Measure deck-wide."
+    },
+    {
+      "symptom": "The same question appears twice in a section",
+      "cause": "Copy-paste during a section rewrite.",
+      "fix": "Deduplicate by stem before delivery."
+    },
+    {
+      "symptom": "A worked example proves nothing",
+      "cause": "Both compared strategies happen to give the same result on the chosen input.",
+      "fix": "Choose an input where they diverge, and verify by hand."
+    },
+    {
+      "symptom": "Exercise blanks feel trivial",
+      "cause": "Blanking language keywords instead of decisions.",
+      "fix": "Move blanks onto seed values, operators, index arithmetic, undo steps."
+    },
+    {
+      "symptom": "A term is quizzed but the student has never seen it",
+      "cause": "Glossary and quiz written from the curriculum outline rather than from the prose actually written.",
+      "fix": "Run the prerequisite audit."
+    },
+    {
+      "symptom": "Hint 1 contains hint 2's content",
+      "cause": "Nested callout tags not updated when reordering.",
+      "fix": "Check hint labels against content."
+    },
+    {
+      "symptom": "A factual claim about the language is wrong",
+      "cause": "Writing from memory instead of checking.",
+      "fix": "Verify any claim about declaration order, conversion rules, tooling warnings, or version availability before writing it."
+    }
   ],
-
-  "quality_bar": "The deck is done when: every verification check passes; every technique has a recognition callout; every section has at least one named common mistake; every promise is kept; every exercise blank tests a decision; and a reader who finishes the guide could explain WHY each technique exists, not just how to type it."
+  "quality_bar": "The deck is done when: every verification check passes; every technique has a recognition callout; every section has at least one named common mistake; every promise is kept; every exercise blank tests a decision; and a reader who finishes the guide could explain WHY each technique exists, not just how to type it.",
+  "slugs_and_toc": {
+    "principle": "The sidebar's table of contents (id=\"@slug\" attributes + the #toc-list of <a> links) is NOT produced by this generation step. It's a separate, later pass over the finished HTML, run by a dedicated Go tool (extract_toc) plus manual curation. Nothing in this file asks you to build it, and you should not attempt to.",
+    "why_mentioned_here": "The one real dependency running the other way: extract_toc's h1-level slugs are placed on each slide's <div class=\"eyebrow\">...</div>, not the h1 itself, and it only does that for slides whose eyebrow text contains the word 'Ενότητα'. That means eyebrow_conventions (see deck_anatomy) is a hard prerequisite for a slide to get a working TOC entry at all — get the eyebrow right and the rest of this is automatic and none of your concern.",
+    "what_the_tool_does": {
+      "h1_slugs": "on the eyebrow div (id=\"@slug\", derived from the h1's own text), for any slide whose eyebrow says 'Ενότητα' — a title slide or closing glossary/cheatsheet slide correctly has no eyebrow (or a non-'Ενότητα' one) and falls back to the h1 itself instead",
+      "h2_h3_slugs": "hand-picked afterward, only in slides that turn out unusually large, only on genuinely important pieces (a named gotcha, a stated rule of thumb) — not mechanical, not something to pre-empt in your own structure",
+      "toc_list": "built from those ids into <a href=\"#@slug\" class=\"toc-link toc-hN\">Text</a> entries, pasted into #toc-list in the sidebar markup",
+      "toc_section_dividers": "optional, non-clickable <div class=\"toc-section\">LABEL</div> entries added by hand alongside the links to visually group the sidebar — also not something you produce"
+    },
+    "do_not": "Do not emit id=\"@...\" anywhere, do not emit #toc-list content, do not try to guess or reserve slugs, do not add toc-section dividers. Just write correct eyebrow_conventions and move on."
+  }
 }

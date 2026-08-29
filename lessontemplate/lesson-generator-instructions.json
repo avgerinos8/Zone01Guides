@@ -47,5 +47,7 @@
     "never solve the actual exercise/assignment — theory and tools only",
     "confirm the section list with the user before generating full content, unless already confirmed"
   ],
-  "topic": "learn go part 1 (see other file)"
+  "topic": "learn go part 1 (see other file)",
+  "eyebrow_convention": "Every content slide (addContent()) opens with <div class=\"eyebrow\">...</div> immediately before its <h1>, e.g. <div class=\"eyebrow\">Ενότητα 3 / 8 — Loops</div><h1>Τι είναι μια επανάληψη</h1>. Repeat the SAME eyebrow text on every slide that continues that section (don't renumber mid-section). This is required, not decorative: a later, separate tool (extract_toc) reads this exact pattern to build the sidebar table of contents (see slugs_and_toc below) — a slide with a missing or malformed eyebrow silently loses its entry there. A slide that ISN'T a numbered section (the title slide, a closing glossary/cheatsheet slide) correctly has no 'Ενότητα N' eyebrow, or none at all.",
+  "slugs_and_toc": "Do NOT add id=\"@...\" attributes, a #toc-list, or anything TOC-related yourself — this is a separate, later pipeline step, run by a dedicated tool (extract_toc, Go) after this content is generated, plus some manual curation. Nothing here changes what you output. Mentioned only so you don't try to build it: that tool inserts a short id=\"@slug\" on the eyebrow div of most content slides (using the h1's own text to name the slug), and on hand-picked, genuinely important headings inside unusually large slides; it then builds the sidebar's list of <a> links from those ids. The one thing that DOES matter to you here is the eyebrow_convention above, since that tool depends on it."
 }

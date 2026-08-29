@@ -28,5 +28,7 @@
     "do not solve the actual exercise — theory/tools only",
     "do not include title/sources/init slides — only this section's content"
   ],
-  "section_topic": "<< FILL IN >>"
+  "section_topic": "<< FILL IN >>",
+  "eyebrow_convention": "Every addContent() slide opens with <div class=\"eyebrow\">Ενότητα N / TOTAL — <Section Title></div> immediately before its <h1> — same eyebrow text repeated on every slide of that section, don't renumber mid-section. Required: a later tool (extract_toc) reads this exact pattern to build the sidebar TOC; a missing/malformed eyebrow silently drops that slide from it.",
+  "slugs_and_toc": "Do not add id=\"@...\" or any #toc-list content yourself — separate, later step (extract_toc, a Go tool) plus manual curation, run after this content exists. Only thing that matters here is eyebrow_convention above, since that tool depends on it."
 }
