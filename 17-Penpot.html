@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="el">
+<!--
+  ZONE01 SLIDE-DECK TEMPLATE. This file is self-contained instruction-wise —
+  script.js/style.css are a fixed engine you never need to see or edit.
+
+  Edit only the inline <script> at the bottom of <body>. It's a sequence of
+  calls, ending with initSlideDeck() exactly once:
+
+    addContent(html, opts?)
+      One slide. HTML classes available: h1 h2 h3 p .lede .callout
+      .callout.good .card .grid2 .grid3 <pre><code> (hand-color tokens with
+      <span class="tok-kw|tok-type|tok-str|tok-com|tok-num|tok-func">, no
+      auto-highlighter exists) .glossary-table/.glossary-strip/.glossary-columns
+      (mix all three for variety) .title-slide/.title-badge/.kicker-line
+      (title slide only, keep the "ask an AI when stuck" callout as-is).
+      Drag-to-reveal spoiler (e.g. hiding a code answer until dragged open):
+        <div class="spoiler"><div class="spoiler-lock"><span>Drag to
+        reveal →</span></div><pre><code>...</code></pre></div>
+      A click/tap does nothing — only an actual drag past ~40% unlocks it.
+      opts = { bg: "path/to/image.jpg", overlayAlpha: 0..1 (default 0.5),
+      backgroundSize (default "auto"), backgroundRepeat (default "no-repeat"),
+      backgroundPosition (default "top left") }
+      → optional per-slide background image with a solid readability
+      overlay; different slides can use different images or none at all.
+      backgroundPosition accepts real CSS values, e.g. "center center",
+      "top left", "bottom right", "50% 50%".
+
+    addQuiz(question | [question,...], opts?)
+      One or more MC questions on one slide.
+      question = { q, options:[4 strings], correct: index, explain }
+      opts = { bg, overlayAlpha } — same background option as addContent.
+      Rules: options similar length/style; correct-answer slot varies
+      across questions; distractors are plausible, never "obviously
+      silly"; include at least one distractor ~5 words longer than the
+      correct answer somewhere in the deck; one short explain per question.
+
+    addFillBlank(item | [item,...], opts?)
+      item = { code (mark blanks with __id__), blanks:[{id,answer}], explain,
+               lang? }
+      opts = { label, note }
+      Auto-adds a "Reveal hint"/"Check" UI — nothing else to wire up. If an
+      item has exactly 1 blank, the hint button is disabled automatically
+      (shows "[Time to Guess]" instead) since there'd be nothing to guess.
+      code gets syntax-colored automatically — defaults to "go" if item.lang
+      is omitted; set item.lang to "js" | "html" | "css" (or "go" explicitly)
+      to override per item. Only the static code text is colored — the
+      __id__ blanks always stay live, editable inputs, untouched by this.
+
+    addMatching(pairs | [set1, set2, ...], opts?)
+      pairs = [{term, def}, ...] for ONE set, OR an array of 2-3 such sets
+      to stack multiple independent matching games on the same slide.
+      opts = { label, note }
+
+  Score: every quiz/fillblank/matching item is scored automatically (100
+  correct, 50 fill-blank-with-hint-used, 0 wrong) and shown as a small
+  badge next to each slide's "Reset this quiz". To show the aggregate
+  result, put <div id="final-score"></div> ANYWHERE in the deck (typically
+  the sources/last slide) — it fills itself in automatically.
+
+  Deck structure: title → theory sections (interleave addQuiz() checkpoints
+  regularly, not just at the end) → a glossary addContent() may appear
+  after ANY section/quiz where it helps (not only once at the very end) →
+  one final combined addQuiz() with 2-3 questions → sources/footer slide
+  with the #final-score placeholder (keep the "pavgerin/avgerinos8" credit).
+
+  Never solve the actual exercise — theory/tools only. Prose Greek, code
+  comments English. Confirm the section list with the user before writing
+  full content, unless already confirmed.
+-->
+
+<head>
+  <!-- Must be the very first thing in <head>, inline (not an external
+       file — no time for an extra network round-trip): captures the URL's
+       #hash and immediately strips it from the address bar, BEFORE the
+       browser gets any chance to attempt its own native scroll-to-fragment.
+       That native attempt is guaranteed broken here (the target heading
+       doesn't exist until static/script.js builds all the slides later),
+       and worse, some browsers RETRY it once the target appears — landing
+       on a still-hidden (display:none) element, which produces exactly the
+       "scrolled somewhere wrong" symptom, and only intermittently since the
+       retry timing itself isn't consistent. Stripping the hash here removes
+       every native attempt entirely — see handleHashNavigation() in
+       script.js, which reads window.__initialHash (not location.hash,
+       that's been cleared) and does the whole thing itself, deterministically,
+       once slides actually exist. -->
+  <script>
+    window.__initialHash = location.hash;
+    if (location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  </script>
+  <!-- Separate, deliberately self-contained inline script — no dependency on
+       static/script.js's own functions or variables, since the whole point
+       is to still work if THAT script is what's broken (a future syntax
+       error there fires as a window "error" event too, same as a runtime
+       exception during initSlideDeck()). Registered here, before that
+       script is even requested, so it's guaranteed to already be listening
+       no matter how early things go wrong.
+
+       Concretely, this exists for: a course author edits quiz/fill-blank/
+       matching content after a learner has already saved progress against
+       the OLD shape (e.g. removes one matching pair — the learner's saved
+       progress records answers by INDEX into that pairs array, so a saved
+       index that's now out of bounds throws when the exercise tries to
+       render it). That renderMatching()-specific case is now guarded
+       directly (see script.js), but this is the general backstop for
+       "broke some other way nobody anticipated" — shows a plain, honest
+       screen instead of the blank page that an uncaught error during
+       initSlideDeck()'s single synchronous build pass would otherwise
+       leave behind (that pass aborts entirely partway through on any
+       uncaught exception, so nothing after that point ever renders). -->
+  <script>
+    (function () {
+      var shown = false;
+      window.addEventListener("error", function () {
+        if (shown) return;
+        // The critical check: only a failure BEFORE the page ever finished
+        // its first successful render counts as "broken" here. That flag
+        // is set as the very last line of initSlideDeck() in script.js —
+        // if we get this far while it's still unset, the deck's one
+        // synchronous build pass aborted partway through and never
+        // finished, which is the actual blank-page failure mode this
+        // exists for. An error AFTER that flag is set means the page
+        // already rendered successfully and is visibly working — showing
+        // this takeover for something later (e.g. a click handler
+        // throwing) would break a page that wasn't actually broken.
+        if (window.__pageInitialized) return;
+        shown = true;
+        showContentChangedFallback();
+      });
+
+      function showContentChangedFallback() {
+        var overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:999999;background:#1a1a1a;" +
+          "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+          "gap:20px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#e0e0e0;" +
+          "text-align:center;padding:24px;";
+
+        var msg = document.createElement("div");
+        msg.textContent = "Internal Error";
+        msg.style.cssText = "font-size:22px;font-weight:600;letter-spacing:.02em;";
+        overlay.appendChild(msg);
+
+        var btn = document.createElement("button");
+        btn.textContent = "Reset Progress";
+        btn.style.cssText = "font-family:inherit;font-size:15px;padding:10px 22px;" +
+          "border-radius:7px;border:1px solid #888;background:transparent;" +
+          "color:#ccc;cursor:pointer;";
+        btn.addEventListener("click", function () {
+          // Self-contained on purpose — mirrors getStoragePrefix()/
+          // performHardReset() in script.js exactly, but doesn't call them:
+          // if THIS is running, we can't assume anything in that file is
+          // actually intact.
+          var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+          localStorage.removeItem(prefix + "current_slide");
+          localStorage.removeItem(prefix + "answers");
+          localStorage.removeItem(prefix + "scores");
+          localStorage.removeItem(prefix + "notified_100");
+          localStorage.removeItem(prefix + "version");
+          window.location.reload();
+        });
+        overlay.appendChild(btn);
+
+        document.body.appendChild(overlay);
+      }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Penpot — UI/UX Design για Web και Android</title>
+  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <!-- No theme-*.css on purpose — this deck uses the default palette from
+       style.css. Add a theme link here (after style.css) to override it. -->
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-toc">
+        <span class="desktop-text">☰</span>
+        <span class="mobile-text">☰</span>
+      </button>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots">
+      <div class="dots-arrow dots-arrow-left" id="dots-arrow-left"><span class="dots-arrow-triangle"></span></div>
+      <div id="dots-track"></div>
+      <div class="dots-arrow dots-arrow-right" id="dots-arrow-right"><span class="dots-arrow-triangle"></span></div>
+    </div>
+    <div class="nav-group-right">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Contents sidebar ─────────────────────────────────────────────────
+       Opened by #btn-toc. Reset Progress lives in the header now (compact
+       icon, #btn-reset-inner); Return (Home) moved to the footer. #toc-list
+       is populated by JS (heading list); #toc-search is wired in a later
+       step. See initTocSidebar() in static/script.js. -->
+  <div id="toc-backdrop"></div>
+  <div id="toc-sidebar">
+    <div id="toc-header">
+      <span id="toc-title">Contents</span>
+      <div class="toc-header-actions">
+        <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress" aria-label="Reset Progress">Reset Progress</button>
+        <button id="toc-close" class="toc-icon-btn" aria-label="Κλείσιμο">✕</button>
+      </div>
+    </div>
+
+    <div id="toc-search-wrap">
+      <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+    </div>
+
+    <div id="toc-list">
+      <!-- populated by extract_toc's output — a mix of <a class="toc-link
+           toc-hN" href="#@slug">...</a> entries and, optionally, plain
+           non-clickable section dividers to group them visually:
+             <div class="toc-section">ΕΝΟΤΗΤΑ 3 — PATTERNS</div>
+           Not a link, not generated by the tool — added by hand where a
+           visual break between sections is wanted. Text only, no href, no
+           @slug. -->
+    </div>
+
+    <div id="toc-footer">
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
+        <span class="desktop-text">Return Home</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-toc-close-footer">
+        <span class="desktop-text">Close</span>
+        <span class="mobile-text">Close</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
+  <script>
+    // Course content below — see instructions comment at the top of this file.
+
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/penpot.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Penpot<br>UI/UX design για web και Android</h1>
+  <p class="lede">Ένας οδηγός για το open source design tool που δουλεύει με CSS Grid, Flexbox και design tokens — από το πρώτο board μέχρι το handoff προς τον developer.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+`);
+
+    // Section 1
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή</div>
+<h1>Γιατί υπάρχει ένα βήμα πριν τον κώδικα</h1>
+<p class="lede">Πριν μιλήσουμε για το εργαλείο, χρειάζεται να είναι ξεκάθαρο τι πρόβλημα λύνει. Αν δεν είναι, το design μοιάζει με περιττό ενδιάμεσο βήμα.</p>
+
+<h2>Η προφανής προσέγγιση, και πού σταματάει</h2>
+<p>Παίρνεις την εκφώνηση, ανοίγεις τον editor και αρχίζεις να γράφεις. Το layout το αποφασίζεις καθώς γράφεις: ένα container εδώ, λίγο padding εκεί, το κουμπί δεξιά επειδή εκεί έμεινε χώρος. Δουλεύει, μέχρι το σημείο που κάποιος ρωτάει «τι γίνεται όταν η λίστα είναι άδεια;» ή «πώς φαίνεται σε οθόνη 360 pixel;».</p>
+<p>Σε αυτό το σημείο η αλλαγή δεν είναι πια μια γραμμή κειμένου. Είναι αλλαγή σε markup, σε στυλ, σε state, και συχνά σε τρία αρχεία ταυτόχρονα. Το ίδιο ερώτημα, απαντημένο σε ένα design tool, κοστίζει δύο λεπτά και ένα σύρσιμο του ποντικιού.</p>
+
+<div class="callout">
+  <span class="tag">Το κεντρικό επιχείρημα</span>
+  Το design δεν είναι το στάδιο όπου κάτι γίνεται όμορφο. Είναι το στάδιο όπου οι αποφάσεις είναι ακόμα φθηνές. Όσο πιο αργά αλλάζει μια απόφαση, τόσο περισσότερο κοστίζει, και αυτή η καμπύλη είναι απότομη.
+</div>
+
+<h2>UI και UX δεν είναι το ίδιο πράγμα</h2>
+<p>Οι δύο όροι χρησιμοποιούνται συχνά μαζί, σαν να περιγράφουν την ίδια δουλειά. Δεν την περιγράφουν.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>UI — User Interface</h3>
+    <p>Το ορατό και το απτό. Τι χρώμα έχει το κουμπί, πόσο μεγάλο είναι το κείμενο, πού μπαίνει το εικονίδιο, πώς αντιδρά η οθόνη στο πάτημα. Αφορά τη μορφή.</p>
+  </div>
+  <div class="card">
+    <h3>UX — User Experience</h3>
+    <p>Η διαδρομή. Πόσα βήματα χρειάζονται για να ολοκληρωθεί μια εργασία, τι βλέπει ο χρήστης όταν κάτι αποτυγχάνει, αν καταλαβαίνει πού βρίσκεται. Αφορά τη ροή.</p>
+  </div>
+</div>
+
+<p>Μια οθόνη μπορεί να είναι άψογη ως UI και άχρηστη ως UX: όμορφα κουμπιά, σωστές αποστάσεις, και μια διαδικασία εγγραφής επτά βημάτων που κανείς δεν ολοκληρώνει. Το αντίστροφο συμβαίνει επίσης — μια σωστή ροή που φαίνεται τόσο πρόχειρη ώστε ο χρήστης δεν την εμπιστεύεται.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το πιο συχνό λάθος του προγραμματιστή που ξεκινάει με design είναι να ανοίξει το εργαλείο και να αρχίσει να διαλέγει χρώματα. Η σειρά είναι αντίστροφη: πρώτα ποιες οθόνες υπάρχουν και πώς συνδέονται, μετά τι έχει η κάθε μία, και τελευταία πώς φαίνεται.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή</div>
+<h1>Τι είναι το Penpot</h1>
+<p class="lede">Ένα design και prototyping tool που τρέχει στον browser, είναι open source, και αποθηκεύει τα αρχεία του σε ανοιχτά πρότυπα του web.</p>
+
+<h2>Τα τέσσερα πράγματα που το ξεχωρίζουν</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Ανοιχτός κώδικας</h3>
+    <p>Ο κώδικας είναι διαθέσιμος στο GitHub. Μπορείς να το τρέξεις στον δικό σου server με Docker, ή να χρησιμοποιήσεις την cloud έκδοση χωρίς να πληρώσεις για τα βασικά.</p>
+  </div>
+  <div class="card">
+    <h3>Βασισμένο σε web standards</h3>
+    <p>Τα σχέδια είναι SVG. Τα layouts είναι πραγματικό CSS Flexbox και CSS Grid, όχι μια δική του απομίμηση. Τα design tokens ακολουθούν το πρότυπο του W3C.</p>
+  </div>
+  <div class="card">
+    <h3>Τρέχει στον browser</h3>
+    <p>Δεν υπάρχει εγκατάσταση και δεν εξαρτάται από λειτουργικό σύστημα. Linux, Windows και macOS βλέπουν ακριβώς το ίδιο περιβάλλον.</p>
+  </div>
+  <div class="card">
+    <h3>Χωρίς κλείδωμα σε προμηθευτή</h3>
+    <p>Επειδή η μορφή αρχείου είναι ανοιχτή, τα σχέδια δεν είναι όμηροι μιας εταιρείας. Αν αύριο αλλάξει η τιμολόγηση, τα αρχεία παραμένουν αναγνώσιμα.</p>
+  </div>
+</div>
+
+<h2>Πού βρίσκεται σήμερα</h2>
+<p>Η ανάπτυξη είναι ενεργή και γρήγορη. Μέσα στο 2026 προστέθηκαν, μεταξύ άλλων, νέα μηχανή rendering με WebGL, MCP server για συνεργασία με AI εργαλεία, typography tokens στο Design sidebar και background blur. Επειδή το εργαλείο αλλάζει συχνά, όποια λεπτομέρεια του interface δεις εδώ και δεν ταιριάζει με αυτό που έχεις μπροστά σου, το help center είναι η πηγή αλήθειας, όχι ο οδηγός.</p>
+
+<div class="callout">
+  <span class="tag">Ειλικρινές όριο</span>
+  Το Penpot δεν είναι σε κάθε σημείο ισοδύναμο με τα εμπορικά εργαλεία. Το οικοσύστημα plugins είναι πολύ μικρότερο από αυτό του Figma, και σε πολύ μεγάλα αρχεία η απόδοση έχει υπάρξει αδύναμο σημείο — γι αυτό ακριβώς δουλεύουν τη νέα μηχανή WebGL. Για τη δουλειά που θα κάνεις εδώ, τίποτα από τα δύο δεν σε εμποδίζει.
+</div>
+
+<h2>Τι σημαίνει «SVG-native» στην πράξη</h2>
+<p>Ένα ορθογώνιο με στρογγυλεμένες γωνίες στο Penpot δεν είναι μια ιδιόκτητη δομή που μόνο το Penpot καταλαβαίνει. Είναι ένα SVG element με συγκεκριμένα attributes. Αυτό έχει τρεις συνέπειες που θα δεις παρακάτω στον οδηγό: το export σε SVG είναι ακριβές και όχι μια μετατροπή, το Inspect tab μπορεί να σου δείξει πραγματικό CSS, και ένα αρχείο Penpot διαφέρει με τρόπο που διαβάζεται όταν μπει σε version control.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 8 — Εισαγωγή</div>
+<h1>Ξενάγηση στο περιβάλλον</h1>
+<p class="lede">Δύο επίπεδα: το Dashboard, όπου ζουν τα αρχεία, και το Workspace, όπου γίνεται η δουλειά.</p>
+
+<h2>Dashboard</h2>
+<p>Είναι η αρχική οθόνη μετά το login. Εδώ οργανώνεις σε <strong>teams</strong>, μέσα στα teams σε <strong>projects</strong>, και μέσα στα projects σε <strong>files</strong>. Ένα file μπορεί να έχει πολλές <strong>pages</strong>, και κάθε page έχει το δικό της άπειρο canvas.</p>
+<p>Στο Dashboard επίσης ανεβάζεις custom fonts, βλέπεις τα shared libraries της ομάδας και έχεις πρόσβαση στα έτοιμα templates. Υπάρχουν κοινοτικά templates για Material Design 3 και για Android UI kit, τα οποία μπορείς να εισάγεις και να τα μελετήσεις σαν έτοιμα παραδείγματα.</p>
+
+<div class="callout good">
+  <span class="tag">Πρακτική συμβουλή</span>
+  Πριν σχεδιάσεις οτιδήποτε από το μηδέν, κατέβασε ένα template και άνοιξέ το. Το να δεις πώς είναι οργανωμένα τα layers και τα components κάποιου άλλου διδάσκει περισσότερα από πέντε σελίδες θεωρίας.
+</div>
+
+<h2>Workspace</h2>
+<p>Η οθόνη εργασίας χωρίζεται σε τέσσερις περιοχές:</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">Toolbar</td><td class="gt-def">Τα εργαλεία δημιουργίας: board, rectangle, ellipse, text, image, path, curve. Το κάθε ένα έχει και shortcut ενός γράμματος.</td></tr>
+  <tr><td class="gt-term">Αριστερό sidebar</td><td class="gt-def">Δύο tabs. Το Layers δείχνει τη δομή του αρχείου σαν δέντρο. Το Assets δείχνει τα components, τα colors και τις typographies που έχεις αποθηκεύσει.</td></tr>
+  <tr><td class="gt-term">Canvas</td><td class="gt-def">Ο άπειρος καμβάς στο κέντρο. Zoom με το scroll και το Ctrl, μετακίνηση με το space πατημένο ή με το μεσαίο κουμπί.</td></tr>
+  <tr><td class="gt-term">Δεξί sidebar</td><td class="gt-def">Οι ιδιότητες του επιλεγμένου αντικειμένου. Εδώ αλλάζουν διαστάσεις, χρώματα, layout, εφέ, και εδώ ορίζονται τα interactions του prototype.</td></tr>
+</table>
+
+<h2>Τρεις τρόποι να δεις το ίδιο αρχείο</h2>
+<p>Το δεξί sidebar έχει tabs που αλλάζουν εντελώς τι κάνεις:</p>
+<div class="grid3">
+  <div class="card">
+    <h3>Design</h3>
+    <p>Η κανονική λειτουργία. Θέση, μέγεθος, χρώμα, τυπογραφία, layout, εφέ.</p>
+  </div>
+  <div class="card">
+    <h3>Prototype</h3>
+    <p>Εδώ τραβάς συνδέσεις από στοιχείο σε board και ορίζεις τι κάνει το πάτημα. Η ενότητα 6 είναι αφιερωμένη σε αυτό.</p>
+  </div>
+  <div class="card">
+    <h3>Inspect / Code</h3>
+    <p>Η όψη του developer. Μετρήσεις, τιμές χρωμάτων, έτοιμο CSS και το SVG markup. Ενότητα 7.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το Inspect δεν είναι ξεχωριστό εργαλείο για άλλον άνθρωπο. Χρησιμοποίησέ το ενώ σχεδιάζεις, ως έλεγχο. Αν το CSS που παράγει μια οθόνη σου φαίνεται παράλογο, το πρόβλημα είναι συνήθως στη δομή του σχεδίου, όχι στο εργαλείο.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια είναι η βασική δικαιολόγηση για το βήμα του design πριν τον κώδικα;",
+        options: [
+          "Οι αποφάσεις είναι ακόμα φθηνές σε αυτό το στάδιο και αλλάζουν σε λίγα λεπτά",
+          "Ο κώδικας γράφεται μετά πιο γρήγορα επειδή το εργαλείο παράγει έτοιμα αρχεία για την πλατφόρμα",
+          "Επειδή έτσι δουλεύουν οι επαγγελματικές ομάδες, και η καθιερωμένη πρακτική του κλάδου έχει προκύψει από πολλά χρόνια εμπειρίας",
+          "Επειδή το αποτέλεσμα γίνεται πιο όμορφο απ ό,τι αν το σχεδίαζε κατευθείαν ο προγραμματιστής"
+        ],
+        correct: 0,
+        explain: "Το επιχείρημα είναι το κόστος αλλαγής, όχι η αισθητική. Η δεύτερη επιλογή περιγράφει κάτι που το Penpot δεν κάνει: δεν παράγει έτοιμο κώδικα εφαρμογής, μόνο CSS και SVG ως αναφορά."
+      },
+      {
+        q: "Μια εφαρμογή έχει προσεγμένα χρώματα, σωστές αποστάσεις και τυπογραφία, αλλά η εγγραφή απαιτεί επτά βήματα και οι μισοί χρήστες την εγκαταλείπουν. Πού είναι το πρόβλημα;",
+        options: [
+          "Στο UX, γιατί το θέμα είναι η ροή και όχι η μορφή",
+          "Στο UI, γιατί προφανώς κάτι στην εμφάνιση αποθαρρύνει τον χρήστη να συνεχίσει μέχρι το τέλος",
+          "Πουθενά, γιατί οι επτά οθόνες είναι απαραίτητες για τη συλλογή των στοιχείων",
+          "Και στα δύο εξίσου, γιατί UI και UX είναι στην πράξη δύο ονόματα για την ίδια δουλειά"
+        ],
+        correct: 0,
+        explain: "Η μορφή είναι σωστή, η διαδρομή δεν είναι. Η τελευταία επιλογή επαναλαμβάνει ακριβώς τη σύγχυση που η ενότητα ξεκαθαρίζει: οι δύο όροι περιγράφουν διαφορετικά πράγματα."
+      },
+      {
+        q: "Τι σημαίνει πρακτικά ότι το Penpot είναι SVG-native;",
+        options: [
+          "Τα αντικείμενα είναι πραγματικά SVG elements, οπότε το export και το Inspect δεν είναι μετατροπή",
+          "Μπορείς να εισάγεις εικόνες SVG στον καμβά χωρίς να χάσουν ποιότητα όταν μεγαλώσουν, επειδή διατηρούν τα διανυσματικά τους δεδομένα",
+          "Το εργαλείο αποθηκεύει κάθε αρχείο ως ένα συμπιεσμένο SVG που ανοίγει σε οποιονδήποτε browser",
+          "Ο κώδικας του ίδιου του εργαλείου είναι γραμμένος με τεχνολογίες που βασίζονται σε ανοιχτά πρότυπα"
+        ],
+        correct: 0,
+        explain: "Το ζητούμενο είναι η εσωτερική αναπαράσταση: το σχέδιο είναι ήδη SVG, άρα δεν χρειάζεται μετάφραση για να βγει SVG ή CSS. Το import εικόνων SVG υπάρχει, αλλά είναι άσχετο με τον όρο."
+      },
+      {
+        q: "Ποια είναι η σωστή ιεραρχία οργάνωσης στο Dashboard;",
+        options: [
+          "Team, μετά project, μετά file, και μέσα στο file οι pages",
+          "Project, μετά team, μετά page, και μέσα στην page τα files που ανήκουν στην ομάδα",
+          "File, μετά board, μετά layer, χωρίς κάποιο ενδιάμεσο επίπεδο ομαδοποίησης",
+          "Team, μετά library, μετά component, με τα projects να είναι απλώς ετικέτες"
+        ],
+        correct: 0,
+        explain: "Το file είναι η μονάδα που ανοίγεις, και μέσα του οι pages δίνουν ξεχωριστούς καμβάδες. Τα boards και τα layers είναι δομή μέσα στην page, ένα επίπεδο πιο κάτω."
+      },
+      {
+        q: "Γιατί αξίζει να ανοίξεις το Inspect tab ενώ ακόμα σχεδιάζεις, αντί μόνο κατά την παράδοση;",
+        options: [
+          "Επειδή παράλογο CSS συνήθως προδίδει λάθος δομή στο σχέδιο",
+          "Επειδή είναι ο μόνος τρόπος να δεις τις ακριβείς διαστάσεις των αντικειμένων που έχεις τοποθετήσει",
+          "Επειδή οι αλλαγές που κάνεις εκεί ενημερώνουν αυτόματα το σχέδιο και γλιτώνεις διπλή δουλειά",
+          "Επειδή το prototype δεν λειτουργεί χωρίς αυτόν τον έλεγχο"
+        ],
+        correct: 0,
+        explain: "Λειτουργεί ως έλεγχος της δομής. Το Inspect είναι μόνο για ανάγνωση, δεν επιστρέφει αλλαγές στο σχέδιο, και οι διαστάσεις φαίνονται και από το Design tab."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "UI", def: "Η μορφή — χρώματα, μεγέθη, θέσεις, οπτική αντίδραση στο πάτημα" },
+        { term: "UX", def: "Η ροή — βήματα, κατανόηση, τι συμβαίνει όταν κάτι αποτυγχάνει" },
+        { term: "Dashboard", def: "Η οθόνη διαχείρισης teams, projects, files, fonts και templates" },
+        { term: "Workspace", def: "Η οθόνη εργασίας με canvas, toolbar και τα δύο sidebars" },
+        { term: "Page", def: "Ένας ξεχωριστός καμβάς μέσα στο ίδιο αρχείο" }
+      ],
+      [
+        { term: "Tab: Design", def: "Θέση, μέγεθος, χρώμα, layout και εφέ του επιλεγμένου αντικειμένου" },
+        { term: "Tab: Prototype", def: "Συνδέσεις μεταξύ οθονών και συμπεριφορά στο πάτημα" },
+        { term: "Tab: Inspect", def: "Μετρήσεις, τιμές και έτοιμο CSS ή SVG για τον developer" },
+        { term: "Layers panel", def: "Η δομή του αρχείου σε μορφή δέντρου" },
+        { term: "Assets panel", def: "Αποθηκευμένα components, colors και typographies" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 1 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">UI</span><span class="gc-def">η μορφή της διεπαφής</span></div>
+  <div class="gc-line"><span class="gc-term">UX</span><span class="gc-def">η εμπειρία και η ροή χρήσης</span></div>
+  <div class="gc-line"><span class="gc-term">Workspace</span><span class="gc-def">η οθόνη εργασίας του Penpot</span></div>
+  <div class="gc-line"><span class="gc-term">Dashboard</span><span class="gc-def">η οθόνη διαχείρισης αρχείων</span></div>
+  <div class="gc-line"><span class="gc-term">Page</span><span class="gc-def">ξεχωριστός καμβάς μέσα σε ένα file</span></div>
+  <div class="gc-line"><span class="gc-term">Canvas</span><span class="gc-def">η άπειρη επιφάνεια σχεδίασης</span></div>
+  <div class="gc-line"><span class="gc-term">Template</span><span class="gc-def">έτοιμο αρχείο για εισαγωγή και μελέτη</span></div>
+  <div class="gc-line"><span class="gc-term">SVG</span><span class="gc-def">το διανυσματικό πρότυπο του web</span></div>
+  <div class="gc-line"><span class="gc-term">Self-host</span><span class="gc-def">εκτέλεση σε δικό σου server με Docker</span></div>
+  <div class="gc-line"><span class="gc-term">Inspect</span><span class="gc-def">η όψη μετρήσεων και κώδικα</span></div>
+</div>
+`);
+
+    // Section 2
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Boards & δομή</div>
+<h1>Το board είναι η οθόνη</h1>
+<p class="lede">Ο καμβάς είναι άπειρος. Το board είναι το ορθογώνιο που δηλώνει «αυτό εδώ είναι μια οθόνη συσκευής».</p>
+
+<h2>Τι κάνει ένα board και τι δεν κάνει ένα group</h2>
+<p>Και τα δύο περιέχουν άλλα αντικείμενα, οπότε η διαφορά δεν είναι προφανής στην αρχή. Είναι όμως ουσιαστική:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Board</h3>
+    <p>Έχει δικό του background, μπορεί να κόβει ό,τι ξεφεύγει από τα όριά του (clip content), είναι στόχος για export, είναι προορισμός για τα interactions του prototype, και μόνο πάνω σε board μπαίνει flex ή grid layout.</p>
+  </div>
+  <div class="card">
+    <h3>Group</h3>
+    <p>Μια απλή ομαδοποίηση για να μετακινείς πολλά αντικείμενα μαζί. Δεν έχει background, δεν κόβει τίποτα, δεν εμφανίζεται ως οθόνη στο prototype.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Ομαδοποιείς τα στοιχεία μιας κάρτας σε group, και μετά απορείς γιατί το κουμπί δεν στοιχίζεται όταν μεγαλώνει το κείμενο. Το group δεν έχει layout. Αν το πράγμα που φτιάχνεις έχει εσωτερική διάταξη, θέλει board.
+</div>
+
+<h2>Μεγέθη για κινητά</h2>
+<p>Όταν δημιουργείς board, το δεξί sidebar προσφέρει έτοιμα μεγέθη ανά κατηγορία συσκευής. Για Android, το πιο χρήσιμο σημείο εκκίνησης είναι το <strong>360 × 800</strong>. Δεν είναι μια συγκεκριμένη συσκευή, είναι το πλάτος που καλύπτει τη μεγάλη πλειοψηφία των τηλεφώνων όταν μετρηθεί σε ανεξάρτητες μονάδες.</p>
+
+<h2>Γιατί 360 και όχι 1080</h2>
+<p>Ένα σύγχρονο τηλέφωνο έχει οθόνη 1080 φυσικών pixel σε πλάτος. Δεν σχεδιάζεις όμως σε 1080, γιατί το Android δεν τοποθετεί σε φυσικά pixel: τοποθετεί σε <strong>dp</strong> (density-independent pixels). Ένα dp ισούται με ένα φυσικό pixel σε οθόνη 160 dpi, και πολλαπλασιάζεται ανάλογα με την πυκνότητα της συσκευής.</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">mdpi</td><td class="gt-def">×1 — 160 dpi, η βάση του συστήματος</td></tr>
+  <tr><td class="gt-term">hdpi</td><td class="gt-def">×1.5 — 240 dpi</td></tr>
+  <tr><td class="gt-term">xhdpi</td><td class="gt-def">×2 — 320 dpi</td></tr>
+  <tr><td class="gt-term">xxhdpi</td><td class="gt-def">×3 — 480 dpi, η πιο κοινή κατηγορία σήμερα</td></tr>
+  <tr><td class="gt-term">xxxhdpi</td><td class="gt-def">×4 — 640 dpi</td></tr>
+</table>
+
+<p>Η πρακτική συνέπεια είναι απλή: σχεδιάζεις σε κλίμακα ×1 και θεωρείς ότι ένα pixel στον καμβά είναι ένα dp στη συσκευή. Το ίδιο ισχύει και στο web, όπου η αντίστοιχη μονάδα λέγεται CSS pixel. Την πολλαπλή κλίμακα τη χρειάζεσαι μόνο στο export των εικόνων, και αυτό το βλέπουμε στην ενότητα 7.</p>
+
+<div class="callout good">
+  <span class="tag">Το αναγνωρίζεις;</span>
+  Αν έχεις γράψει ποτέ CSS με <code>@media (max-width: 600px)</code>, έχεις ήδη δουλέψει σε αυτή τη λογική. Το breakpoint δεν μετράει φυσικά pixel, μετράει CSS pixel. Το dp είναι η ίδια ιδέα με άλλο όνομα.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 2 / 8 — Boards & δομή</div>
+<h1>Shapes, layers και η πειθαρχία των ονομάτων</h1>
+
+<h2>Τα βασικά αντικείμενα</h2>
+<p>Ορθογώνιο, έλλειψη, κείμενο, εικόνα, path και curve. Το path και το curve φτιάχνουν ελεύθερα σχήματα σημείο προς σημείο, όπως σε κάθε διανυσματικό εργαλείο. Οι <strong>boolean operations</strong> — union, difference, intersection, exclude — συνδυάζουν δύο σχήματα σε ένα καινούριο, και είναι ο συνηθισμένος τρόπος να φτιαχτεί ένα εικονίδιο χωρίς να σχεδιαστεί με το χέρι.</p>
+
+<h2>Το panel των layers δεν είναι λίστα, είναι δέντρο</h2>
+<p>Η σειρά στο panel καθορίζει και τη σειρά στον άξονα z: ό,τι είναι πιο ψηλά στη λίστα ζωγραφίζεται πάνω από ό,τι είναι πιο χαμηλά. Η ένθεση δείχνει τι περιέχεται μέσα σε τι.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Ένα αρχείο με είκοσι layers που λέγονται Rectangle, Rectangle copy, Group, Group 2 είναι πρακτικά αδιάβαστο μία εβδομάδα αργότερα, και εντελώς άχρηστο για όποιον άλλον το ανοίξει. Τα ονόματα δεν είναι διακοσμητικά: εμφανίζονται στο Inspect, στα exports και στα components.
+</div>
+
+<p>Μια σύμβαση που λειτουργεί: ονόμασε με βάση τον ρόλο, όχι το σχήμα. Όχι <code>Rectangle 4</code> αλλά <code>card-background</code>. Όχι <code>Group 7</code> αλλά <code>product-card</code>. Είναι η ίδια λογική με τα ονόματα μεταβλητών στον κώδικα, και έχει τα ίδια οφέλη.</p>
+
+<h2>Constraints: τι γίνεται όταν αλλάξει το μέγεθος του γονέα</h2>
+<p>Κάθε αντικείμενο μέσα σε board έχει constraints — έναν κανόνα για το τι συμβαίνει όταν το board αλλάξει διαστάσεις. Οι επιλογές είναι, οριζόντια και κάθετα ξεχωριστά: <code>left</code>, <code>right</code>, <code>left and right</code>, <code>center</code>, <code>scale</code>.</p>
+
+<h2>Η προφανής προσέγγιση, και το σημείο που σπάει</h2>
+<p>Σχεδιάζεις μια οθόνη 360 πλάτος. Βάζεις ένα κουμπί πλάτους 320 στη θέση x = 20, ώστε να έχει 20 pixel περιθώριο δεξιά και αριστερά. Φαίνεται σωστό.</p>
+<p>Αντιγράφεις το board και το κάνεις 412 πλάτος, για να δεις πώς φαίνεται σε μεγαλύτερο τηλέφωνο. Με το προεπιλεγμένο constraint <code>left</code>, το κουμπί μένει στο x = 20 με πλάτος 320 και το δεξί περιθώριο γίνεται 72. Το σχέδιο δεν είναι πια συμμετρικό, και το λάθος είναι σιωπηλό: τίποτα δεν σου το επισημαίνει.</p>
+<p>Με constraint <code>left and right</code>, το κουμπί κρατάει και τις δύο αποστάσεις και τεντώνεται σε πλάτος 372. Αυτό είναι το ζητούμενο.</p>
+
+<div class="callout good">
+  <span class="tag">Πότε το χρησιμοποιείς</span>
+  Τα constraints είναι για αντικείμενα που τοποθετούνται ελεύθερα, με απόλυτες συντεταγμένες. Μόλις βάλεις flex ή grid layout στον γονέα, οι θέσεις υπολογίζονται από το layout και τα constraints παύουν να ισχύουν για τα παιδιά του. Η ενότητα 4 εξηγεί γιατί το layout είναι σχεδόν πάντα η καλύτερη επιλογή.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Θέλεις μια κάρτα που το ύψος της να μεγαλώνει όταν μεγαλώνει το κείμενο μέσα της. Board ή group;",
+        options: [
+          "Board, γιατί μόνο σε board μπαίνει layout",
+          "Group, γιατί κρατάει τα αντικείμενα μαζί και τα μετακινεί ως ένα σύνολο",
+          "Group, με την προϋπόθεση ότι έχει οριστεί σωστά το constraint στο κείμενο",
+          "Καμία διαφορά, αρκεί το κείμενο να είναι auto-height"
+        ],
+        correct: 0,
+        explain: "Η αυτόματη προσαρμογή σε περιεχόμενο προέρχεται από το layout, και το layout υπάρχει μόνο σε board. Το group μετακινεί, δεν διατάσσει."
+      },
+      {
+        q: "Γιατί σχεδιάζουμε μια οθόνη Android σε πλάτος 360 και όχι στα 1080 φυσικά pixel της συσκευής;",
+        options: [
+          "Γιατί το Android τοποθετεί σε dp, μονάδα ανεξάρτητη από την πυκνότητα",
+          "Γιατί ένα σχέδιο στα 1080 θα καθυστερούσε πολύ το εργαλείο και θα δυσκόλευε το zoom στον καμβά",
+          "Γιατί το Penpot δεν υποστηρίζει boards με πλάτος μεγαλύτερο από περίπου χίλια pixel",
+          "Γιατί τα 360 pixel είναι το πραγματικό πλάτος των περισσότερων τηλεφώνων"
+        ],
+        correct: 0,
+        explain: "Το 360 είναι πλάτος σε dp, όχι σε φυσικά pixel. Η τελευταία επιλογή συγχέει ακριβώς τις δύο μονάδες: τα φυσικά pixel είναι τρεις ή τέσσερις φορές περισσότερα."
+      },
+      {
+        q: "Σε συσκευή κατηγορίας xxhdpi, πόσα φυσικά pixel αντιστοιχούν σε 24 dp;",
+        options: [
+          "72",
+          "24",
+          "48",
+          "96"
+        ],
+        correct: 0,
+        explain: "Η κατηγορία xxhdpi έχει συντελεστή τρία, οπότε 24 × 3 = 72. Το 48 αντιστοιχεί σε xhdpi και το 96 σε xxxhdpi."
+      },
+      {
+        q: "Ένα κουμπί με constraint left μέσα σε board που πλάτυνε από 360 σε 412. Τι συμβαίνει;",
+        options: [
+          "Μένει στην ίδια θέση και το δεξί περιθώριο μεγαλώνει",
+          "Τεντώνεται ώστε να διατηρήσει και τα δύο περιθώρια όπως ήταν πριν την αλλαγή",
+          "Μετακινείται προς τα δεξιά ώστε να παραμείνει κεντραρισμένο μέσα στο νέο πλάτος",
+          "Κλιμακώνεται αναλογικά μαζί με το board, όπως μια εικόνα"
+        ],
+        correct: 0,
+        explain: "Το constraint left κλειδώνει μόνο την αριστερή απόσταση, οπότε όλο το επιπλέον πλάτος πηγαίνει δεξιά. Για διατήρηση και των δύο περιθωρίων χρειάζεται left and right."
+      },
+      {
+        q: "Ποιος είναι ο λόγος που τα ονόματα των layers έχουν πρακτική σημασία;",
+        options: [
+          "Εμφανίζονται στο Inspect, στα exports και στα components",
+          "Χωρίς όνομα το Penpot δεν επιτρέπει τη μετατροπή ενός αντικειμένου σε component",
+          "Επηρεάζουν τη σειρά με την οποία ζωγραφίζονται τα αντικείμενα στον άξονα z",
+          "Είναι υποχρεωτικά για τις boolean operations μεταξύ σχημάτων"
+        ],
+        correct: 0,
+        explain: "Το όνομα ταξιδεύει μαζί με το αντικείμενο σε κάθε έξοδο του αρχείου. Τη σειρά στον άξονα z την καθορίζει η θέση στο panel, όχι το όνομα."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Board", def: "Περιέχει, κόβει, εξάγεται, δέχεται layout και γίνεται οθόνη στο prototype" },
+        { term: "Group", def: "Απλή ομαδοποίηση για μετακίνηση, χωρίς background και χωρίς layout" },
+        { term: "Path", def: "Ελεύθερο σχήμα ορισμένο σημείο προς σημείο" },
+        { term: "Boolean operation", def: "Συνδυασμός δύο σχημάτων σε ένα, με union, difference, intersection ή exclude" },
+        { term: "Constraint", def: "Κανόνας για το τι κάνει ένα αντικείμενο όταν αλλάζει το μέγεθος του γονέα" }
+      ],
+      [
+        { term: "dp", def: "Μονάδα ανεξάρτητη από πυκνότητα, ένα φυσικό pixel στα 160 dpi" },
+        { term: "mdpi", def: "Ο συντελεστής ×1, η βάση της κλίμακας" },
+        { term: "xxhdpi", def: "Ο συντελεστής ×3, η πιο κοινή κατηγορία σε σημερινά τηλέφωνα" },
+        { term: "360 × 800", def: "Το συνηθισμένο μέγεθος board για σχεδίαση οθόνης Android" },
+        { term: "z-order", def: "Η σειρά επικάλυψης, όπως προκύπτει από τη θέση στο panel των layers" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">board</span><span class="gs-def">το πλαίσιο που παριστάνει μια οθόνη</span></div>
+  <div class="gs-pill"><span class="gs-name">group</span><span class="gs-def">ομαδοποίηση χωρίς layout</span></div>
+  <div class="gs-pill"><span class="gs-name">clip content</span><span class="gs-def">κόψιμο ό,τι ξεφεύγει από το board</span></div>
+  <div class="gs-pill"><span class="gs-name">path</span><span class="gs-def">ελεύθερο διανυσματικό σχήμα</span></div>
+  <div class="gs-pill"><span class="gs-name">boolean op</span><span class="gs-def">συνδυασμός δύο σχημάτων</span></div>
+  <div class="gs-pill"><span class="gs-name">constraint</span><span class="gs-def">συμπεριφορά σε αλλαγή μεγέθους γονέα</span></div>
+  <div class="gs-pill"><span class="gs-name">dp</span><span class="gs-def">density-independent pixel</span></div>
+  <div class="gs-pill"><span class="gs-name">dpi bucket</span><span class="gs-def">κατηγορία πυκνότητας οθόνης</span></div>
+  <div class="gs-pill"><span class="gs-name">z-order</span><span class="gs-def">σειρά επικάλυψης</span></div>
+</div>
+`);
+
+    // Section 3
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Χρώμα, τυπογραφία, spacing</div>
+<h1>Τρεις αποφάσεις που κρατούν όλο το σχέδιο όρθιο</h1>
+<p class="lede">Το μεγαλύτερο μέρος του «φαίνεται προσεγμένο» δεν είναι ταλέντο. Είναι το ότι οι τιμές προέρχονται από ένα μικρό, κλειστό σύνολο.</p>
+
+<h2>Η προφανής προσέγγιση, και το αποτέλεσμά της</h2>
+<p>Σχεδιάζεις την πρώτη οθόνη και διαλέγεις ένα γκρι για το δευτερεύον κείμενο από τον color picker. Την επόμενη μέρα, σε άλλη οθόνη, διαλέγεις πάλι ένα γκρι — λίγο διαφορετικό, γιατί το επέλεξες με το μάτι. Μετά από πέντε οθόνες έχεις εννιά αποχρώσεις του γκρι, τέσσερα μεγέθη κειμένου που διαφέρουν κατά ένα pixel, και αποστάσεις 12, 13, 15 και 16.</p>
+<p>Κανένα από αυτά δεν είναι ορατό λάθος όταν κοιτάς μία οθόνη. Είναι όμως ορατό ως συνολική εντύπωση προχειρότητας, και είναι πραγματικό πρόβλημα για όποιον γράψει τον κώδικα: εννιά γκρι σημαίνουν εννιά σταθερές που κανείς δεν ξέρει πότε να χρησιμοποιήσει.</p>
+
+<div class="callout">
+  <span class="tag">Ο κανόνας</span>
+  Περιόρισε τις επιλογές πριν αρχίσεις να σχεδιάζεις. Λίγα χρώματα, λίγα μεγέθη κειμένου, λίγες αποστάσεις. Κάθε φορά που μπαίνεις στον πειρασμό να προσθέσεις μια δέκατη απόχρωση, το πραγματικό ερώτημα είναι ποια από τις εννιά ήθελες.
+</div>
+
+<h2>Χρώμα: contrast πριν από αισθητική</h2>
+<p>Ένα χρώμα κειμένου δεν κρίνεται μόνο του, κρίνεται σε σχέση με το φόντο πάνω στο οποίο κάθεται. Ο λόγος αντίθεσης (contrast ratio) εκφράζεται ως αριθμός από 1:1 έως 21:1, και οι οδηγίες WCAG δίνουν συγκεκριμένα κατώφλια:</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">4.5:1</td><td class="gt-def">Ελάχιστο για κανονικό κείμενο (επίπεδο AA)</td></tr>
+  <tr><td class="gt-term">3:1</td><td class="gt-def">Ελάχιστο για μεγάλο κείμενο, καθώς και για εικονίδια και περιγράμματα στοιχείων ελέγχου</td></tr>
+  <tr><td class="gt-term">7:1</td><td class="gt-def">Το αυστηρότερο επίπεδο AAA, για κανονικό κείμενο</td></tr>
+</table>
+
+<p>Το πιο συνηθισμένο θύμα αυτού του κανόνα είναι το ανοιχτό γκρι κείμενο πάνω σε λευκό, που φαίνεται κομψό στην οθόνη του σχεδιαστή και γίνεται αδιάβαστο στον ήλιο ή σε φθηνό panel.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Χρώμα ως μοναδικός φορέας πληροφορίας. Αν το μόνο που ξεχωρίζει ένα πεδίο με λάθος είναι το κόκκινο περίγραμμα, τότε για έναν χρήστη με αχρωματοψία δεν ξεχωρίζει τίποτα. Πρόσθεσε πάντα και δεύτερο σήμα: εικονίδιο, κείμενο, ή αλλαγή στο σχήμα.
+</div>
+
+<h2>Τι αποθηκεύεις στο Penpot</h2>
+<p>Στο panel Assets αποθηκεύεις χρώματα με όνομα. Από εκεί και πέρα, το χρώμα δεν επαναλαμβάνεται ως τιμή σε είκοσι σημεία: εφαρμόζεται με ένα κλικ, και αν αλλάξει, αλλάζει παντού. Η ενότητα 5 πάει αυτή την ιδέα ένα βήμα παραπέρα με τα design tokens.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 3 / 8 — Χρώμα, τυπογραφία, spacing</div>
+<h1>Τυπογραφία και αποστάσεις</h1>
+
+<h2>Type scale</h2>
+<p>Αντί να διαλέγεις μέγεθος κάθε φορά, ορίζεις μια κλίμακα και χρησιμοποιείς μόνο τις βαθμίδες της. Μια κλίμακα που δουλεύει για οθόνη κινητού:</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">32 / 28</td><td class="gt-def">Τίτλος οθόνης, ένας ανά οθόνη</td></tr>
+  <tr><td class="gt-term">22 / 20</td><td class="gt-def">Επικεφαλίδα ενότητας</td></tr>
+  <tr><td class="gt-term">16</td><td class="gt-def">Κυρίως κείμενο, η βάση της κλίμακας</td></tr>
+  <tr><td class="gt-term">14</td><td class="gt-def">Δευτερεύον κείμενο, ετικέτες</td></tr>
+  <tr><td class="gt-term">12</td><td class="gt-def">Λεζάντες και βοηθητικά — κάτω από αυτό γίνεται δυσανάγνωστο</td></tr>
+</table>
+
+<p>Το ύψος γραμμής (line height) είναι εξίσου σημαντικό με το μέγεθος. Για κείμενο παραγράφου, τιμή γύρω στο 1.4 έως 1.6 φορές το μέγεθος διαβάζεται άνετα. Για μεγάλους τίτλους, πιο κοντά στο 1.1 έως 1.2, γιατί αλλιώς οι γραμμές μοιάζουν ασύνδετες.</p>
+
+<div class="callout good">
+  <span class="tag">Ειδικά για Android</span>
+  Η προεπιλεγμένη οικογένεια γραμματοσειρών του συστήματος είναι η Roboto. Αν σχεδιάσεις με κάτι άλλο, κάποιος θα πρέπει να πακετάρει τη γραμματοσειρά μέσα στην εφαρμογή. Δεν είναι εμπόδιο, είναι απόφαση που πρέπει να ληφθεί συνειδητά και όχι κατά λάθος. Στο Penpot ανεβάζεις custom fonts από το Dashboard και μετά εμφανίζονται κανονικά στη λίστα.
+</div>
+
+<h2>Spacing: το πλέγμα των 8</h2>
+<p>Η πιο διαδεδομένη σύμβαση είναι όλες οι αποστάσεις να είναι πολλαπλάσια του 8, με το 4 να επιτρέπεται για μικρές λεπτομέρειες. Δηλαδή: 4, 8, 16, 24, 32, 48, 64.</p>
+<p>Ο λόγος δεν είναι μυστικιστικός. Ένα μικρό σύνολο τιμών αφαιρεί μια απόφαση που θα έπαιρνες εκατοντάδες φορές, κάνει τις αποστάσεις να επαναλαμβάνονται με τρόπο που το μάτι αναγνωρίζει ως τάξη, και δίνει στον developer μια κλίμακα αντί για αυθαίρετους αριθμούς.</p>
+
+<h2>Ένα μέγεθος που δεν είναι διαπραγματεύσιμο</h2>
+<p>Κάθε στοιχείο που πατιέται με το δάχτυλο χρειάζεται περιοχή αφής τουλάχιστον <strong>48 × 48 dp</strong>. Αυτό δεν σημαίνει ότι το εικονίδιο πρέπει να είναι 48 dp — ένα εικονίδιο 24 dp με padding 12 dp γύρω του δίνει ακριβώς 48.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το κλασικό λάθος είναι το εικονίδιο κλεισίματος στη γωνία ενός modal: σχεδιάζεται 16 dp, φαίνεται καθαρό στην οθόνη του υπολογιστή, και στο τηλέφωνο αστοχεί μία στις τρεις φορές. Το ότι φαίνεται δεν σημαίνει ότι πατιέται.
+</div>
+
+<h2>Πώς φαίνεται αυτό σε κώδικα</h2>
+<p>Οι ίδιες τιμές, όπως θα τις έγραφε κάποιος σε CSS. Η αντιστοιχία δεν είναι σύμπτωση: το σχέδιο και ο κώδικας περιγράφουν το ίδιο πράγμα.</p>
+
+<pre><code class="lang-css">/* one small, closed set of values — nothing outside it */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  --text-body: 16px;
+  --text-label: 14px;
+  --line-body: 1.5;
+}
+
+.card {
+  padding: var(--space-3);
+  gap: var(--space-2);
+  font-size: var(--text-body);
+  line-height: var(--line-body);
+}
+</code></pre>
+`);
+
+    addQuiz([
+      {
+        q: "Ποιος είναι ο πραγματικός λόγος να περιορίσεις τις αποστάσεις σε πολλαπλάσια του 8;",
+        options: [
+          "Αφαιρεί μια απόφαση που θα επαναλαμβανόταν εκατοντάδες φορές",
+          "Οι οθόνες των κινητών αποδίδουν σωστά μόνο τιμές που διαιρούνται ακριβώς με το οκτώ",
+          "Είναι απαίτηση των οδηγιών προσβασιμότητας για κινητά",
+          "Μειώνει το μέγεθος του παραγόμενου CSS επειδή επαναχρησιμοποιούνται οι ίδιες κλάσεις"
+        ],
+        correct: 0,
+        explain: "Είναι σύμβαση συνέπειας, όχι τεχνικός περιορισμός. Καμία οθόνη δεν αποδίδει διαφορετικά τα 15 pixel από τα 16."
+      },
+      {
+        q: "Ανοιχτό γκρι κείμενο 16 pixel πάνω σε λευκό, με contrast ratio 3.2:1. Τι ισχύει;",
+        options: [
+          "Δεν περνάει το επίπεδο AA, που θέλει 4.5:1 για κανονικό κείμενο",
+          "Περνάει, γιατί το κατώφλι των 3:1 καλύπτει κάθε είδους κείμενο ανεξαρτήτως μεγέθους",
+          "Δεν μπορεί να κριθεί, γιατί ο λόγος αντίθεσης εξαρτάται από τη φωτεινότητα της συσκευής",
+          "Περνάει μόνο αν η γραμματοσειρά είναι έντονη, οπότε αρκεί να μπει bold"
+        ],
+        correct: 0,
+        explain: "Τα 16 pixel δεν θεωρούνται μεγάλο κείμενο, οπότε ισχύει το 4.5:1. Το 3:1 αφορά μεγάλο κείμενο, εικονίδια και περιγράμματα στοιχείων ελέγχου."
+      },
+      {
+        q: "Ένα εικονίδιο 24 dp πρέπει να πατιέται με άνεση. Ποια είναι η σωστή κίνηση;",
+        options: [
+          "Padding 12 dp γύρω του, ώστε η περιοχή αφής να φτάσει τα 48 dp",
+          "Μεγέθυνση του ίδιου του εικονιδίου στα 48 dp για να γίνει σαφώς ορατό και ευκολότερο στο πάτημα",
+          "Τοποθέτησή του μακριά από άλλα στοιχεία ώστε να μην υπάρχει κίνδυνος λάθος πατήματος",
+          "Καμία, γιατί τα 24 dp είναι το επίσημο μέγεθος εικονιδίου και άρα επαρκές"
+        ],
+        correct: 0,
+        explain: "Η περιοχή αφής και το ορατό μέγεθος είναι δύο διαφορετικά πράγματα. Μεγαλώνοντας το εικονίδιο χαλάς την οπτική ισορροπία χωρίς λόγο."
+      },
+      {
+        q: "Γιατί δεν αρκεί ένα κόκκινο περίγραμμα για να δηλώσει ότι ένα πεδίο έχει λάθος;",
+        options: [
+          "Γιατί για χρήστη με αχρωματοψία δεν μεταφέρεται καμία πληροφορία",
+          "Γιατί το κόκκινο σπάνια περνάει τον έλεγχο contrast",
+          "Γιατί το χρώμα του περιγράμματος χάνεται όταν το πεδίο έχει focus από το πληκτρολόγιο",
+          "Γιατί τα περιγράμματα δεν αποδίδονται με τον ίδιο τρόπο σε όλες τις συσκευές Android"
+        ],
+        correct: 0,
+        explain: "Ο κανόνας είναι να μη μεταφέρεται πληροφορία μόνο μέσω χρώματος. Χρειάζεται δεύτερο σήμα, όπως κείμενο ή εικονίδιο."
+      },
+      {
+        q: "Τι κερδίζεις αποθηκεύοντας ένα χρώμα στο panel Assets αντί να το εφαρμόζεις κάθε φορά από τον color picker;",
+        options: [
+          "Αλλάζει σε ένα σημείο και ενημερώνεται παντού όπου χρησιμοποιείται",
+          "Το εργαλείο σε εμποδίζει στη συνέχεια να χρησιμοποιήσεις χρώμα εκτός της αποθηκευμένης παλέτας",
+          "Το χρώμα μετατρέπεται αυτόματα σε design token και εξάγεται μαζί με τα υπόλοιπα",
+          "Ελέγχεται αυτόματα ο λόγος αντίθεσης απέναντι στο φόντο"
+        ],
+        correct: 0,
+        explain: "Το όφελος είναι ένα σημείο αλλαγής. Το εργαλείο δεν σε εμποδίζει να βγεις εκτός παλέτας, και τα tokens είναι ξεχωριστό σύστημα που δεν προκύπτει αυτόματα από τα assets."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Contrast ratio", def: "Ο λόγος φωτεινότητας κειμένου προς φόντο, από 1:1 έως 21:1" },
+        { term: "4.5:1", def: "Το ελάχιστο κατώφλι AA για κανονικό κείμενο" },
+        { term: "Type scale", def: "Ένα κλειστό σύνολο μεγεθών κειμένου αντί για ελεύθερη επιλογή" },
+        { term: "Line height", def: "Το κάθετο διάστημα ανά γραμμή, γύρω στο 1.5 για παράγραφο" },
+        { term: "48 dp", def: "Η ελάχιστη περιοχή αφής για στοιχείο που πατιέται" }
+      ],
+      [
+        { term: "Εννιά αποχρώσεις γκρι", def: "Σύμπτωμα επιλογής με το μάτι αντί από κλειστή παλέτα" },
+        { term: "Κείμενο αδιάβαστο στον ήλιο", def: "Σύμπτωμα ανεπαρκούς λόγου αντίθεσης" },
+        { term: "Αστοχία πατήματος στο κινητό", def: "Σύμπτωμα περιοχής αφής μικρότερης από 48 dp" },
+        { term: "Λάθος αόρατο σε αχρωματοψία", def: "Σύμπτωμα πληροφορίας που μεταφέρεται μόνο με χρώμα" },
+        { term: "Γραμματοσειρά που δεν φορτώνει", def: "Σύμπτωμα επιλογής font εκτός συστήματος χωρίς πακετάρισμα" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">contrast ratio</td><td class="gt-def">λόγος αντίθεσης κειμένου προς φόντο</td></tr>
+  <tr><td class="gt-term">WCAG AA</td><td class="gt-def">το συνηθισμένο επίπεδο συμμόρφωσης προσβασιμότητας</td></tr>
+  <tr><td class="gt-term">type scale</td><td class="gt-def">κλειστό σύνολο μεγεθών κειμένου</td></tr>
+  <tr><td class="gt-term">line height</td><td class="gt-def">ύψος γραμμής κειμένου</td></tr>
+  <tr><td class="gt-term">spacing scale</td><td class="gt-def">κλειστό σύνολο αποστάσεων, συνήθως πολλαπλάσια του 8</td></tr>
+  <tr><td class="gt-term">touch target</td><td class="gt-def">η περιοχή που δέχεται το πάτημα, ελάχιστο 48 dp</td></tr>
+  <tr><td class="gt-term">assets panel</td><td class="gt-def">αποθηκευμένα χρώματα, typographies και components</td></tr>
+</table>
+`);
+
+    // Section 4
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Flex & Grid Layout</div>
+<h1>Το σημείο όπου το Penpot διαφέρει ουσιαστικά</h1>
+<p class="lede">Τα layouts του Penpot δεν μιμούνται το CSS. Είναι CSS Flexbox και CSS Grid, με τα ίδια ονόματα ιδιοτήτων και την ίδια συμπεριφορά.</p>
+
+<h2>Η προφανής προσέγγιση, και το σημείο που σπάει</h2>
+<p>Τρεις κάρτες η μία κάτω από την άλλη, με 16 pixel κενό ανάμεσά τους. Τις τοποθετείς με το χέρι στα y = 0, 216 και 432. Φαίνεται σωστό, γιατί είναι σωστό.</p>
+<p>Μετά ο τίτλος της πρώτης κάρτας γίνεται δίγραμμος και το ύψος της πάει από 200 σε 224. Τώρα η δεύτερη κάρτα επικαλύπτεται κατά 8 pixel και η τρίτη είναι λάθος τοποθετημένη. Τις μετακινείς με το χέρι. Μετά αλλάζει και η δεύτερη κάρτα. Τις μετακινείς πάλι.</p>
+<p>Αυτό δεν είναι υπερβολή του παραδείγματος: είναι η κανονική εμπειρία σε ένα σχέδιο με απόλυτες θέσεις, και είναι ο λόγος που σε πολλά σχέδια οι οθόνες μένουν σκόπιμα λίγες. Με flex layout, το ίδιο συμβάν δεν απαιτεί καμία ενέργεια: δηλώνεις ότι το κενό είναι 16, και το κενό παραμένει 16 ό,τι κι αν γίνει με τα ύψη.</p>
+
+<h2>Τρεις τρόποι τοποθέτησης</h2>
+<div class="grid3">
+  <div class="card">
+    <h3>Static</h3>
+    <p>Η προεπιλογή. Κάθε αντικείμενο έχει x και y. Αντιστοιχεί σε απόλυτη τοποθέτηση. Τα constraints της ενότητας 2 ισχύουν εδώ.</p>
+  </div>
+  <div class="card">
+    <h3>Flex layout</h3>
+    <p>Μία διάσταση: τα παιδιά μπαίνουν σε σειρά ή σε στήλη και μοιράζονται τον χώρο. Το πιο συχνά χρήσιμο.</p>
+  </div>
+  <div class="card">
+    <h3>Grid layout</h3>
+    <p>Δύο διαστάσεις: ορίζεις γραμμές και στήλες και τοποθετείς περιεχόμενο σε κελιά ή περιοχές.</p>
+  </div>
+</div>
+
+<p>Το layout μπαίνει σε board, group ή επιλογή από το Design panel, ή με <code>Shift + A</code> για flex και <code>Ctrl/⌘ + Shift + A</code> για grid. Τα layouts φωλιάζουν: ένα grid για τη γενική διάταξη της οθόνης, flex μέσα σε κάθε περιοχή του, και ακόμα ένα flex μέσα σε κάθε κάρτα. Ακριβώς όπως σε πραγματική σελίδα.</p>
+
+<h2>Flex, ιδιότητα προς ιδιότητα</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">Direction</td><td class="gt-def">row ή column, με τις αντίστροφες εκδοχές τους — είναι το <code>flex-direction</code></td></tr>
+  <tr><td class="gt-term">Wrap</td><td class="gt-def">αν τα παιδιά αλλάζουν γραμμή όταν δεν χωρούν — είναι το <code>flex-wrap</code></td></tr>
+  <tr><td class="gt-term">Alignment</td><td class="gt-def">οι δύο άξονες στοίχισης, δηλαδή <code>justify-content</code> και <code>align-items</code></td></tr>
+  <tr><td class="gt-term">Gap</td><td class="gt-def">το κενό ανάμεσα στα παιδιά, ξεχωριστά για γραμμές και στήλες</td></tr>
+  <tr><td class="gt-term">Padding</td><td class="gt-def">εσωτερικό περιθώριο του container, ενιαίο ή ανά πλευρά</td></tr>
+</table>
+
+<p>Στα παιδιά ενός flex container εμφανίζεται μια ρύθμιση μεγέθους με τρεις τιμές, μία για κάθε άξονα:</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">Fix</td><td class="gt-def">σταθερή διάσταση, δεν αλλάζει ό,τι κι αν γίνει</td></tr>
+  <tr><td class="gt-term">Fill</td><td class="gt-def">καταλαμβάνει τον διαθέσιμο χώρο — η αντιστοιχία του <code>flex-grow: 1</code></td></tr>
+  <tr><td class="gt-term">Fit content</td><td class="gt-def">συρρικνώνεται ακριβώς στο περιεχόμενό του — η αντιστοιχία του <code>width: auto</code></td></tr>
+</table>
+
+<div class="callout good">
+  <span class="tag">Πότε το αναγνωρίζεις</span>
+  Ένα header με τίτλο αριστερά και εικονίδιο δεξιά είναι flex σε row, με τον τίτλο σε fill και το εικονίδιο σε fix. Μια στήλη από στοιχεία λίστας με σταθερό κενό είναι flex σε column με gap. Αν η διάταξη περιγράφεται με μία πρόταση που έχει τη λέξη «δίπλα» ή «από κάτω», είναι flex.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 8 — Flex & Grid Layout</div>
+<h1>Grid, και το σημείο επαφής με τον κώδικα</h1>
+
+<h2>Πότε grid αντί για flex</h2>
+<p>Το flex διατάσσει σε μία διάσταση. Το grid διατάσσει σε δύο ταυτόχρονα, και είναι η σωστή επιλογή όταν οι θέσεις πρέπει να ευθυγραμμίζονται και οριζόντια και κάθετα. Ένα πλέγμα προϊόντων δύο στηλών, ένα dashboard με πλαϊνή στήλη και κεφαλίδα, ένα πληκτρολόγιο.</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">Container</td><td class="gt-def">Το board που κρατάει το grid</td></tr>
+  <tr><td class="gt-term">Cell</td><td class="gt-def">Μία μονάδα του πλέγματος, τομή γραμμής και στήλης</td></tr>
+  <tr><td class="gt-term">Area</td><td class="gt-def">Σύνθεση πολλών κελιών που αντιμετωπίζονται ως ένα</td></tr>
+  <tr><td class="gt-term">Gap</td><td class="gt-def">Το κενό ανάμεσα σε γραμμές και στήλες</td></tr>
+</table>
+
+<p>Οι γραμμές και οι στήλες ορίζονται με τις ίδιες μονάδες που θα χρησιμοποιούσες σε CSS: σταθερή τιμή σε pixel, ποσοστό, <code>auto</code>, ή <code>fr</code> για αναλογική κατανομή του χώρου που περισσεύει.</p>
+
+<h2>Η ίδια διάταξη, στις δύο μορφές της</h2>
+<p>Μια απλή οθόνη λίστας: κεφαλίδα, περιεχόμενο, γραμμή πλοήγησης στο κάτω μέρος.</p>
+
+<pre><code class="lang-css">/* the outer screen — one column, three rows */
+.screen {
+  display: grid;
+  grid-template-rows: 56px 1fr 64px;   /* header, content, bottom nav */
+  height: 800px;
+}
+
+/* a row inside the list — title takes what is left, icon stays fixed */
+.list-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+}
+
+.list-item .title { flex-grow: 1; }    /* Fill in the Penpot sidebar */
+.list-item .icon  { width: 24px; }     /* Fix in the Penpot sidebar */
+</code></pre>
+
+<p>Αυτό δεν είναι κώδικας που γράφεις για να φτιάξεις το σχέδιο. Είναι κώδικας που το Inspect tab θα σου δείξει επειδή έφτιαξες το σχέδιο σωστά. Η κατεύθυνση είναι από το σχέδιο προς τον κώδικα, και αυτός είναι όλος ο λόγος που τα layouts του Penpot υλοποιήθηκαν πάνω σε πραγματικό CSS.</p>
+
+<h2>Και στο Android;</h2>
+<p>Εδώ χρειάζεται ειλικρίνεια. Το Android δεν χρησιμοποιεί CSS, οπότε το παραπάνω δεν αντιγράφεται σε έργο Android. Αυτό που μεταφέρεται είναι οι έννοιες, και μεταφέρονται σχεδόν ένα προς ένα στο Jetpack Compose:</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">flex-direction: row</td><td class="gt-def">Row</td></tr>
+  <tr><td class="gt-term">flex-direction: column</td><td class="gt-def">Column</td></tr>
+  <tr><td class="gt-term">gap</td><td class="gt-def">Arrangement.spacedBy</td></tr>
+  <tr><td class="gt-term">flex-grow: 1 (Fill)</td><td class="gt-def">Modifier.weight(1f)</td></tr>
+  <tr><td class="gt-term">padding</td><td class="gt-def">Modifier.padding</td></tr>
+  <tr><td class="gt-term">απόλυτη τοποθέτηση</td><td class="gt-def">Box με alignment</td></tr>
+  <tr><td class="gt-term">κάθετο grid</td><td class="gt-def">LazyVerticalGrid</td></tr>
+</table>
+
+<div class="callout">
+  <span class="tag">Ειλικρινές όριο</span>
+  Το Penpot δεν παράγει Compose ούτε XML. Το Inspect δίνει CSS και SVG. Για έργο Android, η χρησιμότητα του Inspect είναι στις τιμές — μεγέθη, αποστάσεις, χρώματα, τυπογραφία — και όχι στον ίδιο τον κώδικα. Όποιος υπόσχεται πλήρη μετατροπή σχεδίου σε κώδικα εφαρμογής, για οποιοδήποτε εργαλείο, υπερβάλλει.
+</div>
+
+<h2>Τρία λάθη που κάνουν σχεδόν όλοι</h2>
+<div class="grid3">
+  <div class="card">
+    <h3>Fix εκεί που χρειάζεται Fill</h3>
+    <p>Ένα κείμενο με σταθερό πλάτος μέσα σε flex δεν προσαρμόζεται όταν αλλάξει η οθόνη. Το σύμπτωμα είναι κείμενο που κόβεται ή περισσεύει χώρος στο πλάι.</p>
+  </div>
+  <div class="card">
+    <h3>Κενό με άδεια αντικείμενα</h3>
+    <p>Η απόσταση μπαίνει με gap και padding. Άδεια ορθογώνια ως αποστάτες επιβιώνουν από τα εργαλεία σχεδίασης της προηγούμενης δεκαετίας και δεν έχουν αντίστοιχο στον κώδικα.</p>
+  </div>
+  <div class="card">
+    <h3>Πολύ βαθιά φωλιάσματα</h3>
+    <p>Έξι επίπεδα layout για μια κάρτα με τρία στοιχεία. Γίνεται δύσκολο και για σένα και για όποιον το υλοποιήσει. Αν δεν μπορείς να πεις σε μία πρόταση τι κάνει ένα επίπεδο, μάλλον περισσεύει.</p>
+  </div>
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποιο είναι το κύριο πρακτικό όφελος του flex layout απέναντι στην τοποθέτηση με απόλυτες θέσεις;",
+        options: [
+          "Οι αποστάσεις διατηρούνται μόνες τους όταν αλλάζει το περιεχόμενο",
+          "Το σχέδιο ανοίγει πιο γρήγορα στον browser επειδή αποθηκεύονται λιγότερες συντεταγμένες ανά αντικείμενο",
+          "Επιτρέπει να τοποθετηθούν αντικείμενα σε δύο διαστάσεις ταυτόχρονα, σε γραμμές και στήλες",
+          "Είναι απαραίτητο για να γίνουν αργότερα components τα αντικείμενα"
+        ],
+        correct: 0,
+        explain: "Το κέρδος είναι ότι το layout υπολογίζει ξανά τις θέσεις. Οι δύο διαστάσεις είναι περιγραφή του grid, όχι του flex."
+      },
+      {
+        q: "Header με τίτλο αριστερά και εικονίδιο δεξιά. Ποια ρύθμιση μεγέθους θέλει το καθένα;",
+        options: [
+          "Τίτλος σε Fill, εικονίδιο σε Fix",
+          "Τίτλος σε Fix, εικονίδιο σε Fill",
+          "Και τα δύο σε Fit content, με το κενό να ρυθμίζεται από τη στοίχιση του container",
+          "Και τα δύο σε Fill, ώστε να μοιραστούν ισότιμα τον διαθέσιμο οριζόντιο χώρο"
+        ],
+        correct: 0,
+        explain: "Το Fill αντιστοιχεί σε flex-grow: 1, οπότε ο τίτλος παίρνει ό,τι περισσεύει και σπρώχνει το εικονίδιο στη δεξιά άκρη. Το εικονίδιο θέλει σταθερή διάσταση."
+      },
+      {
+        q: "Πλέγμα προϊόντων δύο στηλών, όπου οι κάρτες πρέπει να ευθυγραμμίζονται και οριζόντια και κάθετα. Τι διαλέγεις;",
+        options: [
+          "Grid layout",
+          "Flex layout σε row με ενεργοποιημένο το wrap και σταθερό πλάτος στις κάρτες",
+          "Static τοποθέτηση με constraints σε κάθε κάρτα",
+          "Grid layout για τις στήλες και ξεχωριστό flex για κάθε γραμμή του πλέγματος"
+        ],
+        correct: 0,
+        explain: "Δύο διαστάσεις σημαίνει grid. Το flex με wrap δίνει κάτι που μοιάζει με πλέγμα, αλλά η κάθετη ευθυγράμμιση δεν είναι εγγυημένη όταν τα ύψη διαφέρουν."
+      },
+      {
+        q: "Τι αντιστοιχεί στο Modifier.weight(1f) του Jetpack Compose, από όσα είδαμε;",
+        options: [
+          "Το Fill, δηλαδή το flex-grow: 1",
+          "Το Fit content, δηλαδή η προσαρμογή του μεγέθους στο περιεχόμενο του στοιχείου",
+          "Το gap, δηλαδή το σταθερό κενό ανάμεσα στα παιδιά ενός container",
+          "Το padding, δηλαδή το εσωτερικό περιθώριο"
+        ],
+        correct: 0,
+        explain: "Και τα δύο εκφράζουν την ίδια ιδέα: αυτό το παιδί παίρνει τον χώρο που περισσεύει. Το gap αντιστοιχεί στο Arrangement.spacedBy."
+      },
+      {
+        q: "Τι μπορεί ρεαλιστικά να πάρει ένας Android developer από το Inspect tab;",
+        options: [
+          "Τιμές: μεγέθη, αποστάσεις, χρώματα και τυπογραφία",
+          "Έτοιμο κώδικα Compose που μπορεί να αντιγραφεί κατευθείαν στο έργο και να μεταγλωττιστεί",
+          "Αρχεία XML layout για κάθε board",
+          "Τίποτα χρήσιμο, γιατί το CSS δεν έχει καμία σχέση με την ανάπτυξη σε Android"
+        ],
+        correct: 0,
+        explain: "Το Inspect δίνει CSS και SVG. Οι τιμές μεταφέρονται σε οποιαδήποτε πλατφόρμα, ο κώδικας όχι — αλλά αυτό δεν το κάνει άχρηστο."
+      },
+      {
+        q: "Γιατί δεν βάζουμε κενά χρησιμοποιώντας άδεια ορθογώνια ως αποστάτες;",
+        options: [
+          "Γιατί το κενό εκφράζεται με gap και padding, που έχουν αντιστοιχία στον κώδικα",
+          "Γιατί τα άδεια ορθογώνια αυξάνουν σημαντικά το μέγεθος του αρχείου και το κάνουν πιο αργό",
+          "Γιατί το Penpot διαγράφει αυτόματα τα αντικείμενα που δεν έχουν ορατό περιεχόμενο",
+          "Γιατί ένα ορθογώνιο χωρίς γέμισμα δεν εμφανίζεται καθόλου στο panel των layers"
+        ],
+        correct: 0,
+        explain: "Ο αποστάτης είναι αντικείμενο που δεν αντιστοιχεί σε τίποτα στην υλοποίηση. Το gap είναι ιδιότητα του container και μεταφράζεται άμεσα."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Static", def: "Απόλυτη τοποθέτηση με x και y, όπου ισχύουν τα constraints" },
+        { term: "Flex layout", def: "Διάταξη σε μία διάσταση, σε σειρά ή σε στήλη" },
+        { term: "Grid layout", def: "Διάταξη σε δύο διαστάσεις, με γραμμές και στήλες" },
+        { term: "Fill", def: "Το παιδί καταλαμβάνει τον χώρο που περισσεύει" },
+        { term: "Fit content", def: "Το παιδί συρρικνώνεται ακριβώς στο περιεχόμενό του" }
+      ],
+      [
+        { term: "<code>gap</code>", def: "Arrangement.spacedBy στο Compose" },
+        { term: "<code>flex-direction: row</code>", def: "Row στο Compose" },
+        { term: "<code>flex-grow: 1</code>", def: "Modifier.weight(1f) στο Compose" },
+        { term: "<code>padding</code>", def: "Modifier.padding στο Compose" },
+        { term: "<code>fr</code>", def: "Αναλογικό μερίδιο του χώρου που περισσεύει σε grid" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 4 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">flex layout</span><span class="gc-def">διάταξη σε μία διάσταση</span></div>
+  <div class="gc-line"><span class="gc-term">grid layout</span><span class="gc-def">διάταξη σε δύο διαστάσεις</span></div>
+  <div class="gc-line"><span class="gc-term">direction</span><span class="gc-def">row ή column</span></div>
+  <div class="gc-line"><span class="gc-term">gap</span><span class="gc-def">κενό ανάμεσα στα παιδιά</span></div>
+  <div class="gc-line"><span class="gc-term">padding</span><span class="gc-def">εσωτερικό περιθώριο container</span></div>
+  <div class="gc-line"><span class="gc-term">Fix</span><span class="gc-def">σταθερή διάσταση</span></div>
+  <div class="gc-line"><span class="gc-term">Fill</span><span class="gc-def">παίρνει τον χώρο που περισσεύει</span></div>
+  <div class="gc-line"><span class="gc-term">Fit content</span><span class="gc-def">προσαρμογή στο περιεχόμενο</span></div>
+  <div class="gc-line"><span class="gc-term">area</span><span class="gc-def">σύνθεση κελιών σε grid</span></div>
+  <div class="gc-line"><span class="gc-term">fr</span><span class="gc-def">αναλογική μονάδα του grid</span></div>
+</div>
+`);
+
+    // Section 5
+    addContent(`
+<div class="eyebrow">Ενότητα 5 / 8 — Design system</div>
+<h1>Components: ένα σημείο αλλαγής</h1>
+<p class="lede">Η ίδια ιδέα με τη function που καλείς σε πολλά σημεία, μεταφερμένη στο σχέδιο.</p>
+
+<h2>Η προφανής προσέγγιση, και το κόστος της</h2>
+<p>Σχεδιάζεις ένα κουμπί, το αντιγράφεις και το επικολλάς σε δώδεκα οθόνες. Είναι γρήγορο και δουλεύει. Μετά αποφασίζεται ότι το radius των γωνιών πάει από 8 σε 12. Τώρα έχεις δώδεκα ανεξάρτητα αντίγραφα να διορθώσεις, θα ξεχάσεις δύο, και τα δύο που ξέχασες θα τα βρει κάποιος άλλος τρεις εβδομάδες αργότερα.</p>
+
+<h2>Main component και copies</h2>
+<p>Μετατρέπεις το κουμπί σε component. Από εκείνη τη στιγμή υπάρχει ένα <strong>main component</strong> και όσα <strong>copies</strong> θέλεις. Αλλαγή στο main διαδίδεται σε όλα τα copies.</p>
+<p>Ένα copy μπορεί όμως να διαφέρει τοπικά: αλλάζεις το κείμενο, το χρώμα, ένα εικονίδιο. Αυτό λέγεται <strong>override</strong>. Το copy συνεχίζει να ακολουθεί το main σε ό,τι δεν έχεις αλλάξει, και κρατάει τη δική του τιμή σε ό,τι έχεις.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το override είναι εργαλείο, όχι λύση για κάθε παραλλαγή. Αν κάθε copy έχει πέντε overrides, το component δεν σου προσφέρει τίποτα πια: κανένα copy δεν μοιάζει με το main και η αλλαγή στο main δεν φτάνει πουθενά. Όταν το δεις αυτό, η παραλλαγή δεν ήταν override, ήταν variant.
+</div>
+
+<h2>Variants</h2>
+<p>Ένα κουμπί δεν έχει μία μορφή. Έχει primary και secondary, έχει μεγάλο και μικρό, έχει κανονική, πατημένη και απενεργοποιημένη κατάσταση. Τα variants εκφράζουν ακριβώς αυτό: ένα component με ονομασμένες ιδιότητες και τιμές.</p>
+
+<pre><code class="lang-js">// one component, three properties — not nine separate components
+button
+  variant : primary | secondary | ghost
+  size    : small | medium | large
+  state   : default | pressed | disabled
+</code></pre>
+
+<p>Στο σχέδιο αυτό σημαίνει ότι επιλέγεις το copy και αλλάζεις τιμές από αναδυόμενες λίστες, αντί να ψάχνεις στο panel των assets ανάμεσα σε εννιά παρόμοια εικονίδια. Στην υλοποίηση αντιστοιχεί σε παραμέτρους ενός composable ή props ενός component.</p>
+
+<h2>Φώλιασμα και shared libraries</h2>
+<p>Ένα component μπορεί να περιέχει άλλα components: το στοιχείο λίστας περιέχει το avatar και το εικονίδιο, η κάρτα περιέχει το κουμπί. Αλλαγή στο εσωτερικό διαδίδεται προς τα έξω, σε όλα τα επίπεδα.</p>
+<p>Ένα ολόκληρο αρχείο μπορεί να δημοσιευτεί ως <strong>shared library</strong>. Τότε τα components, τα χρώματα και οι typographies του γίνονται διαθέσιμα σε άλλα αρχεία της ομάδας. Όταν η βιβλιοθήκη ενημερωθεί, τα αρχεία που τη χρησιμοποιούν ειδοποιούνται και αποφασίζουν πότε θα δεχτούν την ενημέρωση.</p>
+
+<div class="callout good">
+  <span class="tag">Το αναγνωρίζεις;</span>
+  Main component και copies, overrides, variants, shared library: είναι ορισμός, κλήση με ορίσματα, προεπιλεγμένες τιμές και εξαρτήσεις πακέτου. Η ίδια δομή σκέψης με τον κώδικα, σε άλλο μέσο.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 5 / 8 — Design system</div>
+<h1>Design tokens</h1>
+<p class="lede">Ονομασμένες τιμές που ζουν έξω από το σχέδιο και έξω από τον κώδικα, και τροφοδοτούν και τα δύο.</p>
+
+<h2>Το πρόβλημα που λύνουν</h2>
+<p>Ένα αποθηκευμένο χρώμα στο Assets λύνει το πρόβλημα μέσα σε ένα αρχείο Penpot. Δεν λύνει το ότι η ίδια τιμή υπάρχει επίσης σε ένα CSS αρχείο, σε ένα <code>colors.xml</code> του Android και σε ένα theme του Compose, και ότι οι τέσσερις εκδοχές αποκλίνουν με τον χρόνο.</p>
+<p>Τα design tokens είναι μια πηγή σε μορφή δεδομένων, από την οποία παράγονται όλες οι υπόλοιπες. Το Penpot τα υποστηρίζει εγγενώς και ακολουθεί το πρότυπο του W3C για τη μορφή τους, οπότε το αρχείο που εξάγεις δεν είναι ιδιόκτητο.</p>
+
+<h2>Τι μπορεί να γίνει token</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">color</td><td class="gt-def">Χρώματα γεμίσματος, κειμένου, περιγράμματος</td></tr>
+  <tr><td class="gt-term">spacing</td><td class="gt-def">Padding και gaps — τα gaps ισχύουν μόνο σε flex ή grid layout</td></tr>
+  <tr><td class="gt-term">sizing / dimension</td><td class="gt-def">Πλάτη, ύψη, μεγέθη εικονιδίων</td></tr>
+  <tr><td class="gt-term">border radius</td><td class="gt-def">Στρογγύλεμα γωνιών</td></tr>
+  <tr><td class="gt-term">stroke width</td><td class="gt-def">Πάχος περιγράμματος</td></tr>
+  <tr><td class="gt-term">typography</td><td class="gt-def">Μέγεθος, βάρος, ύψος γραμμής</td></tr>
+  <tr><td class="gt-term">opacity / rotation</td><td class="gt-def">Διαφάνεια και στροφή</td></tr>
+</table>
+
+<h2>Αναφορές και επίπεδα</h2>
+<p>Ένα token μπορεί να δείχνει σε άλλο. Αυτό επιτρέπει δύο επίπεδα ονομασίας, και η διάκριση είναι το πιο χρήσιμο σημείο όλου του συστήματος:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Primitive</h3>
+    <p>Περιγράφει την τιμή. <code>blue-600</code>, <code>space-16</code>. Δεν λέει πού χρησιμοποιείται.</p>
+  </div>
+  <div class="card">
+    <h3>Semantic</h3>
+    <p>Περιγράφει τον ρόλο. <code>color-action-primary</code>, <code>space-card-padding</code>. Δείχνει σε ένα primitive.</p>
+  </div>
+</div>
+
+<pre><code class="lang-js">{
+  "color": {
+    "blue-600":  { "$type": "color", "$value": "#1B62D6" },
+    "grey-900":  { "$type": "color", "$value": "#14181F" },
+
+    "action-primary": { "$type": "color", "$value": "{color.blue-600}" },
+    "text-default":   { "$type": "color", "$value": "{color.grey-900}" }
+  },
+  "space": {
+    "2": { "$type": "dimension", "$value": "8px" },
+    "3": { "$type": "dimension", "$value": "16px" }
+  }
+}
+</code></pre>
+
+<p>Στα στοιχεία του σχεδίου εφαρμόζεις πάντα το semantic token, ποτέ το primitive. Έτσι, όταν αλλάξει το χρώμα της μάρκας, αλλάζει μία γραμμή: το <code>action-primary</code> δείχνει σε άλλο μπλε, και ενημερώνονται όλα τα κουμπιά, τα links και τα ενεργά εικονίδια ταυτόχρονα.</p>
+
+<h2>Sets και themes</h2>
+<p>Τα tokens οργανώνονται σε <strong>sets</strong>, και τα sets συνδυάζονται σε <strong>themes</strong>. Η τυπική χρήση είναι το ζευγάρι light και dark: το ίδιο semantic όνομα, δύο διαφορετικές τιμές, εναλλαγή από ένα σημείο. Για Android αυτό αντιστοιχεί ακριβώς στο ζεύγος light και dark theme που ούτως ή άλλως πρέπει να υποστηρίξεις.</p>
+
+<div class="callout">
+  <span class="tag">Ειλικρινές όριο</span>
+  Το Penpot εξάγει τα tokens σε JSON. Δεν παράγει από μόνο του <code>colors.xml</code> ούτε αρχείο theme για Compose. Αυτό το βήμα το κάνει ένα εργαλείο μετατροπής στο έργο σου, με το Style Dictionary να είναι το πιο διαδεδομένο. Είναι δουλειά που στήνεται μία φορά, όχι μία φορά ανά αλλαγή.
+</div>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Τα spacing tokens που εφαρμόζονται σε gap δουλεύουν μόνο όταν το στοιχείο έχει ήδη flex ή grid layout. Αν το token εφαρμόστηκε πριν μπει το layout, μπορεί να χρειαστεί να αφαιρεθεί και να ξαναμπεί για να ισχύσει.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Κάθε copy ενός component έχει πέντε overrides. Τι σημαίνει αυτό;",
+        options: [
+          "Οι παραλλαγές έπρεπε να είναι variants, όχι overrides",
+          "Ότι το component είναι σωστά φτιαγμένο, αφού επιτρέπει προσαρμογή σε κάθε περίπτωση χρήσης",
+          "Ότι το main component πρέπει να αποσυνδεθεί από τα copies για να σταματήσουν οι συγκρούσεις",
+          "Ότι χρειάζονται πέντε ξεχωριστά components"
+        ],
+        correct: 0,
+        explain: "Όταν όλα διαφέρουν, η αλλαγή στο main δεν φτάνει πουθενά και το component χάνει τον λόγο ύπαρξής του. Οι επαναλαμβανόμενες παραλλαγές ανήκουν στο σύστημα των variants."
+      },
+      {
+        q: "Τι διαδίδεται από το main component στα copies;",
+        options: [
+          "Κάθε αλλαγή, εκτός από τις ιδιότητες που έχουν πάρει override στο συγκεκριμένο copy",
+          "Καμία αλλαγή, γιατί τα copies είναι ανεξάρτητα αντίγραφα από τη στιγμή που δημιουργούνται",
+          "Μόνο οι αλλαγές χρώματος και τυπογραφίας, ενώ οι διαστάσεις και οι θέσεις των στοιχείων μένουν πάντα σταθερές",
+          "Κάθε αλλαγή, χωρίς εξαίρεση, ακόμα και αν το copy έχει τροποποιηθεί τοπικά"
+        ],
+        correct: 0,
+        explain: "Το override είναι ακριβώς ο μηχανισμός εξαίρεσης: κρατάει τοπική τιμή σε ό,τι άλλαξες, και ακολουθεί το main σε όλα τα υπόλοιπα."
+      },
+      {
+        q: "Ποια είναι η διαφορά primitive και semantic token;",
+        options: [
+          "Το primitive περιγράφει την τιμή, το semantic τον ρόλο και δείχνει σε primitive",
+          "Το primitive ορίζεται στο Penpot, ενώ το semantic ορίζεται μόνο στο εργαλείο μετατροπής του έργου",
+          "Το primitive αφορά χρώματα, ενώ το semantic αφορά αποστάσεις και τυπογραφία",
+          "Το semantic είναι παλαιότερος όρος για το ίδιο πράγμα, πριν καθιερωθεί το πρότυπο του W3C"
+        ],
+        correct: 0,
+        explain: "Η διάκριση είναι μεταξύ ονόματος τιμής και ονόματος ρόλου. Και τα δύο επίπεδα ζουν στο ίδιο σύστημα και υποστηρίζουν κάθε τύπο token."
+      },
+      {
+        q: "Γιατί εφαρμόζουμε στα στοιχεία το semantic token και όχι το primitive;",
+        options: [
+          "Γιατί η αλλαγή γίνεται σε μία γραμμή και φτάνει σε όλα τα σημεία με τον ίδιο ρόλο",
+          "Γιατί τα primitive tokens δεν εξάγονται στο JSON και άρα χάνονται κατά την παράδοση, ενώ τα semantic tokens διατηρούνται κανονικά ως έχουν",
+          "Γιατί το Penpot επιτρέπει την εφαρμογή μόνο σε tokens που περιέχουν αναφορά σε άλλο token",
+          "Γιατί τα semantic tokens υπολογίζουν αυτόματα τον λόγο αντίθεσης απέναντι στο φόντο"
+        ],
+        correct: 0,
+        explain: "Το semantic επίπεδο είναι το σημείο ελέγχου. Αν εφαρμόσεις το primitive, χάνεις τη δυνατότητα να αλλάξεις έναν ρόλο χωρίς να αγγίξεις κάθε στοιχείο ξεχωριστά."
+      },
+      {
+        q: "Τι παίρνει ένα έργο Android από τα tokens του Penpot;",
+        options: [
+          "Ένα JSON που μετατρέπεται σε πόρους της πλατφόρμας με εργαλείο όπως το Style Dictionary",
+          "Έτοιμα αρχεία colors.xml και theme για Compose, παραγόμενα κατευθείαν από το εργαλείο χωρίς ενδιάμεσο βήμα μετατροπής",
+          "Τίποτα, γιατί το πρότυπο του W3C αφορά αποκλειστικά εφαρμογές που τρέχουν σε browser",
+          "Μόνο τα χρώματα, αφού οι υπόλοιποι τύποι token δεν έχουν αντίστοιχο στο Android"
+        ],
+        correct: 0,
+        explain: "Η έξοδος είναι δεδομένα σε ανοιχτή μορφή. Η μετατροπή σε πόρους πλατφόρμας γίνεται από ξεχωριστό εργαλείο και στήνεται μία φορά."
+      },
+      {
+        q: "Εφάρμοσες spacing token σε gap και δεν φαίνεται καμία αλλαγή. Ποια είναι η πιθανότερη αιτία;",
+        options: [
+          "Το στοιχείο δεν έχει flex ή grid layout",
+          "Το token ορίστηκε ως dimension αντί για spacing, οπότε αγνοείται από την ιδιότητα του gap",
+          "Το set στο οποίο ανήκει το token δεν είναι ενεργό στο επιλεγμένο theme του αρχείου",
+          "Τα gaps δέχονται μόνο σταθερές τιμές"
+        ],
+        correct: 0,
+        explain: "Το gap υπάρχει μόνο σε flex και grid. Αν το token μπήκε πριν από το layout, συχνά χρειάζεται αφαίρεση και επανεφαρμογή."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Main component", def: "Ο ορισμός από τον οποίο προκύπτουν όλα τα αντίγραφα" },
+        { term: "Copy", def: "Στιγμιότυπο που ακολουθεί το main σε ό,τι δεν έχει αλλάξει τοπικά" },
+        { term: "Override", def: "Τοπική τιμή σε ένα copy, που δεν ενημερώνεται από το main" },
+        { term: "Variant", def: "Ονομασμένη ιδιότητα με τιμές, για επαναλαμβανόμενες παραλλαγές" },
+        { term: "Shared library", def: "Αρχείο δημοσιευμένο ώστε τα assets του να χρησιμοποιούνται αλλού" }
+      ],
+      [
+        { term: "<code>blue-600</code>", def: "Primitive token — περιγράφει την τιμή" },
+        { term: "<code>color-action-primary</code>", def: "Semantic token — περιγράφει τον ρόλο" },
+        { term: "Token set", def: "Ομάδα tokens που ενεργοποιείται ή απενεργοποιείται μαζί" },
+        { term: "Theme", def: "Συνδυασμός sets, τυπικά για light και dark" },
+        { term: "Style Dictionary", def: "Εργαλείο που μετατρέπει το JSON σε πόρους της πλατφόρμας" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 5 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">component</span><span class="gs-def">επαναχρησιμοποιήσιμο στοιχείο σχεδίου</span></div>
+  <div class="gs-pill"><span class="gs-name">main</span><span class="gs-def">ο ορισμός του component</span></div>
+  <div class="gs-pill"><span class="gs-name">copy</span><span class="gs-def">στιγμιότυπο που ακολουθεί το main</span></div>
+  <div class="gs-pill"><span class="gs-name">override</span><span class="gs-def">τοπική εξαίρεση σε ένα copy</span></div>
+  <div class="gs-pill"><span class="gs-name">variant</span><span class="gs-def">ονομασμένη ιδιότητα με τιμές</span></div>
+  <div class="gs-pill"><span class="gs-name">shared library</span><span class="gs-def">δημοσιευμένο αρχείο assets</span></div>
+  <div class="gs-pill"><span class="gs-name">design token</span><span class="gs-def">ονομασμένη τιμή σε ανοιχτή μορφή</span></div>
+  <div class="gs-pill"><span class="gs-name">primitive</span><span class="gs-def">token που ονομάζει την τιμή</span></div>
+  <div class="gs-pill"><span class="gs-name">semantic</span><span class="gs-def">token που ονομάζει τον ρόλο</span></div>
+  <div class="gs-pill"><span class="gs-name">theme</span><span class="gs-def">συνδυασμός sets, π.χ. light και dark</span></div>
+</div>
+`);
+
+    // Section 6
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Prototyping</div>
+<h1>Από στατικές οθόνες σε κάτι που πατιέται</h1>
+<p class="lede">Ένα prototype δεν είναι εφαρμογή. Είναι ένα σύνολο οθονών με κανόνες μετάβασης, που απαντάει σε ερωτήσεις τις οποίες μια στατική εικόνα δεν μπορεί να απαντήσει.</p>
+
+<h2>Τι απαντάει ένα prototype</h2>
+<p>Πόσα πατήματα χρειάζονται για να ολοκληρωθεί μια εργασία. Αν ο χρήστης βρίσκει την επιστροφή. Αν η σειρά των οθονών βγάζει νόημα όταν τη ζεις αντί να την κοιτάς. Αυτά δεν φαίνονται σε καμία εικόνα, και είναι ακριβώς τα πράγματα που κοστίζουν αν ανακαλυφθούν μετά την υλοποίηση.</p>
+
+<h2>Ο μηχανισμός</h2>
+<p>Στο tab Prototype, επιλέγεις ένα στοιχείο και τραβάς μια σύνδεση προς το board προορισμού. Κάθε σύνδεση έχει τρία μέρη:</p>
+
+<div class="grid3">
+  <div class="card">
+    <h3>Trigger</h3>
+    <p>Τι την ενεργοποιεί: click, mouse enter, mouse leave, ή αυτόματα μετά από καθυστέρηση.</p>
+  </div>
+  <div class="card">
+    <h3>Action</h3>
+    <p>Τι συμβαίνει: navigate to, open overlay, close overlay, toggle overlay, previous screen, open URL.</p>
+  </div>
+  <div class="card">
+    <h3>Animation</h3>
+    <p>Πώς φαίνεται η μετάβαση: dissolve, slide, push, με διάρκεια και καμπύλη επιτάχυνσης.</p>
+  </div>
+</div>
+
+<p>Ένα board μπορεί να οριστεί ως αφετηρία ενός <strong>flow</strong>. Ένα αρχείο συνήθως έχει περισσότερα από ένα flows — εγγραφή, αγορά, ρυθμίσεις — και ο θεατής ξεκινάει από όποιο διαλέξει, χωρίς να χρειάζεται να διασχίσει όλη την εφαρμογή για να φτάσει στο σημείο που τον ενδιαφέρει.</p>
+
+<h2>Overlays</h2>
+<p>Η ενέργεια <code>open overlay</code> εμφανίζει ένα board πάνω από το τρέχον, χωρίς να το αντικαταστήσει. Είναι ο σωστός τρόπος για dialog, bottom sheet, μενού και toast. Ρυθμίζεις τη θέση του, αν υπάρχει σκούρο φόντο από πίσω, και αν κλείνει με πάτημα εκτός του.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Ένα dialog φτιαγμένο ως κανονική οθόνη αντί για overlay φαίνεται σχεδόν ίδιο και συμπεριφέρεται λάθος: η προηγούμενη οθόνη δεν υπάρχει από κάτω, οπότε η επιστροφή πρέπει να στηθεί με το χέρι σε κάθε σημείο από όπου μπορεί να ανοίξει το dialog. Με overlay, το κλείσιμο επιστρέφει εκεί που ήσουν, ό,τι κι αν ήταν αυτό.
+</div>
+
+<h2>Scroll και σταθερά στοιχεία</h2>
+<p>Αν το περιεχόμενο ξεπερνάει το ύψος του board, η περιοχή γίνεται κυλιόμενη στο viewer. Ένα στοιχείο μπορεί να οριστεί ως σταθερό ώστε να μένει στη θέση του ενώ το υπόλοιπο κυλάει — έτσι στήνεται μια κεφαλίδα ή μια κάτω γραμμή πλοήγησης που δεν φεύγει από την οθόνη.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 6 / 8 — Prototyping</div>
+<h1>Παρουσίαση, σχόλια και τα όρια</h1>
+
+<h2>Viewer και κοινοποίηση</h2>
+<p>Το prototype παρουσιάζεται στο viewer, σε πλήρη οθόνη. Από εκεί παράγεται και ένας σύνδεσμος κοινοποίησης: μπορείς να επιλέξεις ποια flows θα είναι ορατά, αν χρειάζεται κωδικός, και αν ο επισκέπτης βλέπει μόνο το prototype ή έχει πρόσβαση και στο Inspect.</p>
+<p>Ο σύνδεσμος ανοίγει και στο κινητό. Αυτό είναι πιο σημαντικό απ ό,τι ακούγεται: ένα σχέδιο για Android που κρίθηκε μόνο σε οθόνη υπολογιστή δεν έχει ελεγχθεί καθόλου. Τα μεγέθη αφής, η αναγνωσιμότητα του κειμένου και η απόσταση που πρέπει να διανύσει ο αντίχειρας φαίνονται μόνο στη συσκευή.</p>
+
+<h2>Σχόλια</h2>
+<p>Οποιοσδήποτε έχει πρόσβαση μπορεί να αφήσει σχόλιο καρφιτσωμένο σε συγκεκριμένο σημείο του καμβά. Είναι σαφώς καλύτερο από την εναλλακτική, δηλαδή τη συζήτηση σε chat όπου κανείς δεν ξέρει σε ποια οθόνη αναφέρεται το «το κουμπί είναι πολύ ψηλά».</p>
+
+<h2>Τι δεν αποδεικνύει ένα prototype</h2>
+<p>Αυτό είναι το σημείο όπου τα prototypes παραπλανούν, γιατί μοιάζουν πολύ με την τελική εφαρμογή:</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">Δεδομένα</td><td class="gt-def">Οι λίστες έχουν πάντα τέσσερα προσεγμένα στοιχεία. Στην πραγματικότητα έχουν μηδέν, ή διακόσια, ή ένα με τίτλο ογδόντα χαρακτήρων.</td></tr>
+  <tr><td class="gt-term">Χρόνος</td><td class="gt-def">Κάθε μετάβαση είναι στιγμιαία. Στην εφαρμογή υπάρχει δίκτυο, και άρα καταστάσεις φόρτωσης και αποτυχίας που κανείς δεν σχεδίασε.</td></tr>
+  <tr><td class="gt-term">Πληκτρολόγιο</td><td class="gt-def">Στο κινητό το πληκτρολόγιο καλύπτει το κάτω μισό της οθόνης. Αν το κουμπί υποβολής βρίσκεται εκεί, το ανακαλύπτεις στη συσκευή.</td></tr>
+  <tr><td class="gt-term">Επιστροφή στο Android</td><td class="gt-def">Η κίνηση επιστροφής υπάρχει σε επίπεδο συστήματος. Ο χρήστης θα τη χρησιμοποιήσει, ανεξάρτητα από το τι έχεις σχεδιάσει.</td></tr>
+</table>
+
+<div class="callout">
+  <span class="tag">Ειδικά για Android</span>
+  Για κάθε οθόνη, απάντησε ρητά τι κάνει η επιστροφή. Στην πρώτη οθόνη μιας ροής, βγαίνει από τη ροή; Σε ένα ανοιχτό overlay, κλείνει το overlay ή πάει πίσω μια οθόνη; Στο Penpot αυτό εκφράζεται με την ενέργεια <code>previous screen</code>, αλλά η αξία δεν είναι στη ρύθμιση: είναι στο ότι σε αναγκάζει να το σκεφτείς.
+</div>
+
+<div class="callout good">
+  <span class="tag">Πρακτική συμβουλή</span>
+  Σχεδίασε τις καταστάσεις που δεν είναι η καλή περίπτωση: άδεια λίστα, φόρτωση, αποτυχία δικτύου, πολύ μακρύ κείμενο. Είναι το φθηνότερο πράγμα που μπορείς να προσφέρεις σε όποιον υλοποιήσει την οθόνη, και το πιο συχνά παραλειπόμενο.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποιο ερώτημα απαντάει ένα prototype που δεν απαντάει μια στατική οθόνη;",
+        options: [
+          "Αν η σειρά των οθονών βγάζει νόημα όταν τη διατρέχεις",
+          "Αν τα χρώματα και οι αποστάσεις είναι συνεπείς σε όλες τις οθόνες της εφαρμογής",
+          "Αν το layout προσαρμόζεται σωστά σε διαφορετικά πλάτη οθόνης και σε tablet",
+          "Αν οι τιμές του σχεδίου μεταφέρονται με ακρίβεια στην υλοποίηση"
+        ],
+        correct: 0,
+        explain: "Η αξία του prototype είναι στη ροή και στη σειρά. Η συνέπεια των τιμών και η προσαρμογή του layout ελέγχονται στο ίδιο το σχέδιο."
+      },
+      {
+        q: "Ένα dialog πρέπει να μπορεί να ανοίγει από τρεις διαφορετικές οθόνες. Πώς το στήνεις;",
+        options: [
+          "Ως overlay, ώστε το κλείσιμο να επιστρέφει στην οθόνη από την οποία άνοιξε",
+          "Ως κανονικό board, με ξεχωριστή σύνδεση επιστροφής προς κάθε μία από τις τρεις οθόνες",
+          "Ως τρία αντίγραφα του ίδιου board, ένα για κάθε σημείο από το οποίο μπορεί να ανοίξει",
+          "Ως στοιχείο με trigger after delay, ώστε να εμφανίζεται αυτόματα όταν χρειάζεται"
+        ],
+        correct: 0,
+        explain: "Το overlay εμφανίζεται πάνω από την τρέχουσα οθόνη και δεν την αντικαθιστά, οπότε η επιστροφή δεν χρειάζεται να στηθεί ανά περίπτωση."
+      },
+      {
+        q: "Τι είναι το flow σε ένα αρχείο Penpot;",
+        options: [
+          "Μια ονομασμένη αφετηρία από την οποία ξεκινάει η παρουσίαση",
+          "Η σειρά με την οποία τοποθετήθηκαν τα boards πάνω στον καμβά της σελίδας",
+          "Η ομαδοποίηση των συνδέσεων που έχουν το ίδιο είδος animation μετάβασης",
+          "Ένα αντίγραφο του prototype με δικό του κωδικό"
+        ],
+        correct: 0,
+        explain: "Το flow ορίζει από πού ξεκινάει ο θεατής. Έτσι μπορεί να δει μια συγκεκριμένη διαδρομή χωρίς να περάσει από όλη την εφαρμογή."
+      },
+      {
+        q: "Γιατί πρέπει να ανοίξεις το prototype στο ίδιο το κινητό και όχι μόνο στον υπολογιστή;",
+        options: [
+          "Γιατί μεγέθη αφής και αναγνωσιμότητα κρίνονται μόνο στη συσκευή",
+          "Γιατί ορισμένα είδη animation δεν αποδίδονται σωστά όταν το prototype τρέχει σε browser υπολογιστή",
+          "Γιατί ο σύνδεσμος κοινοποίησης λειτουργεί διαφορετικά ανά λειτουργικό",
+          "Γιατί το Penpot εμφανίζει τα boards σε διαφορετική κλίμακα ανάλογα με το μέγεθος της οθόνης"
+        ],
+        correct: 0,
+        explain: "Το ζητούμενο είναι το φυσικό μέγεθος και το δάχτυλο. Ένα εικονίδιο που πατιέται άνετα με το ποντίκι μπορεί να αστοχεί συστηματικά με τον αντίχειρα."
+      },
+      {
+        q: "Ποια από τις παρακάτω καταστάσεις παραλείπεται συχνότερα και κοστίζει περισσότερο στην υλοποίηση;",
+        options: [
+          "Η άδεια λίστα και η αποτυχία δικτύου",
+          "Η κατάσταση πατημένου κουμπιού, που πρέπει να σχεδιαστεί ξεχωριστά για κάθε είδος κουμπιού",
+          "Η οθόνη ρυθμίσεων, που συνήθως αφήνεται τελευταία επειδή έχει πολλά στοιχεία",
+          "Η οριζόντια διάταξη της οθόνης"
+        ],
+        correct: 0,
+        explain: "Οι καταστάσεις χωρίς δεδομένα και οι αποτυχίες είναι σχεδόν πάντα εκτός σχεδίου, και τότε αποφασίζονται βιαστικά μέσα στον κώδικα."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Trigger", def: "Τι ενεργοποιεί μια σύνδεση, όπως το click ή η καθυστέρηση" },
+        { term: "Action", def: "Τι συμβαίνει, όπως navigate to ή open overlay" },
+        { term: "Flow", def: "Η ονομασμένη αφετηρία μιας διαδρομής στο prototype" },
+        { term: "Overlay", def: "Board που εμφανίζεται πάνω από το τρέχον χωρίς να το αντικαταστήσει" },
+        { term: "Fixed element", def: "Στοιχείο που μένει ακίνητο ενώ το υπόλοιπο περιεχόμενο κυλάει" }
+      ],
+      [
+        { term: "Λίστα με ακριβώς τέσσερα προσεγμένα στοιχεία", def: "Το prototype δεν δείχνει πραγματικά δεδομένα" },
+        { term: "Στιγμιαία μετάβαση σε κάθε πάτημα", def: "Δεν υπάρχει καθυστέρηση δικτύου, άρα ούτε κατάσταση φόρτωσης" },
+        { term: "Κουμπί υποβολής στο κάτω μέρος της οθόνης", def: "Το πληκτρολόγιο του κινητού μπορεί να το καλύπτει" },
+        { term: "Καμία απάντηση για την κίνηση επιστροφής", def: "Το Android τη διαθέτει σε επίπεδο συστήματος, σχεδιασμένη ή όχι" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 6 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">prototype</td><td class="gt-def">οθόνες συνδεδεμένες με κανόνες μετάβασης</td></tr>
+  <tr><td class="gt-term">trigger</td><td class="gt-def">το γεγονός που ενεργοποιεί μια σύνδεση</td></tr>
+  <tr><td class="gt-term">action</td><td class="gt-def">η ενέργεια που εκτελείται</td></tr>
+  <tr><td class="gt-term">flow</td><td class="gt-def">αφετηρία διαδρομής μέσα στο αρχείο</td></tr>
+  <tr><td class="gt-term">overlay</td><td class="gt-def">board πάνω από το τρέχον</td></tr>
+  <tr><td class="gt-term">viewer</td><td class="gt-def">η λειτουργία παρουσίασης σε πλήρη οθόνη</td></tr>
+  <tr><td class="gt-term">fixed element</td><td class="gt-def">στοιχείο που δεν κυλάει</td></tr>
+  <tr><td class="gt-term">empty state</td><td class="gt-def">η οθόνη όταν δεν υπάρχουν δεδομένα</td></tr>
+</table>
+`);
+
+    // Section 7
+    addContent(`
+<div class="eyebrow">Ενότητα 7 / 8 — Handoff</div>
+<h1>Από το σχέδιο στην υλοποίηση</h1>
+<p class="lede">Handoff είναι το σημείο όπου το σχέδιο γίνεται κώδικας. Είναι επίσης το σημείο όπου χάνονται οι περισσότερες πληροφορίες, και σχεδόν πάντα επειδή δεν είχαν καταγραφεί ποτέ.</p>
+
+<h2>Inspect</h2>
+<p>Το tab Inspect δείχνει το επιλεγμένο αντικείμενο ως δεδομένα: ακριβείς διαστάσεις και θέση, αποστάσεις προς τα γειτονικά στοιχεία, τιμές χρωμάτων σε διάφορες μορφές, ρυθμίσεις τυπογραφίας, εφέ. Δίπλα σε αυτά, το παραγόμενο CSS και το SVG markup του αντικειμένου.</p>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το CSS του Inspect είναι αναφορά, όχι πηγαίος κώδικας για αντιγραφή. Περιγράφει ένα αντικείμενο εκεί που στέκεται, χωρίς να ξέρει τι είναι επαναχρησιμοποιήσιμο, ποιο είναι το component και ποια τιμή προέρχεται από token. Αν αντιγραφεί αυτούσιο, το αποτέλεσμα είναι κώδικας με σταθερές παντού και καμία δομή.
+</div>
+
+<h2>Export</h2>
+<p>Το export ορίζεται ανά αντικείμενο ή ανά board, στο κάτω μέρος του Design panel. Κάθε αντικείμενο μπορεί να έχει πολλές ρυθμίσεις εξόδου ταυτόχρονα, καθεμία με δική της κλίμακα και δικό της επίθεμα στο όνομα αρχείου. Οι μορφές καλύπτουν raster έξοδο, όπως PNG, JPEG και WebP, και vector έξοδο, δηλαδή SVG και PDF.</p>
+
+<h2>Τι χρειάζεται ένα έργο Android</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">Εικονίδια</td><td class="gt-def">Σε SVG. Το Android Studio τα μετατρέπει σε vector drawable, οπότε ένα αρχείο καλύπτει όλες τις πυκνότητες οθόνης.</td></tr>
+  <tr><td class="gt-term">Φωτογραφίες</td><td class="gt-def">Σε WebP ή PNG, σε πολλαπλές κλίμακες. Εδώ χρειάζονται οι συντελεστές της ενότητας 2: ×1, ×1.5, ×2, ×3, ×4.</td></tr>
+  <tr><td class="gt-term">Λογότυπα</td><td class="gt-def">Σε SVG όπου γίνεται. Ένα λογότυπο εξαγόμενο ως PNG σε μία κλίμακα θα φανεί θολό σε κάποια συσκευή.</td></tr>
+  <tr><td class="gt-term">Χρώματα και μεγέθη</td><td class="gt-def">Ως tokens, όχι ως τιμές αντιγραμμένες από το Inspect μία προς μία.</td></tr>
+</table>
+
+<div class="callout good">
+  <span class="tag">Πότε χρειάζεσαι πολλαπλές κλίμακες</span>
+  Μόνο για raster. Ένα SVG δεν έχει κλίμακα, γι αυτό και δεν εξάγεται σε ×2 ή ×3. Αν εξάγεις εικονίδια σε PNG για Android, κάτι έχει πάει στραβά νωρίτερα στη διαδικασία.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 7 / 8 — Handoff</div>
+<h1>Ιστορικό, επεκτάσεις και το ανθρώπινο κομμάτι</h1>
+
+<h2>Ιστορικό και μεταφορά αρχείων</h2>
+<p>Το Penpot κρατάει ιστορικό εκδόσεων, ώστε να μπορείς να επιστρέψεις σε προηγούμενη κατάσταση του αρχείου. Ένα αρχείο εξάγεται επίσης ολόκληρο και εισάγεται σε άλλο περιβάλλον — για παράδειγμα από την cloud έκδοση σε δικό σου self-hosted server. Υπάρχει και εισαγωγή αρχείων Figma: τα περισσότερα περνούν καθαρά, αλλά τα σύνθετα layouts συνήθως θέλουν χειροκίνητη διόρθωση μετά.</p>
+
+<h2>Plugins και MCP</h2>
+<p>Το Penpot έχει API plugins, οπότε μπορείς να γράψεις δικές σου επεκτάσεις — για παράδειγμα να γεμίσεις μια λίστα με ρεαλιστικά δεδομένα, ή να ελέγξεις αυτόματα τους λόγους αντίθεσης σε όλη τη σελίδα. Διαθέτει επίσης MCP server, δηλαδή έναν τυποποιημένο τρόπο ώστε ένα AI εργαλείο να διαβάζει τα σχέδια και να δουλεύει πάνω τους.</p>
+
+<div class="callout">
+  <span class="tag">Ρεαλιστική προσδοκία</span>
+  Ούτε τα plugins ούτε το MCP μετατρέπουν το σχέδιο σε έτοιμη εφαρμογή. Αυτό που κάνουν είναι να αυτοματοποιούν επαναλαμβανόμενες εργασίες και να δίνουν σε ένα εργαλείο δομημένη πρόσβαση στο σχέδιο αντί για ένα screenshot. Χρήσιμο, αλλά όχι υποκατάστατο του να ξέρεις τι σχεδιάζεις.
+</div>
+
+<h2>Τι πραγματικά ζητάει αυτός που θα το υλοποιήσει</h2>
+<p>Η μεγαλύτερη απώλεια στο handoff δεν είναι τεχνική. Είναι ότι το σχέδιο δείχνει μία εκδοχή του κόσμου και ο κώδικας πρέπει να καλύψει όλες. Ένα σχέδιο έτοιμο για παράδοση απαντάει στα εξής, χωρίς να χρειαστεί να ρωτήσει κανείς:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Καταστάσεις</h3>
+    <p>Άδειο, φόρτωση, σφάλμα, πολλά δεδομένα. Και ανά στοιχείο: κανονικό, πατημένο, απενεργοποιημένο, με focus.</p>
+  </div>
+  <div class="card">
+    <h3>Όρια κειμένου</h3>
+    <p>Τι γίνεται με τίτλο ογδόντα χαρακτήρων. Κόβεται με αποσιωπητικά, τυλίγεται σε δεύτερη γραμμή, ή μεγαλώνει η κάρτα;</p>
+  </div>
+  <div class="card">
+    <h3>Ονόματα</h3>
+    <p>Layers και components ονομασμένα με βάση τον ρόλο τους. Είναι το λεξιλόγιο με το οποίο θα συζητηθεί η οθόνη.</p>
+  </div>
+  <div class="card">
+    <h3>Πηγή τιμών</h3>
+    <p>Ποιο χρώμα είναι token και ποιο είναι εξαίρεση. Χωρίς αυτό, όλα γίνονται σταθερές μέσα στον κώδικα.</p>
+  </div>
+</div>
+
+<div class="callout good">
+  <span class="tag">Πρακτικός έλεγχος</span>
+  Πριν παραδώσεις, άνοιξε το αρχείο σαν να το βλέπεις πρώτη φορά. Αν χρειάζεσαι πάνω από δέκα δευτερόλεπτα για να καταλάβεις ποια οθόνη είναι η αφετηρία, ποια είναι η τελική εκδοχή και ποια είναι παλιά δοκιμή, το ίδιο θα ισχύσει και για όποιον άλλον — μόνο που εκείνος δεν έχει τη δυνατότητα να ρωτήσει τον εαυτό του.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί δεν αντιγράφουμε αυτούσιο το CSS που δίνει το Inspect;",
+        options: [
+          "Γιατί περιγράφει ένα μεμονωμένο αντικείμενο, χωρίς δομή, components ή tokens",
+          "Γιατί το παραγόμενο CSS χρησιμοποιεί ιδιότητες που δεν υποστηρίζονται από όλους τους browsers",
+          "Γιατί οι τιμές του είναι στρογγυλοποιημένες και ανακριβείς",
+          "Γιατί ενημερώνεται μόνο όταν αποθηκευτεί νέα έκδοση του αρχείου και συχνά είναι παλιό"
+        ],
+        correct: 0,
+        explain: "Είναι σωστή περιγραφή ενός αντικειμένου, αλλά αγνοεί την οργάνωση. Η αξία του είναι στις τιμές που παρέχει, όχι στη δομή που δεν έχει."
+      },
+      {
+        q: "Σε ποια μορφή δίνεις ένα εικονίδιο σε έργο Android και γιατί;",
+        options: [
+          "SVG, γιατί μετατρέπεται σε vector drawable και καλύπτει κάθε πυκνότητα",
+          "PNG σε πέντε κλίμακες, μία για κάθε κατηγορία πυκνότητας που υποστηρίζει το σύστημα",
+          "WebP, γιατί συμπιέζεται καλύτερα από κάθε άλλη μορφή και μειώνει το μέγεθος της εφαρμογής",
+          "PDF, γιατί διατηρεί τα διανυσματικά δεδομένα και ανοίγει σε οποιοδήποτε εργαλείο"
+        ],
+        correct: 0,
+        explain: "Το vector drawable δεν έχει πυκνότητα, οπότε ένα αρχείο αρκεί. Οι πολλαπλές κλίμακες χρειάζονται μόνο για raster περιεχόμενο, δηλαδή για φωτογραφίες."
+      },
+      {
+        q: "Τι σημαίνει ότι το Penpot διαθέτει MCP server;",
+        options: [
+          "Ότι ένα AI εργαλείο μπορεί να διαβάσει το σχέδιο με δομημένο τρόπο",
+          "Ότι το σχέδιο μπορεί να μετατραπεί αυτόματα σε λειτουργική εφαρμογή για την πλατφόρμα που θα επιλέξεις",
+          "Ότι το εργαλείο μπορεί να φιλοξενηθεί σε δικό σου server χωρίς εξάρτηση από την cloud έκδοση",
+          "Ότι τα σχέδια συγχρονίζονται αυτόματα με ένα αποθετήριο κώδικα σε κάθε αποθήκευση"
+        ],
+        correct: 0,
+        explain: "Ο MCP server είναι τρόπος πρόσβασης στα δεδομένα του σχεδίου. Το self-hosting είναι άλλο χαρακτηριστικό και υπήρχε ούτως ή άλλως."
+      },
+      {
+        q: "Ποια πληροφορία λείπει συχνότερα από ένα σχέδιο που παραδίδεται;",
+        options: [
+          "Οι καταστάσεις: άδειο, φόρτωση, σφάλμα και υπερβολικά μακρύ κείμενο",
+          "Οι ακριβείς τιμές των χρωμάτων σε δεκαεξαδική μορφή για κάθε στοιχείο της οθόνης",
+          "Οι διαστάσεις και οι αποστάσεις των αντικειμένων",
+          "Το είδος της γραμματοσειράς και το βάρος της σε κάθε επίπεδο της τυπογραφικής κλίμακας"
+        ],
+        correct: 0,
+        explain: "Τιμές, διαστάσεις και τυπογραφία τα δίνει το Inspect αυτόματα. Τις καταστάσεις τις δίνει μόνο κάποιος που κάθισε και τις σχεδίασε."
+      },
+      {
+        q: "Τι ισχύει για την εισαγωγή αρχείου από Figma;",
+        options: [
+          "Τα περισσότερα περνούν καθαρά, ενώ τα σύνθετα layouts θέλουν διόρθωση",
+          "Δεν υποστηρίζεται, γιατί η μορφή του Figma είναι κλειστή",
+          "Υποστηρίζεται πλήρως και χωρίς απώλειες, αφού και τα δύο εργαλεία βασίζονται σε ανοιχτά πρότυπα",
+          "Υποστηρίζεται μόνο για μεμονωμένα components και όχι για ολόκληρα αρχεία με πολλές σελίδες"
+        ],
+        correct: 0,
+        explain: "Υπάρχει ενσωματωμένος μετατροπέας. Η ρεαλιστική προσδοκία είναι καλή μεταφορά με χειροκίνητο έλεγχο μετά, όχι τελειότητα."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Inspect", def: "Μετρήσεις, τιμές και παραγόμενο CSS ή SVG του επιλεγμένου αντικειμένου" },
+        { term: "Export scale", def: "Πολλαπλάσιο μέγεθος εξόδου για raster αρχεία" },
+        { term: "Vector drawable", def: "Η μορφή εικονιδίου του Android, που προκύπτει από SVG" },
+        { term: "Plugin API", def: "Διεπαφή για δικές σου επεκτάσεις μέσα στο εργαλείο" },
+        { term: "MCP server", def: "Δομημένη πρόσβαση ενός AI εργαλείου στο σχέδιο" }
+      ],
+      [
+        { term: "Εικονίδιο", def: "SVG, μία φορά, χωρίς κλίμακες" },
+        { term: "Φωτογραφία", def: "WebP ή PNG, σε πολλαπλές κλίμακες" },
+        { term: "Χρώμα μάρκας", def: "Design token, όχι τιμή αντιγραμμένη ανά στοιχείο" },
+        { term: "Τίτλος ογδόντα χαρακτήρων", def: "Απόφαση για κόψιμο, τύλιγμα ή μεγέθυνση της κάρτας" },
+        { term: "Layer με όνομα Rectangle 12", def: "Χαμένη πληροφορία ρόλου κατά την παράδοση" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 7 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-columns">
+  <div class="gc-line"><span class="gc-term">handoff</span><span class="gc-def">η παράδοση του σχεδίου προς υλοποίηση</span></div>
+  <div class="gc-line"><span class="gc-term">inspect</span><span class="gc-def">η όψη δεδομένων και κώδικα</span></div>
+  <div class="gc-line"><span class="gc-term">export scale</span><span class="gc-def">πολλαπλάσιο μέγεθος εξόδου</span></div>
+  <div class="gc-line"><span class="gc-term">vector drawable</span><span class="gc-def">διανυσματικό εικονίδιο Android</span></div>
+  <div class="gc-line"><span class="gc-term">plugin API</span><span class="gc-def">διεπαφή για επεκτάσεις</span></div>
+  <div class="gc-line"><span class="gc-term">MCP server</span><span class="gc-def">δομημένη πρόσβαση για AI εργαλεία</span></div>
+  <div class="gc-line"><span class="gc-term">version history</span><span class="gc-def">ιστορικό εκδόσεων του αρχείου</span></div>
+  <div class="gc-line"><span class="gc-term">states</span><span class="gc-def">οι καταστάσεις μιας οθόνης ή στοιχείου</span></div>
+</div>
+`);
+
+    // Section 8
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — Ροή εργασίας</div>
+<h1>Από την ιδέα στην οθόνη</h1>
+<p class="lede">Οι επτά προηγούμενες ενότητες έδωσαν κομμάτια. Εδώ μπαίνουν σε σειρά, και η σειρά έχει σημασία.</p>
+
+<h2>Τα πέντε βήματα</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">1. Task flow</td><td class="gt-def">Τι προσπαθεί να κάνει ο χρήστης, σε βήματα. Γράφεται με λέξεις ή με κουτιά και βέλη, πριν σχεδιαστεί οτιδήποτε.</td></tr>
+  <tr><td class="gt-term">2. Wireframe</td><td class="gt-def">Γκρι κουτιά, χωρίς χρώμα και χωρίς τελικό κείμενο. Απαντάει μόνο στο ερώτημα τι υπάρχει στην οθόνη και πού.</td></tr>
+  <tr><td class="gt-term">3. Θεμέλια</td><td class="gt-def">Παλέτα, type scale, spacing scale, tokens. Πριν σχεδιαστεί η δεύτερη οθόνη, όχι μετά τη δέκατη.</td></tr>
+  <tr><td class="gt-term">4. Σχέδιο υψηλής πιστότητας</td><td class="gt-def">Οθόνες με layouts και components. Εδώ μπαίνουν και οι καταστάσεις, όχι μόνο η καλή περίπτωση.</td></tr>
+  <tr><td class="gt-term">5. Prototype και παράδοση</td><td class="gt-def">Συνδέσεις, έλεγχος στη συσκευή, ονόματα, exports.</td></tr>
+</table>
+
+<div class="callout">
+  <span class="tag">Γιατί το wireframe πριν το χρώμα</span>
+  Αν δείξεις σε κάποιον μια έγχρωμη οθόνη, θα σχολιάσει το χρώμα. Αν του δείξεις γκρι κουτιά, θα σχολιάσει τη δομή — που είναι το μόνο πράγμα που έχει νόημα να αλλάξει σε αυτό το στάδιο, γιατί είναι και το πιο ακριβό αργότερα.
+</div>
+
+<h2>Ένα παράδειγμα, από άκρη σε άκρη</h2>
+<p>Εφαρμογή που δείχνει μια λίστα μαθημάτων και τις λεπτομέρειες του καθενός.</p>
+
+<p><strong>Task flow:</strong> ανοίγει την εφαρμογή, βλέπει τη λίστα, διαλέγει ένα μάθημα, διαβάζει τις λεπτομέρειες, επιστρέφει στη λίστα.</p>
+
+<p><strong>Δομή στο Penpot:</strong> δύο boards 360 × 800. Το πρώτο, με όνομα <code>screen-course-list</code>, παίρνει grid layout τριών γραμμών: 56 για την κεφαλίδα, το υπόλοιπο για τη λίστα, 64 για την κάτω πλοήγηση. Το δεύτερο, <code>screen-course-detail</code>, με την ίδια δομή.</p>
+
+<p><strong>Components:</strong> ένα <code>course-card</code> με flex layout σε row — εικονίδιο σε Fix, στήλη κειμένου σε Fill, βέλος σε Fix — και variants για τις καταστάσεις <code>default</code> και <code>pressed</code>. Ένα <code>app-bar</code> και ένα <code>bottom-nav</code>, χρησιμοποιημένα και στις δύο οθόνες.</p>
+
+<p><strong>Tokens:</strong> <code>color-surface</code>, <code>color-text-default</code>, <code>color-action-primary</code>, <code>space-2</code> και <code>space-3</code> για padding και gaps, <code>radius-card</code>. Δύο sets, light και dark.</p>
+
+<p><strong>Καταστάσεις:</strong> τρίτο board <code>screen-course-list-empty</code> με μήνυμα και κουμπί, και τέταρτο <code>screen-course-list-error</code> με μήνυμα αποτυχίας και επανάληψη.</p>
+
+<p><strong>Prototype:</strong> το <code>course-card</code> συνδέεται με την οθόνη λεπτομερειών με trigger click και animation slide. Το βέλος επιστροφής στην κεφαλίδα χρησιμοποιεί <code>previous screen</code>, ώστε να συμπεριφέρεται όπως η κίνηση επιστροφής του συστήματος.</p>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 8 / 8 — Ροή εργασίας</div>
+<h1>Λίστα ελέγχου για Android</h1>
+<p class="lede">Τα σημεία που διαφοροποιούν μια οθόνη Android από μια σελίδα web, μαζεμένα.</p>
+
+<h2>Πλαίσιο συστήματος</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">Status bar</td><td class="gt-def">Πάνω, με ώρα και ενδείξεις. Το περιεχόμενό σου δεν πρέπει να κρύβεται από κάτω, εκτός αν το έχεις σχεδιάσει σκόπιμα.</td></tr>
+  <tr><td class="gt-term">Πλοήγηση συστήματος</td><td class="gt-def">Κάτω. Άλλοτε τρία κουμπιά, άλλοτε μια λεπτή γραμμή χειρονομιών. Το ύψος διαφέρει, οπότε μην στηρίζεις τίποτα κρίσιμο στην απόλυτη κάτω άκρη.</td></tr>
+  <tr><td class="gt-term">Ασφαλείς περιοχές</td><td class="gt-def">Εγκοπές κάμερας, στρογγυλεμένες γωνίες, καμπύλες άκρες. Κράτα περιθώριο.</td></tr>
+  <tr><td class="gt-term">Επιστροφή</td><td class="gt-def">Υπάρχει πάντα, σε επίπεδο συστήματος. Κάθε οθόνη χρειάζεται απάντηση για το τι κάνει.</td></tr>
+</table>
+
+<h2>Περιεχόμενο και αλληλεπίδραση</h2>
+<table class="glossary-table">
+  <tr><td class="gt-term">48 dp</td><td class="gt-def">Ελάχιστη περιοχή αφής, χωρίς εξαιρέσεις.</td></tr>
+  <tr><td class="gt-term">Dark theme</td><td class="gt-def">Δεν είναι προαιρετικό στο Android. Αν έχεις tokens σε δύο sets, το έχεις ήδη.</td></tr>
+  <tr><td class="gt-term">Μεγέθυνση κειμένου</td><td class="gt-def">Ο χρήστης μπορεί να αυξήσει το μέγεθος γραμματοσειράς από τις ρυθμίσεις. Κάρτες με σταθερό ύψος σπάνε πρώτες.</td></tr>
+  <tr><td class="gt-term">Πλάτος οθόνης</td><td class="gt-def">Το 360 είναι αφετηρία, όχι εγγύηση. Έλεγξε τουλάχιστον ένα στενότερο και ένα φαρδύτερο board.</td></tr>
+  <tr><td class="gt-term">Material 3</td><td class="gt-def">Το σύστημα σχεδίασης της πλατφόρμας. Δεν είσαι υποχρεωμένος να το ακολουθήσεις, αλλά η απόκλιση πρέπει να είναι απόφαση.</td></tr>
+</table>
+
+<div class="callout good">
+  <span class="tag">Γιατί αξίζει να ξεκινήσεις από το Material 3</span>
+  Οι χρήστες του Android έχουν ήδη μάθει πού βρίσκονται τα πράγματα σε μια εφαρμογή που το ακολουθεί. Κάθε απόκλιση από αυτό είναι κόστος μάθησης που πληρώνει ο χρήστης, και πρέπει να αντισταθμίζεται από κάποιο πραγματικό όφελος. Υπάρχουν κοινοτικά UI kits του Material 3 για το Penpot, τα οποία μπορείς να εισάγεις και να χτίσεις πάνω τους.
+</div>
+
+<h2>Τέσσερα λάθη που εμφανίζονται ξανά και ξανά</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>Μία οθόνη, ένα μέγεθος</h3>
+    <p>Όλα φτιαγμένα για 360 πλάτος, με απόλυτες θέσεις. Στην πρώτη διαφορετική συσκευή, τίποτα δεν στοιχίζεται.</p>
+  </div>
+  <div class="card">
+    <h3>Μόνο η καλή περίπτωση</h3>
+    <p>Λίστες πάντα γεμάτες, ονόματα πάντα σύντομα, δίκτυο πάντα διαθέσιμο. Οι υπόλοιπες περιπτώσεις αποφασίζονται βιαστικά μέσα στον κώδικα.</p>
+  </div>
+  <div class="card">
+    <h3>Ψεύτικο κείμενο μέχρι το τέλος</h3>
+    <p>Το lorem ipsum έχει βολικό μήκος. Τα πραγματικά ονόματα προϊόντων δεν έχουν, και το ανακαλύπτεις όταν είναι αργά.</p>
+  </div>
+  <div class="card">
+    <h3>Design system που ήρθε τελευταίο</h3>
+    <p>Δώδεκα οθόνες σχεδιασμένες ελεύθερα, και μετά προσπάθεια να εξαχθούν components από αυτές. Είναι πάντα πιο πολλή δουλειά από το να είχε οριστεί νωρίς.</p>
+  </div>
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί το wireframe γίνεται πριν μπει χρώμα;",
+        options: [
+          "Γιατί αλλιώς τα σχόλια πηγαίνουν στην εμφάνιση αντί στη δομή",
+          "Γιατί τα χρώματα δεν μπορούν να αλλάξουν εύκολα αφού εφαρμοστούν σε πολλές οθόνες ταυτόχρονα",
+          "Γιατί το Penpot δεν επιτρέπει την προσθήκη layout σε board που έχει ήδη χρώμα φόντου",
+          "Γιατί οι έγχρωμες οθόνες καθυστερούν τον καμβά"
+        ],
+        correct: 0,
+        explain: "Το ζητούμενο σε εκείνο το στάδιο είναι η δομή, και η δομή είναι το ακριβότερο πράγμα να αλλάξει αργότερα."
+      },
+      {
+        q: "Οθόνη λίστας με κεφαλίδα 56, περιεχόμενο και κάτω πλοήγηση 64. Ποια είναι η φυσική επιλογή για το εξωτερικό board;",
+        options: [
+          "Grid layout με τρεις γραμμές, όπου η μεσαία παίρνει τον υπόλοιπο χώρο",
+          "Flex layout σε row, με τα τρία τμήματα να μοιράζονται ισότιμα το διαθέσιμο ύψος της οθόνης",
+          "Static τοποθέτηση, με constraint top στην κεφαλίδα και constraint bottom στην πλοήγηση",
+          "Τρία ξεχωριστά boards το ένα κάτω από το άλλο, ώστε να μπορούν να μετακινούνται ανεξάρτητα"
+        ],
+        correct: 0,
+        explain: "Δύο σταθερά ύψη και ένα ελαστικό στη μέση περιγράφεται άμεσα ως τρεις γραμμές grid. Το flex σε row θα έβαζε τα τμήματα το ένα δίπλα στο άλλο."
+      },
+      {
+        q: "Ποιο από τα παρακάτω δεν είναι δικό σου σχεδιαστικό ερώτημα, αλλά δεδομένο της πλατφόρμας;",
+        options: [
+          "Η ύπαρξη της κίνησης επιστροφής σε επίπεδο συστήματος",
+          "Το αν η κάτω γραμμή πλοήγησης της εφαρμογής θα έχει τρία ή τέσσερα στοιχεία",
+          "Το αν η οθόνη λεπτομερειών ανοίγει με slide ή με dissolve",
+          "Το ποια οθόνη είναι αφετηρία του flow"
+        ],
+        correct: 0,
+        explain: "Η επιστροφή υπάρχει ούτως ή άλλως και ο χρήστης θα τη χρησιμοποιήσει. Το μόνο που αποφασίζεις εσύ είναι τι θα κάνει σε κάθε οθόνη."
+      },
+      {
+        q: "Ο χρήστης αυξάνει το μέγεθος γραμματοσειράς από τις ρυθμίσεις του συστήματος. Τι σπάει πρώτο;",
+        options: [
+          "Οι κάρτες με σταθερό ύψος",
+          "Τα εικονίδια, τα οποία κλιμακώνονται μαζί με το κείμενο και χάνουν την ευκρίνειά τους",
+          "Τα χρώματα, γιατί ο λόγος αντίθεσης υπολογίζεται διαφορετικά σε μεγαλύτερο κείμενο",
+          "Οι μεταβάσεις του prototype, που δεν προλαβαίνουν να ολοκληρωθούν στη νέα διάταξη"
+        ],
+        correct: 0,
+        explain: "Το κείμενο χρειάζεται περισσότερο χώρο, οπότε ό,τι έχει κλειδωμένο ύψος είτε το κόβει είτε το αφήνει να ξεχειλίσει. Με Fit content το ύψος ακολουθεί."
+      },
+      {
+        q: "Πότε ορίζονται παλέτα, type scale και tokens;",
+        options: [
+          "Πριν σχεδιαστεί η δεύτερη οθόνη",
+          "Αφού ολοκληρωθούν όλες οι οθόνες, ώστε να προκύψουν από αυτό που χρειάστηκε στην πράξη",
+          "Στο τέλος, μαζί με τα exports, γιατί ανήκουν στο στάδιο της παράδοσης προς τον developer",
+          "Κατά τη διάρκεια του wireframe, ταυτόχρονα με την τοποθέτηση των γκρι κουτιών"
+        ],
+        correct: 0,
+        explain: "Νωρίς, αλλά όχι πριν υπάρχει μια οθόνη που να δείχνει τι χρειάζεται. Η εξαγωγή συστήματος από δώδεκα έτοιμες οθόνες είναι πάντα περισσότερη δουλειά."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Task flow", def: "Τα βήματα του χρήστη, πριν σχεδιαστεί οθόνη" },
+        { term: "Wireframe", def: "Γκρι κουτιά που απαντούν μόνο τι υπάρχει και πού" },
+        { term: "Hi-fi σχέδιο", def: "Οθόνες με layouts, components και καταστάσεις" },
+        { term: "Prototype", def: "Οι συνδέσεις και ο έλεγχος της ροής στη συσκευή" },
+        { term: "Handoff", def: "Ονόματα, exports, tokens και τεκμηριωμένες καταστάσεις" }
+      ],
+      [
+        { term: "Status bar", def: "Η πάνω ζώνη του συστήματος με ώρα και ενδείξεις" },
+        { term: "Πλοήγηση συστήματος", def: "Η κάτω ζώνη, με κουμπιά ή γραμμή χειρονομιών" },
+        { term: "Dark theme", def: "Δεύτερο token set με τα ίδια semantic ονόματα" },
+        { term: "Material 3", def: "Το σύστημα σχεδίασης της πλατφόρμας Android" },
+        { term: "Μεγέθυνση κειμένου", def: "Ρύθμιση συστήματος που σπάει τα σταθερά ύψη" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 8 / 8</div>
+<h2>Όροι που μόλις είδαμε</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">task flow</span><span class="gs-def">τα βήματα του χρήστη σε μια εργασία</span></div>
+  <div class="gs-pill"><span class="gs-name">wireframe</span><span class="gs-def">σχέδιο δομής χωρίς χρώμα</span></div>
+  <div class="gs-pill"><span class="gs-name">hi-fi</span><span class="gs-def">σχέδιο υψηλής πιστότητας</span></div>
+  <div class="gs-pill"><span class="gs-name">safe area</span><span class="gs-def">περιοχή εκτός εγκοπών και γωνιών</span></div>
+  <div class="gs-pill"><span class="gs-name">app bar</span><span class="gs-def">η κεφαλίδα της οθόνης</span></div>
+  <div class="gs-pill"><span class="gs-name">bottom nav</span><span class="gs-def">η κάτω γραμμή πλοήγησης</span></div>
+  <div class="gs-pill"><span class="gs-name">Material 3</span><span class="gs-def">το σύστημα σχεδίασης του Android</span></div>
+  <div class="gs-pill"><span class="gs-name">dark theme</span><span class="gs-def">η σκοτεινή εκδοχή της παλέτας</span></div>
+</div>
+`);
+
+    // Final review
+    addContent(`
+<div class="eyebrow">Τελική Επανάληψη</div>
+<h1>Τι πρόσθεσε κάθε ενότητα</h1>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">1 — Εισαγωγή</td><td class="gt-def">Το design είναι το στάδιο όπου οι αποφάσεις κοστίζουν λίγο. UI είναι η μορφή, UX η ροή.</td></tr>
+  <tr><td class="gt-term">2 — Boards</td><td class="gt-def">Το board είναι η οθόνη και δέχεται layout, το group όχι. Σχεδιάζεις σε dp, όχι σε φυσικά pixel.</td></tr>
+  <tr><td class="gt-term">3 — Θεμέλια</td><td class="gt-def">Κλειστά σύνολα τιμών για χρώμα, κείμενο και αποστάσεις. Contrast και 48 dp δεν είναι διαπραγματεύσιμα.</td></tr>
+  <tr><td class="gt-term">4 — Layout</td><td class="gt-def">Flex για μία διάσταση, grid για δύο. Fix, Fill και Fit content αντιστοιχούν σε πραγματικές ιδιότητες CSS.</td></tr>
+  <tr><td class="gt-term">5 — Design system</td><td class="gt-def">Components για ένα σημείο αλλαγής, variants για τις παραλλαγές, tokens για μία πηγή τιμών.</td></tr>
+  <tr><td class="gt-term">6 — Prototype</td><td class="gt-def">Trigger, action, animation. Απαντάει για τη ροή, δεν αποδεικνύει τίποτα για δεδομένα και χρόνο.</td></tr>
+  <tr><td class="gt-term">7 — Handoff</td><td class="gt-def">Το Inspect δίνει τιμές, όχι δομή. SVG για εικονίδια, κλίμακες μόνο για raster.</td></tr>
+  <tr><td class="gt-term">8 — Ροή</td><td class="gt-def">Flow, wireframe, θεμέλια, hi-fi, prototype. Οι καταστάσεις σχεδιάζονται, δεν προκύπτουν.</td></tr>
+</table>
+
+<h2>Τέσσερις ερωτήσεις για κάθε καινούρια οθόνη</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>1. Τι προσπαθεί να κάνει ο χρήστης εδώ;</h3>
+    <p>Αν δεν απαντιέται σε μία πρόταση, η οθόνη κάνει δύο πράγματα και μάλλον πρέπει να γίνει δύο οθόνες.</p>
+  </div>
+  <div class="card">
+    <h3>2. Τι αλλάζει όταν αλλάζει το περιεχόμενο;</h3>
+    <p>Η απάντηση οδηγεί στην επιλογή layout και στη ρύθμιση Fix, Fill ή Fit content ανά στοιχείο.</p>
+  </div>
+  <div class="card">
+    <h3>3. Ποιες είναι οι άλλες καταστάσεις;</h3>
+    <p>Άδειο, φόρτωση, σφάλμα, πολλά δεδομένα, πολύ μακρύ κείμενο. Καθεμία είναι οθόνη ή variant.</p>
+  </div>
+  <div class="card">
+    <h3>4. Τι κάνει η επιστροφή;</h3>
+    <p>Στο Android υπάρχει ούτως ή άλλως. Αν δεν έχεις απάντηση, θα την αποφασίσει κάποιος άλλος τυχαία.</p>
+  </div>
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ένα group με τρία αντικείμενα δεν κρατάει σταθερές αποστάσεις όταν μεγαλώνει το κείμενο. Γιατί;",
+        options: [
+          "Τα groups δεν δέχονται layout, το οποίο υπάρχει μόνο σε board",
+          "Το gap του group πρέπει να οριστεί ξεχωριστά για γραμμές και για στήλες πριν λειτουργήσει",
+          "Τα constraints των παιδιών έχουν προτεραιότητα και ακυρώνουν τις ρυθμίσεις του group",
+          "Το κείμενο πρέπει πρώτα να μετατραπεί σε component για να ενημερώνει τον γονέα του"
+        ],
+        correct: 0,
+        explain: "Η διαφορά board και group είναι ακριβώς εδώ. Το group μετακινεί μαζί, δεν διατάσσει."
+      },
+      {
+        q: "Σχεδιάζεις board 360 πλάτος για Android. Τι δηλώνει αυτός ο αριθμός;",
+        options: [
+          "Πλάτος σε dp, ανεξάρτητο από την πυκνότητα της οθόνης",
+          "Πλάτος σε φυσικά pixel, όπως το αναφέρουν τα τεχνικά χαρακτηριστικά της συσκευής",
+          "Το ελάχιστο πλάτος που υποστηρίζει το λειτουργικό σύστημα σε συσκευές τηλεφώνου",
+          "Πλάτος σε pixel για κατηγορία xxhdpi, που τριπλασιάζεται στην απόδοση"
+        ],
+        correct: 0,
+        explain: "Ένα dp είναι ένα φυσικό pixel μόνο στα 160 dpi. Σε συσκευή xxhdpi τα 360 dp είναι 1080 φυσικά pixel."
+      },
+      {
+        q: "Κείμενο σε flex container έχει σταθερό πλάτος και κόβεται σε στενότερη οθόνη. Ποια ρύθμιση το διορθώνει;",
+        options: [
+          "Fill αντί για Fix",
+          "Fit content αντί για Fix, ώστε το κείμενο να συρρικνώνεται στο ελάχιστο δυνατό πλάτος του",
+          "Ενεργοποίηση του wrap στον container του κειμένου",
+          "Constraint left and right στο ίδιο το κείμενο, ώστε να κρατήσει τις αποστάσεις"
+        ],
+        correct: 0,
+        explain: "Το Fill αντιστοιχεί σε flex-grow: 1 και δίνει στο κείμενο τον διαθέσιμο χώρο. Τα constraints δεν ισχύουν για παιδιά μέσα σε layout."
+      },
+      {
+        q: "Τι από τα παρακάτω περιγράφει σωστά ένα override;",
+        options: [
+          "Τοπική τιμή σε ένα copy, που δεν ενημερώνεται πια από το main",
+          "Ονομασμένη ιδιότητα με προκαθορισμένες τιμές, όπως size ή state, που επιλέγονται από λίστα",
+          "Πλήρης αποσύνδεση ενός copy από το main, ώστε να γίνει ανεξάρτητο αντικείμενο",
+          "Ενημέρωση του main από ένα copy, όταν η αλλαγή πρέπει να φτάσει σε όλα τα υπόλοιπα"
+        ],
+        correct: 0,
+        explain: "Το override είναι εξαίρεση σε ένα copy. Η δεύτερη επιλογή περιγράφει variant, η τρίτη detach."
+      },
+      {
+        q: "Το χρώμα της μάρκας αλλάζει. Πόσα σημεία αγγίζεις, αν έχεις δουλέψει με semantic tokens;",
+        options: [
+          "Ένα, την τιμή στην οποία δείχνει το semantic token",
+          "Ένα ανά οθόνη, γιατί τα tokens ορίζονται ανά board",
+          "Δύο, ένα για το light και ένα για το dark theme, σε κάθε component ξεχωριστά",
+          "Όσα και τα components που χρησιμοποιούν το χρώμα, αλλά με αυτόματο εντοπισμό τους"
+        ],
+        correct: 0,
+        explain: "Αυτός είναι όλος ο λόγος του semantic επιπέδου. Αν εφάρμοζες το primitive παντού, θα άγγιζες κάθε στοιχείο ξεχωριστά."
+      },
+      {
+        q: "Πότε χρησιμοποιείς overlay αντί για navigate to;",
+        options: [
+          "Όταν η προηγούμενη οθόνη πρέπει να παραμείνει από κάτω, όπως σε dialog",
+          "Όταν η μετάβαση πρέπει να έχει animation, γιατί το navigate to εμφανίζει την οθόνη ακαριαία",
+          "Όταν ο προορισμός είναι μικρότερος από το board αφετηρίας και δεν καλύπτει την οθόνη",
+          "Όταν η ίδια οθόνη ανοίγει από περισσότερα από δύο διαφορετικά σημεία της εφαρμογής"
+        ],
+        correct: 0,
+        explain: "Το κριτήριο είναι αν η από κάτω οθόνη διατηρείται. Και οι δύο ενέργειες δέχονται animation."
+      },
+      {
+        q: "Ποια είναι η σωστή μορφή εξόδου για ένα εικονίδιο που πάει σε έργο Android;",
+        options: [
+          "SVG, χωρίς πολλαπλές κλίμακες",
+          "PNG σε ×1, ×2 και ×3, ώστε να καλυφθούν οι κατηγορίες πυκνότητας των συσκευών",
+          "WebP σε μία κλίμακα, γιατί υποστηρίζει διαφάνεια και συμπιέζεται αποδοτικά",
+          "PDF, γιατί είναι διανυσματική μορφή και δεν χάνει ποιότητα σε καμία ανάλυση"
+        ],
+        correct: 0,
+        explain: "Το SVG γίνεται vector drawable και καλύπτει κάθε πυκνότητα με ένα αρχείο. Οι κλίμακες αφορούν μόνο raster περιεχόμενο."
+      },
+      {
+        q: "Ποιο είναι το ρεαλιστικό όφελος του Inspect για κάποιον που γράφει Compose;",
+        options: [
+          "Οι τιμές: αποστάσεις, μεγέθη, χρώματα και τυπογραφία",
+          "Ο κώδικας, ο οποίος μεταφράζεται αυτόματα από CSS σε αντίστοιχα modifiers του Compose",
+          "Η δομή των layouts, η οποία αντιγράφεται ως ιεραρχία από composable σε composable",
+          "Τίποτα, γιατί το Inspect απευθύνεται σε προγραμματιστές web"
+        ],
+        correct: 0,
+        explain: "Το CSS δεν μεταφέρεται, οι τιμές μεταφέρονται. Το να μην είναι έτοιμος κώδικας δεν το κάνει άχρηστο."
+      },
+      {
+        q: "Ένα εικονίδιο 20 dp λειτουργεί ως κουμπί κλεισίματος. Τι διορθώνεις;",
+        options: [
+          "Την περιοχή αφής, με padding ώστε να φτάσει τα 48 dp",
+          "Το μέγεθος του εικονιδίου, φέρνοντάς το στα 48 dp ώστε να είναι ορατό και ευδιάκριτο",
+          "Τη θέση του, μετακινώντας το μακριά από την άκρη της οθόνης όπου δύσκολα φτάνει ο αντίχειρας",
+          "Το χρώμα του, ώστε να περνάει τον έλεγχο αντίθεσης"
+        ],
+        correct: 0,
+        explain: "Το ορατό μέγεθος και η περιοχή αφής είναι ανεξάρτητα. Το padding λύνει το δεύτερο χωρίς να χαλάσει το πρώτο."
+      },
+      {
+        q: "Ποια κατάσταση λείπει σχεδόν πάντα από ένα σχέδιο και κοστίζει στην υλοποίηση;",
+        options: [
+          "Η άδεια λίστα",
+          "Η κατάσταση πατημένου κουμπιού, την οποία οι developers υλοποιούν διαφορετικά σε κάθε πλατφόρμα",
+          "Η οριζόντια διάταξη της οθόνης, που χρειάζεται ξεχωριστό board για κάθε ανάλυση",
+          "Η οθόνη ρυθμίσεων, η οποία συνήθως αφήνεται τελευταία στη σειρά σχεδίασης"
+        ],
+        correct: 0,
+        explain: "Χωρίς σχεδιασμένη empty state, η απόφαση παίρνεται βιαστικά μέσα στον κώδικα από κάποιον που δεν σχεδιάζει."
+      },
+      {
+        q: "Δύο στήλες καρτών που πρέπει να ευθυγραμμίζονται και κάθετα. Flex ή grid;",
+        options: [
+          "Grid",
+          "Flex με wrap, εφόσον όλες οι κάρτες έχουν το ίδιο ακριβώς ύψος από τη σχεδίαση",
+          "Flex σε column, με μία στήλη ανά container και τα δύο containers δίπλα-δίπλα",
+          "Static τοποθέτηση, γιατί κανένα layout δεν εγγυάται ευθυγράμμιση σε δύο άξονες"
+        ],
+        correct: 0,
+        explain: "Δύο άξονες ταυτόχρονα σημαίνει grid. Το flex με wrap δίνει κάτι που μοιάζει με πλέγμα μόνο όσο τα ύψη συμπίπτουν."
+      },
+      {
+        q: "Πού μπαίνει το dark theme σε ένα σύστημα με design tokens;",
+        options: [
+          "Ως δεύτερο set με τα ίδια semantic ονόματα και άλλες τιμές",
+          "Ως δεύτερο αντίγραφο κάθε οθόνης, σχεδιασμένο ξεχωριστά με τα σκούρα χρώματα",
+          "Ως ρύθμιση του board, η οποία αντιστρέφει αυτόματα τις τιμές φωτεινότητας των χρωμάτων",
+          "Ως variant σε κάθε component, με τιμές light και dark στην ίδια ιδιότητα"
+        ],
+        correct: 0,
+        explain: "Ίδια ονόματα ρόλων, άλλες τιμές, εναλλαγή από ένα σημείο. Αντίγραφα οθονών ή variants ανά component δεν κλιμακώνονται."
+      },
+      {
+        q: "Ποια είναι η σωστή σειρά στη ροή εργασίας;",
+        options: [
+          "Task flow, wireframe, θεμέλια, hi-fi, prototype",
+          "Wireframe, hi-fi, task flow, prototype, θεμέλια, με τα θεμέλια να προκύπτουν στο τέλος",
+          "Θεμέλια, prototype, task flow, wireframe, hi-fi, ξεκινώντας από την παλέτα χρωμάτων",
+          "Hi-fi, wireframe, prototype, θεμέλια, task flow"
+        ],
+        correct: 0,
+        explain: "Πρώτα τι κάνει ο χρήστης, μετά τι υπάρχει στην οθόνη, μετά πώς φαίνεται, τελευταία πώς συμπεριφέρεται."
+      },
+      {
+        q: "Το spacing token σε ένα gap δεν έχει καμία επίδραση. Τι ελέγχεις πρώτο;",
+        options: [
+          "Αν το στοιχείο έχει flex ή grid layout",
+          "Αν το token ανήκει σε set που είναι ενεργό στο τρέχον theme του αρχείου",
+          "Αν η τιμή του token είναι πολλαπλάσιο του οκτώ, όπως απαιτεί η κλίμακα αποστάσεων",
+          "Αν το στοιχείο είναι copy με override"
+        ],
+        correct: 0,
+        explain: "Το gap είναι ιδιότητα του layout. Χωρίς flex ή grid δεν υπάρχει gap για να δεχτεί την τιμή."
+      },
+      {
+        q: "Ποια είναι η πιο ακριβής περιγραφή του τι δίνει το Penpot σε ένα έργο Android;",
+        options: [
+          "Τιμές, εικονίδια, tokens και τεκμηριωμένες αποφάσεις, όχι κώδικα εφαρμογής",
+          "Πλήρη κώδικα διεπαφής, εφόσον οι οθόνες έχουν φτιαχτεί με σωστά flex και grid layouts",
+          "Μόνο εικόνες, αφού όλα τα άλλα εξαρτώνται από την πλατφόρμα",
+          "Αρχεία θέματος και πόρων, τα οποία παράγονται αυτόματα κατά την εξαγωγή του αρχείου"
+        ],
+        correct: 0,
+        explain: "Η μετατροπή των tokens σε πόρους πλατφόρμας γίνεται από ξεχωριστό εργαλείο, και ο κώδικας διεπαφής γράφεται κανονικά."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Board χωρίς layout", def: "Θέσεις με x και y, όπου ισχύουν τα constraints" },
+        { term: "Flex σε column με gap", def: "Στήλη στοιχείων με σταθερό κενό που διατηρείται μόνο του" },
+        { term: "Grid τριών γραμμών", def: "Κεφαλίδα, ελαστικό περιεχόμενο, κάτω πλοήγηση" },
+        { term: "Variant state", def: "Default, pressed και disabled στο ίδιο component" },
+        { term: "Semantic token", def: "Ένα σημείο αλλαγής για όλα τα στοιχεία με τον ίδιο ρόλο" }
+      ],
+      [
+        { term: "Επιστροφή στο Android", def: "Ενέργεια previous screen στο prototype" },
+        { term: "Bottom sheet", def: "Overlay, όχι ξεχωριστή οθόνη" },
+        { term: "Λογότυπο", def: "Export σε SVG, χωρίς κλίμακες" },
+        { term: "Φωτογραφία προϊόντος", def: "Export σε raster, σε πολλαπλές κλίμακες" },
+        { term: "Έλεγχος στο κινητό", def: "Ο μόνος τρόπος να κριθούν αφή και αναγνωσιμότητα" }
+      ]
+    ], { allowHTML: true });
+
+    addContent(`
+<div class="eyebrow">Τελικό Γλωσσάρι</div>
+<h1>Όλοι οι όροι του οδηγού</h1>
+
+<h2>Δομή αρχείου</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">workspace</span><span class="gs-def">η οθόνη εργασίας</span></div>
+  <div class="gs-pill"><span class="gs-name">page</span><span class="gs-def">ξεχωριστός καμβάς σε ένα file</span></div>
+  <div class="gs-pill"><span class="gs-name">board</span><span class="gs-def">το πλαίσιο που παριστάνει οθόνη</span></div>
+  <div class="gs-pill"><span class="gs-name">group</span><span class="gs-def">ομαδοποίηση χωρίς layout</span></div>
+  <div class="gs-pill"><span class="gs-name">z-order</span><span class="gs-def">σειρά επικάλυψης</span></div>
+</div>
+
+<h2>Μονάδες και θεμέλια</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">dp</span><span class="gs-def">density-independent pixel</span></div>
+  <div class="gs-pill"><span class="gs-name">dpi bucket</span><span class="gs-def">κατηγορία πυκνότητας, από mdpi έως xxxhdpi</span></div>
+  <div class="gs-pill"><span class="gs-name">contrast ratio</span><span class="gs-def">λόγος αντίθεσης, ελάχιστο 4.5:1 για κείμενο</span></div>
+  <div class="gs-pill"><span class="gs-name">type scale</span><span class="gs-def">κλειστό σύνολο μεγεθών κειμένου</span></div>
+  <div class="gs-pill"><span class="gs-name">spacing scale</span><span class="gs-def">κλειστό σύνολο αποστάσεων</span></div>
+  <div class="gs-pill"><span class="gs-name">touch target</span><span class="gs-def">περιοχή αφής, ελάχιστο 48 dp</span></div>
+</div>
+
+<h2>Layout</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">flex layout</span><span class="gs-def">διάταξη σε μία διάσταση</span></div>
+  <div class="gs-pill"><span class="gs-name">grid layout</span><span class="gs-def">διάταξη σε δύο διαστάσεις</span></div>
+  <div class="gs-pill"><span class="gs-name">gap</span><span class="gs-def">κενό ανάμεσα στα παιδιά</span></div>
+  <div class="gs-pill"><span class="gs-name">Fix</span><span class="gs-def">σταθερή διάσταση</span></div>
+  <div class="gs-pill"><span class="gs-name">Fill</span><span class="gs-def">παίρνει τον χώρο που περισσεύει</span></div>
+  <div class="gs-pill"><span class="gs-name">Fit content</span><span class="gs-def">προσαρμογή στο περιεχόμενο</span></div>
+  <div class="gs-pill"><span class="gs-name">constraint</span><span class="gs-def">συμπεριφορά σε αλλαγή μεγέθους γονέα</span></div>
+</div>
+
+<h2>Design system</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">component</span><span class="gs-def">επαναχρησιμοποιήσιμο στοιχείο</span></div>
+  <div class="gs-pill"><span class="gs-name">main / copy</span><span class="gs-def">ορισμός και στιγμιότυπο</span></div>
+  <div class="gs-pill"><span class="gs-name">override</span><span class="gs-def">τοπική εξαίρεση σε copy</span></div>
+  <div class="gs-pill"><span class="gs-name">variant</span><span class="gs-def">ονομασμένη ιδιότητα με τιμές</span></div>
+  <div class="gs-pill"><span class="gs-name">shared library</span><span class="gs-def">δημοσιευμένο αρχείο assets</span></div>
+  <div class="gs-pill"><span class="gs-name">design token</span><span class="gs-def">ονομασμένη τιμή σε ανοιχτή μορφή</span></div>
+  <div class="gs-pill"><span class="gs-name">primitive / semantic</span><span class="gs-def">όνομα τιμής και όνομα ρόλου</span></div>
+  <div class="gs-pill"><span class="gs-name">theme</span><span class="gs-def">συνδυασμός sets, light και dark</span></div>
+</div>
+
+<h2>Prototype και παράδοση</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">trigger / action</span><span class="gs-def">τι ενεργοποιεί και τι εκτελείται</span></div>
+  <div class="gs-pill"><span class="gs-name">flow</span><span class="gs-def">αφετηρία διαδρομής</span></div>
+  <div class="gs-pill"><span class="gs-name">overlay</span><span class="gs-def">board πάνω από το τρέχον</span></div>
+  <div class="gs-pill"><span class="gs-name">viewer</span><span class="gs-def">λειτουργία παρουσίασης</span></div>
+  <div class="gs-pill"><span class="gs-name">inspect</span><span class="gs-def">όψη δεδομένων και κώδικα</span></div>
+  <div class="gs-pill"><span class="gs-name">export scale</span><span class="gs-def">πολλαπλάσιο μέγεθος εξόδου</span></div>
+  <div class="gs-pill"><span class="gs-name">vector drawable</span><span class="gs-def">διανυσματικό εικονίδιο Android</span></div>
+  <div class="gs-pill"><span class="gs-name">handoff</span><span class="gs-def">η παράδοση προς υλοποίηση</span></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<h1>Και τώρα;</h1>
+<p class="lede">Ο οδηγός κάλυψε το εργαλείο και τον τρόπο σκέψης. Το μόνο που μένει είναι να ανοίξεις ένα κενό αρχείο και να σχεδιάσεις κάτι δικό σου.</p>
+
+<div class="callout good">
+  <span class="tag">Μια πρόταση για πρώτη άσκηση</span>
+  Διάλεξε μια εφαρμογή που χρησιμοποιείς κάθε μέρα και ξανασχεδίασε δύο οθόνες της, με boards 360 × 800, flex ή grid layout παντού, ένα component με variants, και τουλάχιστον μία empty state. Δεν χρειάζεται να είναι καλύτερη από την αρχική. Χρειάζεται να είναι δική σου, ώστε να δεις ποιες αποφάσεις κρύβονταν πίσω από κάθε οθόνη που θεωρούσες δεδομένη.
+</div>
+
+<h2>Πηγές</h2>
+<ul>
+  <li><a href="https://penpot.app" target="_blank" rel="noopener">penpot.app</a> — η επίσημη σελίδα και τα release notes</li>
+  <li><a href="https://help.penpot.app/user-guide/" target="_blank" rel="noopener">help.penpot.app/user-guide</a> — το εγχειρίδιο χρήσης, η πηγή αλήθειας για κάθε λεπτομέρεια του interface</li>
+  <li><a href="https://github.com/penpot/penpot" target="_blank" rel="noopener">github.com/penpot/penpot</a> — ο κώδικας και οι οδηγίες self-hosting</li>
+  <li><a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" rel="noopener">w3.org/WAI/WCAG21/quickref</a> — οι οδηγίες προσβασιμότητας, με τα κατώφλια αντίθεσης</li>
+  <li><a href="https://m3.material.io" target="_blank" rel="noopener">m3.material.io</a> — το Material Design 3</li>
+  <li><a href="https://developer.android.com/design" target="_blank" rel="noopener">developer.android.com/design</a> — οι οδηγίες σχεδίασης της πλατφόρμας Android</li>
+</ul>
+
+<div id="final-score"></div>
+
+<p class="lede">Zone01 Athens · Cohort 2.3 · pavgerin / avgerinos8</p>
+`);
+
+    initSlideDeck({
+      version: "1.0.0",
+      notifyUrl: "https://script.google.com/macros/s/AKfycbzZRFWgg0WwQXHE6H0yg-QS-cem-d4qaYYYNmZ58Fss-fZmSXqmuu-u7DPXyLzn1Lc/exec"
+    });
+  </script>
+</body>
+
+</html>

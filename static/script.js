@@ -1593,7 +1593,7 @@ function wireDotsArrows() {
  * simply finds nothing in either case, which is fine).
  * @param {number} slideIndex
  */
-function goTo(i) {
+function goTo(i, opts) {
   if (i < 0 || i >= slides.length) return;
   const goingBack = i < current;
 
@@ -1622,6 +1622,16 @@ function goTo(i) {
 
   counterEl.textContent = (current + 1) + " / " + slides.length;
   fillEl.style.width = (((current + 1) / slides.length) * 100) + "%";
+
+  // Any #@slug in the address bar reflects wherever THAT click took you —
+  // once you move on via Next/Back/dots/keyboard, it's stale: reloading at
+  // that point would incorrectly jump you back there instead of where you
+  // actually navigated to. Cleared on every path here EXCEPT the one that's
+  // actively setting the hash right now (jumpToHash, which passes
+  // {fromHash:true}) — clearing there would erase the very hash it just set.
+  if (!(opts && opts.fromHash) && location.hash) {
+    history.replaceState(null, "", location.pathname + location.search);
+  }
 
   prevBtn.disabled = current === 0;
   nextBtn.disabled = current === slides.length - 1;
@@ -1731,11 +1741,11 @@ function initTocSidebar() {
       return;
     }
 
-    // A/D navigate slides, W opens the sidebar, S closes it — but never
-    // while the user is actually typing (search box, fill-in-the-blank
-    // inputs, the feedback form, anywhere), and never alongside a
-    // modifier key (Ctrl/Cmd/Alt), so this doesn't fight with browser or
-    // OS shortcuts that happen to use the same letters.
+    // A/D navigate slides, W/S scroll the current slide up/down, Q toggles
+    // the sidebar — but never while the user is actually typing (search
+    // box, fill-in-the-blank inputs, the feedback form, anywhere), and
+    // never alongside a modifier key (Ctrl/Cmd/Alt), so this doesn't fight
+    // with browser or OS shortcuts that happen to use the same letters.
     const activeTag = document.activeElement ? document.activeElement.tagName : "";
     const isTyping = activeTag === "INPUT" || activeTag === "TEXTAREA" ||
       (document.activeElement && document.activeElement.isContentEditable);
@@ -1744,8 +1754,22 @@ function initTocSidebar() {
     switch (e.key.toLowerCase()) {
       case "a": goTo(current - 1); break;
       case "d": goTo(current + 1); break;
-      case "w": openToc(); break;
-      case "s": closeToc(); break;
+      case "q":
+        if (tocSidebarEl.classList.contains("open")) closeToc(); else openToc();
+        break;
+      case "w": {
+        const container = slideEls[current];
+        const step = container.clientHeight * 0.8;
+        smoothScrollTop(container, Math.max(0, container.scrollTop - step), 400);
+        break;
+      }
+      case "s": {
+        const container = slideEls[current];
+        const step = container.clientHeight * 0.8;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        smoothScrollTop(container, Math.min(maxScroll, container.scrollTop + step), 400);
+        break;
+      }
     }
   });
 
@@ -1978,14 +2002,14 @@ function smoothScrollTop(container, targetTop, maxDuration) {
  * the element directly instead of looking one up.
  * @param {HTMLElement} targetEl
  */
-function jumpToElement(targetEl) {
+function jumpToElement(targetEl, opts) {
   const targetSlide = targetEl.closest(".slide");
   if (!targetSlide) return;
 
   const slideIndex = parseInt(targetSlide.dataset.index, 10);
   if (isNaN(slideIndex)) return;
 
-  goTo(slideIndex);
+  goTo(slideIndex, opts);
 
   // Wait a frame so goTo()'s active-class switch (display:none -> visible)
   // has actually applied before measuring/scrolling within it.
@@ -2029,7 +2053,7 @@ function jumpToHash(hash) {
   if (!hash || hash.length < 2) return;
   const targetEl = document.getElementById(hash.slice(1)); // drop the leading '#'
   if (!targetEl) return; // no heading/slug on this page matches
-  jumpToElement(targetEl);
+  jumpToElement(targetEl, { fromHash: true });
 }
 
 /**

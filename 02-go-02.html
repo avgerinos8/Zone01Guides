@@ -124,7 +124,6 @@
             <a href="#@own-package" class="toc-link toc-h2">Το δικό μας package</a>
             <a href="#@exported" class="toc-link toc-h2">Exported vs unexported</a>
             <a href="#@init-func" class="toc-link toc-h2">Η function init()</a>
-            <a href="#@glossary1" class="toc-link toc-h1">Μίνι γλωσσάριο §1.1–§1.2</a>
             <a href="#@chapter1layout" class="toc-link toc-h1">Οργάνωση project</a>
             <a href="#@subpackages" class="toc-link toc-h2">Sub-packages</a>
             <a href="#@circular-deps" class="toc-link toc-h2">Κυκλικές εξαρτήσεις</a>
@@ -137,7 +136,6 @@
             <a href="#@flag-detect" class="toc-link toc-h2">Ανίχνευση flags</a>
             <a href="#@flag-args" class="toc-link toc-h1">flag.Args()</a>
             <a href="#@str-to-number" class="toc-link toc-h1">Από string σε αριθμό</a>
-            <a href="#@glossary2" class="toc-link toc-h1">Μίνι γλωσσάριο Ενότητας 2</a>
             <div class="toc-section">ΕΝΟΤΗΤΑ 3 — PATTERNS</div>
             <a href="#@patterns-intro" class="toc-link toc-h1">Γιατί χρειαζόμαστε patterns</a>
             <a href="#@accumulator" class="toc-link toc-h1">Result variable — accumulator</a>
@@ -218,7 +216,6 @@
             <div class="toc-section">ΕΝΟΤΗΤΑ 8 — DYNAMIC PROGRAMMING</div>
             <a href="#@memoization" class="toc-link toc-h1">Memoization</a>
             <a href="#@tabulation" class="toc-link toc-h1">Tabulation</a>
-            <a href="#@dp-space" class="toc-link toc-h2">Πετάμε και τον πίνακα</a>
             <a href="#@dp-when" class="toc-link toc-h1">Πότε λύνεται με DP</a>
             <a href="#@dp-coins" class="toc-link toc-h1">Τα ρέστα, σωστά αυτή τη φορά</a>
             <a href="#@dp-grid" class="toc-link toc-h1">Δύο διαστάσεις</a>
@@ -482,8 +479,8 @@ func main() {
 
         // ── Mini-glossary — §1.1-1.2 ─────────────────────────────────────────── ⊃
         addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — §1.1 &amp; §1.2</div>
-<h2 id="@glossary1">Όροι που μόλις είδαμε</h2>
+<div class="eyebrow" id="@glossary1">Μίνι Γλωσσάρι — §1.1 &amp; §1.2</div>
+<h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
   <div class="gc-line"><span class="gc-term">module</span><span class="gc-def">συλλογή packages που διαχειρίζονται μαζί ως μία μονάδα</span></div>
   <div class="gc-line"><span class="gc-term">go.mod</span><span class="gc-def">αρχείο ταυτότητας module: όνομα, έκδοση Go, εξαρτήσεις</span></div>
@@ -1031,7 +1028,7 @@ func toInt(s string) (value int, ok bool) {
   <tr><td class="gt-term">os.Args</td><td class="gt-def">slice από strings με όλα τα ορίσματα εκκίνησης, index 0 = όνομα προγράμματος</td></tr>
   <tr><td class="gt-term">os.Args[1:]</td><td class="gt-def">τα πραγματικά ορίσματα του χρήστη, χωρίς το όνομα του προγράμματος</td></tr>
   <tr><td class="gt-term">flag</td><td class="gt-def">named όρισμα με παύλα μπροστά, π.χ. -name=value ή -loud</td></tr>
-  <tr><td class="gt-term">flag.Parse()</td><td class="gt-def">διαβάζει το os.Args και γεμίζει τις τιμές των ορισμένων flags</td></tr>
+  <tr><td class="gt-term">flag.Parse()</td><td class="gt-def">διαβάζει το os.ArgΣτην Ενότητα 6 αφήσαμε ένα πρόβλημα ανοιχτό.s και γεμίζει τις τιμές των ορισμένων flags</td></tr>
   <tr><td class="gt-term">flag.Args()</td><td class="gt-def">τα θεσιακά ορίσματα που απομένουν μετά την αφαίρεση των flags</td></tr>
   <tr><td class="gt-term">θεσιακό όρισμα</td><td class="gt-def">όρισμα χωρίς παύλα — η σημασία του εξαρτάται από τη θέση του</td></tr>
   <tr><td class="gt-term">(value, ok bool)</td><td class="gt-def">δεύτερη τιμή επιστροφής που δηλώνει αν η πρώτη είναι έγκυρη</td></tr>
@@ -7475,7 +7472,7 @@ func SolveQueens(board []int, row int) bool {
 <div class="eyebrow" id="@memoization">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
 <h1>Memoization: κράτα ό,τι έχεις ήδη υπολογίσει</h1>
 
-<p class="lede"> Στην Ενότητα 6 αφήσαμε ένα πρόβλημα ανοιχτό. Ο αναδρομικός <code>Fib</code> ήταν σωστός και σύντομος, αλλά για <code>n = 50</code> χρειαζόταν περίπου 25 δισεκατομμύρια κλήσεις. Ας δούμε γιατί, και ας το διορθώσουμε με μία μεταβλητή παραπάνω. </p>
+<p class="lede"> Στην Ενότητα 6 αφήσαμε κάποιες εκκρεμότητες. Ο αναδρομικός <code>Fib</code> (που υπολόγιζε την ακολουθία Fibonacci) ήταν σωστός σαν κώδικας, αλλά για <code>n = 50</code> χρειαζόταν περίπου 25 δισεκατομμύρια κλήσεις. Ας θυμηθούμε σύντομα το γιατί, και έπειτα θα το διορθώσουμε με μία μόνο μεταβλητή.</p>
 
 <pre><code class="lang-go">// The version from section 6 - correct, but exponential.
 func Fib(n int) int {
@@ -7489,11 +7486,11 @@ func Fib(n int) int {
 <p>Το δέντρο κλήσεων για το <code>Fib(6)</code>:</p>
 
 <pre><code>                      Fib(6)
-                   /          \
+                   /          \\
               Fib(5)            Fib(4)
-             /      \          /      \
+             /      \\          /      \\
         Fib(4)    Fib(3)   Fib(3)   Fib(2)
-       /     \    /    \    /    \
+       /     \\    /    \\    /    \\
    Fib(3) Fib(2) ...  ...  ...  ...
 </code></pre>
 
@@ -7536,30 +7533,22 @@ func main() {
 
 <p> Στην πράξη, από τις δύο αναδρομικές κλήσεις κάθε επιπέδου, μόνο η μία κάνει πραγματική δουλειά. Το δέντρο εκφυλίζεται σε μια αλυσίδα μήκους <code>n</code>. </p>
 
-<div class="callout">
-    <span class="tag">Πότε γράφεις στο memo</span>
-    <p> Το <code>memo[n] = result</code> μπαίνει <strong>αφού</strong> υπολογιστεί το αποτέλεσμα και <strong>πριν</strong> από το <code>return</code>. Αν το ξεχάσεις, ο κώδικας παραμένει απόλυτα σωστός — απλώς δεν κερδίζεις τίποτα, γιατί το memo μένει άδειο και κάθε κλήση ξαναϋπολογίζει τα πάντα. Είναι ένα σφάλμα που δεν εμφανίζεται ως λάθος αποτέλεσμα, μόνο ως αργός κώδικας. </p>
-</div>
 
 <div class="callout">
     <span class="tag">Το memo πρέπει να είναι κοινό για όλες τις κλήσεις</span>
-    <p> Πρόσεξε ότι το <code>memo</code> δημιουργείται μία φορά στη <code>main</code> και περνιέται σε κάθε αναδρομική κλήση. Αν το δημιουργούσες μέσα στην ίδια τη <code>Fib</code>, κάθε κλήση θα ξεκινούσε με άδειο σημειωματάριο και δεν θα άλλαζε τίποτα. Τα maps είναι reference types, όπως είδαμε στην Ενότητα 4, οπότε όλες οι κλήσεις μοιράζονται την ίδια δομή χωρίς να χρειάζεται pointer. </p>
+    <p> Πρόσεξε ότι το <code>memo</code> δημιουργείται μία φορά στη <code>main</code> και περνιέται σε κάθε αναδρομική κλήση. Αν το δημιουργούσες μέσα στην ίδια τη <code>Fib</code>, κάθε κλήση θα ξεκινούσε με άδειο "σημειωματάριο" και δεν θα άλλαζε τίποτα. Τα maps είναι reference types, όπως είδαμε στην Ενότητα 4, οπότε όλες οι κλήσεις μοιράζονται την ίδια δομή χωρίς να χρειάζεται pointer. </p>
 </div>
 
-<h2>Τι μόλις κάναμε, με μια πρόταση</h2>
+<h2>Δυναμικός προγραμματισμός</h2>
 
-<p> Πήραμε μια αναδρομική λύση που ξαναϋπολόγιζε τα ίδια υποπροβλήματα, και της προσθέσαμε μνήμη. Αυτό είναι όλο. Και έχει επίσημο όνομα: λέγεται <strong>δυναμικός προγραμματισμός</strong> (dynamic programming), και είναι το θέμα αυτού του κεφαλαίου. </p>
+<p> Πήραμε μια αναδρομική λύση που ξαναϋπολόγιζε τα ίδια υποπροβλήματα, και της προσθέσαμε μνήμη. Αυτό είναι όλο. Και έχει επίσημο όνομα: λέγεται <strong>δυναμικός προγραμματισμός</strong> (dynamic programming). </p>
 
 <div class="callout">
     <span class="tag">Το όνομα δεν βοηθάει</span>
     <p> Ο όρος επινοήθηκε τη δεκαετία του 1950 από τον Richard Bellman, και ο ίδιος παραδέχτηκε αργότερα ότι τον διάλεξε επειδή ακουγόταν εντυπωσιακός σε διοικητικά κλιμάκια που δεν ήθελε να καταλάβουν τι ακριβώς έκανε. Δεν έχει σχέση ούτε με δυναμική μνήμη ούτε με προγραμματισμό όπως τον εννοούμε σήμερα. Αν σε μπερδεύει το όνομα, σκέψου το ως «αναδρομή που θυμάται». </p>
 </div>
-`);
-
-        // ── §8.2 — Tabulation ────────────────────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow" id="@tabulation">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
-<h1>Tabulation: η ίδια ιδέα, από την άλλη κατεύθυνση</h1>
+<br>
+<h1 id="@tabulation">Tabulation: η ίδια ιδέα, από την άλλη κατεύθυνση</h1>
 
 <p class="lede"> Το memoization ξεκινάει από το μεγάλο πρόβλημα και κατεβαίνει προς τα μικρά. Υπάρχει και η αντίθετη διαδρομή: ξεκίνα από τα μικρά, και χτίσε προς τα πάνω μέχρι να φτάσεις σε αυτό που ζητήθηκε. </p>
 
@@ -7642,11 +7631,6 @@ func FibTwoVars(n int) int {
 }
 </code></pre>
 
-<div class="callout good">
-    <span class="tag">Το αναγνωρίζεις;</span>
-    <p> Δύο μεταβλητές που κουβαλάνε την προηγούμενη κατάσταση καθώς προχωράει η λούπα — αυτό είναι το <strong>previous value</strong> pattern της Ενότητας 3, με δύο μεταβλητές αντί για μία. Και η γραμμή <code>prev, current = current, prev+current</code> είναι η ταυτόχρονη ανάθεση που είδαμε στο bubble sort: η Go υπολογίζει πρώτα ολόκληρη τη δεξιά πλευρά, οπότε δεν χρειάζεται βοηθητική μεταβλητή. </p>
-</div>
-
 <p> Η πολυπλοκότητα χρόνου παραμένει <code>O(n)</code>, αλλά η μνήμη έπεσε από <code>O(n)</code> σε <code>O(1)</code>. Αυτή η βελτιστοποίηση είναι διαθέσιμη μόνο στη bottom-up μορφή: το memoization χρειάζεται ούτως ή άλλως ολόκληρο το σημειωματάριο, γιατί δεν ξέρει εκ των προτέρων με ποια σειρά θα του ζητηθούν οι τιμές. </p>
 `);
 
@@ -7660,7 +7644,7 @@ func FibTwoVars(n int) int {
 <div class="grid2">
     <div class="card">
         <span class="card-tag">1. Επικαλυπτόμενα υποπροβλήματα</span>
-        <p> Η αναδρομική λύση ζητάει <strong>το ίδιο υποπρόβλημα πολλές φορές</strong>. Αυτό είναι που κάνει το σημειωματάριο να αποδίδει: χωρίς επανάληψη, δεν υπάρχει τίποτα να εξοικονομήσεις. </p>
+        <p> Η αναδρομική λύση ζητάει <strong>το ίδιο υποπρόβλημα πολλές φορές</strong>. Αυτό είναι που κάνει το "σημειωματάριο" να αποδίδει: χωρίς επανάληψη, δεν υπάρχει τίποτα να εξοικονομήσεις. </p>
     </div>
     <div class="card">
         <span class="card-tag">2. Βέλτιστη υποδομή</span>
@@ -7674,91 +7658,278 @@ func FibTwoVars(n int) int {
 
 <p> Αυτή είναι ακριβώς η διαφορά που περιγράψαμε στην Ενότητα 6, όταν εξηγήσαμε γιατί δύο αναδρομικές κλήσεις δεν σημαίνουν αυτόματα εκθετικό κόστος. Τώρα έχει και όνομα: <strong>divide and conquer</strong> σημαίνει υποπροβλήματα που δεν επικαλύπτονται, <strong>δυναμικός προγραμματισμός</strong> σημαίνει υποπροβλήματα που επικαλύπτονται. </p>
 
-<h2>Πώς φτάνεις σε μια λύση DP</h2>
+<br>
 
-<p>Η διαδικασία είναι σχεδόν πάντα η ίδια, και έχει τέσσερα βήματα:</p>
-
-<ul>
-    <li><strong>1. Γράψε την αφελή αναδρομική λύση.</strong> Χωρίς να σε νοιάζει η ταχύτητα. Χρησιμοποίησε
-        τις τρεις ερωτήσεις της Ενότητας 6: ποιο είναι το base case, πώς μικραίνει το πρόβλημα, πώς
-        συνδυάζω.</li>
-    <li><strong>2. Δες αν επαναλαμβάνονται υποπροβλήματα.</strong> Σχεδίασε δύο-τρία επίπεδα του δέντρου
-        κλήσεων. Αν το ίδιο όρισμα εμφανίζεται σε δύο διαφορετικά κλαδιά, υπάρχει επικάλυψη.</li>
-    <li><strong>3. Πρόσθεσε memo.</strong> Ένα map ή slice με κλειδί ό,τι ορίζει το υποπρόβλημα — συνήθως οι
-        παράμετροι της αναδρομικής function.</li>
-    <li><strong>4. Αν χρειάζεται, γύρνα το ανάποδα.</strong> Μετέτρεψέ το σε λούπα που γεμίζει πίνακα, για να
-        γλιτώσεις την αναδρομή και ίσως και τη μνήμη.</li>
-</ul>
-
-<div class="callout">
-    <span class="tag">Το κλειδί του memo είναι ό,τι αλλάζει</span>
-    <p> Αν η αναδρομική function έχει μία παράμετρο που αλλάζει, το memo είναι <code>map[int]int</code>. Αν έχει δύο, χρειάζεσαι κλειδί που να τις περιέχει και τις δύο — για παράδειγμα <code>map[[2]int]int</code>, όπως κάναμε με τις συντεταγμένες στον λαβύρινθο. Παράμετροι που δεν αλλάζουν ποτέ (π.χ. το slice των δεδομένων) δεν μπαίνουν στο κλειδί. </p>
-</div>
-`);
-
-        // ── §8.4 — Ρέστα: η εκδίκηση του §7 ─────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow" id="@dp-coins">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
-<h1>Τα ρέστα, σωστά αυτή τη φορά</h1>
+<h1 id="@dp-coins">Τα ρέστα, σωστά αυτή τη φορά</h1>
 
 <p class="lede"> Στην Ενότητα 7 αφήσαμε ένα πρόβλημα άλυτο. Με κέρματα <code>{4, 3, 1}</code> και στόχο το 6, το greedy έδωσε τρία κέρματα (<code>4 + 1 + 1</code>) ενώ η σωστή απάντηση είναι δύο (<code>3 + 3</code>). Τώρα έχουμε το εργαλείο που το λύνει. </p>
 
-<h2>Γιατί το πρόβλημα ταιριάζει στο DP</h2>
+<h2>Η ερώτηση που ξεκλειδώνει το πρόβλημα</h2>
 
-<p>Ας ελέγξουμε τις δύο προϋποθέσεις:</p>
+<p> Το πρώτο ένστικτο είναι λάθος: «θα δοκιμάσω όλους τους συνδυασμούς κερμάτων». Οι συνδυασμοί είναι εκθετικά πολλοί, και το DP δεν τους απαριθμεί ποτέ. Κάνει μία πολύ πιο στενή ερώτηση: </p>
 
-<ul>
-    <li><strong>Βέλτιστη υποδομή:</strong> αν ξέρω τα λιγότερα κέρματα για κάθε ποσό μικρότερο του 6, τότε
-        για το 6 αρκεί να δοκιμάσω κάθε κέρμα <code>c</code> και να πάρω <code>1 + (λύση για 6-c)</code>.</li>
-    <li><strong>Επικάλυψη:</strong> η λύση για το 2 χρειάζεται και όταν ξεκινάς με το 4 και όταν ξεκινάς με
-        το 3 και κάτι. Το ίδιο υποπρόβλημα εμφανίζεται σε πολλά κλαδιά.</li>
-</ul>
+<p> <strong>Ποιο ήταν το τελευταίο κέρμα;</strong> </p>
 
-<h2>Η λύση, από κάτω προς τα πάνω</h2>
+<p> Όποια κι αν είναι η σωστή λύση για το 6, κάπου τελειώνει, και το τελευταίο κέρμα που μπήκε είναι ένα από τα <code>{4, 3, 1}</code>. Δεν ξέρουμε ποιο — αλλά ξέρουμε ότι είναι ένα από τρία. Τρεις υποψήφιοι, όχι δεκάδες συνδυασμοί. </p>
+
+<svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:940px; height:auto; margin:18px auto; display:block; color:inherit;">
+  <defs><marker id="dpfan-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <rect x="375" y="20" width="150" height="56" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="450" y="55" text-anchor="middle" font-size="21" fill="currentColor">ποσό 6</text>
+  <line x1="450" y1="76" x2="140" y2="190" stroke="currentColor" stroke-width="2" stroke-linecap="round" marker-end="url(#dpfan-ar)" opacity="0.75"/>
+  <rect x="252" y="120" width="86" height="26" rx="6" fill="var(--tone-1)"/>
+  <text x="295" y="138" text-anchor="middle" font-size="15" fill="currentColor">κέρμα 4</text>
+  <rect x="40" y="190" width="200" height="76" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="140" y="219" text-anchor="middle" font-size="17" fill="currentColor">υπόλοιπο 2</text>
+  <text x="140" y="246" text-anchor="middle" font-size="16" fill="var(--tone-4)">best[2] = 2</text>
+  <text x="140" y="296" text-anchor="middle" font-size="16" fill="currentColor">σύνολο 3 κέρματα</text>
+  <line x1="450" y1="76" x2="450" y2="190" stroke="var(--tone-5)" stroke-width="2" stroke-linecap="round" marker-end="url(#dpfan-ar)" opacity="1"/>
+  <rect x="407" y="120" width="86" height="26" rx="6" fill="var(--tone-1)"/>
+  <text x="450" y="138" text-anchor="middle" font-size="15" fill="var(--tone-5)">κέρμα 3</text>
+  <rect x="350" y="190" width="200" height="76" rx="10" fill="none" stroke="var(--tone-5)" stroke-width="2.5"/>
+  <text x="450" y="219" text-anchor="middle" font-size="17" fill="currentColor">υπόλοιπο 3</text>
+  <text x="450" y="246" text-anchor="middle" font-size="16" fill="var(--tone-4)">best[3] = 1</text>
+  <text x="450" y="296" text-anchor="middle" font-size="16" fill="var(--tone-5)" font-weight="700">σύνολο 2 κέρματα</text>
+  <line x1="450" y1="76" x2="760" y2="190" stroke="currentColor" stroke-width="2" stroke-linecap="round" marker-end="url(#dpfan-ar)" opacity="0.75"/>
+  <rect x="562" y="120" width="86" height="26" rx="6" fill="var(--tone-1)"/>
+  <text x="605" y="138" text-anchor="middle" font-size="15" fill="currentColor">κέρμα 1</text>
+  <rect x="660" y="190" width="200" height="76" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+  <text x="760" y="219" text-anchor="middle" font-size="17" fill="currentColor">υπόλοιπο 5</text>
+  <text x="760" y="246" text-anchor="middle" font-size="16" fill="var(--tone-4)">best[5] = 2</text>
+  <text x="760" y="296" text-anchor="middle" font-size="16" fill="currentColor">σύνολο 3 κέρματα</text>
+  <text x="450" y="326" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.6">κρατάμε το μικρότερο σύνολο</text>
+</svg>
+
+<p>Κάθε κλαδί παίρνει ένα κέρμα. Οπότε στο τελικό πλήθος μπαίνει ένα <code>+1</code>. Ό,τι απομένει είναι το υπόλοιπο του κλαδιού: 2, 3 ή 5 αντίστοιχα.</p>
+
+<p>Για κάθε υπόλοιπο διαβάζουμε το <code>best[υπόλοιπο]</code> που είναι ένα slice με το μικρότερο πλήθος κερμάτων που φτιάχνει ακριβώς αυτό το ποσό (το υπόλοιπο). Ξέρουμε αυτές τις τιμές ήδη, επειδή έχουμε λύσουμε τα μικρότερα ποσά με τη σειρά, από το 0 και πάνω: όταν φτάνουμε στο 6, κάθε μικρότερο ποσό είναι ήδη υπολογισμένο.</p>
+
+<p>Άρα κάθε κλαδί κοστίζει <code>best[υπόλοιπο] + 1</code>. Τρία κλαδιά, τρεις αριθμοί. Ο μικρότερος γίνεται το <code>best[6]</code> και καταχωρείται στον πίνακα, για να τον διαβάσει με τη σειρά του κάποιο μεγαλύτερο ποσό.</p>
+
+<svg viewBox="0 0 840 322" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:980px; height:auto; margin:18px auto; display:block; color:inherit;">
+  <defs><marker id="dpdep-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/></marker></defs>
+  <path d="M 192 150 Q 135 118 78 150" fill="none" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.85" marker-end="url(#dpdep-ar)"/>
+  <path d="M 306 150 Q 249 118 192 150" fill="none" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.85" marker-end="url(#dpdep-ar)"/>
+  <path d="M 420 150 Q 249 54 78 150" fill="none" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.85" marker-end="url(#dpdep-ar)"/>
+  <path d="M 534 150 Q 306 22 78 150" fill="none" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.85" marker-end="url(#dpdep-ar)"/>
+  <path d="M 648 150 Q 420 22 192 150" fill="none" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.85" marker-end="url(#dpdep-ar)"/>
+  <path d="M 762 150 Q 591 54 420 150" fill="none" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.85" marker-end="url(#dpdep-ar)"/>
+  <rect x="26" y="160" width="104" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="78" y="200" text-anchor="middle" font-size="26" fill="var(--tone-5)" font-weight="700">0</text>
+  <text x="78" y="221" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">best[0]</text>
+  <text x="78" y="254" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.55">base case</text>
+  <rect x="140" y="160" width="104" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="192" y="200" text-anchor="middle" font-size="26" fill="var(--tone-5)" font-weight="700">1</text>
+  <text x="192" y="221" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">best[1]</text>
+  <text x="192" y="252" text-anchor="middle" font-size="14" fill="var(--tone-5)" font-weight="700">+1 &#8594; 1</text>
+  <rect x="254" y="160" width="104" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="306" y="200" text-anchor="middle" font-size="26" fill="var(--tone-5)" font-weight="700">2</text>
+  <text x="306" y="221" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">best[2]</text>
+  <text x="306" y="252" text-anchor="middle" font-size="14" fill="var(--tone-5)" font-weight="700">+1 &#8594; 2</text>
+  <rect x="368" y="160" width="104" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="420" y="200" text-anchor="middle" font-size="26" fill="var(--tone-5)" font-weight="700">1</text>
+  <text x="420" y="221" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">best[3]</text>
+  <text x="420" y="252" text-anchor="middle" font-size="14" fill="var(--tone-5)" font-weight="700">+3 &#8594; 1</text>
+  <text x="420" y="272" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">+1 &#8594; 3</text>
+  <rect x="482" y="160" width="104" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="534" y="200" text-anchor="middle" font-size="26" fill="var(--tone-5)" font-weight="700">1</text>
+  <text x="534" y="221" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">best[4]</text>
+  <text x="534" y="252" text-anchor="middle" font-size="14" fill="var(--tone-5)" font-weight="700">+4 &#8594; 1</text>
+  <text x="534" y="272" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">+3 &#8594; 2</text>
+  <text x="534" y="292" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">+1 &#8594; 2</text>
+  <rect x="596" y="160" width="104" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="648" y="200" text-anchor="middle" font-size="26" fill="var(--tone-5)" font-weight="700">2</text>
+  <text x="648" y="221" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">best[5]</text>
+  <text x="648" y="252" text-anchor="middle" font-size="14" fill="var(--tone-5)" font-weight="700">+4 &#8594; 2</text>
+  <text x="648" y="272" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">+3 &#8594; 3</text>
+  <text x="648" y="292" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">+1 &#8594; 2</text>
+  <rect x="710" y="160" width="104" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="762" y="200" text-anchor="middle" font-size="26" fill="var(--tone-5)" font-weight="700">2</text>
+  <text x="762" y="221" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.7">best[6]</text>
+  <text x="762" y="252" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">+4 &#8594; 3</text>
+  <text x="762" y="272" text-anchor="middle" font-size="14" fill="var(--tone-5)" font-weight="700">+3 &#8594; 2</text>
+  <text x="762" y="292" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.55">+1 &#8594; 3</text>
+</svg>
+
+<p>Διάβασέ το από αριστερά προς τα δεξιά, όπως γεμίζει. Κάτω από κάθε κελί είναι οι υποψήφιοι του — ένας ανά κέρμα που χωράει στο ποσό. Το highlighted value κέρδισε και έγινε η τιμή του κελιού. Το τόξο από πάνω δείχνει σε ποιο προηγούμενο <code>best</code> στηρίχτηκε αυτός ο νικητής.</p>
+
+<p>Κανένα τόξο δεν πάει προς τα δεξιά. Κάθε κελί διαβάζει μόνο κελιά που έχουν ήδη συμπληρωθεί, και γι' αυτό η σειρά από το 0 προς τα πάνω δεν είναι σύμβαση αλλά προϋπόθεση. Το <code>best[6]</code> στηρίζεται στο <code>best[3]</code>, που στηρίζεται στο <code>best[0]</code>: δύο κέρματα των 3, ακριβώς η λύση που το greedy δεν έβρισκε.</p>
+
+<p> Το <code>best[5]</code> έχει δύο υποψηφίους με την τιμή 2. Ο κώδικας κρατάει αυτόν που συνάντησε πρώτο — το πλήθος κερμάτων είναι ίδιο, οπότε η απάντηση δεν αλλάζει. </p>
+
+<div class="callout">
+    <span class="tag">Και αν το ποσό δεν γίνεται καθόλου;</span>
+    <p> Με κέρματα <code>{4, 3}</code> το ποσό 1 δεν φτιάχνεται με κανέναν τρόπο. Το κελί του χρειάζεται μια τιμή που να σημαίνει «αδύνατο» — και το 0 δεν κάνει, γιατί το 0 είναι ήδη η σωστή απάντηση για το <code>best[0]</code>. Χρειαζόμαστε ξεχωριστό σημάδι: ένα sentinel value. Ο κώδικας θα επιστρέφει <code>-1</code> σε αυτή την περίπτωση, και στο επόμενο βήμα θα δεις τι χρησιμοποιεί εσωτερικά μέχρι να φτάσει εκεί. </p>
+</div>
+
+<h2>Χτίζουμε το best με την σειρά</h2>
+
+<p>Θα λύσουμε <strong>κάθε</strong> ποσό από το 0 μέχρι το ζητούμενο, με τη σειρά. Έτσι, όταν φτάνουμε στο 6, όλα τα υπόλοιπα που μπορεί να χρειαστεί είναι ήδη έτοιμα. </p>
+
+<p><strong>1.</strong> Ο πίνακας που κρατάει τις απαντήσεις, και το μόνο ποσό που ξέρουμε χωρίς σκέψη:</p>
+
+<pre><code class="lang-go">// best[i] = the fewest coins that add up to exactly i
+best := make([]int, amount+1)
+best[0] = 0 // zero coins are needed to make zero
+</code></pre>
+
+<p> Ο πίνακας έχει <code>amount+1</code> θέσεις γιατί χρειαζόμαστε και το index 0. Η <code>make</code> γεμίζει με μηδενικά, οπότε η γραμμή <code>best[0] = 0</code> είναι τεχνικά περιττή — τη γράφουμε επειδή είναι το base case και αξίζει να φαίνεται. </p>
+
+<p><strong>2.</strong> Χρειαζόμαστε έναν τρόπο να λέμε «δεν έχω βρει τίποτα ακόμα» μια τιμή μεγαλύτερη από κάθε πιθανή λύση (το pattern Extremum της Ενότητας 3):</p>
+
+<pre><code class="lang-go">// Bigger than any real answer: the smallest coin is at least 1, so you can
+// never need more than "amount" coins in total.
+impossible := amount + 1
+</code></pre>
+
+<p> Δεν είναι αυθαίρετος αριθμός. Με το μικρότερο δυνατό κέρμα, το 1, το ποσό 6 θέλει το πολύ 6 κέρματα. Άρα το 7 δεν μπορεί να είναι ποτέ πραγματική απάντηση, και μπορεί να σημαίνει «τίποτα». </p>
+
+<p><strong>3.</strong> Οι υποψήφιοι για ένα συγκεκριμένο ποσό <code>i</code> — ένας ανά κέρμα (τα 3 κλαδιά που είδαμε σε παραπάνω σχήμα):</p>
+
+<pre><code class="lang-go">for _, c := range coins {
+    if c &gt; i {
+        continue // this coin alone overshoots the amount
+    }
+
+    remaining := i - c               // what is left after taking coin c
+    candidate := best[remaining] + 1 // coins for the rest, plus this one
+}
+</code></pre>
+
+<p> Πρόσεξε τη διαφορά ανάμεσα στις δύο μεταβλητές. Το <code>remaining</code> είναι <strong>ποσό</strong>: τι μένει να πληρωθεί. Το <code>candidate</code> είναι <strong>πλήθος κερμάτων</strong>: πόσα χρειάζονται συνολικά αν διαλέξουμε αυτό το κέρμα. Το <code>+1</code> προσθέτει ένα κέρμα, όχι μία μονάδα ποσού. </p>
+
+<p><strong>4.</strong> Από τους τρεις υποψηφίους κρατάμε τον μικρότερο:</p>
+
+<pre><code class="lang-go">best[i] = impossible // nothing found for this amount yet
+
+for _, c := range coins {
+    if c &gt; i {
+        continue
+    }
+
+    remaining := i - c               
+    candidate := best[remaining] + 1
+
+    if candidate &lt; best[i] { // if we found something better
+        best[i] = candidate
+    }
+}
+</code></pre>
+
+<p><strong>5.</strong> Και στο τέλος, μετάφραση του σημαδιού σε απάντηση:</p>
+
+<pre><code class="lang-go">if best[amount] == impossible {
+    return -1 // this amount cannot be made with these coins
+}
+return best[amount]
+</code></pre>
+
+<p>Όλα μαζί:</p>
 
 <pre><code class="lang-go">// MinCoins returns the fewest coins that add up exactly to amount,
 // or -1 if the amount cannot be made at all.
 func MinCoins(coins []int, amount int) int {
-    // best[i] = fewest coins needed to make exactly i
+    impossible := amount + 1 // bigger than any real answer
+
     best := make([]int, amount+1)
-    // best[0] is already 0: zero coins are needed to make zero
+    best[0] = 0 // zero coins are needed to make zero
 
     for i := 1; i &lt;= amount; i++ {
-        best[i] = -1 // -1 means "not reachable so far"
+        best[i] = impossible // nothing found for this amount yet
 
         for _, c := range coins {
             if c &gt; i {
-                continue // this coin alone is bigger than the amount
+                continue // this coin alone overshoots i
             }
 
-            rest := best[i-c]
-            if rest == -1 {
-                continue // the remainder itself cannot be made
-            }
+            remaining := i - c
+            candidate := best[remaining] + 1
 
-            if best[i] == -1 || rest+1 &lt; best[i] {
-                best[i] = rest + 1 // this coin gives a better result
+            if candidate &lt; best[i] {
+                best[i] = candidate
             }
         }
+    }
+
+    if best[amount] == impossible {
+        return -1
     }
     return best[amount]
 }
 </code></pre>
 
+<div class="callout">
+    <span class="tag">Τα αδύνατα ποσά "διαδίδονται" μόνα τους</span>
+    <p>Αν είχαμε μόνο κέρματα <code>{4, 3}</code> (και όχι κέρμα με αξία <code>1</code>) το ποσό 1 δεν μπορεί να δοθεί, οπότε το <code>best[1]</code> θα έμενε <code>impossible</code>. Όταν αργότερα κάποιο <code>i</code> δοκιμάσει να διαβάσει το <code>best[1]</code>, ο υποψήφιος βγαίνει <code>impossible + 1</code> — μεγαλύτερος από το <code>impossible</code>, άρα δεν κερδίζει ποτέ τη σύγκριση. Δεν χρειάζεται ξεχωριστός έλεγχος: το ίδιο το μέγεθος του αριθμού και το extremum pattern κάνει τη δουλειά.</p>
+</div>
+
 <h2>Πώς γεμίζει ο πίνακας</h2>
 
-<p>Με κέρματα <code>{4, 3, 1}</code> και στόχο το 6, ο πίνακας συμπληρώνεται από αριστερά προς τα δεξιά:</p>
+<p> Μία σειρά ανά ποσό, μία στήλη ανά κέρμα. Κάθε κελί είναι ένας υποψήφιος, και δίπλα-δίπλα φαίνεται ποιος κερδίζει: </p>
 
-<table class="glossary-table">
-<tr><td class="gt-term">i</td><td class="gt-term">δοκιμές</td><td class="gt-def">best[i]</td></tr>
-<tr><td class="gt-term">0</td><td class="gt-term">—</td><td class="gt-def">0 (κανένα κέρμα)</td></tr>
-<tr><td class="gt-term">1</td><td class="gt-term">μόνο το 1 χωράει → best[0] + 1</td><td class="gt-def">1</td></tr>
-<tr><td class="gt-term">2</td><td class="gt-term">1 → best[1] + 1</td><td class="gt-def">2</td></tr>
-<tr><td class="gt-term">3</td><td class="gt-term">3 → best[0] + 1 = 1· 1 → best[2] + 1 = 3</td><td class="gt-def">1</td></tr>
-<tr><td class="gt-term">4</td><td class="gt-term">4 → best[0] + 1 = 1· 3 → best[1] + 1 = 2</td><td class="gt-def">1</td></tr>
-<tr><td class="gt-term">5</td><td class="gt-term">4 → best[1] + 1 = 2· 3 → best[2] + 1 = 3</td><td class="gt-def">2</td></tr>
-<tr><td class="gt-term">6</td><td class="gt-term">4 → best[2] + 1 = 3· <strong>3 → best[3] + 1 = 2</strong></td><td class="gt-def"><strong>2</strong></td></tr>
-</table>
+<svg viewBox="0 0 800 424" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:980px; height:auto; margin:18px auto; display:block; color:inherit;">
+  <text x="52" y="50" text-anchor="middle" font-size="15" fill="currentColor" opacity="0.75">ποσό</text>
+  <text x="181" y="50" text-anchor="middle" font-size="15" fill="var(--tone-4)">κέρμα 4</text>
+  <text x="361" y="50" text-anchor="middle" font-size="15" fill="var(--tone-4)">κέρμα 3</text>
+  <text x="541" y="50" text-anchor="middle" font-size="15" fill="var(--tone-4)">κέρμα 1</text>
+  <text x="715" y="50" text-anchor="middle" font-size="15" fill="currentColor" opacity="0.75">best</text>
+  <line x1="20" y1="64" x2="790" y2="64" stroke="currentColor" stroke-width="2" opacity="0.45"/>
+  <text x="52" y="102" text-anchor="middle" font-size="17" fill="currentColor">0</text>
+  <text x="181" y="102" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <text x="361" y="102" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <text x="541" y="102" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <text x="691" y="102" text-anchor="middle" font-size="17" fill="var(--tone-5)" font-weight="700">0</text>
+  <text x="757" y="102" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.6">base case</text>
+  <line x1="20" y1="118" x2="790" y2="118" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+  <text x="52" y="148" text-anchor="middle" font-size="17" fill="currentColor">1</text>
+  <text x="181" y="148" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <text x="361" y="148" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <rect x="462" y="123" width="158" height="34" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="541" y="148" text-anchor="middle" font-size="15" fill="var(--tone-5)">best[0]+1 = 1</text>
+  <text x="715" y="148" text-anchor="middle" font-size="19" fill="var(--tone-5)" font-weight="700">1</text>
+  <line x1="20" y1="164" x2="790" y2="164" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+  <text x="52" y="194" text-anchor="middle" font-size="17" fill="currentColor">2</text>
+  <text x="181" y="194" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <text x="361" y="194" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <rect x="462" y="169" width="158" height="34" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="541" y="194" text-anchor="middle" font-size="15" fill="var(--tone-5)">best[1]+1 = 2</text>
+  <text x="715" y="194" text-anchor="middle" font-size="19" fill="var(--tone-5)" font-weight="700">2</text>
+  <line x1="20" y1="210" x2="790" y2="210" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+  <text x="52" y="240" text-anchor="middle" font-size="17" fill="currentColor">3</text>
+  <text x="181" y="240" text-anchor="middle" font-size="16" fill="currentColor" opacity="0.3">—</text>
+  <rect x="282" y="215" width="158" height="34" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="361" y="240" text-anchor="middle" font-size="15" fill="var(--tone-5)">best[0]+1 = 1</text>
+  <text x="541" y="240" text-anchor="middle" font-size="15" fill="currentColor">best[2]+1 = 3</text>
+  <text x="715" y="240" text-anchor="middle" font-size="19" fill="var(--tone-5)" font-weight="700">1</text>
+  <line x1="20" y1="256" x2="790" y2="256" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+  <text x="52" y="286" text-anchor="middle" font-size="17" fill="currentColor">4</text>
+  <rect x="102" y="261" width="158" height="34" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="181" y="286" text-anchor="middle" font-size="15" fill="var(--tone-5)">best[0]+1 = 1</text>
+  <text x="361" y="286" text-anchor="middle" font-size="15" fill="currentColor">best[1]+1 = 2</text>
+  <text x="541" y="286" text-anchor="middle" font-size="15" fill="currentColor">best[3]+1 = 2</text>
+  <text x="715" y="286" text-anchor="middle" font-size="19" fill="var(--tone-5)" font-weight="700">1</text>
+  <line x1="20" y1="302" x2="790" y2="302" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+  <text x="52" y="332" text-anchor="middle" font-size="17" fill="currentColor">5</text>
+  <rect x="102" y="307" width="158" height="34" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="181" y="332" text-anchor="middle" font-size="15" fill="var(--tone-5)">best[1]+1 = 2</text>
+  <text x="361" y="332" text-anchor="middle" font-size="15" fill="currentColor">best[2]+1 = 3</text>
+  <rect x="462" y="307" width="158" height="34" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="541" y="332" text-anchor="middle" font-size="15" fill="var(--tone-5)">best[4]+1 = 2</text>
+  <text x="715" y="332" text-anchor="middle" font-size="19" fill="var(--tone-5)" font-weight="700">2</text>
+  <line x1="20" y1="348" x2="790" y2="348" stroke="currentColor" stroke-width="1" opacity="0.15"/>
+  <text x="52" y="378" text-anchor="middle" font-size="17" fill="currentColor">6</text>
+  <text x="181" y="378" text-anchor="middle" font-size="15" fill="currentColor">best[2]+1 = 3</text>
+  <rect x="282" y="353" width="158" height="34" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="361" y="378" text-anchor="middle" font-size="15" fill="var(--tone-5)">best[3]+1 = 2</text>
+  <text x="541" y="378" text-anchor="middle" font-size="15" fill="currentColor">best[5]+1 = 3</text>
+  <text x="715" y="378" text-anchor="middle" font-size="19" fill="var(--tone-5)" font-weight="700">2</text>
+  <line x1="628" y1="64" x2="628" y2="394" stroke="currentColor" stroke-width="1" opacity="0.25"/>
+  <text x="20" y="416" font-size="14" fill="currentColor" opacity="0.6">κάθε σειρά: μία στήλη ανά κέρμα, κρατάμε το μικρότερο</text>
+</svg>
+
+<p> Οι παύλες είναι τα κέρματα που δεν χωράνε στο ποσό της σειράς — εκεί χτυπάει το <code>continue</code>. Κάθε άλλο κελί διαβάζει μια τιμή που βρίσκεται <strong>πιο πάνω στην ίδια στήλη «best»</strong>, ποτέ πιο κάτω. Γι' αυτό η σειρά συμπλήρωσης έχει σημασία. </p>
+
+<p> Στη σειρά του 5 κερδίζουν δύο κελιά ταυτόχρονα, γιατί και τα δύο δίνουν 2. Ο κώδικας κρατάει αυτό που συνάντησε πρώτο, με το <code>&lt;</code> αντί για <code>&lt;=</code>. Το πλήθος κερμάτων είναι ίδιο, οπότε η απάντηση δεν αλλάζει. </p>
 
 <div class="callout good">
     <span class="tag">Η διαφορά από το greedy, σε μία γραμμή</span>
@@ -7767,26 +7938,62 @@ func MinCoins(coins []int, amount int) int {
 
 <h2>Πόσο κοστίζει</h2>
 
-<p> Δύο φωλιασμένες λούπες: η εξωτερική τρέχει <code>amount</code> φορές, η εσωτερική όσα και τα διαθέσιμα κέρματα. Άρα <code>O(amount × πλήθος κερμάτων)</code>. Για ρέστα σε λεπτά του ευρώ με οκτώ κέρματα, αυτό είναι ασήμαντο. </p>
+<p> Δύο φωλιασμένα loops: το εξωτερικό τρέχει <code>amount</code> φορές, το εσωτερικό όσα και τα διαθέσιμα κέρματα. Άρα <code>O(amount × πλήθος κερμάτων)</code>. Για ρέστα σε λεπτά του ευρώ με οκτώ κέρματα, ασήμαντο. </p>
 
-<p> Σύγκρινέ το με το backtracking της Ενότητας 7, που θα δοκίμαζε κάθε συνδυασμό κερμάτων και θα ήταν εκθετικό. Ίδια σωστή απάντηση, ριζικά διαφορετικό κόστος — και η μόνη διαφορά είναι ότι το DP δεν ξαναϋπολογίζει ποτέ ένα υποπρόβλημα που έχει ήδη λύσει. </p>
+<p> Το backtracking της Ενότητας 7 θα δοκίμαζε κάθε συνδυασμό και θα ήταν εκθετικό. Ίδια σωστή απάντηση, ριζικά διαφορετικό κόστος, και η μόνη διαφορά είναι ότι εδώ κανένα υποπρόβλημα δεν λύνεται δεύτερη φορά. </p>
+
+<h2>Η ίδια λύση, αναδρομικά</h2>
+
+<p>Πήγαμε σε iterative λύση, γιατί φαίνεται καθαρότερα το γέμισμα. Αξίζει όμως να δεις και την μορφή με recursion, γιατί είναι πιο κοντά στην ερώτηση «ποιο ήταν το τελευταίο κέρμα;» με την οποία ξεκινήσαμε.</p>
+
+<pre><code class="lang-go">// impossible has to be one fixed value here: every call works on a different
+// amount, so "amount + 1" would mean something different at each level.
+const impossible = 1000000
+
+// MinCoinsRec returns the fewest coins for amount, remembering what it solves.
+func MinCoinsRec(coins []int, amount int, memo map[int]int) int {
+    if amount == 0 {
+        return 0 // base case: nothing left to pay
+    }
+
+    if known, ok := memo[amount]; ok {
+        return known // solved this amount before
+    }
+
+    best := impossible
+
+    for _, c := range coins {
+        if c &gt; amount {
+            continue
+        }
+
+        candidate := MinCoinsRec(coins, amount-c, memo) + 1
+        if candidate &lt; best {
+            best = candidate
+        }
+    }
+
+    memo[amount] = best // write it down before returning
+    return best
+}
+</code></pre>
+
+<p> Το σώμα του loop είναι το ίδιο με πριν, με μία αντικατάσταση: όπου ο πίνακας διάβαζε <code>best[remaining]</code>, εδώ γίνεται κλήση <code>MinCoinsRec(coins, amount-c, memo)</code>. Η βεντάλια του πρώτου σχήματος είναι πλέον γραμμένη κυριολεκτικά: τρεις κλήσεις, μία ανά κέρμα. </p>
+
+<p> Χωρίς το memo, το <code>MinCoinsRec(coins, 6, ...)</code> κάνει 24 κλήσεις· με το memo, 14. Για ποσό 20 η διαφορά είναι 20.736 έναντι 56. Ο καλών μεταφράζει το <code>impossible</code> σε <code>-1</code>, όπως έκανε και η bottom-up μορφή στο τέλος της. </p>
 
 <div class="callout">
-    <span class="tag">Γιατί το -1 και όχι το 0</span>
-    <p> Χρειαζόμαστε έναν τρόπο να ξεχωρίσουμε το «αυτό το ποσό γίνεται με μηδέν κέρματα» από το «αυτό το ποσό δεν γίνεται καθόλου». Το 0 είναι έγκυρη απάντηση μόνο για το <code>best[0]</code>, οπότε δεν μπορεί να σημαίνει και «αδύνατο». Το <code>-1</code> είναι <strong>sentinel value</strong> — το pattern της Ενότητας 3 — και εδώ είναι ασφαλές, γιατί το πλήθος κερμάτων δεν μπορεί ποτέ να είναι αρνητικό. </p>
+    <span class="tag">Ποια από τις δύο να γράψεις</span>
+    <p> Η αναδρομική υπολογίζει μόνο τα ποσά που πραγματικά χρειάζονται· η bottom-up υπολογίζει όλα τα ποσά μέχρι τον στόχο, αλλά χωρίς call stack. Για ρέστα, όπου σχεδόν κάθε ενδιάμεσο ποσό χρειάζεται έτσι κι αλλιώς, η bottom-up είναι η καθαρή επιλογή.</p>
 </div>
-`);
-
-        // ── §8.5 — DP σε δύο διαστάσεις ──────────────────────────────────────── ⊃
-        addContent(`
-<div class="eyebrow" id="@dp-grid">Ενότητα 8 / 8 — Δυναμικός Προγραμματισμός</div>
-<h1>Όταν το υποπρόβλημα χρειάζεται δύο αριθμούς</h1>
+<br>
+<h1 id="@dp-grid">Όταν το υποπρόβλημα χρειάζεται δύο αριθμούς</h1>
 
 <p class="lede"> Μέχρι τώρα κάθε υποπρόβλημα οριζόταν από έναν αριθμό: το <code>Fib(n)</code> από το <code>n</code>, τα ρέστα από το ποσό. Υπάρχουν όμως προβλήματα όπου χρειάζονται δύο — και τότε ο πίνακας γίνεται δισδιάστατος. </p>
 
 <h2>Πόσες διαδρομές υπάρχουν σε ένα grid</h2>
 
-<p> Βρίσκεσαι στην πάνω αριστερή γωνία ενός grid και θέλεις να φτάσεις στην κάτω δεξιά. Μπορείς να κινηθείς μόνο <strong>δεξιά</strong> ή <strong>κάτω</strong>, ποτέ πίσω. Πόσες διαφορετικές διαδρομές υπάρχουν; </p>
+<p> Βρίσκεσαι στην πάνω αριστερή γωνία ενός grid και θέλεις να φτάσεις στην κάτω δεξιά. Το grid είναι κενό και δεν υπάρχουν εμπόδια. Μπορείς να κινηθείς μόνο <strong>δεξιά</strong> ή <strong>κάτω</strong>, ποτέ πίσω. Πόσες διαφορετικές διαδρομές υπάρχουν; </p>
 
 <p> Η αφελής προσέγγιση είναι αναδρομική: οι διαδρομές προς ένα κελί είναι όσες φτάνουν σε αυτό από πάνω, συν όσες φτάνουν από αριστερά. Αλλά τα υποπροβλήματα επικαλύπτονται έντονα — το ίδιο κελί προσεγγίζεται από πολλά διαφορετικά μονοπάτια. </p>
 
@@ -7815,10 +8022,42 @@ func CountPaths(rows, cols int) int {
 
 <p>Για grid 3×3, ο πίνακας γεμίζει έτσι:</p>
 
-<pre><code>  1   1   1
-  1   2   3
-  1   3   6
-</code></pre>
+<svg viewBox="0 0 700 470" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:600px; height:auto; margin:18px auto; display:block; color:inherit;">
+  <defs><marker id="cp-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/></marker></defs>
+  <line x1="281" y1="105" x2="293" y2="105" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="405" y1="105" x2="417" y2="105" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="226" y1="160" x2="226" y2="172" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="350" y1="160" x2="350" y2="172" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="281" y1="229" x2="293" y2="229" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="474" y1="160" x2="474" y2="172" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="405" y1="229" x2="417" y2="229" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="226" y1="284" x2="226" y2="296" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="350" y1="284" x2="350" y2="296" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="281" y1="353" x2="293" y2="353" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="474" y1="284" x2="474" y2="296" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <line x1="405" y1="353" x2="417" y2="353" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#cp-ar)"/>
+  <rect x="171" y="50" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="226" y="120" text-anchor="middle" font-size="34" fill="currentColor">1</text>
+  <rect x="295" y="50" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="350" y="120" text-anchor="middle" font-size="34" fill="currentColor">1</text>
+  <rect x="419" y="50" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="474" y="120" text-anchor="middle" font-size="34" fill="currentColor">1</text>
+  <rect x="171" y="174" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="226" y="244" text-anchor="middle" font-size="34" fill="currentColor">1</text>
+  <rect x="295" y="174" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="350" y="244" text-anchor="middle" font-size="34" fill="currentColor">2</text>
+  <rect x="419" y="174" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="474" y="244" text-anchor="middle" font-size="34" fill="currentColor">3</text>
+  <rect x="171" y="298" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="226" y="368" text-anchor="middle" font-size="34" fill="currentColor">1</text>
+  <rect x="295" y="298" width="110" height="110" rx="10" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <text x="350" y="368" text-anchor="middle" font-size="34" fill="currentColor">3</text>
+  <rect x="419" y="298" width="110" height="110" rx="10" fill="none" stroke="var(--tone-5)" stroke-width="2.5"/>
+  <text x="474" y="368" text-anchor="middle" font-size="34" fill="var(--tone-5)">6</text>
+  <text x="226" y="38" text-anchor="middle" font-size="15" fill="currentColor" opacity="0.7">αφετηρία</text>
+  <text x="474" y="434" text-anchor="middle" font-size="15" fill="var(--tone-5)">τερματισμός</text>
+  <text x="350" y="462" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.6">κάθε κελί = πόσες διαδρομές φτάνουν σε αυτό· τα βέλη δείχνουν από πού</text>
+</svg>
 
 <p> Κάθε κελί είναι το άθροισμα του από πάνω και του από αριστερά. Η πρώτη γραμμή και η πρώτη στήλη είναι γεμάτες με άσσους, γιατί εκεί υπάρχει μόνο ένας τρόπος να φτάσεις: ευθεία. </p>
 
@@ -7832,9 +8071,348 @@ func CountPaths(rows, cols int) int {
     <p> Το <code>grid[r][c]</code> διαβάζει το <code>grid[r-1][c]</code> και το <code>grid[r][c-1]</code>. Επειδή προχωράμε γραμμή προς γραμμή και μέσα σε κάθε γραμμή από αριστερά προς τα δεξιά, και τα δύο είναι ήδη συμπληρωμένα όταν τα χρειαστούμε. Αν άλλαζες τη σειρά των λούπων, θα διάβαζες κελιά που είναι ακόμα μηδέν. Στο bottom-up DP, <strong>το να βρεις τη σωστή σειρά είναι μέρος της λύσης</strong>. </p>
 </div>
 
-<h2 id="@dp-more">Τι άλλο υπάρχει, ονομαστικά</h2>
+<br>
+<h1 id="@lcs">Κοινή υποακολουθία</h1>
 
-<p> Ο δυναμικός προγραμματισμός είναι ολόκληρη οικογένεια προβλημάτων, και δεν θα τα δούμε εδώ. Αξίζει όμως να ξέρεις τα ονόματα, γιατί θα τα συναντήσεις παντού: </p>
+<p>Το προηγούμενο πρόβλημα γέμιζε έναν πίνακα με προσθέσεις. Εδώ τα πράγματα είναι είναι διαφορετικά και η αναδρομή δεν είναι προαιρετική.</p>
+
+<p>Δίνονται δύο ακολουθίες χαρακτήρων. Ζητείται η μεγαλύτερη ακολουθία που εμφανίζεται <strong>και στις δύο, με την ίδια σειρά</strong>, όχι απαραίτητα σε συνεχόμενες θέσεις. Για τα <code>"logic"</code> και <code>"magic"</code> η απάντηση είναι το <code>"gic"</code>, μήκους 3. Αυτό λέγεται <strong>longest common subsequence</strong>, και είναι ο πυρήνας κάθε εργαλείου που συγκρίνει δύο εκδοχές ενός αρχείου — το <code>git diff</code> τρέχει ακριβώς αυτό (με γραμμές αντί για χαρακτήρες).</p>
+
+<h2>Η ερώτηση: τι κάνουμε με τους δύο πρώτους χαρακτήρες</h2>
+
+<p> Κοίτα τον πρώτο χαρακτήρα κάθε λέξης. Δύο περιπτώσεις, καμία τρίτη: </p>
+
+<ul>
+    <li>Είναι <strong>ίδιοι</strong>. Τότε συμφέρει πάντα να μπει στην απάντηση, και προχωράμε και στις δύο λέξεις: <code>1 + LCS(υπόλοιπο a, υπόλοιπο b)</code>.</li>
+    <li>Είναι <strong>διαφορετικοί</strong>. Τότε τουλάχιστον ένας από τους δύο περισσεύει, αλλά δεν ξέρουμε ποιος. Δοκιμάζουμε και τα δύο — πετάμε τον πρώτο της <code>a</code>, ή τον πρώτο της <code>b</code> — και κρατάμε το καλύτερο αποτέλεσμα.</li>
+</ul>
+
+<p> Εδώ είναι η διαφορά από το grid. Στην περίπτωση της διαφοράς το πρόβλημα <strong>διχάζεται</strong>: δύο κλήσεις αντί για μία, και κάθε μία από αυτές μπορεί να διχαστεί ξανά. Αυτό είναι εκθετικό δέντρο, όχι πίνακας με προσθέσεις. </p>
+
+<pre><code class="lang-go">// LCSNaive returns the length of the longest common subsequence of the
+// parts of a and b that start at i and j. Correct, but exponential.
+func LCSNaive(a, b string, i, j int) int {
+    if i == len(a) || j == len(b) {
+        return 0 // one of the two ran out - nothing left in common
+    }
+
+    if a[i] == b[j] {
+        return 1 + LCSNaive(a, b, i+1, j+1) // this character counts
+    }
+
+    dropA := LCSNaive(a, b, i+1, j) // skip the first character of a
+    dropB := LCSNaive(a, b, i, j+1) // skip the first character of b
+
+    if dropB &gt; dropA {
+        return dropB
+    }
+    return dropA
+}
+</code></pre>
+
+<p> Το base case δεν είναι ένας αριθμός αλλά μια κατάσταση: μόλις μία από τις δύο λέξεις εξαντληθεί, δεν μένει τίποτα κοινό, άρα 0. </p>
+
+<h2>Γιατί εδώ το memo είναι απαραίτητο</h2>
+
+<p> Το ζεύγος <code>(i, j)</code> φτάνει από πολλές διαφορετικές διαδρομές: πέτα ένα από την <code>a</code> και μετά ένα από την <code>b</code>, ή το ανάποδο, και βρίσκεσαι στο ίδιο σημείο. Ίδιο υποπρόβλημα, ξαναλυμένο από την αρχή κάθε φορά. </p>
+
+<p> Για <code>"logic"</code> και <code>"magic"</code>, η <code>LCSNaive</code> κάνει 211 κλήσεις. Για δύο λέξεις των δέκα χαρακτήρων χωρίς κανένα κοινό γράμμα, 369.511. Δεν είναι πρόβλημα κλίμακας που θα το σώσει ένας γρηγορότερος επεξεργαστής — είναι λάθος τάξη πολυπλοκότητας. </p>
+
+<pre><code class="lang-go">// LCSMemo is the same function with a notepad. Every (i, j) pair is solved
+// at most once. An array is a valid map key in Go, a slice is not.
+func LCSMemo(a, b string, i, j int, memo map[[2]int]int) int {
+    if i == len(a) || j == len(b) {
+        return 0
+    }
+
+    key := [2]int{i, j}
+    if known, ok := memo[key]; ok {
+        return known // seen this pair of positions before
+    }
+
+    result := 0
+    if a[i] == b[j] {
+        result = 1 + LCSMemo(a, b, i+1, j+1, memo)
+    } else {
+        dropA := LCSMemo(a, b, i+1, j, memo)
+        dropB := LCSMemo(a, b, i, j+1, memo)
+
+        result = dropA
+        if dropB &gt; dropA {
+            result = dropB
+        }
+    }
+
+    memo[key] = result
+    return result
+}
+
+func main() {
+    memo := make(map[[2]int]int)
+    fmt.Println(LCSMemo("logic", "magic", 0, 0, memo)) // 3
+}
+</code></pre>
+
+<p>Οι 211 κλήσεις γίνονται 48. Οι 369.511 γίνονται 201. Το κλειδί είναι array δύο θέσεων και όχι slice, γιατί στη Go μόνο τα arrays είναι comparable και επιτρέπονται ως κλειδιά map — η ίδια τεχνική που χρειάζεται και ο <a href="#@challenge6">λαβύρινθος της Ενότητας 6</a> (hint 3) για να θυμάται πού έχει ήδη περάσει. Εδώ αποθηκεύει αριθμό αντί για <code>bool</code>.</p>
+
+
+<h2>Εναλλακτικός τρόπος: πίνακας δύο διαστάσεων</h2>
+
+<p>Προηγουμένως, τα κλειδιά του memo ήταν ζεύγη <code>(i, j)</code>: μία θέση στην <code>a</code>, μία στην <code>b</code>. Όμως, ένα ζεύγος αριθμών είναι ακριβώς αυτό που δεικτοδοτεί έναν πίνακα δύο διαστάσεων. Άρα το map γίνεται <code>table[i][j]</code>, χωρίς να αλλάξει τίποτα άλλο:</p>
+
+<p> Οι διαστάσεις είναι <code>len(a)+1</code> επί <code>len(b)+1</code>, με ένα παραπάνω σε κάθε πλευρά. Η τελευταία γραμμή αντιστοιχεί στο <code>i == len(a)</code>, δηλαδή στην περίπτωση που η <code>a</code> έχει εξαντληθεί· η τελευταία στήλη στο ίδιο για την <code>b</code>. Εκεί η απάντηση είναι πάντα 0, και τη δίνει η <code>make</code> χωρίς να γράψουμε γραμμή κώδικα. </p>
+
+<svg viewBox="0 0 700 600" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:820px; height:auto; margin:18px auto; display:block; color:inherit;">
+  <defs>
+    <marker id="lcs-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-5)"/></marker>
+    <marker id="lcs-s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/></marker>
+  </defs>
+  <text x="119" y="46" text-anchor="middle" font-size="19" fill="var(--tone-4)">m</text>
+  <text x="217" y="46" text-anchor="middle" font-size="19" fill="var(--tone-4)">a</text>
+  <text x="315" y="46" text-anchor="middle" font-size="19" fill="var(--tone-4)">g</text>
+  <text x="413" y="46" text-anchor="middle" font-size="19" fill="var(--tone-4)">i</text>
+  <text x="511" y="46" text-anchor="middle" font-size="19" fill="var(--tone-4)">c</text>
+  <text x="609" y="46" text-anchor="middle" font-size="19" fill="var(--tone-4)">&#8212;</text>
+  <text x="60" y="105" text-anchor="end" font-size="19" fill="var(--tone-4)">l</text>
+  <text x="60" y="175" text-anchor="end" font-size="19" fill="var(--tone-4)">o</text>
+  <text x="60" y="245" text-anchor="end" font-size="19" fill="var(--tone-4)">g</text>
+  <text x="60" y="315" text-anchor="end" font-size="19" fill="var(--tone-4)">i</text>
+  <text x="60" y="385" text-anchor="end" font-size="19" fill="var(--tone-4)">c</text>
+  <text x="60" y="455" text-anchor="end" font-size="19" fill="var(--tone-4)">&#8212;</text>
+  <line x1="119" y1="122" x2="119" y2="133" stroke="var(--tone-4)" stroke-width="2.6" opacity="1" marker-end="url(#lcs-s)"/>
+  <line x1="217" y1="122" x2="217" y2="133" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="315" y1="122" x2="315" y2="133" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="413" y1="122" x2="413" y2="133" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="511" y1="122" x2="511" y2="133" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="119" y1="192" x2="119" y2="203" stroke="var(--tone-4)" stroke-width="2.6" opacity="1" marker-end="url(#lcs-s)"/>
+  <line x1="217" y1="192" x2="217" y2="203" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="315" y1="192" x2="315" y2="203" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="413" y1="192" x2="413" y2="203" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="511" y1="192" x2="511" y2="203" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="162" y1="233" x2="173" y2="233" stroke="var(--tone-4)" stroke-width="2.6" opacity="1" marker-end="url(#lcs-s)"/>
+  <line x1="260" y1="233" x2="271" y2="233" stroke="var(--tone-4)" stroke-width="2.6" opacity="1" marker-end="url(#lcs-s)"/>
+  <line x1="358" y1="262" x2="369" y2="273" stroke="var(--tone-5)" stroke-width="2.6" opacity="1" marker-end="url(#lcs-m)"/>
+  <line x1="413" y1="262" x2="413" y2="273" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="511" y1="262" x2="511" y2="273" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="162" y1="303" x2="173" y2="303" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="260" y1="303" x2="271" y2="303" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="358" y1="303" x2="369" y2="303" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="456" y1="332" x2="467" y2="343" stroke="var(--tone-5)" stroke-width="2.6" opacity="1" marker-end="url(#lcs-m)"/>
+  <line x1="511" y1="332" x2="511" y2="343" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="162" y1="373" x2="173" y2="373" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="260" y1="373" x2="271" y2="373" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="358" y1="373" x2="369" y2="373" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="456" y1="373" x2="467" y2="373" stroke="var(--tone-4)" stroke-width="1.6" opacity="0.4" marker-end="url(#lcs-s)"/>
+  <line x1="554" y1="402" x2="565" y2="413" stroke="var(--tone-5)" stroke-width="2.6" opacity="1" marker-end="url(#lcs-m)"/>
+  <rect x="76" y="64" width="86" height="58" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="2.4" opacity="1"/>
+  <text x="119" y="101" text-anchor="middle" font-size="22" fill="var(--tone-5)" opacity="1">3</text>
+  <rect x="174" y="64" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="217" y="101" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">3</text>
+  <rect x="272" y="64" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="315" y="101" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">3</text>
+  <rect x="370" y="64" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="413" y="101" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">2</text>
+  <rect x="468" y="64" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="511" y="101" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="566" y="64" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="609" y="101" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="76" y="134" width="86" height="58" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="1.8" opacity="1"/>
+  <text x="119" y="171" text-anchor="middle" font-size="22" fill="var(--tone-5)" opacity="1">3</text>
+  <rect x="174" y="134" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="217" y="171" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">3</text>
+  <rect x="272" y="134" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="315" y="171" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">3</text>
+  <rect x="370" y="134" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="413" y="171" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">2</text>
+  <rect x="468" y="134" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="511" y="171" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="566" y="134" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="609" y="171" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="76" y="204" width="86" height="58" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="1.8" opacity="1"/>
+  <text x="119" y="241" text-anchor="middle" font-size="22" fill="var(--tone-5)" opacity="1">3</text>
+  <rect x="174" y="204" width="86" height="58" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="1.8" opacity="1"/>
+  <text x="217" y="241" text-anchor="middle" font-size="22" fill="var(--tone-5)" opacity="1">3</text>
+  <rect x="272" y="204" width="86" height="58" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="1.8" opacity="1"/>
+  <text x="315" y="241" text-anchor="middle" font-size="22" fill="var(--tone-5)" opacity="1">3</text>
+  <rect x="370" y="204" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="413" y="241" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">2</text>
+  <rect x="468" y="204" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="511" y="241" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="566" y="204" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="609" y="241" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="76" y="274" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="119" y="311" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">2</text>
+  <rect x="174" y="274" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="217" y="311" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">2</text>
+  <rect x="272" y="274" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="315" y="311" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">2</text>
+  <rect x="370" y="274" width="86" height="58" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="1.8" opacity="1"/>
+  <text x="413" y="311" text-anchor="middle" font-size="22" fill="var(--tone-5)" opacity="1">2</text>
+  <rect x="468" y="274" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="511" y="311" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="566" y="274" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="609" y="311" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="76" y="344" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="119" y="381" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="174" y="344" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="217" y="381" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="272" y="344" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="315" y="381" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="370" y="344" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="413" y="381" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">1</text>
+  <rect x="468" y="344" width="86" height="58" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="1.8" opacity="1"/>
+  <text x="511" y="381" text-anchor="middle" font-size="22" fill="var(--tone-5)" opacity="1">1</text>
+  <rect x="566" y="344" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="609" y="381" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="76" y="414" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="119" y="451" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="174" y="414" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="217" y="451" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="272" y="414" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="315" y="451" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="370" y="414" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="413" y="451" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="468" y="414" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="511" y="451" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <rect x="566" y="414" width="86" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.1" opacity="0.45"/>
+  <text x="609" y="451" text-anchor="middle" font-size="22" fill="currentColor" opacity="0.6">0</text>
+  <text x="76" y="486" font-size="14" fill="currentColor" opacity="0.6">κάθε κελί = μήκος του LCS από εκείνο το σημείο και μετά</text>
+  <rect x="76" y="500" width="576" height="82" rx="10" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.35"/>
+  <line x1="100" y1="522" x2="126" y2="536" stroke="var(--tone-5)" stroke-width="2.6" marker-end="url(#lcs-m)"/>
+  <text x="146" y="535" font-size="15" fill="currentColor">ίδιο &#8594; 1 + το διαγώνιο κελί</text>
+  <line x1="100" y1="562" x2="126" y2="562" stroke="var(--tone-4)" stroke-width="2.6" marker-end="url(#lcs-s)"/>
+  <text x="146" y="567" font-size="15" fill="currentColor">διαφορετικό &#8594; το μεγαλύτερο από κάτω/δεξιά</text>
+  <text x="440" y="535" font-size="14" fill="currentColor" opacity="0.6">έντονα: η πορεία από το [0][0]</text>
+  <text x="440" y="567" font-size="14" fill="currentColor" opacity="0.6">τα διαγώνια βήματα δίνουν «gic»</text>
+</svg>
+
+<p> Επειδή κάθε κελί διαβάζει κελιά που βρίσκονται <strong>δεξιά ή από κάτω</strong>, ο πίνακας γεμίζει ανάποδα: από την τελευταία γραμμή προς την πρώτη, και μέσα σε κάθε γραμμή από τα δεξιά προς τα αριστερά. Είναι η ίδια αρχή με το grid, με αντίθετη φορά. </p>
+
+<p> Στο σχήμα συγκρίνουμε γράμματα, γιατί χωράνε σε εικόνα. Ο κώδικας παρακάτω συγκρίνει <strong>γραμμές αρχείου</strong>. Ο αλγόριθμος δεν αλλάζει ούτε κατά γράμμα — αλλάζει μόνο ο τύπος του στοιχείου που μπαίνει στο <code>==</code>. Αυτό είναι και ο λόγος που το LCS χρησιμοποιείται σε εργαλεία σύγκρισης αρχείων. </p>
+
+<p> Και μια δεύτερη αλλαγή, μικρή αλλά καθοριστική: η function δεν επιστρέφει το μήκος, αλλά <strong>τον ίδιο τον πίνακα</strong>. Το μήκος είναι απλώς το <code>table[0][0]</code>, και σε λίγο θα φανεί γιατί τον χρειαζόμαστε ολόκληρο. </p>
+
+<pre><code class="lang-go">// LCSTable builds the table for two files, given as slices of lines.
+// Cell [i][j] holds the LCS length of oldLines[i:] and newLines[j:].
+func LCSTable(oldLines, newLines []string) [][]int {
+    table := make([][]int, len(oldLines)+1)
+    for i := range table {
+        table[i] = make([]int, len(newLines)+1) // extra row and column stay zero
+    }
+
+    for i := len(oldLines) - 1; i &gt;= 0; i-- {
+        for j := len(newLines) - 1; j &gt;= 0; j-- {
+            if oldLines[i] == newLines[j] {
+                table[i][j] = 1 + table[i+1][j+1] // this line survives in both
+                continue
+            }
+
+            dropOld := table[i+1][j] // skip the old line
+            dropNew := table[i][j+1] // skip the new line
+
+            table[i][j] = dropOld
+            if dropNew &gt; dropOld {
+                table[i][j] = dropNew
+            }
+        }
+    }
+
+    return table
+}
+</code></pre>
+
+<h2>Από τον πίνακα στο diff</h2>
+
+<p> Ο πίνακας ξέρει πόσες γραμμές είναι κοινές, αλλά όχι ποιες. Η πληροφορία όμως υπάρχει ήδη μέσα του: σε κάθε κελί, η σύγκριση <code>dropOld</code> με <code>dropNew</code> λέει προς τα πού βρίσκεται η καλύτερη συνέχεια. Ξαναπερπατάμε τον πίνακα από το <code>[0][0]</code> κάνοντας ακριβώς την ίδια σύγκριση, και σε κάθε βήμα γράφουμε μία γραμμή εξόδου. </p>
+
+<p> Το δεύτερο πέρασμα δεν "κοστίζει" ιδιαίτερα. Το γέμισμα κοστίζει <code>O(m × n)</code>, το "περπάτημα" <code>O(m + n)</code> — γινόμενο vs άθροισμα, ουσιαστικά το περπάτημα δεν κοστίζει τίποτα, συγκριτικά.</p>
+
+<pre><code class="lang-go">// Diff walks the finished table once and returns the lines of the diff:
+// "  line" unchanged, "- line" only in the old file, "+ line" only in the new.
+func Diff(oldLines, newLines []string, table [][]int) []string {
+    result := []string{}
+    i, j := 0, 0
+
+    for i &lt; len(oldLines) &amp;&amp; j &lt; len(newLines) {
+        if oldLines[i] == newLines[j] {
+            result = append(result, "  "+oldLines[i])
+            i++
+            j++
+            continue
+        }
+
+        if table[i+1][j] &gt;= table[i][j+1] {
+            result = append(result, "- "+oldLines[i]) // dropping the old line
+            i++                                       // keeps the answer longest
+        } else {
+            result = append(result, "+ "+newLines[j])
+            j++
+        }
+    }
+
+    // One of the two files ran out - whatever is left has no counterpart.
+    for i &lt; len(oldLines) {
+        result = append(result, "- "+oldLines[i])
+        i++
+    }
+    for j &lt; len(newLines) {
+        result = append(result, "+ "+newLines[j])
+        j++
+    }
+
+    return result
+}
+</code></pre>
+
+<p> Οι δύο τελευταίες loops είναι απαραίτητες. Η κύρια loop σταματάει μόλις εξαντληθεί το ένα από τα δύο αρχεία· ό,τι περισσεύει στο άλλο είναι εξ ορισμού αποκλειστικά δικό του, χωρίς να χρειάζεται καμία σύγκριση. </p>
+
+<pre><code class="lang-go">func main() {
+    oldFile := []string{
+        "package main",
+        "",
+        "func main() {",
+        "    fmt.Println(\"hello\")",
+        "}",
+    }
+    newFile := []string{
+        "package main",
+        "",
+        "func main() {",
+        "    name := \"world\"",
+        "    fmt.Println(name)",
+        "}",
+    }
+
+    table := LCSTable(oldFile, newFile)
+    fmt.Println("common lines:", table[0][0]) // 4
+
+    for _, line := range Diff(oldFile, newFile, table) {
+        fmt.Println(line)
+    }
+}
+</code></pre>
+
+<pre><code><span style="display:block;">common lines: 4</span><span style="display:block;">  package main</span><span style="display:block;">  </span><span style="display:block;">  func main() {</span><span style="display:block; color:#e05252; background:rgba(224,82,82,0.12);">-     fmt.Println("hello")</span><span style="display:block; color:#3fb950; background:rgba(63,185,80,0.12);">+     name := "world"</span><span style="display:block; color:#3fb950; background:rgba(63,185,80,0.12);">+     fmt.Println(name)</span><span style="display:block;">  }</span></code></pre>
+
+<div class="callout good">
+    <span class="tag">Αυτό είναι diff</span>
+    <p> Δεν είναι απλοποιημένη εκδοχή για μάθημα — είναι η ίδια ερώτηση που απαντάει το <code>git diff</code>, γραμμένη σε σαράντα γραμμές. Το πραγματικό <code>git</code> τρέχει τον αλγόριθμο του Myers, που για αρχεία με λίγες αλλαγές αποφεύγει το γέμισμα ολόκληρου του πίνακα, και προσθέτει γραμμές συγκειμένου γύρω από κάθε αλλαγή. Η ουσία, όμως, είναι η κοινή υποακολουθία. </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Το <code>&gt;=</code> και όχι το <code>&gt;</code></span>
+    <p> Όταν οι δύο δρόμοι δίνουν το ίδιο μήκος, και οι δύο είναι εξίσου σωστοί — αλλάζει μόνο ποια από τις ισοδύναμες εξόδους θα δεις. Με το <code>&gt;=</code> προτιμάμε πρώτα τις διαγραφές, οπότε τα <code>-</code> εμφανίζονται πάνω από τα <code>+</code>, όπως είναι συνηθισμένο. Η ίδια προτίμηση είναι και η πορεία που φαίνεται τονισμένη στο σχήμα. </p>
+</div>
+
+<div class="callout">
+    <span class="tag">Η μέθοδος γενικεύεται</span>
+    <p> Το ίδιο ισχύει για κάθε bottom-up DP. Ο πίνακας του <code>MinCoins</code> λέει πόσα κέρματα· αν τον ξαναπερπατήσεις από το <code>best[amount]</code> ελέγχοντας ποιο κέρμα έδωσε τη νικήτρια τιμή, παίρνεις <em>ποια</em> κέρματα. Ο αριθμός είναι το εύκολο μέρος. Η διαδρομή που τον παρήγαγε είναι συνήθως αυτό που θέλει ο χρήστης. </p>
+</div>
+
+<br>
+<h1 id="@dp-more">DP: Τι άλλο υπάρχει</h1>
+
+<p> Ο δυναμικός προγραμματισμός είναι ολόκληρη οικογένεια προβλημάτων, και δεν θα τα δούμε εδώ. Αξίζει όμως να ξέρεις τα ονόματα: </p>
 
 <table style="width:100%; border-collapse:collapse; margin:16px 0;">
     <tr style="border-bottom:2px solid rgba(var(--ink-rgb),0.3);">
@@ -7848,213 +8426,337 @@ func CountPaths(rows, cols int) int {
         <td style="padding:8px;">2 (αντικείμενο, βάρος)</td>
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
-        <td style="padding:8px;"><strong>Longest Common Subsequence</strong></td>
-        <td style="padding:8px;">ποια είναι η μεγαλύτερη κοινή ακολουθία δύο συμβολοσειρών;</td>
-        <td style="padding:8px;">2 (θέση στο πρώτο, θέση στο δεύτερο)</td>
-    </tr>
-    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>Edit Distance</strong></td>
         <td style="padding:8px;">πόσες αλλαγές χρειάζονται για να γίνει η μία λέξη η άλλη;</td>
         <td style="padding:8px;">2 (θέση στο πρώτο, θέση στο δεύτερο)</td>
     </tr>
-    <tr>
+    <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>Longest Increasing Subsequence</strong></td>
         <td style="padding:8px;">ποια είναι η μεγαλύτερη αύξουσα υποακολουθία;</td>
         <td style="padding:8px;">1 (θέση)</td>
+    </tr>
+    <tr>
+        <td style="padding:8px;"><strong>Matrix Chain Multiplication</strong></td>
+        <td style="padding:8px;">με ποια σειρά να πολλαπλασιάσεις πίνακες για το λιγότερο κόστος;</td>
+        <td style="padding:8px;">2 (αρχή, τέλος διαστήματος)</td>
     </tr>
 </table>
 
 <div class="callout">
     <span class="tag">Θέλεις να εμβαθύνεις;</span>
-    <p> Και τα τέσσερα λύνονται με τα ίδια τέσσερα βήματα που είδαμε: αφελής αναδρομή, εντοπισμός επικάλυψης, memo, και προαιρετικά μετατροπή σε πίνακα. Αν σε ενδιαφέρει, το LCS είναι το καλύτερο επόμενο βήμα — είναι η βάση για το <code>git diff</code> και για κάθε εργαλείο σύγκρισης αρχείων. Δεν είναι προαπαιτούμενο για να συνεχίσεις. </p>
-</div>
-
-<div class="callout good">
-    <span class="tag">Πού βρίσκεται το DP στην εικόνα της Ενότητας 7</span>
-    <p> Στο δέντρο αποφάσεων, το greedy κατεβαίνει ένα μονοπάτι, το backtracking κατεβαίνει όλα τα μονοπάτια κλαδεύοντας τα άκυρα, και ο δυναμικός προγραμματισμός παρατηρεί ότι πολλά μονοπάτια οδηγούν στους ίδιους κόμβους — και υπολογίζει κάθε κόμβο μία μόνο φορά. Δεν είναι διαφορετική στρατηγική εξερεύνησης· είναι ο ίδιος χώρος αναζήτησης, με μνήμη. </p>
+    <p> Και τα τέσσερα λύνονται με τα ίδια τέσσερα βήματα: αφελής αναδρομή, εντοπισμός επικάλυψης, memo, και προαιρετικά μετατροπή σε πίνακα. Το <strong>knapsack</strong> είναι το καλύτερο επόμενο βήμα, γιατί έχει κάτι που δεν είδαμε: η δεύτερη διάσταση δεν είναι θέση σε ακολουθία αλλά <em>χωρητικότητα που απομένει</em>. Είναι επίσης το subset-sum της Ενότητας 7 — το ίδιο «παίρνω / δεν παίρνω» — με αξίες πάνω στα αντικείμενα. </p>
 </div>
 `);
-
         addQuiz([
             {
-                q: "Τι ακριβώς προσθέτει το memoization σε μια αναδρομική function;",
-                options: [
-                    "Μια δομή που κρατάει τα ήδη υπολογισμένα αποτελέσματα, ώστε κανένα υποπρόβλημα να μη λυθεί δεύτερη φορά",
-                    "Έναν επιπλέον έλεγχο που σταματάει την αναδρομή πριν φτάσει σε επικίνδυνο βάθος και προκαλέσει stack overflow στο πρόγραμμα",
-                    "Μια δεύτερη αναδρομική κλήση που τρέχει παράλληλα",
-                    "Έναν πίνακα που αντικαθιστά εντελώς την αναδρομή"
-                ],
-                correct: 0,
-                explain: "Το memo είναι σημειωματάριο: πριν υπολογίσεις, κοιτάς αν το έχεις ήδη· αφού υπολογίσεις, το γράφεις. Η αναδρομή μένει ακριβώς όπως ήταν — αλλάζει μόνο πόσες φορές εκτελείται."
-            },
-            {
-                q: "Γιατί το memo πρέπει να δημιουργείται έξω από την αναδρομική function και να περνιέται ως παράμετρος;",
-                options: [
-                    "Γιατί αν δημιουργούνταν μέσα, κάθε κλήση θα ξεκινούσε με άδειο memo και δεν θα κέρδιζε τίποτα",
-                    "Γιατί η Go δεν επιτρέπει τη δημιουργία map μέσα σε function που καλεί τον εαυτό της, ώστε να αποφευχθεί η υπερκατανάλωση μνήμης",
-                    "Γιατί τα maps δεν μπορούν να περαστούν ως παράμετροι",
-                    "Δεν χρειάζεται — είναι θέμα προτίμησης"
-                ],
-                correct: 0,
-                explain: "Όλες οι κλήσεις πρέπει να μοιράζονται το ίδιο σημειωματάριο. Επειδή τα maps είναι reference types, το πέρασμα ως παράμετρος αρκεί — δεν χρειάζεται pointer."
-            },
-            {
-                q: "Ποια είναι η βασική διαφορά ανάμεσα σε memoization και tabulation;",
-                options: [
-                    "Το memoization ξεκινά από το μεγάλο πρόβλημα και κατεβαίνει, το tabulation ξεκινά από τα base cases και ανεβαίνει",
-                    "Το memoization δίνει σωστό αποτέλεσμα μόνο για μικρές εισόδους, ενώ το tabulation δουλεύει σωστά σε οποιοδήποτε μέγεθος δεδομένων, χωρίς κανέναν περιορισμό",
-                    "Το tabulation χρησιμοποιεί map, το memoization slice",
-                    "Δεν υπάρχει διαφορά, είναι δύο ονόματα για το ίδιο πράγμα"
-                ],
-                correct: 0,
-                explain: "Είναι δύο κατευθύνσεις για την ίδια ιδέα. Το top-down υπολογίζει μόνο όσα υποπροβλήματα χρειάζονται πραγματικά· το bottom-up τα υπολογίζει όλα, αλλά χωρίς αναδρομή και χωρίς κίνδυνο stack overflow."
-            },
-            {
-                q: "Ποιες δύο ιδιότητες πρέπει να έχει ένα πρόβλημα για να λύνεται με δυναμικό προγραμματισμό;",
-                options: [
-                    "Επικαλυπτόμενα υποπροβλήματα και βέλτιστη υποδομή",
-                    "Ταξινομημένα δεδομένα και σταθερό μέγεθος εισόδου, ώστε ο πίνακας να μπορεί να δεσμευτεί εκ των προτέρων",
-                    "Αναδρομή και τουλάχιστον δύο διαφορετικά base cases",
-                    "Μικρή είσοδος και λίγες μεταβλητές"
-                ],
-                correct: 0,
-                explain: "Χωρίς επικάλυψη δεν υπάρχει τίποτα να εξοικονομήσεις — γι' αυτό το merge sort, που έχει βέλτιστη υποδομή αλλά όχι επικάλυψη, δεν κερδίζει τίποτα από memo."
-            },
-            {
-                q: "Στο MinCoins, γιατί χρησιμοποιούμε -1 και όχι 0 για να δηλώσουμε ότι ένα ποσό δεν γίνεται;",
-                options: [
-                    "Γιατί το 0 είναι έγκυρη απάντηση για το ποσό μηδέν, οπότε δεν μπορεί να σημαίνει ταυτόχρονα και «αδύνατο»",
-                    "Γιατί ο compiler της Go αρχικοποιεί κάθε slice ακεραίων με -1, οπότε είναι η φυσική επιλογή για πίνακες αυτού του είδους",
-                    "Γιατί το -1 καταλαμβάνει λιγότερη μνήμη",
-                    "Γιατί έτσι τρέχει πιο γρήγορα η σύγκριση"
-                ],
-                correct: 0,
-                explain: "Είναι sentinel value, το pattern της Ενότητας 3. Και είναι ασφαλές εδώ ακριβώς επειδή το πλήθος κερμάτων δεν μπορεί ποτέ να είναι αρνητικό."
-            },
-            {
-                q: "Στο CountPaths, γιατί γεμίζουμε τον πίνακα γραμμή προς γραμμή και από αριστερά προς τα δεξιά;",
-                options: [
-                    "Γιατί κάθε κελί διαβάζει το από πάνω και το από αριστερά, που έτσι είναι ήδη συμπληρωμένα",
-                    "Γιατί η Go διαβάζει τα δισδιάστατα slices μόνο με αυτή τη σειρά και οποιαδήποτε άλλη σειρά προκαλεί σφάλμα κατά τη μεταγλώττιση",
-                    "Γιατί έτσι χρησιμοποιείται λιγότερη μνήμη",
-                    "Η σειρά δεν έχει καμία σημασία"
-                ],
-                correct: 0,
-                explain: "Στο bottom-up DP, η σειρά συμπλήρωσης είναι μέρος της λύσης. Αν αντιστρέψεις τις λούπες, θα διαβάζεις κελιά που είναι ακόμα μηδέν και το αποτέλεσμα θα είναι λάθος — χωρίς κανένα μήνυμα σφάλματος."
-            },
-            {
-                q: "Έγραψες αναδρομική λύση, πρόσθεσες memo, αλλά ο κώδικας παρέμεινε εξίσου αργός. Ποια είναι η πιθανότερη αιτία;",
-                options: [
-                    "Ξέχασες να γράψεις το αποτέλεσμα στο memo πριν το return, οπότε το σημειωματάριο μένει άδειο",
-                    "Το memo είναι πολύ μικρό και χρειάζεται να δεσμεύσεις εκ των προτέρων μεγαλύτερη χωρητικότητα με τη make",
-                    "Τα maps είναι πιο αργά από τα slices",
-                    "Το πρόβλημα δεν έχει base case"
-                ],
-                correct: 0,
-                explain: "Είναι το πιο συχνό λάθος, και ύπουλο: το αποτέλεσμα παραμένει απόλυτα σωστό, οπότε τίποτα δεν δείχνει ότι κάτι πάει στραβά. Μόνο ο χρόνος εκτέλεσης το προδίδει."
-            },
-            {
-                q: "Γιατί το merge sort δεν κερδίζει τίποτα από memoization;",
-                options: [
-                    "Γιατί τα δύο μισά του δεν επικαλύπτονται — κάθε στοιχείο ανήκει σε ένα μόνο υποπρόβλημα",
-                    "Γιατί δεν είναι αναδρομικός αλγόριθμος, και επομένως δεν υπάρχουν καθόλου υποπροβλήματα που θα μπορούσαν να αποθηκευτούν σε κάποιο memo",
-                    "Γιατί είναι ήδη O(n log n)",
-                    "Γιατί ταξινομεί επί τόπου"
-                ],
-                correct: 0,
-                explain: "Έχει βέλτιστη υποδομή αλλά όχι επικάλυψη. Αυτή ακριβώς η διάκριση χωρίζει το divide and conquer από τον δυναμικό προγραμματισμό."
-            }
-        ], {
-            note: "Ενότητα 8 — memoization, tabulation, και πότε εφαρμόζονται."
-        });
-
-        addFillBlank([
-            {
+                q: "Τι υπολογίζει η παρακάτω function;",
+                lang: "go",
                 code:
-                    `// Fib with a memo: every value is computed at most once.
-func Fib(n int, memo map[int]int) int {
-    if n <= 2 {
-        return 1
-    }
+                    `func mystery(nums []int) int {
+    dp := make([]int, len(nums)+2)
 
-    if value, ok := memo[__key__]; ok {
-        return __hit__                      // what do we return when it is already known?
-    }
+    for i := len(nums) - 1; i >= 0; i-- {
+        skip := dp[i+1]
+        take := nums[i] + dp[i+2]
 
-    result := Fib(n-1, memo) + Fib(n-2, memo)
-    __store__                               // what must happen before returning?
-    return result
+        dp[i] = skip
+        if take > skip {
+            dp[i] = take
+        }
+    }
+    return dp[0]
 }`,
-                blanks: [
-                    { id: "key", answer: "n" },
-                    { id: "hit", answer: "value" },
-                    { id: "store", answer: "memo[n] = result" }
+                options: [
+                    "Το μέγιστο άθροισμα που μπορεί να επιλεγεί χωρίς δύο γειτονικά στοιχεία",
+                    "Το μέγιστο άθροισμα συνεχόμενων στοιχείων, δηλαδή το καλύτερο συνεχόμενο υποδιάστημα μέσα στο slice",
+                    "Το άθροισμα όλων των στοιχείων του slice",
+                    "Τη μεγαλύτερη τιμή που υπάρχει στο slice"
                 ],
-                explain: "Το κλειδί του memo είναι ό,τι ορίζει το υποπρόβλημα — εδώ μόνο το n. Και η γραμμή memo[n] = result είναι όλη η ουσία της τεχνικής: αν λείψει, ο κώδικας παραμένει σωστός αλλά εξίσου αργός, γιατί το σημειωματάριο δεν γεμίζει ποτέ."
+                correct: 0,
+                explain: "Σε κάθε θέση υπάρχουν δύο επιλογές: την προσπερνάς και συνεχίζεις από την i+1, ή την παίρνεις και συνεχίζεις από την i+2 — που είναι ακριβώς ο λόγος που δεν μπορούν να επιλεγούν γειτονικά. Το «συνεχόμενο υποδιάστημα» θα απαιτούσε να μη γίνεται ποτέ skip χωρίς να τερματίζεται το διάστημα, κάτι που ο κώδικας δεν κάνει."
             },
             {
+                q: "Τι εκφράζει η τιμή που επιστρέφει η παρακάτω function;",
+                lang: "go",
                 code:
-                    `// FibTable builds every value from the bottom up. No recursion.
-func FibTable(n int) int {
-    if n <= 2 {
-        return 1
+                    `func walk(grid [][]int) int {
+    rows, cols := len(grid), len(grid[0])
+    cost := make([][]int, rows)
+    for r := range cost {
+        cost[r] = make([]int, cols)
     }
 
-    table := make([]int, __size__)          // how many cells do we need?
-    table[1], table[2] = 1, 1
-
-    for i := __start__; i <= n; i++ {       // where does the loop begin, and why?
-        table[i] = __formula__
-    }
-    return table[n]
-}`,
-                blanks: [
-                    { id: "size", answer: "n+1" },
-                    { id: "start", answer: "3" },
-                    { id: "formula", answer: "table[i-1] + table[i-2]" }
-                ],
-                explain: "Ο πίνακας θέλει n+1 θέσεις γιατί χρησιμοποιούμε τα index 1 έως n και το index 0 μένει αχρησιμοποίητο. Η λούπα ξεκινά από το 3 επειδή τα table[1] και table[2] είναι ήδη γραμμένα ως base cases — αν ξεκινούσε από το 1, θα τα έσβηνε διαβάζοντας κελιά που δεν υπάρχουν."
-            },
-            {
-                code:
-                    `// MinCoins returns the fewest coins that add up exactly to amount.
-func MinCoins(coins []int, amount int) int {
-    best := make([]int, amount+1)
-
-    for i := 1; i <= amount; i++ {
-        best[i] = __unknown__               // the value that means "not reachable"
-
-        for _, c := range coins {
-            if c > i {
-                continue
-            }
-            rest := best[__sub__]           // which smaller amount is left?
-            if rest == -1 {
-                continue
-            }
-            if best[i] == -1 || rest+1 < best[i] {
-                best[i] = __better__
+    for r := 0; r < rows; r++ {
+        for c := 0; c < cols; c++ {
+            if r == 0 && c == 0 {
+                cost[r][c] = grid[r][c]
+            } else if r == 0 {
+                cost[r][c] = cost[r][c-1] + grid[r][c]
+            } else if c == 0 {
+                cost[r][c] = cost[r-1][c] + grid[r][c]
+            } else {
+                up, left := cost[r-1][c], cost[r][c-1]
+                cost[r][c] = grid[r][c] + left
+                if up < left {
+                    cost[r][c] = grid[r][c] + up
+                }
             }
         }
     }
-    return best[amount]
+    return cost[rows-1][cols-1]
+}
+
+// grid {{1,3,1},{1,5,1},{4,2,1}} -> 7`,
+                options: [
+                    "Το ελάχιστο άθροισμα διαδρομής από πάνω-αριστερά σε κάτω-δεξιά, με κινήσεις μόνο δεξιά και κάτω",
+                    "Το πλήθος των διαφορετικών διαδρομών από την πάνω αριστερή στην κάτω δεξιά γωνία, όταν επιτρέπονται μόνο κινήσεις δεξιά και κάτω",
+                    "Το μέγιστο άθροισμα μιας τέτοιας διαδρομής",
+                    "Το άθροισμα όλων των κελιών του grid"
+                ],
+                correct: 0,
+                explain: "Η γραμμή που κρατάει το μικρότερο από τα cost[r-1][c] και cost[r][c-1] είναι που κάνει το αποτέλεσμα ελάχιστο. Αν έλειπε η σύγκριση και τα δύο απλώς προστίθεντο, θα μετρούσε διαδρομές — αλλά εδώ προστίθεται πάντα ένα μόνο από τα δύο, οπότε το αποτέλεσμα είναι κόστος, όχι πλήθος."
+            },
+            {
+                q: "Ο κώδικας δίνει σωστό αποτέλεσμα, αλλά τρέχει εξίσου αργά με την εκδοχή χωρίς memo. Γιατί;",
+                lang: "go",
+                code:
+                    `func count(n int, memo map[int]int) int {
+    if n <= 1 {
+        return 1
+    }
+
+    if v, ok := memo[n]; ok {
+        return v
+    }
+
+    return count(n-1, memo) + count(n-2, memo)
+}`,
+                options: [
+                    "Δεν γράφει ποτέ στο memo, οπότε ο έλεγχος το βρίσκει πάντα άδειο",
+                    "Το κλειδί είναι λάθος: το n δεν αρκεί για να ξεχωρίσει το υποπρόβλημα από τα υπόλοιπα",
+                    "Τα maps στη Go είναι πιο αργά από τα slices",
+                    "Το base case πιάνει και το 0 και το 1"
+                ],
+                correct: 0,
+                explain: "Το memoization είναι δύο πράξεις: διάβασε πριν υπολογίσεις, γράψε αφού υπολογίσεις. Εδώ υπάρχει μόνο η πρώτη. Το κλειδί δεν φταίει — το n ορίζει πλήρως το υποπρόβλημα· απλώς δεν αποθηκεύεται ποτέ τίποτα κάτω από αυτό."
+            },
+            {
+                q: "Τι επιστρέφει η κλήση του σχολίου;",
+                lang: "go",
+                code:
+                    `func ways(coins []int, amount int) int {
+    dp := make([]int, amount+1)
+    dp[0] = 1
+
+    for _, c := range coins {
+        for i := c; i <= amount; i++ {
+            dp[i] += dp[i-c]
+        }
+    }
+    return dp[amount]
+}
+
+// ways([]int{1, 2}, 3)`,
+                options: [
+                    "2",
+                    "3, αν κάθε διαφορετική σειρά κερμάτων μετρούσε ως ξεχωριστός τρόπος",
+                    "4",
+                    "1"
+                ],
+                correct: 0,
+                explain: "Οι συνδυασμοί είναι 1+1+1 και 1+2. Το 2+1 δεν μετράει χωριστά, γιατί κάθε κέρμα εξετάζεται μία φορά στο εξωτερικό for και όλα τα ποσά περνούν από αυτό πριν προχωρήσει στο επόμενο κέρμα."
+            },
+            {
+                q: "Στον ίδιο κώδικα, τι αλλάζει αν αντιστραφεί η σειρά των δύο for — πρώτα το ποσό, μετά τα κέρματα;",
+                lang: "go",
+                code:
+                    `// original: coins outside, amount inside
+for _, c := range coins {
+    for i := c; i <= amount; i++ {
+        dp[i] += dp[i-c]
+    }
+}
+
+// swapped: amount outside, coins inside
+for i := 1; i <= amount; i++ {
+    for _, c := range coins {
+        if c <= i {
+            dp[i] += dp[i-c]
+        }
+    }
+}`,
+                options: [
+                    "Μετράει και τη σειρά, οπότε το 1+2 και το 2+1 μετρούν χωριστά",
+                    "Τίποτα — η σειρά των φωλιασμένων for δεν επηρεάζει ποτέ το αποτέλεσμα σε bottom-up DP",
+                    "Ο κώδικας κάνει panic γιατί το dp[i-c] βγαίνει εκτός ορίων",
+                    "Το αποτέλεσμα μένει ίδιο, αλλάζει μόνο ο χρόνος"
+                ],
+                correct: 0,
+                explain: "Με τα κέρματα απ' έξω, κάθε συνδυασμός χτίζεται με τα κέρματα σε σταθερή σειρά και μετριέται μία φορά. Με το ποσό απ' έξω, κάθε ποσό δοκιμάζει ξανά όλα τα κέρματα ως τελευταίο, οπότε 1+2 και 2+1 γίνονται δύο. Η σειρά των for στο bottom-up DP δεν είναι στιλιστική επιλογή: εδώ αλλάζει το ίδιο το πρόβλημα που λύνεις."
+            },
+            {
+                q: "Τι κρατάει το dp[i] στον παρακάτω κώδικα;",
+                lang: "go",
+                code:
+                    `func longest(v []int) int {
+    dp := make([]int, len(v))
+    best := 0
+
+    for i := range v {
+        dp[i] = 1
+        for j := 0; j < i; j++ {
+            if v[j] < v[i] && dp[j]+1 > dp[i] {
+                dp[i] = dp[j] + 1
+            }
+        }
+        if dp[i] > best {
+            best = dp[i]
+        }
+    }
+    return best
+}
+
+// longest([]int{3, 1, 4, 1, 5}) -> 3`,
+                options: [
+                    "Το μήκος της μεγαλύτερης αύξουσας υποακολουθίας που τελειώνει στη θέση i",
+                    "Το μήκος της μεγαλύτερης αύξουσας υποακολουθίας μέσα στις πρώτες i θέσεις, ανεξάρτητα από το πού τελειώνει",
+                    "Πόσα στοιχεία πριν τη θέση i είναι μικρότερα από το v[i]",
+                    "Το μέγιστο άθροισμα αύξουσας υποακολουθίας"
+                ],
+                correct: 0,
+                explain: "Το «τελειώνει στη θέση i» είναι απαραίτητο, και γι' αυτό χρειάζεται η ξεχωριστή μεταβλητή best. Αν το dp[i] κρατούσε το καλύτερο μέχρι τη θέση i, το dp[len(v)-1] θα ήταν ήδη η απάντηση και το best θα περίσσευε."
+            },
+            {
+                q: "Η παρακάτω function αποθηκεύει στο memo με κλειδί μόνο το i. Τι θα συμβεί;",
+                lang: "go",
+                code:
+                    `func common(a, b string, i, j int, memo map[int]int) int {
+    if i == len(a) || j == len(b) {
+        return 0
+    }
+
+    if v, ok := memo[i]; ok {
+        return v
+    }
+
+    result := 0
+    if a[i] == b[j] {
+        result = 1 + common(a, b, i+1, j+1, memo)
+    } else {
+        result = common(a, b, i+1, j, memo)
+    }
+
+    memo[i] = result
+    return result
+}`,
+                options: [
+                    "Θα επιστρέψει λάθος αποτέλεσμα, γιατί το ίδιο i αντιστοιχεί σε πολλά διαφορετικά υποπροβλήματα",
+                    "Θα δουλέψει σωστά αλλά πιο αργά, γιατί ο έλεγχος του memo θα αστοχεί συνεχώς και οι κλήσεις θα πολλαπλασιαστούν",
+                    "Θα προκαλέσει compile error, γιατί το κλειδί πρέπει να είναι array",
+                    "Θα δουλέψει σωστά, με λίγη περιττή μνήμη"
+                ],
+                correct: 0,
+                explain: "Το υποπρόβλημα ορίζεται από το ζεύγος (i, j), όχι από το i μόνο. Το memo θα επιστρέψει την απάντηση που αποθηκεύτηκε για κάποιο άλλο j, και το λάθος είναι σιωπηλό. Δεν είναι θέμα ταχύτητας: ένα ελλιπές κλειδί δεν επιβραδύνει, αλλά απαντάει σε άλλη ερώτηση από αυτή που τέθηκε."
+            },
+            {
+                q: "Ποιο από τα παρακάτω προβλήματα δεν κερδίζει τίποτα από memoization;",
+                options: [
+                    "Η binary search σε ταξινομημένο slice",
+                    "Το πλήθος διαδρομών σε grid με κινήσεις δεξιά και κάτω",
+                    "Ο υπολογισμός όρου αναδρομικής ακολουθίας με δύο κλαδιά",
+                    "Το ελάχιστο πλήθος κερμάτων για ένα ποσό"
+                ],
+                correct: 0,
+                explain: "Η binary search πετάει το μισό διάστημα σε κάθε βήμα και δεν ξαναπερνάει ποτέ από εκεί — κάθε υποπρόβλημα εμφανίζεται ακριβώς μία φορά, οπότε δεν υπάρχει τίποτα να αποθηκευτεί. Στο grid, αντίθετα, το ίδιο κελί προσεγγίζεται από πολλά μονοπάτια, και εκεί ακριβώς το memo κάνει τη διαφορά."
+            }
+        ], {
+            note: "Ενότητα 8 — DP σε προβλήματα που δεν είδαμε στο κεφάλαιο."
+        });
+        addFillBlank([
+            {
+                code:
+                    `// MaxNonAdjacent returns the largest sum you can pick from nums,
+// never taking two neighbours.
+func MaxNonAdjacent(nums []int) int {
+    dp := make([]int, len(nums)+__pad__)   // why not just len(nums)?
+
+    for i := len(nums) - 1; i >= 0; i-- {
+        skip := dp[i+1]
+        take := nums[i] + dp[__jump__]     // where do we continue from after taking?
+
+        dp[i] = skip
+        if take > skip {
+            dp[i] = __better__
+        }
+    }
+    return dp[0]
 }`,
                 blanks: [
-                    { id: "unknown", answer: "-1" },
-                    { id: "sub", answer: "i-c" },
-                    { id: "better", answer: "rest + 1" }
+                    { id: "pad", answer: "2" },
+                    { id: "jump", answer: "i+2" },
+                    { id: "better", answer: "take" }
                 ],
-                explain: "Το i-c είναι το υπόλοιπο ποσό αφού πάρεις το κέρμα c, και η λύση του είναι ήδη γνωστή γιατί i-c είναι μικρότερο από i. Το rest+1 σημαίνει «τα κέρματα του υπολοίπου, συν αυτό που μόλις πήρα»."
+                explain: "Το i+2 είναι όλος ο περιορισμός του προβλήματος γραμμένος σε τρεις χαρακτήρες: παίρνοντας το nums[i], η επόμενη θέση που επιτρέπεται είναι η i+2. Οι δύο επιπλέον θέσεις υπάρχουν ακριβώς γι' αυτό — για i = len(nums)-1 το dp[i+2] θα έβγαινε εκτός ορίων, ενώ έτσι διαβάζει ένα μηδενικό που σημαίνει «δεν απομένει τίποτα». Και στην ανάθεση μπαίνει το take, όχι το nums[i]: συγκρίναμε δύο συνολικά αθροίσματα, όχι δύο στοιχεία."
+            },
+            {
+                code:
+                    `// CountWaysToPay returns how many combinations of coins add up to amount.
+// Order does not matter: 1+2 and 2+1 count as one.
+func CountWaysToPay(coins []int, amount int) int {
+    dp := make([]int, amount+1)
+    dp[__base__] = 1                       // one way to pay nothing at all
+
+    for _, c := range coins {
+        for i := __from__; i <= amount; i++ {   // below this the coin does not fit
+            dp[i] += dp[__prev__]
+        }
+    }
+    return dp[amount]
+}`,
+                blanks: [
+                    { id: "base", answer: "0" },
+                    { id: "from", answer: "c" },
+                    { id: "prev", answer: "i-c" }
+                ],
+                explain: "Το dp[0] = 1 δεν είναι σύμβαση: υπάρχει πράγματι ένας τρόπος να πληρώσεις μηδέν, με κανένα κέρμα, και αν το άφηνες 0 όλα τα υπόλοιπα κελιά θα έμεναν μηδενικά. Η εσωτερική for ξεκινά από το c επειδή για μικρότερα ποσά το κέρμα δεν χωράει — έτσι γλιτώνεις και τον έλεγχο ορίων στο i-c. Και το dp[i-c] είναι οι τρόποι για το υπόλοιπο, που προστίθενται στους ήδη μετρημένους."
+            },
+            {
+                code:
+                    `// LongestIncreasing returns the length of the longest strictly increasing
+// subsequence of v. The elements do not have to be neighbours.
+func LongestIncreasing(v []int) int {
+    dp := make([]int, len(v))
+    best := 0
+
+    for i := range v {
+        dp[i] = __seed__                   // every element on its own is what?
+        for j := 0; j < i; j++ {
+            if v[j] __cmp__ v[i] && dp[j]+1 > dp[i] {
+                dp[i] = dp[j] + 1
+            }
+        }
+        if dp[i] > best {
+            best = __update__
+        }
+    }
+    return best
+}`,
+                blanks: [
+                    { id: "seed", answer: "1" },
+                    { id: "cmp", answer: "<" },
+                    { id: "update", answer: "dp[i]" }
+                ],
+                explain: "Η αρχική τιμή είναι 1 και όχι 0, γιατί κάθε στοιχείο από μόνο του είναι ήδη αύξουσα υποακολουθία μήκους ένα — με 0 η απάντηση θα έβγαινε μονίμως μικρότερη κατά ένα. Το < και όχι <= είναι που κάνει τη σειρά γνήσια αύξουσα: με <= δύο ίσα στοιχεία θα μετρούσαν ως άνοδος. Και το best ενημερώνεται με το dp[i], επειδή η μεγαλύτερη υποακολουθία δεν τελειώνει απαραίτητα στο τελευταίο στοιχείο."
             }
         ]);
-
         addMatching([
             [
-                { term: "memoization", def: "αναδρομή που κρατάει τα αποτελέσματα σε map ή slice" },
-                { term: "tabulation", def: "λούπα που γεμίζει πίνακα από τα base cases προς τα πάνω" },
+                { term: "memoization (top-down)", def: "αναδρομή που κρατάει τα ήδη υπολογισμένα αποτελέσματα" },
+                { term: "tabulation (bottom-up)", def: "πίνακας που γεμίζει με for, ξεκινώντας από τα base cases" },
                 { term: "επικαλυπτόμενα υποπροβλήματα", def: "το ίδιο υποπρόβλημα ζητείται από πολλά κλαδιά" },
                 { term: "βέλτιστη υποδομή", def: "η λύση του μεγάλου χτίζεται από τις λύσεις των μικρών" },
-                { term: "sentinel value", def: "ειδική τιμή που δηλώνει «δεν υπάρχει απάντηση» — εδώ το -1" }
+                { term: "κλειδί του memo", def: "ό,τι ορίζει πλήρως το υποπρόβλημα — αν λείπει κομμάτι, το αποτέλεσμα βγαίνει λάθος" },
+                { term: "ανάκτηση λύσης", def: "δεύτερο πέρασμα στον πίνακα, για να πάρεις ποια και όχι μόνο πόσα" }
             ],
             [
                 { term: "<code>Fib</code> χωρίς memo", def: "O(2ⁿ) — κάθε τιμή ξαναϋπολογίζεται από την αρχή" },
@@ -8127,7 +8829,7 @@ func CountWays(n int) int {
 
 <div class="callout">
     <span class="tag">Αν θες να πας παρακάτω</span>
-    <p> Τρεις παραλλαγές. Πρώτη: κάνε τη να χρησιμοποιεί δύο μεταβλητές αντί για πίνακα, όπως το <code>FibTwoVars</code>. Δεύτερη: επίτρεψε βήματα ενός, δύο <em>ή τριών</em> σκαλιών — τι αλλάζει στη γραμμή του αθροίσματος και τι στα base cases; Τρίτη: πρόσθεσε μια λίστα με «σπασμένα» σκαλιά που απαγορεύεται να πατήσεις, και βάλε τους τρόπους για αυτά τα σκαλιά σε μηδέν. </p>
+    <p>Τρεις παραλλαγές. Πρώτη: κάνε τη να χρησιμοποιεί δύο μεταβλητές αντί για πίνακα, όπως το <a href="#@dp-space">FibTwoVars</a>. Δεύτερη: επίτρεψε βήματα ενός, δύο <em>ή τριών</em> σκαλιών — τι αλλάζει στη γραμμή του αθροίσματος και τι στα base cases; Τρίτη: πρόσθεσε μια λίστα με σκαλιά που ενδεχομένως είναι ετοιμόρροπα (και απαγορεύεται να πατήσεις), και ψάξε τον τρόπο υλοποίησης για κάτι τέτοιο.</p>
 </div>
 `);
 
@@ -8137,21 +8839,24 @@ func CountWays(n int) int {
 <h1>Δυναμικός Προγραμματισμός, με μια Ματιά</h1>
 <p class="lede">Οι όροι που θα σου χρειαστούν από αυτό το κεφάλαιο.</p>
 
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">δυναμικός προγραμματισμός</span><span class="gs-def">αναδρομή που θυμάται — λύνει κάθε υποπρόβλημα μία μόνο φορά</span></div>
-  <div class="gs-pill"><span class="gs-name">memoization (top-down)</span><span class="gs-def">αναδρομή συν map ή slice με τα ήδη γνωστά αποτελέσματα</span></div>
-  <div class="gs-pill"><span class="gs-name">tabulation (bottom-up)</span><span class="gs-def">λούπα που γεμίζει πίνακα ξεκινώντας από τα base cases</span></div>
-  <div class="gs-pill"><span class="gs-name">επικαλυπτόμενα υποπροβλήματα</span><span class="gs-def">το ίδιο υποπρόβλημα ζητείται από πολλά κλαδιά — χωρίς αυτό, το memo είναι άχρηστο</span></div>
-  <div class="gs-pill"><span class="gs-name">βέλτιστη υποδομή</span><span class="gs-def">η σωστή λύση του μεγάλου προκύπτει από τις σωστές λύσεις των μικρότερων</span></div>
-  <div class="gs-pill"><span class="gs-name">κλειδί του memo</span><span class="gs-def">ό,τι ορίζει το υποπρόβλημα — οι παράμετροι που αλλάζουν, όχι όλες</span></div>
-  <div class="gs-pill"><span class="gs-name">σειρά συμπλήρωσης</span><span class="gs-def">στο bottom-up, το να βρεις τη σωστή σειρά είναι μέρος της λύσης</span></div>
-  <div class="gs-pill"><span class="gs-name">O(2ⁿ) → O(n)</span><span class="gs-def">η τυπική βελτίωση που φέρνει ένα memo σε αναδρομή με δύο κλαδιά</span></div>
-  <div class="gs-pill"><span class="gs-name">2D DP</span><span class="gs-def">όταν το υποπρόβλημα ορίζεται από δύο αριθμούς — πίνακας δύο διαστάσεων</span></div>
-  <div class="gs-pill"><span class="gs-name">τα τέσσερα βήματα</span><span class="gs-def">αφελής αναδρομή → εντόπισε επικάλυψη → πρόσθεσε memo → προαιρετικά κάν' το πίνακα</span></div>
-  <div class="gs-pill"><span class="gs-name">DP vs divide and conquer</span><span class="gs-def">η μόνη διαφορά είναι αν τα υποπροβλήματα επικαλύπτονται ή όχι</span></div>
-  <div class="gs-pill"><span class="gs-name">DP vs greedy</span><span class="gs-def">το greedy κάνει μία επιλογή· το DP εξετάζει όλες, αλλά καθεμία μία φορά</span></div>
-  <div class="gs-pill"><span class="gs-name">κλασικά προβλήματα</span><span class="gs-def">knapsack, LCS, edit distance, longest increasing subsequence</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">δυναμικός προγραμματισμός</td><td class="gt-def">αναδρομή που θυμάται — λύνει κάθε υποπρόβλημα μία μόνο φορά</td></tr>
+  <tr><td class="gt-term">memoization (top-down)</td><td class="gt-def">αναδρομή συν map ή slice με τα ήδη γνωστά αποτελέσματα</td></tr>
+  <tr><td class="gt-term">tabulation (bottom-up)</td><td class="gt-def">πίνακας που γεμίζει με for, ξεκινώντας από τα base cases</td></tr>
+  <tr><td class="gt-term">επικαλυπτόμενα υποπροβλήματα</td><td class="gt-def">το ίδιο υποπρόβλημα ζητείται από πολλά κλαδιά — χωρίς αυτό, το memo είναι άχρηστο</td></tr>
+  <tr><td class="gt-term">βέλτιστη υποδομή</td><td class="gt-def">η σωστή λύση του μεγάλου προκύπτει από τις σωστές λύσεις των μικρότερων</td></tr>
+  <tr><td class="gt-term">κλειδί του memo</td><td class="gt-def">ό,τι ορίζει πλήρως το υποπρόβλημα· ελλιπές κλειδί δίνει σιωπηλά λάθος απαντήσεις</td></tr>
+  <tr><td class="gt-term">σειρά συμπλήρωσης</td><td class="gt-def">στο bottom-up, το να βρεις τη σωστή σειρά είναι μέρος της λύσης</td></tr>
+  <tr><td class="gt-term">σημάδι «αδύνατο»</td><td class="gt-def">τιμή μεγαλύτερη από κάθε πραγματική απάντηση, ώστε να χάνει πάντα τη σύγκριση</td></tr>
+  <tr><td class="gt-term">O(2ⁿ) → O(n)</td><td class="gt-def">η τυπική βελτίωση που φέρνει ένα memo σε αναδρομή με δύο κλαδιά</td></tr>
+  <tr><td class="gt-term">2D DP</td><td class="gt-def">όταν το υποπρόβλημα ορίζεται από δύο αριθμούς — πίνακας δύο διαστάσεων</td></tr>
+  <tr><td class="gt-term">LCS</td><td class="gt-def">μεγαλύτερη κοινή υποακολουθία δύο ακολουθιών — η βάση κάθε εργαλείου diff</td></tr>
+  <tr><td class="gt-term">ανάκτηση λύσης</td><td class="gt-def">δεύτερο πέρασμα O(m+n) στον έτοιμο πίνακα, που δίνει ποια στοιχεία και όχι μόνο πόσα</td></tr>
+  <tr><td class="gt-term">τα τέσσερα βήματα</td><td class="gt-def">αφελής αναδρομή → εντόπισε επικάλυψη → πρόσθεσε memo → προαιρετικά κάν' το πίνακα</td></tr>
+  <tr><td class="gt-term">DP vs divide and conquer</td><td class="gt-def">η μόνη διαφορά είναι αν τα υποπροβλήματα επικαλύπτονται ή όχι</td></tr>
+  <tr><td class="gt-term">DP vs greedy</td><td class="gt-def">το greedy κάνει μία επιλογή· το DP εξετάζει όλες, αλλά καθεμία μία φορά</td></tr>
+  <tr><td class="gt-term">κλασικά προβλήματα</td><td class="gt-def">knapsack, edit distance, longest increasing subsequence, matrix chain</td></tr>
+</table>
 `);
 
 
@@ -8159,7 +8864,7 @@ func CountWays(n int) int {
 
         addContent(`
 <div class="eyebrow">Τελική Επανάληψη — Μέρος 2</div>
-<h1 id="@final-review">Όλα όσα είδαμε, σε μία εικόνα</h1>
+<h1 id="@final-review">Όλα όσα είδαμε</h1>
 
 <p class="lede"> Οκτώ ενότητες, και ένα νήμα που τις διαπερνά όλες: <strong>πώς σκέφτεσαι μπροστά σε ένα πρόβλημα που δεν έχεις ξαναδεί</strong>. Πριν από τις τελικές ερωτήσεις, ας τα βάλουμε στη σειρά. </p>
 
@@ -8188,11 +8893,11 @@ func CountWays(n int) int {
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>5. Αναζήτηση &amp; Ταξινόμηση</strong></td>
-        <td style="padding:8px;">Big-O ως κοινή γλώσσα σύγκρισης, και η έτοιμη λύση της Go</td>
+        <td style="padding:8px;">Big-O, αλγόριθμοι σύγκρισης, και η έτοιμη λύση της Go</td>
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>6. Αναδρομή</strong></td>
-        <td style="padding:8px;">divide and conquer, DFS και BFS — για δεδομένα που διακλαδώνονται</td>
+        <td style="padding:8px;">Divide and Conquer, Recursion</td>
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>7. Greedy &amp; Backtracking</strong></td>
@@ -8212,9 +8917,6 @@ func CountWays(n int) int {
     <li><strong>Τι πρέπει να θυμάμαι καθώς προχωράω;</strong> Η απάντηση ονομάζει το pattern της Ενότητας 3.
         Τίποτα; Απλή λούπα. Το προηγούμενο στοιχείο; Previous value. Αν κάτι έχει ήδη συμβεί; Boolean switch.
         Ό,τι έχω δει μέχρι τώρα; Map.</li>
-    <li><strong>Είναι τα δεδομένα γραμμή ή δίκτυο;</strong> Γραμμή σημαίνει λούπα. Δίκτυο ή grid σημαίνει
-        DFS ή BFS — και η επιλογή ανάμεσά τους εξαρτάται από το αν θέλεις οποιαδήποτε διαδρομή ή τη
-        συντομότερη.</li>
     <li><strong>Παίρνω μία απόφαση ή πολλές αλληλεξαρτώμενες;</strong> Μία, και δεν επηρεάζει τις επόμενες;
         Greedy. Πολλές, με περιορισμούς που μπορεί να μην ικανοποιούνται; Backtracking.</li>
     <li><strong>Είναι σωστό αλλά αργό;</strong> Ψάξε αν το ίδιο υποπρόβλημα λύνεται πολλές φορές. Αν ναι,
@@ -8223,7 +8925,7 @@ func CountWays(n int) int {
 
 <div class="callout good">
     <span class="tag">Το πιο χρήσιμο πράγμα που έμαθες</span>
-    <p> Δεν είναι κάποιος συγκεκριμένος αλγόριθμος — αυτούς θα τους ξεχάσεις και θα τους ξαναβρείς όταν τους χρειαστείς. Είναι η συνήθεια να γράφεις πρώτα την απλή λύση, να ψάχνεις μετά συνειδητά την είσοδο που τη σπάει, και να βελτιώνεις μόνο αφού ξέρεις <em>τι ακριβώς</em> δεν πάει καλά. Αυτή η σειρά δουλειάς δεν αφορά μόνο αλγορίθμους. </p>
+    <p>Είδες πραγματικά προβλήματα με πραγματικές λύσεις και διαφορετικά σκεπτικά — και αυτό ακριβώς θα σε βοηθήσει, γιατί δεν μαθαίνεις απλώς συνταγές, αλλά τρόπους σκέψης. Όταν μπροστά σου βρεθεί ένα καινούργιο πρόβλημα, δε θα ψάχνεις να θυμηθείς «ποιος αλγόριθμος ταιριάζει εδώ»· θα αναγνωρίζεις μοτίβα, θα ξέρεις τι να ρωτήσεις πρώτο, θα έχεις ένα νοητό εργαλειοθήκη από στρατηγικές — και θα ξέρεις πότε να τις χρησιμοποιήσεις.</p>
 </div>
 `);
 
@@ -8423,68 +9125,65 @@ func CountWays(n int) int {
         addContent(`
 <div class="eyebrow">Τελικό Γλωσσάρι — Μέρος 2</div>
 <h1 id="@cheatsheet">Ολόκληρο το Μέρος 2 σε μία σελίδα</h1>
-<p class="lede"> Οι όροι που θα θέλεις να έχεις πρόχειρους. Κράτησέ το ανοιχτό όσο λύνεις ασκήσεις. </p>
 
 <h2>Δομή project</h2>
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">package</span><span class="gs-def">ομάδα αρχείων που μοιράζονται χώρο ονομάτων — ένα ανά φάκελο</span></div>
-  <div class="gs-pill"><span class="gs-name">module</span><span class="gs-def">ολόκληρο το project, με ρίζα εκεί που βρίσκεται το go.mod</span></div>
-  <div class="gs-pill"><span class="gs-name">exported</span><span class="gs-def">όνομα με κεφαλαίο αρχικό — ορατό από άλλα packages</span></div>
-  <div class="gs-pill"><span class="gs-name">os.Args</span><span class="gs-def">όλα τα ορίσματα εκκίνησης ως strings, με index 0 το όνομα του προγράμματος</span></div>
-  <div class="gs-pill"><span class="gs-name">flag.Args()</span><span class="gs-def">όσα ορίσματα απέμειναν αφού το package flag τράβηξε τα δικά του</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">package</td><td class="gt-def">ομάδα αρχείων που μοιράζονται χώρο ονομάτων — ένα ανά φάκελο</td></tr>
+  <tr><td class="gt-term">module</td><td class="gt-def">ολόκληρο το project, με ρίζα εκεί που βρίσκεται το go.mod</td></tr>
+  <tr><td class="gt-term">exported</td><td class="gt-def">όνομα με κεφαλαίο αρχικό — ορατό από άλλα packages</td></tr>
+  <tr><td class="gt-term">os.Args</td><td class="gt-def">όλα τα ορίσματα εκκίνησης ως strings, με index 0 το όνομα του προγράμματος</td></tr>
+  <tr><td class="gt-term">flag.Args()</td><td class="gt-def">όσα ορίσματα απέμειναν αφού το package flag τράβηξε τα δικά του</td></tr>
+</table>
 
 <h2>Patterns επίλυσης</h2>
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">accumulator</span><span class="gs-def">μεταβλητή που μαζεύει το αποτέλεσμα καθώς τρέχει η λούπα</span></div>
-  <div class="gs-pill"><span class="gs-name">boolean switch</span><span class="gs-def">bool που θυμάται αν κάτι έχει ήδη συμβεί μέσα στη λούπα</span></div>
-  <div class="gs-pill"><span class="gs-name">guard clause</span><span class="gs-def">early return στην αρχή, για τις περιπτώσεις που ξέρεις ήδη</span></div>
-  <div class="gs-pill"><span class="gs-name">sentinel value</span><span class="gs-def">ειδική τιμή που σημαίνει «δεν υπάρχει απάντηση» — προσοχή στη συγκρουόμενη έγκυρη τιμή</span></div>
-  <div class="gs-pill"><span class="gs-name">extremum</span><span class="gs-def">μέγιστο ή ελάχιστο, με αρχικοποίηση από πραγματικό στοιχείο και όχι από το μηδέν</span></div>
-  <div class="gs-pill"><span class="gs-name">previous value</span><span class="gs-def">μεταβλητή που κρατάει το προηγούμενο στοιχείο, για συγκρίσεις με γείτονες</span></div>
-  <div class="gs-pill"><span class="gs-name">two pointers</span><span class="gs-def">δύο δείκτες στα ίδια δεδομένα — από τις άκρες, ή με άλματα</span></div>
-  <div class="gs-pill"><span class="gs-name">sliding window</span><span class="gs-def">παράθυρο που μετακινείται προσθέτοντας δεξιά και αφαιρώντας αριστερά</span></div>
-  <div class="gs-pill"><span class="gs-name">complement lookup</span><span class="gs-def">υπολόγισε το ταίρι που ψάχνεις και ρώτα ένα map αν το έχεις δει</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">accumulator</td><td class="gt-def">μεταβλητή που μαζεύει το αποτέλεσμα καθώς τρέχει η λούπα</td></tr>
+  <tr><td class="gt-term">boolean switch</td><td class="gt-def">bool που θυμάται αν κάτι έχει ήδη συμβεί μέσα στη λούπα</td></tr>
+  <tr><td class="gt-term">guard clause</td><td class="gt-def">early return στην αρχή, για τις περιπτώσεις που ξέρεις ήδη</td></tr>
+  <tr><td class="gt-term">sentinel value</td><td class="gt-def">ειδική τιμή που σημαίνει «δεν υπάρχει απάντηση» — προσοχή στη συγκρουόμενη έγκυρη τιμή</td></tr>
+  <tr><td class="gt-term">extremum</td><td class="gt-def">μέγιστο ή ελάχιστο, με αρχικοποίηση από πραγματικό στοιχείο και όχι από το μηδέν</td></tr>
+  <tr><td class="gt-term">previous value</td><td class="gt-def">μεταβλητή που κρατάει το προηγούμενο στοιχείο, για συγκρίσεις με γείτονες</td></tr>
+  <tr><td class="gt-term">two pointers</td><td class="gt-def">δύο δείκτες στα ίδια δεδομένα — από τις άκρες, ή με άλματα</td></tr>
+  <tr><td class="gt-term">sliding window</td><td class="gt-def">παράθυρο που μετακινείται προσθέτοντας δεξιά και αφαιρώντας αριστερά</td></tr>
+  <tr><td class="gt-term">complement lookup</td><td class="gt-def">υπολόγισε το ταίρι που ψάχνεις και ρώτα ένα map αν το έχεις δει</td></tr>
+</table>
 
 <h2>Δομές δεδομένων</h2>
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">Stack (LIFO)</span><span class="gs-def">τελευταίο μέσα, πρώτο έξω — append και slice[:len-1]</span></div>
-  <div class="gs-pill"><span class="gs-name">Queue (FIFO)</span><span class="gs-def">πρώτο μέσα, πρώτο έξω — append και slice[1:]</span></div>
-  <div class="gs-pill"><span class="gs-name">Deque</span><span class="gs-def">προσθήκη και αφαίρεση και από τις δύο άκρες</span></div>
-  <div class="gs-pill"><span class="gs-name">Set</span><span class="gs-def">map με κενή τιμή, για έλεγχο ύπαρξης σε O(1)</span></div>
-  <div class="gs-pill"><span class="gs-name">aliasing</span><span class="gs-def">δύο slices που μοιράζονται underlying array — αντέγραψε ρητά όταν αποθηκεύεις</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">Stack (LIFO)</td><td class="gt-def">τελευταίο μέσα, πρώτο έξω — append και slice[:len-1]</td></tr>
+  <tr><td class="gt-term">Queue (FIFO)</td><td class="gt-def">πρώτο μέσα, πρώτο έξω — append και slice[1:]</td></tr>
+  <tr><td class="gt-term">Deque</td><td class="gt-def">προσθήκη και αφαίρεση και από τις δύο άκρες</td></tr>
+  <tr><td class="gt-term">Set</td><td class="gt-def">map με κενή τιμή, για έλεγχο ύπαρξης σε O(1)</td></tr>
+  <tr><td class="gt-term">aliasing</td><td class="gt-def">δύο slices που μοιράζονται underlying array — αντέγραψε ρητά όταν αποθηκεύεις</td></tr>
+</table>
 
 <h2>Κόστος και αναζήτηση</h2>
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">Big-O</span><span class="gs-def">πώς μεγαλώνει ο χρόνος όταν μεγαλώνουν τα δεδομένα</span></div>
-  <div class="gs-pill"><span class="gs-name">linear search</span><span class="gs-def">ένα-ένα μέχρι να βρεθεί — O(n), δουλεύει πάντα</span></div>
-  <div class="gs-pill"><span class="gs-name">binary search</span><span class="gs-def">υποδιπλασιάζει το διάστημα — O(log n), απαιτεί ταξινομημένα δεδομένα</span></div>
-  <div class="gs-pill"><span class="gs-name">slices.Sort</span><span class="gs-def">η έτοιμη λύση της Go, in place, για κάθε συγκρίσιμο τύπο</span></div>
-  <div class="gs-pill"><span class="gs-name">stable sort</span><span class="gs-def">ίσα στοιχεία κρατάνε τη μεταξύ τους σειρά</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">Big-O</td><td class="gt-def">πώς μεγαλώνει ο χρόνος όταν μεγαλώνουν τα δεδομένα</td></tr>
+  <tr><td class="gt-term">linear search</td><td class="gt-def">ένα-ένα μέχρι να βρεθεί — O(n), δουλεύει πάντα</td></tr>
+  <tr><td class="gt-term">binary search</td><td class="gt-def">υποδιπλασιάζει το διάστημα — O(log n), απαιτεί ταξινομημένα δεδομένα</td></tr>
+  <tr><td class="gt-term">slices.Sort</td><td class="gt-def">η έτοιμη λύση της Go, in place, για κάθε συγκρίσιμο τύπο</td></tr>
+  <tr><td class="gt-term">stable sort</td><td class="gt-def">ίσα στοιχεία κρατάνε τη μεταξύ τους σειρά</td></tr>
+</table>
 
 <h2>Αναδρομή και εξερεύνηση</h2>
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">base case</span><span class="gs-def">επιστροφή χωρίς νέα κλήση — πρέπει να είναι φτάσιμο από κάθε είσοδο</span></div>
-  <div class="gs-pill"><span class="gs-name">call stack</span><span class="gs-def">η στοίβα κλήσεων· γεμίζει σε βαθιά αναδρομή και δίνει stack overflow</span></div>
-  <div class="gs-pill"><span class="gs-name">divide and conquer</span><span class="gs-def">χώρισε, λύσε αναδρομικά, ένωσε — υποπροβλήματα που δεν επικαλύπτονται</span></div>
-  <div class="gs-pill"><span class="gs-name">DFS</span><span class="gs-def">βάθος πρώτα — Stack ή αναδρομή· «υπάρχει διαδρομή;»</span></div>
-  <div class="gs-pill"><span class="gs-name">BFS</span><span class="gs-def">πλάτος πρώτα — Queue· δίνει τη συντομότερη διαδρομή</span></div>
-  <div class="gs-pill"><span class="gs-name">visited map</span><span class="gs-def">υποχρεωτικό σε κάθε εξερεύνηση γραφήματος, αλλιώς οι κύκλοι δεν τελειώνουν</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">base case</td><td class="gt-def">επιστροφή χωρίς νέα κλήση — πρέπει να είναι φτάσιμο από κάθε είσοδο</td></tr>
+  <tr><td class="gt-term">call stack</td><td class="gt-def">η στοίβα κλήσεων· γεμίζει σε βαθιά αναδρομή και δίνει stack overflow</td></tr>
+  <tr><td class="gt-term">divide and conquer</td><td class="gt-def">χώρισε, λύσε αναδρομικά, ένωσε — υποπροβλήματα που δεν επικαλύπτονται</td></tr>
+  <tr><td class="gt-term">visited map</td><td class="gt-def">υποχρεωτικό σε κάθε εξερεύνηση γραφήματος, αλλιώς οι κύκλοι δεν τελειώνουν</td></tr>
+</table>
 
 <h2>Στρατηγικές απόφασης</h2>
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">greedy</span><span class="gs-def">τοπικά βέλτιστη επιλογή, χωρίς επιστροφή — γρήγορο, όχι πάντα σωστό</span></div>
-  <div class="gs-pill"><span class="gs-name">αντιπαράδειγμα</span><span class="gs-def">μικρή είσοδος που αποδεικνύει ότι το greedy δεν αρκεί</span></div>
-  <div class="gs-pill"><span class="gs-name">backtracking</span><span class="gs-def">choose, explore, un-choose — DFS σε δέντρο αποφάσεων</span></div>
-  <div class="gs-pill"><span class="gs-name">pruning</span><span class="gs-def">εγκατάλειψη υποδέντρου μόλις αποδειχθεί άκυρο</span></div>
-  <div class="gs-pill"><span class="gs-name">memoization</span><span class="gs-def">αναδρομή που κρατάει τα ήδη γνωστά αποτελέσματα</span></div>
-  <div class="gs-pill"><span class="gs-name">tabulation</span><span class="gs-def">λούπα που γεμίζει πίνακα από τα base cases προς τα πάνω</span></div>
-  <div class="gs-pill"><span class="gs-name">επικάλυψη υποπροβλημάτων</span><span class="gs-def">η προϋπόθεση χωρίς την οποία το memo δεν προσφέρει τίποτα</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">greedy</td><td class="gt-def">τοπικά βέλτιστη επιλογή, χωρίς επιστροφή — γρήγορο, όχι πάντα σωστό</td></tr>
+  <tr><td class="gt-term">αντιπαράδειγμα</td><td class="gt-def">μικρή είσοδος που αποδεικνύει ότι το greedy δεν αρκεί</td></tr>
+  <tr><td class="gt-term">backtracking</td><td class="gt-def">choose, explore, un-choose — DFS σε δέντρο αποφάσεων</td></tr>
+  <tr><td class="gt-term">pruning</td><td class="gt-def">εγκατάλειψη υποδέντρου μόλις αποδειχθεί άκυρο</td></tr>
+  <tr><td class="gt-term">memoization</td><td class="gt-def">αναδρομή που κρατάει τα ήδη γνωστά αποτελέσματα</td></tr>
+  <tr><td class="gt-term">tabulation</td><td class="gt-def">λούπα που γεμίζει πίνακα από τα base cases προς τα πάνω</td></tr>
+  <tr><td class="gt-term">επικάλυψη υποπροβλημάτων</td><td class="gt-def">η προϋπόθεση χωρίς την οποία το memo δεν προσφέρει τίποτα</td></tr>
+</table>
 `);
 
         // ── Κλείσιμο ─────────────────────────────────────────────────────────── ⊃
