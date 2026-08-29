@@ -7237,7 +7237,7 @@ func CountSolutionsMRV(grid [][]int, limit int) int {
     </tr>
 </table>
 
-<h2>Μια πρακτική σειρά δουλειάς</h2>
+<h2>Μια πρακτική σειρά επίλυσης</h2>
 
 <ul>
     <li><strong>Ξεκίνα greedy.</strong> Γράφεται σε λίγα λεπτά και συχνά είναι η σωστή απάντηση. Αν
@@ -7441,31 +7441,30 @@ func SolveQueens(board []int, row int) bool {
             note: "Πρώτο σετ: οι έννοιες. Δεύτερο σετ: πρόβλημα → ποια τεχνική και γιατί."
         });
 
-        // ── Mini-glossary — Ενότητα 7 ────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow" id="@greedy-bt-recap">Μίνι Γλωσσάρι — Ενότητα 7 / 8</div>
-<h1>Greedy & Backtracking, με μια Ματιά</h1>
+<h1>Greedy & Backtracking</h1>
 <p class="lede">Οι όροι που θα σου χρειαστούν από αυτό το κεφάλαιο.</p>
 
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">greedy</span><span class="gs-def">τοπικά βέλτιστη επιλογή σε κάθε βήμα, χωρίς ποτέ επιστροφή — γρήγορο, όχι πάντα σωστό</span></div>
-  <div class="gs-pill"><span class="gs-name">τοπικά vs συνολικά βέλτιστο</span><span class="gs-def">το καλύτερο τώρα δεν είναι πάντα μέρος του καλύτερου συνολικά</span></div>
-  <div class="gs-pill"><span class="gs-name">αντιπαράδειγμα</span><span class="gs-def">μικρή είσοδος όπου το greedy δίνει λάθος — π.χ. κέρματα {4, 3, 1} για στόχο 6</span></div>
-  <div class="gs-pill"><span class="gs-name">activity selection</span><span class="gs-def">μέγιστο πλήθος μη-επικαλυπτόμενων διαστημάτων — greedy κατά ώρα λήξης</span></div>
-  <div class="gs-pill"><span class="gs-name">backtracking</span><span class="gs-def">δοκίμασε, προχώρα, ξήλωσε αν δεν βγάζει πουθενά — DFS σε δέντρο αποφάσεων</span></div>
-  <div class="gs-pill"><span class="gs-name">choose / explore / un-choose</span><span class="gs-def">ο τριμερής σκελετός κάθε backtracking, χωρίς εξαίρεση</span></div>
-  <div class="gs-pill"><span class="gs-name">pruning (κλάδεμα)</span><span class="gs-def">εγκατάλειψη υποδέντρου μόλις αποδειχθεί άκυρο — η διαφορά από brute force</span></div>
-  <div class="gs-pill"><span class="gs-name">δέντρο αποφάσεων</span><span class="gs-def">νοητή δομή: κόμβος = επιλογή, κλαδί = συνέχεια, φύλλο = πλήρης λύση</span></div>
-  <div class="gs-pill"><span class="gs-name">implicit search space</span><span class="gs-def">το δέντρο δεν υπάρχει στη μνήμη — χτίζεται καθώς αποφασίζεις</span></div>
-  <div class="gs-pill"><span class="gs-name">N-Queens</span><span class="gs-def">το κλασικό backtracking — []int με μία στήλη ανά γραμμή, έλεγχος στηλών και διαγωνίων</span></div>
-  <div class="gs-pill"><span class="gs-name">κωδικοποίηση περιορισμού στη δομή</span><span class="gs-def">όταν η δομή δεδομένων κάνει τις άκυρες καταστάσεις αδύνατες να παρασταθούν</span></div>
-  <div class="gs-pill"><span class="gs-name">sudoku solver</span><span class="gs-def">ίδιος σκελετός με N-Queens — αλλάζει μόνο ο έλεγχος εγκυρότητας</span></div>
-  <div class="gs-pill"><span class="gs-name">μία λύση vs όλες</span><span class="gs-def">καθορίζει αν χρειάζεσαι un-choose στο visited — συχνότατο λάθος</span></div>
-  <div class="gs-pill"><span class="gs-name">αφαιρετικά ζεύγη</span><span class="gs-def">CM, CD, XC, XL, IX, IV — μπαίνουν στη λίστα σαν κέρματα και κάνουν το greedy σωστό</span></div>
-  <div class="gs-pill"><span class="gs-name">παράλληλα slices</span><span class="gs-def">δύο slices ευθυγραμμισμένα στο ίδιο index, όσο δεν έχουμε structs</span></div>
-  <div class="gs-pill"><span class="gs-name">ο έλεγχος ορίζει το πρόβλημα</span><span class="gs-def">ο σκελετός απαριθμεί· χωρίς συνθήκη ελέγχου το backtracking είναι brute force</span></div>
-  <div class="gs-pill"><span class="gs-name">η σειρά δουλειάς</span><span class="gs-def">greedy → ψάξε αντιπαράδειγμα → backtracking → pruning → DP αν επικαλύπτονται</span></div>
-</div>
+<table class="glossary-table">
+  <tr><td class="gt-term">greedy</td><td class="gt-def">τοπικά βέλτιστη επιλογή σε κάθε βήμα, χωρίς ποτέ επιστροφή — γρήγορο, όχι πάντα σωστό</td></tr>
+  <tr><td class="gt-term">τοπικά vs συνολικά βέλτιστο</td><td class="gt-def">το καλύτερο τώρα δεν είναι πάντα μέρος του καλύτερου συνολικά</td></tr>
+  <tr><td class="gt-term">αντιπαράδειγμα</td><td class="gt-def">μικρή είσοδος όπου το greedy δίνει λάθος — π.χ. κέρματα {4, 3, 1} για στόχο 6</td></tr>
+  <tr><td class="gt-term">activity selection</td><td class="gt-def">μέγιστο πλήθος μη-επικαλυπτόμενων διαστημάτων — greedy κατά ώρα λήξης</td></tr>
+  <tr><td class="gt-term">backtracking</td><td class="gt-def">δοκίμασε, προχώρα, ξήλωσε αν δεν βγάζει πουθενά — DFS σε δέντρο αποφάσεων</td></tr>
+  <tr><td class="gt-term">choose / explore / un-choose</td><td class="gt-def">ο τριμερής σκελετός κάθε backtracking, χωρίς εξαίρεση</td></tr>
+  <tr><td class="gt-term">pruning (κλάδεμα)</td><td class="gt-def">εγκατάλειψη υποδέντρου μόλις αποδειχθεί άκυρο — η διαφορά από brute force</td></tr>
+  <tr><td class="gt-term">δέντρο αποφάσεων</td><td class="gt-def">νοητή δομή: κόμβος = επιλογή, κλαδί = συνέχεια, φύλλο = πλήρης λύση</td></tr>
+  <tr><td class="gt-term">implicit search space</td><td class="gt-def">το δέντρο δεν υπάρχει στη μνήμη — χτίζεται καθώς αποφασίζεις</td></tr>
+  <tr><td class="gt-term">N-Queens</td><td class="gt-def">το κλασικό backtracking — []int με μία στήλη ανά γραμμή, έλεγχος στηλών και διαγωνίων</td></tr>
+  <tr><td class="gt-term">κωδικοποίηση περιορισμού στη δομή</td><td class="gt-def">όταν η δομή δεδομένων κάνει τις άκυρες καταστάσεις αδύνατες να παρασταθούν</td></tr>
+  <tr><td class="gt-term">sudoku solver</td><td class="gt-def">ίδιος σκελετός με N-Queens — αλλάζει μόνο ο έλεγχος εγκυρότητας</td></tr>
+  <tr><td class="gt-term">μία λύση vs όλες</td><td class="gt-def">καθορίζει αν χρειάζεσαι un-choose στο visited — συχνότατο λάθος</td></tr>
+  <tr><td class="gt-term">αφαιρετικά ζεύγη</td><td class="gt-def">CM, CD, XC, XL, IX, IV — μπαίνουν στη λίστα σαν κέρματα και κάνουν το greedy σωστό</td></tr>
+  <tr><td class="gt-term">παράλληλα slices</td><td class="gt-def">δύο slices ευθυγραμμισμένα στο ίδιο index, όσο δεν έχουμε structs</td></tr>
+  <tr><td class="gt-term">ο έλεγχος ορίζει το πρόβλημα</td><td class="gt-def">ο σκελετός απαριθμεί· χωρίς συνθήκη ελέγχου το backtracking είναι brute force</td></tr>
+  <tr><td class="gt-term">η σειρά δουλειάς</td><td class="gt-def">greedy → ψάξε αντιπαράδειγμα → backtracking → pruning → DP αν επικαλύπτονται</td></tr>
+</table>
 `);
 
 
