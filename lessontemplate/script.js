@@ -1731,34 +1731,36 @@ function initTocSidebar() {
       return;
     }
 
-    // A/D navigate slides, W opens the sidebar, S closes it — but never
-    // while the user is actually typing (search box, fill-in-the-blank
-    // inputs, the feedback form, anywhere), and never alongside a
-    // modifier key (Ctrl/Cmd/Alt), so this doesn't fight with browser or
-    // OS shortcuts that happen to use the same letters.
+    // A/D navigate slides, W/S scroll the current slide up/down, Q toggles
+    // the sidebar — but never while the user is actually typing (search
+    // box, fill-in-the-blank inputs, the feedback form, anywhere), and
+    // never alongside a modifier key (Ctrl/Cmd/Alt), so this doesn't fight
+    // with browser or OS shortcuts that happen to use the same letters.
     const activeTag = document.activeElement ? document.activeElement.tagName : "";
     const isTyping = activeTag === "INPUT" || activeTag === "TEXTAREA" ||
       (document.activeElement && document.activeElement.isContentEditable);
     if (isTyping || e.ctrlKey || e.metaKey || e.altKey) return;
 
-    switch (e.key.toLowerCase()) {
-      case "a": goTo(current - 1); break;
-      case "d": goTo(current + 1); break;
-      case "w": openToc(); break;
-      case "s": closeToc(); break;
+    switch (e.code) {
+      case "KeyA": navigateTo(current - 1, null); break;
+      case "KeyD": navigateTo(current + 1, null); break;
+      case "KeyQ":
+        if (tocSidebarEl.classList.contains("open")) closeToc(); else openToc();
+        break;
+      case "KeyW": {
+        const container = slideEls[current];
+        const step = container.clientHeight * 0.8;
+        smoothScrollTop(container, Math.max(0, container.scrollTop - step), 400);
+        break;
+      }
+      case "KeyS": {
+        const container = slideEls[current];
+        const step = container.clientHeight * 0.8;
+        const maxScroll = container.scrollHeight - container.clientHeight;
+        smoothScrollTop(container, Math.min(maxScroll, container.scrollTop + step), 400);
+        break;
+      }
     }
-  });
-
-  // Navigating anywhere (e.g. clicking a .toc-link — see the shared
-  // "hashchange" listener elsewhere in this file for the actual jump
-  // logic) should close the sidebar ONLY on mobile — there, it covers the
-  // whole screen, so you can't see where you landed until it closes. On
-  // desktop it's a side drawer that doesn't block the content, so it stays
-  // open — lets you click through several TOC entries in a row without
-  // reopening it each time. Same breakpoint the rest of the nav uses.
-  window.addEventListener("hashchange", () => {
-    const isMobile = window.matchMedia("(max-width: 920px)").matches;
-    if (isMobile && tocSidebarEl.classList.contains("open")) closeToc();
   });
 
   tocResetBtn.addEventListener("click", handleResetClick);
@@ -1777,6 +1779,25 @@ function initTocSidebar() {
   // rest of this function rather than assuming.
   const tocSearchEl = document.getElementById("toc-search");
   const tocListEl = document.getElementById("toc-list");
+
+  // Click-delegation for the static, extract_toc.go-generated .toc-link
+  // entries (href="#@slug") — needed now that navigation goes through
+  // navigateTo()'s own history.pushState() instead of relying on the
+  // browser's native anchor-click hash behavior (which pushes its own
+  // entry with no custom state, unlike everything else here).
+  if (tocListEl) {
+    tocListEl.addEventListener("click", (e) => {
+      const link = e.target.closest(".toc-link[href^='#']");
+      if (!link || !tocListEl.contains(link)) return;
+      e.preventDefault();
+      const resolved = resolveHash(link.getAttribute("href"));
+      if (!resolved) return;
+      navigateTo(resolved.slideIndex, resolved.elId);
+      const isMobile = window.matchMedia("(max-width: 920px)").matches;
+      if (isMobile) closeToc();
+    });
+  }
+
   if (tocSearchEl && tocListEl) {
     // Built ONCE from the live DOM — every slide already exists (see the
     // note at the top of decorateSpoilers() for why), so there's nothing
@@ -1799,6 +1820,7 @@ function initTocSidebar() {
     });
 
     const originalTocListHTML = tocListEl.innerHTML; // browse mode — restored when the search box is cleared
+    let searchHitIdCounter = 0;
 
     /**
      * Builds a "…3-4 words… **match** …3-4 words…" snippet around the
@@ -1886,7 +1908,15 @@ function initTocSidebar() {
 
         a.addEventListener("click", (e) => {
           e.preventDefault();
-          jumpToElement(entry.el);
+          // Search hits are arbitrary paragraphs/list items/code blocks
+          // that usually don't have their own id — give it one, once, the
+          // first time it's ever clicked; reused after that.
+          if (!entry.el.id) {
+            entry.el.id = "@search-hit-" + (searchHitIdCounter++);
+          }
+          const slide = entry.el.closest(".slide");
+          const slideIndex = slide ? parseInt(slide.dataset.index, 10) : NaN;
+          if (!isNaN(slideIndex)) navigateTo(slideIndex, entry.el.id);
           const isMobile = window.matchMedia("(max-width: 920px)").matches;
           if (isMobile) closeToc();
         });
@@ -1970,66 +2000,91 @@ function smoothScrollTop(container, targetTop, maxDuration) {
 }
 
 /**
- * The actual "go to this element" logic — switches to its slide and
- * smooth-scrolls to it, with a brief highlight flash so it's obvious where
- * you landed. Shared by jumpToHash() (deep-links, TOC clicks) and search
- * result clicks below — search matches are arbitrary paragraphs/list
- * items/code blocks that usually don't have an id at all, so this takes
- * the element directly instead of looking one up.
- * @param {HTMLElement} targetEl
+ * The single entry point for EVERY navigation action that should be
+ * representable in browser history — Next/Back, dots, A/D and arrow keys,
+ * TOC link clicks, and search result clicks all funnel through this, so
+ * the browser's Back/Forward buttons step through all of them, in the
+ * order they actually happened, not just link/search jumps. Switches to
+ * the given slide, optionally smooth-scrolls to and highlights a specific
+ * element within it, then records ONE history entry for the whole move
+ * (skipped when this call is ITSELF the result of a Back/Forward action,
+ * via fromHistory — otherwise every Back press would immediately push a
+ * new entry right back, undoing itself).
+ * @param {number} slideIndex
+ * @param {string|null} elId - element id to scroll to/highlight within that slide, or null for a plain slide change with no specific target
+ * @param {boolean} [fromHistory] - true only when called from the popstate handler itself
  */
-function jumpToElement(targetEl) {
-  const targetSlide = targetEl.closest(".slide");
-  if (!targetSlide) return;
-
-  const slideIndex = parseInt(targetSlide.dataset.index, 10);
-  if (isNaN(slideIndex)) return;
+function navigateTo(slideIndex, elId, fromHistory) {
+  if (slideIndex < 0 || slideIndex >= slides.length) return;
 
   goTo(slideIndex);
 
-  // Wait a frame so goTo()'s active-class switch (display:none -> visible)
-  // has actually applied before measuring/scrolling within it.
-  requestAnimationFrame(() => {
-    // Deliberately NOT scrollIntoView() — it also adjusts HORIZONTAL scroll
-    // position based on the target's bounding box, and some slide content
-    // here is wider than the viewport (e.g. a wide code block). That
-    // combination made scrollIntoView shove the whole PAGE sideways to
-    // "reveal" the target — with no way back, since nothing in this design
-    // has a horizontal scrollbar or any logic that resets it. Computing
-    // and setting scrollTop by hand never touches horizontal position at
-    // all, so this can't happen from here again.
-    const slideRect = targetSlide.getBoundingClientRect();
-    const targetRect = targetEl.getBoundingClientRect();
-    const targetTop = targetSlide.scrollTop + (targetRect.top - slideRect.top) - 10;
-    smoothScrollTop(targetSlide, targetTop, 500);
+  if (elId) {
+    const targetEl = document.getElementById(elId);
+    const targetSlide = slideEls[slideIndex];
+    if (targetEl && targetSlide) {
+      // Wait a frame so goTo()'s active-class switch (display:none ->
+      // visible) has actually applied before measuring/scrolling within it.
+      requestAnimationFrame(() => {
+        // Deliberately NOT scrollIntoView() — it also adjusts HORIZONTAL
+        // scroll position based on the target's bounding box, and some
+        // slide content here is wider than the viewport (e.g. a wide code
+        // block); that combination once shoved the whole page sideways
+        // with no way back. Computing scrollTop by hand never touches
+        // horizontal position at all.
+        const slideRect = targetSlide.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+        const targetTop = targetSlide.scrollTop + (targetRect.top - slideRect.top) - 10;
+        smoothScrollTop(targetSlide, targetTop, 500);
 
-    // Defensive, unconditional reset — this site has no intentional
-    // horizontal scrolling ANYWHERE, so if anything (this bug or a future
-    // one) ever nudges it sideways, undo that every time we navigate,
-    // rather than only fixing the one path that caused it once.
-    window.scrollTo({ left: 0 });
-    targetSlide.scrollLeft = 0;
+        window.scrollTo({ left: 0 });
+        targetSlide.scrollLeft = 0;
 
-    // Brief flash so landing somewhere in a long slide is obvious, not just
-    // "the page moved somewhere". Force a reflow before re-adding the class
-    // so it re-triggers even if you jump to the same spot twice in a row.
-    targetEl.classList.remove("toc-jump-highlight");
-    void targetEl.offsetWidth;
-    targetEl.classList.add("toc-jump-highlight");
-    setTimeout(() => targetEl.classList.remove("toc-jump-highlight"), 8000);
-  });
+        // Brief flash so landing somewhere in a long slide is obvious.
+        // Force a reflow before re-adding the class so it re-triggers even
+        // if you jump to the same spot twice in a row.
+        targetEl.classList.remove("toc-jump-highlight");
+        void targetEl.offsetWidth;
+        targetEl.classList.add("toc-jump-highlight");
+        setTimeout(() => targetEl.classList.remove("toc-jump-highlight"), 8000);
+      });
+    }
+  }
+
+  if (!fromHistory) {
+    const url = location.pathname + location.search + (elId ? "#" + elId : "");
+    history.pushState({ slideIndex, elId: elId || null }, "", url);
+  }
 }
 
+// The other end of navigateTo()'s pushState calls — fires on the
+// browser's Back/Forward buttons (and only those; a NEW navigateTo() call,
+// e.g. clicking a fresh link, does not trigger this, since popstate is
+// specifically for moving through EXISTING history entries). e.state is
+// whatever navigateTo() pushed, so this can just replay it directly,
+// marked fromHistory so it doesn't push yet another entry on top.
+window.addEventListener("popstate", (e) => {
+  if (e.state && typeof e.state.slideIndex === "number") {
+    navigateTo(e.state.slideIndex, e.state.elId, true);
+  }
+});
+
 /**
- * Thin wrapper around jumpToElement() for hash-based callers (deep-links,
- * static .toc-link entries with href="#@slug") — resolves the id first.
- * @param {string} hash - includes the leading '#', e.g. "#@some-slug".
+ * Resolves a "#@slug"-style hash to its element and containing slide
+ * index, or null if it doesn't match anything on this page.
+ * @param {string} hash - includes the leading '#'
+ * @returns {{elId: string, slideIndex: number}|null}
  */
-function jumpToHash(hash) {
-  if (!hash || hash.length < 2) return;
-  const targetEl = document.getElementById(hash.slice(1)); // drop the leading '#'
-  if (!targetEl) return; // no heading/slug on this page matches
-  jumpToElement(targetEl);
+function resolveHash(hash) {
+  if (!hash || hash.length < 2) return null;
+  const elId = hash.slice(1);
+  const targetEl = document.getElementById(elId);
+  if (!targetEl) return null;
+  const targetSlide = targetEl.closest(".slide");
+  if (!targetSlide) return null;
+  const slideIndex = parseInt(targetSlide.dataset.index, 10);
+  if (isNaN(slideIndex)) return null;
+  return { elId, slideIndex };
 }
 
 /**
@@ -2049,12 +2104,19 @@ function jumpToHash(hash) {
  * caller, initSlideDeck(), finishes building slides[]), and on top of
  * that, some browsers retry the native attempt once the target DOES
  * appear, landing on a still display:none element with undefined (and
- * inconsistent — hence "only some of the time") scroll behavior. Once this
- * function is done, it puts the hash back in the address bar via
- * replaceState (not a normal assignment — that would re-trigger a
- * hashchange and this whole function again), so the URL still reflects
- * where you are, for bookmarking/sharing.
+ * inconsistent — hence "only some of the time") scroll behavior.
  */
+function handleInitialHashNavigation() {
+  const resolved = resolveHash(window.__initialHash);
+  if (!resolved) return null;
+  // fromHistory:true here on purpose — this is the FIRST navigation of the
+  // session, not something to record as a Back-able move in its own right;
+  // the caller seeds the baseline history entry itself, using the return
+  // value below, once this is done.
+  navigateTo(resolved.slideIndex, resolved.elId, true);
+  return resolved;
+}
+
 // Defensive, real-time safety net for the first couple seconds after load.
 // html/body already have overflow-x:hidden (see that rule's own comment),
 // and every .slide does too — this site has NO intentional horizontal
@@ -2078,27 +2140,6 @@ function jumpToHash(hash) {
   document.addEventListener("scroll", correctDrift, { passive: true, capture: true });
   setTimeout(() => { watching = false; }, 2500);
 })();
-
-function handleInitialHashNavigation() {
-  const hash = window.__initialHash;
-  if (!hash || hash.length < 2) return;
-
-  jumpToHash(hash);
-  history.replaceState(null, "", location.pathname + location.search + hash);
-}
-
-// Ongoing in-app navigation — e.g. clicking a .toc-link in the sidebar,
-// which is a completely plain <a href="#@slug">, no click handler of its
-// own. Clicking it is what makes the browser fire "hashchange" (this is
-// the browser's own event, not something wired to the link directly), so
-// listening for that one event covers every such link on the page, without
-// needing any click-delegation code at all. No race to worry about here —
-// unlike the cold-load case above, the page (and every slide) already
-// fully exists by the time this can possibly fire.
-window.addEventListener("hashchange", () => {
-  jumpToHash(location.hash);
-});
-
 
 function initSlideDeck(config) {
   const opts = config || {};
@@ -2171,7 +2212,7 @@ function initSlideDeck(config) {
     const el = document.createElement("div");
     el.className = isDiamond ? "dot dot-diamond" : "dot";
     if (slides[i].type !== "content") el.classList.add("quiz-dot");
-    el.addEventListener("click", () => goTo(i));
+    el.addEventListener("click", () => navigateTo(i, null));
 
     const preview = previews[i];
     el.dataset.tipEyebrow = preview.eyebrow || "";
@@ -2275,18 +2316,38 @@ function initSlideDeck(config) {
     }
   });
 
-  prevBtn.addEventListener("click", () => goTo(current - 1));
-  nextBtn.addEventListener("click", () => goTo(current + 1));
+  prevBtn.addEventListener("click", () => navigateTo(current - 1, null));
+  nextBtn.addEventListener("click", () => navigateTo(current + 1, null));
   document.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowRight") goTo(current + 1);
-    if (e.key === "ArrowLeft") goTo(current - 1);
+    const activeTag2 = document.activeElement ? document.activeElement.tagName : "";
+    const isTyping2 = activeTag2 === "INPUT" || activeTag2 === "TEXTAREA" ||
+      (document.activeElement && document.activeElement.isContentEditable);
+    if (isTyping2) return; // let the cursor move normally instead of changing slides
+
+    if (e.key === "ArrowRight") navigateTo(current + 1, null);
+    if (e.key === "ArrowLeft") navigateTo(current - 1, null);
   });
 
   wireDotsArrows();
 
   if (current >= slides.length) current = 0;
   goTo(current);
-  handleInitialHashNavigation(); // overrides the line above if the URL has a matching #hash
+  const initialResolved = handleInitialHashNavigation(); // overrides the line above if the URL has a matching #hash
+
+  // Seeds the very first history entry with real state (matching what
+  // navigateTo() itself pushes for every subsequent move), so popstate has
+  // something to read even when Back is pressed all the way to the start —
+  // without this, that first entry would have state:null and need a
+  // separate "what do I do with no state" special case. Uses
+  // initialResolved.elId (not location.hash — fromHistory:true above
+  // deliberately skipped updating that) so a cold-load deep-link still
+  // shows its #@slug in the address bar for bookmarking/sharing.
+  const initialElId = initialResolved ? initialResolved.elId : null;
+  history.replaceState(
+    { slideIndex: current, elId: initialElId },
+    "",
+    location.pathname + location.search + (initialElId ? "#" + initialElId : "")
+  );
   // On first load, #dots/#dots-track may not have a finalized layout yet
   // at this exact synchronous point (no paint has happened yet) —
   // clientWidth/scrollWidth/getBoundingClientRect can read 0 or stale
