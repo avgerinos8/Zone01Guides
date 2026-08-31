@@ -11,29 +11,55 @@
 
 # Guides01 — Interactive Lesson Engine
 
-This repository contains the source code and content generation framework for the interactive slide‑deck lessons used at **Zone01 Athens**. The lesson content (prose, instructions, and exercises) is written entirely in Greek. The lessons are delivered as self‑contained HTML files, powered by a lightweight JavaScript engine that turns a simple API into a fully navigable, interactive course with quizzes, fill‑in‑the‑blank exercises, matching games, and progress tracking.
+This repository contains the source, content, and generation tooling for interactive slide‑deck lessons. The lesson content (prose, instructions, and exercises) is written entirely in Greek. Each lesson is a self‑contained HTML file, powered by a lightweight JavaScript engine that turns a simple API into a fully navigable, interactive course with quizzes, fill‑in‑the‑blank exercises, matching games, and progress tracking.
 
-**Hosted on github pages:** [https://avgerinos8.github.io/Zone01Guides](https://avgerinos8.github.io/Zone01Guides)
+**Hosted at:** [https://guides01.devs.surf](https://guides01.devs.surf/) (custom domain, see `CNAME`), served via GitHub Pages from [avgerinos8.github.io/Zone01Guides](https://avgerinos8.github.io/Zone01Guides)
 
 ---
 
-## What’s inside?
+## What's inside?
 
-- **`index.html`** – the skeleton of a lesson; includes the CSS, the JS engine, and the **inline script** where the actual lesson content is written.
-- **`static/`** – the reusable engine:
-  - `style.css` – styles the deck, navigation, and interactive elements.
-  - `script.js` – the core engine: renders slides, handles navigation, stores progress in `localStorage`, and exposes the authoring API.
-  - `highlighter.js` – syntax highlighting for code blocks.
-  - `theme-*.css` – colour themes (the lesson picks one via `<link>`).
-- **`detailed-lesson-generator-instructions.json`** – a complete specification for creating new lessons: pedagogical rules, verification steps, banned expressions, and style guidelines. This is the **source of truth** for lesson authors.
+### The live site
 
-> The actual lessons (the HTML files that appear on the live site) are **not** stored in this repo – they are built from the generator spec and deployed separately. This repo holds the *blueprint* and the *tooling*.
+- **`index.html`** – the site's landing page: a terminal/CRT‑themed page linking out to every published lesson.
+- **`00-bash.html`, `01-go-01.html`, `02-go-02.html`, `03-go-03.html`, `07-Networks.html`, `08-Docker.html`, `10-goroutines-channels.html`, etc...  – the actual lessons, each a standalone slide deck (Bash & shell, three Go modules, networking/cybersecurity, Docker, goroutines & channels).
+- **`icons/`, `images/`** – artwork and per‑topic icons/images used across the lessons and landing page.
+- **`CNAME`** – the custom domain (`guides01.devs.surf`) for GitHub Pages.
+
+### The shared engine (`static/`)
+
+- `script.js` – the core slide‑deck engine: renders slides, handles navigation, stores progress in `localStorage`, and exposes the authoring API (`addContent`, `addQuiz`, `addFillBlank`, `addMatching`, `initSlideDeck`).
+- `notify-progress.js` – an add‑on, loaded after `script.js`, that hooks into it to send per‑slide/course‑completion/feedback email notifications without modifying the core engine.
+- `style.css`, `viz-style.css`, `theme-*.css` – deck styling and swappable colour themes (a lesson picks one via `<link>` in its `<head>`).
+- `highlighter.js` – syntax highlighting for code blocks.
+- `vizJS/` – standalone visualizations embeddable in lessons (`viz-common.js`, `viz-merge-sort.js`, `viz-sliding-window.js`, `viz-sudoku.js`).
+
+### Authoring a new lesson (`lessontemplate/`)
+
+- `sample.html` – the annotated starting template for a new lesson: self‑documenting comments describe the authoring API, available CSS classes, and conventions; only the inline `<script>` at the bottom is meant to be edited.
+- `script.js`, `style.css`, `highlighter.js`, `viz-*.js` – the same engine, kept here so template authoring doesn't depend on `static/` drifting.
+- `detailed-lesson-generator-instructions.json`, `lesson-generator-instructions.json`, `section-generator-instructions.json`, `section-generator-standalone.json`, `project-brief.json` – specifications for generating lesson content: pedagogical rules, verification steps, banned expressions, and style guidelines. These are the **source of truth** for lesson authors (including AI‑assisted authoring).
+- `go_plan1.md` – planning notes for the Go lesson series.
+- `bg-image-options.html` – a reference sheet of available slide background images.
+- `_docs/` – JSON reference specs for individual features (quizzes, fill‑in‑the‑blank, matching, slide backgrounds, TOC slugs, inline figures, visualizations).
+
+### TOC tooling
+
+Two independent implementations of the same tool exist, both scanning a lesson's `addContent`/`addQuiz`/`addFillBlank`/`addMatching` calls in order to build a table‑of‑contents from the headings inside, and to backfill stable `id` anchors for them:
+
+- **`content-toc-go/`** – a Go CLI (`main.go`, `go.mod`, own `README.md`) that both inserts `id="@slug"` anchors into the source HTML and writes a ready‑to‑paste `<div id="toc-list">` snippet as `<file>-toc.md`. This is the actively maintained version — see `content-toc-go/README.md` for full usage, modes, and safety guarantees.
+- **`extract_toc.py`** – an earlier Python prototype of the same idea, kept at the repo root.
+- **`00-bash-toc.md`** – an example TOC snippet generated by the tool for `00-bash.html`.
+
+### Misc
+
+- **`cleaner.js`** – a one‑off Node script that collapses stray newlines inside `<p>` tags in `00-bash.html` (its `TARGET_FILE`) without touching `<pre>`/`<code>` blocks.
 
 ---
 
 ## How lessons are authored
 
-Every lesson is a single `index.html` page. The content lives inside the last `<script>` block of the file, where the author calls a few global functions:
+Every lesson is a single, standalone HTML file (e.g. `00-bash.html`, `01-go-01.html`, ...) at the repo root — new lessons are normally started from the `lessontemplate/sample.html` template. The content lives inside the last `<script>` block of the file, where the author calls a few global functions:
 
 ```javascript
 addContent(`...`)          // a normal slide with HTML
@@ -59,7 +85,7 @@ Interactive slides (quiz, fillblank, matching) are generated by the engine – y
 
 ### Structuring a lesson
 
-The file `detailed-lesson-generator-instructions.json` defines a strict, pedagogical structure:
+The file `lessontemplate/detailed-lesson-generator-instructions.json` defines a strict, pedagogical structure:
 
 - Every numbered section must end with a **quiz**, a **fill‑in‑the‑blank**, a **matching exercise**, a **VSCode Challenge**, and a **mini‑glossary**.
 - Questions must follow rules: correct answer is never the longest option, distractors must be plausible, and every term used must have been taught earlier.
@@ -77,9 +103,10 @@ The specification also includes:
 ## Development workflow
 
 1. **Plan** the lesson outline (sections, learning objectives, prerequisite ledger) and get it approved.
-2. **Write** each section’s content as calls to `addContent`, `addQuiz`, etc., inside the inline script of a local `index.html`.
+2. **Copy** `lessontemplate/sample.html` to a new file at the repo root (e.g. `NN-topic.html`) and write each section's content as calls to `addContent`, `addQuiz`, etc., inside its inline script.
 3. **Test** locally by opening the file in a browser (progress is stored in `localStorage`).
-4. **Deploy** by placing the final HTML file on the live site (GitHub Pages or any static host).
+4. **Generate the TOC** with `content-toc-go` (or `extract_toc.py`) to backfill heading anchors and produce the `<div id="toc-list">` snippet.
+5. **Link it** from `index.html`'s module list and **deploy** by committing the final HTML file — GitHub Pages serves the repo root directly.
 
 > The engine expects all slides to be built **before** `initSlideDeck()` is called. Do not use external data or async loading – everything is static.
 
@@ -87,9 +114,9 @@ The specification also includes:
 
 ## Customising the engine
 
-If you need to change the engine’s behaviour (e.g. new slide types, different scoring), edit the files in `static/`. The engine is vanilla JS, with no build step. Keep in mind that changes affect every lesson using that version.
+If you need to change the engine's behaviour (e.g. new slide types, different scoring), edit `static/script.js` (and `static/style.css` for styling). The engine is vanilla JS, with no build step. Keep in mind that changes affect every lesson that loads from `static/`; the copy in `lessontemplate/` is separate and used only when authoring new lessons from the template, so keep the two in sync by hand if a fix needs to apply to both.
 
-The theme can be swapped by changing the `<link>` to a different `theme-*.css` file in the `<head>` of `index.html`.
+The theme can be swapped per‑lesson by changing the `<link>` to a different `static/theme-*.css` file in that lesson's `<head>`.
 
 ---
 
