@@ -1965,6 +1965,31 @@ li {
     gap: 4px;
   }
 
+  /* Prev/Next specifically (not ☰, not any other .nav-btn) get bigger —
+     this is the ONLY way to navigate on mobile, so they're worth more tap
+     target and visual weight than a generic nav button. Bar height itself
+     (#nav-bar) is untouched — bigger buttons fit inside it via
+     align-items:center, not by growing the bar. Tighter #nav-bar padding
+     and .nav-group gap (right below) claw back the room these need,
+     mostly from #dots' own space (it's flex:1, absorbs the difference
+     automatically) rather than the bar growing. */
+  #btn-prev,
+  #btn-next {
+    padding: 14px 18px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  #nav-bar {
+    padding: 0 6px;
+    gap: 4px;
+  }
+
+  .nav-group,
+  .nav-group-right {
+    gap: 4px;
+  }
+
   /* Slide content gets a lot of vertical padding on desktop (64px/120px);
      tighten it on small phones so there's more usable reading space. */
   .slide {

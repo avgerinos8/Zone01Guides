@@ -124,20 +124,67 @@
   <script src="../static/viz-common.js?v=20260818"></script>
   <script>
 
-    // ── Title Slide ──────────────────────────────────────────────────────── Dynamic API & Templates
+
     addContent(`
-<div class="title-slide">
-  <div class="title-badge"><img src="./icons/icon.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>Go</span>'"></div>
-  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
-  <h1>REST APIs & HTML Templates στη Go</h1>
-  <p class="lede">Ολοκληρωμένος οδηγός για την ανάγνωση JSON δεδομένων (io.ReadAll vs json.Decoder) και τη διαμόρφωση HTML templates με custom συναρτήσεις (FuncMap).</p>
-  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
-</div>
-`);
+    <div class="title-slide">
+      <div class="title-badge"><img src="./icons/icon.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>Go</span>'"></div>
+      <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+      <h1>REST APIs & HTML Templates στη Go</h1>
+      <p class="lede">Ολοκληρωμένος οδηγός για την ανάγνωση JSON δεδομένων από APIs, τη διαμόρφωση HTML templates με custom συναρτήσεις, και την ασφαλή ρύθμιση ενός production-ready HTTP server.</p>
+      <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+    </div>
+    `);
+
+    // ────────────────────────────────────────────────────────────────────────────────
+    // SECTION 1: HTTP BASICS
+    // ────────────────────────────────────────────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_1_HTTP_Βασικά">Ενότητα 1 — HTTP Βασικά</div>
+    <h1>Τι είναι ένα REST API;</h1>
+    <p class="lede">Πριν γράψουμε κώδικα, πρέπει να καταλάβουμε τι ακριβώς κάνουμε όταν «καλούμε ένα API».</p>
+
+    <p>Ένα <strong>REST API</strong> (Application Programming Interface) είναι ένας τρόπος με τον οποίο δύο εφαρμογές επικοινωνούν μέσω του πρωτοκόλλου HTTP. Ο server εκθέτει <strong>endpoints</strong> (URLs) που ο client (π.χ. το πρόγραμμά μας στη Go) καλεί για να διαβάσει ή να στείλει δεδομένα.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>HTTP Methods</h3>
+        <ul>
+          <li><strong>GET</strong> — Ανάκτηση δεδομένων (η πιο συχνή)</li>
+          <li><strong>POST</strong> — Δημιουργία νέου πόρου</li>
+          <li><strong>PUT</strong> — Πλήρης ενημέρωση πόρου</li>
+          <li><strong>DELETE</strong> — Διαγραφή πόρου</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>HTTP Status Codes</h3>
+        <ul>
+          <li><strong>200 OK</strong> — Όλα πήγαν καλά</li>
+          <li><strong>404 Not Found</strong> — Το endpoint δεν υπάρχει</li>
+          <li><strong>500 Internal Server Error</strong> — Σφάλμα στον server</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>Σε αυτό το μάθημα θα εστιάσουμε σε <strong>GET</strong> αιτήματα που επιστρέφουν JSON δεδομένα.</p>
+
+    <h2>Το βασικό pattern: http.Get + resp.Body</h2>
+    <pre><code class="lang-go">// ── basic HTTP GET request ────────────────────────────────────────────────── ⊃
+
+resp, err := http.Get("https://api.example.com/data")
+if err != nil {
+    return nil, err
+}
+defer resp.Body.Close() // απελευθέρωση πόρων
+
+// Το resp.Body είναι ένα io.ReadCloser — μια ροή δεδομένων από το δίκτυο.</code></pre>
+
+    <div class="callout"><span class="tag">Προσοχή:</span> Το <code>defer resp.Body.Close()</code> είναι <strong>υποχρεωτικό</strong>! Αν το ξεχάσεις, ο server θα κρατάει ανοιχτές συνδέσεις μέχρι να εξαντληθούν οι πόροι του συστήματος.</div>
+    `);
+
 
     // ── Section 1: API Reading (io.ReadAll vs Decoder) ───────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 2 — Ανάγνωση API: io.ReadAll vs json.NewDecoder</div>
+<div class="eyebrow">Ενότητα 2 — Ανάγνωση API: io.ReadAll vs json.NewDecoder</div>
 <h1>Δύο τρόποι για ανάγνωση JSON από API</h1>
 <p class="lede">Όταν καλούμε ένα HTTP API στη Go, τα δεδομένα επιστρέφουν ως stream στο <code>resp.Body</code>. Η Go προσφέρει δύο διαφορετικούς μηχανισμούς για την μετατροπή τους σε structs.</p>
 
@@ -178,48 +225,9 @@ err = json.NewDecoder(resp.Body).Decode(&data)</code></pre>
 </div>
 `);
 
-    // ── Section 1 Quiz ───────────────────────────────────────────────────── ⊃
-    addQuiz([
-      {
-        q: "Ποια είναι η κύρια διαφορά στη μνήμη RAM μεταξύ json.NewDecoder και io.ReadAll + json.Unmarshal;",
-        options: [
-          "Το json.NewDecoder επεξεργάζεται τα δεδομένα ως stream χωρίς να φορτώνει ολόκληρο το response body στη RAM.",
-          "Το io.ReadAll είναι πιο γρήγορο επειδή παρακάμπτει τους κανόνες ασφαλείας του HTTP protocol.",
-          "Το io.ReadAll φορτώνει ολόκληρο το σώμα της απάντησης στη μνήμη RAM πριν την αποκωδικοποίηση, ενώ το Decoder διαβάζει σταδιακά το stream.",
-          "Δεν υπάρχει καμία διαφορά στη χρήση μνήμης μεταξύ των δύο μεθόδων."
-        ],
-        correct: 0,
-        explain: "Το Decoder διαβάζει τα δεδομένα απευθείας από τη δικτυακή ροή (stream), ενώ το io.ReadAll αποθηκεύει πρώτα ολόκληρο το JSON ως slice από bytes ([]byte) στη μνήμη."
-      }
-    ]);
-
-    // ── Section 1 Fill-in-the-blank ──────────────────────────────────────── ⊃
-    addFillBlank([
-      {
-        code: `// Fetching API data using streaming decoder
-resp, err := http.Get("https://api.example.com/data")
-if err != nil {
-    return nil, err
-}
-defer resp.Body.__close__()
-
-var data []Artist
-err = json.__new_decoder__(resp.Body).__decode__(&data)
-if err != nil {
-    return nil, err
-}`,
-        blanks: [
-          { id: "close", answer: "Close()" },
-          { id: "new_decoder", answer: "NewDecoder" },
-          { id: "decode", answer: "Decode" }
-        ],
-        explain: "Χρησιμοποιούμε defer resp.Body.Close() για απελευθέρωση πόρων, NewDecoder για ανάγνωση από το stream, και Decode για την εγγραφή στο struct."
-      }
-    ]);
-
     // ── Section 2: Custom Template Functions ─────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 2 / 2 — Go Templates & Custom Functions (FuncMap)</div>
+<div class="eyebrow">Ενότητα 3 — Go Templates & Custom Functions (FuncMap)</div>
 <h1>Διαμόρφωση HTML Templates</h1>
 <p class="lede">Όταν θέλουμε να καλέσουμε δικές μας Go συναρτήσεις μέσα από ένα HTML template (π.χ. μετατροπή κειμένου σε κεφαλαία), η απλή <code>template.ParseFiles()</code> δεν αρκεί.</p>
 
@@ -243,36 +251,90 @@ tmpl, err := template.New("index.html").
 </div>
 `);
 
-    // ── Section 2 Quiz ───────────────────────────────────────────────────── ⊃
-    addQuiz([
-      {
-        q: "Γιατί πρέπει να καλέσουμε τη μέθοδο .Funcs() πριν από την .ParseFiles() όταν ορίζουμε custom συναρτήσεις;",
-        options: [
-          "Επειδή ο parser πρέπει να γνωρίζει τα ονόματα των συναρτήσεων κατά τη διάρκεια της ανάγνωσης του HTML αρχείου.",
-          "Επειδή η .ParseFiles() διαγράφει αυτόματα όλες τις μεταβλητές που δηλώθηκαν νωρίτερα στο πρόγραμμα.",
-          "Επειδή η Go δεν επιτρέπει την τροποποίηση ενός template αφού αυτό φορτωθεί στη μνήμη RAM, προκαλώντας άμεσα panic στο πρόγραμμα.",
-          "Επειδή η .Funcs() εκτελεί τις συναρτήσεις και αποθηκεύει τα αποτελέσματα στο αρχείο."
-        ],
-        correct: 0,
-        explain: "Όταν ο parser διαβάζει το HTML και συναντά ένα tag όπως {{ upper .Name }}, πρέπει να γνωρίζει ήδη ότι η συνάρτηση upper υπάρχει στο FuncMap."
-      }
-    ]);
+    // ── Section 1.5: URL Query Parameters ─────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Ενότητα 4 — Ανάγνωση URL Query Parameters</div>
+<h1>Διαχείριση Αιτημάτων με το r.URL.Query()</h1>
+<p class="lede">Όταν ο χρήστης επισκέπτεται ένα URL με παραμέτρους (π.χ. <code>/search?query=queen&amp;page=2</code>), η Go μας επιτρέπει να διαβάσουμε εύκολα αυτά τα δεδομένα μέσω της <code>r.URL.Query()</code>.</p>
 
-    // ── Matching Pairs ───────────────────────────────────────────────────── ⊃
-    addMatching([
-      [
-        { term: "<code>json.NewDecoder(r.Body).Decode(&v)</code>", def: "Διαβάζει απευθείας από το HTTP stream χωρίς να επιβαρύνει τη RAM." },
-        { term: "<code>io.ReadAll(r.Body)</code>", def: "Φορτώνει ολόκληρο το response body στη μνήμη ως slice από bytes." },
-        { term: "<code>template.New().Funcs()</code>", def: "Καταχωρίζει custom συναρτήσεις στο template πριν γίνει το parsing." },
-        { term: "<code>template.ParseFiles()</code>", def: "Φορτώνει HTML αρχεία απευθείας χωρίς προσαρμοσμένα FuncMaps." }
-      ]
-    ], { note: "Ταιρίαξε κάθε εντολή της Go με την αντίστοιχη συμπεριφορά της." });
+<h2>1. Τι είναι το r.URL.Query();</h2>
+<p>Η μέθοδος <code>r.URL.Query()</code> αναλύει το query string του URL και επιστρέφει έναν τύπο <code>url.Values</code> (που στην πραγματικότητα είναι ένα <code>map[string][]string</code>).</p>
 
+<h2>2. Βασικές Μεθόδοι Ανάγνωσης</h2>
+<pre><code class="lang-go">// ── query parameters parsing ─────────────────────────────────────────────── ⊃
 
+// parsePagination extracts and validates the "page" query parameter from the request.
+func parsePagination(r *http.Request) (int, error) {
+	// Query parses the URL and returns a url.Values map
+	queryParams := r.URL.Query()
+
+	// Get retrieves the FIRST value associated with the key "page".
+	// If the key does not exist, it returns an empty string "".
+	pageStr := queryParams.Get("page")
+	if pageStr == "" {
+		return 1, nil // Default fallback page
+	}
+
+	// URL parameters are ALWAYS strings, so numeric conversion is required
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		return 0, fmt.Errorf("invalid page number format: %w", err)
+	}
+
+	return page, nil
+}</code></pre>
+
+<div class="grid2">
+  <div class="card">
+    <h3>.Get("key")</h3>
+    <p>Επιστρέφει τη **πρώτη** τιμή της παραμέτρου ως <code>string</code>. Αν η παράμετρος δεν υπάρχει στο URL, επιστρέφει κενό string (<code>""</code>).</p>
+  </div>
+  <div class="card">
+    <h3>Πολλαπλές Τιμές (Slice)</h3>
+    <p>Αν το URL έχει διπλότυπα keys (π.χ. <code>?tag=go&amp;tag=web</code>), αποκτούμε πρόσβαση σε όλες τις τιμές ως slice μέσω του map: <code>tags := r.URL.Query()["tag"]</code>.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="tag">Προσοχή: Τύποι Δεδομένων</span>
+  Όλες οι τιμές που λαμβάνονται από το <code>r.URL.Query()</code> είναι <strong>πάντα strings</strong>! Πρέπει πάντα να κάνουμε μετατροπή τύπου (π.χ. <code>strconv.Atoi()</code> για ακέραιους, <code>strconv.ParseBool()</code> για boolean) και έλεγχο σφαλμάτων (Input Validation) πριν τις χρησιμοποιήσουμε.
+</div>
+
+<h2>2. Ποιος δημιουργεί το Query Endpoint και Πώς;</h2>
+<p>Το query string στο URL (π.χ. <code>?query=metallica</code>) δημιουργείται <strong>αποκλειστικά στο Frontend (Browser)</strong> με δύο τρόπους:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>A. Αυτόματα μέσω HTML Form (GET Method)</h3>
+    <p>Όταν μια φόρμα έχει <code>method="GET"</code>, ο browser συλλέγει τα <code>name</code> attributes των <code>&lt;input&gt;</code> και χτίζει αυτόματα το URL κατά το submit:</p>
+    <pre><code class="lang-html">&lt;form action="/search" method="GET"&gt;
+  &lt;input type="text" name="query" placeholder="Search..."&gt;
+  &lt;button type="submit"&gt;Search&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+  </div>
+  <div class="card">
+    <h3>B. Δυναμικά μέσω JavaScript (AJAX / Fetch)</h3>
+    <p>Η JavaScript κατασκευάζει το URL κατά την πληκτρολόγηση (live search/suggestions) χρησιμοποιώντας τη συνάρτηση <code>encodeURIComponent()</code> για ασφαλή χαρακτήρες:</p>
+    <pre><code class="lang-js">// ── frontend URL construction ────────────────────────────────────────────── ⊃
+
+// fetchSearchResults builds the query string dynamically and sends an AJAX request.
+async function fetchSearchResults(searchTerm) {
+    const encodedQuery = encodeURIComponent(searchTerm);
+    const response = await fetch(\`/suggestions?query=\${encodedQuery}\`);
+    return await response.json();
+}</code></pre>
+  </div>
+</div>
+
+<div class="callout good">
+  <span class="tag">Σύνοψη Ροής</span>
+  Ο <b>Browser ή η JavaScript</b> φτιάχνει το URL με το query string (<code>?query=...</code>) &rarr; Ο <b>Go Server</b> το παραλαμβάνει στο <code>r.URL.Query().Get("query")</code> &rarr; Εκτελείται το filtering των δεδομένων.
+</div>
+`);
 
     // ── Glossary Slide ───────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
+<div class="eyebrow">Ενότητα 5 Συγκεντρωτικό Γλωσσάρι</div>
 <h1>Όλοι οι όροι που καλύψαμε</h1>
 <p class="lede">Γρήγορη αναφορά για τα APIs και τα Templates στη Go.</p>
 
@@ -298,7 +360,7 @@ tmpl, err := template.New("index.html").
     // ── Final Synthesis Quiz ─────────────────────────────────────────────── ⊃
     // ── Section 3: Handler Factory Pattern (Closures) ─────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 3 / 4 — HTTP Routing & Closures</div>
+<div class="eyebrow">Ενότητα 6 — HTTP Routing & Closures</div>
 <h1>Το Handler Factory Pattern (Dependency Injection)</h1>
 <p class="lede">Η συνάρτηση <code>http.HandleFunc</code> απαιτεί αυστηρά ένα signature της μορφής <code>func(w http.ResponseWriter, r *http.Request)</code>. Πώς περνάμε λοιπόν εξωτερικά δεδομένα (π.χ. <code>artists</code>) χωρίς να χρησιμοποιήσουμε καθολικές (global) μεταβλητές;</p>
 
@@ -336,7 +398,7 @@ func Handler(artists []Artist, locations []Location) http.HandlerFunc {
 
     // ── Section 4: Pagination & Unique Data Logic ──────────────────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 4 / 4 — Pagination & Data Processing</div>
+<div class="eyebrow">Ενότητα 7 — Pagination & Data Processing</div>
 <h1>Σελιδοποίηση & Απομάκρυνση Διπλότυπων (Deduplication)</h1>
 <p class="lede">Μέσα στο <code>Handler</code> βλέπουμε δύο πολύ συνηθισμένους αλγόριθμους: τον τεμαχισμό δεδομένων σε σελίδες (Pagination) και την εύρεση μοναδικών τιμών με <code>map</code>.</p>
 
@@ -377,7 +439,7 @@ for _, locationGroup := range locations {
 
     // ── Section 5: JSON Streaming, Headers & Frontend AJAX ───────────────── ⊃
     addContent(`
-<div class="eyebrow">Ενότητα 5 — JSON Streaming, Headers & Frontend AJAX</div>
+<div class="eyebrow">Ενότητα 8 — JSON Streaming, Headers & Frontend AJAX</div>
 <h1>HTTP Headers, JSON Streaming & JS Fetch</h1>
 <p class="lede">Πώς επικοινωνεί η Go με το Frontend μέσω JSON, πώς ρυθμίζουμε τα HTTP Headers και πώς καταναλώνουμε τα δεδομένα στην JavaScript.</p>
 
@@ -461,19 +523,584 @@ async function fetchSuggestions(query) {
 </div>
 `);
 
-    // ── Closing Slide ────────────────────────────────────────────────────── ⊃
+    // ── Section 6: Environment Variables & Custom HTTP Server ─────────────── ⊃
     addContent(`
-<div class="eyebrow">Έφτασες στο τέλος</div>
-<h1>Ελπίζω να σου φάνηκε χρήσιμο!</h1>
-<p class="lede">Τώρα γνωρίζεις πώς να διαβάζεις APIs αποδοτικά στη Go και πώς να επεκτείνεις τα HTML templates σου.</p>
+<div class="eyebrow">Ενότητα 9 — Environment Variables &amp; Custom HTTP Server</div>
+<h1>Production Server Setup &amp; Timeouts στη Go</h1>
+<p class="lede">Γιατί η απλή <code>http.ListenAndServe(":8080", mux)</code> είναι επικίνδυνη για παραγωγή (production) και πώς ρυθμίζουμε σωστά έναν <code>http.Server</code> με Timeouts και Environment Variables.</p>
 
-<div id="final-score"></div>
+<h2>1. Δυναμικό Port μέσω Environment Variables</h2>
+<p>Σε περιβάλλοντα deployment (Docker, Cloud Providers όπως Render/Heroku), το port ορίζεται δυναμικά από το περιβάλλον εκτέλεσης. Χρησιμοποιούμε την <code>os.Getenv()</code> με fallback τιμή (default):</p>
 
-<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
-  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
-</p>
+<pre><code class="lang-go">// ── dynamic port resolution ──────────────────────────────────────────────── ⊃
+
+// Read environment port or fallback to default 8080
+port := os.Getenv("PORT")
+if port == "" {
+	port = "8080"
+}</code></pre>
+
+<h2>2. Γιατί Χρειάζεται Custom http.Server Pointer;</h2>
+<p>Η βασική συνάρτηση <code>http.ListenAndServe</code> δεν θέτει κανένα χρονικό όριο (timeout). Αν ένας client συνδεθεί και σταματήσει να στέλνει δεδομένα, ο server θα κρατήσει τη σύνδεση ανοιχτή <strong>για πάντα</strong>, εξαντλώντας τη μνήμη RAM του συστήματος.</p>
+
+<pre><code class="lang-go">// ── custom HTTP server configuration ──────────────────────────────────────── ⊃
+
+// Configure custom server timeouts to safeguard against slow clients and DDoS attacks
+server := &amp;http.Server{
+	Addr:              ":" + port,         // Listening TCP address
+	Handler:           mux,                // Root router (ServeMux)
+	ReadTimeout:       5 * time.Second,    // Max duration for reading entire request body
+	ReadHeaderTimeout: 2 * time.Second,    // Max duration for reading request headers
+	WriteTimeout:      10 * time.Second,   // Max duration for writing the response
+	IdleTimeout:       120 * time.Second,  // Keep-alive connection wait duration
+	MaxHeaderBytes:    1 &lt;&lt; 20,            // Limit request headers to 1 MB (Bitwise Shift)
+}
+
+// Start server with configured settings
+err := server.ListenAndServe()</code></pre>
+
+<h2>3. Αναλυτική Εξήγηση Παραμέτρων Ασφαλείας</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>ReadHeaderTimeout (Slowloris Protection)</h3>
+    <p>Προστατεύει από <strong>Slowloris DDoS attacks</strong>, όπου ο επιτιθέμενος στέλνει τα headers πάρα πολύ αργά για να δεσμεύσει sockets. Όριο: 2 δευτερόλεπτα.</p>
+  </div>
+  <div class="card">
+    <h3>MaxHeaderBytes (Bitwise Shift: 1 &lt;&lt; 20)</h3>
+    <p>Η έκφραση <code>1 &lt;&lt; 20</code> μετατοπίζει το bit κατά 20 θέσεις αριστερά: $1 \times 2^{20} = 1.048.576\text{ bytes}$ (**1 MB**). Αποτρέπει επιθέσεις εξάντλησης RAM μέσω τεράστιων headers.</p>
+  </div>
+</div>
+
+<div class="grid2" style="margin-top:16px;">
+  <div class="card">
+    <h3>Read &amp; Write Timeouts</h3>
+    <p><code>ReadTimeout</code>: Συνολικός χρόνος ανάγνωσης request body (5s).<br><code>WriteTimeout</code>: Συνολικός χρόνος για να απαντήσει ο server (10s).</p>
+  </div>
+  <div class="card">
+    <h3>IdleTimeout</h3>
+    <p>Χρόνος αναμονής για το επόμενο request σε σύνδεση Keep-Alive (120s) πριν την αποδέσμευση του TCP socket.</p>
+  </div>
+</div>
+
+<div class="callout good">
+  <span class="tag">Production Tip</span>
+  Ένας production-ready HTTP server στη Go πρέπει <strong>πάντα</strong> να ορίζει ρητά <code>ReadHeaderTimeout</code> και <code>WriteTimeout</code>!
+</div>
 `);
+    addContent(`
+<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 10</div>
+<h1>Όροι & Έννοιες για JSON Streaming, Headers & Frontend AJAX</h1>
+<p class="lede">Γρήγορη αναφορά στους βασικούς όρους που καλύπτονται στην ενότητα της επικοινωνίας Go ↔ Frontend μέσω JSON.</p>
 
+<div class="glossary-group">
+  <h2>HTTP Response Writer & Headers</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">w.Header()</td><td class="gt-def">Επιστρέφει το map των HTTP headers. Χρησιμοποιούμε <code>.Set(key, value)</code> για να προσθέσουμε/αλλάξουμε headers πριν την αποστολή της απάντησης.</td></tr>
+    <tr><td class="gt-term">w.WriteHeader(statusCode)</td><td class="gt-def">Στέλνει τον HTTP κωδικό κατάστασης (π.χ. 200, 404). Πρέπει να καλείται <strong>μετά</strong> τα <code>w.Header().Set()</code> και <strong>πριν</strong> την εγγραφή του body.</td></tr>
+    <tr><td class="gt-term">Content-Type header</td><td class="gt-def">Ενημερώνει τον browser για τον τύπο των δεδομένων. Κοινά: <code>application/json</code>, <code>text/html</code>, <code>text/css</code>.</td></tr>
+    <tr><td class="gt-term">Access-Control-Allow-Origin</td><td class="gt-def">Header CORS που επιτρέπει σε σελίδες από άλλα domains να καλούν το API μας. Στο παράδειγμα: <code>*</code> (οποιοδήποτε) ή συγκεκριμένο domain.</td></tr>
+    <tr><td class="gt-term">Cache-Control</td><td class="gt-def">Ελέγχει το caching στον browser. Π.χ. <code>no-cache, no-store</code> για αποφυγή αποθήκευσης ευαίσθητων δεδομένων.</td></tr>
+    <tr><td class="gt-term">Location</td><td class="gt-def">Header που χρησιμοποιείται σε redirects, μαζί με status 3xx (π.χ. 302 Found).</td></tr>
+    <tr><td class="gt-term">X-Content-Type-Options: nosniff</td><td class="gt-def">Αποτρέπει τον browser από το να μαντέψει τον MIME τύπο, μειώνοντας τον κίνδυνο επιθέσεων.</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>JSON Streaming (Encoder / Decoder)</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">json.NewEncoder(w)</td><td class="gt-def">Δημιουργεί έναν encoder που γράφει JSON απευθείας στο <code>http.ResponseWriter</code> (stream output). Χρησιμοποιούμε <code>.Encode(v)</code> για σειριοποίηση.</td></tr>
+    <tr><td class="gt-term">json.NewDecoder(r.Body)</td><td class="gt-def">Δημιουργεί έναν decoder που διαβάζει JSON απευθείας από το <code>http.Request.Body</code> (stream input). Χρησιμοποιούμε <code>.Decode(&v)</code> για αποσειριοποίηση.</td></tr>
+    <tr><td class="gt-term">JSON Streaming</td><td class="gt-def">Η τεχνική της ανάγνωσης/εγγραφής JSON δεδομένων χωρίς να αποθηκεύεται ολόκληρο το payload στη RAM, επεξεργάζοντας τα δεδομένα σταδιακά (stream).</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Frontend JavaScript (Fetch API)</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">fetch(url)</td><td class="gt-def">Η ενσωματωμένη JavaScript συνάρτηση για ασύγχρονα HTTP requests. Επιστρέφει ένα Promise που επιλύεται σε αντικείμενο <code>Response</code>.</td></tr>
+    <tr><td class="gt-term">response.ok</td><td class="gt-def">Boolean που δείχνει αν το status code είναι 200-299 (επιτυχία). Χρησιμοποιείται για έλεγχο σφαλμάτων.</td></tr>
+    <tr><td class="gt-term">response.json()</td><td class="gt-def">Μέθοδος που διαβάζει το body stream και το μετατρέπει σε JavaScript object (ή array). Επιστρέφει Promise, γι' αυτό χρησιμοποιούμε <code>await</code>.</td></tr>
+    <tr><td class="gt-term">encodeURIComponent()</td><td class="gt-def">Συνάρτηση που κωδικοποιεί ειδικούς χαρακτήρες (π.χ. κενά, &, #) ώστε να είναι έγκυροι σε ένα query string URL.</td></tr>
+  </table>
+</div>
+
+<div class="callout good">
+  <span class="tag">Σύνοψη</span>
+  Η Go ρυθμίζει headers με <code>w.Header().Set</code>, στέλνει JSON με <code>json.NewEncoder(w).Encode</code>, και η JavaScript το καταναλώνει με <code>fetch</code> και <code>response.json()</code>, όλα σε ένα ασύγχρονο, streaming μοντέλο.
+</div>
+`);
+    // ─── SECTION 11: Introduction to Defense in Depth ──────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_11_Ασφάλεια_Εισαγωγή">Ενότητα 11 — Defense in Depth: Εισαγωγή</div>
+    <h1>Πλήρης Οδηγός Ασφαλείας Web Εφαρμογών στη Go</h1>
+    <p class="lede">Η ασφάλεια απαιτεί πολλαπλά επίπεδα προστασίας (Defense in Depth). Κάθε επίπεδο μειώνει τον κίνδυνο, ακόμα και αν κάποιο άλλο αποτύχει.</p>
+
+    <p>Οι σύγχρονες web εφαρμογές αντιμετωπίζουν ένα ευρύ φάσμα απειλών. Σε αυτή την ενότητα θα καλύψουμε τις πιο κρίσιμες ευπάθειες και πώς να τις αντιμετωπίσουμε στη Go (2026).</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Οι 5 πιο συχνές ευπάθειες (OWASP Top 10)</h3>
+        <ul>
+          <li><strong>XSS</strong> — Cross‑Site Scripting</li>
+          <li><strong>CSRF</strong> — Cross‑Site Request Forgery</li>
+          <li><strong>SQL Injection</strong></li>
+          <li><strong>Path Traversal</strong></li>
+          <li><strong>Broken Authentication &amp; Session Management</strong></li>
+        </ul>
+        <p>Θα δούμε πώς να τις αποτρέψουμε με Go.</p>
+      </div>
+      <div class="card">
+        <h3>Βασικές αρχές ασφαλούς ανάπτυξης</h3>
+        <ul>
+          <li><strong>Validate everything</strong> — εισερχόμενα δεδομένα</li>
+          <li><strong>Escape output</strong> — χρήση html/template</li>
+          <li><strong>Use parameterized queries</strong> — αποφυγή SQL injection</li>
+          <li><strong>Use secure headers</strong> — HSTS, CSP, X-Frame-Options</li>
+          <li><strong>Rate limiting</strong> — προστασία από brute‑force</li>
+          <li><strong>Secrets via environment</strong> — όχι hard‑coded keys</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout good"><span class="tag">Στόχος</span> Μέχρι το τέλος αυτής της σειράς ολισθήσεων, θα έχεις ένα πλήρως λειτουργικό, ασφαλές Go web app που μπορείς να ανεβάσεις σε production με σιγουριά.</div>
+    `);
+
+
+    // ─── SECTION 12: XSS ──────────────────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_12_XSS">Ενότητα 12 — XSS (Cross‑Site Scripting)</div>
+    <h1>XSS: Τι είναι και πώς το αποτρέπουμε στη Go</h1>
+    <p class="lede">Το Cross‑Site Scripting (XSS) επιτρέπει σε έναν εισβολέα να εισάγει κακόβουλο JavaScript σε μια ιστοσελίδα που προβάλλεται από άλλους χρήστες.</p>
+
+    <h2>Πώς λειτουργεί μια XSS επίθεση;</h2>
+    <p>Ένας εισβολέας υποβάλλει ένα σχόλιο που περιέχει <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>. Αν το backend το εμφανίσει χωρίς escaping, το script εκτελείται στον browser κάθε επισκέπτη.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Ευάλωτος κώδικας (ΠΟΤΕ ΜΗΝ ΤΟ ΚΑΝΕΙΣ)</h3>
+        <pre><code class="lang-go">// Χρησιμοποιώντας text/template ή string concatenation
+var comment string = "&lt;script&gt;alert('XSS')&lt;/script&gt;"
+fmt.Fprintf(w, "&lt;p&gt;%s&lt;/p&gt;", comment) // DANGER!</code></pre>
+      </div>
+      <div class="card">
+        <h3>Ασφαλής κώδικας (html/template)</h3>
+        <pre><code class="lang-go">// Χρησιμοποιούμε html/template που κάνει escaping
+tmpl := template.Must(template.New("").Parse("&lt;p&gt;{{.}}&lt;/p&gt;"))
+tmpl.Execute(w, comment) // &lt;p&gt;&lt;script&gt;...&lt;/script&gt;&lt;/p&gt;</code></pre>
+      </div>
+    </div>
+
+    <h2>Επιπλέον προστασία: Content Security Policy (CSP)</h2>
+    <p>Το CSP είναι ένα header που περιορίζει τις πηγές από τις οποίες μπορεί να φορτωθεί JavaScript.</p>
+    <pre><code class="lang-go">w.Header().Set("Content-Security-Policy",
+    "default-src 'self'; script-src 'self' https://trusted.cdn.com;")
+</code></pre>
+
+    <div class="callout good"><span class="tag">Σύνοψη:</span> Χρησιμοποιούμε <strong>πάντα</strong> το <code>html/template</code> για απόδοση HTML και προσθέτουμε <strong>CSP</strong> headers για επιπλέον άμυνα.</div>
+    `);
+
+
+
+    // ─── SECTION 13: CSRF ──────────────────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_13_CSRF">Ενότητα 13 — CSRF (Cross‑Site Request Forgery)</div>
+    <h1>CSRF: Προστασία από μη εξουσιοδοτημένες ενέργειες</h1>
+    <p class="lede">Το CSRF εξαναγκάζει έναν πιστοποιημένο χρήστη να εκτελέσει μια ανεπιθύμητη ενέργεια σε μια web εφαρμογή, χωρίς τη συγκατάθεσή του.</p>
+
+    <h2>Πώς λειτουργεί;</h2>
+    <p>Ένας κακόβουλος ιστότοπος στέλνει ένα POST request στο bank.com/transfer με τα στοιχεία του χρήστη, εκμεταλλευόμενος το session cookie του θύματος.</p>
+
+    <h2>Προστασία: CSRF Tokens</h2>
+    <p>Ενσωματώνουμε ένα μυστικό token σε κάθε φόρμα και το επαληθεύουμε στον server. Έτσι, ένας επιτιθέμενος δεν μπορεί να πλαστογραφήσει το αίτημα χωρίς το token.</p>
+
+    <pre><code class="lang-go">// ── CSRF protection with gorilla/csrf ─────────────────────────────────────── ⊃
+
+import "github.com/gorilla/csrf"
+
+// Middleware
+csrfMiddleware := csrf.Protect(
+    []byte("32-byte-long-secret-key"),
+    csrf.Secure(true),   // only over HTTPS
+)
+
+// Στη φόρμα HTML: {{ .csrfField }}
+// Στη Go handler: r.ParseForm() και έλεγχος γίνεται αυτόματα από το middleware.</code></pre>
+
+    <div class="callout"><span class="tag">Σημείωση:</span> Για APIs που χρησιμοποιούνται από frontend frameworks, χρησιμοποιούμε tokens που αποστέλλονται σε headers (π.χ. <code>X-CSRF-Token</code>).</div>
+    `);
+
+
+    // ─── SECTION 14: SQL Injection ────────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_14_SQL_Injection">Ενότητα 14 — SQL Injection</div>
+    <h1>SQL Injection: Παραμετροποιημένα Queries με database/sql</h1>
+    <p class="lede">Η SQL Injection συμβαίνει όταν ο χρήστης εισάγει κακόβουλο SQL κώδικα μέσω μιας φόρμας, που εκτελείται στη βάση δεδομένων.</p>
+
+    <h2>Παράδειγμα ευάλωτου κώδικα (ΠΟΤΕ)</h2>
+    <pre><code class="lang-go">// DANGER: string concatenation
+query := "SELECT * FROM users WHERE name = '" + userName + "'"
+rows, err := db.Query(query) // Αν userName = "'; DROP TABLE users; --" → disaster</code></pre>
+
+    <h2>Σωστός τρόπος: Parameterized Queries</h2>
+    <pre><code class="lang-go">// ── safe parameterized query ───────────────────────────────────────────────── ⊃
+
+var user User
+err := db.QueryRow(
+    "SELECT id, name, email FROM users WHERE name = $1",
+    userName,
+).Scan(&amp;user.ID, &amp;user.Name, &amp;user.Email)</code></pre>
+
+    <p>Η Go βιβλιοθήκη <code>database/sql</code> υποστηρίζει placeholders (<code>$1</code>, <code>?</code> ανάλογα με τη βάση). Το driver φροντίζει για το escaping.</p>
+
+    <div class="callout good"><span class="tag">Χρυσός κανόνας:</span> Ποτέ μη φτιάχνεις SQL queries με concatenation! Πάντα χρησιμοποίησε parameterized queries ή ORM (π.χ. GORM) που τα κάνει αυτόματα.</div>
+    `);
+
+
+
+    // ─── SECTION 15: Path Traversal ──────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_15_Path_Traversal">Ενότητα 15 — Path Traversal</div>
+    <h1>Path Traversal: Αποτροπή πρόσβασης σε αρχεία εκτός φακέλου</h1>
+    <p class="lede">Η ευπάθεια Path Traversal επιτρέπει σε έναν επιτιθέμενο να διαβάσει αρχεία εκτός του επιτρεπόμενου φακέλου, χρησιμοποιώντας <code>../</code>.</p>
+
+    <h2>Παράδειγμα ευάλωτου κώδικα</h2>
+    <pre><code class="lang-go">// DANGER: ο χρήστης μπορεί να στείλει "../../etc/passwd"
+file, err := os.Open("/var/www/static/" + userFilename)</code></pre>
+
+    <h2>Σωστή προστασία</h2>
+    <ul>
+      <li>Χρησιμοποιούμε <code>filepath.Clean()</code> για να αφαιρέσουμε τα <code>../</code>.</li>
+      <li>Ελέγχουμε ότι το τελικό μονοπάτι βρίσκεται μέσα στον επιτρεπόμενο φάκελο.</li>
+    </ul>
+
+    <pre><code class="lang-go">// ── safe file access ──────────────────────────────────────────────────────── ⊃
+
+func serveFile(w http.ResponseWriter, r *http.Request) {
+    baseDir := "./static"
+    requested := r.URL.Path[len("/files/"):]
+
+    // Clean the path to remove ".."
+    cleanPath := filepath.Clean(requested)
+    fullPath := filepath.Join(baseDir, cleanPath)
+
+    // Verify that the resolved path is inside baseDir
+    if !strings.HasPrefix(fullPath, filepath.Clean(baseDir)+string(os.PathSeparator)) {
+        http.Error(w, "Forbidden", http.StatusForbidden)
+        return
+    }
+    http.ServeFile(w, r, fullPath)
+}</code></pre>
+
+    <div class="callout"><span class="tag">Συχνό λάθος:</span> Να εμπιστεύεστε το <code>filepath.Clean</code> μόνο του. Πάντα να επαληθεύετε ότι το αποτέλεσμα βρίσκεται εντός του επιτρεπόμενου φακέλου.</div>
+    `);
+
+
+
+    // ─── SECTION 16: Rate Limiting ───────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_16_Rate_Limiting">Ενότητα 16 — Rate Limiting</div>
+    <h1>Rate Limiting: Προστασία από brute‑force και DoS</h1>
+    <p class="lede">Το Rate Limiting περιορίζει τον αριθμό των requests από μια IP σε ένα χρονικό διάστημα, αποτρέποντας επιθέσεις brute‑force και DoS.</p>
+
+    <h2>Υλοποίηση με golang.org/x/time/rate</h2>
+    <pre><code class="lang-go">import "golang.org/x/time/rate"
+
+// ── rate limiter middleware ────────────────────────────────────────────────── ⊃
+
+func rateLimitMiddleware(next http.Handler) http.Handler {
+    // 10 requests per second, burst up to 20
+    limiter := rate.NewLimiter(10, 20)
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        if !limiter.Allow() {
+            http.Error(w, "Too many requests", http.StatusTooManyRequests)
+            return
+        }
+        next.ServeHTTP(w, r)
+    })
+}</code></pre>
+
+    <p>Για πιο προχωρημένη λογική (ανά IP, sliding window) μπορούμε να χρησιμοποιήσουμε βιβλιοθήκες όπως <code>github.com/didip/tollbooth</code>.</p>
+
+    <div class="callout good"><span class="tag">Πρακτική συμβουλή:</span> Εφάρμοσε rate limiting σε endpoints που είναι ευάλωτα (π.χ. login, registration, API search).</div>
+    `);
+
+
+    // ─── SECTION 17: Security Headers ─────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_17_Security_Headers">Ενότητα 17 — Security Headers</div>
+    <h1>HTTP Security Headers: Ενισχύοντας την άμυνα</h1>
+    <p class="lede">Τα security headers δίνουν εντολές στον browser για το πώς να συμπεριφέρεται, αποτρέποντας πολλές επιθέσεις.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>HSTS (HTTP Strict Transport Security)</h3>
+        <p>Επιβάλλει τη χρήση HTTPS για όλες τις μελλοντικές συνδέσεις.</p>
+        <pre><code class="lang-go">w.Header().Set("Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains; preload")</code></pre>
+      </div>
+      <div class="card">
+        <h3>X‑Frame‑Options</h3>
+        <p>Αποτρέπει το clickjacking, μην επιτρέποντας embedding σε frames.</p>
+        <pre><code class="lang-go">w.Header().Set("X-Frame-Options", "SAMEORIGIN")</code></pre>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Content‑Type‑Options</h3>
+        <p>Αποτρέπει τον browser να κάνει MIME sniffing.</p>
+        <pre><code class="lang-go">w.Header().Set("X-Content-Type-Options", "nosniff")</code></pre>
+      </div>
+      <div class="card">
+        <h3>Referrer‑Policy</h3>
+        <p>Ελέγχει πόσες πληροφορίες αποστέλλονται στο header Referer.</p>
+        <pre><code class="lang-go">w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")</code></pre>
+      </div>
+    </div>
+
+    <h2>Ολοκληρωμένο middleware για security headers</h2>
+    <pre><code class="lang-go">// ── security headers middleware ───────────────────────────────────────────── ⊃
+
+func securityHeadersMiddleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+        w.Header().Set("X-Content-Type-Options", "nosniff")
+        w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+        // CSP μπορεί να προστεθεί ανάλογα
+        next.ServeHTTP(w, r)
+    })
+}</code></pre>
+
+    <div class="callout good"><span class="tag">Σύνοψη:</span> Πρόσθεσε αυτά τα headers σε όλες τις απαντήσεις σου για να ενισχύσεις την ασφάλεια χωρίς επιπλέον κόστος.</div>
+    `);
+
+
+    // ─── SECTION 18: Secrets & Container Security ────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_18_Secrets_Container">Ενότητα 18 — Secrets Management &amp; Container Security</div>
+    <h1>Διαχείριση Μυστικών και Ασφάλεια Container</h1>
+    <p class="lede">Ποτέ μην αποθηκεύεις API keys, κωδικούς βάσης ή άλλα μυστικά στον κώδικα. Χρησιμοποίησε περιβαλλοντικές μεταβλητές και Docker security practices.</p>
+
+    <h2>1. Ανάγνωση μυστικών από Environment Variables</h2>
+    <pre><code class="lang-go">// ── secrets from env ────────────────────────────────────────────────────────── ⊃
+
+apiKey := os.Getenv("API_KEY")
+if apiKey == "" {
+    log.Fatal("API_KEY not set")
+}
+dbPassword := os.Getenv("DB_PASSWORD")</code></pre>
+
+    <h2>2. Docker: Μην τρέχεις ως root</h2>
+    <p>Στο Dockerfile, δημιούργησε έναν μη‑root χρήστη:</p>
+    <pre><code class="lang-docker">FROM golang:1.21-alpine
+RUN adduser -D -g '' appuser
+USER appuser
+...
+</code></pre>
+
+    <h2>3. Χρήση .env αρχείων (μόνο για development)</h2>
+    <p>Μην ανεβάζεις το .env στο repository. Χρησιμοποίησε βιβλιοθήκες όπως <code>github.com/joho/godotenv</code> μόνο για τοπική ανάπτυξη.</p>
+
+    <div class="callout good"><span class="tag">Σύνοψη:</span> Τα μυστικά πρέπει να περνούν μέσω env στο production. Ποτέ μην τα κάνεις commit.</div>
+    `);
+
+
+    // ─── SECTION 19: Complete Secure App Example ─────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_19_Complete_Secure_App">Ενότητα 19 — Ολοκληρωμένο Ασφαλές Web App</div>
+    <h1>Πλήρης υλοποίηση με όλα τα παραπάνω</h1>
+    <p class="lede">Ακολουθεί ένα ολοκληρωμένο main.go που συνδυάζει όλες τις τεχνικές ασφαλείας που μάθαμε.</p>
+
+    <pre><code class="lang-go">// ── main.go (production‑ready, secure) ────────────────────────────────────── ⊃
+
+package main
+
+import (
+    "context"
+    "log"
+    "net/http"
+    "os"
+    "os/signal"
+    "time"
+
+    "github.com/gorilla/csrf"
+    "golang.org/x/time/rate"
+)
+
+func main() {
+    // 1. Environment
+    port := os.Getenv("PORT")
+    if port == "" { port = "8080" }
+
+    // 2. Router
+    mux := http.NewServeMux()
+    mux.HandleFunc("/", homeHandler)
+    mux.HandleFunc("/api/data", apiHandler)
+
+    // 3. Middleware stack (order matters!)
+    handler := securityHeadersMiddleware(mux)       // Headers
+    handler = csrf.Protect([]byte("32-byte-secret"))(handler) // CSRF
+    handler = rateLimitMiddleware(handler)          // Rate limit
+    // (add logging, recovery, etc.)
+
+    // 4. Server with timeouts
+    srv := &amp;http.Server{
+        Addr:              ":" + port,
+        Handler:           handler,
+        ReadTimeout:       5 * time.Second,
+        ReadHeaderTimeout: 2 * time.Second,
+        WriteTimeout:      10 * time.Second,
+        IdleTimeout:       120 * time.Second,
+        MaxHeaderBytes:    1 &lt;&lt; 20,
+    }
+
+    // 5. Graceful shutdown
+    go func() {
+        if err := srv.ListenAndServe(); err != http.ErrServerClosed {
+            log.Fatalf("listen: %s\n", err)
+        }
+    }()
+    log.Printf("Server running on port %s", port)
+
+    c := make(chan os.Signal, 1)
+    signal.Notify(c, os.Interrupt)
+    &lt;-c
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    srv.Shutdown(ctx)
+    log.Println("Server gracefully stopped")
+}
+
+// Middleware functions (as defined in previous slides)
+func securityHeadersMiddleware(next http.Handler) http.Handler { ... }
+func rateLimitMiddleware(next http.Handler) http.Handler { ... }
+// Handlers...
+</code></pre>
+
+    <div class="callout good"><span class="tag">Σύνοψη:</span> Αυτό το boilerplate είναι έτοιμο για production. Προσθέτει timeouts, rate limiting, CSRF, security headers, και graceful shutdown.</div>
+    `);
+
+    // ─── SECTION 20: Production Checklist ─────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Ενότητα_20_Production_Checklist">Ενότητα 20 — Production Checklist</div>
+    <h1>Ελέγχοντας την εφαρμογή σου πριν το deploy</h1>
+    <p class="lede">Μια λίστα ελέγχου για να βεβαιωθείς ότι η εφαρμογή σου είναι ασφαλής.</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>☐ HTTP Timeouts</h3>
+        <p>ReadTimeout, WriteTimeout, ReadHeaderTimeout, IdleTimeout ορισμένα.</p>
+      </div>
+      <div class="card">
+        <h3>☐ Security Headers</h3>
+        <p>HSTS, X‑Frame‑Options, X‑Content‑Type‑Options, Referrer‑Policy.</p>
+      </div>
+      <div class="card">
+        <h3>☐ CSRF Protection</h3>
+        <p>Για όλα τα state‑changing requests (POST, PUT, DELETE).</p>
+      </div>
+      <div class="card">
+        <h3>☐ Rate Limiting</h3>
+        <p>Ειδικά για login, registration, search.</p>
+      </div>
+      <div class="card">
+        <h3>☐ Input Validation</h3>
+        <p>Όλα τα query, form, JSON δεδομένα επικυρωμένα.</p>
+      </div>
+      <div class="card">
+        <h3>☐ Parameterized Queries</h3>
+        <p>Καμία concatenation σε SQL.</p>
+      </div>
+      <div class="card">
+        <h3>☐ Path Traversal</h3>
+        <p>filepath.Clean + έλεγχος base directory.</p>
+      </div>
+      <div class="card">
+        <h3>☐ Secrets via Env</h3>
+        <p>Κανένα μυστικό στον κώδικα.</p>
+      </div>
+      <div class="card">
+        <h3>☐ HTTPS</h3>
+        <p>Χρήση TLS ή reverse proxy με Let's Encrypt.</p>
+      </div>
+      <div class="card">
+        <h3>☐ Non‑root Docker</h3>
+        <p>Ο χρήστης στο container δεν είναι root.</p>
+      </div>
+    </div>
+
+    <div class="callout good"><span class="tag">Επόμενο βήμα:</span> Τρέξε ένα vulnerability scanner (π.χ. <code>gosec</code>) για να εντοπίσεις τυχόν παραλείψεις.</div>
+    `);
+
+    addQuiz([{
+      q: "Ποιο από τα παρακάτω είναι το πιο κρίσιμο μέτρο ασφαλείας για production;",
+      options: [
+        "Η ρύθμιση timeouts και η χρήση HTTPS, διότι προστατεύουν από βασικές επιθέσεις και διαρροές δεδομένων.",
+        "Η χρήση ενός πολύπλοκου κωδικού πρόσβασης για τον admin.",
+        "Η χρήση της τελευταίας έκδοσης της Go, ανεξάρτητα από άλλες ρυθμίσεις.",
+        "Η ενεργοποίηση του logging σε επίπεδο debug για να βλέπεις όλες τις κινήσεις."
+      ],
+      correct: 0,
+      explain: "Τα timeouts αποτρέπουν DoS, το HTTPS προστατεύει από eavesdropping. Είναι βασικά μέτρα. Η χρήση της τελευταίας έκδοσης είναι καλή αλλά όχι αρκετή."
+    }]);
+
+    // ────────────────────────────────────────────────────────────────────────────────
+    // FINAL GLOSSARY
+    // ────────────────────────────────────────────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Τελικό_Γλωσσάρι">Τελικό Γλωσσάρι</div>
+    <h1>Όλοι οι Όροι που Καλύψαμε</h1>
+    <p class="lede">Γρήγορη αναφορά για τα APIs και τα Templates στη Go, με έμφαση στην ασφάλεια.</p>
+
+    <div class="glossary-group">
+      <h2>API &amp; JSON</h2>
+      <table class="glossary-table">
+        <tr><td class="gt-term">json.NewDecoder</td><td class="gt-def">Stream‑based αποκωδικοποίηση JSON.</td></tr>
+        <tr><td class="gt-term">io.ReadAll</td><td class="gt-def">Φόρτωση όλων των bytes στη RAM.</td></tr>
+        <tr><td class="gt-term">Struct Tags</td><td class="gt-def">Ελέγχουν την αντιστοίχιση JSON/Go (omitempty, "-").</td></tr>
+      </table>
+    </div>
+
+    <div class="glossary-group">
+      <h2>Security</h2>
+      <table class="glossary-table">
+        <tr><td class="gt-term">XSS</td><td class="gt-def">Εισαγωγή κακόβουλου JS. Αντιμετώπιση: html/template + CSP.</td></tr>
+        <tr><td class="gt-term">CSRF</td><td class="gt-def">Επιθέσεις που εκμεταλλεύονται session cookies. Λύση: CSRF tokens.</td></tr>
+        <tr><td class="gt-term">SQL Injection</td><td class="gt-def">Εισαγωγή SQL κώδικα. Λύση: parameterized queries.</td></tr>
+        <tr><td class="gt-term">Path Traversal</td><td class="gt-def">Πρόσβαση σε αρχεία εκτός φακέλου. Λύση: filepath.Clean + base check.</td></tr>
+        <tr><td class="gt-term">Rate Limiting</td><td class="gt-def">Περιορισμός αιτήσεων ανά IP.</td></tr>
+        <tr><td class="gt-term">Security Headers</td><td class="gt-def">HSTS, X‑Frame‑Options, X‑Content‑Type‑Options, CSP.</td></tr>
+        <tr><td class="gt-term">Environment Variables</td><td class="gt-def">Αποθήκευση μυστικών (API keys, κωδικοί).</td></tr>
+      </table>
+    </div>
+    `);
+
+    // ────────────────────────────────────────────────────────────────────────────────
+    // CLOSING SLIDE
+    // ────────────────────────────────────────────────────────────────────────────────
+    addContent(`
+    <div class="eyebrow" id="@Κλείσιμο">Έφτασες στο τέλος</div>
+    <h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+    <p class="lede">Τώρα γνωρίζεις πώς να διαβάζεις APIs αποδοτικά, πώς να επεκτείνεις templates, και πώς να χτίζεις ασφαλείς web εφαρμογές στη Go με όλα τα σύγχρονα μέτρα προστασίας.</p>
+
+    <div id="final-score"></div>
+
+    <p class="lede" style="margin-top:24px;">Για περαιτέρω εμβάθυνση:</p>
+    <div class="sources-list">
+      <a target="_blank" rel="noopener" href="https://pkg.go.dev/net/http">Go net/http</a>
+      <a target="_blank" rel="noopener" href="https://pkg.go.dev/html/template">Go html/template</a>
+      <a target="_blank" rel="noopener" href="https://owasp.org/Top10/">OWASP Top 10</a>
+      <a target="_blank" rel="noopener" href="https://github.com/gorilla/csrf">gorilla/csrf</a>
+    </div>
+
+    <p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
+      Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+    </p>
+    `);
+
+    // ────────────────────────────────────────────────────────────────────────────────
+    // INIT
+    // ────────────────────────────────────────────────────────────────────────────────
     initSlideDeck({
       version: "3.0.0",
       notifyUrl: "https://script.google.com/macros/s/AKfycbzZRFWgg0WwQXHE6H0yg-QS-cem-d4qaYYYNmZ58Fss-fZmSXqmuu-u7DPXyLzn1Lc/exec"
