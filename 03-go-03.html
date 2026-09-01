@@ -141,8 +141,8 @@
 <div class="title-slide">
   <div class="title-badge"><img src="./icons/go_three.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
   <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
-  <h1>Go — Μέρος 3<br>Error Handling, Standard Library &amp; Structs/Methods/Interfaces</h1>
-  <p class="lede">Στο Μέρος 3 μπαίνουμε στην "ενήλικη ζωή" της Go: πώς διαχειρίζεται σφάλματα χωρίς exceptions, πώς επικοινωνεί με το λειτουργικό σύστημα μέσω βασικών πακέτων, και πώς οργανώνει δεδομένα και συμπεριφορά με structs, methods και interfaces — τα θεμέλια για κάθε πιο σύνθετο πρόγραμμα από εδώ και πέρα.</p>
+  <h1>Go — Μέρος 3</h1>
+  <p class="lede">Standard Library &amp; Structs/Methods/Interfaces</p>
   <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
 </div>
 `);
@@ -170,29 +170,15 @@
 </div>
 
 <h2>Errors as Values — τι σημαίνει στην πράξη</h2>
-<p>Το ότι το error είναι "απλά μια τιμή" σημαίνει ότι μπορείς να κάνεις μαζί του ό,τι κάνεις με οποιαδήποτε άλλη τιμή: να το αποθηκεύσεις σε μεταβλητή, να το περάσεις σε άλλη function, να το συγκρίνεις, να το τυπώσεις, ακόμα και να το αγνοήσεις (κάτι που, βέβαια, συνήθως είναι κακή ιδέα). Δεν υπάρχει ειδικός μηχανισμός "διακοπής ροής" όπως το throw — η ροή του προγράμματος συνεχίζει κανονικά, γραμμή-γραμμή, και εσύ αποφασίζεις τι θα κάνεις όταν δεις ότι κάτι πήγε στραβά.</p>
-
-<div class="grid3">
-  <div class="card"><h3>Exceptions (άλλες γλώσσες)</h3><p>Κρυφή ροή ελέγχου· το σφάλμα "πηδάει" προς τα πάνω μέχρι να πιαστεί· ο κώδικας που το χειρίζεται είναι μακριά από τον κώδικα που το προκάλεσε.</p></div>
-  <div class="card"><h3>Errors as Values (Go)</h3><p>Ρητή, ορατή ροή· το σφάλμα επιστρέφεται σαν κανονική τιμή· ο χειρισμός γίνεται αμέσως δίπλα στην κλήση που μπορεί να αποτύχει.</p></div>
-  <div class="card"><h3>Το κόστος</h3><p>Περισσότερος "θόρυβος" κώδικα (πολλά <code class="inline-code">if err != nil</code>)· ανταλλαγή που η κοινότητα της Go θεωρεί άξια για τη σαφήνεια.</p></div>
-</div>
-`);
-
-    // ── Section 1.2 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow">Ενότητα 1 / 7 — Error Handling &amp; Standard Packages</div>
-<h1>Το Interface <code class="inline-code">error</code>: Ανατομία</h1>
-<p class="lede">Πριν προχωρήσουμε, χρειάζεται να δούμε τι ΕΙΝΑΙ πραγματικά ο τύπος <code class="inline-code">error</code>. Δεν είναι ένα ειδικό, "μαγικό" κατασκεύασμα της γλώσσας — είναι ένα ενσωματωμένο (built-in) interface, τόσο απλό όσο αυτό:</p>
-
-<pre><code class="lang-go">type error interface {
-    Error() string
-}</code></pre>
-
-<p>Αυτό σημαίνει: <strong>οτιδήποτε</strong> έχει μια μέθοδο <code class="inline-code">Error() string</code> είναι αυτόματα ένα έγκυρο error στη Go. Δεν χρειάζεται να κληρονομήσεις από κάποια ειδική κλάση, ούτε να δηλώσεις ρητά ότι "αυτό είναι error" — αν το type σου έχει αυτή τη μία μέθοδο, ταιριάζει στο interface. (Θα δούμε γιατί αυτό λέγεται "implicit implementation" αναλυτικά στην Ενότητα 5 για τα Interfaces — προς το παρόν, κράτησε ότι το <code class="inline-code">error</code> είναι απλώς ένα συμβόλαιο συμπεριφοράς.)</p>
+<p>Το ότι το error είναι "απλά μια τιμή" σημαίνει ότι μπορείς να κάνεις μαζί του ό,τι κάνεις με οποιαδήποτε άλλη τιμή: να το αποθηκεύσεις σε μεταβλητή, να το περάσεις σε άλλη function, να το συγκρίνεις, να το τυπώσεις, ακόμα και να το αγνοήσεις (κάτι που, βέβαια, συνήθως είναι κακή ιδέα). Δεν υπάρχει ειδικός μηχανισμός "διακοπής ροής" όπως το throw — η ροή του προγράμματος συνεχίζει κανονικά, γραμμή-γραμμή, και εσύ αποφασίζεις τι θα κάνεις όταν δεις ότι κάτι πήγε στραβά. Το κόστος; Περισσότερος "θόρυβος" κώδικα (πολλά <code class="inline-code">if err != nil</code>)· ανταλλαγή που η κοινότητα της Go θεωρεί άξια για τη σαφήνεια.</p>
 
 <div class="callout">
-  <span class="tag">Γιατί έχει σημασία τώρα</span>
+  <span class="tag">Τι είναι όμως το error;</span>
+  Πριν προχωρήσουμε, χρειάζεται να δούμε τι ΕΙΝΑΙ πραγματικά ο τύπος <code class="inline-code">error</code>. Δεν είναι ένα ειδικό, "μαγικό" κατασκεύασμα της γλώσσας — είναι ένα built-in interface, τόσο απλό όσο αυτό:
+<pre><code class="lang-go">type error interface {
+    Error() string
+  }</code></pre>
+  Αυτό σημαίνει: <strong>οτιδήποτε</strong> έχει μια μέθοδο <code class="inline-code">Error() string</code> είναι αυτόματα ένα έγκυρο error στη Go. Θα δούμε περισσότερα για τα interfaces αργότερα.
   Όταν βλέπεις <code class="inline-code">var err error</code>, δεν φαντάζεσαι ένα συγκεκριμένο "κουτί" δεδομένων — φαντάζεσαι <em>οποιοδήποτε</em> value που ξέρει να απαντήσει στην ερώτηση "τι πήγε στραβά;" μέσω της <code class="inline-code">Error()</code>. Αυτό είναι που επιτρέπει σε βιβλιοθήκες τρίτων να ορίζουν τα δικά τους, πλουσιότερα error types (π.χ. με επιπλέον πεδία όπως error code) χωρίς να σπάνε τη συμβατότητα με τον υπόλοιπο κώδικα Go.
 </div>
 
@@ -265,7 +251,7 @@ func validateAge(age int) error {
 }</code></pre>
 
 <h2>fmt.Errorf — όταν χρειάζεσαι δυναμικό περιεχόμενο</h2>
-<p>Συχνά θέλεις το μήνυμα σφάλματος να περιλαμβάνει συγκεκριμένες τιμές — π.χ. "ποιο ήταν το άκυρο input;". Εδώ μπαίνει η <code class="inline-code">fmt.Errorf</code>, η οποία δουλεύει σαν την οικεία <code class="inline-code">fmt.Sprintf</code> αλλά επιστρέφει κατευθείαν ένα error αντί για string.</p>
+<p>Συχνά θέλεις το μήνυμα σφάλματος να περιλαμβάνει συγκεκριμένες τιμές — π.χ. "ποιο ήταν το άκυρο input;". Εδώ μπαίνει η <code class="inline-code">fmt.Errorf</code>, η οποία δουλεύει σαν την <code class="inline-code">fmt.Sprintf</code> αλλά επιστρέφει κατευθείαν ένα error αντί για string.</p>
 
 <pre><code class="lang-go">import "fmt"
 
@@ -278,7 +264,7 @@ func validateAge(age int) error {
 
 <div class="callout">
   <span class="tag">Πότε ποιο;</span>
-  Χρησιμοποίησε <code class="inline-code">errors.New</code> για στατικά, σταθερά μηνύματα που δεν αλλάζουν ποτέ. Χρησιμοποίησε <code class="inline-code">fmt.Errorf</code> όταν θέλεις να "χτίσεις" το μήνυμα δυναμικά, ενσωματώνοντας τιμές μεταβλητών μέσα του με τα ίδια verbs (<code class="inline-code">%d</code>, <code class="inline-code">%s</code>, <code class="inline-code">%v</code> κ.λπ.) που ήδη ξέρεις από το <code class="inline-code">fmt.Println</code>/<code class="inline-code">fmt.Printf</code>.
+  Χρησιμοποίησε <code class="inline-code">errors.New</code> για στατικά, σταθερά μηνύματα που δεν αλλάζουν ποτέ. Χρησιμοποίησε <code class="inline-code">fmt.Errorf</code> όταν θέλεις να ενσωματώσεις τιμές μεταβλητών μέσα του με τα ίδια verbs (<code class="inline-code">%d</code>, <code class="inline-code">%s</code>, <code class="inline-code">%v</code> κ.λπ.) που ξέρουμε από το <code class="inline-code">fmt.Println</code>/<code class="inline-code">fmt.Printf</code>.
 </div>
 
 <h2>Το θεμελιώδες μοτίβο: Guard Clause</h2>
@@ -296,7 +282,7 @@ func validateAge(age int) error {
 }</code></pre>
 
 <div class="grid2">
-  <div class="card"><h3>Χωρίς Guard Clause</h3><p>Ο κύριος κώδικας μπερδεύεται με ελέγχους σε βάθος (nested ifs), δύσκολο να διαβαστεί η "χαρούμενη διαδρομή" (happy path).</p></div>
+  <div class="card"><h3>Χωρίς Guard Clause</h3><p>Ο κύριος κώδικας γεμίζει με φωλιασμένους ελέγχους (nested ifs) που δημιουργούν βαθιά εσοχή. Αυτό κρύβει το happy path — έτσι αποκαλούμε τη ροή που ακολουθεί ο κώδικας όταν όλα πάνε καλά — και δυσκολεύει την ανάγνωση και τη συντήρηση.</p></div>
   <div class="card"><h3>Με Guard Clause</h3><p>Όλοι οι έλεγχοι σφαλμάτων μαζεύονται στην κορυφή· ό,τι απομένει μετά είναι καθαρή, γραμμική λογική χωρίς εμφωλευμένα ifs.</p></div>
 </div>
 `);
@@ -374,8 +360,8 @@ func validateUsername(name string) error {
   Σκέψου το σαν "άνοιγμα-κλείσιμο σε αντίστροφη σειρά": αν ανοίξεις αρχείο Α, μετά σύνδεση Β, μετά lock Γ — θέλεις να κλείσεις πρώτα το Γ, μετά το Β, μετά το Α. Δηλαδή κλείνεις πάντα τον πιο πρόσφατα ανοιγμένο πόρο πρώτο, ακριβώς όπως το LIFO της στοίβας.
 </div>
 
-<h2>Πότε αξιολογούνται τα arguments</h2>
-<p>Ένα σημείο που μπερδεύει αρχάριους: τα arguments μιας deferred κλήσης αξιολογούνται <strong>αμέσως</strong>, τη στιγμή που συναντάται το defer — όχι αργότερα, όταν εκτελείται η κλήση.</p>
+<h2>Πότε αξιολογούνται τα expressions που περιέχονται σε ένα defer</h2>
+<p>Ένα σημείο που αξίζει να τονιστεί: τα arguments μιας deferred κλήσης αξιολογούνται <strong>αμέσως</strong>, τη στιγμή που συναντάται το defer — όχι αργότερα, όταν εκτελείται η κλήση.</p>
 
 <pre><code class="lang-go">func demo() {
     x := 10
@@ -386,13 +372,10 @@ func validateUsername(name string) error {
 // Έξοδος:
 // x is now: 20
 // x was: 10   <- όχι 20! το argument είχε ήδη αξιολογηθεί</code></pre>
-`);
 
-    // ── Section 1.5 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow">Ενότητα 1 / 7 — Error Handling &amp; Standard Packages</div>
+<br>
 <h1>Panic: Πότε επιτρέπεται</h1>
-<p class="lede">Το <code class="inline-code">panic</code> το γνώρισες ήδη επιφανειακά στο Μέρος 1, ως ένα από τα δύο "failure modes" (μαζί με το compile error). Τώρα θα δούμε πότε είναι ΣΩΣΤΟ να το χρησιμοποιείς εσύ ο ίδιος/η ίδια, και πότε ΟΧΙ.</p>
+<p class="lede">Το <code class="inline-code">panic</code> το γνώρισες ήδη <a href="https://guides01.devs.surf/01-go-01.html#@panic">επιφανειακά στο Μέρος 1</a>, ως ένα από τα δύο "failure modes" (μαζί με το compile error). Τώρα θα δούμε πότε είναι ΣΩΣΤΟ να το χρησιμοποιείς εσύ ο ίδιος/η ίδια, και πότε ΟΧΙ.</p>
 
 <h2>Η βασική αρχή: panic ≠ error handling</h2>
 <p>Ένα πολύ συχνό λάθος αρχαρίων είναι να χρησιμοποιούν <code class="inline-code">panic</code> σαν να ήταν "throw" από άλλες γλώσσες — δηλαδή σαν κανονικό μηχανισμό για αναμενόμενα σφάλματα (π.χ. "ο χρήστης έδωσε άκυρο input"). Αυτό είναι λάθος. Στη Go, η σύμβαση είναι ξεκάθαρη: <strong>το error είναι για αναμενόμενα, ανακτήσιμα προβλήματα· το panic είναι για μη αναμενόμενα, μη ανακτήσιμα σφάλματα προγραμματισμού ή συστήματος</strong>.</p>
@@ -460,7 +443,7 @@ func validateUsername(name string) error {
     addContent(`
 <div class="eyebrow">Ενότητα 1 / 7 — Error Handling &amp; Standard Packages</div>
 <h1>Recover: Περιορισμός της Ζημιάς</h1>
-<p class="lede">Αν το panic ξεκινήσει και κανείς δεν κάνει τίποτα, το πρόγραμμα τερματίζει βίαια (crash), τυπώνοντας ένα stack trace. Το <code class="inline-code">recover</code> είναι ο μηχανισμός που σου επιτρέπει να "πιάσεις" ένα panic πριν κρασάρει ολόκληρο το πρόγραμμα, και να το μετατρέψεις σε κάτι πιο διαχειρίσιμο — συνήθως, ξανά, σε ένα κανονικό error.</p>
+<p class="lede">Αν το panic ξεκινήσει και κανένας δεν κάνει τίποτα, το πρόγραμμα τερματίζει βίαια (crash), τυπώνοντας ένα stack trace. Το <code class="inline-code">recover</code> είναι ο μηχανισμός που σου επιτρέπει να "πιάσεις" ένα panic πριν κρασάρει ολόκληρο το πρόγραμμα, και να το μετατρέψεις σε κάτι πιο διαχειρίσιμο — συνήθως, ξανά, σε ένα κανονικό error.</p>
 
 <h2>Ο κανόνας: recover δουλεύει ΜΟΝΟ μέσα σε defer</h2>
 <p>Το <code class="inline-code">recover()</code> έχει νόημα μόνο όταν καλείται απευθείας μέσα σε μια deferred function. Αν το καλέσεις οπουδήποτε αλλού, απλά επιστρέφει <code class="inline-code">nil</code> και δεν κάνει τίποτα. Αυτό είναι σκόπιμο: θέλουμε το recover να μπορεί να "πιάσει" ένα panic ακριβώς τη στιγμή που η στοίβα κλήσεων ξετυλίγεται (unwinds) εξαιτίας του — και αυτό συμβαίνει μόνο κατά την εκτέλεση των deferred calls.</p>
@@ -547,7 +530,7 @@ strings.Count(s, "l")            // 3 (πόσες φορές εμφανίζετ�
 
 <div class="callout">
   <span class="tag">Σημείωση</span>
-  Το <code class="inline-code">Index</code> επιστρέφει <code class="inline-code">-1</code> αν το substring δεν βρεθεί καθόλου — ΟΧΙ κάποιο error. Είναι σύμβαση σε πολλές functions της standard library: όταν "δεν βρέθηκε τίποτα" δεν θεωρείται σφάλμα αλλά μια απολύτως έγκυρη, αναμενόμενη απάντηση.
+  Το <code class="inline-code">Index</code> επιστρέφει <code class="inline-code">-1</code> (sentinel value) αν το substring δεν βρεθεί καθόλου — ΟΧΙ κάποιο error. Είναι σύμβαση σε πολλές functions της standard library: όταν "δεν βρέθηκε τίποτα" δεν θεωρείται σφάλμα αλλά μια απολύτως έγκυρη, αναμενόμενη απάντηση.
 </div>
 
 <h2>Μετασχηματισμός &amp; Καθαρισμός</h2>
@@ -563,7 +546,7 @@ strings.ReplaceAll(s, "o", "0") // "  Hell0, W0rld!  "</code></pre>
 
 <div class="callout">
   <span class="tag">Θυμήσου: τα strings είναι immutable</span>
-  Κάθε μία από αυτές τις functions <strong>δεν τροποποιεί</strong> το αρχικό string — επιστρέφει ένα καινούριο. Αυτό είναι λογική συνέχεια αυτού που έμαθες στο Μέρος 1: τα strings στη Go είναι immutable (αμετάβλητα). Αν δεν αποθηκεύσεις το αποτέλεσμα σε μια μεταβλητή, χάνεται.
+  Κάθε μία από αυτές τις functions <strong>δεν τροποποιεί</strong> το αρχικό string — επιστρέφει ένα καινούριο. Να θυμίσουμε πώς τα strings στη Go είναι <a href="https://guides01.devs.surf/01-go-01.html#@immutability">immutable (αμετάβλητα)</a>. Αν δεν αποθηκεύσεις το αποτέλεσμα σε μια μεταβλητή, χάνεται.
 </div>
 
 <h2>Τεμαχισμός &amp; Συνένωση</h2>
@@ -580,7 +563,7 @@ joined := strings.Join(parts, " - ") // "apple - banana - cherry"</code></pre>
 
 <div class="callout">
   <span class="tag">Split vs Fields</span>
-  Το <code class="inline-code">Split</code> χωρίζει σε ΑΚΡΙΒΩΣ τον διαχωριστή που δίνεις — αν δώσεις δύο κενά στη σειρά και χωρίσεις με ένα κενό, θα πάρεις ένα κενό string ως στοιχείο ανάμεσα. Το <code class="inline-code">Fields</code> χωρίζει σε whitespace γενικά (κενά, tabs, newlines) και αγνοεί πολλαπλά διαδοχικά whitespace — ιδανικό για "σπάσιμο σε λέξεις" χωρίς να νοιάζεσαι πόσα κενά υπάρχουν ανάμεσα.
+  Το <code class="inline-code">Split</code> χωρίζει σε ΑΚΡΙΒΩΣ τον διαχωριστή που δίνεις — αν δώσεις δύο κενά στη σειρά, θα πάρεις ένα κενό string ως στοιχείο ανάμεσα. Το <code class="inline-code">Fields</code> χωρίζει σε whitespace γενικά (κενά, tabs, newlines) και αγνοεί πολλαπλά διαδοχικά whitespace — ιδανικό για "σπάσιμο σε λέξεις" χωρίς να νοιάζεσαι πόσα κενά υπάρχουν ανάμεσα.
 </div>
 `);
 
@@ -615,7 +598,7 @@ joined := strings.Join(parts, " - ") // "apple - banana - cherry"</code></pre>
 <h1><code class="inline-code">strings.Builder</code> &amp; Συγκρίσεις</h1>
 
 <h2>Το πρόβλημα με την επαναλαμβανόμενη συνένωση</h2>
-<p>Θυμήσου: τα strings είναι immutable. Αυτό σημαίνει ότι κάθε φορά που κάνεις <code class="inline-code">s = s + "κάτι"</code> μέσα σε ένα loop, η Go δημιουργεί ΚΑΙΝΟΥΡΙΟ string από την αρχή — αντιγράφοντας ό,τι υπήρχε ήδη, συν το νέο κομμάτι. Σε ένα loop με χιλιάδες επαναλήψεις, αυτό γίνεται εξαιρετικά αναποδοτικό (πολλές περιττές αντιγραφές μνήμης).</p>
+<p>Θυμήσου: τα strings είναι <a href="https://guides01.devs.surf/01-go-01.html#@immutability">immutable</a>. Αυτό σημαίνει ότι κάθε φορά που κάνεις <code class="inline-code">s = s + "κάτι"</code> μέσα σε ένα loop, η Go δημιουργεί ΚΑΙΝΟΥΡΙΟ string από την αρχή — αντιγράφοντας ό,τι υπήρχε ήδη, συν το νέο κομμάτι. Σε ένα loop με χιλιάδες επαναλήψεις, αυτό γίνεται εξαιρετικά αναποδοτικό (πολλές περιττές αντιγραφές μνήμης).</p>
 
 <pre><code class="lang-go">// Αναποδοτικό: κάθε += δημιουργεί ολόκληρο νέο string
 result := ""
@@ -677,7 +660,7 @@ func buildGreeting(names []string) string {
     addContent(`
 <div class="eyebrow">Ενότητα 2 / 7 — Standard Packages</div>
 <h1>Το πακέτο <code class="inline-code">strconv</code></h1>
-<p class="lede">Η Go είναι μια αυστηρά typed γλώσσα (strict/static typing) — θυμήσου από το Μέρος 1 ότι δεν κάνει ποτέ αυτόματη μετατροπή τύπων (implicit conversion). Το πακέτο <code class="inline-code">strconv</code> ("string conversion") είναι το γεφύρι ανάμεσα σε strings και αριθμητικούς τύπους, ρητά και ελεγμένα.</p>
+<p class="lede">Η Go είναι μια αυστηρά typed γλώσσα (strict/static typing) — <a href="https://guides01.devs.surf/01-go-01.html#@staticallytyped">θυμήσου από το Μέρος 1 ότι δεν κάνει ποτέ αυτόματη μετατροπή τύπων (implicit conversion)</a>. Το πακέτο <code class="inline-code">strconv</code> ("string conversion") είναι το γεφύρι ανάμεσα σε strings και αριθμητικούς τύπους.</p>
 
 <h2>String → Αριθμός</h2>
 <p>Η πιο συχνή ανάγκη: πήρες κείμενο (π.χ. από input χρήστη, ή από ένα αρχείο) και χρειάζεσαι τον αριθμό που αναπαριστά.</p>
@@ -1248,11 +1231,9 @@ writer.Flush() // ΚΡΙΣΙΜΟ: στέλνει ό,τι έχει μείνει �
   <span class="tag">Πρακτική συμβουλή (προχωρημένη, όχι απαραίτητη τώρα)</span>
   Αν κάποια στιγμή σε ενδιαφέρει βελτιστοποίηση μνήμης σε πολύ μεγάλα προγράμματα, η σειρά δήλωσης πεδίων (π.χ. μεγαλύτεροι τύποι πρώτα) μπορεί να μειώσει το padding. Για τώρα, γράψε τα πεδία με τη σειρά που έχει το περισσότερο νόημα διαβασμού — η βελτιστοποίηση μνήμης είναι λεπτομέρεια για αργότερα.
 </div>
-`);
 
-    // ── Section 3.2 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow">Ενότητα 3 / 7 — Structs σε Βάθος</div>
+<br>
+
 <h1>Αρχικοποίηση &amp; Προσπέλαση</h1>
 <p class="lede">Υπάρχουν αρκετοί τρόποι να δημιουργήσεις ένα struct value — ας τους δούμε έναν-έναν.</p>
 
