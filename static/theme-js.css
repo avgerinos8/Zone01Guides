@@ -1,0 +1,57 @@
+/* ══════════════════════════════════════════════════════════════════════════ 
+Color scheme ONLY. Load this AFTER style.css in index.html (a second <link>) 
+to apply this palette. To make a new color scheme, copy this file, rename it 
+(theme-<name>.css), and change only the values below — nothing else in the 
+site needs to know about it. 
+══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --tone-1: #111b27ff;
+    --tone-2: #182635ff;
+    --tone-3: #223447ff;
+    --tone-4: #e8d34dff;
+    --tone-5: #5cb3faff;
+
+    --tone-1-rgb: 17, 27, 39;
+    --tone-2-rgb: 24, 38, 53;
+    --tone-3-rgb: 34, 52, 71;
+    --tone-4-rgb: 232, 211, 77;
+    --tone-5-rgb: 92, 179, 250;
+
+    --tone-text: #f0f4f8ff;
+    --tone-text-rgb: 240, 244, 248;
+
+    --code-bg: #0b1118ff;
+    --code-bg-rgb: 11, 17, 24;
+
+    --bg: var(--tone-1);
+    --panel: var(--tone-2);
+    --panel-rgb: var(--tone-2-rgb);
+    --ink: var(--tone-text);
+    --ink-rgb: var(--tone-text-rgb);
+    --accent: var(--tone-4);
+    --accent-rgb: var(--tone-4-rgb);
+
+    --danger: #ff6b4aff;
+    --danger-rgb: 255, 107, 74;
+    --correct: #539e43ff;
+    --correct-rgb: 83, 158, 67;
+    --wrong: #e03131ff;
+    --wrong-rgb: 224, 49, 49;
+
+    --h1-color: #ffffffff;
+    --h1-shadow: #2f74c0ff;
+    --h1-outline: #0b1118ff;
+}
+
+h1 {
+    color: var(--h1-color);
+
+    text-shadow:
+        -0.035em -0.035em 0 var(--code-bg),
+        0.035em 0.035em 0 var(--code-bg),
+        0px 0.04em 0 var(--h1-shadow),
+        0px 0.06em 0 var(--h1-shadow),
+        0px 0.08em 0 var(--h1-shadow),
+        0px 0.10em 0 var(--h1-shadow);
+}

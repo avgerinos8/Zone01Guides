@@ -1,130 +1,18 @@
 <!DOCTYPE html>
 <html lang="el">
-<!--
-  ZONE01 SLIDE-DECK TEMPLATE. This file is self-contained instruction-wise —
-  script.js/style.css are a fixed engine you never need to see or edit.
-
-  Edit only the inline <script> at the bottom of <body>. It's a sequence of
-  calls, ending with initSlideDeck() exactly once:
-
-    addContent(html, opts?)
-      One slide. HTML classes available: h1 h2 h3 p .lede .callout
-      .callout.good .card .grid2 .grid3 <pre><code> (hand-color tokens with
-      <span class="tok-kw|tok-type|tok-str|tok-com|tok-num|tok-func">, no
-      auto-highlighter exists) .glossary-table/.glossary-strip/.glossary-columns
-      (mix all three for variety) .title-slide/.title-badge/.kicker-line
-      (title slide only, keep the "ask an AI when stuck" callout as-is).
-      Drag-to-reveal spoiler (e.g. hiding a code answer until dragged open):
-        <div class="spoiler"><div class="spoiler-lock"><span>Drag to
-        reveal →</span></div><pre><code>...</code></pre></div>
-      A click/tap does nothing — only an actual drag past ~40% unlocks it.
-      opts = { bg: "path/to/image.jpg", overlayAlpha: 0..1 (default 0.5),
-      backgroundSize (default "auto"), backgroundRepeat (default "no-repeat"),
-      backgroundPosition (default "top left") }
-      → optional per-slide background image with a solid readability
-      overlay; different slides can use different images or none at all.
-      backgroundPosition accepts real CSS values, e.g. "center center",
-      "top left", "bottom right", "50% 50%".
-
-    addQuiz(question | [question,...], opts?)
-      One or more MC questions on one slide.
-      question = { q, options:[4 strings], correct: index, explain }
-      opts = { bg, overlayAlpha } — same background option as addContent.
-      Rules: options similar length/style; correct-answer slot varies
-      across questions; distractors are plausible, never "obviously
-      silly"; include at least one distractor ~5 words longer than the
-      correct answer somewhere in the deck; one short explain per question.
-
-    addFillBlank(item | [item,...], opts?)
-      item = { code (mark blanks with __id__), blanks:[{id,answer}], explain,
-               lang? }
-      opts = { label, note }
-      Auto-adds a "Reveal hint"/"Check" UI — nothing else to wire up. If an
-      item has exactly 1 blank, the hint button is disabled automatically
-      (shows "[Time to Guess]" instead) since there'd be nothing to guess.
-      code gets syntax-colored automatically — defaults to "go" if item.lang
-      is omitted; set item.lang to "js" | "html" | "css" (or "go" explicitly)
-      to override per item. Only the static code text is colored — the
-      __id__ blanks always stay live, editable inputs, untouched by this.
-
-    addMatching(pairs | [set1, set2, ...], opts?)
-      pairs = [{term, def}, ...] for ONE set, OR an array of 2-3 such sets
-      to stack multiple independent matching games on the same slide.
-      opts = { label, note }
-
-  Score: every quiz/fillblank/matching item is scored automatically (100
-  correct, 50 fill-blank-with-hint-used, 0 wrong) and shown as a small
-  badge next to each slide's "Reset this quiz". To show the aggregate
-  result, put <div id="final-score"></div> ANYWHERE in the deck (typically
-  the sources/last slide) — it fills itself in automatically.
-
-  Deck structure: title → theory sections (interleave addQuiz() checkpoints
-  regularly, not just at the end) → a glossary addContent() may appear
-  after ANY section/quiz where it helps (not only once at the very end) →
-  one final combined addQuiz() with 2-3 questions → sources/footer slide
-  with the #final-score placeholder (keep the "pavgerin/avgerinos8" credit).
-
-  Never solve the actual exercise — theory/tools only. Prose Greek, code
-  comments English. Confirm the section list with the user before writing
-  full content, unless already confirmed.
--->
 
 <head>
-  <!-- Must be the very first thing in <head>, inline (not an external
-       file — no time for an extra network round-trip): captures the URL's
-       #hash and immediately strips it from the address bar, BEFORE the
-       browser gets any chance to attempt its own native scroll-to-fragment.
-       That native attempt is guaranteed broken here (the target heading
-       doesn't exist until static/script.js builds all the slides later),
-       and worse, some browsers RETRY it once the target appears — landing
-       on a still-hidden (display:none) element, which produces exactly the
-       "scrolled somewhere wrong" symptom, and only intermittently since the
-       retry timing itself isn't consistent. Stripping the hash here removes
-       every native attempt entirely — see handleHashNavigation() in
-       script.js, which reads window.__initialHash (not location.hash,
-       that's been cleared) and does the whole thing itself, deterministically,
-       once slides actually exist. -->
   <script>
     window.__initialHash = location.hash;
     if (location.hash) {
       history.replaceState(null, "", location.pathname + location.search);
     }
   </script>
-  <!-- Separate, deliberately self-contained inline script — no dependency on
-       static/script.js's own functions or variables, since the whole point
-       is to still work if THAT script is what's broken (a future syntax
-       error there fires as a window "error" event too, same as a runtime
-       exception during initSlideDeck()). Registered here, before that
-       script is even requested, so it's guaranteed to already be listening
-       no matter how early things go wrong.
-
-       Concretely, this exists for: a course author edits quiz/fill-blank/
-       matching content after a learner has already saved progress against
-       the OLD shape (e.g. removes one matching pair — the learner's saved
-       progress records answers by INDEX into that pairs array, so a saved
-       index that's now out of bounds throws when the exercise tries to
-       render it). That renderMatching()-specific case is now guarded
-       directly (see script.js), but this is the general backstop for
-       "broke some other way nobody anticipated" — shows a plain, honest
-       screen instead of the blank page that an uncaught error during
-       initSlideDeck()'s single synchronous build pass would otherwise
-       leave behind (that pass aborts entirely partway through on any
-       uncaught exception, so nothing after that point ever renders). -->
   <script>
     (function () {
       var shown = false;
       window.addEventListener("error", function () {
         if (shown) return;
-        // The critical check: only a failure BEFORE the page ever finished
-        // its first successful render counts as "broken" here. That flag
-        // is set as the very last line of initSlideDeck() in script.js —
-        // if we get this far while it's still unset, the deck's one
-        // synchronous build pass aborted partway through and never
-        // finished, which is the actual blank-page failure mode this
-        // exists for. An error AFTER that flag is set means the page
-        // already rendered successfully and is visibly working — showing
-        // this takeover for something later (e.g. a click handler
-        // throwing) would break a page that wasn't actually broken.
         if (window.__pageInitialized) return;
         shown = true;
         showContentChangedFallback();
@@ -148,10 +36,6 @@
           "border-radius:7px;border:1px solid #888;background:transparent;" +
           "color:#ccc;cursor:pointer;";
         btn.addEventListener("click", function () {
-          // Self-contained on purpose — mirrors getStoragePrefix()/
-          // performHardReset() in script.js exactly, but doesn't call them:
-          // if THIS is running, we can't assume anything in that file is
-          // actually intact.
           var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
           localStorage.removeItem(prefix + "current_slide");
           localStorage.removeItem(prefix + "answers");
@@ -171,8 +55,7 @@
   <title>Penpot — UI/UX Design για Web και Android</title>
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="stylesheet" href="static/style.css?v=20260801">
-  <!-- No theme-*.css on purpose — this deck uses the default palette from
-       style.css. Add a theme link here (after style.css) to override it. -->
+  <link rel="stylesheet" href="static/theme-js.css?v=20260802">
 </head>
 
 <body>
