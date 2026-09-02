@@ -1,0 +1,3854 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>01-edu JS Piscine — subjects</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --fg: #e6e6e6;
+      --dim: #8b929e;
+      --acc: #7aa2f7;
+      --acc-soft: #7aa2f71a;
+      --card: #141821;
+      --line: #232936;
+      --code: #1b202a;
+      --nav-w: 290px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 16px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased
+    }
+
+    /* ── sidebar ─────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--nav-w);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border-right: 1px solid var(--line);
+      z-index: 40
+    }
+
+    .brand {
+      padding: 1.1rem 1.1rem .7rem;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .brand b {
+      display: block;
+      font-size: .95rem;
+      letter-spacing: .04em
+    }
+
+    .brand span {
+      font-size: .72rem;
+      color: var(--dim)
+    }
+
+    .search {
+      margin: .7rem 1.1rem 0;
+      padding: .5rem .7rem;
+      width: calc(100% - 2.2rem);
+      background: #0e121a;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--fg);
+      font: inherit;
+      font-size: .85rem;
+      outline: none
+    }
+
+    .search:focus {
+      border-color: var(--acc)
+    }
+
+    .toc {
+      flex: 1;
+      overflow-y: auto;
+      padding: .6rem 1.1rem 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: #2d3444 transparent
+    }
+
+    .toc::-webkit-scrollbar {
+      width: 8px
+    }
+
+    .toc::-webkit-scrollbar-thumb {
+      background: #2d3444;
+      border-radius: 99px
+    }
+
+    .toc::-webkit-scrollbar-thumb:hover {
+      background: #3b4356
+    }
+
+    .toc h3 {
+      margin: 1.1rem 0 .35rem;
+      font-size: .68rem;
+      letter-spacing: .16em;
+      color: var(--dim);
+      text-transform: uppercase
+    }
+
+    .toc a {
+      display: block;
+      padding: .26rem .55rem;
+      margin: 1px 0;
+      border-radius: 6px;
+      color: #c8cdd6;
+      text-decoration: none;
+      font-size: .875rem;
+      border-left: 2px solid transparent;
+      transition: background .12s, color .12s
+    }
+
+    .toc a:hover {
+      background: #1d2330;
+      color: #fff
+    }
+
+    .toc a.active {
+      background: var(--acc-soft);
+      color: var(--acc);
+      border-left-color: var(--acc);
+      font-weight: 600
+    }
+
+    .toc a.missing {
+      color: #6f4a4a
+    }
+
+    .toc a[hidden] {
+      display: none
+    }
+
+    /* ── content ─────────────────────────────────────────────────────────────── */
+    main {
+      margin-left: var(--nav-w);
+      padding: 2.6rem 3rem 6rem;
+      max-width: 900px
+    }
+
+    .crumb {
+      font-size: .7rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    article h2 {
+      margin: .2rem 0 1.4rem;
+      font-size: 1.9rem;
+      color: var(--acc);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace
+    }
+
+    pre {
+      background: var(--code);
+      padding: 1rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      font-size: .88rem
+    }
+
+    code {
+      background: var(--code);
+      padding: .15em .4em;
+      border-radius: 5px;
+      font-size: .9em
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: .92rem
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: .45rem .75rem;
+      text-align: left
+    }
+
+    th {
+      background: #1a1f2a
+    }
+
+    blockquote {
+      margin: 1rem 0;
+      padding: .4rem 1rem;
+      border-left: 3px solid var(--acc);
+      color: #c3c9d3;
+      background: #141922
+    }
+
+    img {
+      max-width: 100%
+    }
+
+    a {
+      color: var(--acc)
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--line)
+    }
+
+    .missing {
+      color: #e07a7a
+    }
+
+    /* prev / next */
+    .pager {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 3rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--line)
+    }
+
+    .pager button {
+      background: #1a1f2a;
+      border: 1px solid var(--line);
+      color: var(--fg);
+      padding: .55rem 1rem;
+      border-radius: 8px;
+      font: inherit;
+      font-size: .88rem;
+      cursor: pointer
+    }
+
+    .pager button:hover:not(:disabled) {
+      border-color: var(--acc);
+      color: var(--acc)
+    }
+
+    .pager button:disabled {
+      opacity: .35;
+      cursor: default
+    }
+
+    /* ── mobile ──────────────────────────────────────────────────────────────── */
+    .bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      align-items: center;
+      gap: .8rem;
+      padding: .7rem 1rem;
+      background: #141821e6;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line)
+    }
+
+    .burger {
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--fg);
+      padding: .35rem .6rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer
+    }
+
+    .scrim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000a;
+      z-index: 35
+    }
+
+    @media(max-width:820px) {
+      .bar {
+        display: flex
+      }
+
+      nav {
+        transform: translateX(-100%);
+        transition: transform .22s ease;
+        width: 80vw;
+        max-width: 320px
+      }
+
+      body.menu-open nav {
+        transform: translateX(0)
+      }
+
+      body.menu-open .scrim {
+        display: block
+      }
+
+      main {
+        margin-left: 0;
+        padding: 1.4rem 1.1rem 5rem
+      }
+
+      article h2 {
+        font-size: 1.45rem;
+        word-break: break-word
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav id="nav">
+    <div class="brand"><b>01-edu · JS Piscine</b><span>102 exercises</span></div>
+    <input id="q" class="search" type="search" placeholder="filter…" autocomplete="off">
+    <div class="toc" id="toc">
+      <h3>DATA</h3>
+      <a class='ex' href='#data-how-2-js'>how-2-js</a>
+      <a class='ex' href='#data-primitives'>primitives</a>
+      <a class='ex' href='#data-declarations'>declarations</a>
+      <a class='ex' href='#data-mutability'>mutability</a>
+      <a class='ex' href='#data-more-or-less'>more-or-less</a>
+      <a class='ex' href='#data-returns'>returns</a>
+      <a class='ex' href='#data-last-first-kiss'>last-first-kiss</a>
+      <a class='ex' href='#data-concat-str'>concat-str</a>
+      <a class='ex' href='#data-change'>change</a>
+      <a class='ex' href='#data-dog-years'>dog-years</a>
+      <a class='ex' href='#data-circular'>circular</a>
+      <a class='ex' href='#data-biggie-smalls'>biggie-smalls</a>
+      <a class='ex' href='#data-method-man'>method-man</a>
+      <a class='ex' href='#data-abs'>abs</a>
+      <a class='ex' href='#data-min-max'>min-max</a>
+      <a class='ex' href='#data-sign'>sign</a>
+      <a class='ex' href='#data-is'>is</a>
+      <a class='ex' href='#data-physics'>physics</a>
+      <a class='ex' href='#data-collections'>collections</a>
+      <a class='ex' href='#data-block-chain'>block-chain</a>
+      <h3>LOOP</h3>
+      <a class='ex' href='#loop-repeat'>repeat</a>
+      <a class='ex' href='#loop-elementary'>elementary</a>
+      <a class='ex' href='#loop-index-of'>index-of</a>
+      <a class='ex' href='#loop-slicer'>slicer</a>
+      <a class='ex' href='#loop-keep-cut'>keep-cut</a>
+      <a class='ex' href='#loop-cut-corners'>cut-corners</a>
+      <a class='ex' href='#loop-reverser'>reverser</a>
+      <a class='ex' href='#loop-unbreakable'>unbreakable</a>
+      <a class='ex' href='#loop-chunky'>chunky</a>
+      <a class='ex' href='#loop-nasa'>nasa</a>
+      <a class='ex' href='#loop-molecules-cells'>molecules-cells</a>
+      <a class='ex' href='#loop-get'>get</a>
+      <a class='ex' href='#loop-triangle'>triangle</a>
+      <a class='ex' href='#loop-pyramid'>pyramid</a>
+      <a class='ex' href='#loop-flat'>flat</a>
+      <a class='ex' href='#loop-find-expression'>find-expression</a>
+      <a class='ex' href='#loop-sums'>sums</a>
+      <h3>FIND</h3>
+      <a class='ex' href='#find-its-a-match'>its-a-match</a>
+      <a class='ex' href='#find-letter-space-number'>letter-space-number</a>
+      <a class='ex' href='#find-vowel-dots'>vowel-dots</a>
+      <a class='ex' href='#find-same-amount'>same-amount</a>
+      <a class='ex' href='#find-ion-out'>ion-out</a>
+      <a class='ex' href='#find-greedy-url'>greedy-url</a>
+      <a class='ex' href='#find-group-price'>group-price</a>
+      <a class='ex' href='#find-valid-ip'>valid-ip</a>
+      <h3>RAID 1</h3>
+      <a class='ex' href='#raid-1-crossword'>crossword</a>
+      <h3>TIME</h3>
+      <a class='ex' href='#time-dr-strange'>dr-strange</a>
+      <a class='ex' href='#time-date-is'>date-is</a>
+      <a class='ex' href='#time-get-some-time'>get-some-time</a>
+      <a class='ex' href='#time-rebecca-black'>rebecca-black</a>
+      <a class='ex' href='#time-match-cron'>match-cron</a>
+      <a class='ex' href='#time-count-leap-years'>count-leap-years</a>
+      <a class='ex' href='#time-day-of-the-year'>day-of-the-year</a>
+      <a class='ex' href='#time-sunny-sunday'>sunny-sunday</a>
+      <a class='ex' href='#time-unicode-technical-report-35'>unicode-technical-report-35</a>
+      <h3>CALL ME MAYBE</h3>
+      <a class='ex' href='#call-me-maybe-using-map'>using-map</a>
+      <a class='ex' href='#call-me-maybe-using-filter'>using-filter</a>
+      <a class='ex' href='#call-me-maybe-using-reduce'>using-reduce</a>
+      <a class='ex' href='#call-me-maybe-long-words'>long-words</a>
+      <a class='ex' href='#call-me-maybe-for-each'>for-each</a>
+      <a class='ex' href='#call-me-maybe-mapper'>mapper</a>
+      <a class='ex' href='#call-me-maybe-filter'>filter</a>
+      <a class='ex' href='#call-me-maybe-reduce'>reduce</a>
+      <a class='ex' href='#call-me-maybe-quantifiers'>quantifiers</a>
+      <a class='ex' href='#call-me-maybe-sweet-curry'>sweet-curry</a>
+      <a class='ex' href='#call-me-maybe-has-city'>has-city</a>
+      <a class='ex' href='#call-me-maybe-flow'>flow</a>
+      <a class='ex' href='#call-me-maybe-currify'>currify</a>
+      <h3>DOM</h3>
+      <a class='ex' href='#call-me-maybe-get-them-all'>get-them-all</a>
+      <a class='ex' href='#call-me-maybe-build-brick-and-break'>build-brick-and-break</a>
+      <a class='ex' href='#call-me-maybe-harder-bigger-bolder-stronger'>harder-bigger-bolder-stronger</a>
+      <a class='ex' href='#call-me-maybe-pimp-my-style'>pimp-my-style</a>
+      <a class='ex' href='#call-me-maybe-fifty-shades-of-cold'>fifty-shades-of-cold</a>
+      <a class='ex' href='#call-me-maybe-keycodes-symphony'>keycodes-symphony</a>
+      <a class='ex' href='#call-me-maybe-mouse-trap'>mouse-trap</a>
+      <a class='ex' href='#call-me-maybe-pick-and-click'>pick-and-click</a>
+      <a class='ex' href='#call-me-maybe-gossip-grid'>gossip-grid</a>
+      <a class='ex' href='#call-me-maybe-where-do-we-go'>where-do-we-go</a>
+      <h3>RAID 2</h3>
+      <a class='ex' href='#raid-2-sortable'>sortable</a>
+      <h3>OBJECT</h3>
+      <a class='ex' href='#object-invert'>invert</a>
+      <a class='ex' href='#object-pick-omit'>pick-omit</a>
+      <a class='ex' href='#object-fusion'>fusion</a>
+      <a class='ex' href='#object-manipulate-values'>manipulate-values</a>
+      <a class='ex' href='#object-manipulate-keys'>manipulate-keys</a>
+      <a class='ex' href='#object-manipulate-entries'>manipulate-entries</a>
+      <a class='ex' href='#object-curry-entries'>curry-entries</a>
+      <a class='ex' href='#object-deep-copy'>deep-copy</a>
+      <a class='ex' href='#object-replica'>replica</a>
+      <a class='ex' href='#object-pronoun'>pronoun</a>
+      <a class='ex' href='#object-neuron'>neuron</a>
+      <a class='ex' href='#object-flagger'>flagger</a>
+      <h3>ASYNC</h3>
+      <a class='ex' href='#async-debounce'>debounce</a>
+      <a class='ex' href='#async-throttle'>throttle</a>
+      <a class='ex' href='#async-interpolation'>interpolation</a>
+      <a class='ex' href='#async-keep-trying-or-giveup'>keep-trying-or-giveup</a>
+      <a class='ex' href='#async-get-json'>get-json</a>
+      <a class='ex' href='#async-is-winner'>is-winner</a>
+      <a class='ex' href='#async-gougle-search'>gougle-search</a>
+      <a class='ex' href='#async-all'>all</a>
+      <a class='ex' href='#async-series'>series</a>
+      <a class='ex' href='#async-race'>race</a>
+    </div>
+  </nav>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="bar">
+    <button class="burger" id="burger" aria-label="menu">☰</button>
+    <strong id="barTitle" style="font-size:.95rem"></strong>
+  </div>
+
+  <main id="main">
+    <article id='data-how-2-js' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>how-2-js</h2>
+      <h2>How 2 JS</h2>
+      <h3>Instructions</h3>
+      <p>Welcome to the JS piscine 👋.</p>
+      <p>First you will have to learn to execute JavaScript.</p>
+      <p>JavaScript can run in different <strong>runtime</strong> environments. What you can do with JavaScript will
+        greatly depend on the runtime. Even different web browsers (Chrome, Firefox, Safari etc) count as different
+        runtime environments.</p>
+      <p>We'll start by running JavaScript in your browser, so you don't need to install anything to get started.</p>
+      <p>Some common JavaScript runtime environments:</p>
+      <ul>
+        <li>Web browsers</li>
+        <li><a href="https://nodejs.org/">Node.js</a></li>
+        <li><a href="https://deno.land/">Deno</a></li>
+      </ul>
+      <p>Let's make a hello world. First we create the JavaScript file</p>
+      <pre><code class="language-sh">$ echo &quot;console.log('Hello World')&quot; &gt; how-2-js.js
+</code></pre>
+      <p>To run JavaScript in your browser, you can import it into a HTML page:</p>
+      <pre><code class="language-sh">$ echo '&lt;script type=&quot;module&quot; src=&quot;how-2-js.js&quot;&gt;&lt;/script&gt;' &gt; index.html
+</code></pre>
+      <p>Let's create a simple web server:</p>
+      <pre><code class="language-sh">$ &amp;&gt;/dev/null python3 -m http.server &amp;
+</code></pre>
+      <p>Now open your browser at the specified port. You'll use an appropriate command for your system:</p>
+      <ul>
+        <li>Linux: <code>xdg-open</code></li>
+        <li>macOS: <code>open</code></li>
+        <li>Windows: <code>start</code></li>
+      </ul>
+      <pre><code class="language-sh">xdg-open 'http://localhost:8000'
+</code></pre>
+      <p>You can now open your web browser console. From Google Chrome, press <strong>Command+Option+J</strong> (Mac) or
+        <strong>Control+Shift+J</strong> (Windows, Linux, ChromeOS), and you should see your hello world.</p>
+      <p>The console is a handy place to test your code.</p>
+      <p>You are all set. If you want to re-execute your script, just refresh.</p>
+      <p>Create a repository named <code>((ROOT))</code> which will hold all your solutions for this piscine. Add your 2
+        generated files to it.</p>
+      <p>We'll start slow for now... 🐢</p>
+    </article>
+    <article id='data-primitives' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>primitives</h2>
+      <h2>Primitives</h2>
+      <h3>Instructions</h3>
+      <p>Create a constant variable for each of the following primitive types:</p>
+      <ul>
+        <li><code>str</code> for <code>string</code></li>
+        <li><code>num</code> for <code>number</code></li>
+        <li><code>bool</code> for <code>boolean</code></li>
+        <li><code>undef</code> for <code>undefined</code></li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/primitive-and-operators.js">Primitives and
+            operators</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/variables.js">Variables</a></li>
+      </ul>
+    </article>
+    <article id='data-declarations' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>declarations</h2>
+      <h2>Declarations</h2>
+      <h3>Instructions</h3>
+      <p>Create the following constant variables:</p>
+      <ul>
+        <li><code>escapeStr</code>: a <code>string</code> which contains the following special characters:
+          <code>`</code>, <code>\</code>, <code>/</code>, <code>&quot;</code> and <code>'</code>.</li>
+        <li><code>arr</code>: an array containing the values <code>4</code> and <code>'2'</code>.</li>
+        <li><code>obj</code>: an object containing primitive values:
+          <ul>
+            <li><code>str</code>: with a <code>string</code> value.</li>
+            <li><code>num</code>: with a <code>number</code> value.</li>
+            <li><code>bool</code>: with a <code>boolean</code> value.</li>
+            <li><code>undef</code>: with a <code>undefined</code> value.</li>
+          </ul>
+        </li>
+        <li><code>nested</code>: an object containing:
+          <ul>
+            <li><code>arr</code>: an array of 3 values: <code>4</code>, <code>undefined</code> and <code>'2'</code>.
+            </li>
+            <li><code>obj</code>: an object with 3 properties
+              <ul>
+                <li><code>str</code> with a <code>string</code> value.</li>
+                <li><code>num</code> with a <code>number</code> value.</li>
+                <li><code>bool</code> with a <code>boolean</code> value.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <p><code>nested</code>, <code>arr</code> and <code>obj</code> must be frozen, so that their elements or properties
+        cannot be changed.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li>Primitive and Operators</li>
+        <li>Variables</li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/freeze">Freeze</a></li>
+      </ul>
+    </article>
+    <article id='data-mutability' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>mutability</h2>
+      <h2>Mutability</h2>
+      <h3>Instructions</h3>
+      <p>Create three copies of the <code>person</code> object named <code>clone1</code>, <code>clone2</code> and
+        <code>samePerson</code>.</p>
+      <p>Increase the <code>age</code> of <code>person</code> by one, and set its <code>country</code> to
+        <code>'FR'</code>.</p>
+      <p>You must find a way to keep the original values of <code>clone1</code> and <code>clone2</code>. The values of
+        <code>samePerson</code> should change when <code>person</code> is changed.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/set.js">Set</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">const person = {
+  name: 'Rick',
+  age: 77,
+  country: 'US',
+}
+</code></pre>
+    </article>
+    <article id='data-more-or-less' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>more-or-less</h2>
+      <h2>More Or Less</h2>
+      <h3>Instructions</h3>
+      <p>Create 4 functions:</p>
+      <ul>
+        <li><code>more</code> that takes 1 argument and adds 1 to it.</li>
+        <li><code>less</code> that takes 1 argument and subtracts 1 from it.</li>
+        <li><code>add</code> that takes 2 arguments and adds them together.</li>
+        <li><code>sub</code> that takes 2 arguments and subtracts the second argument from the first.</li>
+      </ul>
+      <p>All the functions must return the result of the operations specified above.</p>
+      <p>Each function should be defined with the exact number of parameters needed.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/functions.js">Functions</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/primitive-and-operators.js">Primitives and
+            Operators</a></li>
+      </ul>
+    </article>
+    <article id='data-returns' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>returns</h2>
+      <h2>Returns</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions:</p>
+      <ul>
+        <li><code>id</code> that takes one argument and returns it.</li>
+        <li><code>getLength</code> that takes an array or a string and returns its length.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/functions.js">Functions</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get</a></li>
+      </ul>
+    </article>
+    <article id='data-last-first-kiss' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>last-first-kiss</h2>
+      <h2>Last First Kiss</h2>
+      <h3>Instructions</h3>
+      <p>Create 3 functions:</p>
+      <ul>
+        <li>
+          <p><code>first</code>: that takes an array or a string and returns its first element or character.</p>
+        </li>
+        <li>
+          <p><code>last</code>: that takes an array or a string and return its last element or character.</p>
+        </li>
+        <li>
+          <p><code>kiss</code>: that takes an array or string, and returns an array of 2 elements. The returned array
+            should contain the last and first elements or characters, in that order.</p>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures.js</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get.js</a></li>
+      </ul>
+    </article>
+    <article id='data-concat-str' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>concat-str</h2>
+      <h2>Concat Str</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>concatStr</code> which takes 2 arguments and concatenates them.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/functions.js">Functions.js</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/primitive-and-operators.js">Primitive and
+            Operators.js</a></li>
+      </ul>
+    </article>
+    <article id='data-change' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>change</h2>
+      <h2>Change</h2>
+      <h3>Instructions</h3>
+      <p>Create 2 functions:</p>
+      <ul>
+        <li>
+          <p><code>get</code>: a function that takes a key and returns the corresponding value from the
+            <code>sourceObject</code>.</p>
+        </li>
+        <li>
+          <p><code>set</code>: a function that takes a key and a value. Update the value for the corresponding property
+            of the <code>sourceObject</code> and return the value.</p>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/functions.js">Functions</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/set.js">Set</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">const sourceObject = {
+  num: 42,
+  bool: true,
+  str: 'some text',
+  log: console.log,
+}
+</code></pre>
+    </article>
+    <article id='data-dog-years' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>dog-years</h2>
+      <h2>Dog Years</h2>
+      <h3>Instructions</h3>
+      <p>Someone once said that a human year is equal to 7 dog years.</p>
+      <p>Create a function named <code>dogYears</code>, that accepts the name of a planet, and the age of the dog in
+        seconds. Your function should return the age of the dog on that planet in dog years.</p>
+      <ul>
+        <li><code>earth</code>: orbital period 1.0 Earth years, 365.25 Earth days, or 31,557,600 seconds.</li>
+        <li><code>mercury</code>: orbital period 0.2408467 Earth years.</li>
+        <li><code>venus</code>: orbital period 0.61519726 Earth years.</li>
+        <li><code>mars</code>: orbital period 1.8808158 Earth years.</li>
+        <li><code>jupiter</code>: orbital period 11.862615 Earth years.</li>
+        <li><code>saturn</code>: orbital period 29.447498 Earth years.</li>
+        <li><code>uranus</code>: orbital period 84.016846 Earth years.</li>
+        <li><code>neptune</code>: orbital period 164.79132 Earth years.</li>
+      </ul>
+      <p>If you were told that a dog was 1,000,000,000 seconds old, you should calculate that the dog would be 221.82
+        Earth-years old.</p>
+      <p>You will have to format the number so that the result is rounded like the example above.</p>
+    </article>
+    <article id='data-circular' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>circular</h2>
+      <h2>Circular</h2>
+      <h3>Instructions</h3>
+      <p>Create an object named <code>circular</code> that has a property named <code>circular</code> with itself as the
+        value.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/set.js">Sets</a></li>
+      </ul>
+    </article>
+    <article id='data-biggie-smalls' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>biggie-smalls</h2>
+      <h2>Biggie Smalls</h2>
+      <h3>Instructions</h3>
+      <p>Create 2 variables:</p>
+      <ul>
+        <li><code>smalls</code> with the smallest possible <code>number</code> value.</li>
+        <li><code>biggie</code> with the greatest possible <code>number</code> value.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript-number/">Number</a></li>
+      </ul>
+    </article>
+    <article id='data-method-man' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>method-man</h2>
+      <h2>Method Man</h2>
+      <h3>Instructions</h3>
+      <p>Write 5 functions:</p>
+      <ul>
+        <li><code>words</code>: that takes a string, splits it by spaces, and returns an array of those substrings.</li>
+        <li><code>sentence</code>: that takes an array of strings, and joins them with spaces to return a single string.
+        </li>
+        <li><code>yell</code>: that takes a string and returns it in upper case.</li>
+        <li><code>whisper</code>: that takes a string and returns it in lower case, surrounded by <code>*</code>.</li>
+        <li><code>capitalize</code>: that takes a string and transforms it so that the first character is upper case,
+          and the subsequent characters are lower case.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/methods.js">Methods</a></li>
+      </ul>
+    </article>
+    <article id='data-abs' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>abs</h2>
+      <h2>Abs</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>isPositive</code> that takes a number as a argument, returning <code>true</code>
+        if the number is strictly positive, and <code>false</code> otherwise.</p>
+      <p>Create a function named <code>abs</code> that takes a number as an argument and returns its absolute value. You
+        must make your own implementation. You <strong>must not</strong> use <code>Math.abs()</code>.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/functions.js">Functions</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/ternary.js">Ternary</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/math/abs">Math.abs</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Math.abs = undefined
+</code></pre>
+    </article>
+    <article id='data-min-max' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>min-max</h2>
+      <h2>Min Max</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>max</code> that takes 2 number arguments and returns the largest of the two.</p>
+      <blockquote>
+        <p>You must not just use <code>Math.max</code>, make your own.</p>
+      </blockquote>
+      <p>Create a function named <code>min</code> which is the same as <code>max</code>, but returns the lowest.</p>
+      <blockquote>
+        <p>You must not just use <code>Math.min</code>, make your own.</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/functions.js">Functions</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/ternary.js">Ternary</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/math/min">Math.min</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/math/max">Math.max</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Math.min = Math.max = undefined
+</code></pre>
+    </article>
+    <article id='data-sign' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>sign</h2>
+      <h2>Sign</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>sign</code> that takes one number argument; returning <code>1</code> if the
+        number is positive, <code>-1</code> if the number is negative and <code>0</code> if the number is exactly 0.</p>
+      <blockquote>
+        <p>You must not just use <code>Math.sign</code>, make your own.</p>
+      </blockquote>
+      <p>Create a function named <code>sameSign</code> that takes 2 numbers as arguments and returns <code>true</code>
+        if they both have the same sign, or false otherwise.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/functions.js">Functions</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/if-else.js">If-else</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/math/sign">Math.sign</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Math.sign = undefined
+</code></pre>
+    </article>
+    <article id='data-is' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>is</h2>
+      <h2>Is</h2>
+      <h3>Instructions</h3>
+      <p>Add new function properties to the <code>is</code> object to check value types. Each function should take one
+        argument, and return a <code>boolean</code>.</p>
+      <ul>
+        <li><code>is.num</code>: value is a <code>number</code>.</li>
+        <li><code>is.nan</code>: value is <code>NaN</code>.</li>
+        <li><code>is.str</code>: value is a <code>string</code>.</li>
+        <li><code>is.bool</code>: value is a <code>boolean</code>.</li>
+        <li><code>is.undef</code>: value is <code>undefined</code>.</li>
+        <li><code>is.def</code>: value is defined.</li>
+        <li><code>is.arr</code>: value is an <code>array</code>.</li>
+        <li><code>is.obj</code>: value is a simple object or <code>null</code> objects.</li>
+        <li><code>is.fun</code>: value is a function.</li>
+        <li><code>is.truthy</code>: value is truthy.</li>
+        <li><code>is.falsy</code>: value is falsy.</li>
+      </ul>
+      <h3>Examples</h3>
+      <pre><code class="language-js">console.log(is.num(5))
+// output: true
+
+console.log(is.num('ciao'))
+// output: false
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/primitive-and-operators.js">Primitives and
+            operators</a></li>
+        <li><a href="https://devdocs.io/javascript/operators/typeof">typeof</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/Truthy">Truthy</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Glossary/Falsy">Falsy</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">const is = {}
+</code></pre>
+    </article>
+    <article id='data-physics' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>physics</h2>
+      <h2>physics</h2>
+      <h3>Instructions</h3>
+      <p>Isaac Newton has forgotten his laws of physics and needs your help to animate an object on his game.</p>
+      <p>He must use the Second Law of Motion that states, &quot;when the forces acting on an object are unbalanced, the
+        object will accelerate.&quot;</p>
+      <p>This acceleration is dependent upon the force that acts upon the object and the object's mass.</p>
+      <p>So he wants to know what the acceleration of that object is, depending on its properties:</p>
+      <ul>
+        <li>mass of xx</li>
+        <li>Δv of xx</li>
+        <li>Δt of xx</li>
+        <li>force of xx</li>
+        <li>distance xx</li>
+        <li>time xx</li>
+      </ul>
+      <p>Create a function named <code>getAcceleration</code> that calculates the acceleration of a given object. For
+        example:</p>
+      <pre><code class="language-js">{
+  f: 10,
+  m: 5,
+  Δv: 100,
+  Δt: 50,
+  t:1,
+  d: 10
+}
+</code></pre>
+      <p>If it is not possible to calculate it, it must return the string <code>&quot;impossible&quot;</code>.</p>
+      <h3>Formulas</h3>
+      <pre><code>a = F/m
+a = Δv/Δt
+a = 2d/t^2
+
+a = acceleration
+m = mass
+F = force
+Δv = final velocity - initial velocity
+Δt = final time - initial time
+d = distance
+t = time
+</code></pre>
+      <h3>Quote</h3>
+      <p><em>&quot;Truth is ever to be found in simplicity, and not in the multiplicity and confusion of
+          things.&quot;</em></p>
+      <p>Isaac Newton</p>
+    </article>
+    <article id='data-collections' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>collections</h2>
+      <h2>Collections</h2>
+      <h3>Instructions</h3>
+      <p>Write a bunch of functions which converts data from one type to another:</p>
+      <ul>
+        <li><code>arrToSet</code>: from <code>Array</code> to <code>Set</code>.</li>
+        <li><code>arrToStr</code>: from <code>Array</code> to <code>string</code>.</li>
+        <li><code>setToArr</code>: from <code>Set</code> to <code>Array</code>.</li>
+        <li><code>setToStr</code>: from <code>Set</code> to <code>string</code>.</li>
+        <li><code>strToArr</code>: from <code>string</code> to <code>Array</code>.</li>
+        <li><code>strToSet</code>: from <code>string</code> to <code>Set</code>.</li>
+        <li><code>mapToObj</code>: from <code>Map</code> to <code>Object</code>.</li>
+        <li><code>objToArr</code>: from <code>Object</code> to <code>Array</code>.</li>
+        <li><code>objToMap</code>: from <code>Object</code> to <code>Map</code>.</li>
+        <li><code>arrToObj</code>: from <code>Array</code> to <code>Object</code>.</li>
+        <li><code>strToObj</code>: from <code>string</code> to <code>Object</code>.</li>
+      </ul>
+      <p>Finally, write a function named <code>superTypeOf</code> that unlike <code>typeof</code> returns a specific
+        values for advanced types like <code>Map</code> and <code>Set</code>.</p>
+      <h3>Examples</h3>
+      <pre><code class="language-js">const str = 'hello'
+const arr = [1, 2, 1, 3]
+const obj = { x: 45, y: 75, radius: 24 }
+const set = new Set()
+const map = new Map()
+set.add(1)
+set.add(2)
+set.add(1)
+set.add(3)
+map.set('a', 1)
+map.set('b', 2)
+map.set(3, 'c')
+map.set(4, 'd')
+
+arrToSet(arr) // -&gt; Set { 1, 2, 3 }
+arrToStr(arr) // -&gt; '1213'
+setToArr(set) // -&gt; [1, 2, 3]
+setToStr(set) // -&gt; '123'
+strToArr(str) // -&gt; ['h', 'e', 'l', 'l', 'o']
+strToSet(str) // -&gt; Set { 'h', 'e', 'l', 'o' }
+mapToObj(map) // -&gt; { a: 1, b: 2, '3': 'c', '4': 'd' }
+objToArr(obj) // -&gt; [45, 75, 24]
+objToMap(obj) // -&gt; Map { 'x' =&gt; 45, 'y' =&gt; 75, 'radius' =&gt; 24 }
+arrToObj(arr) // -&gt; { '0': 1, '1': 2, '2': 1, '3': 3 }
+strToObj(str) // -&gt; { '0': 'h', '1': 'e', '2': 'l', '3': 'l', '4': 'o' }
+
+superTypeOf(map) //         -&gt; 'Map'
+superTypeOf(set) //         -&gt; 'Set'
+superTypeOf(obj) //         -&gt; 'Object'
+superTypeOf(str) //         -&gt; 'String'
+superTypeOf(666) //         -&gt; 'Number'
+superTypeOf(NaN) //         -&gt; 'Number'
+superTypeOf(arr) //         -&gt; 'Array'
+superTypeOf(null) //        -&gt; 'null'
+superTypeOf(undefined) //   -&gt; 'undefined'
+superTypeOf(superTypeOf) // -&gt; 'Function'
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/operators/typeof">typeof</a></li>
+        <li><a href="https://devdocs.io/javascript/operators/spread_syntax">Spread syntax</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/map">Map</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/set">Set</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">Object.fromEntries</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/entries">Object.entries</a></li>
+      </ul>
+    </article>
+    <article id='data-block-chain' hidden>
+      <div class='crumb'>DATA</div>
+      <h2>block-chain</h2>
+      <h2>Block Chain</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>blockChain</code> that creates a block in your very own block chain. It takes 2
+        arguments:</p>
+      <ul>
+        <li><code>data</code>: any valid JSON data.</li>
+        <li><code>prev</code>: the previous block, if no block are given it should use the genesis block:
+          <code>{ index: 0, hash: '0' }</code>.</li>
+      </ul>
+      <p>A block must have the following properties:</p>
+      <ul>
+        <li><code>index</code></li>
+        <li><code>hash</code>: a computed hash using the <code>hashCode</code> function provided. You will need to pass
+          it a concatenation of the block's <code>index</code>, the previous block's <code>hash</code> and the block's
+          stringified <code>data</code>.</li>
+        <li><code>data</code>: any valid object.</li>
+        <li><code>prev</code>: the previous block.</li>
+        <li><code>chain</code>: a function that accepts <code>data</code> as an argument, and creates the next block
+          with it.</li>
+      </ul>
+      <h3>Examples</h3>
+      <pre><code class="language-js">const first = blockChain({ a: 1 })
+console.log(first.index) //           -&gt; 1
+console.log(first.data) //            -&gt; { a: 1 }
+console.log(first.prev) //            -&gt; { index: 0, hash: &quot;0&quot; }
+console.log(first.hash) //            -&gt; '1103f27'
+console.log(hashCode('10{&quot;a&quot;:1}')) // -&gt; '1103f27'
+
+const second = first.chain({ hello: 'world' })
+console.log(second.hash) //                           -&gt; '18drvvc'
+console.log(hashCode('21103f27{&quot;hello&quot;:&quot;world&quot;}')) // -&gt; '18drvvc'
+
+const chain = second
+  .chain({ value: 4455 })
+  .chain({ some: 'data' })
+  .chain({ cool: 'stuff' })
+
+const fork = second
+  .chain({ value: 335 })
+  .chain({ some: 'data' })
+  .chain({ cool: 'stuff' })
+
+console.log(chain.hash) //  -&gt; '1qr3qfs'
+console.log(fork.hash) //   -&gt; '1x9gsc1'
+console.log(chain.index) // -&gt; 5
+console.log(fork.index) //  -&gt; 5
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/json/stringify">JSON.stringify</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">const hashCode = str =&gt;
+  (
+    [...str].reduce((h, c) =&gt; (h = (h &lt;&lt; 5) - h + c.charCodeAt(0)) &amp; h, 0) &gt;&gt;&gt; 0
+  ).toString(36)
+</code></pre>
+    </article>
+    <article id='loop-repeat' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>repeat</h2>
+      <h2>Repeat</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>repeat</code> that takes a <code>string</code> and a <code>number</code> as
+        arguments, and returns the string repeated as many times as the number describes. It should function like
+        <code>String.repeat()</code>, but of course you must make your own.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/repeat">String.repeat</a>
+        </li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">String.prototype.repeat = undefined
+</code></pre>
+    </article>
+    <article id='loop-elementary' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>elementary</h2>
+      <h2>Elementary</h2>
+      <h3>Instructions</h3>
+      <p>Create 3 functions which each take <code>(a, b)</code> as arguments:</p>
+      <ul>
+        <li><code>multiply</code> that acts like the <code>*</code> operator, without using it.</li>
+        <li><code>divide</code> that acts like the integer division operator <code>/</code>, without using it.</li>
+        <li><code>modulo</code> that acts like the <code>%</code> operator, without using it.</li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Math.imul = undefined
+eval = undefined
+</code></pre>
+    </article>
+    <article id='loop-index-of' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>index-of</h2>
+      <h2>Index Of</h2>
+      <h3>Instructions</h3>
+      <p>Create 3 functions which accept an array to be searched, and a value to be matched.</p>
+      <ul>
+        <li><code>indexOf</code>: which returns the index of the first occurrence. It also accepts an
+          <strong>optional</strong> index from where the search should begin. If the value was not found,
+          <code>-1</code> is returned.</li>
+        <li><code>lastIndexOf</code>: which works just like your <code>indexOf</code> function, but returns the index of
+          the last occurrence.</li>
+        <li><code>includes</code>: which returns <code>true</code> if the value was found in the array, and
+          <code>false</code> otherwise.</li>
+      </ul>
+      <blockquote>
+        <p>Of course you <strong>must not</strong> use any of <code>Array.indexOf()</code>,
+          <code>Array.lastIndexOf()</code> or <code>Array.includes()</code>.</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/indexof">Array.indexOf</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/lastindexof">Array.lastIndexOf</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/includes">Array.includes</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.indexOf = undefined
+Array.prototype.lastIndexOf = undefined
+Array.prototype.includes = undefined
+</code></pre>
+    </article>
+    <article id='loop-slicer' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>slicer</h2>
+      <h2>Slicer</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>slice</code> that works like <code>Array.slice()</code> and
+        <code>String.slice()</code>.</p>
+      <p>It takes 3 arguments:</p>
+      <ul>
+        <li>string or array to process.</li>
+        <li>starting index.</li>
+        <li>optional ending index.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/slice">Array.slice</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.slice = undefined
+String.prototype.slice = undefined
+</code></pre>
+    </article>
+    <article id='loop-keep-cut' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>keep-cut</h2>
+      <h2>Keep Cut</h2>
+      <h3>Instructions</h3>
+      <p>Create some functions, which each take a <code>string</code> as an argument:</p>
+      <ul>
+        <li>
+          <p><code>cutFirst</code>: returns the string with the first 2 characters removed.</p>
+        </li>
+        <li>
+          <p><code>cutLast</code> returns the string with the last 2 characters removed.</p>
+        </li>
+        <li>
+          <p><code>cutFirstLast</code> returns the string with the first 2 characters and the last 2 characters removed.
+          </p>
+        </li>
+        <li>
+          <p><code>keepFirst</code> returns only the first 2 characters.</p>
+        </li>
+        <li>
+          <p><code>keepLast</code> returns only the last 2 characters.</p>
+        </li>
+        <li>
+          <p><code>keepFirstLast</code> returns the first 2 characters, and the last 2 characters.</p>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/slice">Array.slice</a></li>
+      </ul>
+    </article>
+    <article id='loop-cut-corners' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>cut-corners</h2>
+      <h2>Cut Corners</h2>
+      <h3>Instructions</h3>
+      <p>Create some functions which behave like JavaScript's <code>Math</code> rounding functions:</p>
+      <ul>
+        <li><code>round</code>: which behaves similar to <code>Math.round()</code>.</li>
+        <li><code>ceil</code>: which behaves similar to <code>Math.ceil()</code>.</li>
+        <li><code>floor</code>: which behaves similar to <code>Math.floor()</code>.</li>
+        <li><code>trunc</code>: which behaves similar to <code>Math.trunc()</code>.</li>
+      </ul>
+      <blockquote>
+        <p>Some restrictions apply:</p>
+        <ul>
+          <li>You may not use strings conversion to do it</li>
+          <li>No bitwise operator</li>
+          <li>No <code>%</code> operator</li>
+        </ul>
+      </blockquote>
+      <h3>Usage</h3>
+      <pre><code class="language-js">const nums = [3.7, -3.7, 3.1, -3.1]
+console.log(nums.map(round))
+console.log(nums.map(floor))
+console.log(nums.map(trunc))
+console.log(nums.map(ceil))
+</code></pre>
+      <p>Output:</p>
+      <pre><code class="language-console">[ 4, -4, 3, -3 ]
+[ 3, -4, 3, -4 ]
+[ 3, -3, 3, -3 ]
+[ 4, -3, 4, -3 ]
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/math">Math</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Math.round = Math.ceil = Math.floor = Math.trunc = undefined
+</code></pre>
+    </article>
+    <article id='loop-reverser' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>reverser</h2>
+      <h2>Reverser</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>reverse</code> which accepts an array or a string. It should work like
+        <code>Array.reverse()</code>, and of course you cannot use that.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://devdocs.io/javascript/global_objects/array/reverse">devdocs.io/javascript/global_objects/array/reverse</a>
+        </li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.reverse = undefined
+</code></pre>
+    </article>
+    <article id='loop-unbreakable' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>unbreakable</h2>
+      <h2>Unbreakable</h2>
+      <h3>Instructions</h3>
+      <p>Implement 2 functions:</p>
+      <ul>
+        <li>
+          <p><code>split</code> that works like <code>String.split</code>, but takes the <code>string</code> as its
+            first argument.</p>
+        </li>
+        <li>
+          <p><code>join</code> that works like <code>Array.join</code>, but take the array as
+            its first argument.</p>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/join">Array.join</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/string/split">String.split</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">String.prototype.split = undefined
+String.prototype.match = undefined
+RegExp.prototype.exec = undefined
+Array.prototype.join = undefined
+</code></pre>
+    </article>
+    <article id='loop-chunky' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>chunky</h2>
+      <h2>Chunky</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>chunk</code> which accepts an array and an integer representing a size.</p>
+      <p>Your function will chunk the array into sub-arrays, and return an array with each sub-array as its elements.
+        The length of each sub-array is denoted by the size argument.</p>
+      <p>If the array cannot be split evenly, the last sub-array will contain the remaining elements.</p>
+    </article>
+    <article id='loop-nasa' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>nasa</h2>
+      <h2>Nasa</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>nasa</code> that takes a number <code>N</code> as an argument and returns a
+        string with all numbers from 1 to <code>N</code> separated by spaces. There are three exceptions:</p>
+      <ul>
+        <li>Convert numbers which are divisible by 3 to <code>&quot;NA&quot;</code>.</li>
+        <li>Convert numbers which are divisible by 5 to <code>&quot;SA&quot;</code>.</li>
+        <li>Convert numbers which are divisible by 3 <em>and</em> 5 to <code>&quot;NASA&quot;</code>.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
+      </ul>
+    </article>
+    <article id='loop-molecules-cells' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>molecules-cells</h2>
+      <h2>Molecules Cells</h2>
+      <h3>Instructions</h3>
+      <p>Create two functions which accept a <code>string</code>, and return a <code>string</code>:</p>
+      <ul>
+        <li><code>RNA</code>: that converts a DNA strand into its compliment RNA strand.</li>
+        <li><code>DNA</code>: that converts an RNA strand into its compliment DNA strand.</li>
+      </ul>
+      <p>Compliments:</p>
+      <pre><code>DNA | RNA
+ G  -  C
+ C  -  G
+ T  -  A
+ A  -  U
+</code></pre>
+      <p>Each strand must be represented as upper case <code>string</code>, without spaces, eg:
+        <code>&quot;ATCG&quot;</code> is a valid DNA strand.</p>
+    </article>
+    <article id='loop-get' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>get</h2>
+      <h2>Get</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>get</code> which takes two arguments:</p>
+      <ul>
+        <li><code>src</code>: an object.</li>
+        <li><code>path</code>: a string representing a path.</li>
+      </ul>
+      <p>Your function will return the value at the given <code>path</code> in the <code>src</code> object.</p>
+      <h3>Example:</h3>
+      <pre><code class="language-js">const src = { nested: { key: 'peekaboo' } }
+const path = 'nested.key'
+get(src, path) // -&gt; 'peekaboo'
+</code></pre>
+    </article>
+    <article id='loop-triangle' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>triangle</h2>
+      <h2>Triangle</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>triangle</code> that takes a string and a number as arguments. Your function will
+        return a string representing a triangle.</p>
+      <p>The string will denote the characters which construct the triangle, and the number denotes its height.</p>
+      <h3>Example</h3>
+      <ul>
+        <li><code>*</code> character and depth of <code>5</code>:</li>
+      </ul>
+      <pre><code>*
+**
+***
+****
+*****
+</code></pre>
+      <blockquote>
+        <p>No new line in last line</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
+      </ul>
+    </article>
+    <article id='loop-pyramid' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>pyramid</h2>
+      <h2>Pyramid</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>pyramid</code> which works just like your <code>triangle</code> function. But, it
+        should be pyramid shaped.</p>
+      <h3>Output example</h3>
+      <ul>
+        <li><code>*</code> character and depth of 5 :</li>
+      </ul>
+      <pre><code>    *
+   ***
+  *****
+ *******
+*********
+</code></pre>
+      <blockquote>
+        <p>No new line in last line</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
+      </ul>
+    </article>
+    <article id='loop-flat' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>flat</h2>
+      <h2>Flat</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>flat</code> that works like <code>Array.flat()</code>, except its first argument
+        is the array.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/flat">Flat</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.flat = undefined
+</code></pre>
+    </article>
+    <article id='loop-find-expression' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>find-expression</h2>
+      <h2>Find Expression</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>findExpression</code> that takes a <code>number</code> as parameter and returns a
+        <code>string</code>.</p>
+      <ul>
+        <li>2 constant variables will be made available to your function: <code>add4</code> and <code>mul2</code>.</li>
+        <li>Your goal is to try to find a sequence, starting from the number 1, and repeatedly either adding 4 or
+          multiplying by 2, to produce the number given as a parameter.</li>
+        <li>If the number can not be reached you should return <code>undefined</code></li>
+      </ul>
+      <p>For example, for the number <code>8</code>, you must first multiply by 2 twice, and then add 4. Your function
+        should return something like: <code>1 *2 *2 +4</code>.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
+        <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">const add4 = '+4'
+const mul2 = '*2'
+</code></pre>
+    </article>
+    <article id='loop-sums' hidden>
+      <div class='crumb'>LOOP</div>
+      <h2>sums</h2>
+      <h2>Sums</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>sums</code> that accepts a number and returns its partitions.</p>
+      <p>A partition is a group of numbers, where the sum of the partition is equal to the number argument.
+        Duplicate partitions are not allowed. <code>[1, 2]</code> and <code>[2, 1]</code> are considered duplicates.
+        The array of partitions must be sorted.</p>
+      <p>Example:</p>
+      <pre><code class="language-js">sums(4) // [ [1, 1, 1, 1], [1, 1, 2], [1, 3], [2, 2] ]
+</code></pre>
+    </article>
+    <article id='find-its-a-match' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>its-a-match</h2>
+      <h2>Its A Match</h2>
+      <h3>Instructions</h3>
+      <p>Have you ever pondered the etymology of <code>grep</code>?</p>
+      <p>Create 4 regular expression variables:</p>
+      <ul>
+        <li>
+          <p><code>normal</code>: matches with the expression 'hi'.</p>
+        </li>
+        <li>
+          <p><code>begin</code>: matches with the expression 'hi',
+            only when it is at the beginning.</p>
+        </li>
+        <li>
+          <p><code>end</code>: matches with the expression 'hi',
+            only when it is at the end.</p>
+        </li>
+        <li>
+          <p><code>beginEnd</code>: matches with the expression 'hi',
+            only when it is exactly hi.</p>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://github.com/ziishaned/learn-regex#28-anchors">RegEx Anchors</a></li>
+      </ul>
+    </article>
+    <article id='find-letter-space-number' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>letter-space-number</h2>
+      <h2>Letter Space Number</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>letterSpaceNumber</code> that accepts a string; returning an array with every
+        instance of a letter, followed by a space, followed by a number, only if that number has only one digit, and is
+        not followed by any letter.</p>
+      <h3>Examples</h3>
+      <pre><code class="language-js">console.log(letterSpaceNumber('example 1, example 20'))
+// output: ['e 1']
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://github.com/ziishaned/learn-regex#3-shorthand-character-sets">RegEx Shorthand Character
+            Sets</a></li>
+      </ul>
+    </article>
+    <article id='find-vowel-dots' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>vowel-dots</h2>
+      <h2>Vowel Dots</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>vowelDots</code> that receives a string. Your function should return a new string
+        with a <code>.</code> after every vowel.</p>
+      <p>Your RegEx should be stored in a variable named <code>vowels</code>.</p>
+      <blockquote>
+        <p>a, e, i, o and u are considered as vowels here.</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://github.com/ziishaned/learn-regex#22-character-sets">RegEx Character Sets</a></li>
+      </ul>
+    </article>
+    <article id='find-same-amount' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>same-amount</h2>
+      <h2>Same Amount</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>sameAmount</code>, that takes three arguments: a <code>string</code>, and 2
+        regular expressions. Your function should return a <code>boolean</code>.</p>
+      <p>The objective is to confirm that the regular expressions match the string the same number of times.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Using_regular_expressions_in_JavaScript">Using
+            regular expressions in JavaScript</a></li>
+      </ul>
+    </article>
+    <article id='find-ion-out' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>ion-out</h2>
+      <h2>Ion Out</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>ionOut</code>, that receives a <code>string</code> and returns an array with
+        every word containing <code>'ion'</code> following a <code>'t'</code>. The words should be returned without the
+        <code>'ion'</code> part.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://github.com/ziishaned/learn-regex#4-lookarounds">Learn RegEx Lookarounds</a></li>
+      </ul>
+    </article>
+    <article id='find-greedy-url' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>greedy-url</h2>
+      <h2>Greedy Url</h2>
+      <h3>Instructions</h3>
+      <p>Create 3 functions, which accept a <code>string</code> which we'll refer to as the <code>dataSet</code>. Your
+        function should return an array of strings.</p>
+      <ul>
+        <li><code>getURL</code>: returns all URLs present in the <code>dataSet</code>.</li>
+        <li><code>greedyQuery</code>: returns URLs from the <code>dataSet</code>, with at least 3 query parameters.</li>
+        <li><code>notSoGreedy</code>: returns URLs from the <code>dataSet</code>, with at least 2, but not more then 3
+          query parameters.</li>
+      </ul>
+      <p>Example <code>dataSet</code>:</p>
+      <pre><code>qqq http:// qqqq q qqqqq https://something.com/hello qqqqqqq qhttp://example.com/hello?you=something&amp;something=you
+</code></pre>
+      <blockquote>
+        <p>Only http and https URLs are valid.
+          You can search for greedy quantifiers for help.</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://github.com/ziishaned/learn-regex">Learn RegEx</a></li>
+      </ul>
+    </article>
+    <article id='find-group-price' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>group-price</h2>
+      <h2>Group Price</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>groupPrice</code>, that can find prices in a given string.</p>
+      <p>Your function will return 2D array with the full price breakdown.</p>
+      <p>If there is no match, your function should return an empty array.</p>
+      <h3>Example</h3>
+      <p>Given price of <code>USD12.31</code>:</p>
+      <pre><code>[[&quot;USD12.31&quot;, &quot;12&quot;, &quot;31&quot;]]
+</code></pre>
+    </article>
+    <article id='find-valid-ip' hidden>
+      <div class='crumb'>FIND</div>
+      <h2>valid-ip</h2>
+      <h2>Valid Ip</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>findIP</code>, that returns an array of valid IP addresses from a given string.
+        These addresses may or may not have a port.</p>
+      <p>For the IP part, the syntax will be as follows, where <code>x</code> is a number from 0-255. Values with
+        leading zeros are not valid:</p>
+      <pre><code>x.x.x.x
+</code></pre>
+      <p>Don't forget to learn about the syntax of ports. But remember, the maximum TCP port number is 65,535.</p>
+      <blockquote>
+        <p>For this task, you <strong>only</strong> need to concern yourself with <code>&lt;host&gt;</code> and
+          <code>&lt;port&gt;</code>. Don't worry about <code>&lt;scheme&gt;</code> or anything else.</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://github.com/ziishaned/learn-regex">Learn RegEx</a></li>
+      </ul>
+    </article>
+    <article id='raid-1-crossword' hidden>
+      <div class='crumb'>RAID 1</div>
+      <h2>crossword</h2>
+      <h2>crossword</h2>
+      <h3>Instructions</h3>
+      <p>Create the function <code>crosswordSolver</code> that is able to solve an empty crossword puzzle. The function
+        must be submitted in a file named <code>crosswordSolver.js</code>.</p>
+      <p>The function takes two arguments:</p>
+      <ol>
+        <li>an empty puzzle, passed as a string and</li>
+        <li>a list of words to fill in the puzzle (no double words allowed)</li>
+      </ol>
+      <p>The function must print on the console a string representing the puzzle filled with the input words.</p>
+      <p>The empty puzzle will be a string with the following rules:</p>
+      <ul>
+        <li>each character will be either a number, a <code>.</code> or a <code>\n</code>;</li>
+        <li>a number represents the number of words starting from the specific position and a <code>.</code> represents
+          a space that does not need to be filled.</li>
+      </ul>
+      <p>If the puzzle or list of words provided as inputs does not guarantee a unique solution, or any other conditions
+        stated above are not met, the function must print <code>'Error'</code>.</p>
+      <h3>Examples</h3>
+      <pre><code class="language-js">const emptyPuzzle = `2001
+0..0
+1000
+0..0`
+const words = ['casa', 'alan', 'ciao', 'anta']
+
+crosswordSolver(emptyPuzzle, words)
+
+/* output:
+`casa
+i..l
+anta
+o..n`
+*/
+</code></pre>
+    </article>
+    <article id='time-dr-strange' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>dr-strange</h2>
+      <h2>Dr Strange</h2>
+      <h3>Instructions</h3>
+      <p>You will create two functions: <code>addWeek</code> and <code>timeTravel</code>.</p>
+      <p>You have been given a mission to create a new sense of time. Normally a week has 7 days right? Well, that is
+        about to change.</p>
+      <p>Weeks will instead have <strong>14</strong> days.</p>
+      <p>Let me explain; this new week will have 14 days, from <code>Monday</code> to <code>Sunday</code>, then
+        <code>secondMonday</code> to <code>secondSunday</code>.</p>
+      <p>Your purpose is to create a new function named <code>addWeek</code>, that takes a <code>Date</code> as an
+        argument. Your function should return the weekday as a string, according to our new 14-day week format.
+        The <strong>epoch</strong> of our new 14-day week is <code>0001-01-01</code>, and that was a
+        <code>Monday</code>.</p>
+      <blockquote>
+        <p>What is an epoch?</p>
+      </blockquote>
+      <p>Now imagine you have an appointment with your doctor, and you have to wait for some hours, but you do not want
+        to wait. So you decide that you need to create a new function named <code>timeTravel</code>, that allows you to
+        change the <strong>time</strong> according to your needs.</p>
+      <p>Your function will take an <code>object</code> as an argument, and return a <code>Date</code>. You can see the
+        <code>timeTravel</code> example below to understand the structure of the <code>object</code> argument.</p>
+      <p>Your objective is to use the information from the <code>object</code> to modify the <strong>time</strong> of
+        the <code>Date</code> before returning it.</p>
+      <h3>Example</h3>
+      <pre><code class="language-js">addWeek(new Date('0001-01-01')) // Output: Monday
+addWeek(new Date('0001-01-02')) // Output: Tuesday
+addWeek(new Date('0001-01-07')) // Output: Sunday
+addWeek(new Date('0001-01-08')) // Output: secondMonday
+addWeek(new Date('0001-01-09')) // Output: secondTuesday
+
+// timeTravel({ date, hour, minute, second })
+
+timeTravel({
+  date: new Date('2020-05-29 23:25:22'),
+  hour: 21,
+  minute: 22,
+  second: 22,
+}).toString()
+
+// Output: Fri May 29 2020 21:22:22 GMT+0100 (Western European Summer Time)
+</code></pre>
+    </article>
+    <article id='time-date-is' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>date-is</h2>
+      <h2>Date Is</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions:</p>
+      <ul>
+        <li><code>isValid</code>: accepts a <code>Date</code>, and returns <code>false</code> if the <code>Date</code>
+          is invalid.</li>
+        <li><code>isAfter</code>: accepts two <code>Date</code> arguments, and returns <code>true</code> if the first is
+          greater then the second.</li>
+        <li><code>isBefore</code>: accepts two <code>Date</code> arguments, and returns <code>true</code> if the second
+          is greater than the first.</li>
+        <li><code>isFuture</code>: accepts a <code>Date</code>, and returns <code>true</code> if the <code>Date</code>
+          is valid, and is after than the present date.</li>
+        <li><code>isPast</code>: accepts a <code>Date</code>, and returns <code>true</code> if the <code>Date</code> is
+          valid, and is before the present date.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isValid">date-fns: isValid</a></li>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isAfter">date-fns: isAfter</a></li>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isBefore">date-fns: isBefore</a></li>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isFuture">date-fns: isFuture</a></li>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isPast">date-fns: isPast</a></li>
+      </ul>
+    </article>
+    <article id='time-get-some-time' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>get-some-time</h2>
+      <h2>Get Some Time</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>firstDayWeek</code>, which accepts a specific week in a given year:</p>
+      <ul>
+        <li><code>number</code>: representing a week of the year (between 1 and 53).</li>
+        <li><code>string</code>: representing a year.</li>
+      </ul>
+      <p>Your function should return a <code>string</code> representing the date of the first day of that specific week
+        in the format <code>dd-mm-yyyy</code>.</p>
+      <p>Week <code>1</code> is in all cases, the week which contains the 1st of January.</p>
+      <p>The first day of a week is a Monday.</p>
+      <p>If the start of the week is in the previous year, then your function should return the first day of the
+        specified year.</p>
+    </article>
+    <article id='time-rebecca-black' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>rebecca-black</h2>
+      <h2>Rebecca Black</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions which accept a <code>Date</code>:</p>
+      <ul>
+        <li><code>isFriday</code>: returns <code>true</code> if the <code>Date</code> is a Friday.</li>
+        <li><code>isWeekend</code>: returns <code>true</code> if the <code>Date</code> is a weekend day.</li>
+        <li><code>isLeapYear</code>: returns <code>true</code> if the year of the <code>Date</code> is a leap year.</li>
+        <li><code>isLastDayOfMonth</code>: returns <code>true</code> if the <code>Date</code> represents the last day of
+          the month.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isWeekend">date-fns: isWeekend</a></li>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isAfter">date-fns: isAfter</a></li>
+        <li><a href="https://date-fns.org/v2.14.0/docs/isLastDayOfMonth">date-fns: isLastDayOfMonth</a></li>
+      </ul>
+    </article>
+    <article id='time-match-cron' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>match-cron</h2>
+      <h2>Match Cron</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>matchCron</code>, which accepts a valid cron <code>string</code>, and a valid
+        <code>Date</code>. Your function should return <code>true</code> if the pattern matches the <code>Date</code>.
+      </p>
+      <blockquote>
+        <p>You only need to implement numbers and <code>*</code>.
+          Other complex patterns are <strong>not</strong> required.</p>
+      </blockquote>
+      <p>Only valid patterns will be tested.</p>
+      <h3>Example</h3>
+      <pre><code class="language-js">matchCron('9 * * * *', new Date('2020-05-30 18:09:00')) // -&gt; true
+matchCron('9 * * * *', new Date('2020-05-30 19:09:00')) // -&gt; true
+matchCron('9 * * * *', new Date('2020-05-30 19:21:00')) // -&gt; false
+//         | | | | |
+//         | | | | +- Day of the Week   (range: 1-7, 1 is Monday)
+//         | | | +--- Month of the Year (range: 1-12)
+//         | | +----- Day of the Month  (range: 1-31)
+//         | +------- Hour              (range: 0-23)
+//         +--------- Minute            (range: 0-59)
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://crontab.guru/">crontab.guru</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/date">Date</a></li>
+      </ul>
+    </article>
+    <article id='time-count-leap-years' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>count-leap-years</h2>
+      <h2>Count Leap Years</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>countLeapYears</code> which accepts a <code>Date</code>. Your function should
+        return the number of leap years to have taken place since the year 1.</p>
+    </article>
+    <article id='time-day-of-the-year' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>day-of-the-year</h2>
+      <h2>Day Of The Year</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>dayOfTheYear</code> which accepts a <code>Date</code>. Your function should
+        return the number of days since the first day of that year.</p>
+    </article>
+    <article id='time-sunny-sunday' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>sunny-sunday</h2>
+      <h2>Sunny Sunday</h2>
+      <h3>Instructions</h3>
+      <p>Let's eliminate Sundays by taking them out of the calendar, making a week only six days long, from
+        <code>&quot;Monday&quot;</code> to <code>&quot;Saturday&quot;</code>.</p>
+      <p>Create a function called <code>sunnySunday</code> that takes a <code>Date</code> as an argument and returns the
+        weekday as a <code>string</code>.</p>
+      <blockquote>
+        <p>01/01/0001 is a Monday.</p>
+      </blockquote>
+    </article>
+    <article id='time-unicode-technical-report-35' hidden>
+      <div class='crumb'>TIME</div>
+      <h2>unicode-technical-report-35</h2>
+      <h2>Unicode Technical Report 35</h2>
+      <h3>Subject</h3>
+      <p>Create a function named <code>format</code> which accepts a valid <code>Date</code> and a format
+        <code>string</code>. Your function should return a correctly formatted string.</p>
+      <p>Your function must handle:</p>
+      <ul>
+        <li><code>y</code></li>
+        <li><code>yyyy</code></li>
+        <li><code>G</code></li>
+        <li><code>GGGG</code></li>
+        <li><code>M</code></li>
+        <li><code>MM</code></li>
+        <li><code>MMM</code></li>
+        <li><code>MMMM</code></li>
+        <li><code>d</code></li>
+        <li><code>dd</code></li>
+        <li><code>E</code></li>
+        <li><code>EEEE</code></li>
+        <li><code>h</code></li>
+        <li><code>hh</code></li>
+        <li><code>m</code></li>
+        <li><code>mm</code></li>
+        <li><code>s</code></li>
+        <li><code>ss</code></li>
+        <li><code>H</code></li>
+        <li><code>HH</code></li>
+        <li><code>a</code></li>
+      </ul>
+      <h3>Example</h3>
+      <pre><code class="language-js">const d = new Date('7 January 1985, 3:08:19')
+
+format(d, 'HH(mm)ss [dd] &lt;MMM&gt;') // -&gt; '03(08)19 [07] &lt;Jan&gt;'
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table">Unicode Date Field
+            Symbol Table</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-using-map' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>using-map</h2>
+      <h2>Using Map</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions:</p>
+      <blockquote>
+        <p>Your solutions <strong>must</strong> use <code>map</code>.</p>
+      </blockquote>
+      <h4>Cities Only</h4>
+      <p><code>citiesOnly</code>: accepts an array of objects and returns an array of strings from the <code>city</code>
+        key.</p>
+      <pre><code class="language-js">citiesOnly([
+  {
+    city: 'Los Angeles',
+    temperature: '  101 °F   ',
+  },
+  {
+    city: 'San Francisco',
+    temperature: ' 84 ° F   ',
+  },
+]) // -&gt; ['Los Angeles', 'San Francisco']
+</code></pre>
+      <h4>Upper Casing States</h4>
+      <p><code>upperCasingStates</code>: accepts an array of strings, and returns a new array of strings. The returned
+        array will be the same as the argument, except the first letter of every word must be capitalized.</p>
+      <pre><code class="language-js">upperCasingStates(['alabama', 'new jersey']) // -&gt; ['Alabama', 'New Jersey']
+</code></pre>
+      <h4>Fahrenheit to Celsius</h4>
+      <p><code>fahrenheitToCelsius</code>: accepts an array of fahrenheit temperatures as strings, and returns an array
+        of strings converted to celsius. Round down the result.</p>
+      <pre><code class="language-js">fahrenheitToCelsius(['68°F', '59°F', '25°F']) // -&gt; ['20°C', '15°C', '-4°C']
+</code></pre>
+      <h4>Trim Temp</h4>
+      <p><code>trimTemp</code>: accepts an array of objects, and returns a new array of objects with the same structure.
+        The <code>temperature</code> strings must have their spaces removed in the new array.</p>
+      <pre><code class="language-js">trimTemp([
+  { city: 'Los Angeles', temperature: '  101 °F   ' },
+  { city: 'San Francisco', temperature: ' 84 ° F   ' },
+]) /* -&gt; [
+  { city: 'Los Angeles', temperature: '101°F' },
+  { city: 'San Francisco', temperature: '84°F' },
+] */
+</code></pre>
+      <h4>Temp Forecasts</h4>
+      <p><code>tempForecasts</code>: accepts an array of objects, and returns an array of formatted strings. See the
+        example below:</p>
+      <pre><code class="language-js">tempForecasts([
+  {
+    city: 'Pasadena',
+    temperature: ' 101 °F',
+    state: 'california',
+    region: 'West',
+  },
+]) // -&gt; ['38°Celsius in Pasadena, California']
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/map">Array.prototype.map</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-using-filter' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>using-filter</h2>
+      <h2>Using Filter</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions:</p>
+      <blockquote>
+        <p>Your solutions <strong>must</strong> use <code>filter</code>.</p>
+      </blockquote>
+      <ul>
+        <li>
+          <p><code>filterShortStateName</code>: accepts an array of strings, and returns only those strings which
+            contain less than 7 characters.</p>
+        </li>
+        <li>
+          <p><code>filterStartVowel</code>: accepts an array of strings, and returns only those that start with any
+            vowel (a,e,i,o,u).</p>
+        </li>
+        <li>
+          <p><code>filter5Vowels</code>: accepts an array of strings, and returns only those which contain at least 5 of
+            any vowels (a,e,i,o,u).</p>
+        </li>
+        <li>
+          <p><code>filter1DistinctVowel</code>: accepts an array of strings, and returns only those which contain only
+            one distinct vowel (a,e,i,o,u). For example, <code>&quot;Alabama&quot;</code> contains only 1 distinct vowel
+            <code>&quot;a&quot;</code>.</p>
+        </li>
+        <li>
+          <p><code>multiFilter</code>: accepts an array of objects, and returns only those which:</p>
+          <ul>
+            <li>the key <code>capital</code> contains at least 8 characters.</li>
+            <li>the key <code>name</code> does not start with a vowel.</li>
+            <li>the key <code>tag</code> has at least one vowel.</li>
+            <li>the key <code>region</code> is not <code>&quot;South&quot;</code></li>
+          </ul>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/filter">Array.prototype.filter</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-using-reduce' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>using-reduce</h2>
+      <h2>Using Reduce</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions:</p>
+      <blockquote>
+        <p>Your solutions <strong>must</strong> use <code>reduce</code>.</p>
+      </blockquote>
+      <ul>
+        <li>
+          <p><code>adder</code>: accepts an array of numbers, and returns the sum as a <code>number</code>.</p>
+        </li>
+        <li>
+          <p><code>sumOrMul</code>: accepts an array of numbers and adds or multiplies its elements depending on whether
+            the element is odd or even. Even = multiply. Odd = add.</p>
+        </li>
+        <li>
+          <p><code>funcExec</code>: accepts an array of functions and executes them using <code>reduce</code>, returning
+            the result.</p>
+        </li>
+      </ul>
+      <blockquote>
+        <p>Each function may accept an optional argument, which should be the initial value for the function's
+          execution.</p>
+      </blockquote>
+      <h4>Example:</h4>
+      <pre><code class="language-js">sumOrMul([1, 2, 3, 5, 8], 5) // (((((5 + 1) * 2) + 3) + 5) * 8) -&gt; 160
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/reduce">Array.prototype.reduce</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-long-words' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>long-words</h2>
+      <h2>Long Words</h2>
+      <h3>Instructions</h3>
+      <p>Create three functions, which each accept an array as an argument.</p>
+      <ul>
+        <li>
+          <p><code>longWords</code>: returns <code>true</code> if every element of the array is a <code>string</code>
+            with at least 5 characters.</p>
+        </li>
+        <li>
+          <p><code>oneLongWord</code>: returns <code>true</code> if at least one element of the array is a
+            <code>string</code> with 10 or more characters.</p>
+        </li>
+        <li>
+          <p><code>noLongWords</code>: returns <code>true</code> if there are no elements in the array which is a
+            <code>string</code> with at least 7 characters.</p>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/every">Array.prototype.every</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/some">Array.prototype.some</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-for-each' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>for-each</h2>
+      <h2>For Each</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>forEach</code> which takes an array as the first argument, a function as the
+        second argument,
+        and that works like the <code>Array.prototype.forEach</code> method.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/foreach">Array.prototype.forEach</a></li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.forEach = undefined
+</code></pre>
+    </article>
+    <article id='call-me-maybe-mapper' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>mapper</h2>
+      <h2>Mapper</h2>
+      <h3>Instructions</h3>
+      <ul>
+        <li>
+          <p>Create a <code>map</code> function that takes an array as the first argument, a function as second, and
+            that works like the method <code>.map</code></p>
+        </li>
+        <li>
+          <p>Create a <code>flatMap</code> function that takes an array as the first argument, a function as second, and
+            that works like the method <code>.flatMap</code></p>
+        </li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.map = undefined
+Array.prototype.flatMap = undefined
+Array.prototype.flat = undefined
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://devdocs.io/javascript/global_objects/array/map">devdocs.io/javascript/global_objects/array/map</a>
+        </li>
+        <li><a
+            href="https://devdocs.io/javascript/global_objects/array/flatmap">devdocs.io/javascript/global_objects/array/flatmap</a>
+        </li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-filter' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>filter</h2>
+      <h2>Filter</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions, which each take an array as the first argument, and a function as the second
+        argument.</p>
+      <ul>
+        <li>
+          <p><code>filter</code>: that works like the <code>[].filter</code> method.</p>
+        </li>
+        <li>
+          <p><code>reject</code>: that works like the <code>reject</code> function from lodash.</p>
+        </li>
+        <li>
+          <p><code>partition</code>: that works like the <code>partition</code> function from lodash.</p>
+        </li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.filter = undefined
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://devdocs.io/javascript/global_objects/array/filter">devdocs.io/javascript/global_objects/array/filter</a>
+        </li>
+        <li><a href="https://lodash.com/docs/4.17.15#reject">lodash.com/docs/4.17.15#reject</a></li>
+        <li><a href="https://lodash.com/docs/4.17.15#partition">lodash.com/docs/4.17.15#partition</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-reduce' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>reduce</h2>
+      <h2>Reduce</h2>
+      <h3>Instructions</h3>
+      <p>Create four functions:</p>
+      <ul>
+        <li>
+          <p><code>fold</code> that receives an array, a function and an accumulator, in this order,
+            and applies the function in the elements of the array starting on the left.</p>
+        </li>
+        <li>
+          <p><code>foldRight</code> that receives an array, a function and an accumulator, in this order,
+            and applies the function in the elements of the array starting on the right.</p>
+        </li>
+        <li>
+          <p><code>reduce</code> that works just like the method <code>[].reduce</code> when you don't
+            specify an accumulator.
+            The arguments should be an array and a function.
+            The starting value of your accumulator must be the first value of the array.
+            If your array is less than 1 argument you should throw an error.</p>
+        </li>
+        <li>
+          <p><code>reduceRight</code> like reduce, from the last value to the first</p>
+        </li>
+      </ul>
+      <p>Example:</p>
+      <pre><code class="language-js">const adder = (a, b) =&gt; a + b
+fold([1, 2, 3], adder, 2) // returns 8 (2 + 1 + 2 + 3)
+foldRight([1, 2, 3], adder, 2) // returns 8 (2 + 3 + 2 + 1)
+reduce([1, 2, 3], adder) // returns 6 (1 + 2 + 3)
+reduceRight([1, 2, 3], adder) // returns 6 (3 + 2 + 1)
+</code></pre>
+      <p>The use of <code>[].reduce</code> and <code>[].reduceRight</code> is forbidden for this exercise.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://devdocs.io/javascript/global_objects/array/reduce">devdocs.io/javascript/global_objects/array/reduce</a>
+        </li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>all code provided will be added to your solution and doesn't need to be submited.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.reduce = undefined
+Array.prototype.reduceRight = undefined
+</code></pre>
+    </article>
+    <article id='call-me-maybe-quantifiers' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>quantifiers</h2>
+      <h2>Quantifiers</h2>
+      <h3>Instructions</h3>
+      <p>Create these functions which receive an array and a function each. Each element will return <code>true</code>
+        if</p>
+      <ul>
+        <li><code>every</code>: every element in the array respects the condition of the function.</li>
+        <li><code>some</code>: that returns <code>true</code> if at least one element in the array respects the
+          condition of the function.</li>
+        <li><code>none</code>: that returns <code>true</code> if <strong>none</strong> of the elements in the array
+          respects the condition of the function.</li>
+      </ul>
+      <p>The use of <code>[].every</code> and <code>[].some</code> is forbidden for this exercise.</p>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Array.prototype.some = Array.prototype.every = undefined
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://devdocs.io/javascript/global_objects/array/some">devdocs.io/javascript/global_objects/array/some</a>
+        </li>
+        <li><a
+            href="https://devdocs.io/javascript/global_objects/array/every">devdocs.io/javascript/global_objects/array/every</a>
+        </li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-sweet-curry' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>sweet-curry</h2>
+      <h2>Sweet Curry</h2>
+      <h3>Instructions</h3>
+      <p>Create the following functions with the &quot;currying&quot; process. Those functions should accept only one
+        argument each.</p>
+      <ul>
+        <li><code>mult2</code>: that multiplies two numbers.</li>
+        <li><code>add3</code>: that adds three numbers.</li>
+        <li><code>sub4</code>: that subtracts four numbers in the given order: first number minus second number etc.
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://stackoverflow.com/questions/36314/what-is-currying">stackoverflow.com/questions/36314/what-is-currying</a>
+        </li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-has-city' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>has-city</h2>
+      <h2>Has City</h2>
+      <h3>Instructions</h3>
+      <p>Create a function <code>hasCity</code> that takes a string called <code>country</code> and an array of strings,
+        which are cities of that country, which returns a new function.
+        The new function takes a string, called <code>city</code>, as a parameter and which determines
+        whether the array contains that string or not.</p>
+      <p>If it does, it should return the string <code>&lt;city&gt; is a city from &lt;country&gt;</code>, otherwise
+        <code>&lt;city&gt; is not a city from &lt;country&gt;</code>.
+      </p>
+    </article>
+    <article id='call-me-maybe-flow' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>flow</h2>
+      <h2>Flow</h2>
+      <h3>Instructions</h3>
+      <p>Create the function named <code>flow</code> that will act like the <code>_.flow([funcs])</code> from lodash.
+      </p>
+      <h3>Example</h3>
+      <pre><code class="language-js">const square = (nbr) =&gt; nbr * nbr
+const add2Numbers = (nbr1, nbr2) =&gt; nbr1 + nbr2
+
+const flowedFunctions = flow([add2Numbers, square])
+flowedFunctions(2, 3) // -&gt; 25
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://lodash.com/docs/4.17.15#flow">lodash.com/docs/4.17.15#flow</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-currify' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>currify</h2>
+      <h2>Currify</h2>
+      <h3>Instructions</h3>
+      <p>Create the function <code>currify</code> that will curry any functions put as argument.</p>
+      <p>example:</p>
+      <pre><code class="language-js">const mult2 = (el1, el2) =&gt; el1 * el2
+console.log(mult2(2, 2)) // result expected 4
+
+const mult2Curried = currify(mult2)
+
+console.log(mult2Curried(2)(2)) // result expected 4
+// (same result, with a function that has technically only one argument)
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a
+            href="https://stackoverflow.com/questions/36314/what-is-currying">stackoverflow.com/questions/36314/what-is-currying</a>
+        </li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-dom' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>DOM</h2>
+      <p class='missing'>README not found in repo.</p>
+    </article>
+    <article id='call-me-maybe-get-them-all' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>get-them-all</h2>
+      <h2>Get them all</h2>
+      <h3>Instructions</h3>
+      <p>You've been attributed the task to find the main architect of the Tower of Pisa before he achieves his plans,
+        avoiding us nowadays all those lame pictures of people pretending to stop it from falling.</p>
+      <p>You arrive at the architects' chamber to find him, but all you have in front of you is a bunch of unknown
+        people.
+        Step by step, with the limited details you have, gather information and figure out by elimination who he is.</p>
+      <p>Launch the provided HTML file in the browser to begin your investigation.<br />
+        On top of the webpage, each of the four buttons fires a function:</p>
+      <ul>
+        <li>
+          <p>Write the body of the <code>getArchitects</code> function, which returns an array containing 2 arrays of
+            HTML elements:</p>
+          <ul>
+            <li>the first array contains the architects, all corresponding to a <code>&lt;a&gt;</code> tag</li>
+            <li>the second array contains all the non-architects people</li>
+          </ul>
+        </li>
+        <li>
+          <p>Write the body of the <code>getClassical</code> function, which returns an array containing 2 arrays of
+            HTML elements:</p>
+          <ul>
+            <li>the first array contains the architects belonging to the <code>classical</code> class</li>
+            <li>the second array contains the non-classical architects</li>
+          </ul>
+        </li>
+        <li>
+          <p>Write the body of the <code>getActive</code> function, which returns an array containing 2 arrays of HTML
+            elements:</p>
+          <ul>
+            <li>the first array contains the classical architects who are <code>active</code> in their class</li>
+            <li>the second array contains the non-active classical architects</li>
+          </ul>
+        </li>
+        <li>
+          <p>Write the body of the <code>getBonannoPisano</code> function, which returns an array containing:</p>
+          <ul>
+            <li>the HTML element of the architect you're looking for, whose <code>id</code> is
+              <code>BonannoPisano</code></li>
+            <li>an array which contains all the remaining HTML elements of active classical architects</li>
+          </ul>
+        </li>
+      </ul>
+      <blockquote>
+        <p>From now on, don't forget to <a
+            href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export"><strong>export</strong></a>
+          all the expected functions, so that they can be imported to be tested<br /> &gt;
+          <code>export const getArchitects = () =&gt; {...}</code></p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element">HTML Element</a></li>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByTagName"><code>getElementsByTagName()</code></a>
+        </li>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName"><code>getElementsByClassName()</code></a>
+        </li>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById"><code>getElementById()</code></a>
+        </li>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelectorAll"><code>querySelectorAll()</code></a>
+          / <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Document/querySelector"><code>querySelector()</code></a>
+        </li>
+        <li>...and bit of CSS that could help with the <a
+            href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not"><code>:not</code> pseudo class</a></li>
+      </ul>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>get-them-all.js</code> ; we're providing you the
+        following files to download (click right and save link) &amp; test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./get-them-all.html">get-them-all.html</a> to open in the browser, which includes:
+          </p>
+          <ul>
+            <li>the JS script running some code, and which will also allow to run yours</li>
+            <li>some CSS pre-styled classes: feel free to use those as they are, or modify them</li>
+            <li>the import of the data</li>
+          </ul>
+        </li>
+        <li>
+          <p>the data file <a href="./get-them-all.data.js">get-them-all.data.js</a> used to generate content in the
+            HTML</p>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./get-them-all.data.css">get-them-all.data.css</a> as it is or you
+            can also modify it.</p>
+        </li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-build-brick-and-break' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>build-brick-and-break</h2>
+      <h2>Build brick and break</h2>
+      <h3>Instructions</h3>
+      <p>Today, your mission is to build a 3-column brick tower, maintain it and finally break it.</p>
+      <ul>
+        <li>
+          <p>Create a function <code>build</code> which will create and display the amount of bricks passed as argument:
+          </p>
+          <ul>
+            <li>each brick has to be created as a <code>div</code> and added to the page at a regular interval of 100ms.
+            </li>
+            <li>each brick will receive a unique <code>id</code> property, like the following:</li>
+          </ul>
+          <pre><code class="language-html">&lt;div id=&quot;brick-1&quot;&gt;&lt;/div&gt;
+</code></pre>
+          <ul>
+            <li>each brick in the middle column has to be set with the custom data attribute <code>foundation</code>,
+              receiving the value <code>true</code>.</li>
+          </ul>
+        </li>
+        <li>
+          <p>Each one of the two emojis in the top-right corner fires a function on click:</p>
+          <ul>
+            <li>🔨: triggers the function <code>repair</code>. Write the body of that function. It receives any number
+              of <code>ids</code>. For each <code>id</code>, it retrieves the HTML element, and sets the
+              <code>repaired</code> custom attribute to <code>in progress</code> if it is a brick situated in the middle
+              column, and <code>true</code> if not.</li>
+            <li>🧨: triggers the <code>destroy</code> function. Write the body of that function. It removes the current
+              last brick in the tower.</li>
+          </ul>
+        </li>
+      </ul>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>build-brick-and-break.js</code>, We're providing you the
+        following file to download and test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./build-brick-and-break.html">build-brick-and-break.html</a> can be opened in the
+            browser, which includes:</p>
+          <ul>
+            <li>the JS script running some code, and which will enable you to run your code.</li>
+          </ul>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./build-brick-and-break.data.css">build-brick-and-break.data.css</a>
+            as it is or you can also modify it.</p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://youtu.be/OjSP_7u9CZ4">here</a></p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement">createElement</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/append">append</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element">Element</a></li>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">setInterval</a>
+          / <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval">clearInterval</a>
+        </li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/hasAttribute">hasAttribute</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/dataset">dataset</a> / <a
+            href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*">data-*</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove">remove</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-harder-bigger-bolder-stronger' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>harder-bigger-bolder-stronger</h2>
+      <h2>Harder, bigger, bolder, stronger</h2>
+      <h3>Instructions</h3>
+      <p>Being stuck at home, bored, desperate and coming up with a lot of weird ideas, a friend asks you to develop a
+        tool to measure his ocular skills. One of those <a href="https://en.wikipedia.org/wiki/Monoyer_chart">Monoyer
+          charts</a> that ophthalmologists use.</p>
+      <p>Generate a board where each new letter is harder, bigger, bolder and stronger.</p>
+      <p>Write the function <code>generateLetters</code> which creates 120 <code>div</code> elements, each containing a
+        letter randomly picked through the <strong>uppercase</strong> alphabet, and whose style properties have to be
+        increased:</p>
+      <ul>
+        <li>each letter's <code>font-size</code> has to grow from <code>11</code> to <code>130</code> pixels.</li>
+        <li><code>font-weight</code> has to be <code>300</code> for the first third of the letters, <code>400</code> for
+          the second third, and <code>600</code> for the last third.</li>
+      </ul>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>harder-bigger-bolder-stronger.js</code>. We're providing
+        you the following file to download and test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./harder-bigger-bolder-stronger.html">harder-bigger-bolder-stronger.html</a> to open
+            in the browser, which includes:</p>
+          <ul>
+            <li>the JS script running some code, and which will enable you to run yours.</li>
+          </ul>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a
+              href="./harder-bigger-bolder-stronger.data.css">harder-bigger-bolder-stronger.data.css</a> as it is or you
+            can also modify it.</p>
+        </li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement">createElement</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/append">append</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ElementCSSInlineStyle/style">style</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent">textContent</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-pimp-my-style' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>pimp-my-style</h2>
+      <h2>Pimp my style</h2>
+      <h3>Instructions</h3>
+      <p>Check out that button on the HTML page:</p>
+      <pre><code class="language-html">&lt;button class=&quot;button&quot;&gt;pimp my style&lt;/div&gt;
+</code></pre>
+      <p>For now, it's only a lonely, basic and sad element. let's pimp it up.</p>
+      <p>On each click on the page, a function <code>pimp</code> is triggered.
+        Write the body of that function so that the button's class is altered:</p>
+      <ul>
+        <li>From the data file provided, add each of the <code>styles</code> array elements as classes, in order.</li>
+        <li>When the end of the array is reached, remove the classes in a LIFO fashion.</li>
+        <li>While removing classes, toggle the <code>unpimp</code> class on. And toggle it off again while adding
+          classes.</li>
+      </ul>
+      <p>Example for a <code>styles</code> array with only 3 classes:</p>
+      <pre><code class="language-js">[&quot;one&quot;, &quot;two&quot;, &quot;three&quot;]
+</code></pre>
+      <pre><code>Page load --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
+
+...adding
+Click 1 --&gt; &lt;button class=&quot;button one&quot;&gt;&lt;/button&gt;
+Click 2 --&gt; &lt;button class=&quot;button one two&quot;&gt;&lt;/button&gt;
+
+...toggling `unpimp`
+Click 3 --&gt; &lt;button class=&quot;button one two three unpimp&quot;&gt;&lt;/button&gt;
+
+...and removing backwards
+Click 4 --&gt; &lt;button class=&quot;button one two unpimp&quot;&gt;&lt;/button&gt;
+Click 5 --&gt; &lt;button class=&quot;button one unpimp&quot;&gt;&lt;/button&gt;
+Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
+</code></pre>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>pimp-my-style.js</code>. We're providing you the
+        following files to download and test locally.:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./pimp-my-style.html">pimp-my-style.html</a> to open in the browser, which includes:
+          </p>
+          <ul>
+            <li>the JS script running some code, and which will enable you to run yours.</li>
+          </ul>
+        </li>
+        <li>
+          <p>the data file <a href="./pimp-my-style.data.js">pimp-my-style.data.js</a> from which you can import
+            <code>styles</code>.</p>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./pimp-my-style.data.css">pimp-my-style.data.css</a> as it is or you
+            can also modify it.</p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://youtu.be/VIRf3TBDTN4">here</a></p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList">classList</a>:
+          <code>add()</code>, <code>remove()</code>, <code>toggle()</code></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-fifty-shades-of-cold' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>fifty-shades-of-cold</h2>
+      <h2>Fifty shades of cold</h2>
+      <h3>Instructions</h3>
+      <p>You've been asked to freshen up a webpage, by displaying shades of cold colors.</p>
+      <p>Check the <code>colors</code> array provided in the data file below.</p>
+      <p>Write the <code>generateClasses</code> function. It creates a <code>&lt;style&gt;</code> tag inside the
+        <code>&lt;head&gt;</code>. It should generate one class for each color in the <code>colors</code> array, which
+        sets the <code>background</code> attribute like so:</p>
+      <pre><code class="language-css">.blue {
+  background: blue;
+}
+</code></pre>
+      <p>Write the <code>generateColdShades</code> function which creates a <code>&lt;div&gt;</code> for each color of
+        the <code>colors</code> array, whose name contains <code>aqua</code>, <code>blue</code>, <code>turquoise</code>,
+        <code>green</code>, <code>cyan</code>, <code>navy</code> or <code>purple</code>. Each <code>&lt;div&gt;</code>
+        must have the corresponding generated class and display the name of the color, like following:</p>
+      <pre><code class="language-html">&lt;div class=&quot;blue&quot;&gt;blue&lt;/div&gt;
+</code></pre>
+      <p>The function <code>choseShade</code> is triggered when clicking on a <code>div</code>. Write the body of this
+        function. It accepts the shade of the clicked element as an argument, and replaces all the classes of all the
+        other elements by the chosen shade.</p>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>fifty-shades-of-cold.js</code>, we're providing you the
+        following files to download and test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./fifty-shades-of-cold.html">fifty-shades-of-cold.html</a> to open in the browser,
+            which includes:</p>
+          <ul>
+            <li>the JS script running some code, and which will enable you to run yours</li>
+          </ul>
+        </li>
+        <li>
+          <p>the data file <a href="./fifty-shades-of-cold.data.js">fifty-shades-of-cold.data.js</a> from which you can
+            import <code>colors</code>.</p>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./fifty-shades-of-cold.data.css">fifty-shades-of-cold.data.css</a>
+            as it is or you can also modify it.</p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://youtu.be/a-3JDEvW-Qg">here</a></p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/head">head tag</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style">style tag</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/className">className</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList">classList</a>:
+          <code>contains()</code>, <code>replace()</code></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-keycodes-symphony' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>keycodes-symphony</h2>
+      <h2>Keycodes symphony</h2>
+      <h3>Instructions</h3>
+      <p>Like an inspired Beethoven who's about to write his Moonlight Sonata, you're about to compose a colorful
+        symphony of letters with your keyboard.</p>
+      <p>Write the function <code>compose</code>:</p>
+      <ul>
+        <li>Make it fire every time a key is pressed.</li>
+        <li>Create a new <code>div</code> with the class <code>note</code> when a letter of the lowercase alphabet is
+          pressed. It should have a unique background color generated using the <code>key</code> of the
+          <code>event</code>. It should also display the corresponding pressed character.</li>
+        <li>When <code>Backspace</code> is pressed, delete the last note.</li>
+        <li>When <code>Escape</code> is pressed, clear all the notes.</li>
+      </ul>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>keycodes-symphony.js</code>; we're providing you the
+        following file to download to test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./keycodes-symphony.html">keycodes-symphony.html</a> to open in the browser, which
+            includes:</p>
+          <ul>
+            <li>the JS script which will allow to run your code.</li>
+          </ul>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./keycodes-symphony.data.css">keycodes-symphony.data.css</a> as it
+            is or you can also modify it.</p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://youtu.be/5DdijwBnpAk">here</a></p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent">Keyboard event</a>: <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Document/keydown_event"><code>keydown</code></a>, <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key"><code>key</code></a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-mouse-trap' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>mouse-trap</h2>
+      <h2>Mouse trap</h2>
+      <h3>Instructions</h3>
+      <p>Develop a trap to capture the elements when the mouse is getting too close to the center of the page.</p>
+      <p>Create the following functions:</p>
+      <ul>
+        <li>
+          <p><code>createCircle</code>: make it fire on every click on the page, and create a <code>div</code> at the
+            position of the mouse on the screen, setting its <code>background</code> to <code>white</code> and its class
+            to <code>circle</code>.</p>
+        </li>
+        <li>
+          <p><code>moveCircle</code>: make it fire when the mouse moves, and get the last circle created and makes it
+            move along with the mouse.</p>
+        </li>
+        <li>
+          <p><code>setBox</code>: which creates a box with the class <code>box</code> in the center of the page. When a
+            circle is entirely inside that box, it has to be purple (use the CSS global variable
+            <code>var(--purple)</code> as its <code>background</code>). Once a circle enters the box, it is trapped
+            inside and cannot escape.</p>
+        </li>
+      </ul>
+      <blockquote>
+        <p>Hint: Be careful, a circle cannot overlap the box which has walls of <code>1px</code>. It has to be trapped
+          <strong>strictly</strong> inside.</p>
+      </blockquote>
+      <h3>Provided files</h3>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>mouse-trap.js</code>, we're providing you the following
+        files to download and test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./mouse-trap.html">mouse-trap.html</a> to open in the browser, which includes:</p>
+          <ul>
+            <li>the JS script which will enable you to run your code.</li>
+          </ul>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./mouse-trap.data.css">mouse-trap.data.css</a> as it is or you can
+            also modify it.</p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://youtu.be/qF843P-V2Yw">here</a></p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">addEventListener</a>
+        </li>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/removeEventListener">removeEventListener</a>
+        </li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/MouseEvent">Mouse event</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event">click</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/mousemove_event">mousemove</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientX">clientX</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/clientY">clientY</a></li>
+        <li><a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect">getBoundingClientRect</a>
+        </li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-pick-and-click' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>pick-and-click</h2>
+      <h2>Pick &amp; click</h2>
+      <h3>Instructions</h3>
+      <p>Today, you're going to create your own color picker.</p>
+      <p>Write the function <code>pick</code> which turns the screen into a <code>hsl</code> color picker. It will vary
+        the <code>hue</code> and <code>luminosity</code> according to the position of the mouse.</p>
+      <p>The <code>background</code> color of the <code>body</code> will change based on the position of the mouse on
+        the screen.</p>
+      <ul>
+        <li>The X axis will vary the hue value between 0 and 360.</li>
+        <li>The Y axis will vary the luminosity value between 0 and 100.</li>
+      </ul>
+      <p>You'll need to display these three values:</p>
+      <ul>
+        <li>The full <code>hsl</code> value in a <code>div</code>, which has the class <code>hsl</code> in the middle of
+          the screen.</li>
+        <li>The <code>hue</code> value in a <code>div</code> with the class <code>hue</code> and <code>text</code> in
+          the top right corner of the screen.</li>
+        <li>The <code>luminosity</code> value will be displayed in the bottom left corner of the screen, in a
+          <code>div</code> with the class <code>luminosity</code> and <code>text</code>.</li>
+      </ul>
+      <p>When the mouse is clicked, the value of the <code>hsl</code> will need to be copied to the clipboard.</p>
+      <p>Two SVG lines with ids <code>axisX</code> and <code>axisY</code> will need to follow the cursor, like really
+        long cross hairs.</p>
+      <ul>
+        <li>the <code>axisX</code> attributes <code>x1</code> and <code>x2</code> need to be set to the X position of
+          the cursor.</li>
+        <li>the <code>axisY</code> attributes <code>y1</code> and <code>y2</code> need to be set to the Y position of
+          the cursor.</li>
+      </ul>
+      <blockquote>
+        <p>The formatting of a <code>hsl</code> value: <code>hsl(45, 50%, 35%)</code>.</p>
+      </blockquote>
+      <blockquote>
+        <p>Use <code>Math.round()</code> to round the values.</p>
+      </blockquote>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>pick-and-click.js</code>; we're providing you the
+        following file to download and test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./pick-and-click.html">pick-and-click.html</a> to open in the browser, which
+            includes:</p>
+          <ul>
+            <li>the JS script which will enable you to run your code.</li>
+          </ul>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./pick-and-click.data.css">pick-and-click.data.css</a> as it is or
+            you can also modify it.</p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://www.youtube.com/watch?v=eE4eE9_eKZI">here</a>
+      </p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/copy_event">Copy event</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/mousemove_event">Mouse move event</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg">SVG</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/createElementNS">createElementNS</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setAttribute">setAttribute</a></li>
+        <li>Take a look at the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Applying_color">HSL
+            section</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-gossip-grid' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>gossip-grid</h2>
+      <h2>Gossip grid</h2>
+      <h3>Instructions</h3>
+      <p>Create the function <code>grid</code> which displays all the <code>gossips</code>, provided in the data file
+        below, as cards on a grid (in the same order).</p>
+      <p>They will each be represented as a <code>div</code> with the <code>gossip</code> class.</p>
+      <p>The first <code>gossip</code> card must be a <code>form</code>. It will need a <code>textarea</code>, and a
+        submit button with the text <code>&quot;Share gossip!&quot;</code>. It will add new gossip to the list.</p>
+      <p>Create 3 <code>type=&quot;range&quot;</code> inputs with the class <code>range</code>, all wrapped in a
+        <code>div</code> with the class <code>ranges</code>.</p>
+      <ul>
+        <li><code>id=&quot;width&quot;</code>: that controls the width of cards from 200 to 800 pixels.</li>
+        <li><code>id=&quot;fontSize&quot;</code>: that controls the font size from 20 to 40 pixels.</li>
+        <li><code>id=&quot;background&quot;</code>: that control the background lightness from 20% to 75%.</li>
+      </ul>
+      <blockquote>
+        <p>Use <code>hsl</code> for colors</p>
+      </blockquote>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>gossip-grid.js</code>; we're providing you the following
+        files to download and test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./gossip-grid.html">gossip-grid.html</a> to open in the browser, which includes:</p>
+          <ul>
+            <li>the JS script which will enable you to run your code.</li>
+          </ul>
+        </li>
+        <li>
+          <p>the data file <a href="./gossip-grid.data.js">gossip-grid.data.js</a> from which you can import
+            <code>gossips</code>.</p>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./gossip-grid.data.css">gossip-grid.data.css</a> as it is or you can
+            also modify it.</p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://youtu.be/nbR2eHBqTxU">here</a></p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Form">form</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input">input</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/text">text</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range">range</a></li>
+      </ul>
+    </article>
+    <article id='call-me-maybe-where-do-we-go' hidden>
+      <div class='crumb'>CALL ME MAYBE</div>
+      <h2>where-do-we-go</h2>
+      <h2>Where do we go?</h2>
+      <h3>Instructions</h3>
+      <p>Where will you go on your next holiday?</p>
+      <p>Let's make a page to index your options, so that next time you ask yourself that question, you'll be ready with
+        some ideas.</p>
+      <p>Create a function named <code>explore</code>, which creates a page displaying the list of <code>places</code>
+        provided in the data file below.</p>
+      <ul>
+        <li>Sort the <code>places</code> from north to south, so that the northern-most place is first.</li>
+        <li>Display a fullscreen-size <code>&lt;section&gt;</code> for each place. Use the pics hosted in the
+          <code>./where-do-we-go_images</code> folder below. Set the <code>background</code> attribute with the
+          corresponding image URL. The URL has to be formatted like so:
+          <code>./where-do-we-go_images/name-of-the-place.jpg</code>.</li>
+        <li>Display a location indicator as an <code>&lt;a&gt;</code> tag in the middle of the screen. It should:
+          <ul>
+            <li>have the class <code>location</code></li>
+            <li>display the <code>name</code> and <code>coordinates</code> of the current place, as text strings
+              separated by <code>\n</code></li>
+            <li>set the text color as <code>color</code></li>
+            <li>update the <code>name</code>, <code>coordinates</code> and <code>color</code> on scroll, at the point
+              when the next image reaches the middle of the screen height</li>
+            <li>make the <code>href</code> attribute open <strong>a new tab</strong> redirecting to a Google Maps URL
+              with the coordinates of the place currently displayed</li>
+          </ul>
+        </li>
+        <li>Display a compass as a <code>div</code> tag, indicating the latitude direction which:
+          <ul>
+            <li>has the class <code>direction</code></li>
+            <li>displays <code>N</code> for North if the user is scrolling up</li>
+            <li>displays <code>S</code> for South if he's scrolling down</li>
+          </ul>
+        </li>
+      </ul>
+      <h3>Files</h3>
+      <p>You only need to create &amp; submit the JS file <code>where-do-we-go.js</code>; we're providing you the
+        following files to download and test locally:</p>
+      <ul>
+        <li>
+          <p>the HTML file <a href="./where-do-we-go.html">where-do-we-go.html</a> to open in the browser, which
+            includes:</p>
+          <ul>
+            <li>the JS script which will enable you to run your code</li>
+          </ul>
+        </li>
+        <li>
+          <p>the data file <a href="./where-do-we-go.data.js">where-do-we-go.data.js</a> from which you can import
+            <code>places</code></p>
+        </li>
+        <li>
+          <p>feel free to use the CSS file <a href="./where-do-we-go.data.css">where-do-we-go.data.css</a> as it is or
+            you can also modify it.</p>
+        </li>
+        <li>
+          <p>you can get the images to be used in this <a
+              href="https://assets.01-edu.org/where-do-we-go_images.zip">compressed folder</a> or you can get them in
+            the where-do-we-go_images folder from the public URL. Example: `<a
+              href="https://public.01-edu.org/subjects/where-do-we-go/where-do-we-go_images/arlit.jpg">https://public.01-edu.org/subjects/where-do-we-go/where-do-we-go_images/arlit.jpg</a>
+          </p>
+        </li>
+      </ul>
+      <h3>Expected result</h3>
+      <p>You can see an example of the expected result <a href="https://youtu.be/BLxNi1WH6_0">here</a></p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event">Scroll event</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window">window</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/innerHeight">innerHeight</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/scrollY">scrollY</a></li>
+        <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/pageYOffset">pageYOffset</a></li>
+        <li>Take a look at the <a href="https://en.wikipedia.org/wiki/Decimal_degrees">DMS coordinates system</a></li>
+      </ul>
+    </article>
+    <article id='raid-2-sortable' hidden>
+      <div class='crumb'>RAID 2</div>
+      <h2>sortable</h2>
+      <h2>Sortable</h2>
+      <h3>Instructions</h3>
+      <p>You are a villain and your dream is to get rid of those annoying, yoga-pant-wearing, weird masked
+        <strong>superheroes</strong>.
+        You never understood why some of them are considered to be superheroes, just because they are rich. Others annoy
+        you with their philosophical speeches.</p>
+      <p>We've found <em>confidential</em> information about those superheroes.</p>
+      <p><strong>Your task</strong> is to build a web page to organize all the data about those smartypants. All that
+        data can be found <a href="https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json">here</a> in
+        <code>all.json</code>.</p>
+      <p>You must write all of the code from scratch. You are not allowed to rely on any frameworks or libraries like
+        React, Vue, Svelte etc.</p>
+      <h4>Fetching the data</h4>
+      <p>In order to get the information, you should use <code>fetch</code>.
+        When you use <code>fetch</code> in JS, it always returns a <code>Promise</code>. We will look more deeply into
+        that later on. For now, take a look at this:</p>
+      <pre><code class="language-js">// This function is called only after the data has been fetched, and parsed.
+const loadData = (heroes) =&gt; {
+  console.log(heroes);
+};
+
+// Request the file with fetch, and the data will be downloaded to your browser cache.
+fetch(&quot;https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json&quot;)
+  .then((response) =&gt; response.json()) // parse the response from JSON
+  .then(loadData); // .then will call the `loadData` function with the JSON value.
+</code></pre>
+      <h4>Display</h4>
+      <p>Not all the information is valuable at a glance, so we will only show some of the fields in a
+        <code>&lt;table&gt;</code> element. The necessary data will be:</p>
+      <ul>
+        <li>Icon (<code>.images.xs</code>, should be displayed as images and not as a string)</li>
+        <li>Name (<code>.name</code>)</li>
+        <li>Full Name (<code>.biography.fullName</code>)</li>
+        <li>Powerstats (each entry of <code>.powerstats</code>)</li>
+        <li>Race (<code>.appearance.race</code>)</li>
+        <li>Gender (<code>.appearance.gender</code>)</li>
+        <li>Height (<code>.appearance.height</code>)</li>
+        <li>Weight (<code>.appearance.weight</code>)</li>
+        <li>Place Of Birth (<code>.biography.placeOfBirth</code>)</li>
+        <li>Alignment (<code>.biography.alignment</code>)</li>
+      </ul>
+      <p>The information must be displayed in multiple pages. Use a <code>&lt;select&gt;</code> input to chose the page
+        size from <code>10</code>, <code>20</code>,<code>50</code>, <code>100</code> or <code>all results</code>.</p>
+      <p>The default page size selected option must be <code>20</code>.</p>
+      <h4>Search</h4>
+      <p>It must be possible to filter information by searching the name as a string. For example, searching
+        <em>&quot;man&quot;</em> should find all superheros with <code>&quot;man&quot;</code> in their name.</p>
+      <p>The search should be interactive. In other words, the results should be filtered after every keystroke. So we
+        don't need a &quot;search&quot; button.</p>
+      <h4>Sort</h4>
+      <p>It will be valuable to sort the information in the table by any of its columns. Results should be sortable
+        alphabetically or numerically.</p>
+      <ul>
+        <li>Initially all rows should be sorted by the column <code>name</code> by <code>ascending</code> order.</li>
+        <li>The first click on a column heading will sort the table by the data in that column in <code>ascending</code>
+          order.</li>
+        <li>Consecutive clicks on a column heading will toggle between <code>ascending</code> and
+          <code>descending</code>.</li>
+        <li>Some of the columns are composed of strings, but represent numerical values. For example, when the
+          <code>weight</code> column is sorted in ascending order, then <code>&quot;78 kg&quot;</code> must be displayed
+          before <code>&quot;100 kg&quot;</code>.</li>
+        <li>Missing values should <strong>always</strong> be sorted last, irrespective of <code>ascending</code> or
+          <code>descending</code>.</li>
+      </ul>
+      <blockquote>
+        <p>When dealing with heroes, <strong>speed</strong> is critical. All operations must be performed quickly,
+          without slowing the browser down.</p>
+      </blockquote>
+      <h3>Bonus</h3>
+      <p>Additional features will be critical to your success. Here's a few which will give you a bigger boost:</p>
+      <ul>
+        <li>Specify the field that the search applies to.</li>
+        <li>Custom search operators
+          <ul>
+            <li><code>include</code></li>
+            <li><code>exclude</code></li>
+            <li><code>fuzzy</code></li>
+            <li><code>equal</code>, <code>not equal</code>, <code>greater than</code> and <code>lesser than</code> for
+              numbers (including weight and height).</li>
+          </ul>
+        </li>
+        <li>Detail view. Clicking a hero from the list will show all the details and large image.</li>
+        <li>A slick design. Spend some time improving the look and feel by playing around with CSS. Have fun with it.
+        </li>
+        <li>Modify the URL with the search term, so that if you copy and paste the URL in a different tab, it will
+          display the same column filters. If you have implemented detail view, the state of which hero is displayed
+          should also form part of the URL.</li>
+      </ul>
+    </article>
+    <article id='object-invert' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>invert</h2>
+      <h2>Invert</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>invert</code> which takes an object and returns a new one with its keys and
+        values inverted.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/object">object</a></li>
+      </ul>
+    </article>
+    <article id='object-pick-omit' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>pick-omit</h2>
+      <h2>Pick Omit</h2>
+      <h3>Instructions</h3>
+      <p>Create two functions which takes an object and a string or array of strings. They should return a new object
+        which:</p>
+      <ul>
+        <li><code>pick</code>: contains only those keys which appear in the string or array of strings.</li>
+        <li><code>omit</code>: contains only those keys which do not match the string, or do not appear in the array of
+          strings.</li>
+      </ul>
+      <blockquote>
+        <p>Those functions are pure and must not modify the given object
+          It should ignore properties from the prototype chain</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/object">object</a></li>
+      </ul>
+    </article>
+    <article id='object-fusion' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>fusion</h2>
+      <h2>Fusion</h2>
+      <h3>Instructions</h3>
+      <p>The objective of this exercise is to merge objects into a new object depending on the values type.</p>
+      <p>Create a function named <code>fusion</code> that:</p>
+      <ul>
+        <li>For array types, you will concatenate them.</li>
+      </ul>
+      <pre><code class="language-js">fusion({ arr: [1, &quot;2&quot;] }, { arr: [2] }); // -&gt; { arr: [ 1, '2', 2 ] }
+fusion({ arr: [], arr1: [5] },{ arr: [10, 3], arr1: [15, 3], arr2: [&quot;7&quot;, &quot;1&quot;] }); // -&gt;{ arr: [ 10, 3 ], arr1: [ 5, 15, 3 ], arr2: [ '7', '1' ] }
+</code></pre>
+      <ul>
+        <li>For strings, you must concatenate them with a space.</li>
+      </ul>
+      <pre><code class="language-js">fusion({ str: &quot;salem&quot; }, { str: &quot;alem&quot; }); // -&gt; { str: 'salem alem' }
+fusion({ str: &quot;salem&quot; }, { str: &quot;&quot; }); // -&gt; { str: 'salem ' }
+</code></pre>
+      <ul>
+        <li>If they are numbers, you must add them.</li>
+      </ul>
+      <pre><code class="language-js">fusion({ a: 10, b: 8, c: 1 }, { a: 10, b: 2 }); // -&gt; { a: 20, b: 10, c: 1 }
+</code></pre>
+      <ul>
+        <li>If it is an object, you must join them recursively.</li>
+      </ul>
+      <pre><code class="language-js">fusion({ a: 1, b: { c: &quot;Salem&quot; } }, { a: 10, x: [], b: { c: &quot;alem&quot; } }); // -&gt; { a: 11, x: [], b: { c: 'Salem alem' } }
+fusion( { a: { b: [3, 2], c: { d: 8 } } },{ a: { b: [0, 3, 1], c: { d: 3 } } }); // -&gt; { a: { b: [ 3, 2, 0, 3, 1 ], c: { d: 11 } } }
+</code></pre>
+      <ul>
+        <li>In case of type mismatch you must replace it with the value of the second object (if it exists).</li>
+      </ul>
+      <pre><code class="language-js">fusion({ a: &quot;hello&quot;, b: [] }, { a: 4 }); // -&gt; { a: 4, b: [] }
+</code></pre>
+    </article>
+    <article id='object-manipulate-values' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>manipulate-values</h2>
+      <h2>Manipulate Values</h2>
+      <h3>Instructions</h3>
+      <p>Let's buy groceries.</p>
+      <p>You have a grocery cart with some items you need. The item's name is the <code>key</code>, and the
+        <code>value</code> will represent nutrition facts per 100 grams.</p>
+      <p>Create 3 functions that work like the <code>.filter</code>, <code>.map</code> and <code>.reduce</code> array
+        methods, for the values in your grocery cart object. You can see their function names and how they work in the
+        examples.</p>
+      <h3>Examples</h3>
+      <pre><code class="language-js">const nutrients = { carbohydrates: 12, protein: 20, fat: 5 }
+
+console.log(filterValues(nutrients, (nutrient) =&gt; nutrient &lt;= 12))
+// output: { carbohydrates: 12, fat: 5 }
+
+console.log(mapValues(nutrients, (v) =&gt; v+1))
+// output: { carbohydrates: 13, protein: 21, fat: 6 }
+
+console.log(reduceValues(nutrients, (acc, cr) =&gt; acc + cr))
+// output: 37
+</code></pre>
+      <p>You will have a small database to help you with the groceries.</p>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">// small database with nutrition facts, per 100 grams
+// In this exercise this is used for testing purposes only
+// prettier-ignore
+const nutritionDB = {
+    tomato:  { calories: 18,  protein: 0.9,   carbs: 3.9,   sugar: 2.6, fiber: 1.2, fat: 0.2   },
+    vinegar: { calories: 20,  protein: 0.04,  carbs: 0.6,   sugar: 0.4, fiber: 0,   fat: 0     },
+    oil:     { calories: 48,  protein: 0,     carbs: 0,     sugar: 123, fiber: 0,   fat: 151   },
+    onion:   { calories: 0,   protein: 1,     carbs: 9,     sugar: 0,   fiber: 0,   fat: 0     },
+    garlic:  { calories: 149, protein: 6.4,   carbs: 33,    sugar: 1,   fiber: 2.1, fat: 0.5   },
+    paprika: { calories: 282, protein: 14.14, carbs: 53.99, sugar: 1,   fiber: 0,   fat: 12.89 },
+    sugar:   { calories: 387, protein: 0,     carbs: 100,   sugar: 100, fiber: 0,   fat: 0     },
+    orange:  { calories: 49,  protein: 0.9,   carbs: 13,    sugar: 9,   fiber: 0.2, fat: 0.1   },
+  }
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/filter">filter</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/map">map</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/reduce">reduce</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/entries">entries</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">fromEntries</a></li>
+      </ul>
+    </article>
+    <article id='object-manipulate-keys' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>manipulate-keys</h2>
+      <h2>Manipulate Keys</h2>
+      <h3>Instructions</h3>
+      <p>I do not want onions. I want oranges.</p>
+      <p>Create 3 functions that works like the <code>.filter</code>, <code>.map</code> and <code>.reduce</code> array
+        methods, but for the <strong>keys</strong> of your grocery cart. You can see their names and how they work in
+        the examples.</p>
+      <h3>Examples</h3>
+      <pre><code class="language-js">const nutrients = { carbohydrates: 12, protein: 20, fat: 5 }
+
+console.log(filterKeys(nutrients, (key) =&gt; /protein/.test(key)))
+// output: { protein: 20 }
+
+console.log(mapKeys(nutrients, (k) =&gt; `-${k}`))
+// output: { -carbohydrates: 12, -protein: 20, -fat: 5 }
+
+console.log(reduceKeys(nutrients, (acc, cr) =&gt;acc.concat(', ', cr)))
+// output: carbohydrates, protein, fat
+</code></pre>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">// small database with nutrition facts, per 100 grams
+// prettier-ignore
+const nutritionDB = {
+  tomato:  { calories: 18,  protein: 0.9,   carbs: 3.9,   sugar: 2.6, fiber: 1.2, fat: 0.2   },
+  vinegar: { calories: 20,  protein: 0.04,  carbs: 0.6,   sugar: 0.4, fiber: 0,   fat: 0     },
+  oil:     { calories: 48,  protein: 0,     carbs: 0,     sugar: 123, fiber: 0,   fat: 151   },
+  onion:   { calories: 0,   protein: 1,     carbs: 9,     sugar: 0,   fiber: 0,   fat: 0     },
+  garlic:  { calories: 149, protein: 6.4,   carbs: 33,    sugar: 1,   fiber: 2.1, fat: 0.5   },
+  paprika: { calories: 282, protein: 14.14, carbs: 53.99, sugar: 1,   fiber: 0,   fat: 12.89 },
+  sugar:   { calories: 387, protein: 0,     carbs: 100,   sugar: 100, fiber: 0,   fat: 0     },
+  orange:  { calories: 49,  protein: 0.9,   carbs: 13,    sugar: 12,  fiber: 0.2, fat: 0.1   },
+}
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/filter">filter</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/map">map</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/reduce">reduce</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/entries">entries</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">fromEntries</a></li>
+      </ul>
+    </article>
+    <article id='object-manipulate-entries' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>manipulate-entries</h2>
+      <h2>Manipulate Entries</h2>
+      <h3>Instructions</h3>
+      <p>Create 3 functions which work like the <code>.filter</code>, <code>.map</code> and <code>.reduce</code> array
+        methods, but for the <strong>entries</strong> in the grocery cart.</p>
+      <ul>
+        <li><code>filterEntries</code>: filters using both key and value, passed as an array (<code>[k, v]</code>).</li>
+        <li><code>mapEntries</code>: changes the key, the value or both, passed as an array (<code>[k, v]</code>).</li>
+        <li><code>reduceEntries</code>: reduces the entries passing keys and values as an array (<code>[k, v]</code>).
+        </li>
+      </ul>
+      <p>Create 3 additional functions that use your previously created functions and take an object as input:</p>
+      <ul>
+        <li><code>totalCalories</code>: that will return the total calories of a cart.</li>
+        <li><code>lowCarbs</code>: that leaves only those items of the cart which have less than 50 grams of carbs after
+          calculating the total amount.</li>
+        <li><code>cartTotal</code>: that will give you the right amount of calories, proteins and so on for each item in
+          your grocery cart.</li>
+      </ul>
+      <blockquote>
+        <p>Think about the shape of <code>Object.entries()</code></p>
+      </blockquote>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">// small database with nutrition facts, per 100 grams
+// prettier-ignore
+const nutritionDB = {
+  tomato:  { calories: 18,  protein: 0.9,   carbs: 3.9,   sugar: 2.6, fiber: 1.2, fat: 0.2   },
+  vinegar: { calories: 20,  protein: 0.04,  carbs: 0.6,   sugar: 0.4, fiber: 0,   fat: 0     },
+  oil:     { calories: 48,  protein: 0,     carbs: 0,     sugar: 123, fiber: 0,   fat: 151   },
+  onion:   { calories: 0,   protein: 1,     carbs: 9,     sugar: 0,   fiber: 0,   fat: 0     },
+  garlic:  { calories: 149, protein: 6.4,   carbs: 33,    sugar: 1,   fiber: 2.1, fat: 0.5   },
+  paprika: { calories: 282, protein: 14.14, carbs: 53.99, sugar: 1,   fiber: 0,   fat: 12.89 },
+  sugar:   { calories: 387, protein: 0,     carbs: 100,   sugar: 100, fiber: 0,   fat: 0     },
+  orange:  { calories: 49,  protein: 0.9,   carbs: 13,    sugar: 9,   fiber: 0.2, fat: 0.1   },
+}
+</code></pre>
+      <h3>Usage</h3>
+      <p>Here is a possible script to test your functions:</p>
+      <blockquote>
+        <p>The value for each item in <code>groceriesCart</code> is the number of grams</p>
+      </blockquote>
+      <pre><code class="language-js">const groceriesCart = { orange: 500, oil: 20, sugar: 480 }
+
+console.log('Total calories:')
+console.log(totalCalories(groceriesCart))
+console.log('Items with low carbs:')
+console.log(lowCarbs(groceriesCart))
+console.log('Total cart nutritional facts:')
+console.log(cartTotal(groceriesCart))
+</code></pre>
+      <p>And its output:</p>
+      <pre><code class="language-console">Total calories:
+2112.2
+Items with low carbs:
+{ oil: 20 }
+Total cart nutritional facts:
+{
+  orange: {
+    calories: 245,
+    protein: 4.5,
+    carbs: 65,
+    sugar: 45,
+    fiber: 1,
+    fat: 0.5
+  },
+  oil: {
+    calories: 9.6,
+    protein: 0,
+    carbs: 0,
+    sugar: 24.6,
+    fiber: 0,
+    fat: 30.2
+  },
+  sugar: {
+    calories: 1857.6,
+    protein: 0,
+    carbs: 480,
+    sugar: 480,
+    fiber: 0,
+    fat: 0
+  }
+}
+
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/filter">filter</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/map">map</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/reduce">reduce</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/entries">entries</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">fromentries</a></li>
+      </ul>
+    </article>
+    <article id='object-curry-entries' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>curry-entries</h2>
+      <h2>Curry Entries</h2>
+      <h3>Instructions</h3>
+      <p>You're going to create some curry functions, to apply to the object's entries.</p>
+      <p>Create <code>defaultCurry</code>, which curries two objects. It mergers the objects together. If the key exists
+        in both objects, the value from the second object override the value from the first object.</p>
+      <pre><code class="language-js">defaultCurry({
+  http: 403,
+  connection: 'close',
+  contentType: 'multipart/form-data',
+})({
+  http: 200,
+  connection: 'open',
+  requestMethod: 'GET'
+})
+// output
+{
+    http: 200,
+    connection: 'open',
+    contentType: 'multipart/form-data',
+    requestMethod: 'GET'
+}
+
+</code></pre>
+      <p>Create <code>mapCurry</code>, which replicates function <code>.map</code> (but for an object). The first entry
+        is the function, and the second entry is the object.</p>
+      <pre><code class="language-js">mapCurry(([k, v]) =&gt; [`${k}_force`, v])(personnel)
+// output
+{
+  lukeSkywalker_force: { id: 5,  pilotingScore: 98, shootingScore: 56, isForceUser: true  },
+  sabineWren_force:    { id: 82, pilotingScore: 73, shootingScore: 99, isForceUser: false },
+  zebOrellios_force:   { id: 22, pilotingScore: 20, shootingScore: 59, isForceUser: false },
+  ezraBridger_force:   { id: 15, pilotingScore: 43, shootingScore: 67, isForceUser: true  },
+  calebDume_force:     { id: 11, pilotingScore: 71, shootingScore: 85, isForceUser: true  },
+}
+</code></pre>
+      <p>Create <code>reduceCurry</code>, which replicates the <code>.reduce</code> method (but from an object). The
+        first entry is the function, and the second is the object and initial value).</p>
+      <pre><code class="language-js">reduceCurry((acc, [k, v]) =&gt; (acc += v))({ a: 1, b: 2, c: 3 }, 0)
+// output
+6
+</code></pre>
+      <p>Create <code>filterCurry</code> which replicates the <code>.filter</code> method (but for an object). The first
+        entry is the function, and the second is an object.</p>
+      <pre><code class="language-js">filterCurry(([k, v]) =&gt; typeof v === 'string' || k === 'arr')({
+  str: 'string',
+  nbr: 1,
+  arr: [1, 2],
+})
+// output
+{ str: 'string', arr: [1, 2] }
+</code></pre>
+      <p>Using each curry function create the following functions with a parameter <code>personnel</code>:</p>
+      <ul>
+        <li><code>reduceScore</code>: that will return the total value of the scores
+          of the people who use the force. (this function can have one additional parameter).</li>
+        <li><code>filterForce</code>: that will return the force users with <code>shootingScores</code> equal to or
+          higher than 80.</li>
+        <li><code>mapAverage</code>: that will return a new object with the property <code>averageScore</code>, that is
+          the average of the scores for each person.</li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">// prettier-ignore
+const personnel = {
+  lukeSkywalker: { id: 5,  pilotingScore: 98, shootingScore: 56, isForceUser: true  },
+  sabineWren:    { id: 82, pilotingScore: 73, shootingScore: 99, isForceUser: false },
+  zebOrellios:   { id: 22, pilotingScore: 20, shootingScore: 59, isForceUser: false },
+  ezraBridger:   { id: 15, pilotingScore: 43, shootingScore: 67, isForceUser: true  },
+  calebDume:     { id: 11, pilotingScore: 71, shootingScore: 85, isForceUser: true  },
+}
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/filter">filter</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/map">map</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/array/reduce">reduce</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/entries">entries</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">fromentries</a></li>
+        <li><a href="https://stackoverflow.com/questions/36314/what-is-currying">stackoverflow what-is-currying?</a>
+        </li>
+      </ul>
+    </article>
+    <article id='object-deep-copy' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>deep-copy</h2>
+      <h2>Deep Copy</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>deepCopy</code> that copies objects and arrays recursively.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript-object/">devdocs.io/javascript-object</a></li>
+      </ul>
+    </article>
+    <article id='object-replica' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>replica</h2>
+      <h2>Replica</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>replica</code> that allows you to deep assign the values of all properties from
+        one or more objects to a target object.</p>
+      <blockquote>
+        <p>Watch out for shallow copies.</p>
+      </blockquote>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">data-structures</a></li>
+      </ul>
+    </article>
+    <article id='object-pronoun' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>pronoun</h2>
+      <h2>Pronoun</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>pronoun</code> that accepts a string as its parameter.
+        This function should return an object where each key is a personal pronoun found in the string. The value of
+        each key should be a sub-object containing:</p>
+      <ul>
+        <li>a <code>word</code> array, which includes the first word that follows each occurrence of the pronoun
+          (excluding other pronouns)</li>
+        <li>a <code>count</code> property, indicating how many times the pronoun appears in the string.</li>
+      </ul>
+      <blockquote>
+        <p>Note: If the word that follows a pronoun is also a pronoun, it should be ignored and not included in the word
+          array.</p>
+      </blockquote>
+      <p>Pronouns:</p>
+      <ul>
+        <li>i</li>
+        <li>you</li>
+        <li>he</li>
+        <li>she</li>
+        <li>it</li>
+        <li>they</li>
+        <li>we</li>
+      </ul>
+      <h4>Example</h4>
+      <pre><code class="language-js">const ex = 'Using Array Destructuring, you you can iterate through objects easily.'
+
+{ you: { word: [ 'can' ], count: 2 } }
+
+const ex = 'If he you want to buy something you have to pay.'
+
+{
+  he: { word: [], count: 1}
+  you: { word: [ 'want', 'have' ], count: 2 }
+}
+
+</code></pre>
+    </article>
+    <article id='object-neuron' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>neuron</h2>
+      <h2>Neuron</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>neuron</code>, that enables your AI/bot to learn to mutate data into a more
+        usable shape. You can see how it works from the example.</p>
+      <h3>Example</h3>
+      <pre><code class="language-js">neuron([
+  'Questions: what is ounces? - Response: Ounce, unit of weight in the avoirdupois system',
+  'Questions: what is ounces? - Response: equal to 1/16 pound (437 1/2 grains)',
+  'Questions: what is Mud dauber - Response: Mud dauber is a name commonly applied to a number of wasps',
+  'Orders: shutdown! - Response: Yes Sr!',
+  'Orders: Quote something! - Response: Pursue what catches your heart, not what catches your eyes.'
+])
+
+// output
+{
+  questions: {
+    what_is_ounces: { question: 'what is ounces?', responses: [
+        'Ounce, unit of weight in the avoirdupois system',
+        'equal to 1/16 pound (437 1/2 grains)'
+    ] },
+    what_is_mud_dauber: { question: 'what is Mud dauber', responses: [
+        'Mud dauber is a name commonly applied to a number of wasps'
+    ] }
+  },
+  orders: {
+    shutdown: { order: 'shutdown!', responses: ['Yes Sr!'] },
+    quote_something: { order: 'Quote something!', responses: [
+        'Pursue what catches your heart, not what catches your eyes.'
+    ] }
+  }
+}
+</code></pre>
+    </article>
+    <article id='object-flagger' hidden>
+      <div class='crumb'>OBJECT</div>
+      <h2>flagger</h2>
+      <h2>Flagger</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>flags</code> that receives an object and returns the specific aliases and
+        descriptions from the properties of that object.</p>
+      <p>The <code>help</code> flag:</p>
+      <ul>
+        <li>Must be present in the <strong>output</strong> by default.</li>
+        <li>When not present in the input, it should return the description of all flags.</li>
+        <li>When present in the input, it specifies the descriptions of the flags that are passed to <code>help</code>.
+          (ex: <code>help: ['divide']</code>)</li>
+      </ul>
+      <h4>Example:</h4>
+      <pre><code class="language-js">{
+  multiply: 'multiply the values',
+  divide: 'divides the values',
+  help: ['divide']
+}
+</code></pre>
+      <p>and outputs :</p>
+      <pre><code class="language-js">{
+  alias: { h: 'help', m: 'multiply', d: 'divide'}
+  description: '-d, --divide: divides the values',
+}
+</code></pre>
+    </article>
+    <article id='async-debounce' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>debounce</h2>
+      <h2>Debounce</h2>
+      <h3>Instructions</h3>
+      <p>Create two functions that will work like <code>_.debounce</code> from lodash.</p>
+      <ul>
+        <li><code>debounce</code>: don't worry about the options.</li>
+        <li><code>opDebounce</code>: implement the <code>leading</code> options.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://lodash.com/docs/4.17.15#debounce">lodash debounce</a></li>
+        <li><a href="https://css-tricks.com/debouncing-throttling-explained-examples/#debounce">css-tricks.com
+            debounce</a></li>
+      </ul>
+    </article>
+    <article id='async-throttle' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>throttle</h2>
+      <h2>Throttle</h2>
+      <h3>Instructions</h3>
+      <p>Create two functions that will work like <code>_.throttle</code> from lodash.</p>
+      <ul>
+        <li><code>throttle</code>: don't worry about the options.</li>
+        <li><code>opThrottle</code>: implement the <code>trailing</code> and <code>leading</code> options.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://lodash.com/docs/4.17.15#throttle">lodash throttle</a></li>
+        <li><a href="https://css-tricks.com/debouncing-throttling-explained-examples/#throttle">css-tricks throttle</a>
+        </li>
+        <li><a
+            href="https://stackoverflow.com/questions/24079736/confused-about-the-maxwait-option-for-lodashs-debounce-method">stackoverflow
+            about lodash debounce</a></li>
+      </ul>
+    </article>
+    <article id='async-interpolation' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>interpolation</h2>
+      <h2>Interpolation</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>interpolation</code> that takes an object with 5 properties: <code>step</code>,
+        <code>start</code>, <code>end</code>, <code>callback</code> and <code>duration</code>.</p>
+      <p>This function must interpolate points from the <code>start</code> position to the <code>end</code> position
+        (not including the <code>end</code> position). The number of points depends on the number of steps.</p>
+      <p>For each interpolation point, you must call the <code>callback</code> function with an array of the two points
+        <code>[x, y]</code>:</p>
+      <ul>
+        <li><code>x</code>: distance</li>
+        <li><code>y</code>: point</li>
+      </ul>
+      <p>There should be a delay between each <code>callback</code> invocation of <code>duration / step</code>, so that
+        the final call happens after <code>duration</code>.</p>
+      <h3>Example</h3>
+      <pre><code>step = 5
+start = 0
+end = 1
+duration = 10
+
+   t
+   |
+10 |_______________. &lt;- execute callback([0.8, 10])
+   |               |
+   |               |
+ 8 |___________.   |
+   |           |   |
+   |           |   |
+ 6 |_______.   |   |
+   |       |   |   |
+   |       |   |   |
+ 4 |___.   |   |   |
+   |   |   |   |   |
+   |   |   |   |   |
+ 2 .   |   |   |   |
+   |   |   |   |   |
+   |___|___|___|___|___d
+   0  0.2 0.4 0.6 0.8
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://javascript.info/settimeout-setinterval">setTimeout &amp; setInterval</a></li>
+      </ul>
+    </article>
+    <article id='async-keep-trying-or-giveup' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>keep-trying-or-giveup</h2>
+      <h2>Keep Trying Or Giveup</h2>
+      <h3>Instructions</h3>
+      <p>Create a <code>retry</code> function, that takes 2 arguments:</p>
+      <ul>
+        <li><code>count</code>: indicates maximum number of retries.</li>
+        <li><code>callback</code>: an <code>async</code> function that will be invoked for every attempt.</li>
+      </ul>
+      <p><code>retry</code> returns a function that invokes the <code>callback</code> function. That function passes its
+        arguments to <code>callback</code>, and returns the value from <code>callback</code>.</p>
+      <p>The function returned by <code>retry</code> must <code>catch</code> errors from <code>callback</code>. After
+        that function has caught <code>count</code> errors, it must <code>throw</code> an <code>Error</code>.</p>
+      <blockquote>
+        <p>if <code>count</code> is 3, <code>callback</code> will be invoked at most 4 times, the initial call plus 3
+          retries.</p>
+      </blockquote>
+      <p>Create function named <code>timeout</code>, that takes 2 arguments:</p>
+      <ul>
+        <li><code>delay</code>: indicates maximum wait time.</li>
+        <li><code>callback</code>: an asynchronous function that will be invoked.</li>
+      </ul>
+      <p><code>timeout</code> returns a function that invokes and returns the value from <code>callback</code>. The
+        function must pass its arguments to <code>callback</code>. If <code>callback</code> does not resolve before
+        <code>delay</code>, your function returns <code>Error('timeout')</code>.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/promises.js">Promises</a></li>
+        <li><a href="https://devdocs.io/dom/settimeout">setTimeout</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/promise/race">Promise.race</a></li>
+      </ul>
+    </article>
+    <article id='async-get-json' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>get-json</h2>
+      <h2>Get Json</h2>
+      <h3>Instructions</h3>
+      <p>In this exercise, we will focus on building complex async flows with promises.</p>
+      <p>Create a function named <code>getJSON</code> with two parameters:</p>
+      <ul>
+        <li><code>path</code>: a URL called by your function.</li>
+        <li><code>params</code>: optional query parameters that will be appended to the <code>path</code>.</li>
+      </ul>
+      <p><code>getJSON</code> must construct a valid url with the <code>path</code> and stringified <code>params</code>,
+        and use <code>fetch</code> to fulfil the request.</p>
+      <p>If the response is not OK, <code>getJSON</code> must throw an error using the response <em>status text</em>.
+      </p>
+      <p>The response body must then be read and parsed from JSON.</p>
+      <p>The parsed object contains one of those 2 properties:</p>
+      <ul>
+        <li><code>&quot;data&quot;</code>: the actual data to return.</li>
+        <li><code>&quot;error&quot;</code>: the error message to throw.</li>
+      </ul>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/promise.js">Promise.js</a></li>
+        <li><a href="https://devdocs.io/dom/fetch_api/using_fetch">Using fetch</a></li>
+        <li><a href="https://devdocs.io/dom/urlsearchparams">URL search params</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/json">JSON</a></li>
+      </ul>
+    </article>
+    <article id='async-is-winner' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>is-winner</h2>
+      <h2>Is Winner</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>isWinner</code> which accepts a string representing the name of a country. It
+        should use the <code>winners</code> <em>&quot;API&quot;</em> to return a resolved <code>Promise</code> with an
+        appropriate string.</p>
+      <p>The strings which can be returned are listed below. You'll need to replace <code>&quot;Country&quot;</code>
+        with the country named which is passed to <code>isWinner</code>:</p>
+      <ul>
+        <li>
+          <p><code>&quot;Country never was a winner&quot;</code>: The country has never won a FIFA world cup.</p>
+        </li>
+        <li>
+          <p><code>&quot;Country is not what we are looking for because of the continent&quot;</code>: The country is
+            not from the european continent.</p>
+        </li>
+        <li>
+          <p>
+            <code>&quot;Country is not what we are looking for because of the number of times it was champion&quot;</code>:
+            The country won the FIFA world cup fewer than 3 times.</p>
+        </li>
+        <li>
+          <p><code>&quot;Country won the FIFA World Cup in &lt;years&gt; winning by &lt;results&gt;&quot;</code>: with
+            the following format:</p>
+          <ul>
+            <li><code>&lt;years&gt;</code>: <code>&quot;1000, 1004, 1008&quot;</code></li>
+            <li><code>&lt;results&gt;</code>: <code>&quot;4-3, 5-2, 1-0&quot;</code></li>
+          </ul>
+        </li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">const db = (() =&gt; {
+  //countries that won the FIFA World Cup
+  const countries = [
+    { id: 1, name: 'Brazil', continent: 'South America' },
+    { id: 2, name: 'Germany', continent: 'Europe' },
+    { id: 3, name: 'Italy', continent: 'Europe' },
+    { id: 4, name: 'Argentina', continent: 'South America' },
+    { id: 5, name: 'France', continent: 'Europe' },
+    { id: 6, name: 'Uruguay', continent: 'South America' },
+    { id: 7, name: 'England', continent: 'Europe' },
+    { id: 8, name: 'Spain', continent: 'Europe' },
+  ]
+
+  //Information about the wins
+  const results = [
+    { id: 1, countryId: 6, year: 1930, score: '4-2' },
+    { id: 2, countryId: 3, year: 1934, score: '2-1' },
+    { id: 3, countryId: 3, year: 1938, score: '4-2' },
+    { id: 4, countryId: 6, year: 1950, score: '2-1' },
+    { id: 5, countryId: 2, year: 1954, score: '3-2' },
+    { id: 6, countryId: 1, year: 1958, score: '5-2' },
+    { id: 7, countryId: 1, year: 1962, score: '3-1' },
+    { id: 8, countryId: 7, year: 1966, score: '4-2' },
+    { id: 9, countryId: 1, year: 1970, score: '4-1' },
+    { id: 10, countryId: 2, year: 1974, score: '2-1' },
+    { id: 11, countryId: 4, year: 1978, score: '3-1' },
+    { id: 12, countryId: 3, year: 1982, score: '3-1' },
+    { id: 13, countryId: 4, year: 1986, score: '3-2' },
+    { id: 14, countryId: 2, year: 1990, score: '1-0' },
+    { id: 15, countryId: 1, year: 1994, score: '3-2p' },
+    { id: 16, countryId: 5, year: 1998, score: '3-0' },
+    { id: 17, countryId: 1, year: 2002, score: '2-0' },
+    { id: 18, countryId: 3, year: 2006, score: '5-3p' },
+    { id: 19, countryId: 8, year: 2010, score: '1-0' },
+    { id: 20, countryId: 2, year: 2014, score: '1-0' },
+    { id: 21, countryId: 5, year: 2018, score: '4-2' },
+  ]
+
+  return {
+    //returns the information of the country
+    getWinner: async (countryName) =&gt; {
+      const match = countries.find((country) =&gt; country.name === countryName)
+      if (!match) throw Error('Country Not Found')
+      return match
+    },
+    //returns the information of the wins of that country
+    getResults: async (countryId) =&gt; {
+      const match = results.filter((result) =&gt; result.countryId === countryId)
+      if (!match.length) throw Error('Results Not Found')
+      return match
+    },
+    addCountry: (country) =&gt; countries.push(country),
+    addResults: (result) =&gt; results.push(result),
+  }
+})()
+</code></pre>
+    </article>
+    <article id='async-gougle-search' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>gougle-search</h2>
+      <h2>Gougle Search</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>queryServers</code> that takes 2 arguments:</p>
+      <ul>
+        <li><code>serverName</code>: a string of the name of the server.</li>
+        <li><code>q</code>: a string of the query given by the user.</li>
+      </ul>
+      <p>You need to construct 2 urls which should work like this:</p>
+      <pre><code class="language-js">queryServers('pouet', 'hello+world')
+// return the fastest of those 2 calls:
+// -&gt; getJSON('/pouet?q=hello+world')
+// -&gt; getJSON('/pouet_backup?q=hello+world')
+</code></pre>
+      <p>Create a function named: <code>gougleSearch</code> that takes a single query argument (<code>q</code>). It must
+        invoke <code>queryServers</code> concurrently on 3 servers:</p>
+      <ul>
+        <li><code>&quot;web&quot;</code></li>
+        <li><code>&quot;image&quot;</code></li>
+        <li><code>&quot;video&quot;</code></li>
+      </ul>
+      <p>You must return the value from each server in an object using the server name as key.</p>
+      <p>A timeout of 80milliseconds must be set for the whole operation, if it is not complete within 80 milliseconds,
+        then you must return <code>Error('timeout')</code>.</p>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">// fake `getJSON` function
+let getJSON = async (url) =&gt; url
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://devdocs.io/javascript/global_objects/promise/race">Promise.race</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/promise/all">Promise.all</a></li>
+      </ul>
+    </article>
+    <article id='async-all' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>all</h2>
+      <h2>All</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>all</code> that works like <code>Promise.all</code> but with objects (instead of
+        arrays).</p>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Promise.all = undefined
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/promise.js">Promise.js</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/promise/all">Promise.all</a></li>
+      </ul>
+    </article>
+    <article id='async-series' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>series</h2>
+      <h2>Series</h2>
+      <h3>Instructions</h3>
+      <p>Create a function named <code>series</code> that takes an array of <code>async</code> functions. It must
+        execute them in series and return the results in order.</p>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/promise.js">Promise</a></li>
+      </ul>
+    </article>
+    <article id='async-race' hidden>
+      <div class='crumb'>ASYNC</div>
+      <h2>race</h2>
+      <h2>Race</h2>
+      <h3>Instructions</h3>
+      <p>Create two functions:</p>
+      <ul>
+        <li><code>race</code>: that works like <code>Promise.race</code>.</li>
+        <li><code>some</code>: that takes an <code>array</code> of promises or values, and <code>count</code> number. It
+          should return the first <code>count</code> resolved values. Empty arrays or a <code>count</code> of 0 return a
+          promise resolving to <code>undefined</code>.</li>
+      </ul>
+      <h3>Code provided</h3>
+      <blockquote>
+        <p>The provided code will be added to your solution, and does not need to be submitted.</p>
+      </blockquote>
+      <pre><code class="language-js">Promise.race = undefined
+</code></pre>
+      <h3>Notions</h3>
+      <ul>
+        <li><a href="https://nan-academy.github.io/js-training/examples/promise.js">Promise</a></li>
+        <li><a href="https://devdocs.io/javascript/global_objects/promise/race">Promise.race</a></li>
+      </ul>
+    </article>
+
+    <div class="pager">
+      <button id="prev">← previous</button>
+      <button id="next">next →</button>
+    </div>
+  </main>
+
+  <script>
+    // ── single-exercise router ───────────────────────────────────────────────── ⊃
+    const arts = [...document.querySelectorAll('article')];
+    const links = [...document.querySelectorAll('.toc a.ex')];
+    const ids = arts.map(a => a.id);
+
+    function show(id) {
+      const i = ids.indexOf(id) >= 0 ? ids.indexOf(id) : 0;
+      arts.forEach((a, n) => a.hidden = n !== i);
+      links.forEach(l => l.classList.toggle('active', l.hash === '#' + ids[i]));
+      document.getElementById('barTitle').textContent = arts[i].querySelector('h2').textContent;
+      document.getElementById('prev').disabled = i === 0;
+      document.getElementById('next').disabled = i === ids.length - 1;
+      document.body.classList.remove('menu-open');
+      window.scrollTo(0, 0);
+      const on = links[i];
+      if (on) on.scrollIntoView({ block: 'nearest' });
+    }
+    addEventListener('hashchange', () => show(location.hash.slice(1)));
+    show(location.hash.slice(1));
+
+    const go = step => {
+      const i = ids.indexOf(arts.find(a => !a.hidden).id);
+      const j = i + step;
+      if (j >= 0 && j < ids.length) location.hash = ids[j];
+    };
+    prev.onclick = () => go(-1);
+    next.onclick = () => go(1);
+    addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowLeft') go(-1);
+      if (e.key === 'ArrowRight') go(1);
+    });
+
+    // ── menu + filter ────────────────────────────────────────────────────────── ⊃
+    burger.onclick = () => document.body.classList.toggle('menu-open');
+    scrim.onclick = () => document.body.classList.remove('menu-open');
+
+    q.oninput = () => {
+      const t = q.value.trim().toLowerCase();
+      links.forEach(l => l.hidden = t && !l.textContent.toLowerCase().includes(t));
+      document.querySelectorAll('.toc h3').forEach(h => {
+        let any = false;
+        for (let n = h.nextElementSibling; n && n.tagName === 'A'; n = n.nextElementSibling)
+          if (!n.hidden) any = true;
+        h.hidden = !any;
+      });
+    };
+  </script>
+</body>
+
+</html>
