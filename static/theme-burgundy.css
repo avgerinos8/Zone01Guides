@@ -1,25 +1,50 @@
-/* ══════════════════════════════════════════════════════════════════════════
-   theme-burgundy.css — color scheme ONLY. Load this AFTER style.css
-   in index.html (a second <link>) to apply this palette. To make a new
-   color scheme, copy this file, rename it (theme-<name>.css), and change
-   only the values below — nothing else in the site needs to know about it.
-   ══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --tone-1: #1a080aff;
-  --tone-2: #23060eff;
-  --tone-3: #3d0c14ff;
-  --tone-4: #6e1420ff;
-  --tone-5: #d97b3fff;
+  --tone-1: #1e2022ff;
+  --tone-2: #25282bff;
+  --tone-3: #313539ff;
+  --tone-4: #e8d34dff;
+  --tone-5: #ff9f43ff;
 
-  --tone-1-rgb: 26, 8, 10;
-  --tone-2-rgb: 35, 6, 14;
-  --tone-3-rgb: 61, 12, 20;
-  --tone-4-rgb: 110, 20, 32;
-  --tone-5-rgb: 217, 123, 63;
+  --tone-1-rgb: 30, 32, 34;
+  --tone-2-rgb: 37, 40, 43;
+  --tone-3-rgb: 49, 53, 57;
+  --tone-4-rgb: 232, 211, 77;
+  --tone-5-rgb: 255, 159, 67;
 
-  --tone-text: #f6e9dcff;
-  --tone-text-rgb: 246, 233, 220;
+  --tone-text: #e9ecefff;
+  --tone-text-rgb: 233, 236, 239;
 
-  --code-bg: #140d0fff;
-  --code-bg-rgb: 20, 13, 15;
+  --code-bg: #151719ff;
+  --code-bg-rgb: 21, 23, 25;
+
+  --bg: var(--tone-1);
+  --panel: var(--tone-2);
+  --panel-rgb: var(--tone-2-rgb);
+  --ink: var(--tone-text);
+  --ink-rgb: var(--tone-text-rgb);
+  --accent: var(--tone-5);
+  --accent-rgb: var(--tone-5-rgb);
+
+  --danger: #ff6b4aff;
+  --danger-rgb: 255, 107, 74;
+  --correct: #2ec4b6ff;
+  --correct-rgb: 46, 196, 182;
+  --wrong: #e63946ff;
+  --wrong-rgb: 230, 57, 70;
+
+  --h1-color: #ffffffff;
+  --h1-shadow: #3d4655ff;
+  --h1-outline: #000000ff;
+}
+
+h1 {
+  color: var(--h1-color);
+
+  text-shadow:
+    -0.035em -0.035em 0 var(--code-bg),
+    0.035em 0.035em 0 var(--code-bg),
+    0px 0.04em 0 var(--h1-shadow),
+    0px 0.06em 0 var(--h1-shadow),
+    0px 0.08em 0 var(--h1-shadow),
+    0px 0.10em 0 var(--h1-shadow);
 }
