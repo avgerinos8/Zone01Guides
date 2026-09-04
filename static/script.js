@@ -1845,6 +1845,14 @@ function initTocSidebar() {
       });
     });
 
+    tocListEl.querySelectorAll("a.toc-link[href^='#']").forEach((link) => {
+      const text = link.textContent.trim();
+      if (!text) return;
+      const targetEl = document.getElementById(link.getAttribute("href").slice(1));
+      if (!targetEl) return;
+      searchIndex.push({ el: targetEl, text, textLower: text.toLowerCase() });
+    });
+
     const originalTocListHTML = tocListEl.innerHTML; // browse mode — restored when the search box is cleared
     let searchHitIdCounter = 0;
 
@@ -1897,7 +1905,7 @@ function initTocSidebar() {
 
     function renderResults(query) {
       const q = query.trim().toLowerCase();
-      if (!q || q.length < 3) {
+      if (!q) {
         tocListEl.innerHTML = originalTocListHTML;
         return;
       }
@@ -1913,7 +1921,7 @@ function initTocSidebar() {
         return;
       }
 
-      matches.forEach((entry) => {
+      function renderEntry(entry) {
         const a = document.createElement("a");
         a.className = "toc-link toc-search-result";
 
@@ -1947,7 +1955,26 @@ function initTocSidebar() {
           if (isMobile) closeToc();
         });
         tocListEl.appendChild(a);
-      });
+      }
+
+      // Matches on an element that already has a real @slug (a heading
+      // extract_toc recognized and gave a TOC entry to) are shown first —
+      // more likely to be what someone's actually looking for than an
+      // arbitrary paragraph that happens to contain the same word. A
+      // divider marks the split, but only when there's actually a slug
+      // match to put above it.
+      const slugMatches = matches.filter((entry) => entry.el.id && entry.el.id.startsWith("@"));
+      const otherMatches = matches.filter((entry) => !(entry.el.id && entry.el.id.startsWith("@")));
+
+      slugMatches.forEach(renderEntry);
+
+      if (slugMatches.length > 0) {
+        const divider = document.createElement("div");
+        divider.className = "toc-search-divider";
+        tocListEl.appendChild(divider);
+      }
+
+      otherMatches.forEach(renderEntry);
     }
 
     let searchDebounce = null;

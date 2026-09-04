@@ -115,118 +115,86 @@
 
     <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
 
-    <div id="toc-list">
+        <div id="toc-list">
       <div class="toc-section">ΕΝΟΤΗΤΑ 1 — ERROR HANDLING &amp; STANDARD PACKAGES</div>
-      <a href="#@errors" class="toc-link toc-h1">Error Handling στη Go <span class="toc-gloss">why no
-          exceptions</span></a>
-      <a href="#@newerror" class="toc-link toc-h1">Δημιουργία &amp; Διαχείριση Σφαλμάτων <span
-          class="toc-gloss">errors.New, fmt.Errorf</span></a>
-      <a href="#@guard" class="toc-link toc-h2">Guard Clause <span class="toc-gloss">guard clause</span></a>
-      <a href="#@defer" class="toc-link toc-h1">Η λέξη-κλειδί defer <span class="toc-gloss">defer, LIFO</span></a>
-      <a href="#@panic" class="toc-link toc-h1">Panic: Πότε επιτρέπεται<span class="toc-gloss">when to panic</span></a>
-      <a href="#@recover" class="toc-link toc-h1">Recover: Περιορισμός της Ζημιάς<span
-          class="toc-gloss">recover</span></a>
-      <a href="#@recoverrule" class="toc-link toc-h2">Ο κανόνας: recover δουλεύει ΜΟΝΟ μέσα σε defer</a>
+      <a href="#@errors" class="toc-link toc-h1">Error Handling στη Go</a>
+      <a href="#@newerror" class="toc-link toc-h1">errors.New, fmt.Errorf</a>
+      <a href="#@guard" class="toc-link toc-h2">Guard Clause</a>
+      <a href="#@defer" class="toc-link toc-h1">Η λέξη-κλειδί defer</a>
+      <a href="#@panic" class="toc-link toc-h1">Panic: Πότε επιτρέπεται</a>
+      <a href="#@recover" class="toc-link toc-h1">Recover: Περιορισμός της Ζημιάς</a>
+      <a href="#@recoverrule" class="toc-link toc-h2">Recover ΜΟΝΟ μέσα σε defer</a>
       <a href="#@glossary1" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 1</a>
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 2 — STANDARD PACKAGES</div>
-      <a href="#@strings" class="toc-link toc-h1">Το πακέτο strings <span class="toc-gloss">strings package</span></a>
-      <a href="#@stringbuilder" class="toc-link toc-h1">strings.Builder &amp; Συγκρίσεις <span
-          class="toc-gloss">building strings</span></a>
-      <a href="#@strconv" class="toc-link toc-h1">Το πακέτο strconv <span class="toc-gloss">string ↔ number</span></a>
-      <a href="#@os" class="toc-link toc-h1">Το πακέτο os &amp; Αλληλεπίδραση με το Σύστημα <span class="toc-gloss">os
-          package</span></a>
+      <a href="#@strings" class="toc-link toc-h1"></a>
+      <a href="#@stringbuilder" class="toc-link toc-h1">building strings</a>
+      <a href="#@strconv" class="toc-link toc-h1">Το πακέτο strconv</a>
+      <a href="#@os" class="toc-link toc-h1">os package</a>
       <a href="#@exit" class="toc-link toc-h1">os.Exit: Άμεσος Τερματισμός</a>
-      <a href="#@io" class="toc-link toc-h1">Το πακέτο io: Αφαιρέσεις Εισόδου/Εξόδου <span class="toc-gloss">io.Reader /
-          io.Writer</span></a>
-      <a href="#@files" class="toc-link toc-h1">Ανάγνωση &amp; Εγγραφή Αρχείων <span class="toc-gloss">reading/writing
-          files</span></a>
-      <a href="#@bufio" class="toc-link toc-h1">Buffering &amp; Ροές Δεδομένων (bufio) <span
-          class="toc-gloss">bufio.Scanner</span></a>
+      <a href="#@io" class="toc-link toc-h1">io.Reader / io.Writer</a>
+      <a href="#@files" class="toc-link toc-h1">reading/writing files</a>
+      <a href="#@bufio" class="toc-link toc-h1">bufio.Scanner</a>
       <a href="#@readmodes" class="toc-link toc-h1">Σύνοψη: Τρεις Τρόποι Ανάγνωσης Αρχείου</a>
-      <a href="#@wordfreq" class="toc-link toc-h1">Word Frequency Counter <span class="toc-gloss">VSCode
-          Challenge</span></a>
+
       <a href="#@glossary2" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 2</a>
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 3 — STRUCTS</div>
-      <a href="#@struct" class="toc-link toc-h1">Τι είναι το Struct <span class="toc-gloss">structs basics</span></a>
-      <a href="#@literals" class="toc-link toc-h1">Αρχικοποίηση &amp; Προσπέλαση <span class="toc-gloss">struct
-          literals</span></a>
-      <a href="#@anonstruct" class="toc-link toc-h1">Advanced Struct Concepts: Ανώνυμα Structs &amp; Δείκτες <span
-          class="toc-gloss">anonymous structs, pointers</span></a>
-      <a href="#@composition" class="toc-link toc-h1">Struct Composition: Σύνθεση αντί για Κληρονομικότητα <span
-          class="toc-gloss">composition over inheritance</span></a>
-      <a href="#@shadowing" class="toc-link toc-h2">Shadowing: Όταν Συγκρούονται Ονόματα <span class="toc-gloss">name
-          shadowing</span></a>
-      <a href="#@library" class="toc-link toc-h1">Βιβλιοθήκη με Embedded Metadata <span class="toc-gloss">VSCode
-          Challenge</span></a>
+      <a href="#@struct" class="toc-link toc-h1">structs basics</a>
+      <a href="#@literals" class="toc-link toc-h1">struct literals</a>
+      <a href="#@anonstruct" class="toc-link toc-h1">anonymous structs, pointers</a>
+      <a href="#@composition" class="toc-link toc-h1">composition over inheritance</a>
+      <a href="#@shadowing" class="toc-link toc-h2">name shadowing</a>
+
       <a href="#@glossary3" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 3</a>
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 4 — METHODS</div>
-      <a href="#@methods" class="toc-link toc-h1">Εισαγωγή στα Methods <span class="toc-gloss">methods basics</span></a>
+      <a href="#@methods" class="toc-link toc-h1">methods basics</a>
       <a href="#@receivers" class="toc-link toc-h1">Value Receivers vs Pointer Receivers</a>
       <a href="#@nonstruct" class="toc-link toc-h1">Methods σε Non-Struct Types</a>
-      <a href="#@bank" class="toc-link toc-h1">Bank Account με Pointer Receivers <span class="toc-gloss">VSCode
-          Challenge</span></a>
+
       <a href="#@glossary4" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 4</a>
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 5 — INTERFACES</div>
-      <a href="#@interfaces" class="toc-link toc-h1">Θεμελιώδεις Αρχές των Interfaces <span class="toc-gloss">interfaces
-          basics</span></a>
+      <a href="#@interfaces" class="toc-link toc-h1">interfaces basics</a>
       <a href="#@implicit" class="toc-link toc-h1">Implicit Implementation (Έμμεση Υλοποίηση)</a>
-      <a href="#@polymorphism" class="toc-link toc-h1">Θεωρία Πολυμορφισμού στη Go <span class="toc-gloss">polymorphism
-          theory</span></a>
-      <a href="#@internals" class="toc-link toc-h1">Advanced Interface Usage: Εσωτερική Δομή <span
-          class="toc-gloss">interface internals</span></a>
-      <a href="#@nilpitfall" class="toc-link toc-h2">Η Παγίδα: nil pointer μέσα σε non-nil interface <span
-          class="toc-gloss">nil interface trap</span></a>
+      <a href="#@polymorphism" class="toc-link toc-h1">polymorphism theory</a>
+      <a href="#@internals" class="toc-link toc-h1">interface internals</a>
+      <a href="#@nilpitfall" class="toc-link toc-h2">nil interface trap</a>
       <a href="#@assertions" class="toc-link toc-h1">Type Assertions &amp; Type Switches</a>
       <a href="#@smallinterfaces" class="toc-link toc-h2">Η Χρυσή Αρχή: Keep Interfaces Small</a>
-      <a href="#@shapes" class="toc-link toc-h1">Shape Interface — Πολυμορφισμός στην Πράξη <span
-          class="toc-gloss">VSCode Challenge</span></a>
+
       <a href="#@glossary5" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 5</a>
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 6 — ΠΟΛΥΜΟΡΦΙΣΜΟΣ ΣΤΗΝ ΠΡΑΞΗ</div>
-      <a href="#@abstraction" class="toc-link toc-h1">*os.File vs io.Reader/io.Writer <span class="toc-gloss">concrete
-          type vs abstraction</span></a>
+      <a href="#@abstraction" class="toc-link toc-h1">concrete type vs abstraction</a>
       <a href="#@readwrite" class="toc-link toc-h1">Ανατομία: Read() &amp; Write()</a>
       <a href="#@piping" class="toc-link toc-h1">Πραγματικός Πολυμορφισμός: Piping Data Anywhere</a>
       <a href="#@pitfalls" class="toc-link toc-h1">Παγίδες, Anti-patterns &amp; Testing Benefits</a>
-      <a href="#@testing" class="toc-link toc-h2">Unit Testing χωρίς Πραγματικά Αρχεία <span class="toc-gloss">testing
-          without real files</span></a>
-      <a href="#@countlines" class="toc-link toc-h1">CountLines: Πολυμορφική Μέτρηση Γραμμών <span
-          class="toc-gloss">VSCode Challenge</span></a>
+      <a href="#@testing" class="toc-link toc-h2">testing without real files</a>
+
       <a href="#@glossary6" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 6</a>
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 7 — ΑΡΧΙΤΕΚΤΟΝΙΚΑ ΜΟΤΙΒΑ</div>
       <a href="#@pipeline" class="toc-link toc-h1">Pipeline Pattern</a>
-      <a href="#@fsm" class="toc-link toc-h1">Finite State Machine (FSM) <span class="toc-gloss">intro + plain
-          switch</span></a>
-      <a href="#@fsm2" class="toc-link toc-h1">2η Υλοποίηση FSM: Με Enums (iota) <span class="toc-gloss">FSM with
-          enums</span></a>
-      <a href="#@fsm3" class="toc-link toc-h1">3η Υλοποίηση FSM: Πίνακας Μεταβάσεων (Map) <span class="toc-gloss">FSM
-          with a transition table</span></a>
+      <a href="#@fsm" class="toc-link toc-h1">intro + plain switch</a>
+      <a href="#@fsm2" class="toc-link toc-h1">FSM with enums</a>
+      <a href="#@fsm3" class="toc-link toc-h1">FSM with a transition table</a>
       <a href="#@fsm4" class="toc-link toc-h1">4η Υλοποίηση FSM: Βασισμένη σε Callbacks/Hooks</a>
       <a href="#@fsm5" class="toc-link toc-h1">5η Υλοποίηση FSM: State Pattern με Structs &amp; Interfaces</a>
-      <a href="#@fsmcompare" class="toc-link toc-h1">FSM: Συμπέρασμα &amp; Σύγκριση των 5 Προσεγγίσεων <span
-          class="toc-gloss">comparing all 5 approaches</span></a>
-      <a href="#@trafficlight" class="toc-link toc-h1">Traffic Light FSM <span class="toc-gloss">VSCode
-          Challenge</span></a>
+      <a href="#@fsmcompare" class="toc-link toc-h1">comparing all 5 approaches</a>
       <a href="#@strategy" class="toc-link toc-h1">Strategy Pattern</a>
       <a href="#@command" class="toc-link toc-h1">Command Pattern</a>
       <a href="#@undoredo" class="toc-link toc-h2">Undo/Redo: Η Κλασική Χρήση</a>
       <a href="#@builder" class="toc-link toc-h1">Builder Pattern</a>
       <a href="#@options" class="toc-link toc-h1">Functional Options Pattern</a>
-      <a href="#@httpclient" class="toc-link toc-h1">HTTPClient με Functional Options <span class="toc-gloss">VSCode
-          Challenge</span></a>
+
       <a href="#@glossary7" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 7</a>
 
       <div class="toc-section">ΚΛΕΙΣΙΜΟ</div>
-      <a href="#@review" class="toc-link toc-h1">Συνδυαστικό Quiz — Όλο το Μέρος 3 <span class="toc-gloss">final review
-          quiz</span></a>
-      <a href="#@glossaryall" class="toc-link toc-h1">Όλοι οι όροι που είδαμε, σε ένα σημείο <span
-          class="toc-gloss">full glossary</span></a>
-      <a href="#@end" class="toc-link toc-h1">Έφτασες στο τέλος <span class="toc-gloss">the end / sources</span></a>
+      <a href="#@review" class="toc-link toc-h1">final review quiz</a>
+      <a href="#@glossaryall" class="toc-link toc-h1">full glossary</a>
+      <a href="#@end" class="toc-link toc-h1">Έφτασες στο τέλος</a>
     </div>
 
     <div id="toc-footer">
