@@ -1048,15 +1048,15 @@ case result := <-slowServer:
 
 <pre><code class="lang-go">var wg sync.WaitGroup
 
-for i := 0; i < 3; i++ {
+for i := 0; i &lt; 3; i++ {
     wg.Add(1) <span class="cm">// register one goroutine we expect to wait for</span>
-    go func(id int) {
+<span class="ln-go">    go func(id int) {</span>
         defer wg.Done() <span class="cm">// always signal completion, even on early return/panic</span>
         fmt.Println("worker", id, "done")
     }(i)
 }
 
-wg.Wait() <span class="cm">// blocks here until all 3 goroutines have called Done()</span>
+<span class="ln-wait">wg.Wait() <span class="cm">// blocks here until all 3 goroutines have called Done()</span></span>
 fmt.Println("all workers finished")
 </code></pre>
 
@@ -1067,197 +1067,336 @@ fmt.Println("all workers finished")
   να προλάβει να τρέξει και να δει μετρητή 0 <strong>πριν</strong> προλάβει η goroutine να καλέσει το δικό της <code>Add</code>,
   με αποτέλεσμα το <code>Wait()</code> να επιστρέψει πρόωρα, χωρίς να έχει περιμένει τίποτα.
 </div>
+`);
+        addContent(`
+<div id="@api-calls" class="eyebrow">Ενότητα 5 / 9 — Concurrency Synchronization</div>
+<h1>Παράδειγμα: Παράλληλα fetches</h1>
 
-<h2 id="@paradeigma-fetch">Παράδειγμα: N fetches παράλληλα</h2>
-<p>Το πρόγραμμα πρέπει να τραβήξει δεδομένα από N διαφορετικά API endpoints. Σειριακά, ο συνολικός χρόνος είναι το άθροισμα όλων. Παράλληλα, είναι όσος του πιο αργού. Κάθε goroutine χρειάζεται έναν τρόπο να επιστρέψει το αποτέλεσμά της (channel) και έναν τρόπο να δηλώσει ότι τελείωσε (<code>sync.WaitGroup</code>). Με δύο fetches:</p>
+<p>Το πρόγραμμα πρέπει να τραβήξει δεδομένα από δύο διαφορετικά API endpoints. Σειριακά, ο συνολικός χρόνος είναι το άθροισμα των δύο. Παράλληλα, είναι όσος του πιο αργού — αλλά με ένα κόστος που φαίνεται καθαρά μόνο σε άξονα χρόνου:</p>
 
-<pre><code class="lang-go">func StartServer() error {
+<svg viewBox="0 0 560 200" style="width:100%;max-width:760px;height:auto;margin:1.5rem auto;display:block;color:inherit;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Σύγκριση σειριακής και παράλληλης εκτέλεσης δύο fetches σε άξονα χρόνου">
+  <defs>
+    <marker id="figTimeTick" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
+
+  <text x="88" y="60" text-anchor="end" font-family="system-ui, sans-serif" font-size="13" fill="currentColor">Σειριακά</text>
+  <rect x="96" y="44" width="312" height="24" rx="4" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="252" y="60" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="currentColor">artists</text>
+  <rect x="408" y="44" width="104" height="24" rx="4" fill="currentColor" fill-opacity="0.20" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="460" y="60" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="currentColor">relations</text>
+  <line x1="512" y1="38" x2="512" y2="164" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.45"/>
+  <text x="508" y="32" text-anchor="end" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.8">σύνολο 4s</text>
+
+  <text x="88" y="124" text-anchor="end" font-family="system-ui, sans-serif" font-size="13" fill="currentColor">Παράλληλα</text>
+  <rect x="96" y="100" width="312" height="22" rx="4" fill="currentColor" fill-opacity="0.10" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="252" y="115" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="currentColor">artists</text>
+  <rect x="96" y="128" width="104" height="22" rx="4" fill="currentColor" fill-opacity="0.20" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.6"/>
+  <text x="148" y="143" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="currentColor">relations</text>
+  <rect x="200" y="128" width="208" height="22" rx="4" fill="var(--hl-wait, rgba(198, 64, 64, .20))" stroke="var(--hl-wait, rgba(198, 64, 64, .20))" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="304" y="143" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.85">περιμένει</text>
+  <line x1="408" y1="94" x2="408" y2="164" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" stroke-opacity="0.45"/>
+  <text x="404" y="88" text-anchor="end" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.8">σύνολο 3s</text>
+
+  <line x1="96" y1="164" x2="524" y2="164" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.7" marker-end="url(#figTimeTick)"/>
+  <line x1="96" y1="164" x2="96" y2="170" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.7"/>
+  <line x1="200" y1="164" x2="200" y2="170" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.7"/>
+  <line x1="304" y1="164" x2="304" y2="170" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.7"/>
+  <line x1="408" y1="164" x2="408" y2="170" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.7"/>
+  <line x1="512" y1="164" x2="512" y2="170" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.7"/>
+  <text x="96" y="186" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.7">0s</text>
+  <text x="200" y="186" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.7">1s</text>
+  <text x="304" y="186" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.7">2s</text>
+  <text x="408" y="186" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.7">3s</text>
+  <text x="512" y="186" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.7">4s</text>
+</svg>
+
+<p>Το κέρδος είναι πραγματικό: τέσσερα δευτερόλεπτα γίνονται τρία. Πρόσεξε όμως τι δείχνει η κόκκινη ζώνη — το γρήγορο fetch τελείωσε στο ένα δευτερόλεπτο και μετά κάθεται ακίνητο για δύο ακόμα. Θα επανέλθουμε σε αυτό.</p>
+
+<p>Κάθε goroutine χρειάζεται έναν τρόπο να επιστρέψει το αποτέλεσμά της (channel) και έναν τρόπο να δηλώσει ότι τερμάτισε (<code>sync.WaitGroup</code>):</p>
+
+<pre><code class="lang-go"><span class="cm">// WARNING: this code is broken on purpose — example only, do not use</span>
+func main() {
     var wg sync.WaitGroup
     wg.Add(2)
 
-    <span class="cm">// one channel per fetch — unbuffered</span>
-    artistChannel   := make(chan ArtistResult)
-    relationChannel := make(chan RelationResult)
+    artistChannel   := make(chan []Artist)   <span class="cm">// unbuffered</span>
+    relationChannel := make(chan []Relation) <span class="cm">// unbuffered</span>
+
+<span class="ln-go">    go func() {</span>
+        defer wg.Done()
+<span class="ln-wait">        artistChannel &lt;- FetchArtists()</span>
+    }()
+
+<span class="ln-go">    go func() {</span>
+        defer wg.Done()
+<span class="ln-wait">        relationChannel &lt;- FetchRelations()</span>
+    }()
+
+<span class="ln-wait">    wg.Wait() <span class="cm">// wait until both fetches have finished</span></span>
+
+    artists := &lt;-artistChannel
+    relations := &lt;-relationChannel
+    fmt.Println(len(artists), len(relations))
+}
+<span class="cm">// fatal error: all goroutines are asleep - deadlock!</span>
+</code></pre>
+
+<h2 id="@giati-einai-dead">Γιατί δεν τρέχει ποτέ</h2>
+<p>Η λογική «πρώτα περιμένω να τελειώσουν όλες, μετά μαζεύω τα αποτελέσματα» είναι η ίδια η αιτία του προβλήματος. Δημιουργεί κυκλική αναμονή:</p>
+
+<div class="glossary-group">
+  <h2>Βήματα Deadlock (Unbuffered)</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">Βήμα 1</td><td class="gt-def"><strong>main:</strong> ξεκινά τις δύο goroutines. <strong>goroutine:</strong> καλεί το fetch της.</td></tr>
+    <tr><td class="gt-term">Βήμα 2</td><td class="gt-def"><strong>main:</strong> μπλοκάρει στο <code>wg.Wait()</code>. <strong>goroutine:</strong> το fetch τελείωσε, κάνει send.</td></tr>
+    <tr><td class="gt-term">Βήμα 3</td><td class="gt-def"><strong>main:</strong> δεν έχει φτάσει στο receive. <strong>goroutine:</strong> το send μπλοκάρει.</td></tr>
+    <tr><td class="gt-term">Βήμα 4</td><td class="gt-def"><strong>main:</strong> counter = 2, ακίνητος. <strong>goroutine:</strong> το <code>wg.Done()</code> δεν εκτελείται ποτέ.</td></tr>
+    <tr><td class="gt-term">Αποτέλεσμα</td><td class="gt-def">Καμία goroutine δεν μπορεί να προχωρήσει — deadlock.</td></tr>
+  </table>
+</div>
+
+<p>Το <code>main</code> δεν φτάνει στα receives πριν τερματίσουν οι goroutines. Οι goroutines δεν τερματίζουν πριν κάποιος κάνει receive, επειδή ένα unbuffered send απαιτεί receiver την ίδια ακριβώς στιγμή.</p>
+
+<div class="callout">
+<p><strong>Η παγίδα με το <code>defer wg.Done()</code>.</strong> Είναι γραμμένο πρώτο μέσα στη function, αλλά το <code>defer</code> <em>καταγράφει</em> την κλήση εκεί και την <em>εκτελεί κατά τον τερματισμό</em>. Αφού η function μένει μόνιμα μπλοκαρισμένη στο send, δεν τερματίζει ποτέ, άρα το <code>Done()</code> δεν εκτελείται ποτέ.</p>
+</div>
+
+<!-- Αντικατάσταση του σχολίου "// ΕΔΩ ΓΡΑΨΕ ΤΟΝ ΣΩΣΤΟ ΚΩΔΙΚΑ ΜΕ BUFFER" -->
+
+<pre><code class="lang-go">func main() {
+    var wg sync.WaitGroup
+    wg.Add(2)
+
+    // Με buffer 1 το send δεν μπλοκάρει όσο υπάρχει ελεύθερη θέση
+    artistChannel   := make(chan []Artist, 1)   // buffer size 1
+    relationChannel := make(chan []Relation, 1) // buffer size 1
 
     go func() {
         defer wg.Done()
-        artists, err := FetchArtists()
-        artistChannel &lt;- ArtistResult{Artists: artists, Err: err}
+        artistChannel <- FetchArtists()
     }()
 
     go func() {
         defer wg.Done()
-        relations, err := FetchRelations()
-        relationChannel &lt;- RelationResult{Relations: relations, Err: err}
+        relationChannel <- FetchRelations()
     }()
 
-    wg.Wait() <span class="cm">// wait until both fetches have finished</span>
+    wg.Wait() // τώρα όλες οι goroutines έχουν τερματίσει
 
-    artistResult := &lt;-artistChannel
-    if artistResult.Err != nil {
-        return fmt.Errorf("could not fetch artists: %w", artistResult.Err)
-    }
-
-    relationResult := &lt;-relationChannel
-    if relationResult.Err != nil {
-        return fmt.Errorf("could not fetch relations: %w", relationResult.Err)
-    }
-
-    return nil
+    artists := &lt;-artistChannel
+    relations := &lt;-relationChannel
+    fmt.Println(len(artists), len(relations))
 }
 </code></pre>
 
-<p>Η πρόθεση είναι καθαρή: κάθε goroutine συσκευάζει αποτέλεσμα και σφάλμα σε μία τιμή και τη στέλνει στο δικό της channel, το <code>wg.Wait()</code> περιμένει να τελειώσουν και οι δύο, και μετά το <code>main</code> μαζεύει τα αποτελέσματα και ελέγχει τα σφάλματα.</p>
+<p>Η μόνη αλλαγή σε σχέση με τον αρχικό κώδικα είναι το <code>, 1</code> στη δήλωση των channels. Με αυτό, το send επιστρέφει αμέσως μόλις τοποθετηθεί η τιμή στον buffer, ακόμα κι αν δεν υπάρχει receiver. Έτσι κάθε goroutine μπορεί να ολοκληρώσει, να εκτελέσει το <code>defer wg.Done()</code>, και το <code>wg.Wait()</code> ξεμπλοκάρει κανονικά. Οι receives γίνονται μετά, παίρνοντας τις τιμές από τον buffer χωρίς καθυστέρηση.</p>
 
-<div class="callout">
-<p><strong>Αυτός ο κώδικας δεν τρέχει ποτέ.</strong> Τερματίζει με <code>fatal error: all goroutines are asleep - deadlock!</code></p>
+<div class="callout good">
+  <p><strong>Σωστό:</strong> Το buffer λύνει το deadlock ακριβώς επειδή αποσυνδέει χρονικά το send από το receive. Το πρόγραμμα τώρα τρέχει και τυπώνει τα μήκη των δύο slices.</p>
 </div>
 
-<h2 id="@giati-einai-dead">Γιατί είναι deadlock</h2>
-<p>Το πρόβλημα δεν είναι σε μία γραμμή, είναι μια κυκλική αναμονή:</p>
+<h2 id="@buffered-vs-unbu">Τι αλλάζει ο buffer</h2>
+<p>Η διαφορά ανάμεσα στα δύο είδη channel είναι ότι το ένα έχει θέσεις αποθήκευσης και το άλλο όχι. Αυτό αρκεί για να αλλάξει ποιος περιμένει ποιον:</p>
 
-<table>
-  <thead>
-    <tr><th>Βήμα</th><th>main</th><th>goroutine</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>ξεκινά τις goroutines</td><td>καλεί το <code>FetchArtists()</code></td></tr>
-    <tr><td>2</td><td>μπλοκάρει στο <code>wg.Wait()</code></td><td>το fetch τελείωσε, κάνει send</td></tr>
-    <tr><td>3</td><td>δεν κάνει receive ακόμη</td><td>το send μπλοκάρει</td></tr>
-    <tr><td>4</td><td>counter = 2, δεν κινείται</td><td>το <code>wg.Done()</code> δεν τρέχει ποτέ</td></tr>
-    <tr><td>5</td><td colspan="2">Και οι τρεις goroutines κοιμούνται → deadlock</td></tr>
-  </tbody>
-</table>
+<svg viewBox="0 0 560 368" style="width:100%;max-width:760px;height:auto;margin:1.5rem auto;display:block;color:inherit;" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Τρεις περιπτώσεις: unbuffered channel, buffered με έναν sender, buffered με δύο senders">
+  <defs>
+    <marker id="figChanArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
 
-<p>Το <code>main</code> δεν φτάνει στο receive πριν τελειώσουν οι goroutines. Οι goroutines δεν τελειώνουν πριν κάποιος κάνει receive, γιατί ένα unbuffered send απαιτεί receiver εκείνη τη στιγμή.</p>
+  <text x="8" y="22" font-family="Menlo, Consolas, monospace" font-size="13" fill="currentColor" fill-opacity="0.9">make(chan T)</text>
+  <text x="8" y="46" font-family="system-ui, sans-serif" font-size="13" fill="currentColor" fill-opacity="0.6">καμία θέση</text>
+  <rect x="8" y="60" width="96" height="32" rx="6" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.6"/>
+  <text x="56" y="80" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" fill="currentColor">sender</text>
+  <line x1="108" y1="76" x2="198" y2="76" stroke="currentColor" stroke-width="1.6" marker-end="url(#figChanArrow)"/>
+  <rect x="202" y="56" width="112" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 5" stroke-opacity="0.65"/>
+  <text x="258" y="81" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="currentColor" fill-opacity="0.75">0 θέσεις</text>
+  <line x1="318" y1="76" x2="408" y2="76" stroke="currentColor" stroke-width="1.6" marker-end="url(#figChanArrow)"/>
+  <rect x="412" y="60" width="96" height="32" rx="6" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.6"/>
+  <text x="460" y="80" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" fill="currentColor">receiver</text>
+  <text x="258" y="116" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.8">send και receive γίνονται την ίδια στιγμή</text>
 
-<div class="callout">
-<p><strong>Η παγίδα με το <code>defer wg.Done()</code>.</strong> Είναι γραμμένο πρώτο στο body, αλλά το <code>defer</code> <em>καταγράφει</em> την κλήση εκεί και την <em>εκτελεί στον τερματισμό</em> της function. Αφού η function κολλάει μόνιμα στο send, δεν τερματίζει ποτέ.</p>
-</div>
+  <text x="8" y="164" font-family="Menlo, Consolas, monospace" font-size="13" fill="currentColor" fill-opacity="0.9">make(chan T, 1)</text>
+  <text x="8" y="188" font-family="system-ui, sans-serif" font-size="13" fill="currentColor" fill-opacity="0.6">ένας sender</text>
+  <rect x="8" y="202" width="96" height="32" rx="6" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.6"/>
+  <text x="56" y="222" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" fill="currentColor">sender</text>
+  <line x1="108" y1="218" x2="198" y2="218" stroke="currentColor" stroke-width="1.6" marker-end="url(#figChanArrow)"/>
+  <rect x="202" y="198" width="112" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="212" y="206" width="92" height="24" rx="4" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5"/>
+  <text x="258" y="223" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor">τιμή</text>
+  <line x1="318" y1="218" x2="408" y2="218" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 5" stroke-opacity="0.6" marker-end="url(#figChanArrow)"/>
+  <rect x="412" y="202" width="96" height="32" rx="6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="6 5" stroke-opacity="0.6"/>
+  <text x="460" y="222" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="13" fill="currentColor" fill-opacity="0.7">receiver</text>
+  <text x="258" y="258" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.8">το send επιστρέφει αμέσως, ο receiver έρχεται αργότερα</text>
 
-<h2 id="@o-sostos-tropos">Ο σωστός τρόπος: buffered channels</h2>
-<p>Αλλάζει μόνο το <code>make</code>, τίποτα άλλο:</p>
+  <text x="8" y="300" font-family="Menlo, Consolas, monospace" font-size="13" fill="currentColor" fill-opacity="0.9">make(chan T, 1)</text>
+  <text x="8" y="324" font-family="system-ui, sans-serif" font-size="13" fill="currentColor" fill-opacity="0.6">δύο senders</text>
+  <rect x="8" y="290" width="0" height="0"/>
+  <rect x="120" y="282" width="72" height="26" rx="6" fill="currentColor" fill-opacity="0.07" stroke="currentColor" stroke-width="1.6"/>
+  <text x="156" y="299" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="currentColor">send A</text>
+  <rect x="120" y="320" width="72" height="26" rx="6" fill="var(--hl-wait, rgba(198, 64, 64, .20))" stroke="currentColor" stroke-width="1.6" stroke-opacity="0.6"/>
+  <text x="156" y="337" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="12" fill="currentColor">send B</text>
+  <line x1="196" y1="295" x2="236" y2="304" stroke="currentColor" stroke-width="1.6" marker-end="url(#figChanArrow)"/>
+  <line x1="196" y1="333" x2="230" y2="325" stroke="var(--hl-wait, rgba(198, 64, 64, .20))" stroke-width="2.4"/>
+  <rect x="234" y="308" width="6" height="36" rx="3" fill="var(--hl-wait, rgba(198, 64, 64, .20))"/>
+  <rect x="248" y="284" width="112" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  <rect x="258" y="292" width="92" height="24" rx="4" fill="currentColor" fill-opacity="0.18" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.5"/>
+  <text x="304" y="309" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor">τιμή</text>
+  <text x="372" y="309" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.7">η μία θέση γέμισε</text>
+  <text x="304" y="360" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="currentColor" fill-opacity="0.85">ο δεύτερος sender μπλοκάρει — ξανά το ίδιο deadlock</text>
+</svg>
 
-<pre><code class="lang-go">artistChannel   := make(chan ArtistResult, 1)   <span class="cm">// room for one value</span>
-relationChannel := make(chan RelationResult, 1)
+<p>Στον κώδικά μας αλλάζει μόνο το <code>make</code>, τίποτα άλλο σε ολόκληρο το πρόγραμμα:</p>
+
+<pre><code class="lang-go">artistChannel   := make(chan []Artist, 1)   <span class="cm">// room for one value</span>
+relationChannel := make(chan []Relation, 1)
 </code></pre>
 
-<p>Ο buffer επιτρέπει στην τιμή να μπει μέσα στο channel και να μείνει εκεί, χωρίς να περιμένει κανείς να τη διαβάσει εκείνη τη στιγμή. Η goroutine αφήνει το αποτέλεσμα και τερματίζει.</p>
+<p>Το πρόγραμμα τρέχει τώρα κανονικά. Η goroutine αφήνει την τιμή της στη θέση του buffer και συνεχίζει, χωρίς να χρειάζεται κάποιος να τη διαβάσει εκείνη τη στιγμή.</p>
 
-<table>
-  <thead>
-    <tr><th>Βήμα</th><th>main</th><th>goroutine</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>μπλοκάρει στο <code>wg.Wait()</code></td><td>κάνει send</td></tr>
-    <tr><td>2</td><td>μπλοκαρισμένη</td><td>υπάρχει χώρος, το send επιστρέφει</td></tr>
-    <tr><td>3</td><td>μπλοκαρισμένη</td><td>τερματίζει, counter → 1</td></tr>
-    <tr><td>4</td><td>counter = 0, ξεμπλοκάρει</td><td>έχει τερματίσει</td></tr>
-    <tr><td>5</td><td>το receive επιστρέφει αμέσως</td><td>—</td></tr>
-  </tbody>
-</table>
-
-<div class="callout">
-<p><strong>Γιατί χωρητικότητα 1;</strong> Επειδή σε κάθε channel αντιστοιχεί ένας sender που κάνει ένα send. Αν δύο goroutines μοιράζονταν το ίδιο channel, θα χρειαζόταν 2.</p>
+<div class="glossary-group">
+  <h2>Βήματα Buffered Channel</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">Βήμα 1</td><td class="gt-def"><strong>main:</strong> μπλοκάρει στο <code>wg.Wait()</code>. <strong>goroutine:</strong> κάνει send.</td></tr>
+    <tr><td class="gt-term">Βήμα 2</td><td class="gt-def"><strong>goroutine:</strong> υπάρχει χώρος στον buffer, το send επιστρέφει αμέσως.</td></tr>
+    <tr><td class="gt-term">Βήμα 3</td><td class="gt-def"><strong>goroutine:</strong> τερματίζει, ο counter πέφτει στο 1.</td></tr>
+    <tr><td class="gt-term">Βήμα 4</td><td class="gt-def"><strong>main:</strong> counter = 0, το <code>wg.Wait()</code> ξεμπλοκάρει.</td></tr>
+    <tr><td class="gt-term">Αποτέλεσμα</td><td class="gt-def">Οι τιμές περιμένουν ήδη στους buffers, τα receives επιστρέφουν αμέσως.</td></tr>
+  </table>
 </div>
 
-<h2 id="@agnosto-plithos">Και αν δεν ξέρουμε πόσες τιμές θα περάσουν;</h2>
-<p>Ναι, τότε η λύση αυτή είναι επικίνδυνη. Ο buffer δεν λύνει το deadlock, το αναβάλλει: δουλεύει εδώ μόνο επειδή ξέρουμε τη στιγμή που γράφουμε τον κώδικα ότι θα γίνει ακριβώς ένα send σε κάθε channel. Ένα δεύτερο send στο <code>artistChannel</code> χωρίς αλλαγή στο <code>make</code> επαναφέρει το deadlock — και τώρα εμφανίζεται μόνο υπό συνθήκες, άρα εντοπίζεται δυσκολότερα.</p>
-<p>Χωρητικότητα buffer επιλέγεται όταν το πλήθος των sends είναι γνωστό και σταθερό. Ένα <code>make(chan T, 1000)</code> «για ασφάλεια» απλώς μετακινεί το deadlock στο send 1001 και δεσμεύει μνήμη που δεν χρειάζεται.</p>
+<div class="callout">
+<p><strong>Ο buffer δεν λύνει το deadlock, το αναβάλλει.</strong> Δουλεύει εδώ μόνο επειδή γνωρίζουμε από πριν το πλήθος των sends — ένας sender ανά channel, ένα send ο καθένας. Το τρίτο μέρος του σχήματος δείχνει τι γίνεται μόλις αυτή η προϋπόθεση πάψει να ισχύει. Ένα <code>make(chan T, 1000)</code> για λόγους ασφαλείας απλώς μετακινεί το πρόβλημα στο send με αριθμό 1001, ενώ δεσμεύει μνήμη που δεν χρειάζεται. Χωρητικότητα επιλέγεται όταν το πλήθος είναι γνωστό και σταθερό.</p>
+</div>
 
-<h2 id="@treis-enallakti">Οι εναλλακτικές</h2>
-<p>Όταν το πλήθος είναι άγνωστο, το πρόβλημα λύνεται στη σειρά των πράξεων, όχι στο μέγεθος του buffer.</p>
+<h1 id="@pente-tropoi-gia">Το ίδιο πρόγραμμα, πέντε τρόποι</h1>
+<p>Πριν προχωρήσουμε, αξίζει να παρατηρήσουμε κάτι στη διορθωμένη εκδοχή: το <code>WaitGroup</code> δεν προσφέρει απολύτως τίποτα. Τα δύο receives μπλοκάρουν ήδη μέχρι να έρθει η κάθε τιμή, οπότε ο συγχρονισμός υπάρχει έτσι κι αλλιώς. Η ανάγκη για buffer προέκυψε αποκλειστικά από την παρουσία του <code>wg.Wait()</code> πριν από τα receives — δηλαδή από ένα εργαλείο που ήταν εξαρχής περιττό.</p>
 
-<h3>1. Receive πριν το <code>Wait</code></h3>
-<p>Μετακίνησε τα receives πάνω από το <code>wg.Wait()</code>. Το <code>main</code> είναι τότε έτοιμο να λάβει τη στιγμή που στέλνει η goroutine, και τα unbuffered channels δουλεύουν χωρίς καμία χωρητικότητα.</p>
-<pre><code class="lang-go">artistChannel   := make(chan ArtistResult)   <span class="cm">// unbuffered</span>
-relationChannel := make(chan RelationResult)
+<h2>1. Σκέτα receives, χωρίς WaitGroup</h2>
+<p>Η πιο σύντομη σωστή εκδοχή. Το channel μένει unbuffered και δεν χρειάζεται καμία χωρητικότητα.</p>
+<pre><code class="lang-go">artistChannel   := make(chan []Artist)   <span class="cm">// unbuffered</span>
+relationChannel := make(chan []Relation)
 
-go func() { defer wg.Done(); artistChannel &lt;- fetchArtists() }()
-go func() { defer wg.Done(); relationChannel &lt;- fetchRelations() }()
+<span class="ln-go">go func() { artistChannel &lt;- FetchArtists() }()</span>
+<span class="ln-go">go func() { relationChannel &lt;- FetchRelations() }()</span>
 
-artistResult := &lt;-artistChannel      <span class="cm">// receive first: unblocks the sender</span>
-relationResult := &lt;-relationChannel
-
-wg.Wait() <span class="cm">// both goroutines have already returned by now</span>
+<span class="ln-wait">artists := &lt;-artistChannel     <span class="cm">// blocks here until the value arrives</span></span>
+<span class="ln-wait">relations := &lt;-relationChannel <span class="cm">// this one has probably arrived already</span></span>
 </code></pre>
-<p>Εδώ το <code>WaitGroup</code> είναι στην πράξη περιττό: τα δύο receives μπλοκάρουν ήδη μέχρι να έρθει η κάθε τιμή, και αυτό από μόνο του είναι συγχρονισμός.</p>
+<p>Ο συνολικός χρόνος παραμένει ίσος με του πιο αργού fetch, όπως στο πρώτο σχήμα. Τα δύο fetches ξεκίνησαν ταυτόχρονα και τρέχουν ανεξάρτητα από το πού βρίσκεται το <code>main</code>: το γρήγορο περιμένει μπλοκαρισμένο στο send του, και το receive του επιστρέφει ακαριαία μόλις έρθει η σειρά του.</p>
 
-<h3>2. Όποιο είναι πρώτο έτοιμο: <code>select</code></h3>
-<p>Στον κώδικα παραπάνω, τα receives γίνονται με τη σειρά που τα γράψαμε. Ο συνολικός χρόνος δεν επηρεάζεται — τα fetches τρέχουν ήδη παράλληλα, οπότε περιμένουμε τον πιο αργό είτε έτσι είτε αλλιώς. Αυτό που χάνουμε είναι η δυνατότητα να <strong>επεξεργαστούμε</strong> κάθε αποτέλεσμα τη στιγμή που φτάνει: αν το ένα endpoint απαντά σε 100ms και το άλλο σε 3s, το γρήγορο κάθεται αχρησιμοποίητο για σχεδόν τρία δευτερόλεπτα επειδή το receive του είναι γραμμένο δεύτερο.</p>
-<p>Το <code>select</code> λύνει ακριβώς αυτό: περιμένει ταυτόχρονα σε πολλά channels και εκτελεί το case όποιου ετοιμαστεί πρώτο. Θα το δούμε αναλυτικά σε παρακάτω Ενότητα — εδώ αρκεί να δεις τη μορφή του στο ίδιο παράδειγμα:</p>
+<h2>2. <code>select</code>, όταν μας ενδιαφέρει η σειρά άφιξης</h2>
+<p>Αυτή είναι η κόκκινη ζώνη του πρώτου σχήματος. Τα receives εκτελούνται με τη σειρά που τα γράψαμε, οπότε το γρήγορο αποτέλεσμα μένει ανεκμετάλλευτο μέχρι να ολοκληρωθεί το αργό. Ο συνολικός χρόνος δεν αλλάζει, αλλά αν έχουμε δουλειά να κάνουμε πάνω σε κάθε αποτέλεσμα, χάνουμε δύο δευτερόλεπτα. Το <code>select</code> περιμένει ταυτόχρονα και στα δύο channels και εξυπηρετεί όποιο ετοιμαστεί πρώτο.</p>
+<pre><code class="lang-go">artistChannel   := make(chan []Artist)
+relationChannel := make(chan []Relation)
 
-<pre><code class="lang-go">artistChannel   := make(chan ArtistResult)   <span class="cm">// unbuffered — no capacity needed</span>
-relationChannel := make(chan RelationResult)
-
-go func() { artistChannel &lt;- fetchArtists() }()
-go func() { relationChannel &lt;- fetchRelations() }()
+<span class="ln-go">go func() { artistChannel &lt;- FetchArtists() }()</span>
+<span class="ln-go">go func() { relationChannel &lt;- FetchRelations() }()</span>
 
 <span class="cm">// two values are coming, but we don't know in which order</span>
 for i := 0; i &lt; 2; i++ {
-    select {
-    case artistResult := &lt;-artistChannel:
-        handleArtists(artistResult)   <span class="cm">// runs the moment artists arrive</span>
-        artistChannel = nil           <span class="cm">// disable this case for good</span>
+<span class="ln-wait">    select {</span>
+    case artists := &lt;-artistChannel:
+        handleArtists(artists)      <span class="cm">// runs the moment artists arrive</span>
+        artistChannel = nil         <span class="cm">// disable this case from now on</span>
 
-    case relationResult := &lt;-relationChannel:
-        handleRelations(relationResult)
-        relationChannel = nil
+    case relations := &lt;-relationChannel:
+        handleRelations(relations)  <span class="cm">// runs the moment artists arrive</span>
+        relationChannel = nil       <span class="cm">// disable this case from now on</span>
     }
 }
 </code></pre>
+<p>Το <code>select</code> εξυπηρετεί ένα μόνο case κάθε φορά που εκτελείται, γι' αυτό χρειάζεται το loop. Το <code>= nil</code> στο παράδειγμα μας θα μπορούσε να λείπει, δεν είναι απαραίτητο. Όμως σε μια γενική περίπτωση, χωρίς αυτό, το channel από το οποίο έχουμε ήδη λάβει παραμένει υποψήφιο στη δεύτερη επανάληψη, και το <code>select</code> θα μπορούσε να το ξαναδιαλέξει και να μπλοκάρει περιμένοντας τιμή που δεν θα έρθει ποτέ. Θέτοντάς το <code>nil</code> αξιοποιούμε αυτό που είπαμε στην αρχή της Ενότητας: ένα nil channel μπλοκάρει για πάντα, άρα το case του δεν είναι ποτέ έτοιμο και το <code>select</code> το αγνοεί.
+<br>Επίσης αν κλείναμε το κανάλι, δηλαδή αν κάναμε <code>close(artistChannel)</code>, το <code>select</code> θα το έβλεπε ως άμεσα έτοιμο στη δεύτερη επανάληψη (η ανάγνωση από κλειστό channel επιστρέφει άμεσα τη μηδενική τιμή), και θα έπαιρνε <code>[]Artist(nil)</code> αντί να περιμένει το άλλο αποτέλεσμα.Το <code>= nil</code> είναι ο σωστός τρόπος να <em>απενεργοποιήσεις</em> ένα case σε <code>select</code> όταν δεν περιμένεις άλλη τιμή.</p>
 
-<p>Δύο σημεία αξίζουν προσοχή. Το πρώτο είναι ο <strong>μετρητής</strong>: το <code>select</code> εξυπηρετεί ένα μόνο case κάθε φορά που εκτελείται, οπότε χρειάζεται loop για να μαζέψει και τις δύο τιμές.</p>
-<p>Το δεύτερο είναι το <code>= nil</code>. Χωρίς αυτό, το channel από το οποίο έχουμε ήδη λάβει παραμένει υποψήφιο στην επόμενη επανάληψη, και το <code>select</code> θα μπορούσε να το ξαναδιαλέξει και να μπλοκάρει περιμένοντας μια δεύτερη τιμή που δεν θα έρθει ποτέ. Θέτοντάς το <code>nil</code> αξιοποιούμε τη συμπεριφορά που είδαμε στην αρχή της Ενότητας: ένα nil channel μπλοκάρει για πάντα, άρα το case του δεν είναι ποτέ έτοιμο και το <code>select</code> το αγνοεί.</p>
+<h2>3. <code>close</code> και <code>range</code>, όταν το πλήθος είναι άγνωστο</h2>
+<p>Και οι δύο προηγούμενοι τρόποι στηρίζονται στο ότι ξέρουμε πόσες τιμές θα έρθουν. Αν όμως το endpoint επιστρέφει σε δόσεις, και το πλήθος τους εξαρτάται από την απάντηση του server, δεν μπορούμε ούτε να μετρήσουμε receives ούτε να διαλέξουμε χωρητικότητα. Τότε ο sender δηλώνει ρητά πότε τελείωσε:</p>
+<pre><code class="lang-go">pages := make(chan []Artist) <span class="cm">// unknown number of values</span>
 
-<div class="callout">
-<p><strong>Πότε χρειάζεσαι πραγματικά <code>select</code>.</strong> Μόνο όταν τα channels μεταφέρουν <em>διαφορετικούς τύπους</em> ή απαιτούν διαφορετικό χειρισμό. Αν όλα τα αποτελέσματα έχουν κοινό τύπο, ένα μόνο κοινό channel για όλες τις goroutines κάνει την ίδια δουλειά με πολύ λιγότερο κώδικα — οι τιμές φτάνουν ούτως ή άλλως με τη σειρά ολοκλήρωσης.</p>
+<span class="ln-go">go func() {</span>
+    FetchArtistsPaged(pages) <span class="cm">// sends one page at a time</span>
+    close(pages)             <span class="cm">// nothing more will ever be sent</span>
+}()
+
+all := []Artist{}
+<span class="ln-wait">for page := range pages { <span class="cm">// ends by itself when the channel closes</span></span>
+    all = append(all, page...)
+}
+</code></pre>
+<p>Το <code>close</code> δεν στέλνει τιμή, στέλνει την πληροφορία ότι δεν θα ακολουθήσει άλλη τιμή — και αυτό ακριβώς είναι που τερματίζει το <code>range</code>. Το αναλύουμε σε παρακάτω Ενότητα.</p>
+
+<h2>4. Χωρίς channel καθόλου</h2>
+<p>Άξιο αναφοράς επειδή συχνά ξεχνιέται: αν το μόνο που θέλουμε είναι να γεμίσουμε δύο μεταβλητές, το channel είναι περιττό.</p>
+<pre><code class="lang-go">var wg sync.WaitGroup
+var artists []Artist
+var relations []Relation
+
+wg.Add(2)
+<span class="ln-go">go func() {</span>
+    defer wg.Done()
+    artists = FetchArtists() <span class="cm">// writes to its own variable</span>
+}()
+<span class="ln-go">go func() {</span>
+    defer wg.Done()
+    relations = FetchRelations() <span class="cm">// writes to a different one</span>
+}()
+
+<span class="ln-wait">wg.Wait() <span class="cm">// nothing else would block main here</span></span>
+fmt.Println(len(artists), len(relations))
+</code></pre>
+<p>Αυτό είναι ασφαλές επειδή κάθε goroutine γράφει σε <strong>δική της, διαφορετική μεταβλητή</strong>, οπότε δύο goroutines δεν αγγίζουν ποτέ την ίδια θέση μνήμης. Εδώ το <code>WaitGroup</code> είναι πραγματικά απαραίτητο, αφού δεν υπάρχει τίποτα άλλο να κρατήσει το <code>main</code> πίσω. Το τίμημα είναι ότι κανένα αποτέλεσμα δεν είναι διαθέσιμο πριν ολοκληρωθούν και τα δύο.</p>
+
+<h2>5. Με <code>wg.Wait()</code>, αλλά σωστά</h2>
+<p>Αν για κάποιο λόγο θέλουμε οπωσδήποτε να αποδείξουμε ότι όλες οι goroutines τερμάτισαν πριν διαβάσουμε οτιδήποτε, το <code>wg.Wait()</code> έχει θέση — αλλά τότε ο buffer γίνεται υποχρεωτικός, όχι προαιρετικός.</p>
+<pre><code class="lang-go">var wg sync.WaitGroup
+artistChannel   := make(chan []Artist, 1)   <span class="cm">// buffered: senders never block</span>
+relationChannel := make(chan []Relation, 1)
+
+wg.Add(2)
+<span class="ln-go">go func() {</span>
+    defer wg.Done()
+    artistChannel &lt;- FetchArtists()
+}()
+<span class="ln-go">go func() {</span>
+    defer wg.Done()
+    relationChannel &lt;- FetchRelations()
+}()
+
+<span class="ln-wait">wg.Wait() <span class="cm">// both goroutines have fully returned by now</span></span>
+
+artists := &lt;-artistChannel     <span class="cm">// values are already sitting in the buffers</span>
+relations := &lt;-relationChannel
+</code></pre>
+<p>Πότε αξίζει αυτό; Όταν οι goroutines κάνουν και κάτι άλλο μετά το send — κλείνουν ένα αρχείο, απελευθερώνουν μια σύνδεση, γράφουν σε log. Το <code>wg.Wait()</code> εγγυάται ότι όλα αυτά έχουν ολοκληρωθεί, κάτι που το σκέτο receive δεν εγγυάται: το receive αποδεικνύει μόνο ότι η τιμή στάλθηκε, όχι ότι η goroutine τερμάτισε.</p>
+<p>Υπάρχει και δεύτερη εκδοχή του ίδιου τρόπου, χωρίς buffer: το <code>wg.Wait()</code> μεταφέρεται σε δική του goroutine, ώστε να μην εμποδίζει το <code>main</code> να κάνει receive.</p>
+<pre><code class="lang-go">done := make(chan struct{})
+<span class="ln-go">go func() {</span>
+<span class="ln-wait">    wg.Wait()   <span class="cm">// waits in the background instead</span></span>
+    close(done) <span class="cm">// signals that every goroutine has returned</span>
+}()
+
+<span class="ln-wait">artists := &lt;-artistChannel     <span class="cm">// unbuffered channels work fine now</span></span>
+<span class="ln-wait">relations := &lt;-relationChannel</span>
+
+<span class="ln-wait">&lt;-done <span class="cm">// and only then confirm everyone finished</span></span>
+</code></pre>
+
+<div class="glossary-group">
+  <h2>Πώς διαλέγεις</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">Γνωστό πλήθος τιμών</td><td class="gt-def">Σκέτα receives σε unbuffered channel.</td></tr>
+    <tr><td class="gt-term">Κάθε αποτέλεσμα μόλις φτάσει</td><td class="gt-def"><code>select</code> στα channels.</td></tr>
+    <tr><td class="gt-term">Άγνωστο πλήθος τιμών</td><td class="gt-def"><code>close</code> από τον sender, <code>range</code> στον receiver.</td></tr>
+    <tr><td class="gt-term">Ανάθεση σε ξεχωριστές μεταβλητές</td><td class="gt-def"><code>WaitGroup</code>, χωρίς channel.</td></tr>
+    <tr><td class="gt-term">Απόδειξη ότι όλες τερμάτισαν</td><td class="gt-def"><code>WaitGroup</code> με buffered channels.</td></tr>
+  </table>
 </div>
 
-<h3>3. Ξεχωριστή goroutine για το receive</h3>
-<p>Αν το <code>main</code> πρέπει οπωσδήποτε να κάνει <code>Wait()</code>, τότε κάποιος άλλος πρέπει να αδειάζει το channel παράλληλα με τα sends.</p>
-<pre><code class="lang-go">results := make(chan ArtistResult) <span class="cm">// unbuffered, shared by both senders</span>
-collected := make([]ArtistResult, 0, 2)
-done := make(chan struct{})
+<p>Το συμπέρασμα δεν είναι ότι τα unbuffered channels είναι επικίνδυνα ούτε ότι τα buffered είναι ασφαλή. Το deadlock προήλθε από ένα <code>wg.Wait()</code> τοποθετημένο πριν από τα receives, και ο buffer απλώς έτυχε να το καλύψει. Η ερώτηση που πρέπει να απαντάς κάθε φορά που γράφεις ένα send είναι ποιος θα κάνει το αντίστοιχο receive, και πότε.</p>
 
-go func() { defer wg.Done(); results &lt;- fetchArtists() }()
-go func() { defer wg.Done(); results &lt;- fetchMoreArtists() }()
-
-go func() { <span class="cm">// drains the channel while the senders are still running</span>
-    for i := 0; i &lt; 2; i++ {
-        collected = append(collected, &lt;-results)
-    }
-    close(done)
-}()
-
-wg.Wait()
-&lt;-done <span class="cm">// make sure the collector finished writing to collected</span>
-</code></pre>
-
-<h3>4. <code>close</code> και iteration</h3>
-<p>Η κανονική λύση για άγνωστο πλήθος: ο sender δηλώνει με <code>close(ch)</code> ότι τελείωσε, και ο receiver διαβάζει μέχρι το channel να κλείσει, χωρίς να ξέρει εκ των προτέρων πόσες τιμές θα έρθουν.</p>
-<pre><code class="lang-go">results := make(chan ArtistResult) <span class="cm">// unbuffered, unknown number of values</span>
-
-for _, fetch := range fetchers { <span class="cm">// however many there happen to be</span>
-    wg.Add(1)
-    go func(f func() ArtistResult) {
-        defer wg.Done()
-        results &lt;- f()
-    }(fetch)
-}
-
-go func() {
-    wg.Wait()      <span class="cm">// when every sender has returned...</span>
-    close(results) <span class="cm">// ...nothing more will ever be sent</span>
-}()
-
-for r := range results { <span class="cm">// stops on its own when the channel closes</span>
-    fmt.Println(r)
-}
-</code></pre>
-<p>Πρόσεξε ότι το <code>wg.Wait()</code> μπήκε και εδώ σε δική του goroutine, για τον ίδιο ακριβώς λόγο: αν έμενε στο <code>main</code>, θα εμπόδιζε το <code>range</code> να αδειάσει το channel. Θα δούμε αναλυτικά το <code>close</code> και το <code>range</code> σε channel σε παρακάτω Ενότητα.</p>
-
-<p>Το συμπέρασμα: τα unbuffered channels δεν είναι επικίνδυνα, ούτε τα buffered ασφαλή. Το deadlock προήλθε από ένα <code>wg.Wait()</code> τοποθετημένο πριν από τα receives. Η ερώτηση που πρέπει να απαντάς κάθε φορά που γράφεις send είναι «ποιος θα είναι έτοιμος να λάβει, και πότε;».</p>
 `);
 
         addContent(`
@@ -3165,7 +3304,7 @@ func main() {
             backgroundPosition: "center center"
         });
         initSlideDeck({
-            version: "3.0.0",
+            version: "4.0.0",
             notifyUrl: "https://script.google.com/macros/s/AKfycbzZRFWgg0WwQXHE6H0yg-QS-cem-d4qaYYYNmZ58Fss-fZmSXqmuu-u7DPXyLzn1Lc/exec"
         });
     </script>

@@ -163,6 +163,27 @@ function hasGpuAcceleration() {
 }
 
 /**
+ * True on desktop Linux specifically — checked separately from
+ * hasGpuAcceleration() because the gradient-seam issue this whole fallback
+ * exists for shows up there even WITH a real, hardware-accelerated GPU
+ * (renderer string reports a genuine card, softwareSignatures above
+ * wouldn't catch it) — something about how Linux's compositor/driver stack
+ * handles the live CSS repeating-linear-gradient specifically. Excludes
+ * Android on purpose: its user agent also contains "Linux" (same kernel),
+ * but it's a distinct platform this issue hasn't been observed on — this
+ * means "desktop Linux", not "anything Linux-kernel-based". Cached for the
+ * same reason as cachedHasGpu — this doesn't change during a page's life.
+ * @returns {boolean}
+ */
+let cachedIsLinux = null;
+function isLinux() {
+  if (cachedIsLinux !== null) return cachedIsLinux;
+  const ua = navigator.userAgent || "";
+  cachedIsLinux = ua.includes("Linux") && !ua.includes("Android");
+  return cachedIsLinux;
+}
+
+/**
  * Builds (once, cached) a small SVG data-URI tile with the diagonal stripe
  * pattern already "baked in" as three explicit diagonal lines — the robust
  * fallback for when hasGpuAcceleration() is false. See decorateSpoilers()
@@ -255,15 +276,16 @@ function decorateSpoilers(container) {
     lock.dataset.wired = "1";
 
     // Only override anything when there's no real GPU to composite the live
-    // CSS gradient correctly (see hasGpuAcceleration() — this fixed the
-    // Linux/software-rendering drag glitch). With a GPU, leave EVERYTHING
-    // — including background-position — completely untouched: this is the
-    // same repeating-linear-gradient(45deg, ...) that was never robust to a
-    // non-zero position in the first place (that's the original tiling-seam
-    // bug from earlier in this feature). The random-origin cosmetic only
-    // applies where it's actually safe: on the SVG tile, which handles any
-    // offset cleanly (verified separately).
-    if (!hasGpuAcceleration()) {
+    // CSS gradient correctly, OR when on desktop Linux — see isLinux()'s own
+    // comment for why that's checked separately from hasGpuAcceleration()
+    // (the seam issue shows up there even with a genuine GPU). Everywhere
+    // else, leave EVERYTHING — including background-position — completely
+    // untouched: this is the same repeating-linear-gradient(45deg, ...)
+    // that was never robust to a non-zero position in the first place
+    // (that's the original tiling-seam bug from earlier in this feature).
+    // The random-origin cosmetic only applies where it's actually safe: on
+    // the SVG tile, which handles any offset cleanly (verified separately).
+    if (!hasGpuAcceleration() || isLinux()) {
       lock.style.backgroundImage = getStripeTileUrl();
       lock.style.backgroundPosition =
         `${Math.floor(Math.random() * 200)}px ${Math.floor(Math.random() * 200)}px`;
@@ -1711,7 +1733,11 @@ function initTocSidebar() {
     // called from goTo(); without this, the dots stay positioned for the
     // OLD width until the next slide change. Timed to land after the CSS
     // "left .25s ease" transition on #nav-bar finishes, not before.
-    setTimeout(() => centerDotsOn(current), 260);
+    // updateGroupBadge() has the exact same problem — it positions the
+    // "N/M" diamond-group badge via a fixed-pixel getBoundingClientRect()
+    // snapshot of the active dot, which goes stale the moment the dot
+    // itself moves (same underlying cause as the dots re-centering below).
+    setTimeout(() => { centerDotsOn(current); updateGroupBadge(current); }, 260);
   }
 
   function closeToc() {
@@ -1719,7 +1745,7 @@ function initTocSidebar() {
     tocBackdropEl.classList.remove("open");
     document.body.classList.remove("toc-pushed");
     tocOpenBtn.classList.remove("toc-open-btn-hidden");
-    setTimeout(() => centerDotsOn(current), 260);
+    setTimeout(() => { centerDotsOn(current); updateGroupBadge(current); }, 260);
   }
 
   tocOpenBtn.addEventListener("click", openToc);
@@ -1810,13 +1836,45 @@ function initTocSidebar() {
     const SEARCH_SELECTOR = "p, h1, h2, h3, li, td, .lede, pre code, blockquote";
     // no result cap — every match shows; search only runs at 3+ characters (see renderResults)
 
+    /**
+     * Strips Greek (and any other) accent/diacritic marks for
+     * accent-insensitive matching — "τόνους" and "τονους" become the same
+     * string. NFD decomposition splits each accented character into its
+     * base letter + a separate combining-mark codepoint; stripping marks
+     * in the U+0300-U+036F range removes exactly that. For Greek tonos
+     * specifically this is 1-for-1 (one base letter replaces one accented
+     * letter), so the folded string is always the same LENGTH as the
+     * original — meaning a match position found in folded text is still
+     * the correct position to read words out of the ORIGINAL, still-
+     * accented text for display. That's what makes buildSnippet() below
+     * able to search ignoring accents while still showing them normally.
+     * @param {string} str
+     * @returns {string}
+     */
+    function foldAccents(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
     const searchIndex = [];
     document.querySelectorAll(".slide").forEach((slide) => {
       slide.querySelectorAll(SEARCH_SELECTOR).forEach((el) => {
         const text = el.textContent.trim();
         if (!text) return;
-        searchIndex.push({ el, text, textLower: text.toLowerCase() });
+        searchIndex.push({ el, text, textLower: foldAccents(text.toLowerCase()) });
       });
+    });
+
+    // Also index the static TOC link labels themselves — guarantees
+    // whatever text a link actually SHOWS is always searchable, even when
+    // the underlying content-scan above can't independently find it (e.g.
+    // an h1-level slug lives on that slide's eyebrow div, which isn't in
+    // SEARCH_SELECTOR at all, so it never matched anything on its own).
+    tocListEl.querySelectorAll("a.toc-link[href^='#']").forEach((link) => {
+      const text = link.textContent.trim();
+      if (!text) return;
+      const targetEl = document.getElementById(link.getAttribute("href").slice(1));
+      if (!targetEl) return;
+      searchIndex.push({ el: targetEl, text, textLower: foldAccents(text.toLowerCase()) });
     });
 
     const originalTocListHTML = tocListEl.innerHTML; // browse mode — restored when the search box is cleared
@@ -1835,11 +1893,11 @@ function initTocSidebar() {
      * @param {number} contextWords
      * @returns {{before: string, match: string, after: string}|null}
      */
-    function buildSnippet(text, query, contextWords) {
-      const lowerText = text.toLowerCase();
-      const matchStart = lowerText.indexOf(query.toLowerCase());
+    function buildSnippet(text, foldedQuery, contextWords) {
+      const foldedText = foldAccents(text.toLowerCase());
+      const matchStart = foldedText.indexOf(foldedQuery);
       if (matchStart === -1) return null;
-      const matchEnd = matchStart + query.length;
+      const matchEnd = matchStart + foldedQuery.length;
 
       const words = [];
       const wordRe = /\S+/g;
@@ -1870,8 +1928,8 @@ function initTocSidebar() {
     }
 
     function renderResults(query) {
-      const q = query.trim().toLowerCase();
-      if (!q || q.length < 3) {
+      const q = foldAccents(query.trim().toLowerCase());
+      if (!q) {
         tocListEl.innerHTML = originalTocListHTML;
         return;
       }
@@ -1887,7 +1945,7 @@ function initTocSidebar() {
         return;
       }
 
-      matches.forEach((entry) => {
+      function renderEntry(entry) {
         const a = document.createElement("a");
         a.className = "toc-link toc-search-result";
 
@@ -1921,7 +1979,26 @@ function initTocSidebar() {
           if (isMobile) closeToc();
         });
         tocListEl.appendChild(a);
-      });
+      }
+
+      // Matches on an element that already has a real @slug (a heading
+      // extract_toc recognized and gave a TOC entry to) are shown first —
+      // more likely to be what someone's actually looking for than an
+      // arbitrary paragraph that happens to contain the same word. A
+      // divider marks the split, but only when there's actually a slug
+      // match to put above it.
+      const slugMatches = matches.filter((entry) => entry.el.id && entry.el.id.startsWith("@"));
+      const otherMatches = matches.filter((entry) => !(entry.el.id && entry.el.id.startsWith("@")));
+
+      slugMatches.forEach(renderEntry);
+
+      if (slugMatches.length > 0) {
+        const divider = document.createElement("div");
+        divider.className = "toc-search-divider";
+        tocListEl.appendChild(divider);
+      }
+
+      otherMatches.forEach(renderEntry);
     }
 
     let searchDebounce = null;
