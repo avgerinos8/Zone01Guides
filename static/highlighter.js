@@ -266,11 +266,44 @@
     "lang-generic": highlightGeneric
   };
 
+  // ── preserved wrappers ──────────────────────────────────────────────── ⊃
+  // Highlighting normally reads codeEl.textContent and rewrites innerHTML,
+  // which drops any markup written by hand inside the block. Spans whose
+  // class starts with "ln-" (ln-wait, ln-go, ...) are an exception: they mark
+  // whole lines for the reader and must survive. They are re-emitted around
+  // their own highlighted content instead of being flattened away.
+  //
+  // Blocks without such spans take the original single-string path, byte for
+  // byte — existing pages are unaffected.
+  //
+  // CONSTRAINT: a preserved span must contain WHOLE lines. Its content is
+  // tokenized on its own, so a token straddling the span boundary would be
+  // split in two and mis-colored.
+  const KEEP_CLASS = /(^|\s)ln-/;
+
+  function isKept(node) {
+    return node.nodeType === 1 && KEEP_CLASS.test(node.getAttribute("class") || "");
+  }
+
   function highlightElement(codeEl) {
     if (codeEl.dataset.highlighted === "1") return;
     const langClass = Object.keys(LANG_MAP).find(c => codeEl.classList.contains(c));
     if (!langClass) return;
-    codeEl.innerHTML = LANG_MAP[langClass](codeEl.textContent);
+    const highlight = LANG_MAP[langClass];
+
+    if (!Array.from(codeEl.children).some(isKept)) {
+      codeEl.innerHTML = highlight(codeEl.textContent);
+    } else {
+      let out = "";
+      codeEl.childNodes.forEach(node => {
+        if (isKept(node)) {
+          out += `<span class="${node.getAttribute("class")}">${highlight(node.textContent)}</span>`;
+        } else {
+          out += highlight(node.textContent !== undefined ? node.textContent : "");
+        }
+      });
+      codeEl.innerHTML = out;
+    }
     codeEl.dataset.highlighted = "1";
   }
 
