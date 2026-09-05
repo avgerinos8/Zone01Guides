@@ -316,15 +316,14 @@
 }
 
 func main() {
-	// without "go" — sequential, blocks until done
+	<span class="cm">// without "go" — sequential, blocks until done</span>
 	sayHello()
 	fmt.Println("this runs after sayHello finishes")
 
-	// with "go" — starts a new goroutine, does NOT wait
-	go sayHello()
+	<span class="cm">// with "go" — starts a new goroutine, does NOT wait</span>
+<span class="ln-go">	go sayHello()</span>
 	fmt.Println("this runs immediately, maybe even before sayHello prints anything")
 }</code></pre>
-
 
 
 
@@ -370,9 +369,9 @@ func main() {
 <h2>Ο συνδυασμός: <code>go func(){...}()</code></h2>
 <p>Τώρα βάζουμε τα δύο κομμάτια μαζί. Αντί να ορίσουμε μια ξεχωριστή, ονομασμένη συνάρτηση για να τη στείλουμε με <code>go</code>, ορίζουμε μια ανώνυμη συνάρτηση <strong>και</strong> τη στέλνουμε να τρέξει ως goroutine, όλα σε μία γραμμή:</p>
 
-<pre><code class="lang-go">go func() {
+<pre><code class="lang-go"><span class="ln-go">go func() {</span>
     fmt.Println("running inside a goroutine")
-}() // defined AND launched concurrently, in one expression
+}() <span class="cm">// defined AND launched concurrently, in one expression</span>
 </code></pre>
 
 <p>Αυτό είναι εξαιρετικά κοινό στη Go, γιατί συχνά η λογική που θέλουμε να τρέξει concurrent είναι μικρή και χρησιμοποιείται μόνο μία φορά, σε ένα σημείο — δεν αξίζει να της δώσουμε ξεχωριστό όνομα και δήλωση αλλού στο αρχείο.</p>
@@ -380,12 +379,13 @@ func main() {
 <h2>Πέρασμα arguments σε anonymous function που τρέχει ως goroutine</h2>
 <p>Ακριβώς όπως μια κανονική συνάρτηση, μια ανώνυμη συνάρτηση μπορεί να δέχεται παραμέτρους. Τις περνάμε μέσα από την τελική παρένθεση κλήσης:</p>
 
-<pre><code class="lang-go">for i := 0; i < 3; i++ {
-    go func(n int) {
+<pre><code class="lang-go">for i := 0; i &lt; 3; i++ {
+<span class="ln-go">    go func(n int) {</span>
         fmt.Println("goroutine number:", n)
-    }(i) // pass the current value of i as an explicit argument
+    }(i) <span class="cm">// pass the current value of i as an explicit argument</span>
 }</code></pre>
 
+<p>Κάθε iteration δημιουργεί μια goroutine και προχωράει αμέσως στο επόμενο, χωρίς να περιμένει την προηγούμενη. Μετά από τρία iterations υπάρχουν τέσσερις ανεξάρτητες ροές εκτέλεσης.</p>
 <div class="callout">
   <span class="tag">Γιατί το arguments περνιέται explicit εδώ έχει σημασία</span>
   Μια ανώνυμη συνάρτηση έχει πρόσβαση στις μεταβλητές του περιβάλλοντός της μέσω <strong>closure</strong> — δηλαδή θα μπορούσε
@@ -596,7 +596,7 @@ fmt.Println(cap(ch)) <span class="cm">// 3 — total buffer capacity, unchanged<
 <p>Εδώ έχουμε <strong>μία μόνο</strong> goroutine (το <code>main</code>) που προσπαθεί να κάνει send σε ένα unbuffered channel. Επειδή δεν υπάρχει καμία <strong>άλλη</strong> goroutine να κάνει το αντίστοιχο receive, το send μπλοκάρει για πάντα — και αφού είναι η μόνη goroutine στο πρόγραμμα, ο runtime ανιχνεύει ότι απολύτως τίποτα δεν μπορεί να προχωρήσει, και τερματίζει με σφάλμα.</p>
 
 <h2 id="@anonymi-vs-kanon">Anonymous ή κανονική function;</h2>
-<p>Το deadlock παραπάνω λύνεται με μία goroutine που κάνει το receive. Αυτή η goroutine μπορεί να γραφτεί με δύο τρόπους, και η διαφορά τους δεν είναι θέμα ύφους: αφορά το <strong>από πού βλέπει η function τα δεδομένα που χρειάζεται</strong>.</p>
+<p>Το deadlock παραπάνω λύνεται με μία goroutine που κάνει το receive. Αυτή η goroutine μπορεί να γραφτεί με δύο τρόπους που είναι ισοδύναμοι:</p>
 
 <div class="grid2">
   <div class="card">
@@ -1135,7 +1135,6 @@ func main() {
     }()
 
 <span class="ln-wait">    wg.Wait() <span class="cm">// wait until both fetches have finished</span></span>
-
     artists := &lt;-artistChannel
     relations := &lt;-relationChannel
     fmt.Println(len(artists), len(relations))
@@ -1173,18 +1172,17 @@ func main() {
     artistChannel   := make(chan []Artist, 1)   // buffer size 1
     relationChannel := make(chan []Relation, 1) // buffer size 1
 
-    go func() {
+<span class="ln-go">    go func() {</span>
         defer wg.Done()
         artistChannel <- FetchArtists()
     }()
 
-    go func() {
+<span class="ln-go">    go func() {</span>
         defer wg.Done()
         relationChannel <- FetchRelations()
     }()
 
-    wg.Wait() // τώρα όλες οι goroutines έχουν τερματίσει
-
+<span class="ln-wait">    wg.Wait() // τώρα όλες οι goroutines έχουν τερματίσει</span>
     artists := &lt;-artistChannel
     relations := &lt;-relationChannel
     fmt.Println(len(artists), len(relations))

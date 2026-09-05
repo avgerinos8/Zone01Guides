@@ -66,10 +66,10 @@
   --font-body: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", "Consolas", "Menlo", monospace;
 
-  --hl-wait: rgba(198, 64, 64, .42);
-  --hl-wait-line: rgba(210, 80, 80, .95);
-  --hl-go: rgba(96, 165, 214, .40);
-  --hl-go-line: rgba(120, 185, 230, .95);
+  --hl-wait: rgba(198, 64, 64, .09);
+  --hl-wait-line: rgba(210, 80, 80, .12);
+  --hl-go: rgba(96, 165, 214, .09);
+  --hl-go-line: rgba(120, 185, 230, .12);
 
   /* Desktop-only: how far the main content shifts right while the sidebar
      is docked open (see body.toc-pushed further down). Stays 0px on
@@ -1922,21 +1922,24 @@ li {
 }
 
 /* ── highlighted code lines ──────────────────────────────────────────────── ⊃ */
+/* inline-block, NOT block: inside a pre, a block element ends the line by
+   itself, and the newline that follows </span> in the source would then
+   render as a second, empty line. */
 pre code .ln-wait,
 pre code .ln-go {
-  display: block;
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
   border-radius: 3px;
-  margin-inline: -0.4rem;
-  padding-inline: 0.4rem;
 }
 
 pre code .ln-wait {
-  background: var(--hl-wait) !important;
+  background: var(--hl-wait);
   box-shadow: inset 3px 0 0 var(--hl-wait-line);
 }
 
 pre code .ln-go {
-  background: var(--hl-go) !important;
+  background: var(--hl-go);
   box-shadow: inset 3px 0 0 var(--hl-go-line);
 }
 
