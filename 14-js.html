@@ -901,7 +901,7 @@ applySetting(undefined, defaults.volume)  // __r2__`,
       note: "Το πρώτο set είναι ορισμοί, το δεύτερο είναι επιλογή εργαλείου με βάση την ανάγκη."
     });
 
-    // ── Reinforcement material (based on NaN Academy js-training) ───────── ⊃
+
     addContent(`
 <div class="eyebrow" id="@shorthand-ops">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
 <h1>Τιμές, τελεστές και σύντομη ανάθεση</h1>
@@ -942,7 +942,7 @@ let _internal          // valid — underscore prefix, often means "private by c
   <span class="tag">Πότε το αναγνωρίζεις</span>
   Οι σύντομοι τελεστές είναι ιδιαίτερα χρήσιμοι μέσα σε loops και accumulators — τα έχεις ήδη γράψει με το χέρι (<code>total = total + x</code>) πολλές φορές μέχρι τώρα.
 </div>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addContent(`
@@ -999,7 +999,7 @@ console.log(clamp(-5, 0, 10))   // 0
 console.log(clamp(4, 0, 10))    // 4
 </code></pre>
 <p>Αφού κάθε κλάδος επιστρέφει, δεν χρειάζεται κανένα <code>else</code> — το ξέρεις ήδη από τη Go, ισχύει ίδιο εδώ.</p>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addQuiz([
@@ -1240,8 +1240,8 @@ console.log(profile.address.city)   // "Athens"   — fully independent
 
 <p>Αν η δομή σου είναι καθαρά JSON — δηλαδή αν ήρθε από API — τότε το round trip είναι ασφαλές εξ ορισμού, γιατί ό,τι μπορεί να χαθεί δεν υπήρξε ποτέ. Παντού αλλού, δεν το γράφεις.</p>
 
-<h2>Η δική σου, γιατί αξίζει να την έχεις γράψει</h2>
-<p>Το deep copy είναι ένα από τα πιο καθαρά παραδείγματα recursion σε δομή αντί για αριθμό, και η δομή του κώδικα είναι πάντα η ίδια: base case για ό,τι δεν χρειάζεται αντιγραφή, ξεχωριστός κλάδος για τα arrays, γενικός κλάδος για τα objects.</p>
+<h2>Πώς δουλεύει η deep copy</h2>
+<p>Το deep copy είναι ένα από τα πιο καθαρά παραδείγματα recursion σε δομή. base case για ό,τι δεν χρειάζεται αντιγραφή, ξεχωριστός κλάδος για τα arrays, γενικός κλάδος για τα objects. Προφανώς θα την χρησιμοποιείς έτοιμη, αλλά αν έπρεπε να την γράψεις μόνος σου θα έμοιαζε κάπως έτσι:</p>
 
 <pre><code class="lang-js">function deepCopy(value) {
   // base case: primitives (and null) are copied by value already
@@ -1295,8 +1295,8 @@ Object.isFrozen(config)    // true
 </code></pre>
 
 <div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Χωρίς <code>"use strict"</code>, μια ανάθεση σε παγωμένο object <em>δεν πετάει σφάλμα</em>. Απλώς δεν κάνει τίποτα. Μέσα σε modules το strict mode είναι πάντα ενεργό, οπότε εκεί θα πάρεις κανονικά TypeError — αλλά στην κονσόλα του browser όχι, και εκεί ακριβώς δοκιμάζεις.
+  <span class="tag">Use strict</span>
+  Το "use strict" (αυστηρή λειτουργία) είναι μια οδηγία (literal expression) που προστέθηκε στην ECMAScript 5 (ES5) και αναγκάζει τη JavaScript να εκτελείται κάτω από ένα πιο αυστηρό σύνολο κανόνων. Όταν το ενεργοποιείς, αλλάζει η συμπεριφορά της γλώσσας: σφάλματα που πριν η JavaScript τα "αγνοούσε στα κρυφά" (silently ignored), τώρα πετάνε κανονικό σφάλμα (throw error) και σταματούν την εκτέλεση του κώδικα. Χωρίς <code>"use strict"</code>, μια ανάθεση σε παγωμένο object <em>δεν πετάει σφάλμα</em>.
 </div>
 
 <p>Και όπως όλα σε αυτή την ενότητα, το <code>Object.freeze</code> δουλεύει μόνο σε ένα επίπεδο:</p>
@@ -2048,7 +2048,7 @@ getPath({ a: {} }, "a.b.c")        // undefined`,
       ]
     ], { allowHTML: true });
 
-    // ── Reinforcement material (based on NaN Academy js-training) ───────── ⊃
+
     addContent(`
 <div class="eyebrow" id="@literals-recap">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
 <h1>Πώς χτίζεται ένα object literal</h1>
@@ -2092,7 +2092,7 @@ const library = [
 console.log(library[1].publisher.name)
 </code></pre>
 <p>Το shorthand <code>publisher,</code> αντί για <code>publisher: publisher,</code> δουλεύει μόνο όταν το όνομα της μεταβλητής ταιριάζει ακριβώς με το κλειδί που θέλεις — το έχεις ξαναδεί, εδώ απλώς το ξαναθυμόμαστε ρητά.</p>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addContent(`
@@ -2145,7 +2145,7 @@ console.log(station.city)     // "Lakeside"
   <span class="tag">Το αναγνωρίζεις;</span>
   Αυτό δεν έχει άμεσο αντίστοιχο στη Go: ένα struct δεν μπορεί να αποκτήσει καινούργιο πεδίο μετά τη δήλωσή του. Ένα plain object μπορεί, και αυτή η ευελιξία είναι ακριβώς αυτό που κάνει δυνατά patterns όπως το bucketing που έχεις ήδη γράψει.
 </div>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addQuiz([
@@ -2703,7 +2703,7 @@ shout("  hey  ")   // "HEY"`,
       ]
     ], { allowHTML: true });
 
-    // ── Reinforcement material (based on NaN Academy js-training) ───────── ⊃
+
     addContent(`
 <div class="eyebrow" id="@nesting-recap">Ενότητα 4 / 9 — Functions ως τιμές</div>
 <h1>Εμφωλιασμένες κλήσεις functions</h1>
@@ -2747,7 +2747,7 @@ console.log(priceWithTaxQuadrupled(10))   // 49.6
   <span class="tag">Προσοχή / Συχνό λάθος</span>
   Όσο πιο βαθιά η εμφώλευση, τόσο πιο δύσκολο να διαβαστεί με μία ματιά. Αν χρειάζεσαι πάνω από 2-3 επίπεδα, σπάσ' το σε ενδιάμεσες μεταβλητές με περιγραφικά ονόματα — ή, όπως θα δούμε, χρησιμοποίησε <code>pipe</code>.
 </div>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addContent(`
@@ -2780,7 +2780,7 @@ console.log(sumTo(5))    // 15   (5+4+3+2+1)
 console.log(sumTo(100))  // 5050
 </code></pre>
 <p>Το <code>acc = 0</code> είναι η προεπιλεγμένη τιμή παραμέτρου που ήδη ξέρεις — έτσι ο καλών δεν χρειάζεται να δώσει ρητά αρχική τιμή στην πρώτη κλήση.</p>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addQuiz([
@@ -3199,7 +3199,7 @@ people.sort((a, b) => {
       ]
     ], { allowHTML: true, note: "Δεύτερο set: σύμπτωμα προς αιτία." });
 
-    // ── Reinforcement material (based on NaN Academy js-training) ───────── ⊃
+
     addContent(`
 <div class="eyebrow" id="@loops-recap">Ενότητα 5 / 9 — Δηλωτική επεξεργασία συλλογών</div>
 <h1>While και for...of, πριν το map/filter/reduce</h1>
@@ -3237,7 +3237,7 @@ console.log(total / count)   // 21.36 — the average, computed by hand
   <span class="tag">Πότε το αναγνωρίζεις</span>
   Κάθε φορά που έχεις έναν μετρητή <em>και</em> έναν συσσωρευτή μαζί σε ένα loop, κοίτα αν χρειάζεσαι πραγματικά και τα δύο — συχνά ο συσσωρευτής μόνος του (με <code>reduce</code>) αρκεί.
 </div>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addQuiz([
@@ -3691,7 +3691,7 @@ console.log(pretty)   // "03/09/2026"`,
       ]
     ], { allowHTML: true });
 
-    // ── Reinforcement material (based on NaN Academy js-training) ───────── ⊃
+
     addContent(`
 <div class="eyebrow" id="@split-join-recap">Ενότητα 6 / 9 — Κείμενο και Regular Expressions</div>
 <h1>Split, join, και το χτίσιμο μιας αλυσίδας</h1>
@@ -3723,7 +3723,7 @@ const cleanTag = messyTag.split(" ").join("-").toLowerCase()
 console.log(cleanTag)   // "java-script-arrays-methods"
 </code></pre>
 <p>Τρία βήματα σε μία γραμμή: σπάσε στα κενά, ξανάνωσε με παύλες, κάνε τα πάντα πεζά. Κάθε method επιστρέφει κάτι πάνω στο οποίο μπορεί να κληθεί η επόμενη — γι' αυτό αλυσιδώνει τόσο φυσικά.</p>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addQuiz([
@@ -5010,7 +5010,7 @@ function debounce(fn, wait) {
       ]
     ], { allowHTML: true });
 
-    // ── Reinforcement material (based on NaN Academy js-training) ───────── ⊃
+
     addContent(`
 <div class="eyebrow" id="@why-promises">Ενότητα 9 / 9 — Ασύγχρονη JavaScript</div>
 <h1>Γιατί χρειάστηκε το Promise</h1>
@@ -5060,7 +5060,7 @@ setTimeout(() => deferred.resolve(50), 100)
   <span class="tag">Το αναγνωρίζεις;</span>
   Το <code>onValue</code> εδώ είναι ακριβώς ένας listener, ίδια ιδέα με το <code>addEventListener</code> της Ενότητας 8 — κάποιος δηλώνει ενδιαφέρον τώρα, και ειδοποιείται αργότερα όταν συμβεί κάτι.
 </div>
-<p style="margin-top:24px; color:rgba(var(--ink-rgb),0.5); font-size:13px;">Βασισμένο σε υλικό του <a href="https://nan-academy.github.io/js-training/" target="_blank" rel="noopener" style="color:inherit">NaN Academy — js-training</a>.</p>
+
 `);
 
     addQuiz([
