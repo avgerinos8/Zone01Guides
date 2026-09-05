@@ -1444,119 +1444,49 @@ Pi = 3.14159 // ERROR: cannot assign to Pi (constant) — even with the same val
 <h3>Decimal</h3>
 <p> Το πιο γνωστό παράδειγμα αυτής της ιδέας το χρησιμοποιείς ήδη καθημερινά: το <code>x % 10</code> δίνει πάντα το τελευταίο ψηφίο ενός αριθμού (<code>47 % 10</code> είναι <code>7</code>, <code>123 % 10</code> είναι <code>3</code>), επειδή τα ψηφία στο δεκαδικό σύστημα επαναλαμβάνονται κυκλικά από 0 έως 9 — ακριβώς όπως ο σηματοδότης. Γι' αυτό λέγεται <strong>base 10</strong>: μετράει σε κύκλους μήκους 10. </p>
 <h3>Hex</h3>
-<p> Η ίδια λογική ισχύει σε οποιαδήποτε βάση. Στο <strong>δεκαεξαδικό</strong> (base 16, hexadecimal) — που ίσως έχεις δει σε αριθμούς όπως ο <code>ff5733</code> — τα ψηφία είναι 0 έως 15 (γραμμένα <code>0-9</code> και μετά <code>a-f</code>), δηλαδή κύκλοι μήκους 16, και το <code>x % 16</code> δίνει το τελευταίο τους ψηφίο. Το <code>%</code> δεν ξέρει τίποτα για ψηφία ή συστήματα αρίθμησης — απλά μετράει κύκλους όποιου μήκους του ζητήσεις. </p>
+<p> Η ίδια λογική ισχύει σε οποιαδήποτε βάση. Στο <strong>δεκαεξαδικό</strong> (base 16, hexadecimal) — που ίσως έχεις δει σε αριθμούς όπως ο <code>1dcf7458</code> — τα ψηφία είναι 0 έως 15 (γραμμένα <code>0-9</code> και μετά <code>a-f</code>), δηλαδή κύκλοι μήκους 16, και το <code>x % 16</code> δίνει το τελευταίο τους ψηφίο. Το <code>%</code> δεν ξέρει τίποτα για ψηφία ή συστήματα αρίθμησης — απλά μετράει κύκλους όποιου μήκους του ζητήσεις. </p>
+
+
+<div class="callout">
+    <span class="tag">Το μπέρδεμα: το <code>10</code> δεν είναι πάντα δέκα</span>
+    <p> Το <code>10</code> σε hex (δεκαεξαδικό) και το <code>10</code> σε decimal (δεκαδικό) γράφονται με τον ίδιο ακριβώς τρόπο αλλά έχουν διαφορετική αξία: το πρώτο είναι δεκαέξι, το δεύτερο δέκα. Γι' αυτό στη Go γράφουμε το δεκαεξαδικό με πρόθεμα, <code>0x10</code> — ο compiler το διαβάζει ως 16, ενώ το σκέτο <code>10</code> σημαίνει 10 σε decimal. <svg viewBox="0 0 760 372" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:760px; height:auto; display:block; margin:18px auto; color:inherit;"> <rect x="20" y="14" width="720" height="344" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.22" stroke-width="1"/> <line x1="20" y1="58" x2="740" y2="58" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/> <line x1="260" y1="14" x2="260" y2="358" stroke="currentColor" stroke-opacity="0.22" stroke-width="1"/> <line x1="500" y1="14" x2="500" y2="358" stroke="currentColor" stroke-opacity="0.22" stroke-width="1"/> <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13" fill="currentColor" opacity="0.7" text-anchor="middle"> <text x="140" y="41">decimal</text> <text x="380" y="41">hex</text> <text x="620" y="41">Go literal</text> </g> <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="18" text-anchor="middle"> <g fill="currentColor"> <text x="140" y="93">10</text> <text x="140" y="135">16</text> <text x="140" y="177">26</text> <text x="140" y="219">42</text> <text x="140" y="261">100</text> <text x="140" y="303">255</text> <text x="140" y="345">4095</text> </g> <g fill="var(--tone-4)"> <text x="380" y="93">a</text> <text x="380" y="135">10</text> <text x="380" y="177">1a</text> <text x="380" y="219">2a</text> <text x="380" y="261">64</text> <text x="380" y="303">ff</text> <text x="380" y="345">fff</text> </g> <g> <text x="620" y="93"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">a</tspan></text> <text x="620" y="135"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">10</tspan></text> <text x="620" y="177"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">1a</tspan></text> <text x="620" y="219"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">2a</tspan></text> <text x="620" y="261"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">64</tspan></text> <text x="620" y="303"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">ff</tspan></text> <text x="620" y="345"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">fff</tspan></text> </g> </g> </svg> </p>
+</div>
 
 <p> Δες τον κύκλο να ξαναρχίζει, ακριβώς όπως στον σηματοδότη — απλά εδώ έχει μήκος 16 αντί για 3: </p>
 
-<svg viewBox="0 0 900 414" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:960px; height:auto; display:block; margin:18px auto; color:inherit;">
+<svg viewBox="0 0 1000 414" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:1000px; height:auto; display:block; margin:18px auto; color:inherit;">
   <g stroke="currentColor" stroke-opacity="0.22" stroke-width="1" fill="none">
-    <rect x="130" y="28"  width="754" height="70" rx="8"/>
-    <rect x="130" y="120" width="754" height="70" rx="8"/>
-    <rect x="130" y="212" width="754" height="70" rx="8"/>
-    <rect x="130" y="304" width="754" height="70" rx="8"/>
+    <rect x="128" y="28" width="836" height="70" rx="8"/>
+    <rect x="128" y="120" width="836" height="70" rx="8"/>
+    <rect x="128" y="212" width="836" height="70" rx="8"/>
+    <rect x="128" y="304" width="836" height="70" rx="8"/>
   </g>
 
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.7" text-anchor="end">
+  <g font-family="Menlo, Consolas, monospace" font-size="12.5" fill="currentColor" opacity="0.7" text-anchor="end">
     <text x="116" y="48">Dec — base10</text><text x="116" y="84">Hex — base16</text>
     <text x="116" y="140">Dec — base10</text><text x="116" y="176">Hex — base16</text>
     <text x="116" y="232">Dec — base10</text><text x="116" y="268">Hex — base16</text>
     <text x="116" y="324">Dec — base10</text><text x="116" y="360">Hex — base16</text>
   </g>
 
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" fill="currentColor" text-anchor="middle">
-    <text x="154" y="48">0</text><text x="201" y="48">1</text><text x="248" y="48">2</text><text x="295" y="48">3</text>
-    <text x="342" y="48">4</text><text x="389" y="48">5</text><text x="436" y="48">6</text><text x="483" y="48">7</text>
-    <text x="530" y="48">8</text><text x="577" y="48">9</text><text x="624" y="48">10</text><text x="671" y="48">11</text>
-    <text x="718" y="48">12</text><text x="765" y="48">13</text><text x="812" y="48">14</text><text x="859" y="48">15</text>
-
-    <text x="154" y="140">16</text><text x="201" y="140">17</text><text x="248" y="140">18</text><text x="295" y="140">19</text>
-    <text x="342" y="140">20</text><text x="389" y="140">21</text><text x="436" y="140">22</text><text x="483" y="140">23</text>
-    <text x="530" y="140">24</text><text x="577" y="140">25</text><text x="624" y="140">26</text><text x="671" y="140">27</text>
-    <text x="718" y="140">28</text><text x="765" y="140">29</text><text x="812" y="140">30</text><text x="859" y="140">31</text>
-
-    <text x="154" y="232">32</text><text x="201" y="232">33</text><text x="248" y="232">34</text><text x="295" y="232">35</text>
-    <text x="342" y="232">36</text><text x="389" y="232">37</text><text x="436" y="232">38</text><text x="483" y="232">39</text>
-    <text x="530" y="232">40</text><text x="577" y="232">41</text><text x="624" y="232">42</text><text x="671" y="232">43</text>
-    <text x="718" y="232">44</text><text x="765" y="232">45</text><text x="812" y="232">46</text><text x="859" y="232">47</text>
-
-    <text x="154" y="324">48</text><text x="201" y="324">49</text><text x="248" y="324">50</text><text x="295" y="324">51</text>
-    <text x="342" y="324">52</text><text x="389" y="324">53</text><text x="436" y="324">54</text><text x="483" y="324">55</text>
-    <text x="530" y="324">56</text><text x="577" y="324">57</text><text x="624" y="324">58</text><text x="671" y="324">59</text>
-    <text x="718" y="324">60</text><text x="765" y="324">61</text><text x="812" y="324">62</text><text x="859" y="324">63</text>
+  <g font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)" text-anchor="middle">
+    <text x="154" y="48">0</text><text x="206" y="48">1</text><text x="258" y="48">2</text><text x="310" y="48">3</text><text x="362" y="48">4</text><text x="414" y="48">5</text><text x="466" y="48">6</text><text x="518" y="48">7</text><text x="570" y="48">8</text><text x="622" y="48">9</text><text x="674" y="48">10</text><text x="726" y="48">11</text><text x="778" y="48">12</text><text x="830" y="48">13</text><text x="882" y="48">14</text><text x="934" y="48">15</text>
+    <text x="154" y="140">16</text><text x="206" y="140">17</text><text x="258" y="140">18</text><text x="310" y="140">19</text><text x="362" y="140">20</text><text x="414" y="140">21</text><text x="466" y="140">22</text><text x="518" y="140">23</text><text x="570" y="140">24</text><text x="622" y="140">25</text><text x="674" y="140">26</text><text x="726" y="140">27</text><text x="778" y="140">28</text><text x="830" y="140">29</text><text x="882" y="140">30</text><text x="934" y="140">31</text>
+    <text x="154" y="232">32</text><text x="206" y="232">33</text><text x="258" y="232">34</text><text x="310" y="232">35</text><text x="362" y="232">36</text><text x="414" y="232">37</text><text x="466" y="232">38</text><text x="518" y="232">39</text><text x="570" y="232">40</text><text x="622" y="232">41</text><text x="674" y="232">42</text><text x="726" y="232">43</text><text x="778" y="232">44</text><text x="830" y="232">45</text><text x="882" y="232">46</text><text x="934" y="232">47</text>
+    <text x="154" y="324">48</text><text x="206" y="324">49</text><text x="258" y="324">50</text><text x="310" y="324">51</text><text x="362" y="324">52</text><text x="414" y="324">53</text><text x="466" y="324">54</text><text x="518" y="324">55</text><text x="570" y="324">56</text><text x="622" y="324">57</text><text x="674" y="324">58</text><text x="726" y="324">59</text><text x="778" y="324">60</text><text x="830" y="324">61</text><text x="882" y="324">62</text><text x="934" y="324">63</text>
   </g>
 
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="var(--tone-4)" text-anchor="middle">
-    <text x="154" y="84">0</text><text x="201" y="84">1</text><text x="248" y="84">2</text><text x="295" y="84">3</text>
-    <text x="342" y="84">4</text><text x="389" y="84">5</text><text x="436" y="84">6</text><text x="483" y="84">7</text>
-    <text x="530" y="84">8</text><text x="577" y="84">9</text>
-  </g>
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="var(--tone-5)" font-weight="700" text-anchor="middle">
-    <text x="624" y="84">a</text><text x="671" y="84">b</text><text x="718" y="84">c</text>
-    <text x="765" y="84">d</text><text x="812" y="84">e</text><text x="859" y="84">f</text>
+  <g font-family="Menlo, Consolas, monospace" font-size="19" fill="var(--tone-5)" font-weight="700" text-anchor="middle">
+    <text x="154" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>0</tspan></text><text x="206" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>1</tspan></text><text x="258" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>2</tspan></text><text x="310" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>3</tspan></text><text x="362" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>4</tspan></text><text x="414" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>5</tspan></text><text x="466" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>6</tspan></text><text x="518" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>7</tspan></text><text x="570" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>8</tspan></text><text x="622" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>9</tspan></text><text x="674" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>a</tspan></text><text x="726" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>b</tspan></text><text x="778" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>c</tspan></text><text x="830" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>d</tspan></text><text x="882" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>e</tspan></text><text x="934" y="84"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>f</tspan></text>
+    <text x="154" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>10</tspan></text><text x="206" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>11</tspan></text><text x="258" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>12</tspan></text><text x="310" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>13</tspan></text><text x="362" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>14</tspan></text><text x="414" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>15</tspan></text><text x="466" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>16</tspan></text><text x="518" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>17</tspan></text><text x="570" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>18</tspan></text><text x="622" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>19</tspan></text><text x="674" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>1a</tspan></text><text x="726" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>1b</tspan></text><text x="778" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>1c</tspan></text><text x="830" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>1d</tspan></text><text x="882" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>1e</tspan></text><text x="934" y="176"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>1f</tspan></text>
+    <text x="154" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>20</tspan></text><text x="206" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>21</tspan></text><text x="258" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>22</tspan></text><text x="310" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>23</tspan></text><text x="362" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>24</tspan></text><text x="414" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>25</tspan></text><text x="466" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>26</tspan></text><text x="518" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>27</tspan></text><text x="570" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>28</tspan></text><text x="622" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>29</tspan></text><text x="674" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>2a</tspan></text><text x="726" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>2b</tspan></text><text x="778" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>2c</tspan></text><text x="830" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>2d</tspan></text><text x="882" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>2e</tspan></text><text x="934" y="268"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>2f</tspan></text>
+    <text x="154" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>30</tspan></text><text x="206" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>31</tspan></text><text x="258" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>32</tspan></text><text x="310" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>33</tspan></text><text x="362" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>34</tspan></text><text x="414" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>35</tspan></text><text x="466" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>36</tspan></text><text x="518" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>37</tspan></text><text x="570" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>38</tspan></text><text x="622" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>39</tspan></text><text x="674" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>3a</tspan></text><text x="726" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>3b</tspan></text><text x="778" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>3c</tspan></text><text x="830" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>3d</tspan></text><text x="882" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>3e</tspan></text><text x="934" y="360"><tspan fill="currentColor" opacity="0.45" font-weight="400">0x</tspan><tspan>3f</tspan></text>
   </g>
 
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" text-anchor="middle">
-    <text x="154" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">0</tspan></text>
-    <text x="201" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">1</tspan></text>
-    <text x="248" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">2</tspan></text>
-    <text x="295" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">3</tspan></text>
-    <text x="342" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">4</tspan></text>
-    <text x="389" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">5</tspan></text>
-    <text x="436" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">6</tspan></text>
-    <text x="483" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">7</tspan></text>
-    <text x="530" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">8</tspan></text>
-    <text x="577" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-4)">9</tspan></text>
-    <text x="624" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">a</tspan></text>
-    <text x="671" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">b</tspan></text>
-    <text x="718" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">c</tspan></text>
-    <text x="765" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">d</tspan></text>
-    <text x="812" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">e</tspan></text>
-    <text x="859" y="176"><tspan fill="currentColor" opacity="0.3">1</tspan><tspan fill="var(--tone-5)" font-weight="700">f</tspan></text>
-
-    <text x="154" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">0</tspan></text>
-    <text x="201" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">1</tspan></text>
-    <text x="248" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">2</tspan></text>
-    <text x="295" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">3</tspan></text>
-    <text x="342" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">4</tspan></text>
-    <text x="389" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">5</tspan></text>
-    <text x="436" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">6</tspan></text>
-    <text x="483" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">7</tspan></text>
-    <text x="530" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">8</tspan></text>
-    <text x="577" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-4)">9</tspan></text>
-    <text x="624" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">a</tspan></text>
-    <text x="671" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">b</tspan></text>
-    <text x="718" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">c</tspan></text>
-    <text x="765" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">d</tspan></text>
-    <text x="812" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">e</tspan></text>
-    <text x="859" y="268"><tspan fill="currentColor" opacity="0.3">2</tspan><tspan fill="var(--tone-5)" font-weight="700">f</tspan></text>
-
-    <text x="154" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">0</tspan></text>
-    <text x="201" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">1</tspan></text>
-    <text x="248" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">2</tspan></text>
-    <text x="295" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">3</tspan></text>
-    <text x="342" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">4</tspan></text>
-    <text x="389" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">5</tspan></text>
-    <text x="436" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">6</tspan></text>
-    <text x="483" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">7</tspan></text>
-    <text x="530" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">8</tspan></text>
-    <text x="577" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-4)">9</tspan></text>
-    <text x="624" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">a</tspan></text>
-    <text x="671" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">b</tspan></text>
-    <text x="718" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">c</tspan></text>
-    <text x="765" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">d</tspan></text>
-    <text x="812" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">e</tspan></text>
-    <text x="859" y="360"><tspan fill="currentColor" opacity="0.3">3</tspan><tspan fill="var(--tone-5)" font-weight="700">f</tspan></text>
-  </g>
-
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity="0.6" text-anchor="start">
-    <text x="130" y="400">το τονισμένο ψηφίο είναι το x % 16 · κάθε σειρά προσθέτει ένα ψηφίο μπροστά, ο κύκλος συνεχίζεται</text>
+  <g font-family="Menlo, Consolas, monospace" font-size="12.5" fill="currentColor" opacity="0.6" text-anchor="start">
+    <text x="128" y="400">κάθε σειρά ξαναρχίζει από 0 και τελειώνει σε f · μετά προστίθεται ένα ψηφίο μπροστά</text>
   </g>
 </svg>
-
-<div class="callout">
-    <span class="tag">Το μπέρδεμα: το <code>10</code> δεν είναι πάντα δέκα</span>
-    <p> Το <code>10</code> σε hex (δεκαεξαδικό) και το <code>10</code> σε decimal (δεκαδικό) γράφονται με τον ίδιο ακριβώς τρόπο αλλά έχουν διαφορετική αξία: το πρώτο είναι δεκαέξι, το δεύτερο δέκα. Γι' αυτό στη Go γράφουμε το δεκαεξαδικό με πρόθεμα, <code>0x10</code> — ο compiler το διαβάζει ως 16, ενώ το σκέτο <code>10</code> σημαίνει 10 σε decimal. <svg viewBox="0 0 760 372" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:760px; height:auto; display:block; margin:18px auto; color:inherit;"> <rect x="20" y="14" width="720" height="344" rx="8" fill="none" stroke="currentColor" stroke-opacity="0.22" stroke-width="1"/> <line x1="20" y1="58" x2="740" y2="58" stroke="currentColor" stroke-opacity="0.35" stroke-width="1"/> <line x1="260" y1="14" x2="260" y2="358" stroke="currentColor" stroke-opacity="0.22" stroke-width="1"/> <line x1="500" y1="14" x2="500" y2="358" stroke="currentColor" stroke-opacity="0.22" stroke-width="1"/> <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13" fill="currentColor" opacity="0.7" text-anchor="middle"> <text x="140" y="41">decimal</text> <text x="380" y="41">hex</text> <text x="620" y="41">Go literal</text> </g> <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="18" text-anchor="middle"> <g fill="currentColor"> <text x="140" y="93">10</text> <text x="140" y="135">16</text> <text x="140" y="177">26</text> <text x="140" y="219">42</text> <text x="140" y="261">100</text> <text x="140" y="303">255</text> <text x="140" y="345">4095</text> </g> <g fill="var(--tone-4)"> <text x="380" y="93">a</text> <text x="380" y="135">10</text> <text x="380" y="177">1a</text> <text x="380" y="219">2a</text> <text x="380" y="261">64</text> <text x="380" y="303">ff</text> <text x="380" y="345">fff</text> </g> <g> <text x="620" y="93"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">a</tspan></text> <text x="620" y="135"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">10</tspan></text> <text x="620" y="177"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">1a</tspan></text> <text x="620" y="219"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">2a</tspan></text> <text x="620" y="261"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">64</tspan></text> <text x="620" y="303"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">ff</tspan></text> <text x="620" y="345"><tspan fill="var(--tone-5)">0x</tspan><tspan fill="var(--tone-4)">fff</tspan></text> </g> </g> </svg> </p>
-</div>
 
 <h3>Δεκάδες, εκατοντάδες και ψηφία σε Decimal</h3>
 <p> Επιστρέφοντας στο δεκαδικό "κανονικό" σύστημα αρίθμησης (decimal), το ίδιο ισχύει και για μεγαλύτερους κύκλους: το <code>x % 100</code> κρατάει τα <strong>δύο</strong> τελευταία ψηφία (<code>4265 % 100</code> είναι <code>65</code>), το <code>x % 1000</code> <strong>τρία</strong> τελευταία ψηφία (<code>4265 % 100</code> είναι <code>265</code>). </p>
@@ -8270,7 +8200,7 @@ __del__(m, "a")`,
 `);
 
         initSlideDeck({
-            version: "3.0.0",
+            version: "4.0.0",
             notifyUrl: "https://script.google.com/macros/s/AKfycbzZRFWgg0WwQXHE6H0yg-QS-cem-d4qaYYYNmZ58Fss-fZmSXqmuu-u7DPXyLzn1Lc/exec"
         });
     </script>

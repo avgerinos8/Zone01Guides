@@ -1833,24 +1833,48 @@ function initTocSidebar() {
     // separate fragments a query could fall between the cracks of. Each
     // entry's own element doubles as the jump target — no ids needed here,
     // unlike the static extract_toc.go-generated heading links.
-    const SEARCH_SELECTOR = "p, h1, h2, h3, li, td, .lede, pre code, blockquote";
+    const SEARCH_SELECTOR = "p, h1, h2, h3, li, td, .lede, pre code, blockquote, .gs-name, .gs-def, .gc-term, .gc-def, svg text, .callout, .sources-list a";
     // no result cap — every match shows; search only runs at 3+ characters (see renderResults)
+
+    /**
+     * Strips Greek (and any other) accent/diacritic marks for
+     * accent-insensitive matching — "τόνους" and "τονους" become the same
+     * string. NFD decomposition splits each accented character into its
+     * base letter + a separate combining-mark codepoint; stripping marks
+     * in the U+0300-U+036F range removes exactly that. For Greek tonos
+     * specifically this is 1-for-1 (one base letter replaces one accented
+     * letter), so the folded string is always the same LENGTH as the
+     * original — meaning a match position found in folded text is still
+     * the correct position to read words out of the ORIGINAL, still-
+     * accented text for display. That's what makes buildSnippet() below
+     * able to search ignoring accents while still showing them normally.
+     * @param {string} str
+     * @returns {string}
+     */
+    function foldAccents(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
 
     const searchIndex = [];
     document.querySelectorAll(".slide").forEach((slide) => {
       slide.querySelectorAll(SEARCH_SELECTOR).forEach((el) => {
         const text = el.textContent.trim();
         if (!text) return;
-        searchIndex.push({ el, text, textLower: text.toLowerCase() });
+        searchIndex.push({ el, text, textLower: foldAccents(text.toLowerCase()) });
       });
     });
 
+    // Also index the static TOC link labels themselves — guarantees
+    // whatever text a link actually SHOWS is always searchable, even when
+    // the underlying content-scan above can't independently find it (e.g.
+    // an h1-level slug lives on that slide's eyebrow div, which isn't in
+    // SEARCH_SELECTOR at all, so it never matched anything on its own).
     tocListEl.querySelectorAll("a.toc-link[href^='#']").forEach((link) => {
       const text = link.textContent.trim();
       if (!text) return;
       const targetEl = document.getElementById(link.getAttribute("href").slice(1));
       if (!targetEl) return;
-      searchIndex.push({ el: targetEl, text, textLower: text.toLowerCase() });
+      searchIndex.push({ el: targetEl, text, textLower: foldAccents(text.toLowerCase()) });
     });
 
     const originalTocListHTML = tocListEl.innerHTML; // browse mode — restored when the search box is cleared
@@ -1869,11 +1893,11 @@ function initTocSidebar() {
      * @param {number} contextWords
      * @returns {{before: string, match: string, after: string}|null}
      */
-    function buildSnippet(text, query, contextWords) {
-      const lowerText = text.toLowerCase();
-      const matchStart = lowerText.indexOf(query.toLowerCase());
+    function buildSnippet(text, foldedQuery, contextWords) {
+      const foldedText = foldAccents(text.toLowerCase());
+      const matchStart = foldedText.indexOf(foldedQuery);
       if (matchStart === -1) return null;
-      const matchEnd = matchStart + query.length;
+      const matchEnd = matchStart + foldedQuery.length;
 
       const words = [];
       const wordRe = /\S+/g;
@@ -1904,7 +1928,7 @@ function initTocSidebar() {
     }
 
     function renderResults(query) {
-      const q = query.trim().toLowerCase();
+      const q = foldAccents(query.trim().toLowerCase());
       if (!q) {
         tocListEl.innerHTML = originalTocListHTML;
         return;
