@@ -132,10 +132,8 @@
       <a href="#@strconv" class="toc-link toc-h1">Το πακέτο strconv</a>
       <a href="#@os" class="toc-link toc-h1">os package</a>
       <a href="#@exit" class="toc-link toc-h1">os.Exit: Άμεσος Τερματισμός</a>
-      <a href="#@io" class="toc-link toc-h1">io.Reader / io.Writer</a>
-      <a href="#@files" class="toc-link toc-h1">reading/writing files</a>
-      <a href="#@bufio" class="toc-link toc-h1">bufio.Scanner</a>
-      <a href="#@readmodes" class="toc-link toc-h1">Σύνοψη: Τρεις Τρόποι Ανάγνωσης Αρχείου</a>
+      <a href="#@files" class="toc-link toc-h1">reading &amp; writing files</a>
+      <a href="#@wordfreq" class="toc-link toc-h1">Challenge: Word Frequency</a>
 
       <a href="#@glossary2" class="toc-link toc-h1">Μίνι Γλωσσάρι — Ενότητα 2</a>
 
@@ -168,8 +166,9 @@
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 6 — ΠΟΛΥΜΟΡΦΙΣΜΟΣ ΣΤΗΝ ΠΡΑΞΗ</div>
       <a href="#@abstraction" class="toc-link toc-h1">concrete type vs abstraction</a>
-      <a href="#@readwrite" class="toc-link toc-h1">Ανατομία: Read() &amp; Write()</a>
-      <a href="#@piping" class="toc-link toc-h1">Πραγματικός Πολυμορφισμός: Piping Data Anywhere</a>
+      <a href="#@readwrite" class="toc-link toc-h1">io.Reader &amp; io.Writer</a>
+      <a href="#@piping" class="toc-link toc-h1">piping data anywhere</a>
+      <a href="#@countlines" class="toc-link toc-h1">Challenge: CountLines</a>
       <a href="#@pitfalls" class="toc-link toc-h1">Παγίδες, Anti-patterns &amp; Testing Benefits</a>
       <a href="#@testing" class="toc-link toc-h2">testing without real files</a>
 
@@ -665,7 +664,7 @@ joined := strings.Join(parts, " - ") // "apple - banana - cherry"</code></pre>
           "Επιστρέφει -1, δεν θεωρείται σφάλμα, είναι μια απολύτως έγκυρη απάντηση",
           "Πετάει ένα runtime panic με μήνυμα 'substring not found in string'",
           "Επιστρέφει το μήκος του string s ως ένδειξη ότι δεν βρέθηκε τίποτα",
-          "Επιστρέφει ένα κενό string \"\" αντί για ακέραιο δείκτη θέσης"
+          "Επιστρέφει ένα κενό string \"\" αντί για ακέραιο pointer θέσης"
         ],
         correct: 0,
         explain: "Η σύμβαση στη Go για πολλές search functions είναι -1 = δεν βρέθηκε, χωρίς αυτό να θεωρείται σφάλμα — απλά μια πληροφορία."
@@ -1036,156 +1035,159 @@ all := os.Environ() // []string with every variable, as "KEY=VALUE"
     ], {
       note: "Συμπλήρωσε τη διαχείριση missing arguments."
     });
-    // ── Section 2.4 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow" id="@io">Ενότητα 2 / 7 — Standard Packages</div>
-<h1>Το πακέτο <code class="inline-code">io</code>: Reader και Writer</h1>
-<p class="lede">Το πακέτο <code class="inline-code">io</code> δεν περιέχει "έτοιμες" λειτουργίες για συγκεκριμένες πηγές δεδομένων — περιέχει κάτι πιο θεμελιώδες: <strong>interfaces</strong> που περιγράφουν τι σημαίνει γενικά "διάβασμα" και "γράψιμο", ανεξάρτητα από το ΤΙ βρίσκεται στην άλλη άκρη (αρχείο, δίκτυο, μνήμη, οτιδήποτε).</p>
-
-<h2>Το θεμελιώδες interface: io.Reader</h2>
-<pre><code class="lang-go">type Reader interface {
-    Read(p []byte) (n int, err error)
-}</code></pre>
-<p>Αυτό είναι όλο. Οτιδήποτε έχει μια μέθοδο <code class="inline-code">Read</code> με ΑΚΡΙΒΩΣ αυτή την υπογραφή, είναι ένας έγκυρος <code class="inline-code">io.Reader</code>. Η ιδέα: γεμίζει το slice <code class="inline-code">p</code> με δεδομένα, και επιστρέφει πόσα bytes πραγματικά διάβασε (<code class="inline-code">n</code>) και αν κάτι πήγε στραβά (<code class="inline-code">err</code>) — συμπεριλαμβανομένου του ειδικού error <code class="inline-code">io.EOF</code> ("End Of File") όταν δεν υπάρχουν άλλα δεδομένα.</p>
-
-<h2>Το θεμελιώδες interface: io.Writer</h2>
-<pre><code class="lang-go">type Writer interface {
-    Write(p []byte) (n int, err error)
-}</code></pre>
-<p>Συμμετρικά με το Reader: παίρνει bytes και τα "γράφει" κάπου, επιστρέφοντας πόσα πραγματικά γράφτηκαν και τυχόν error.</p>
-
-<div class="callout">
-  <span class="tag">Γιατί έχει τόση σημασία αυτή η αφαίρεση</span>
-  Επειδή τα interfaces αυτά είναι ΤΟΣΟ μικρά (μία μόνο μέθοδο το καθένα), δεκάδες διαφορετικά types στη standard library τα υλοποιούν χωρίς καν να το "ξέρουν" ρητά: αρχεία (<code class="inline-code">*os.File</code>), συνδέσεις δικτύου, buffers στη μνήμη, ακόμα και το ίδιο το terminal (<code class="inline-code">os.Stdin</code>, <code class="inline-code">os.Stdout</code>). Θα δούμε αυτή την ιδέα σε πλήρες βάθος στην Ενότητα 6.
-</div>
-
-<h2>Σύνθετα (Composite) Interfaces</h2>
-<p>Η standard library συνδυάζει τα μικρά interfaces σε μεγαλύτερα, όταν κάτι χρειάζεται να κάνει περισσότερα από ένα πράγμα ταυτόχρονα.</p>
-
-<pre><code class="lang-go">type ReadWriter interface {
-    Reader
-    Writer
-}
-
-type ReadCloser interface {
-    Reader
-    Closer
-}
-
-type WriteCloser interface {
-    Writer
-    Closer
-}</code></pre>
-
-<div class="callout">
-  <span class="tag">Προεπισκόπηση: Interface Composition</span>
-  Αυτό το μοτίβο — "χτίζω" μεγαλύτερα interfaces ενώνοντας μικρότερα — λέγεται Interface Composition, και θα το δούμε αναλυτικά στην Ενότητα 5. Για τώρα, κράτησε την εικόνα: μικρά, εστιασμένα interfaces (Reader, Writer, Closer) γίνονται "τουβλάκια" (building blocks) για μεγαλύτερα.
-</div>
-
-<h2>Χρήσιμες Functions του πακέτου io</h2>
-<pre><code class="lang-go">n, err := io.Copy(dst, src)  // αντιγράφει ΟΛΑ τα δεδομένα από src σε dst
-data, err := io.ReadAll(src) // διαβάζει ΟΛΟΚΛΗΡΟ το περιεχόμενο σε []byte
-limited := io.LimitReader(src, 100) // Reader που σταματάει μετά από 100 bytes</code></pre>
-`);
-
-    addQuiz([
-      {
-        q: "Ποια μέθοδος πρέπει να υλοποιεί ένα type για να θεωρείται έγκυρο io.Reader στη Go;",
-        options: [
-          "Μια μέθοδο Load() που επιστρέφει ολόκληρο το περιεχόμενο ως string",
-          "Μια μέθοδο Read(p []byte) που επιστρέφει (n int, err error)",
-          "Μια μέθοδο GetData() που επιστρέφει slice από bytes χωρίς error",
-          "Μια μέθοδο Fetch() η οποία δέχεται και επιστρέφει io.Reader"
-        ],
-        correct: 1,
-        explain: "Το io.Reader interface απαιτεί ΑΚΡΙΒΩΣ μία μέθοδο: Read(p []byte) (n int, err error) — γεμίζει το p με δεδομένα και αναφέρει πόσα bytes διαβάστηκαν."
-      },
-      {
-        q: "Γιατί τα io.Reader και io.Writer θεωρούνται τόσο σημαντικά στη φιλοσοφία σχεδίασης της Go;",
-        options: [
-          "Επειδή είναι τα μοναδικά interfaces της standard library που επιτρέπεται να υλοποιηθούν από custom types",
-          "Επειδή είναι τόσο μικρά και εστιασμένα (μία μέθοδο το καθένα) που δεκάδες διαφορετικές πηγές δεδομένων μπορούν να τα υλοποιήσουν χωρίς ρητή δήλωση",
-          "Επειδή απαιτούνται υποχρεωτικά από τον compiler σε κάθε πρόγραμμα Go που διαβάζει είσοδο από το πληκτρολόγιο",
-          "Επειδή αντικαθιστούν πλήρως την ανάγκη για error handling σε λειτουργίες εισόδου και εξόδου δεδομένων"
-        ],
-        correct: 1,
-        explain: "Η μικρή, εστιασμένη φύση τους (interface segregation) επιτρέπει σε πολύ διαφορετικά types — αρχεία, δίκτυο, in-memory buffers — να 'ταιριάζουν' χωρίς ρητή σύνδεση, απλά υλοποιώντας τη μία μέθοδο."
-      }
-    ]);
-    // ── Section 2.5 ──────────────────────────────────────────────────────── ⊃
+    // ── Section 2.4: Files, buffering, and choosing between them ─────────── ⊃
     addContent(`
 <div class="eyebrow" id="@files">Ενότητα 2 / 7 — Standard Packages</div>
 <h1>Ανάγνωση &amp; Εγγραφή Αρχείων</h1>
-<p class="lede">Τώρα που ξέρεις τα βασικά interfaces (Reader/Writer) και το πακέτο os, ας δούμε τις πιο πρακτικές, καθημερινές functions για δουλειά με αρχεία.</p>
+<p class="lede">Δύο τρόποι να διαβάσεις ένα αρχείο. Ο πρώτος είναι μία γραμμή κώδικα, ο δεύτερος έχει λόγο ύπαρξης για μεγάλα αρχεία.</p>
 
-<h2>Η "γρήγορη" μέθοδος: os.ReadFile</h2>
-<p>Όταν θέλεις απλά ΟΛΟ το περιεχόμενο ενός αρχείου, χωρίς να νοιάζεσαι για ανοίγματα/κλεισίματα, το <code class="inline-code">os.ReadFile</code> κάνει τα πάντα σε μία κλήση.</p>
+<h1>Α. Όλο το αρχείο μονομιάς: os.ReadFile</h1>
+<p>Όταν θέλεις όλο το περιεχόμενο και το αρχείο είναι μικρό, το <code class="inline-code">os.ReadFile</code> κάνει τα πάντα σε μία κλήση.</p>
 
 <pre><code class="lang-go">data, err := os.ReadFile("config.txt")
 if err != nil {
-    // π.χ. το αρχείο δεν υπάρχει, ή δεν έχεις δικαιώματα ανάγνωσης
+    // the file may not exist, or you may not have read permission
+    return err
 }
-fmt.Println(string(data)) // data είναι []byte — μετατροπή σε string για εμφάνιση</code></pre>
+fmt.Println(string(data)) // data is []byte - convert for printing</code></pre>
 
 <div class="callout">
-  <span class="tag">Σημαντικό: δεν χρειάζεται defer Close εδώ</span>
-  Το <code class="inline-code">os.ReadFile</code> ανοίγει, διαβάζει, ΚΑΙ κλείνει το αρχείο εσωτερικά — όλα μέσα στη μία κλήση. Δεν χρειάζεται (ούτε μπορείς) να καλέσεις εσύ Close σε αυτή την περίπτωση.
+  <span class="tag">Δεν χρειάζεται defer Close εδώ</span>
+  Το <code class="inline-code">os.ReadFile</code> ανοίγει, διαβάζει και κλείνει το αρχείο μέσα στην ίδια κλήση.
 </div>
 
-<h2>Δημιουργία &amp; Εγγραφή</h2>
+<h2>Εγγραφή: os.WriteFile</h2>
 <pre><code class="lang-go">err := os.WriteFile("out.txt", []byte("Hello, Go!"), 0644)
-// δημιουργεί (ή αντικαθιστά πλήρως) το αρχείο με αυτό το περιεχόμενο</code></pre>
+// creates the file, or replaces its contents entirely</code></pre>
 
-<h2>Άνοιγμα με Πλήρη Έλεγχο: os.OpenFile</h2>
-<p>Όταν χρειάζεσαι περισσότερο έλεγχο — π.χ. να προσθέσεις (append) δεδομένα σε ένα ήδη υπάρχον αρχείο, αντί να το αντικαταστήσεις — χρησιμοποιείς το <code class="inline-code">os.OpenFile</code> με ρητά flags.</p>
+<p>Το <code class="inline-code">0644</code> είναι τα δικαιώματα του αρχείου σε οκταδική μορφή (octal): ο owner διαβάζει και γράφει, οι υπόλοιποι μόνο διαβάζουν (-rw-r--r--). Είναι η συνηθισμένη τιμή για αρχεία δεδομένων.</p>
 
-<pre><code class="lang-go">f, err := os.OpenFile("log.txt",
-    os.O_APPEND|os.O_CREATE|os.O_WRONLY, // flags: πρόσθεσε στο τέλος, δημιούργησε αν δεν υπάρχει, μόνο εγγραφή
-    0644)
-defer f.Close()
 
-f.WriteString("new log line\\n")</code></pre>
+<div class="callout">
+  <span class="tag">POSIX Permissions</span>
+  <p>Σε συστήματα Unix/Linux, κάθε αρχείο έχει δικαιώματα πρόσβασης για <strong>τρεις κατηγορίες χρηστών</strong>: τον <strong>ιδιοκτήτη</strong> (owner) — συνήθως αυτός που δημιούργησε το αρχείο, την <strong>ομάδα</strong> (group) — χρήστες που ανήκουν σε μια ομάδα (π.χ. student), και τους <strong>υπόλοιπους</strong> (others) — όλοι οι άλλοι.</p>
+  <p>Για κάθε κατηγορία, τα δικαιώματα ορίζονται με τρεις ενέργειες: <strong>read</strong> (r) — ανάγνωση περιεχομένου, <strong>write</strong> (w) — τροποποίηση ή διαγραφή, και <strong>execute</strong> (x) — εκτέλεση ως πρόγραμμα. Το execute είναι διαφορετικό: για αρχεία δεδομένων (π.χ. .txt) δεν χρειάζεται, αλλά τα scripts χωρίς αυτό δεν μπορούν να τρέξουν.</p>
+  <p>Τα δικαιώματα γράφονται ως τρεις ομάδες των τριών χαρακτήρων, π.χ. <code>-rw-r--r--</code>: το πρώτο <code>-</code> δηλώνει αρχείο (όχι φάκελο), ο owner έχει <code>rw-</code> (read+write), η ομάδα <code>r--</code> (μόνο read), και οι υπόλοιποι <code>r--</code> (μόνο read).</p>
+  <p>Η οκταδική μορφή (octal), όπως το <code>0644</code>, μεταφράζει αυτά τα δικαιώματα σε αριθμούς: <strong>read = 4</strong>, <strong>write = 2</strong>, και <strong>execute = 1</strong>. Το δικαίωμα κάθε κατηγορίας προκύπτει από το άθροισμά τους. Για παράδειγμα, το <code>6</code> σημαίνει <code>4+2</code> (read + write), ενώ το <code>4</code> σημαίνει μόνο read. Εδώ, το αρχικό <code>0</code> υπάρχει γιατί ειδοποιεί τον compiler ότι ο αριθμός είναι οκταδικός, και τα επόμενα τρία ψηφία εφαρμόζονται με τη σειρά (<code>6</code> για τον owner, <code>4</code> για το group, <code>4</code> για τους others).</p>
+  
+<figure><svg viewBox="0 0 640 440" width="100%" height="auto" style="max-width: 640px; margin: 2rem auto; display: block;" font-family="system-ui, sans-serif"><style>.pr-oct{font-size:24px;font-weight:bold;fill:currentColor}.pr-plus,.pr-arrow{font-size:16px;fill:currentColor;opacity:.4}.pr-arrow{opacity:.3}.pr-pill-on{fill:#1c1c1c;opacity:.15}.pr-text-on{font-size:18px;font-weight:bold;fill:#1c1c1c}.pr-pill-off{fill:none;stroke:currentColor;stroke-opacity:.2}.pr-text-off{font-size:18px;fill:currentColor;opacity:.3}.pr-res-bg{fill:currentColor;opacity:.04}.pr-res-on,.pr-res-off{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:18px;fill:currentColor}.pr-res-on{font-weight:bold}.pr-res-off{opacity:.2}.pr-head{font-size:11px;fill:currentColor;opacity:.6;text-transform:uppercase;letter-spacing:1px;font-weight:600}.pr-sub{font-size:10px;fill:currentColor;opacity:.4;letter-spacing:.5px;font-weight:600}</style><g dominant-baseline="central" text-anchor="middle"><text x="70" y="50" class="pr-head">Οκταδικο</text><text x="280" y="50" class="pr-head">Αναλυση Bits</text><text x="180" y="75" class="pr-sub">READ (4)</text><text x="280" y="75" class="pr-sub">WRITE (2)</text><text x="380" y="75" class="pr-sub">EXEC (1)</text><text x="550" y="50" class="pr-head">Δικαιωμα</text></g><line x1="20" y1="95" x2="620" y2="95" stroke="currentColor" stroke-opacity=".1"/><g dominant-baseline="central" text-anchor="middle"><text x="70" y="140" class="pr-oct">7</text><rect x="156" y="122" width="48" height="36" rx="6" class="pr-pill-on"/><text x="180" y="140" class="pr-text-on">4</text><text x="230" y="140" class="pr-plus">+</text><rect x="256" y="122" width="48" height="36" rx="6" class="pr-pill-on"/><text x="280" y="140" class="pr-text-on">2</text><text x="330" y="140" class="pr-plus">+</text><rect x="356" y="122" width="48" height="36" rx="6" class="pr-pill-on"/><text x="380" y="140" class="pr-text-on">1</text><text x="450" y="140" class="pr-arrow">→</text><rect x="500" y="122" width="100" height="36" rx="6" class="pr-res-bg"/><text x="525" y="140" class="pr-res-on">r</text><text x="550" y="140" class="pr-res-on">w</text><text x="575" y="140" class="pr-res-on">x</text></g><g dominant-baseline="central" text-anchor="middle"><text x="70" y="200" class="pr-oct">6</text><rect x="156" y="182" width="48" height="36" rx="6" class="pr-pill-on"/><text x="180" y="200" class="pr-text-on">4</text><text x="230" y="200" class="pr-plus">+</text><rect x="256" y="182" width="48" height="36" rx="6" class="pr-pill-on"/><text x="280" y="200" class="pr-text-on">2</text><text x="330" y="200" class="pr-plus">+</text><rect x="356" y="182" width="48" height="36" rx="6" class="pr-pill-off"/><text x="380" y="200" class="pr-text-off">0</text><text x="450" y="200" class="pr-arrow">→</text><rect x="500" y="182" width="100" height="36" rx="6" class="pr-res-bg"/><text x="525" y="200" class="pr-res-on">r</text><text x="550" y="200" class="pr-res-on">w</text><text x="575" y="200" class="pr-res-off">-</text></g><g dominant-baseline="central" text-anchor="middle"><text x="70" y="260" class="pr-oct">5</text><rect x="156" y="242" width="48" height="36" rx="6" class="pr-pill-on"/><text x="180" y="260" class="pr-text-on">4</text><text x="230" y="260" class="pr-plus">+</text><rect x="256" y="242" width="48" height="36" rx="6" class="pr-pill-off"/><text x="280" y="260" class="pr-text-off">0</text><text x="330" y="260" class="pr-plus">+</text><rect x="356" y="242" width="48" height="36" rx="6" class="pr-pill-on"/><text x="380" y="260" class="pr-text-on">1</text><text x="450" y="260" class="pr-arrow">→</text><rect x="500" y="242" width="100" height="36" rx="6" class="pr-res-bg"/><text x="525" y="260" class="pr-res-on">r</text><text x="550" y="260" class="pr-res-off">-</text><text x="575" y="260" class="pr-res-on">x</text></g><g dominant-baseline="central" text-anchor="middle"><text x="70" y="320" class="pr-oct">4</text><rect x="156" y="302" width="48" height="36" rx="6" class="pr-pill-on"/><text x="180" y="320" class="pr-text-on">4</text><text x="230" y="320" class="pr-plus">+</text><rect x="256" y="302" width="48" height="36" rx="6" class="pr-pill-off"/><text x="280" y="320" class="pr-text-off">0</text><text x="330" y="320" class="pr-plus">+</text><rect x="356" y="302" width="48" height="36" rx="6" class="pr-pill-off"/><text x="380" y="320" class="pr-text-off">0</text><text x="450" y="320" class="pr-arrow">→</text><rect x="500" y="302" width="100" height="36" rx="6" class="pr-res-bg"/><text x="525" y="320" class="pr-res-on">r</text><text x="550" y="320" class="pr-res-off">-</text><text x="575" y="320" class="pr-res-off">-</text></g><g dominant-baseline="central" text-anchor="middle"><text x="70" y="380" class="pr-oct">0</text><rect x="156" y="362" width="48" height="36" rx="6" class="pr-pill-off"/><text x="180" y="380" class="pr-text-off">0</text><text x="230" y="380" class="pr-plus">+</text><rect x="256" y="362" width="48" height="36" rx="6" class="pr-pill-off"/><text x="280" y="380" class="pr-text-off">0</text><text x="330" y="380" class="pr-plus">+</text><rect x="356" y="362" width="48" height="36" rx="6" class="pr-pill-off"/><text x="380" y="380" class="pr-text-off">0</text><text x="450" y="380" class="pr-arrow">→</text><rect x="500" y="362" width="100" height="36" rx="6" class="pr-res-bg"/><text x="525" y="380" class="pr-res-off">-</text><text x="550" y="380" class="pr-res-off">-</text><text x="575" y="380" class="pr-res-off">-</text></g></svg></figure>
 
-<div class="grid3">
-  <div class="card"><h3>os.ReadFile / os.WriteFile</h3><p>Απλή, "γρήγορη" περίπτωση — όλο το αρχείο μονομιάς, καμία ανάγκη χειροκίνητου open/close.</p></div>
-  <div class="card"><h3>os.Open / os.Create</h3><p>Δίνει *os.File για σταδιακό, χειροκίνητο διάβασμα/γράψιμο — χρειάζεται defer Close().</p></div>
-  <div class="card"><h3>os.OpenFile</h3><p>Πλήρης έλεγχος μέσω flags (append, create, read-only κ.λπ.) — για πιο σύνθετα σενάρια.</p></div>
+  <p><strong>Πότε να χρησιμοποιείς ποιο:</strong> Το <code>0644</code> είναι η ασφαλέστερη επιλογή για αρχεία δεδομένων — επιτρέπει σε εσένα να τα αλλάζεις και σε όλους τους άλλους να τα διαβάζουν. Για εκτελέσιμα, χρησιμοποιείς <code>0755</code> (rwxr-xr-x). Για ευαίσθητα αρχεία (π.χ. κλειδιά API), χρησιμοποιείς <code>0600</code> (rw-------) για να έχουν πρόσβαση μόνο ο owner. Η Go θα σε αφήσει να γράψεις όποια τιμή θέλεις και το λειτουργικό σύστημα θα εφαρμόσει τα δικαιώματα που έδωσες — ή θα τα περιορίσει αν η umask είναι πιο αυστηρή.</p>
 </div>
-`);
 
-    // ── Section 2.6 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow" id="@bufio">Ενότητα 2 / 7 — Standard Packages</div>
-<h1>Buffering &amp; Ροές Δεδομένων (<code class="inline-code">bufio</code>)</h1>
-<p class="lede">Το <code class="inline-code">os.ReadFile</code> φορτώνει ΟΛΟΚΛΗΡΟ το αρχείο στη μνήμη — μια χαρά για μικρά αρχεία, αλλά προβληματικό αν το αρχείο είναι, ας πούμε, αρκετά GB. Το πακέτο <code class="inline-code">bufio</code> ("buffered I/O") σου επιτρέπει να επεξεργάζεσαι δεδομένα σταδιακά, κομμάτι-κομμάτι, χωρίς να τα φορτώνεις όλα ταυτόχρονα.</p>
+<h1>Β. Το πρόβλημα του μεγέθους</h1>
+<p>Το <code class="inline-code">os.ReadFile</code> φέρνει ολόκληρο το αρχείο στη μνήμη. Για ένα config των 2 KB δεν το προσέχει κανείς. Για ένα log των 4 GB, το πρόγραμμα θα δυσκολευτεί αρκετά.</p>
 
-<h2>bufio.Scanner — Ανάγνωση Γραμμή-Γραμμή</h2>
-<p>Η πιο συχνή χρήση: διάβασμα αρχείου (ή οποιουδήποτε io.Reader) μία γραμμή τη φορά.</p>
+<h2>Γραμμή-γραμμή: bufio.Scanner</h2>
+<p>Το πακέτο <code class="inline-code">bufio</code> ("buffered I/O") κρατάει στη μνήμη ένα μικρό κομμάτι τη φορά. Ο <code class="inline-code">Scanner</code> είναι το πιο συχνό εργαλείο του: σου δίνει μία γραμμή σε κάθε επανάληψη.</p>
 
-<pre><code class="lang-go">file, _ := os.Open("data.txt")
+
+<svg viewBox="0 0 920 310" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:940px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <defs><marker id="rd-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+  <text x="30" y="28" font-family="Menlo, Consolas, monospace" font-size="16" fill="var(--tone-5)">os.ReadFile</text>
+  <text x="30" y="50" font-size="13" fill="currentColor" opacity="0.6">όλο το αρχείο, μονομιάς</text>
+  <rect x="30" y="68" width="250" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.5"/>
+  <rect x="44" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="72" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="100" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="128" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="156" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="184" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="212" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="240" y="80" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="44" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="72" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="100" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="128" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="156" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="184" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="212" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="240" y="106" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <text x="155" y="152" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.55">αρχείο στον δίσκο</text>
+  <line x1="290" y1="103" x2="330" y2="103" stroke="currentColor" stroke-width="2" opacity="0.6" marker-end="url(#rd-ar)"/>
+  <text x="30" y="178" font-family="Menlo, Consolas, monospace" font-size="16" fill="var(--tone-5)">bufio.Scanner</text>
+  <text x="30" y="200" font-size="13" fill="currentColor" opacity="0.6">μία γραμμή τη φορά</text>
+  <rect x="30" y="218" width="250" height="70" rx="8" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.5"/>
+  <rect x="44" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="72" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="100" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="128" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="156" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="184" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="212" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="240" y="230" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="44" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="72" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="100" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="128" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="156" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="184" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="212" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <rect x="240" y="256" width="24" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+  <text x="155" y="302" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.55">αρχείο στον δίσκο</text>
+  <line x1="290" y1="253" x2="330" y2="253" stroke="currentColor" stroke-width="2" opacity="0.6" marker-end="url(#rd-ar)"/>
+  <rect x="340" y="68" width="250" height="70" rx="8" fill="rgba(var(--tone-4-rgb),0.14)" stroke="var(--tone-4)" stroke-width="1.8"/>
+  <rect x="354" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="382" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="410" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="438" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="466" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="494" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="522" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="550" y="80" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="354" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="382" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="410" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="438" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="466" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="494" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="522" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <rect x="550" y="106" width="24" height="18" rx="3" fill="rgba(var(--tone-4-rgb),0.35)" stroke="var(--tone-4)" stroke-width="1.2" opacity="1"/>
+  <text x="465" y="152" text-anchor="middle" font-size="12" fill="var(--tone-4)">μνήμη: όσο και το αρχείο</text>
+  <text x="620" y="100" font-size="13" fill="currentColor" opacity="0.7">απλός κώδικας</text>
+  <text x="620" y="122" font-size="13" fill="currentColor" opacity="0.7">πρόβλημα σε αρχεία GB</text>
+  <rect x="340" y="218" width="120" height="70" rx="8" fill="rgba(var(--tone-5-rgb),0.14)" stroke="var(--tone-5)" stroke-width="1.8"/>
+  <rect x="354" y="244" width="24" height="18" rx="3" fill="rgba(var(--tone-5-rgb),0.4)" stroke="var(--tone-5)" stroke-width="1.2" opacity="1"/>
+  <rect x="382" y="244" width="24" height="18" rx="3" fill="rgba(var(--tone-5-rgb),0.4)" stroke="var(--tone-5)" stroke-width="1.2" opacity="1"/>
+  <rect x="410" y="244" width="24" height="18" rx="3" fill="rgba(var(--tone-5-rgb),0.4)" stroke="var(--tone-5)" stroke-width="1.2" opacity="1"/>
+  <text x="400" y="302" text-anchor="middle" font-size="12" fill="var(--tone-5)">μνήμη: μία γραμμή</text>
+  <path d="M 400 218 C 400 190 330 190 330 240" fill="none" stroke="var(--tone-5)" stroke-width="1.8" marker-end="url(#rd-ar)"/>
+  <text x="490" y="248" font-size="13" fill="currentColor" opacity="0.7">σταθερή μνήμη, ανεξάρτητα από μέγεθος</text>
+  <text x="490" y="270" font-size="13" fill="currentColor" opacity="0.7">λίγες γραμμές παραπάνω κώδικα</text>
+</svg>
+
+
+<pre><code class="lang-go">file, err := os.Open("data.txt")
+if err != nil {
+    return err
+}
 defer file.Close()
 
 scanner := bufio.NewScanner(file)
 for scanner.Scan() {
-    line := scanner.Text() // η τρέχουσα γραμμή, χωρίς το newline
+    line := scanner.Text() // the current line, without the newline
     fmt.Println(line)
 }
+
 if err := scanner.Err(); err != nil {
-    // κάτι πήγε στραβά ΚΑΤΑ το scanning (όχι απλό EOF — αυτό είναι φυσιολογικό τέλος)
+    // something went wrong DURING scanning - reaching the end is not an error
 }</code></pre>
 
-<h2>Τρόποι "Σπασίματος" (Split Modes)</h2>
-<p>Το scanner δεν χρειάζεται πάντα να σπάει σε γραμμές — μπορεί να "σπάει" τα δεδομένα με διαφορετικούς τρόπους ανάλογα με τη function που δίνεις στο <code class="inline-code">Split()</code>.</p>
+<p>Το <code class="inline-code">scanner.Scan()</code> επιστρέφει <code class="inline-code">false</code> και όταν τελείωσε το αρχείο και όταν κάτι πήγε στραβά. Γι' αυτό ο έλεγχος <code class="inline-code">scanner.Err()</code> μετά το loop δεν είναι προαιρετικός: χωρίς αυτόν, ένα αρχείο που διαβάστηκε μισό μοιάζει με αρχείο που διαβάστηκε ολόκληρο.</p>
+
+<h2>scanner.Split</h2>
+<p>Από προεπιλογή, ο <code>Scanner</code> διαβάζει τα δεδομένα γραμμή-γραμμή. Στην πραγματικότητα όμως, δουλειά του είναι να τεμαχίζει την είσοδο σε λογικά κομμάτια (tokens).</p>
+<p>Με τη μέθοδο <code class="inline-code">Split()</code>, μπορείς να αλλάξεις τον κανόνα διαχωρισμού και να του ορίσεις τι ακριβώς αποτελεί «ένα κομμάτι» για τη δική σου περίπτωση.</p>
 
 <div class="grid2">
-  <div class="card"><h3>bufio.ScanLines (default)</h3><p>Μία γραμμή τη φορά — ιδανικό για logs, ρυθμίσεις, γενικά κείμενα με νόημα ανά γραμμή.</p></div>
-  <div class="card"><h3>bufio.ScanRunes</h3><p>Ένας χαρακτήρας (rune) τη φορά — για επεξεργασία κειμένου γράμμα-γράμμα.</p></div>
-  <div class="card"><h3>bufio.ScanWords</h3><p>Μία λέξη τη φορά, χωρισμένη σε whitespace — ιδανικό για μέτρηση λέξεων.</p></div>
-  <div class="card"><h3>scanner.Split(customFn)</h3><p>Custom split function, όταν κανένα από τα παραπάνω δεν ταιριάζει στην περίπτωσή σου.</p></div>
+  <div class="card"><h3>bufio.ScanLines (default)</h3><p>Μία γραμμή τη φορά — logs, config, CSV, γενικά ό,τι έχει νόημα ανά γραμμή.</p></div>
+  <div class="card"><h3>bufio.ScanWords</h3><p>Μία λέξη τη φορά, χωρισμένη στα κενά. Αγνοεί πολλαπλά κενά και αλλαγές γραμμής.</p></div>
+  <div class="card"><h3>bufio.ScanRunes</h3><p>Έναν χαρακτήρα τη φορά — προσοχή, rune και όχι byte, οπότε δουλεύει σωστά και σε ελληνικά.</p></div>
+  <div class="card"><h3>scanner.Split(customFn)</h3><p>Δική σου συνάρτηση, όταν κανένα από τα παραπάνω δεν ταιριάζει.</p></div>
 </div>
 
 <pre><code class="lang-go">scanner := bufio.NewScanner(file)
-scanner.Split(bufio.ScanWords) // αλλαγή default συμπεριφοράς σε λέξη-λέξη
+scanner.Split(bufio.ScanWords) // change the default before the first Scan()
 
 count := 0
 for scanner.Scan() {
@@ -1193,8 +1195,13 @@ for scanner.Scan() {
 }
 fmt.Println("word count:", count)</code></pre>
 
-<h2>Ανάγνωση Εισόδου Χρήστη (os.Stdin)</h2>
-<p>Το <code class="inline-code">os.Stdin</code> είναι απλά ένας ακόμα <code class="inline-code">io.Reader</code> — αναπαριστά ό,τι πληκτρολογεί ο χρήστης στο terminal. Ο <code class="inline-code">bufio.Scanner</code> δουλεύει πάνω του ακριβώς όπως και σε ένα αρχείο.</p>
+<div class="callout">
+  <span class="tag">Το Split μπαίνει πριν το πρώτο Scan</span>
+  Αν καλέσεις το <code class="inline-code">Split()</code> αφού έχει ήδη ξεκινήσει το διάβασμα, η Go κάνει panic. Η σειρά είναι πάντα: δημιουργία, ρύθμιση, μετά το loop.
+</div>
+
+<h2>Η ίδια δουλειά, με είσοδο από τον χρήστη</h2>
+<p>Ο <code class="inline-code">bufio.Scanner</code> δεν είναι δεμένος με αρχεία. Το <code class="inline-code">os.Stdin</code> — ό,τι πληκτρολογεί ο χρήστης στο terminal — δουλεύει ακριβώς το ίδιο, με τον ίδιο κώδικα.</p>
 
 <pre><code class="lang-go">scanner := bufio.NewScanner(os.Stdin)
 fmt.Print("Enter your name: ")
@@ -1202,100 +1209,148 @@ scanner.Scan()
 name := scanner.Text()
 fmt.Println("Hello,", name)</code></pre>
 
-<h2>ReadString(delim) — Σταμάτα σε Συγκεκριμένο Σύμβολο</h2>
-<p>Όταν ξέρεις ακριβώς σε ποιο χαρακτήρα θέλεις να σταματήσεις (όχι απαραίτητα newline), το <code class="inline-code">bufio.Reader</code> με <code class="inline-code">ReadString</code> είναι εναλλακτική επιλογή.</p>
+<div class="callout">
+  <span class="tag">Γιατί δέχεται και τα δύο</span>
+  Ο <code class="inline-code">bufio.NewScanner</code> δεν ζητάει αρχείο. Ζητάει "κάτι από το οποίο μπορείς να διαβάσεις", και τόσο ένα αρχείο όσο και το terminal ικανοποιούν αυτή την περιγραφή. Πώς ακριβώς εκφράζεται αυτό στη Go, και γιατί είναι από τα σημαντικότερα σχεδιαστικά της χαρακτηριστικά, το βλέπουμε στην <strong>Ενότητα 6</strong> (interfaces). Προς το παρόν αρκεί να ξέρεις ότι δουλεύει.
+</div>
 
-<pre><code class="lang-go">reader := bufio.NewReader(os.Stdin)
-line, err := reader.ReadString('\\n') // διαβάζει μέχρι (και συμπεριλαμβάνει) το newline</code></pre>
-
-<h2>bufio.Writer — Αποδοτική Εγγραφή</h2>
-<p>Συμμετρικά με το Scanner, το <code class="inline-code">bufio.Writer</code> "μαζεύει" εγγραφές σε ένα εσωτερικό buffer και τις στέλνει στην τελική πηγή σε παρτίδες, αντί για μία-μία — σημαντική βελτίωση απόδοσης όταν γράφεις πολλά μικρά κομμάτια δεδομένων διαδοχικά.</p>
+<h2>Εγγραφή σε παρτίδες: bufio.Writer</h2>
+<p>Συμμετρικά με τον Scanner: ο <code class="inline-code">bufio.Writer</code> μαζεύει τις εγγραφές σε ένα εσωτερικό buffer και τις στέλνει μαζεμένες. Χίλιες μικρές εγγραφές γίνονται λίγες μεγάλες.</p>
 
 <pre><code class="lang-go">writer := bufio.NewWriter(file)
+defer writer.Flush() // safest place to put it
+
 for i := 0; i < 1000; i++ {
-    writer.WriteString("line\\n") // γράφεται στο buffer, όχι απευθείας στο δίσκο ακόμα
-}
-writer.Flush() // ΚΡΙΣΙΜΟ: στέλνει ό,τι έχει μείνει στο buffer προς τα έξω</code></pre>
+    writer.WriteString("line\\n") // goes into the buffer, not to disk yet
+}</code></pre>
 
 <div class="callout">
-  <span class="tag">Μην ξεχνάς το Flush()</span>
-  Αν δεν καλέσεις <code class="inline-code">Flush()</code> (ή αν το πρόγραμμα τερματίσει απότομα πριν προλάβει), δεδομένα που βρίσκονται ακόμα στο εσωτερικό buffer ΔΕΝ θα φτάσουν ποτέ στο τελικό αρχείο. Είναι κοινή πρακτική να κάνεις <code class="inline-code">defer writer.Flush()</code> αμέσως μετά τη δημιουργία του writer.
+  <span class="tag">Χωρίς Flush, τα δεδομένα δεν υπάρχουν</span>
+  Ό,τι έχει μείνει στο buffer τη στιγμή που τερματίζει το πρόγραμμα χάνεται σιωπηλά — κανένα error, κανένα panic, απλά ένα αρχείο με λιγότερες γραμμές από όσες νόμιζες ότι έγραψες. Το <code class="inline-code">defer writer.Flush()</code> αμέσως μετά τη δημιουργία είναι η συνήθης προφύλαξη για να μην συμβαίνει αυτό.
+</div>
+
+<h2>Ποιον τρόπο να διαλέξεις</h2>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">Μικρό αρχείο, το θέλω ολόκληρο</td><td class="gt-def">os.ReadFile — μία γραμμή, τέλος</td></tr>
+  <tr><td class="gt-term">Αρχείο με νόημα ανά γραμμή (log, CSV)</td><td class="gt-def">bufio.Scanner με το default ScanLines</td></tr>
+  <tr><td class="gt-term">Μέτρημα ή επεξεργασία λέξεων</td><td class="gt-def">bufio.Scanner με Split(bufio.ScanWords)</td></tr>
+  <tr><td class="gt-term">Είσοδος από τον χρήστη</td><td class="gt-def">bufio.NewScanner(os.Stdin)</td></tr>
+  <tr><td class="gt-term">Προσθήκη στο τέλος υπάρχοντος αρχείου</td><td class="gt-def">os.OpenFile με O_APPEND</td></tr>
+  <tr><td class="gt-term">Πολλές μικρές εγγραφές στη σειρά</td><td class="gt-def">bufio.Writer, με defer Flush()</td></tr>
+</table>
+
+<div class="callout">
+  <span class="tag">Στην πράξη</span>
+  Το <code class="inline-code">os.ReadFile</code> καλύπτει τις περισσότερες περιπτώσεις που θα συναντήσεις στην αρχή, και δεν είναι κακή επιλογή επειδή είναι απλή. Πήγαινε στον Scanner όταν το αρχείο μεγαλώνει ή όταν η δουλειά σου είναι ούτως ή άλλως ανά γραμμή — όχι επειδή "ακούγεται πιο σωστό".
 </div>
 `);
 
     addQuiz([
       {
-        q: "Ποιο split mode του bufio.Scanner χρησιμοποιείς για να μετρήσεις πόσες λέξεις έχει ένα κείμενο;",
+        q: "Τι δείχνει ο παρακάτω κώδικας για τη μνήμη που καταναλώνει το πρόγραμμα;",
+        lang: "go",
+        code:
+          `f, _ := os.Open("huge.log")
+defer f.Close()
+
+scanner := bufio.NewScanner(f)
+for scanner.Scan() {
+    process(scanner.Text())
+}`,
         options: [
-          "bufio.ScanLines, το default mode, που ήδη χωρίζει αυτόματα σε μεμονωμένες λέξεις",
-          "bufio.ScanRunes, καθώς κάθε rune αντιστοιχεί ακριβώς σε μία ολόκληρη λέξη στη Go",
-          "bufio.ScanWords, το οποίο χωρίζει ρητά την είσοδο σε λέξεις με βάση το whitespace",
-          "Δεν χρειάζεται να αλλάξεις τίποτα — το bufio.Scanner δεν διαθέτει καθόλου split modes"
+          "Η μνήμη μένει περίπου σταθερή, όσο και η μεγαλύτερη γραμμή του αρχείου",
+          "Η μνήμη μεγαλώνει όσο προχωράει το loop, γιατί ο Scanner κρατάει όλες τις γραμμές που έχει ήδη διαβάσει",
+          "Η μνήμη ισούται με το μέγεθος ολόκληρου του αρχείου, όπως και στο os.ReadFile",
+          "Δεν καταναλώνεται καθόλου μνήμη, γιατί ο Scanner δουλεύει απευθείας στον δίσκο"
         ],
-        correct: 2,
-        explain: "bufio.ScanWords είναι φτιαγμένο ακριβώς για αυτή τη δουλειά — σπάει την είσοδο σε λέξεις χωρισμένες με whitespace, αγνοώντας πολλαπλά κενά."
+        correct: 0,
+        explain: "Ο Scanner κρατάει μόνο την τρέχουσα γραμμή· η προηγούμενη πετιέται μόλις ζητήσεις την επόμενη. Η δεύτερη επιλογή περιγράφει ακριβώς αυτό που ο Scanner αποφεύγει — αν συσσώρευε τις γραμμές, δεν θα υπήρχε λόγος να προτιμηθεί από το os.ReadFile."
       },
       {
-        q: "Τι κίνδυνο έχεις αν χρησιμοποιείς bufio.Writer αλλά ξεχάσεις να καλέσεις Flush() πριν το πρόγραμμα τερματίσει;",
+        q: "Ο κώδικας τρέχει χωρίς error, αλλά το αρχείο βγαίνει με λιγότερες γραμμές από 1000. Γιατί;",
+        lang: "go",
+        code:
+          `f, _ := os.Create("out.txt")
+defer f.Close()
+
+w := bufio.NewWriter(f)
+for i := 0; i < 1000; i++ {
+    w.WriteString("line\\n")
+}`,
         options: [
-          "Κανέναν πρακτικό κίνδυνο — το bufio.Writer καλεί πάντα αυτόματα Flush() στο τέλος κάθε προγράμματος",
-          "Δεδομένα που βρίσκονται ακόμα στο εσωτερικό buffer μπορεί να μην φτάσουν ποτέ στο τελικό αρχείο ή προορισμό",
-          "Το πρόγραμμα θα κρασάρει άμεσα με ένα runtime panic σχετικό με μη κλεισμένο buffer",
-          "Ο compiler θα αρνηθεί να μεταγλωττίσει (compile) τον κώδικα αν λείπει η κλήση Flush()"
+          "Λείπει το Flush, οπότε ό,τι έμεινε στο buffer δεν έφτασε ποτέ στο αρχείο",
+          "Το bufio.Writer έχει σταθερό όριο γραμμών και αγνοεί σιωπηλά όσες το ξεπερνούν",
+          "Το defer f.Close() εκτελείται πολύ νωρίς και κόβει την εγγραφή στη μέση",
+          "Το WriteString επιστρέφει error που ο κώδικας δεν ελέγχει"
         ],
-        correct: 1,
-        explain: "Το Flush() είναι αυτό που στέλνει πραγματικά τα δεδομένα από το εσωτερικό buffer προς τα έξω· χωρίς αυτό, ό,τι δεν έχει ήδη 'ξεχειλίσει' φυσικά μπορεί να χαθεί."
+        correct: 0,
+        explain: "Ο Writer στέλνει στο αρχείο μόνο όταν γεμίσει το buffer ή όταν καλέσεις Flush. Το Close του αρχείου δεν κάνει flush τον buffered writer — είναι δύο διαφορετικά επίπεδα, και γι' αυτό το defer w.Flush() πρέπει να μπει ρητά."
+      },
+      {
+        q: "Ποιο split mode χρειάζεσαι για να μετρήσεις λέξεις σε ένα κείμενο;",
+        options: [
+          "bufio.ScanWords",
+          "bufio.ScanLines, το default, που ήδη χωρίζει αυτόματα σε μεμονωμένες λέξεις",
+          "bufio.ScanRunes, αφού κάθε rune αντιστοιχεί σε μία λέξη",
+          "Κανένα — ο Scanner δεν διαθέτει split modes"
+        ],
+        correct: 0,
+        explain: "Το ScanWords σπάει στα κενά και αγνοεί τα πολλαπλά διαστήματα. Το ScanLines δίνει ολόκληρες γραμμές, όχι λέξεις — θα χρειαζόσουν και strings.Fields από πάνω για να φτάσεις στο ίδιο αποτέλεσμα."
       }
     ]);
 
-    // ── Section 2.7: Reading summary ────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow" id="@readmodes">Ενότητα 2 / 7 — Standard Packages</div>
-<h1>Σύνοψη: Τρεις Τρόποι Ανάγνωσης Αρχείου</h1>
-<p class="lede">Είδαμε αρκετούς διαφορετικούς τρόπους να διαβάσεις δεδομένα — ας τους συγκεντρώσουμε και ας δούμε πότε ταιριάζει ο καθένας.</p>
+    addFillBlank([
+      {
+        code:
+          `// Read a file line by line and keep only the non-empty lines.
+f, err := os.Open("data.txt")
+if err != nil {
+    return err
+}
+defer f.__blank1__()   // when should the file be released?
 
-<div class="grid3">
-  <div class="card">
-    <h3>Α. Η "Γρήγορη" (os.ReadFile)</h3>
-    <p>Όλο το αρχείο σε μία κλήση, φορτωμένο πλήρως στη μνήμη. Απλούστερος κώδικας. Κατάλληλο για μικρά/μεσαία αρχεία όπου η μνήμη δεν είναι πρόβλημα.</p>
-  </div>
-  <div class="card">
-    <h3>Β. Με Buffer (os.Open + Read)</h3>
-    <p>Χειροκίνητος έλεγχος, διαβάζεις σε κομμάτια (chunks) καθορισμένου μεγέθους. Περισσότερος κώδικας, αλλά πλήρης έλεγχος μνήμης — καλό για πολύ μεγάλα αρχεία.</p>
-  </div>
-  <div class="card">
-    <h3>Γ. Γραμμή-Γραμμή (bufio.NewScanner)</h3>
-    <p>Ιδανικό όταν το αρχείο έχει νόημα ανά γραμμή (logs, CSV, config). Καλή ισορροπία απλότητας/απόδοσης μνήμης.</p>
-  </div>
-</div>
+scanner := bufio.NewScanner(f)
+scanner.Split(__blank2__)   // one line at a time - the default
 
-<h2>Πίνακας Απόφασης</h2>
-<table class="glossary-table">
-  <tr><td class="gt-term">Μικρό αρχείο, θέλω όλο το περιεχόμενο</td><td class="gt-def">os.ReadFile — απλούστερο δυνατό</td></tr>
-  <tr><td class="gt-term">Τεράστιο αρχείο, νοιάζομαι για μνήμη</td><td class="gt-def">os.Open + bufio.Reader σε chunks</td></tr>
-  <tr><td class="gt-term">Αρχείο με νόημα ανά γραμμή (log, CSV)</td><td class="gt-def">bufio.NewScanner με ScanLines</td></tr>
-  <tr><td class="gt-term">Θέλω input από τον χρήστη στο terminal</td><td class="gt-def">bufio.NewScanner(os.Stdin)</td></tr>
-</table>
+var kept []string
+for scanner.__blank3__() {
+    line := scanner.Text()
+    if line != "" {
+        kept = append(kept, line)
+    }
+}
 
-<div class="callout">
-  <span class="tag">Δεν υπάρχει "ένας σωστός τρόπος"</span>
-  Η επιλογή εξαρτάται πάντα από το μέγεθος δεδομένων και τι θέλεις να κάνεις με αυτά. Στην αρχή της καριέρας σου, το <code class="inline-code">os.ReadFile</code> θα καλύπτει τις περισσότερες ανάγκες σου — μάθε τα υπόλοιπα σαν εργαλεία που ανοίγουν όταν το πρόβλημα μεγαλώνει.
-</div>
-`);
+if err := scanner.__blank4__(); err != nil {   // finished, or broke?
+    return err
+}`,
+        blanks: [
+          { id: "blank1", answer: "Close" },
+          { id: "blank2", answer: "bufio.ScanLines" },
+          { id: "blank3", answer: "Scan" },
+          { id: "blank4", answer: "Err" }
+        ],
+        explain: "Το defer f.Close() μπαίνει μετά τον έλεγχο του error, γιατί σε αποτυχία δεν υπάρχει αρχείο να κλείσει. Το ScanLines είναι ήδη το default, οπότε η γραμμή θα μπορούσε να λείπει εντελώς — τη γράφουμε εδώ για να φανεί πού μπαίνει η ρύθμιση, πριν το πρώτο Scan. Και το Err() στο τέλος ξεχωρίζει το φυσιολογικό τέλος του αρχείου από μια αποτυχία στη μέση: το Scan() επιστρέφει false και στις δύο περιπτώσεις."
+      }
+    ], {
+      note: "Το κλασικό pattern ανάγνωσης γραμμή-γραμμή, από την αρχή ως το τέλος."
+    });
 
     addMatching([
       [
-        { term: "os.ReadFile", def: "Διαβάζει ολόκληρο αρχείο σε μνήμη, μία κλήση, χωρίς χειροκίνητο Close" },
-        { term: "os.Open + Read", def: "Χειροκίνητο διάβασμα σε buffer, πλήρης έλεγχος μεγέθους κομματιών" },
-        { term: "bufio.NewScanner", def: "Ανάγνωση γραμμή-γραμμή (ή λέξη/rune ανάλογα με split mode)" }
+        { term: "os.ReadFile", def: "όλο το αρχείο σε μνήμη, μία κλήση, χωρίς Close" },
+        { term: "os.OpenFile", def: "άνοιγμα με ρητά flags — append, create, μόνο εγγραφή" },
+        { term: "bufio.Scanner", def: "σταδιακή ανάγνωση, σταθερή μνήμη" },
+        { term: "bufio.Writer", def: "εγγραφές σε παρτίδες, χρειάζεται Flush" }
       ],
       [
-        { term: "bufio.ScanLines", def: "Default split mode — μία γραμμή τη φορά" },
-        { term: "bufio.ScanWords", def: "Split mode για μέτρηση/επεξεργασία ανά λέξη" },
-        { term: "bufio.ScanRunes", def: "Split mode για επεξεργασία ανά μεμονωμένο χαρακτήρα" }
+        { term: "bufio.ScanLines", def: "μία γραμμή τη φορά — το default" },
+        { term: "bufio.ScanWords", def: "μία λέξη τη φορά, χωρισμένη στα κενά" },
+        { term: "bufio.ScanRunes", def: "έναν χαρακτήρα τη φορά, σωστά και σε ελληνικά" }
       ]
     ], {
-      note: "Δύο ξεχωριστά σετ: πρώτα οι τρόποι ανάγνωσης, μετά τα split modes του Scanner."
+      language: "go",
+      note: "Πρώτο σετ: τα εργαλεία. Δεύτερο σετ: τα split modes του Scanner."
     });
     // ── Section 2 VSCode Challenge ──────────────────────────────────────── ⊃
     addContent(`
@@ -1305,23 +1360,29 @@ writer.Flush() // ΚΡΙΣΙΜΟ: στέλνει ό,τι έχει μείνει �
 
 <div class="callout">
   <span class="tag">Η Άσκηση</span>
-  Γράψε μια function που δέχεται ένα <code class="inline-code">io.Reader</code> ως όρισμα (όχι συγκεκριμένο αρχείο — θυμήσου την αφαίρεση από την Ενότητα 2.4!) και επιστρέφει έναν χάρτη <code class="inline-code">map[string]int</code> με το πόσες φορές εμφανίζεται κάθε λέξη, μετά από μετατροπή όλων των λέξεων σε πεζά (lowercase) ώστε το "Go" και το "go" να μετρηθούν ως η ίδια λέξη. Χρησιμοποίησε <code class="inline-code">bufio.Scanner</code> με το κατάλληλο split mode.
+  Γράψε μια function <code class="inline-code">WordFrequency(path string) (map[string]int, error)</code> που ανοίγει το αρχείο, το διαβάζει λέξη-λέξη, και επιστρέφει πόσες φορές εμφανίζεται η καθεμιά. Μετάτρεψε τις λέξεις σε πεζά, ώστε το "Go" και το "go" να μετρηθούν μαζί. Το αρχείο μπορεί να είναι μεγάλο: μην το φορτώσεις ολόκληρο στη μνήμη.
 </div>
 
 <div class="callout">
   <span class="tag">HINT 1</span>
-  Θυμήσου: <code class="inline-code">bufio.NewScanner</code> δέχεται οποιοδήποτε <code class="inline-code">io.Reader</code> — δεν χρειάζεται να είναι ρητά <code class="inline-code">*os.File</code>. Αυτό σημαίνει ότι η function σου μπορεί να δουλέψει τόσο με πραγματικό αρχείο όσο και με <code class="inline-code">strings.NewReader("...")</code> για testing, χωρίς καμία αλλαγή στον κώδικά της.
+  Το <code class="inline-code">os.Open</code> επιστρέφει δύο τιμές. Έλεγξε το error <strong>πριν</strong> βάλεις το <code class="inline-code">defer</code>: αν το άνοιγμα απέτυχε, δεν υπάρχει τίποτα να κλείσεις. Και επίστρεψε το error στον καλούντα αντί να το τυπώσεις — η function δεν ξέρει τι θέλει να κάνει με αυτό όποιος τη χρησιμοποιεί.
 </div>
 
 <div class="callout">
   <span class="tag">HINT 2</span>
-  Χρησιμοποίησε <code class="inline-code">scanner.Split(bufio.ScanWords)</code> για να πάρεις μία λέξη τη φορά. Για κάθε λέξη, κάνε <code class="inline-code">strings.ToLower</code> πριν την προσθέσεις στον χάρτη. Θυμήσου το μοτίβο "comma ok" από το Μέρος 1 για να αυξήσεις με ασφάλεια μια τιμή σε map που μπορεί να μην έχει ακόμα το key.
+  Χρησιμοποίησε <code class="inline-code">scanner.Split(bufio.ScanWords)</code> για να πάρεις μία λέξη τη φορά, και <code class="inline-code">strings.ToLower</code> σε κάθε λέξη. Για την αύξηση στο map δεν χρειάζεσαι έλεγχο: το <code class="inline-code">freq[word]++</code> δουλεύει και σε key που δεν υπάρχει ακόμα, γιατί η τιμή που λείπει είναι το zero value, δηλαδή 0.
 </div>
 
-<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">func WordFrequency(r io.Reader) map[string]int {
+<div class="spoiler"><div class="spoiler-lock"><span>Drag to reveal →</span></div><pre><code class="lang-go">func WordFrequency(path string) (map[string]int, error) {
+    file, err := os.Open(path)
+    if err != nil {
+        return nil, err // nothing was opened, nothing to close
+    }
+    defer file.Close()
+
     freq := make(map[string]int)
 
-    scanner := bufio.NewScanner(r)
+    scanner := bufio.NewScanner(file)
     scanner.Split(bufio.ScanWords)
 
     for scanner.Scan() {
@@ -1329,17 +1390,22 @@ writer.Flush() // ΚΡΙΣΙΜΟ: στέλνει ό,τι έχει μείνει �
         freq[word]++
     }
 
-    return freq
+    if err := scanner.Err(); err != nil {
+        return nil, err // the file broke halfway through
+    }
+
+    return freq, nil
 }
 
-// Χρήση με αρχείο:
-// file, _ := os.Open("text.txt")
-// defer file.Close()
-// result := WordFrequency(file)
-
-// Χρήση με string, για testing, ΧΩΡΙΣ κανένα αρχείο:
-// result := WordFrequency(strings.NewReader("Go is great. go GO!"))
-// -> map[string]int{"go": 2, "is": 1, "great.": 1, "go!": 1}</code></pre></div>
+// Usage:
+// freq, err := WordFrequency("text.txt")
+// if err != nil { ... }
+//
+// For the text "Go is great. go GO!":
+// map[string]int{"go": 2, "is": 1, "great.": 1, "go!": 1}
+//
+// Note that "great." keeps its full stop - ScanWords splits on spaces only.
+// Stripping punctuation is a separate job, for strings.Trim.</code></pre></div>
 `);
 
     // Section 2 mini-glossary
@@ -1349,7 +1415,8 @@ writer.Flush() // ΚΡΙΣΙΜΟ: στέλνει ό,τι έχει μείνει �
 <div class="glossary-strip">
   <div class="gs-pill"><span class="gs-name">strings.Builder</span><span class="gs-def">αποδοτική κατασκευή string χωρίς επαναλαμβανόμενες αντιγραφές</span></div>
   <div class="gs-pill"><span class="gs-name">strconv</span><span class="gs-def">μετατροπές string ⇄ αριθμός</span></div>
-  <div class="gs-pill"><span class="gs-name">io.Reader / io.Writer</span><span class="gs-def">θεμελιώδη interfaces για γενικό διάβασμα/γράψιμο</span></div>
+  <div class="gs-pill"><span class="gs-name">os.ReadFile</span><span class="gs-def">όλο το αρχείο σε μνήμη, με μία κλήση</span></div>
+  <div class="gs-pill"><span class="gs-name">os.OpenFile</span><span class="gs-def">άνοιγμα με flags — append, create, μόνο εγγραφή</span></div>
   <div class="gs-pill"><span class="gs-name">bufio.Scanner</span><span class="gs-def">σταδιακή ανάγνωση (γραμμή/λέξη/rune)</span></div>
   <div class="gs-pill"><span class="gs-name">Flush()</span><span class="gs-def">αναγκαστική αποστολή buffered δεδομένων προς τα έξω</span></div>
   <div class="gs-pill"><span class="gs-name">os.Args</span><span class="gs-def">command-line arguments ως slice από strings</span></div>
@@ -1359,122 +1426,253 @@ writer.Flush() // ΚΡΙΣΙΜΟ: στέλνει ό,τι έχει μείνει �
     addContent(`
 <div class="eyebrow" id="@struct">Ενότητα 3 / 7 — Structs σε Βάθος</div>
 <h1>Τι είναι το Struct</h1>
-<p class="lede">Μέχρι τώρα δούλευες κυρίως με μεμονωμένους τύπους δεδομένων: ένα int, ένα string, ένα slice από κάτι. Αλλά τι γίνεται όταν χρειάζεσαι να περιγράψεις κάτι που έχει ΠΟΛΛΑΠΛΕΣ, διαφορετικές ιδιότητες μαζί — π.χ. έναν χρήστη με όνομα, ηλικία και email; Εδώ μπαίνει το <strong>struct</strong>.</p>
+<p class="lede">Μέχρι τώρα δούλευες με μεμονωμένα κομμάτια πληροφορίας: ένα <code class="inline-code">int</code>, ένα <code class="inline-code">string</code>, ένα slice. Τι γίνεται όμως όταν θέλεις να περιγράψεις κάτι σύνθετο, που έχει πολλές διαφορετικές ιδιότητες —όπως ένα αυτοκίνητο που έχει μάρκα, χρονολογία και ιπποδύναμη; Εδώ ακριβώς μπαίνει στο παιχνίδι το <strong>struct</strong>.</p>
 
-<h2>Struct αντί για Classes</h2>
-<p>Αν έρχεσαι από μια αντικειμενοστραφή γλώσσα (Java, Python, C++), ίσως περίμενες η Go να έχει "class". Δεν έχει. Αντί γι' αυτό, η Go χρησιμοποιεί <strong>struct</strong> — μια δομή δεδομένων που ομαδοποιεί μαζί πολλαπλά πεδία (fields), το καθένα με το δικό του όνομα και τύπο. Η μεγάλη διαφορά φιλοσοφίας: το struct από μόνο του περιέχει ΜΟΝΟ δεδομένα — καμία συμπεριφορά (behavior). Η συμπεριφορά προστίθεται ξεχωριστά, μέσω των methods (θα τα δούμε στην Ενότητα 4).</p>
+<h2>Το Struct είναι Προδιαγραφή, όχι Δεδομένα</h2>
+<p>Στη Go, το struct είναι ένας τρόπος να ομαδοποιείς πολλαπλά πεδία (fields) κάτω από ένα κοινό όνομα. Το πιο σημαντικό που πρέπει να καταλάβεις από την αρχή είναι το εξής: <strong>Όταν ορίζεις ένα struct, δεν δημιουργείς τίποτα.</strong> Φτιάχνεις απλώς τις προδιαγραφές (το "καλούπι" ή το "blueprint") για έναν νέο τύπο δεδομένων (εξού και το keyword <code>type</code>).</p>
 
-<pre><code class="lang-go">type User struct {
-    Name  string
-    Age   int
-    Email string
+<pre><code class="lang-go">type Car struct {
+    Brand      string
+    Year       int
+    Horsepower int
+    Type       string // e.g., "diesel", "hybrid", "electric"
 }</code></pre>
 
 <div class="callout">
   <span class="tag">Σύνταξη: type ... struct</span>
-  Η δήλωση <code class="inline-code">type Όνομα struct { ... }</code> δημιουργεί έναν νέο, δικό σου τύπο δεδομένων. Από εδώ και πέρα, το <code class="inline-code">User</code> είναι ένας απολύτως έγκυρος τύπος στη Go — μπορείς να τον χρησιμοποιήσεις παντού που θα χρησιμοποιούσες int ή string: ως τύπο μεταβλητής, παραμέτρου function, ακόμα και μέσα σε άλλα structs.
+  Με τη δήλωση <code class="inline-code">type Car struct { ... }</code>, το μόνο που κάνεις είναι να μαθαίνεις στη Go τι σημαίνει «Car» για το δικό σου πρόγραμμα. Δεν έχεις φτιάξει ακόμα κανένα πραγματικό αυτοκίνητο στη μνήμη. Πλέον όμως, το <code class="inline-code">Car</code> είναι ένας κανονικός τύπος. Μπορείς στη συνέχεια να χρησιμοποιήσεις αυτό το καλούπι για να φτιάξεις ένα, δέκα ή χίλια διαφορετικά αυτοκίνητα.
 </div>
 
-<h2>Πεδία, Τύποι &amp; Memory Alignment</h2>
-<p>Κάθε πεδίο (field) ενός struct έχει το δικό του όνομα και τύπο — και τα πεδία μπορούν να είναι διαφορετικών τύπων μεταξύ τους, χωρίς κανένα πρόβλημα.</p>
+<h2>Πεδία και Τύποι</h2>
+<p>Κάθε πεδίο (field) μέσα στο struct έχει το δικό του όνομα και τύπο. Μπορείς να ανακατέψεις ό,τι τύπους θέλεις, χωρίς κανένα απολύτως πρόβλημα.</p>
 
-<pre><code class="lang-go">type Product struct {
-    Name     string
-    Price    float64
-    InStock  bool
-    Quantity int
+<pre><code class="lang-go">type Dog struct {
+    Name   string
+    Breed  string
+    Age    int
+    Weight float64
 }</code></pre>
 
-<p>Στη μνήμη, ένα struct είναι στην πραγματικότητα ένα συνεχόμενο (contiguous) μπλοκ, όπου τα πεδία τοποθετούνται το ένα δίπλα στο άλλο με τη σειρά δήλωσης. Ο compiler, όμως, μπορεί να προσθέσει "κενό χώρο" (padding) ανάμεσα σε ορισμένα πεδία για λόγους ευθυγράμμισης μνήμης (memory alignment) — π.χ. ένας επεξεργαστής διαβάζει πιο αποδοτικά έναν <code class="inline-code">int64</code> αν ξεκινάει σε "στρογγυλή" διεύθυνση μνήμης. Αυτό είναι μια λεπτομέρεια χαμηλού επιπέδου που σπάνια σε αφορά ως αρχάριο — απλά ξέρε ότι το <code class="inline-code">sizeof</code> ενός struct δεν είναι πάντα ακριβώς το άθροισμα των μεγεθών των πεδίων του.</p>
+<p>Στη μνήμη, ένα struct είναι ένα συνεχόμενο (contiguous) μπλοκ. Τα πεδία τοποθετούνται το ένα δίπλα στο άλλο, με τη σειρά ακριβώς που τα δήλωσες. Όμως, ο compiler μπορεί να παρεμβάλει «κενό χώρο» (padding) ανάμεσα τους για λόγους ευθυγράμμισης (memory alignment). Ένας επεξεργαστής διαβάζει πιο γρήγορα, για παράδειγμα, έναν αριθμό αν αυτός ξεκινάει σε μια «στρογγυλή» διεύθυνση μνήμης. Αυτό σημαίνει ότι το τελικό μέγεθος ενός struct δεν είναι απαραίτητα το ακριβές άθροισμα του μεγέθους των πεδίων του.</p>
 
 <div class="callout">
-  <span class="tag">Πρακτική συμβουλή (προχωρημένη, όχι απαραίτητη τώρα)</span>
-  Αν κάποια στιγμή σε ενδιαφέρει βελτιστοποίηση μνήμης σε πολύ μεγάλα προγράμματα, η σειρά δήλωσης πεδίων (π.χ. μεγαλύτεροι τύποι πρώτα) μπορεί να μειώσει το padding. Για τώρα, γράψε τα πεδία με τη σειρά που έχει το περισσότερο νόημα διαβασμού — η βελτιστοποίηση μνήμης είναι λεπτομέρεια για αργότερα.
+  <span class="tag">Πρακτική Συμβουλή (Advanced)</span>
+  Αν γράφεις εφαρμογές όπου η μνήμη είναι εξαιρετικά κρίσιμη, η σειρά που δηλώνεις τα πεδία (π.χ. βάζοντας τα μεγαλύτερα πρώτα) μπορεί να μειώσει αυτό το padding. Προς το παρόν, αγνόησέ το εντελώς. Γράψε τα πεδία με τη σειρά που βγάζει το περισσότερο λογικό νόημα όταν τα διαβάζεις.
 </div>
 
 <br>
 
 <h1 id="@literals">Αρχικοποίηση &amp; Προσπέλαση</h1>
-<p class="lede">Υπάρχουν αρκετοί τρόποι να δημιουργήσεις ένα struct value — ας τους δούμε έναν-έναν.</p>
+<p class="lede">Αφού ορίσαμε το καλούπι, πάμε να δούμε πώς δημιουργούμε πραγματικά δεδομένα (instances) από αυτό το struct.</p>
 
 <h2>Struct Literals: Named vs Positional</h2>
-<pre><code class="lang-go">// Named field initialization — ΠΡΟΤΙΜΩΜΕΝΟΣ τρόπος: ρητά ονόματα, σειρά αδιάφορη
-u1 := User{
-    Name:  "Maria",
-    Age:   28,
-    Email: "maria@example.com",
-}
+<pre><code class="lang-go">// Named field initialization — PREFERRED: explicit names, order doesn't matter
+myDog := Dog{
+    Name:   "Rex",
+    Breed:  "German Shepherd",
+    Age:    3,
+    Weight: 32.5,
+}</code></pre>
 
-// Positional initialization — ΠΡΕΠΕΙ να δώσεις ΟΛΑ τα πεδία, με ΑΚΡΙΒΩΣ τη σειρά δήλωσης
-u2 := User{"Nikos", 34, "nikos@example.com"}</code></pre>
+<pre><code class="lang-go">// Positional initialization — MUST provide ALL fields, in EXACT order of declaration
+strayDog := Dog{"Buddy", "Mixed", 5, 18.2}</code></pre>
 
 <div class="callout">
-  <span class="tag">Γιατί το named προτιμάται σχεδόν πάντα</span>
-  Το positional initialization είναι εύθραυστο (fragile): αν κάποιος αργότερα αλλάξει τη σειρά των πεδίων μέσα στον ορισμό του struct, ΚΑΘΕ positional literal σε ολόκληρο το πρόγραμμα σπάει σιωπηλά — τα δεδομένα μπαίνουν στα λάθος πεδία χωρίς κανένα compile error. Το named literal είναι ανθεκτικό σε τέτοιες αλλαγές και επιπλέον πιο ευανάγνωστο.
+  <span class="tag">Γιατί το named literal είναι μονόδρομος;</span>
+  Το positional initialization είναι εξαιρετικά εύθραυστο (fragile). Αν κάποιος αλλάξει στο μέλλον τη σειρά των πεδίων στον ορισμό του struct (π.χ. βάλει το Age πριν το Breed), κάθε positional literal στον κώδικά σου θα σπάσει σιωπηλά —τα δεδομένα θα μπουν στα λάθος πεδία. Το named literal σε προστατεύει απόλυτα από τέτοια λάθη και είναι απείρως πιο ευανάγνωστο.
 </div>
 
-<h2>Προσπέλαση &amp; Τροποποίηση με τον Τελεστή Τελεία</h2>
-<pre><code class="lang-go">fmt.Println(u1.Name)  // "Maria" — προσπέλαση πεδίου
-u1.Age = 29            // τροποποίηση πεδίου</code></pre>
+<h2>Προσπέλαση &amp; Τροποποίηση (Τελεστής Τελεία)</h2>
+<p>Για να διαβάσεις ή να αλλάξεις την τιμή ενός συγκεκριμένου πεδίου, χρησιμοποιείς την τελεία (<code class="inline-code">.</code>) ακολουθούμενη από το όνομα του πεδίου.</p>
+
+<pre><code class="lang-go">fmt.Println(myDog.Name)  // field access: prints "Rex"
+myDog.Age = 4            // field mutation: updates the age to 4</code></pre>
+
+<div class="callout">
+  <span class="tag">Σημαντική Διάκριση: Τύπος (Type) vs Αντικείμενο (Instance/Object)</span>
+  Παρατήρησε ότι αλλάζουμε την ηλικία στο <code class="inline-code">myDog</code>. Το <code class="inline-code">myDog</code> είναι ένα συγκεκριμένο, υπαρκτό αντικείμενο (instance) στη μνήμη. Δεν μπορούμε <strong>ποτέ</strong> να γράψουμε <code class="inline-code">Dog.Age = 4</code>. Γιατί; Επειδή το <code class="inline-code">Dog</code> (με κεφαλαίο) είναι απλώς ο τύπος, το «καλούπι» — καθορίζει τι "πληροφορίες" θα έχουν τα αντικείμενα τύπου <code>Dog</code> (όπως το <code class="inline-code">myDog</code>)!
+  <br><br>
+  Επιπλέον, το <code class="inline-code">myDog</code> και το <code class="inline-code">strayDog</code> (από το προηγούμενο παράδειγμα) είναι εντελώς ανεξάρτητα αντικείμενα, παρότι φτιάχτηκαν από το ίδιο struct. Αλλάζοντας την ηλικία του <code class="inline-code">myDog</code> σε 4, η ηλικία του <code class="inline-code">strayDog</code> παραμένει ανεπηρέαστη (στο 5). Κάθε αντικείμενο διατηρεί τη δική του, ανεξάρτητη κατάσταση (state) στα δεδομένα του.
+</div>
 
 <h2>Zero Values σε Structs</h2>
-<p>Θυμήσου από το Μέρος 1: κάθε τύπος στη Go έχει μια zero value. Ένα struct που δημιουργείται χωρίς literal παίρνει τη zero value ΚΑΘΕ πεδίου του ξεχωριστά.</p>
+<p>Όπως έχουμε ήδη δει, κάθε τύπος στη Go έχει τη δική του zero value. Όταν δημιουργείς ένα struct χωρίς να του δώσεις αρχικές τιμές (χωρίς literal), κάθε πεδίο του παίρνει αυτόματα τη δική του ξεχωριστή zero value.</p>
 
-<pre><code class="lang-go">var u User // κανένα literal — zero value του struct
-fmt.Println(u.Name)  // "" (zero value του string)
-fmt.Println(u.Age)   // 0  (zero value του int)
-fmt.Println(u.Email) // "" (zero value του string)</code></pre>
+<pre><code class="lang-go">var unknownDog Dog // no literal — struct gets its zero value
+fmt.Println(unknownDog.Name)  // "" (string zero value)
+fmt.Println(unknownDog.Age)   // 0  (int zero value)</code></pre>
 
-<h2>Κατασκευαστές (Constructor Functions)</h2>
-<p>Η Go δεν έχει ενσωματωμένους constructors όπως άλλες γλώσσες — αλλά υπάρχει μια πολύ διαδεδομένη σύμβαση: μια απλή function με όνομα <code class="inline-code">NewXxx(...)</code> που δημιουργεί και επιστρέφει το struct, συχνά με κάποια αρχική επικύρωση (validation) ή προεπιλεγμένες τιμές.</p>
+<h1>Συναρτήσεις Δημιουργίας Αντικειμένων</h1>
+<p>Πολλές φορές θέλεις να βεβαιωθείς ότι ένα struct δημιουργείται σωστά, με έγκυρα δεδομένα (π.χ. ένα αυτοκίνητο δεν μπορεί να έχει αρνητική χρονολογία). Επειδή η Go δεν έχει αυτοματοποιημένους μηχανισμούς γι' αυτό (σε άλλες γλώσσες λέγονται <code>constructors</code>), χρησιμοποιούμε μια πολύ κοινή τακτική: γράφουμε μια απλή function με το όνομα <code class="inline-code">NewXxx(...)</code> η οποία ελέγχει τα δεδομένα (validation) και επιστρέφει το έτοιμο struct (με pointer).</p>
 
-<pre><code class="lang-go">func NewUser(name, email string) (*User, error) {
-    if name == "" {
-        return nil, errors.New("name cannot be empty")
+<pre><code class="lang-go">func NewCar(brand string, year int) (*Car, error) {
+    if year < 1886 {
+        return nil, errors.New("invalid year for a car")
     }
-    return &User{
-        Name:  name,
-        Age:   0, // default
-        Email: email,
+    
+    return &Car{
+        Brand: brand,
+        Year:  year,
+        // other fields implicitly get their zero values
     }, nil
 }
 
-u, err := NewUser("Elena", "elena@example.com")</code></pre>
+myCar, err := NewCar("Toyota", 2022)</code></pre>
 
 <div class="callout">
-  <span class="tag">Γιατί χρησιμοποιούμε NewXxx αντί για γυμνό literal</span>
-  Ένας constructor function σου δίνει ένα κεντρικό σημείο για επικύρωση δεδομένων (π.χ. "το όνομα δεν μπορεί να είναι κενό") και προεπιλεγμένες τιμές — κάτι που ένα γυμνό struct literal δεν μπορεί να εγγυηθεί. Θα το ξαναδούμε στην Ενότητα 7 με το Functional Options Pattern, μια πιο προχωρημένη παραλλαγή αυτής της ιδέας.
+  <span class="tag">Γιατί χρησιμοποιούμε function δημιουργίας αντί για ένα γυμνό literal;</span>
+  Μια function δημιουργίας σου προσφέρει ένα κεντρικό σημείο ελέγχου (όπως τον έλεγχο της χρονολογίας παραπάνω) και την ασφάλεια ότι τα default δεδομένα θα μπουν σωστά —πράγματα που ένα απλό struct literal δεν μπορεί να εγγυηθεί. Θα το ξαναδούμε στην Ενότητα 7 με το Functional Options Pattern.
 </div>
-`);
+<h2>Functions Δημιουργίας &amp; Pointers</h2>
+<p>Μια function δημιουργίας ενός instance πρέπει σχεδόν πάντα να επιστρέφει <strong>pointer</strong> στο instance, και όχι μια απλή τιμή. Με δυο λόγια, η <code class="inline-code">NewCar</code> επιστρέφει <code class="inline-code">*Car</code> και όχι σκέτο <code class="inline-code">Car</code>, επειδή θέλουμε να περνάμε τον pointer (pass by <a href="https://guides01.devs.surf/01-go-01.html#@pass-by">address/pointer</a>) και όχι ένα copy του instance. Έτσι, όποιες αλλαγές γίνονται στην υπόλοιπη πορεία του προγράμματος αφορούν το ίδιο το instance στη μνήμη (και όχι κάποιο τοπικό αντίγραφο των τιμών του).</p>
+
+<p>Ας δούμε ένα πλήρες παράδειγμα όπου η <code class="inline-code">main</code> λαμβάνει έναν pointer από τη function δημιουργίας και τον μεταβιβάζει σε άλλες functions για τροποποίηση:</p>
+
+<pre><code class="lang-go">type Car struct {
+    Brand string
+    Color string
+}
+
+func main() {
+    myCar := NewCar("Toyota")
+    fmt.Println("Before paint:", myCar.Color) // White
+
+    PaintCar(myCar, "Red")
+    fmt.Println("After paint:", myCar.Color)  // Red (the actual instance changed!)
+}
+
+// NewCar returns a pointer to a newly created Car instance
+func NewCar(brand string) *Car {
+    return &amp;Car{
+        Brand: brand,
+        Color: "White", // default color
+    }
+}
+
+// Paints the car by modifying the instance directly via pointer
+func PaintCar(c *Car, newColor string) {
+    c.Color = newColor
+}</code></pre>
+
+<h2>To καταστροφικό σενάριο</h2>
+<p>Για να καταλάβεις τι ακριβώς συμβαίνει όταν <strong>δεν</strong> επιστρέφουμε pointer, ας δούμε τι παθαίνει ο κώδικας αν χρησιμοποιήσουμε απλές τιμές (copies) σε ένα κρίσιμο σενάριο:</p>
+
+<pre><code class="lang-go">type ICBM struct {
+    Armed bool
+}
+
+func main() {
+    missile := NewICBM()
+    Disarm(missile)
+
+    if missile.Armed {
+        pentagon.BlowUpTheWorld() // 💥 BOOM!
+    }
+}
+
+// NAIVE: Returns a copy (value) instead of a pointer
+func NewICBM() ICBM {
+    return ICBM{Armed: true}
+}
+
+// NAIVE: Accepts a copy
+func Disarm(missile ICBM) {
+    missile.Armed = false // Modifies ONLY the local copy!
+}</code></pre>
+
+<p>Όταν η <code class="inline-code">NewICBM()</code> επιστρέφει το instance ως τιμή (by value), κάθε φορά που το περνάμε στη function <code class="inline-code">Disarm</code>, η Go δημιουργεί ένα <strong>πλήρες, ανεξάρτητο αντίγραφο</strong>. Η <code class="inline-code">Disarm</code> απενεργοποιεί μόνο το δικό της τοπικό αντίγραφο, αφήνοντας τον αρχικό <code class="inline-code">missile</code> στη <code class="inline-code">main</code> οπλισμένο (<code class="inline-code">Armed: true</code>).</p>
+
+<p>Η σωστή προσέγγιση επιβάλλει η function δημιουργίας να επιστρέφει από την αρχή έναν <strong>pointer</strong> (<code class="inline-code">*ICBM</code>), ώστε όλο το πρόγραμμα να διαχειρίζεται το ίδιο, μοναδικό instance στη μνήμη:</p>
+
+<pre><code class="lang-go">// CORRECT: Returns a pointer to the new instance
+func NewICBM() *ICBM {
+    return &amp;ICBM{Armed: true}
+}
+
+// CORRECT: Accepts the pointer
+func Disarm(missile *ICBM) {
+    missile.Armed = false // Modifies the actual instance!
+}</code></pre>
+`)
 
     addQuiz([
       {
-        q: "Ποια είναι η κύρια διαφορά φιλοσοφίας ανάμεσα σε ένα struct της Go και μια class σε γλώσσες όπως Java;",
+        q: "Τι ακριβώς πετυχαίνουμε όταν δηλώνουμε έναν νέο τύπο struct (π.χ. type Car struct { ... }) στον κώδικά μας;",
         options: [
-          "Το struct της Go περιέχει μόνο δεδομένα, ενώ η συμπεριφορά (methods) προστίθεται ξεχωριστά — δεν υπάρχει κληρονομικότητα κλάσεων",
-          "Το struct της Go δεν μπορεί ποτέ να περιέχει περισσότερα από τρία πεδία ταυτόχρονα, σε αντίθεση με τις class",
-          "Το struct της Go απαιτεί υποχρεωτικά έναν κατασκευαστή για να δημιουργηθεί, ενώ μια class όχι",
-          "Δεν υπάρχει καμία ουσιαστική διαφορά — το struct είναι απλώς εναλλακτικό όνομα για την ίδια ακριβώς έννοια"
+          "Ορίζουμε απλώς το καλούπι για έναν νέο τύπο δεδομένων, χωρίς να δεσμεύουμε μνήμη για πραγματικά δεδομένα",
+          "Δημιουργούμε αμέσως ένα νέο αντικείμενο στη μνήμη του υπολογιστή, το οποίο έχει τις προεπιλεγμένες zero values, και είναι έτοιμο για να του δώσουμε τις τελικές τιμές",
+          "Φτιάχνουμε μια ειδική συνάρτηση που εκτελείται αυτόματα κάθε φορά που χρειαζόμαστε να παράγουμε ένα νέο αντικείμενο τύπου Car, δεσμεύοντας την κατάλληλη μνήμη στο σύστημα",
+          "Αρχικοποιούμε μια μόνιμη δομή που θα αποθηκεύει όλα τα αντικείμενα τύπου Car που θα χρειαστούμε"
         ],
         correct: 0,
-        explain: "Το struct είναι καθαρά δεδομένα· η συμπεριφορά προστίθεται ξεχωριστά μέσω methods, χωρίς κανένα μηχανισμό κληρονομικότητας class-based."
+        explain: "Ο ορισμός ενός struct είναι απλώς η προδιαγραφή (ο τύπος), δεν είναι δεδομένα. Η πιο δελεαστική λάθος επιλογή μπερδεύει τον ορισμό της δομής με τη δημιουργία ενός αντικειμένου (instance) στη μνήμη, η οποία συμβαίνει ξεχωριστά."
       },
       {
-        q: "Γιατί το named field initialization προτιμάται γενικά έναντι του positional initialization σε structs;",
+        q: "Γιατί το named field initialization προτιμάται σχεδόν πάντα έναντι του positional;",
         options: [
-          "Επειδή το positional initialization δεν υποστηρίζεται καθόλου από τον compiler της Go σε καμία περίπτωση",
-          "Επειδή το named initialization είναι ανθεκτικό σε αλλαγές στη σειρά δήλωσης πεδίων και πιο ευανάγνωστο, ενώ το positional σπάει σιωπηλά αν η σειρά αλλάξει",
-          "Επειδή το named initialization τρέχει σημαντικά πιο γρήγορα σε runtime από το positional initialization",
-          "Επειδή το positional initialization απαιτεί πάντα τη χρήση δεικτών (pointers) για κάθε πεδίο του struct"
+          "Σε προστατεύει αν αλλάξει η σειρά πεδίων στο struct, αποφεύγοντας σιωπηλά bugs",
+          "Είναι ο μοναδικός τρόπος που επιτρέπει ο compiler για να δώσεις τιμές, επειδή το positional έχει πλέον καταργηθεί πλήρως στις νεότερες εκδόσεις",
+          "Προσφέρει καλύτερη ταχύτητα εκτέλεσης (runtime performance), ειδικά σε πολύ μεγάλα structs που διαχειρίζονται δεδομένα",
+          "Το positional initialization υποστηρίζεται μόνο αν χρησιμοποιήσεις δείκτες (pointers) σε κάθε πεδίο"
         ],
-        correct: 1,
-        explain: "Το positional literal εξαρτάται αυστηρά από τη σειρά δήλωσης· αν αυτή αλλάξει αργότερα, τα δεδομένα μπαίνουν σιωπηλά στα λάθος πεδία χωρίς κανένα compile error."
+        correct: 0,
+        explain: "Το named initialization αντιστοιχίζει ρητά τιμές σε πεδία, ανεξάρτητα από τη σειρά τους. Αν κάποιος αλλάξει τη σειρά των πεδίων, το positional θα έβαζε σιωπηλά τα δεδομένα στα λάθος πεδία. Δεν υπάρχει διαφορά στην ταχύτητα εκτέλεσης."
+      },
+      {
+        q: "Τι θα τυπώσει ο παρακάτω κώδικας;",
+        code: "type Config struct {\n    Retries int\n    Timeout int\n}\n\nfunc main() {\n    c1 := Config{Retries: 3}\n    c2 := Config{Timeout: 10}\n    c1.Timeout = 5\n    fmt.Println(c2.Retries, c2.Timeout)\n}",
+        lang: "go",
+        options: [
+          "0 10",
+          "3 5",
+          "3 10",
+          "0 5"
+        ],
+        correct: 0,
+        explain: "Το c1 και το c2 είναι ανεξάρτητα αντικείμενα. Η αλλαγή στο c1.Timeout δεν αγγίζει το c2. Το c2.Retries δεν αρχικοποιήθηκε ρητά, άρα παίρνει τη zero value (0), και το c2.Timeout πήρε την τιμή 10."
+      },
+      {
+        q: "Ποιο είναι το αποτέλεσμα εκτέλεσης του παρακάτω προγράμματος;",
+        code: "type User struct {\n    Username string\n    IsActive bool\n    Score    int\n}\n\nfunc main() {\n    var u User\n    fmt.Printf(\"%q %v %v\", u.Username, u.IsActive, u.Score)\n}",
+        lang: "go",
+        options: [
+          "\"\" false 0",
+          "nil false 0",
+          "Compile error επειδή δεν δόθηκαν αρχικές τιμές στο struct",
+          "panic στο runtime επειδή η μνήμη του struct είναι εντελώς άδεια"
+        ],
+        correct: 0,
+        explain: "Όταν δηλώνεις ένα struct χωρίς literal (var u User), όλα του τα πεδία παίρνουν αυτόματα τις zero values των τύπων τους: \"\" για string (ποτέ nil), false για bool, και 0 για int. Δεν σκάει και δεν απαιτεί ρητό initialization."
+      },
+      {
+        q: "Γιατί η συντριπτική πλειοψηφία των κατασκευαστών (NewXxx) στη Go επιστρέφει pointer στο struct (π.χ. *Server) και όχι απλή τιμή (Server);",
+        options: [
+          "Γιατί αν επιστρέψουν απλή τιμή, κάθε φορά που το struct περνάει ως παράμετρο σε άλλες συναρτήσεις, αντιγράφεται. Αυτό αποτρέπει την τροποποίηση του αρχικού instance (και σπαταλάει μνήμη αν το struct είναι μεγάλο)",
+          "Γιατί ο compiler της Go απαγορεύει ρητά την επιστροφή μεγάλων structs by value από οποιαδήποτε συνάρτηση",
+          "Γιατί τα structs που επιστρέφονται ως απλές τιμές διαγράφονται αμέσως από τη μνήμη (garbage collection) μόλις τελειώσει η εκτέλεση της συνάρτησης",
+          "Δεν υπάρχει κανένας ουσιαστικός λόγος, είναι απλώς μια παλιά συνήθεια από προγραμματιστές της C που γράφουν πλέον κώδικα σε Go"
+        ],
+        correct: 0,
+        explain: "Επιστρέφοντας pointer, διασφαλίζουμε ότι όλες οι λειτουργίες του προγράμματος θα αναφέρονται στο ίδιο, μοναδικό instance στη μνήμη. Αν επιστρέφαμε value, θα παλεύαμε διαρκώς με αντίγραφα και η τροποποίηση των δεδομένων θα αποτύγχανε. Επιπλέον ακόμα και αν δεν είχαμε σκοπό να τροποποιήσουμε το οτιδήποτε (μόνο να διαβάσουμε), πάλι θα ήταν λάθος να μην χρησιμοποιήσουμε pointer, αφού θα σπαταλούσαμε μνήμη για ένα αχρείαστο αντίγραφο!"
+      },
+      {
+        q: "Ποια προσπέλαση είναι λανθασμένη και θα προκαλέσει compile error στον παρακάτω κώδικα;",
+        code: "type Book struct {\n    Title string\n    Pages int\n}\n\nfunc main() {\n    myBook := Book{Title: \"Go Guide\", Pages: 200}\n    fmt.Println(Book.Pages)   // 1\n    fmt.Println(myBook.Pages) // 2\n}",
+        lang: "go",
+        options: [
+          "Η 1 (Book.Pages), επειδή το Book είναι απλώς ο τύπος (το καλούπι) και όχι ένα υπαρκτό αντικείμενο",
+          "Η 2 (myBook.Pages), επειδή τα πεδία ενός struct είναι private και απαιτούν υποχρεωτικά get methods για να τα διαβάσεις",
+          "Και οι δύο προσεγγίσεις είναι απολύτως σωστές"
+        ],
+        correct: 0,
+        explain: "Το `Book` είναι ο τύπος (η ιδέα). Δεν καταλαμβάνει μνήμη με δεδομένα, άρα δεν έχει `Pages` για να διαβάσεις. Μόνο τα πραγματικά αντικείμενα (όπως το `myBook`) έχουν τιμές στα πεδία τους."
       }
     ]);
+
     // ── Section 3.3 ──────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@anonstruct">Ενότητα 3 / 7 — Structs σε Βάθος</div>
-<h1>Advanced Struct Concepts: Ανώνυμα Structs &amp; Δείκτες</h1>
+<h1>Advanced Struct Concepts: Ανώνυμα Structs &amp; Pointers</h1>
 
 <h2>Ανώνυμα Structs (Anonymous Structs)</h2>
 <p>Μερικές φορές δεν χρειάζεσαι έναν πλήρως ονομασμένο τύπο struct — απλά θέλεις μια προσωρινή, "μιας χρήσης" ομαδοποίηση δεδομένων. Η Go σου επιτρέπει να δηλώσεις struct χωρίς όνομα τύπου, inline.</p>
@@ -1490,18 +1688,18 @@ fmt.Println(point.X, point.Y) // 10 20</code></pre>
   Anonymous structs εμφανίζονται συχνά σε δύο σενάρια: (1) γρήγορα, one-off test cases μέσα σε unit tests, όπου δεν αξίζει να ορίσεις ξεχωριστό named type· (2) ως προσωρινή δομή για JSON payloads, όπου θέλεις να "σχηματοποιήσεις" δεδομένα μόνο για μία χρήση χωρίς να "ρυπαίνεις" το πρόγραμμά σου με έναν τύπο που δεν θα ξαναχρησιμοποιηθεί.
 </div>
 
-<h2>Δείκτες σε Structs &amp; Auto-Dereferencing</h2>
-<p>Θυμήσου τους δείκτες (pointers) από το Μέρος 1. Ένας δείκτης σε struct είναι εξαιρετικά συχνός — ειδικά όταν θέλεις μια function να ΤΡΟΠΟΠΟΙΗΣΕΙ το αρχικό struct αντί να δουλέψει πάνω σε αντίγραφο.</p>
+<h2>Pointers σε Structs &amp; Auto-Dereferencing</h2>
+<p>Κάτι που δεν αναφέραμε πριν. Στην go, δεν χρειάζεται να προσθετεις (*) dereference σε pointers όταν πρόκειται για structs.</p>
 
-<pre><code class="lang-go">u := User{Name: "Kostas", Age: 40}
-p := &u // p είναι *User — δείκτης προς το struct u
+<pre><code class="lang-go">u := User{Name: "Vasilis", Age: 40}
+p := &u // p είναι *User — pointer προς το struct u
 
-p.Age = 41 // ΔΕΝ χρειάζεται (*p).Age — η Go κάνει auto-dereferencing
-fmt.Println(u.Age) // 41 — το ΑΡΧΙΚΟ struct άλλαξε, μέσω του δείκτη</code></pre>
+p.Age = 41 // Η λογική λέει ότι θα έπρεπε, όμως ΔΕΝ χρειάζεται (*p).Age — η Go κάνει auto-dereferencing
+fmt.Println(u.Age) // 41 — το ΑΡΧΙΚΟ struct άλλαξε, μέσω του pointer</code></pre>
 
 <div class="callout">
   <span class="tag">Auto-dereferencing: τι σημαίνει</span>
-  Σε πολλές γλώσσες χαμηλού επιπέδου (π.χ. C), αν έχεις δείκτη σε struct, πρέπει να γράψεις ρητά <code class="inline-code">(*p).Age</code> για να φτάσεις στο πεδίο. Η Go σου το απλοποιεί: <code class="inline-code">p.Age</code> δουλεύει απευθείας ΚΑΙ σε value ΚΑΙ σε pointer προς struct — ο compiler καταλαβαίνει τι εννοείς και κάνει την αποαναφορά (dereference) αυτόματα.
+  Σε πολλές γλώσσες χαμηλού επιπέδου (π.χ. C), αν έχεις pointer σε struct, πρέπει να γράψεις ρητά <code class="inline-code">(*p).Age</code> για να φτάσεις στο πεδίο. Η Go σου το απλοποιεί: <code class="inline-code">p.Age</code> δουλεύει απευθείας ΚΑΙ σε value ΚΑΙ σε pointer προς struct — ο compiler καταλαβαίνει τι εννοείς και κάνει την αποαναφορά (dereference) αυτόματα.
 </div>
 
 <h2>Struct Tags: Μεταδεδομένα για Serialization</h2>
@@ -1547,15 +1745,15 @@ fmt.Println(exists) // true</code></pre>
 
     addQuiz([
       {
-        q: "Γιατί η Go επιτρέπει να γράφεις p.Age αντί για (*p).Age όταν το p είναι δείκτης σε struct;",
+        q: "Γιατί η Go επιτρέπει να γράφεις p.Age αντί για (*p).Age όταν το p είναι pointer σε struct;",
         options: [
-          "Επειδή στη Go οι δείκτες σε structs δεν χρειάζονται ποτέ αποαναφορά (dereferencing) σε καμία περίπτωση",
-          "Επειδή ο compiler κάνει αυτόματα την αποαναφορά (auto-dereferencing) όταν προσπελαύνεις πεδίο μέσω δείκτη σε struct",
+          "Επειδή στη Go οι pointers σε structs δεν χρειάζονται ποτέ αποαναφορά (dereferencing) σε καμία περίπτωση",
+          "Επειδή ο compiler κάνει αυτόματα την αποαναφορά (auto-dereferencing) όταν προσπελαύνεις πεδίο μέσω pointer σε struct",
           "Επειδή το p.Age και το (*p).Age αναφέρονται σε εντελώς διαφορετικά, ασύνδετα δεδομένα στη μνήμη",
           "Επειδή αυτή η συντόμευση λειτουργεί μόνο αν το struct έχει ακριβώς ένα πεδίο συνολικά"
         ],
         correct: 1,
-        explain: "Η Go απλοποιεί τη σύνταξη: p.Age δουλεύει είτε το p είναι struct value είτε δείκτης σε struct — ο compiler κάνει την αποαναφορά αυτόματα πίσω από τις σκηνές."
+        explain: "Η Go απλοποιεί τη σύνταξη: p.Age δουλεύει είτε το p είναι struct value είτε pointer σε struct — ο compiler κάνει την αποαναφορά αυτόματα πίσω από τις σκηνές."
       },
       {
         q: "Πότε ΔΕΝ μπορείς να συγκρίνεις δύο structs με τον τελεστή ==;",
@@ -1583,34 +1781,146 @@ fmt.Println(exists) // true</code></pre>
     // ── Section 3.4 ──────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@composition">Ενότητα 3 / 7 — Structs σε Βάθος</div>
-<h1>Struct Composition: Σύνθεση αντί για Κληρονομικότητα</h1>
-<p class="lede">Ερχόμαστε τώρα σε μια από τις πιο σημαντικές αρχές σχεδίασης της Go — μια που θα τη συναντάς ξανά και ξανά σε όλη την υπόλοιπη πορεία σου.</p>
+<h1>Struct Composition &amp; Εμφώλευση</h1>
+<p class="lede">Όταν τα δεδομένα γίνονται πιο σύνθετα, ένα απλό struct δεν αρκεί. Η Go σου δίνει τη δυνατότητα να συνδυάζεις structs με τρεις θεμελιώδεις τρόπους: με ρητή εμφώλευση, με slices από structs και με εσωτερική σύνθεση (embedded structs).</p>
 
-<h2>Embedded Structs: Struct μέσα σε Struct</h2>
-<p>Η Go σου επιτρέπει να "ενσωματώσεις" (embed) ένα struct μέσα σε άλλο, δηλώνοντας το πεδίο ΧΩΡΙΣ όνομα — μόνο τον τύπο. Αυτό λέγεται Anonymous Field.</p>
+<h2>1. Ρητή Εμφώλευση (Nested Structs)</h2>
+<p>Ο πιο απλός και ρητός τρόπος να συνδέσεις δύο structs είναι να δηλώσεις το ένα ως πεδίο μέσα στο άλλο, δίνοντάς του ένα συγκεκριμένο όνομα πεδίου.</p>
 
-<pre><code class="lang-go">type Address struct {
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+type User struct {
+    Name    string
+    Address Address // explicit named field: field "Address" of type "Address"
+}
+
+type Address struct {
     City    string
     Country string
 }
 
-type User struct {
-    Name    string
-    Address // <- embedded struct: ΔΕΝ γράφουμε "Address Address", μόνο "Address"
-}
+func main() {
+    u := User{
+        Name: "Sofia",
+        Address: Address{
+            City:    "Athens",
+            Country: "Greece",
+        },
+    }
 
-u := User{
-    Name: "Sofia",
-    Address: Address{
-        City:    "Athens",
-        Country: "Greece",
-    },
+    // Accessing values requires walking down the field chain explicitly
+    fmt.Println("User name:", u.Name)
+    fmt.Println("User city:", u.Address.City)
+    fmt.Println("User country:", u.Address.Country)
 }</code></pre>
 
-<h2>Promoted Fields: Προαγόμενα Πεδία</h2>
-<p>Το πιο εντυπωσιακό κομμάτι: τα πεδία του embedded struct γίνονται προσβάσιμα ΑΠΕΥΘΕΙΑΣ πάνω στο εξωτερικό struct, σαν να ήταν δικά του — χωρίς να χρειάζεται να γράψεις <code class="inline-code">u.Address.City</code> (αν και εξακολουθεί να δουλεύει και έτσι).</p>
+<div class="callout">
+  <span class="tag">Πώς λειτουργεί η πρόσβαση</span>
+  Για να προσπελάσεις μια τιμή στη ρητή εμφώλευση, πρέπει να γράψεις ολόκληρη τη διαδρομή: <code class="inline-code">u.Address.City</code>. Το εξωτερικό struct <code class="inline-code">User</code> περιέχει το πεδίο <code class="inline-code">Address</code>, και αυτό με τη σειρά του περιέχει το πεδίο <code class="inline-code">City</code>.
+</div>
 
-<pre><code class="lang-go">fmt.Println(u.City)         // "Athens" — προαγόμενο πεδίο, ΟΧΙ u.Address.City
+<h2>2. Struct με Slice από Structs (Σχέση 1-προς-Πολλά)</h2>
+<p>Τι γίνεται όταν μια οντότητα δεν περιέχει απλά ένα άλλο struct, αλλά μια ολόκληρη συλλογή από αυτά; Για παράδειγμα, ένας χρήστης μπορεί να έχει πολλές διευθύνσεις ή ένα καλάθι αγορών να περιέχει πολλά προϊόντα. Σε αυτή την περίπτωση, χρησιμοποιούμε ένα <strong>slice από structs</strong>.</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+type ShoppingCart struct {
+    Owner string
+    Items []Item // slice of Item structs
+}
+
+type Item struct {
+    Name  string
+    Price float64
+}
+
+func main() {
+    cart := ShoppingCart{
+        Owner: "Nikos",
+        Items: []Item{
+            {Name: "Keyboard", Price: 49.99},
+            {Name: "Mouse", Price: 19.99},
+            {Name: "Monitor", Price: 199.99},
+        },
+    }
+
+    fmt.Println("Cart owner:", cart.Owner)
+    fmt.Println("Items in cart:")
+
+    // Iterate over the slice of structs using range
+    total := 0.0
+    for i, item := range cart.Items {
+        fmt.Printf("  %d. %s - %.2f€\\n", i+1, item.Name, item.Price)
+        total += item.Price
+    }
+
+    fmt.Printf("Total cost: %.2f€\\n", total)
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Διαφορά από τη μονή εμφώλευση</span>
+  Στη μονή εμφώλευση προσπέλαζες απευθείας το πεδίο με <code class="inline-code">u.Address.City</code>. Όταν όμως το struct περιέχει slice (<code class="inline-code">cart.Items</code>), πρέπει να κάνεις <strong>iterate</strong> με μια λούπα <code class="inline-code">for range</code> για να επεξεργαστείς κάθε ξεχωριστό instance τύπου <code class="inline-code">Item</code> ή να προσπελάσεις ένα συγκεκριμένο με index (π.χ. <code class="inline-code">cart.Items[0].Name</code>).
+</div>
+
+<h2>3. Embedded Structs &amp; Composition (Ανώνυμα Πεδία)</h2>
+<p>Τώρα ας δούμε τη διαφορά με το <strong>Embedding</strong>. Η Go σου επιτρέπει να ενσωματώσεις ένα struct μέσα σε ένα άλλο <strong>χωρίς να δώσεις όνομα πεδίου</strong> — δηλώνοντας μόνο τον τύπο του. Αυτό ονομάζεται <em>Anonymous Field</em>.</p>
+
+<p>Εδώ συμβαίνει η πραγματική <strong>σύνθεση (composition)</strong>: Το εξωτερικό struct δεν έχει απλά ένα «παιδί» εσωτερικά, αλλά δέχεται και προάγει τα πεδία του embedded struct σαν να ήταν δικά του χαρακτηριστικά!</p>
+
+<div style="text-align: center; margin: 24px 0;">
+  <svg width="100%" height="180" viewBox="0 0 600 180" style="max-width: 600px; font-family: sans-serif;">
+    <!-- Left: Explicit Nesting -->
+    <rect x="10" y="10" width="270" height="160" rx="8" fill="#1e1e2e" stroke="#45475a" stroke-width="2"/>
+    <text x="145" y="35" fill="#cba6f7" font-weight="bold" font-size="14" text-anchor="middle">Explicit Nesting (Address Address)</text>
+    <rect x="30" y="50" width="230" height="100" rx="6" fill="#313244" stroke="#585b70"/>
+    <text x="145" y="70" fill="#89b4fa" font-size="12" text-anchor="middle">u.Address (Field)</text>
+    <text x="145" y="95" fill="#a6adc8" font-size="12" text-anchor="middle">u.Address.City</text>
+    <text x="145" y="115" fill="#a6adc8" font-size="12" text-anchor="middle">u.Address.Country</text>
+
+    <!-- Right: Embedded Composition -->
+    <rect x="320" y="10" width="270" height="160" rx="8" fill="#1e1e2e" stroke="#a6e3a1" stroke-width="2"/>
+    <text x="455" y="35" fill="#a6e3a1" font-weight="bold" font-size="14" text-anchor="middle">Embedded Composition (Address)</text>
+    <rect x="340" y="50" width="230" height="100" rx="6" fill="#313244" stroke="#a6e3a1" stroke-dasharray="4"/>
+    <text x="455" y="75" fill="#f9e2af" font-size="13" font-weight="bold" text-anchor="middle">Promoted Fields!</text>
+    <text x="455" y="100" fill="#a6e3a1" font-size="12" font-weight="bold" text-anchor="middle">u.City (Direct access)</text>
+    <text x="455" y="120" fill="#a6e3a1" font-size="12" font-weight="bold" text-anchor="middle">u.Country (Direct access)</text>
+  </svg>
+</div>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+type User struct {
+    Name    string
+    Address // <- Embedded struct: NO field name, ONLY the type!
+}
+
+type Address struct {
+    City    string
+    Country string
+}
+
+func main() {
+    u := User{
+        Name: "Sofia",
+        Address: Address{
+            City:    "Athens",
+            Country: "Greece",
+        },
+    }
+
+    // Promoted Fields: Access fields directly on the outer struct!
+    fmt.Println("User city:", u.City)        // "Athens" — promoted field!
+    fmt.Println("User country:", u.Country)   // "Greece" — promoted field!</code></pre>
+
+<p>Το "εντυπωσιακό" promoted field: τα πεδία του embedded struct γίνονται προσβάσιμα ΑΠΕΥΘΕΙΑΣ πάνω στο εξωτερικό struct, σαν να ήταν δικά του — χωρίς να χρειάζεται να γράψεις <code class="inline-code">u.Address.City</code> (αν και εξακολουθεί να δουλεύει και έτσι).</p>
+
+<pre><code class="lang-go">fmt.Println(u.City)         // "Athens" — promoted field, ΟΧΙ u.Address.City
 fmt.Println(u.Address.City) // "Athens" — εξίσου έγκυρο, πιο ρητό</code></pre>
 
 <div class="callout">
@@ -1619,15 +1929,15 @@ fmt.Println(u.Address.City) // "Athens" — εξίσου έγκυρο, πιο ρ
 </div>
 
 <h2 id="@shadowing">Shadowing: Όταν Συγκρούονται Ονόματα</h2>
-<p>Τι γίνεται αν το εξωτερικό struct ΕΧΕΙ ήδη ένα πεδίο με το ίδιο όνομα με κάποιο πεδίο του embedded struct; Το πεδίο του εξωτερικού struct "σκιάζει" (shadows) το προαγόμενο — δηλαδή κερδίζει προτεραιότητα.</p>
+<p>Τι γίνεται αν το εξωτερικό struct ΕΧΕΙ ήδη ένα πεδίο με το ίδιο όνομα με κάποιο πεδίο του embedded struct; Το πεδίο του εξωτερικού struct "επισκιάζει" (shadows) το προαγόμενο — δηλαδή κερδίζει προτεραιότητα.</p>
 
-<pre><code class="lang-go">type Base struct {
-    ID int
-}
-
-type Item struct {
+<pre><code class="lang-go">type Item struct {
     Base
     ID int // <- ΙΔΙΟ όνομα με το Base.ID
+}
+
+type Base struct {
+    ID int
 }
 
 it := Item{Base: Base{ID: 1}, ID: 2}
@@ -1690,7 +2000,7 @@ fmt.Println(c.__blank2__) // promoted field access — prints 300`,
 
 <div class="callout">
   <span class="tag">Η Άσκηση</span>
-  Δημιούργησε ένα struct <code class="inline-code">Metadata</code> με πεδία <code class="inline-code">CreatedYear int</code> και <code class="inline-code">Publisher string</code>. Δημιούργησε ένα struct <code class="inline-code">Book</code> που ενσωματώνει (embeds) το <code class="inline-code">Metadata</code>, και προσθέτει δικά του πεδία <code class="inline-code">Title string</code> και <code class="inline-code">Author string</code>. Γράψε μια constructor function <code class="inline-code">NewBook(...)</code> που δέχεται όλα τα απαραίτητα δεδομένα και επιστρέφει δείκτη σε <code class="inline-code">Book</code>. Στο τέλος, τύπωσε το <code class="inline-code">CreatedYear</code> ενός βιβλίου χρησιμοποιώντας το promoted field, ΟΧΙ το πλήρες <code class="inline-code">book.Metadata.CreatedYear</code>.
+  Δημιούργησε ένα struct <code class="inline-code">Metadata</code> με πεδία <code class="inline-code">CreatedYear int</code> και <code class="inline-code">Publisher string</code>. Δημιούργησε ένα struct <code class="inline-code">Book</code> που ενσωματώνει (embeds) το <code class="inline-code">Metadata</code>, και προσθέτει δικά του πεδία <code class="inline-code">Title string</code> και <code class="inline-code">Author string</code>. Γράψε μια constructor function <code class="inline-code">NewBook(...)</code> που δέχεται όλα τα απαραίτητα δεδομένα και επιστρέφει pointer σε <code class="inline-code">Book</code>. Στο τέλος, τύπωσε το <code class="inline-code">CreatedYear</code> ενός βιβλίου χρησιμοποιώντας το promoted field, ΟΧΙ το πλήρες <code class="inline-code">book.Metadata.CreatedYear</code>.
 </div>
 
 <div class="callout">
@@ -1751,35 +2061,98 @@ func main() {
 <p class="lede">Στην προηγούμενη ενότητα είπαμε ότι ένα struct περιέχει ΜΟΝΟ δεδομένα, καμία συμπεριφορά. Τώρα θα δούμε πώς προσθέτουμε αυτή τη συμπεριφορά: μέσω <strong>methods</strong>.</p>
 
 <h2>Method vs Function</h2>
-<p>Ένα method είναι, ουσιαστικά, μια κανονική function με ένα επιπλέον, ειδικό όρισμα πριν το όνομά της: τον <strong>receiver</strong> (παραλήπτη). Ο receiver δηλώνει "σε ποιον τύπο ανήκει" αυτό το method.</p>
+<p>Ένα method είναι, ουσιαστικά, μια κανονική function με ένα επιπλέον, ειδικό όρισμα πριν το όνομά της: τον <strong>receiver</strong> (παραλήπτη). Ο receiver δηλώνει σε ποιον τύπο ανήκει αυτό το method.</p>
 
 <pre><code class="lang-go">type Rectangle struct {
     Width, Height float64
 }
 
-// Αυτό είναι ΜΕΘΟΔΟΣ: έχει receiver (r Rectangle) πριν το όνομα
+// METHOD: Has receiver (r Rectangle) before the function name
 func (r Rectangle) Area() float64 {
     return r.Width * r.Height
 }
 
-// Σύγκρισε με μια απλή FUNCTION (χωρίς receiver):
+// Simple FUNCTION (no receiver)
 func RectangleArea(r Rectangle) float64 {
     return r.Width * r.Height
 }</code></pre>
 
-<h2>Κλήση: η Διαφορά στην Πράξη</h2>
+<h2>Κλήση: Η Διαφορά στην Πράξη</h2>
 <pre><code class="lang-go">rect := Rectangle{Width: 5, Height: 3}
 
-area1 := rect.Area()              // method call — σαν να "ρωτάς" το rect
-area2 := RectangleArea(rect)      // function call — περνάς το rect ως όρισμα</code></pre>
+area1 := rect.Area()         // method call — querying the instance directly
+area2 := RectangleArea(rect) // function call — passing rect as an argument</code></pre>
 
-<div class="callout">
-  <span class="tag">Γιατί προτιμούμε methods</span>
-  Λειτουργικά, και οι δύο προσεγγίσεις παραπάνω κάνουν ΑΚΡΙΒΩΣ το ίδιο πράγμα. Η διαφορά είναι οργανωτική/αναγνωσιμότητα: το <code class="inline-code">rect.Area()</code> διαβάζεται φυσικά ως "ρώτα το ορθογώνιο για το εμβαδόν του" — η συμπεριφορά "ανήκει λογικά" στο δεδομένο. Επιπλέον, μόνο τα methods μπορούν να χρησιμοποιηθούν για να υλοποιήσουν ένα interface — κάτι που θα δούμε στην Ενότητα 5.
+<h2>State (Δεδομένα) vs Behavior (Συμπεριφορά)</h2>
+<p>Λειτουργικά, και οι δύο προσεγγίσεις υπολογίζουν το ίδιο ακριβώς αποτέλεσμα. Η ουσιαστική διαφορά είναι δομική: διαχωρίζει την <strong>κατάσταση (state)</strong> από τη <strong>συμπεριφορά (behavior)</strong> του instance.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Struct = State (Κατάσταση)</h3>
+    <p><strong>"Τι περιέχει;"</strong><br>Είναι η παθητική μνήμη. Ορίζει τις ιδιότητες και τις τιμές του instance σε μια δεδομένη στιγμή (π.χ. <code class="inline-code">Width</code> και <code class="inline-code">Height</code>).</p>
+  </div>
+  <div class="card">
+    <h3>Method = Behavior (Συμπεριφορά)</h3>
+    <p><strong>"Τι μπορεί να κάνει;"</strong><br>Είναι η ενεργή λογική. Ορίζει τις ενέργειες, τους υπολογισμούς και τους κανόνες που εκτελεί το ίδιο το instance πάνω στα δεδομένα του.</p>
+  </div>
 </div>
 
-<h2>Προσομοίωση OOP χωρίς Κλάσεις</h2>
-<p>Ο συνδυασμός struct (δεδομένα) + methods (συμπεριφορά πάνω σε αυτά τα δεδομένα) είναι ο τρόπος που η Go επιτυγχάνει κάτι αντίστοιχο με το "encapsulation" της αντικειμενοστραφούς προγραμματισμού — χωρίς κλάσεις, χωρίς κληρονομικότητα. Ένα struct με τα δικά του methods "συμπεριφέρεται" σαν αντικείμενο (object) με ιδιότητες και ενέργειες, αλλά η σχέση δηλώνεται ρητά μέσω του receiver, όχι μέσω μιας ιεραρχίας κλάσεων.</p>
+<h2>Ποιος είναι ο «Δράστης» της Ενέργειας;</h2>
+<p>Η διαφορά μεταξύ μιας function και ενός method είναι κυρίως εννοιολογική — αλλάζει το ποιος θεωρείται ο «δράστης» της ενέργειας:</p>
+
+<ul>
+  * <strong>Function call (<code class="inline-code">RectangleArea(rect)</code>):</strong> Ένας εξωτερικός χειριστής παίρνει τα δεδομένα του instance ως όρισμα και εκτελεί έναν υπολογισμό πάνω σε αυτά.
+  * <strong>Method call (<code class="inline-code">rect.Area()</code>):</strong> Το ίδιο το instance <code class="inline-code">rect</code> εκτελεί τη συμπεριφορά του. Διαβάζεται φυσικά ως: <em>«ορθογώνιο, υπολόγισε το εμβαδόν σου»</em>.
+</ul>
+
+<div class="callout good">
+  <span class="tag">Γιατί η συμπεριφορά ανήκει στο instance</span>
+  Όταν η λογική πακετάρεται ως method, η συμπεριφορά «ανήκει λογικά» στα δεδομένα. Το instance παύει να είναι απλά μια παθητική στοίβα από μεταβλητές στη μνήμη και αποκτά αυτόνομη προσωπικότητα με δικούς του κανόνες και υπολογισμούς.
+</div>
+
+<p>Αρχιτεκτονικά, αυτό σημαίνει ότι όλες οι υπολογιστικές ενέργειες, οι έλεγχοι και οι μετασχηματισμοί που αφορούν ένα ορθογώνιο συγκεντρώνονται οργανικά ως <strong>methods</strong> πάνω στο <code class="inline-code">Rectangle</code>.</p>
+
+<p>Για παράδειγμα, ένα πλήρες <code class="inline-code">Rectangle</code> θα μπορούσε να διαθέτει μια σειρά από σχετικές methods που ορίζουν τη συμπεριφορά του:</p>
+
+<pre><code class="lang-go">type Rectangle struct {
+    Width, Height float64
+}
+
+// Area calculates the total area of the rectangle
+func (r Rectangle) Area() float64 {
+    return r.Width * r.Height
+}
+
+// Perimeter calculates the total perimeter of the rectangle
+func (r Rectangle) Perimeter() float64 {
+    return 2 * (r.Width + r.Height)
+}
+
+// IsSquare checks whether the rectangle has equal sides
+func (r Rectangle) IsSquare() bool {
+    return r.Width == r.Height
+}
+
+// Scale resizes both dimensions of the rectangle by a given multiplier
+func (r *Rectangle) Scale(factor float64) {
+    r.Width *= factor
+    r.Height *= factor
+}</code></pre>
+
+<p>Με αυτόν τον σχεδιασμό, η χρήση του instance στη <code class="inline-code">main</code> γίνεται απόλυτα καθαρή και εκφραστική, καθώς το ίδιο το instance διαχειρίζεται τα δεδομένα του:</p>
+
+<pre><code class="lang-go">rect := Rectangle{Width: 4, Height: 4}
+
+fmt.Println("Perimeter:", rect.Perimeter()) // 16
+fmt.Println("Is Square?:", rect.IsSquare())  // true
+
+// Scaling the instance directly via pointer receiver
+rect.Scale(2.0)
+fmt.Println("New Area:", rect.Area())       // 64
+</code></pre>
+
+<h2>Προσομοίωση Encapsulation χωρίς Κλάσεις</h2>
+<p>Ο συνδυασμός struct (δεδομένα) + methods (συμπεριφορά πάνω σε αυτά τα δεδομένα) είναι ο τρόπος με τον οποίο η Go επιτυγχάνει το <strong>encapsulation</strong> — χωρίς κλάσεις και χωρίς κληρονομικότητα. Ένα struct με τα δικά του methods συμπεριφέρεται ως μια αυτόνομη οντότητα με ιδιότητες και ενέργειες, όπου η σχέση δηλώνεται ρητά μέσω του receiver.</p>
 `);
 
     // ── Section 4.2 ──────────────────────────────────────────────────────── ⊃
@@ -1791,24 +2164,42 @@ area2 := RectangleArea(rect)      // function call — περνάς το rect ω
 <h2>Value Receiver: Δουλειά πάνω σε Αντίγραφο</h2>
 <p>Όταν ο receiver είναι value, το method λαμβάνει ένα ΑΝΤΙΓΡΑΦΟ (copy) του struct — ό,τι αλλαγές κάνεις μέσα στο method στα πεδία του receiver, ΔΕΝ επηρεάζουν το αρχικό.</p>
 
-<pre><code class="lang-go">func (r Rectangle) Double() {
-    r.Width *= 2  // αλλάζει μόνο το ΑΝΤΙΓΡΑΦΟ r, όχι το αρχικό
+<pre><code class="lang-go">// ── data structure ──────────────────────────────────────────── ⊃
+type Rectangle struct {
+    Width  float64
+    Height float64
 }
 
-rect := Rectangle{Width: 5, Height: 3}
-rect.Double()
-fmt.Println(rect.Width) // 5 — ΑΜΕΤΑΒΛΗΤΟ! Το Double() δεν είχε καμία επίδραση</code></pre>
+// Double attempts to double the rectangle width using a value receiver.
+func (r Rectangle) Double() {
+    r.Width *= 2 // Modifies ONLY the local copy r, not the original instance
+}
 
+// ── main entry point ────────────────────────────────────────── ⊃
+func main() {
+    rect := Rectangle{Width: 5, Height: 3}
+    rect.Double()
+    fmt.Println(rect.Width) // 5 — UNCHANGED! Double() had no effect on the original instance
+}</code></pre>
 <h2>Pointer Receiver: Πραγματική Τροποποίηση</h2>
 <p>Όταν ο receiver είναι pointer, το method λαμβάνει τη ΔΙΕΥΘΥΝΣΗ του αρχικού struct — αλλαγές μέσα στο method ΕΠΗΡΕΑΖΟΥΝ το πραγματικό, αρχικό struct.</p>
 
-<pre><code class="lang-go">func (r *Rectangle) Double() {
-    r.Width *= 2  // τροποποιεί το ΠΡΑΓΜΑΤΙΚΟ struct μέσω του δείκτη
+<pre><code class="lang-go">// ── data structure ──────────────────────────────────────────── ⊃
+type Rectangle struct {
+    Width  float64
+    Height float64
 }
 
-rect := Rectangle{Width: 5, Height: 3}
-rect.Double()
-fmt.Println(rect.Width) // 10 — ΑΛΛΑΞΕ! Η Go καλεί αυτόματα (&rect).Double()</code></pre>
+func (r *Rectangle) Double() {
+    r.Width *= 2  // τροποποιεί το ΠΡΑΓΜΑΤΙΚΟ struct μέσω του pointer
+}
+
+// ── main entry point ────────────────────────────────────────── ⊃
+func main() {
+  rect := Rectangle{Width: 5, Height: 3}
+  rect.Double()
+  fmt.Println(rect.Width) // 10 — ΑΛΛΑΞΕ! Η Go καλεί αυτόματα (&rect).Double()
+}</code></pre>
 
 <div class="callout">
   <span class="tag">Δεν χρειάζεται να γράψεις (&rect).Double() ρητά</span>
@@ -1832,26 +2223,48 @@ fmt.Println(rect.Width) // 10 — ΑΛΛΑΞΕ! Η Go καλεί αυτόματ�
 
     addQuiz([
       {
-        q: "Τι συμβαίνει στο αρχικό struct όταν καλείς ένα method με value receiver που τροποποιεί ένα πεδίο του;",
+        q: "Ποια είναι η βασική δομική διαφορά στη σύνταξη μιας function και ενός method στη Go;",
         options: [
-          "Το αρχικό struct τροποποιείται κανονικά, ακριβώς όπως θα συνέβαινε και με pointer receiver",
-          "Το method λειτουργεί πάνω σε αντίγραφο· το αρχικό struct παραμένει εντελώς αμετάβλητο μετά την κλήση",
-          "Ο compiler αρνείται να μεταγλωττίσει έναν κώδικα που προσπαθεί να τροποποιήσει πεδίο μέσα σε value receiver method",
-          "Το αποτέλεσμα εξαρτάται τυχαία από το αν το struct έχει περισσότερα από δύο πεδία συνολικά"
+          "Το method ορίζει έναν receiver πριν από το όνομά του, ενώ η function δεν διαθέτει receiver",
+          "Το method πρέπει υποχρεωτικά να επιστρέφει κάποια τιμή, ενώ η function μπορεί να είναι void",
+          "Η function δηλώνεται πάντα μέσα στη main, ενώ το method δηλώνεται υποχρεωτικά σε ξεχωριστό package",
+          "Το method μπορεί να καλεστεί αποκλειστικά μέσω pointer, ενώ η function δέχεται μόνο values"
         ],
-        correct: 1,
-        explain: "Value receiver = δουλειά πάνω σε αντίγραφο. Οποιαδήποτε τροποποίηση μέσα στο method αγγίζει μόνο το τοπικό αντίγραφο, όχι το αρχικό struct του καλούντος."
+        correct: 0,
+        explain: "Η μόνη συντακτική διαφορά στον ορισμό είναι η παρουσία του receiver πριν από το όνομα του method, η οποία συνδέει τη συμπεριφορά με τον συγκεκριμένο τύπο."
       },
       {
-        q: "Γιατί η κοινή σύμβαση λέει να κάνεις ΟΛΑ τα methods ενός struct pointer receivers, αν έστω ένα από αυτά χρειάζεται να είναι;",
+        q: "Τι συμβαίνει στο αρχικό struct όταν καλείς ένα method με value receiver (και όχι pointer) που τροποποιεί ένα πεδίο του;",
         options: [
-          "Επειδή η Go δεν επιτρέπει καν σε ένα struct να έχει ταυτόχρονα methods με value και pointer receivers",
-          "Επειδή έτσι εξασφαλίζεται ότι κάθε method εκτελείται ταχύτερα σε runtime, ανεξαρτήτως μεγέθους του struct",
-          "Για συνέπεια/προβλεψιμότητα — αποφεύγεται σύγχυση σχετικά με ποια methods τροποποιούν το struct και ποια όχι",
-          "Επειδή το method set ενός τύπου δεν λειτουργεί καθόλου σωστά αν αναμειγνύονται value και pointer receivers"
+          "Το αρχικό struct τροποποιείται κανονικά, ακριβώς όπως θα συνέβαινε και με pointer receiver",
+          "Το method λειτουργεί πάνω σε αντίγραφο, οπότε το αρχικό struct παραμένει εντελώς αμετάβλητο",
+          "Ο compiler αρνείται να μεταγλωττίσει κώδικα που προσπαθεί να τροποποιήσει πεδίο σε value receiver",
+          "Το αποτέλεσμα εξαρτάται από το αν το struct περιέχει περισσότερα από δύο πεδία στη μνήμη"
+        ],
+        correct: 1,
+        explain: "Value receiver σημαίνει εργασία πάνω σε αντίγραφο (copy). Οποιαδήποτε τροποποίηση αγγίζει μόνο το τοπικό αντίγραφο και όχι το αρχικό instance."
+      },
+      {
+        q: "Τι συμβαίνει όταν καλείς ένα pointer receiver method πάνω σε ένα value instance (π.χ. rect.Scale(2.0));",
+        options: [
+          "Η Go μετατρέπει αυτόματα την κλήση σε (&rect).Scale(2.0), εφόσον το instance είναι addressable",
+          "Ο compiler εμφανίζει σφάλμα μεταγλώττισης επειδή ο τύπος του instance δεν ταιριάζει με τον receiver",
+          "Το method εκτελείται κανονικά αλλά οι αλλαγές χάνονται επειδή δημιουργείται προσωρινό αντίγραφο",
+          "Το πρόγραμμα μεταγλωττίζεται αλλά προκαλείται runtime panic κατά την εκτέλεση της μεθόδου"
+        ],
+        correct: 0,
+        explain: "Η Go προσφέρει syntactic sugar: όταν καλείς pointer receiver method σε value instance που μπορεί να πάρει διεύθυνση μνήμης (addressable), παίρνει αυτόματα τον pointer για εσένα."
+      },
+      {
+        q: "Γιατί η κοινή σύμβαση λέει να κάνεις ΟΛΑ τα methods ενός struct pointer receivers, αν έστω ένα χρειάζεται να είναι;",
+        options: [
+          "Επειδή η Go απαγορεύει αυστηρά σε ένα struct να αναμειγνύει value και pointer receivers",
+          "Επειδή έτσι εξασφαλίζεται ότι κάθε method εκτελείται ταχύτερα στο runtime, ανεξαρτήτως struct",
+          "Για συνέπεια και προβλεψιμότητα, ώστε να αποφεύγεται σύγχυση για το ποια methods αλλοιώνουν το instance",
+          "Επειδή το method set του τύπου παύει να λειτουργεί αν αναμειχθούν διαφορετικοί receivers"
         ],
         correct: 2,
-        explain: "Είναι θέμα καθαρότητας/συνέπειας κώδικα, όχι τεχνικού περιορισμού — η ανάμειξη receiver types είναι τεχνικά επιτρεπτή, απλά θεωρείται κακή πρακτική."
+        explain: "Είναι θέμα καθαρότητας και συνέπειας στον σχεδιασμό του κώδικα. Τεχνικά η ανάμειξη επιτρέπεται, αλλά θεωρείται κακή πρακτική."
       }
     ]);
 
@@ -2072,63 +2485,177 @@ func main() {
     addContent(`
 <div class="eyebrow" id="@interfaces">Ενότητα 5 / 7 — Interfaces</div>
 <h1>Θεμελιώδεις Αρχές των Interfaces</h1>
-<p class="lede">Φτάσαμε στο ίσως πιο σημαντικό εργαλείο σχεδίασης της Go. Ήδη είδες ένα interface νωρίτερα — το ίδιο το <code class="inline-code">error</code> από την Ενότητα 1 — χωρίς να το ονομάσουμε ρητά ως τέτοιο. Τώρα θα καταλάβεις πλήρως τι είναι.</p>
+<p class="lede">Φτάσαμε σε ένα πολύ σημαντικό εργαλείο σχεδίασης της Go. Ήδη είδες ένα interface νωρίτερα — το ίδιο το <code class="inline-code">error</code> από την Ενότητα 1. Τώρα θα καταλάβεις πλήρως τι είναι.</p>
 
 <h2>Interface: Συμβόλαιο Συμπεριφοράς</h2>
-<p>Ένα interface στη Go ΔΕΝ περιγράφει δεδομένα (όπως ένα struct) — περιγράφει <strong>συμπεριφορά</strong>. Συγκεκριμένα, περιγράφει ένα σύνολο methods που ΚΑΠΟΙΟΣ τύπος πρέπει να έχει, χωρίς να λέει ΤΙΠΟΤΑ για το πώς αυτός ο τύπος υλοποιεί εσωτερικά αυτά τα methods.</p>
+<p>Ένα interface στη Go ΔΕΝ περιγράφει δεδομένα (όπως ένα struct) — περιγράφει <strong>συμπεριφορά</strong>. Συγκεκριμένα, περιγράφει ένα σύνολο methods που ΚΑΠΟΙΟΣ τύπος πρέπει να έχει για να ανήκει στο interface.</p>
 
 <pre><code class="lang-go">type Shape interface {
     Area() float64
+    Perimeter() float64
 }</code></pre>
 
-<p>Αυτό λέει: "οτιδήποτε θέλει να θεωρείται Shape πρέπει να έχει ένα method <code class="inline-code">Area()</code> που επιστρέφει float64". Τίποτα παραπάνω. Δεν λέει τίποτα για το ΤΙ είναι — κύκλος, τετράγωνο, τρίγωνο — μόνο τι πρέπει να ΜΠΟΡΕΙ να κάνει.</p>
+<p>Αυτό λέει: "οτιδήποτε θέλει να θεωρείται Shape πρέπει να έχει ένα method <code class="inline-code">Area()</code> και ένα method <code class="inline-code">Perimeter()</code> που επιστρέφουν <code class="inline-code">float64</code>". Τίποτα παραπάνω. Δεν λέει τίποτα για το ΤΙ είναι — κύκλος, τετράγωνο, τρίγωνο — μόνο τι πρέπει να ΜΠΟΡΕΙ να κάνει.</p>
 
-<h2>Duck Typing: "Αν περπατάει σαν πάπια..."</h2>
-<p>Η φιλοσοφία πίσω από τα interfaces της Go συχνά περιγράφεται με τη γνωστή έκφραση: <em>"If it walks like a duck and quacks like a duck, then it's a duck"</em> — αν κάτι περπατάει σαν πάπια και κάνει "quack" σαν πάπια, τότε είναι πάπια, ανεξάρτητα από το τι "ονομάζεται" επίσημα. Στη Go, αυτό σημαίνει: δεν μας νοιάζει ΤΙ ΕΙΝΑΙ ένας τύπος (το όνομά του, η "καταγωγή" του) — μας νοιάζει μόνο ΤΙ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΙ (ποια methods έχει).</p>
+<h2>Από το Μεμονωμένο Struct στην Κοινή Συμπεριφορά</h2>
+<p>Στην προηγούμενη ενότητα, είδαμε το <code class="inline-code">Rectangle</code> να έχει methods όπως <code class="inline-code">Area()</code> και <code class="inline-code">Perimeter()</code>. Αυτές οι ενέργειες όμως δεν αποτελούν αποκλειστικότητα του ορθογωνίου. Ένας κύκλος, ένα τετράγωνο ή ένα τρίγωνο έχουν επίσης εμβαδόν και περίμετρο, αλλά η εσωτερική μαθηματική λογική για τον υπολογισμό τους είναι εντελώς διαφορετική.</p>
 
-<div class="callout">
-  <span class="tag">Γιατί αυτό είναι δυνατό</span>
-  Θα το δούμε αναλυτικά στην επόμενη ενότητα, αλλά η βασική ιδέα: στη Go δεν χρειάζεται να δηλώσεις ρητά "το struct μου υλοποιεί το interface Χ". Αν απλά ΕΧΕΙ τα σωστά methods, ταιριάζει αυτόματα — αυτό είναι το duck typing στην πράξη.
-</div>
-`);
+<p>Χωρίς interface, θα έπρεπε να γράψεις ξεχωριστές functions για κάθε σχήμα (<code class="inline-code">PrintRectangleArea</code>, <code class="inline-code">PrintCircleArea</code>, κ.λπ.). Με το interface <code class="inline-code">Shape</code>, ορίζουμε ένα κοινό συμβόλαιο συμπεριφοράς για όλα.</p>
 
-    // ── Section 5.2 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow" id="@implicit">Ενότητα 5 / 7 — Interfaces</div>
-<h1>Implicit Implementation (Έμμεση Υλοποίηση)</h1>
-<p class="lede">Εδώ βρίσκεται η πιο σημαντική διαφορά ανάμεσα στα interfaces της Go και τα interfaces άλλων γλωσσών (Java, C#, TypeScript).</p>
+<h2>Πλήρες Παράδειγμα: 3 Σχήματα &amp; 1 Interface</h2>
+<p>Ας δούμε έναν ολοκληρωμένο κώδικα όπου τρία διαφορετικά structs (<code class="inline-code">Rectangle</code>, <code class="inline-code">Circle</code>, <code class="inline-code">Triangle</code>) υλοποιούν το ίδιο interface:</p>
 
-<h2>Σε άλλες γλώσσες: Ρητή Δήλωση</h2>
-<p>Σε γλώσσες όπως η Java, αν θέλεις μια κλάση να υλοποιεί ένα interface, πρέπει να το δηλώσεις ΡΗΤΑ στον κώδικα: <code class="inline-code">class Circle implements Shape { ... }</code>. Αν ξεχάσεις αυτή τη δήλωση — ακόμα κι αν η κλάση έχει όλα τα σωστά methods — ο compiler δεν θα την αναγνωρίσει ως Shape.</p>
+<pre><code class="lang-go">package main
 
-<h2>Στη Go: Αυτόματη Αναγνώριση</h2>
-<p>Στη Go, ΔΕΝ γράφεις ποτέ κάτι σαν <code class="inline-code">implements Shape</code>. Αν ένα struct έχει ΟΛΑ τα methods που απαιτεί ένα interface, ΤΑΙΡΙΑΖΕΙ αυτόματα σε αυτό το interface — χωρίς καμία ρητή δήλωση σύνδεσης.</p>
+import (
+    "fmt"
+    "math"
+)
 
-<pre><code class="lang-go">type Shape interface {
+// ── interface definition ────────────────────────────────────── ⊃
+type Shape interface {
     Area() float64
+    Perimeter() float64
+}
+
+// ── concrete data structures ────────────────────────────────── ⊃
+type Rectangle struct {
+    Width  float64
+    Height float64
 }
 
 type Circle struct {
     Radius float64
 }
 
-// Το Circle δεν δηλώνει ΠΟΥΘΕΝΑ ότι "υλοποιεί" το Shape.
-// Απλά ΕΧΕΙ ένα method Area() float64 -> αυτόματα ταιριάζει.
+type Triangle struct {
+    Base   float64
+    Height float64
+    SideA  float64
+    SideB  float64
+    SideC  float64
+}
+
+// ── rectangle methods ───────────────────────────────────────── ⊃
+// Area calculates the area of a rectangle.
+func (r Rectangle) Area() float64 {
+    return r.Width * r.Height
+}
+
+// Perimeter calculates the perimeter of a rectangle.
+func (r Rectangle) Perimeter() float64 {
+    return 2 * (r.Width + r.Height)
+}
+
+// ── circle methods ──────────────────────────────────────────── ⊃
+// Area calculates the area of a circle.
 func (c Circle) Area() float64 {
     return math.Pi * c.Radius * c.Radius
 }
 
-func PrintArea(s Shape) {
-    fmt.Println("Area:", s.Area())
+// Perimeter calculates the perimeter of a circle.
+func (c Circle) Perimeter() float64 {
+    return 2 * math.Pi * c.Radius
 }
 
+// ── triangle methods ────────────────────────────────────────── ⊃
+// Area calculates the area of a triangle using base and height.
+func (t Triangle) Area() float64 {
+    return 0.5 * t.Base * t.Height
+}
+
+// Perimeter calculates the perimeter of a triangle by summing sides.
+func (t Triangle) Perimeter() float64 {
+    return t.SideA + t.SideB + t.SideC
+}
+
+// ── polymorphic helper function ────────────────────────────── ⊃
+// PrintShapeDetails accepts ANY type that satisfies the Shape interface.
+func PrintShapeDetails(s Shape) {
+    fmt.Printf("Area: %.2f | Perimeter: %.2f\\n", s.Area(), s.Perimeter())
+}
+
+// ── main entry point ────────────────────────────────────────── ⊃
 func main() {
-    c := Circle{Radius: 5}
-    PrintArea(c) // δουλεύει! Το Circle "ταιριάζει" σε Shape αυτόματα</code></pre>
+    rect := Rectangle{Width: 4, Height: 5}
+    circ := Circle{Radius: 3}
+    tri := Triangle{Base: 6, Height: 4, SideA: 5, SideB: 5, SideC: 6}
+
+    // Print details individually without knowing the concrete type inside the helper function
+    PrintShapeDetails(rect)
+    PrintShapeDetails(circ)
+    PrintShapeDetails(tri)
+
+    // Store different concrete instances inside a single slice of interfaces!
+    shapes := []Shape{rect, circ, tri}
+
+    fmt.Println("\\nIterating through shapes slice:")
+    for _, shape := range shapes {
+        PrintShapeDetails(shape)
+    }
+}</code></pre>
+
+<h2>Η Πραγματική Αξία του Interface</h2>
+<p>Δες τι συνέβη στη function <code class="inline-code">PrintShapeDetails(s Shape)</code> και στη λούπα της <code class="inline-code">main</code>: Το πρόγραμμα εκτελεί την εύρεση εμβαδού και περιμέτρου για κάθε σχήμα <strong>χωρίς να γνωρίζει ή να ενδιαφέρεται τι σχήμα είναι εκείνη τη στιγμή</strong>!</p>
+
+<p>Το μόνο που γνωρίζει η <code class="inline-code">PrintShapeDetails</code> είναι ότι το όρισμα <code class="inline-code">s</code> σέβεται το συμβόλαιο του <code class="inline-code">Shape</code>. Αυτός είναι ο <strong>πολυμορφισμός (polymorphism)</strong> στη Go.</p>
+
+<h2>Τεχνικό Σενάριο: Σύστημα Ειδοποιήσεων (Notifier)</h2>
+<p>Ας δούμε ένα πιο πρακτικό, τεχνικό παράδειγμα εκτός μαθηματικών. Φαντάσου ένα σύστημα που στέλνει ειδοποιήσεις στους χρήστες. Η αποστολή μπορεί να γίνει μέσω Email ή SMS.</p>
+
+<pre><code class="lang-go">package main
+
+import "fmt"
+
+// ── interface definition ────────────────────────────────────── ⊃
+type Notifier interface {
+    Notify(message string) error
+}
+
+// ── concrete implementers ───────────────────────────────────── ⊃
+type EmailNotifier struct {
+    EmailAddress string
+}
+
+type SMSNotifier struct {
+    PhoneNumber string
+}
+
+// ── methods ─────────────────────────────────────────────────── ⊃
+// Notify sends an email notification.
+func (e EmailNotifier) Notify(message string) error {
+    fmt.Printf("Sending Email to %s: %s\n", e.EmailAddress, message)
+    return nil
+}
+
+// Notify sends an SMS notification.
+func (s SMSNotifier) Notify(message string) error {
+    fmt.Printf("Sending SMS to %s: %s\n", s.PhoneNumber, message)
+    return nil
+}
+
+// ── business logic ──────────────────────────────────────────── ⊃
+// SendAlert executes notification on any valid Notifier interface instance.
+func SendAlert(n Notifier, msg string) {
+    err := n.Notify(msg)
+    if err != nil {
+        fmt.Println("Failed to send alert:", err)
+    }
+}
+
+// ── main entry point ────────────────────────────────────────── ⊃
+func main() {
+    email := EmailNotifier{EmailAddress: "user@example.com"}
+    sms := SMSNotifier{PhoneNumber: "+306912345678"}
+
+    // The business logic function does not care if it is Email or SMS
+    SendAlert(email, "System backup completed!")
+    SendAlert(sms, "Critical server load warning!")
+}</code></pre>
 
 <div class="callout">
-  <span class="tag">Πλεονεκτήματα της έμμεσης υλοποίησης</span>
-  Πρώτον, <strong>Decoupling (αποσύζευξη)</strong>: το πακέτο που ορίζει το <code class="inline-code">Circle</code> δεν χρειάζεται καν να ξέρει ότι υπάρχει το interface <code class="inline-code">Shape</code> — μπορεί να γραφτεί εντελώς ανεξάρτητα, ακόμα και πριν υπάρξει το interface. Δεύτερον, <strong>Unit Testing μέσω Mock Implementations</strong>: μπορείς εύκολα να φτιάξεις ένα "ψεύτικο" (mock/fake) type που υλοποιεί το ίδιο interface, ειδικά για τεστ, χωρίς να χρειάζεται να αλλάξεις τίποτα στο πραγματικό interface ή στους πραγματικούς τύπους.
+  <span class="tag">Implicit Implementation (Έμμεση Υλοποίηση)</span>
+  Παρατήρησε ότι κανένας τύπος δεν δήλωσε ρητά (με κάποια λέξη-κλειδί) ότι συνδέεται με τα αντίστοιχα interfaces. Στη Go, η υλοποίηση είναι έμμεση: αρκεί να ορίσεις τα απαιτούμενα methods και ο compiler αναγνωρίζει αυτόματα τη συμβατότητα.
 </div>
 `);
 
@@ -2145,75 +2672,6 @@ func main() {
         explain: "Ένα interface είναι καθαρά ένα συμβόλαιο συμπεριφοράς: μια λίστα methods που πρέπει να υπάρχουν, χωρίς κανένα ενδιαφέρον για το πώς υλοποιούνται εσωτερικά."
       },
       {
-        q: "Ποια είναι η βασική διαφορά ανάμεσα στην υλοποίηση interfaces στη Go σε σχέση με γλώσσες όπως η Java;",
-        options: [
-          "Στη Go δεν χρειάζεται ρητή δήλωση (π.χ. 'implements') — αν ένα type έχει τα σωστά methods, ταιριάζει αυτόματα στο interface",
-          "Στη Go τα interfaces μπορούν να περιέχουν μόνο ακριβώς ένα method, ενώ στην Java απεριόριστα πολλά",
-          "Στη Go τα interfaces πρέπει να δηλωθούν μέσα στο ίδιο αρχείο με το struct που τα υλοποιεί, σε αντίθεση με την Java",
-          "Δεν υπάρχει καμία πρακτική διαφορά μεταξύ των δύο γλωσσών σε αυτό το θέμα"
-        ],
-        correct: 0,
-        explain: "Η Go χρησιμοποιεί implicit (έμμεση) implementation: αρκεί ένα type να έχει τα απαιτούμενα methods — καμία ρητή δήλωση σύνδεσης δεν χρειάζεται, σε αντίθεση με το ρητό 'implements' της Java."
-      }
-    ]);
-    // ── Section 5.3 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow" id="@polymorphism">Ενότητα 5 / 7 — Interfaces</div>
-<h1>Θεωρία Πολυμορφισμού στη Go</h1>
-<p class="lede">Έχεις ακούσει ίσως τον όρο "πολυμορφισμός" (polymorphism) από άλλες γλώσσες. Ας δούμε τι σημαίνει, και το κρίσιμο: πώς η προσέγγιση της Go διαφέρει θεμελιωδώς από αυτό που ίσως ξέρεις.</p>
-
-<h2>Τι είναι Πολυμορφισμός</h2>
-<p>Πολυμορφισμός σημαίνει, κυριολεκτικά, "πολλές μορφές" — η ικανότητα διαφορετικών τύπων δεδομένων να αντιμετωπίζονται ΜΕΣΩ ΜΙΑΣ κοινής διεπαφής (interface), χωρίς ο κώδικας που τους χρησιμοποιεί να χρειάζεται να ξέρει τον ΑΚΡΙΒΗ, συγκεκριμένο τύπο του καθενός. Ένα interface, πολλές δυνατές "μορφές" υλοποίησης από πίσω του.</p>
-
-<pre><code class="lang-go">type Shape interface {
-    Area() float64
-}
-
-type Circle struct{ Radius float64 }
-type Rectangle struct{ Width, Height float64 }
-
-func (c Circle) Area() float64    { return math.Pi * c.Radius * c.Radius }
-func (r Rectangle) Area() float64 { return r.Width * r.Height }
-
-func PrintArea(s Shape) {
-    fmt.Println("Area:", s.Area()) // δεν νοιάζεται ΤΙ είναι το s — Circle; Rectangle; οτιδήποτε!
-}
-
-func main() {
-    PrintArea(Circle{Radius: 5})           // "μορφή" 1
-    PrintArea(Rectangle{Width: 4, Height: 3}) // "μορφή" 2 — ΙΔΙΑ function, διαφορετική συμπεριφορά
-}</code></pre>
-
-<h2>Πώς Διαφέρει η Go: Χωρίς Κληρονομικότητα</h2>
-<p>Σε γλώσσες όπως η Java, ο πολυμορφισμός συνήθως επιτυγχάνεται μέσω κληρονομικότητας: μια υποκλάση (subclass) "επεκτείνει" (extends) μια γονική κλάση ή "υλοποιεί" (implements) ένα interface, και το <code class="inline-code">super</code> δίνει πρόσβαση στη γονική συμπεριφορά. Η Go ΔΕΝ έχει τίποτα από αυτά — ούτε <code class="inline-code">extends</code>, ούτε <code class="inline-code">super</code>, καμία ιεραρχία κλάσεων.</p>
-
-<div class="callout">
-  <span class="tag">Η ουσιαστική διαφορά</span>
-  Στη Go, ο πολυμορφισμός βασίζεται ΑΠΟΚΛΕΙΣΤΙΚΑ στη <strong>συμπεριφορά</strong> (behavior) — ποια methods έχει ένας τύπος — και ΟΧΙ σε καμία ιεραρχία "είναι ένα" (is-a). Το <code class="inline-code">Circle</code> δεν "είναι ένα" Shape με την έννοια που ένα <code class="inline-code">Dog</code> "είναι ένα" Animal σε Java — απλά ΤΥΧΑΙΝΕΙ να έχει το method που το interface Shape απαιτεί. Αυτό επιτρέπει σε ένα type να "ταιριάζει" σε ΠΟΛΛΑΠΛΑ, εντελώς άσχετα interfaces ταυτόχρονα, χωρίς κανένα πρόβλημα ιεραρχίας.
-</div>
-
-<h2>Compile-time vs Runtime Dispatch</h2>
-<p>Όταν καλείς <code class="inline-code">s.Area()</code> μέσα στην <code class="inline-code">PrintArea</code>, η Go δεν ξέρει κατά τη μεταγλώττιση (compile-time) ΠΟΙΑ ακριβώς υλοποίηση του <code class="inline-code">Area()</code> θα εκτελεστεί — Circle's ή Rectangle's; Αυτό αποφασίζεται κατά την εκτέλεση (runtime), ανάλογα με το ΤΙ πραγματικό value βρίσκεται μέσα στο interface τη δεδομένη στιγμή. Αυτό λέγεται <strong>dynamic dispatch</strong> (δυναμική αποστολή κλήσης).</p>
-
-<div class="grid2">
-  <div class="card"><h3>Compile-time γνωστό</h3><p>Ο τύπος της μεταβλητής (Shape) — ο compiler ξέρει ότι έχει method Area(), αλλά όχι ΠΟΙΑ έκδοση.</p></div>
-  <div class="card"><h3>Runtime αποφασίζεται</h3><p>Ποιο ΣΥΓΚΕΚΡΙΜΕΝΟ Area() θα τρέξει πραγματικά — εξαρτάται από το πραγματικό, "κρυμμένο" value μέσα στο interface τη δεδομένη στιγμή εκτέλεσης.</p></div>
-</div>
-`);
-
-    addQuiz([
-      {
-        q: "Πώς διαφέρει θεμελιωδώς ο πολυμορφισμός της Go από αυτόν γλωσσών όπως η Java;",
-        options: [
-          "Η Go δεν υποστηρίζει καθόλου πολυμορφισμό — μόνο simulate μερικά χαρακτηριστικά του μέσω structs",
-          "Ο πολυμορφισμός στη Go βασίζεται αποκλειστικά σε συμπεριφορά (ποια methods έχει ένας τύπος), χωρίς καμία ιεραρχία κλάσεων ή σχέση 'is-a'",
-          "Η Go απαιτεί πάντα ρητή δήλωση κληρονομικότητας με τη λέξη-κλειδί extends πριν επιτρέψει πολυμορφισμό",
-          "Στη Go ο πολυμορφισμός λειτουργεί μόνο ανάμεσα σε αριθμητικούς τύπους δεδομένων, ποτέ σε custom structs"
-        ],
-        correct: 1,
-        explain: "Χωρίς inheritance, η Go βασίζει τον πολυμορφισμό αποκλειστικά στο αν ένας τύπος ΕΧΕΙ τα σωστά methods — καθαρά behavior-based, όχι hierarchy-based."
-      },
-      {
         q: "Πότε αποφασίζεται ΠΟΙΑ συγκεκριμένη υλοποίηση ενός method θα εκτελεστεί, όταν καλείς ένα method μέσω interface;",
         options: [
           "Πάντα κατά τη μεταγλώττιση (compile-time), με βάση μόνο τον δηλωμένο τύπο της μεταβλητής interface",
@@ -2223,6 +2681,17 @@ func main() {
         ],
         correct: 1,
         explain: "Αυτό λέγεται dynamic dispatch — η επιλογή της συγκεκριμένης υλοποίησης γίνεται κατά το runtime, με βάση το πραγματικό, 'κρυμμένο' value μέσα στο interface."
+      },
+      {
+        q: "Πώς γνωρίζει η Go ότι ένα struct ικανοποιεί ένα interface;",
+        options: [
+          "Αυτόματα και έμμεσα, εφόσον το struct διαθέτει όλα τα methods που ορίζει το interface",
+          "Ρητά, χρησιμοποιώντας τη λέξη-κλειδί implements κατά τη δήλωση του struct",
+          "Δηλώνοντας το interface ως ανώνυμο πεδίο (field) μέσα στη δομή του struct",
+          "Με ειδική δήλωση τύπου (annotation) πάνω από τον ορισμό των methods"
+        ],
+        correct: 0,
+        explain: "Στη Go η υλοποίηση είναι έμμεση (implicit). Δεν υπάρχει λέξη-κλειδί implements — αν το struct διαθέτει τα κατάλληλα methods, ικανοποιεί αυτόματα το interface."
       }
     ]);
     // ── Section 5.4a ─────────────────────────────────────────────────────── ⊃
@@ -2487,11 +2956,11 @@ func main() {
     addContent(`
 <div class="eyebrow" id="@abstraction">Ενότητα 6 / 7 — Πολυμορφισμός στην Πράξη</div>
 <h1>*os.File vs io.Reader/io.Writer</h1>
-<p class="lede">Τώρα που καταλαβαίνεις πλήρως interfaces και πολυμορφισμό, ήρθε η ώρα να δούμε το πιο εντυπωσιακό, πραγματικό παράδειγμά τους σε ολόκληρη τη standard library της Go: το σύστημα I/O.</p>
+<p class="lede">Στην Ενότητα 2 διαβάσαμε αρχεία χωρίς να ρωτήσουμε γιατί ο <code class="inline-code">bufio.NewScanner</code> δέχεται και αρχείο και <code class="inline-code">os.Stdin</code>. Τώρα που ξέρεις interfaces και πολυμορφισμό, ήρθε η ώρα να απαντηθεί — και η απάντηση είναι το πιο χαρακτηριστικό παράδειγμα σχεδίασης σε ολόκληρη τη standard library.</p>
 
 <h2>Concrete Type vs Abstraction</h2>
 <p>Θυμήσου το <code class="inline-code">*os.File</code> από την Ενότητα 2 — τον τύπο που επιστρέφει το <code class="inline-code">os.Open</code>. Αυτό είναι ένας <strong>concrete type</strong> (συγκεκριμένος τύπος): αντιπροσωπεύει ΑΚΡΙΒΩΣ ένα αρχείο στο δίσκο, με όλα τα δικά του, ειδικά χαρακτηριστικά (file descriptor, δικαιώματα κ.λπ.).</p>
-<p>Το <code class="inline-code">io.Reader</code> είναι μια <strong>abstraction</strong> (αφαίρεση): δεν λέει τίποτα για ΤΙ είναι η πηγή δεδομένων — μόνο ότι "μπορεί να διαβαστεί". Ένα <code class="inline-code">*os.File</code> ΤΥΧΑΙΝΕΙ να ικανοποιεί αυτή την αφαίρεση, επειδή έχει το κατάλληλο method <code class="inline-code">Read</code> — αλλά ΔΕΝ είναι το μόνο πράγμα που μπορεί.</p>
+<p>Το <code class="inline-code">io.Reader</code> είναι μια <strong>abstraction</strong>: δεν λέει τίποτα για το τι είναι η πηγή δεδομένων — μόνο ότι μπορεί να διαβαστεί. Ένα <code class="inline-code">*os.File</code> ικανοποιεί αυτή την περιγραφή επειδή έχει το κατάλληλο method <code class="inline-code">Read</code>, αλλά δεν είναι το μόνο που την ικανοποιεί.</p>
 
 <h2>Γιατί το Concrete Type Δυσκολεύει το Testing</h2>
 <p>Φαντάσου μια function που χρειάζεται να διαβάσει δεδομένα και δηλώνεις ρητά ότι θέλει <code class="inline-code">*os.File</code>:</p>
@@ -2505,38 +2974,162 @@ func CountLines(f *os.File) (int, error) {
   <span class="tag">Το πρόβλημα</span>
   Για να τεστάρεις αυτή τη function, ΠΡΕΠΕΙ να δημιουργήσεις ένα πραγματικό αρχείο στο δίσκο — αργό, περίπλοκο, χρειάζεται cleanup μετά, και δεν δουλεύει καθόλου αν θέλεις να περάσεις δεδομένα από κάπου αλλού (π.χ. δίκτυο, ή ένα string στη μνήμη). Είναι <strong>tight coupling</strong> (στενή σύζευξη) στη ΣΥΓΚΕΚΡΙΜΕΝΗ πηγή "αρχείο στο δίσκο".
 </div>
-`);
+<br>
+<h1 id="@readwrite">Τα δύο interfaces: <code class="inline-code">io.Reader</code> και <code class="inline-code">io.Writer</code></h1>
+<p class="lede">Το πακέτο <code class="inline-code">io</code> δεν περιέχει σχεδόν καθόλου λειτουργικότητα. Περιέχει ορισμούς: τι σημαίνει "μπορώ να διαβαστώ" και τι σημαίνει "μπορώ να γραφτώ", χωρίς καμία αναφορά στο τι βρίσκεται από πίσω.</p>
 
-    // ── Section 6.2 ──────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow" id="@readwrite">Ενότητα 6 / 7 — Πολυμορφισμός στην Πράξη</div>
-<h1>Ανατομία: Read() &amp; Write()</h1>
-<p class="lede">Ας δούμε ξανά, πιο προσεκτικά, τις δύο θεμελιώδεις μεθόδους — τώρα που ξέρεις πλήρως πώς λειτουργούν τα interfaces.</p>
+<h2>io.Reader</h2>
+<pre><code class="lang-go">type Reader interface {
+    Read(p []byte) (n int, err error)
+}</code></pre>
 
-<h2>io.Reader.Read(p []byte) (n int, err error)</h2>
-<p>Η μέθοδος γεμίζει το slice <code class="inline-code">p</code> που της δίνεις με ΟΣΑ δεδομένα υπάρχουν διαθέσιμα (μέχρι το μήκος του p), και επιστρέφει πόσα bytes πραγματικά έγραψε μέσα στο p (<code class="inline-code">n</code>). Όταν δεν υπάρχουν άλλα δεδομένα, επιστρέφει το ειδικό error <code class="inline-code">io.EOF</code>.</p>
+<p>Αυτό είναι ολόκληρο το interface. Οτιδήποτε έχει method <code class="inline-code">Read</code> με ακριβώς αυτή την υπογραφή είναι <code class="inline-code">io.Reader</code> — χωρίς να το δηλώσει πουθενά, όπως είδαμε στο implicit implementation της Ενότητας 5.</p>
 
-<h2>io.Writer.Write(p []byte) (n int, err error)</h2>
-<p>Συμμετρικά: παίρνει τα bytes που βρίσκονται μέσα στο <code class="inline-code">p</code> και τα "γράφει" προς τον προορισμό, επιστρέφοντας πόσα πραγματικά γράφτηκαν.</p>
+<h2>Τι κάνει ακριβώς το Read</h2>
+<p>Δεν επιστρέφει δεδομένα. <strong>Γεμίζει ένα slice που του δίνεις εσύ</strong>, και σου λέει πόσα bytes πρόλαβε να βάλει μέσα.</p>
 
-<h2>Πώς το *os.File Υλοποιεί ΚΑΙ τα Δύο Ταυτόχρονα</h2>
-<p>Ο τύπος <code class="inline-code">*os.File</code> έχει ΚΑΙ μια μέθοδο <code class="inline-code">Read</code> ΚΑΙ μια μέθοδο <code class="inline-code">Write</code> με τις ακριβώς σωστές υπογραφές. Αυτό σημαίνει ότι <code class="inline-code">*os.File</code> ταιριάζει ΤΑΥΤΟΧΡΟΝΑ σε <code class="inline-code">io.Reader</code>, <code class="inline-code">io.Writer</code>, ΚΑΙ στο σύνθετο <code class="inline-code">io.ReadWriter</code> — χωρίς καμία επιπλέον προσπάθεια, απλά επειδή έχει τα σωστά methods.</p>
+<svg viewBox="0 0 940 300" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:960px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <defs><marker id="rw-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/></marker></defs>
+  <text x="30" y="40" font-family="Menlo, Consolas, monospace" font-size="16" fill="var(--tone-5)">r.Read(p)</text>
+  <rect x="30" y="60" width="200" height="86" rx="8" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.5"/>
+  <text x="130" y="94" text-anchor="middle" font-size="14" fill="currentColor" opacity="0.8">η πηγή</text>
+  <text x="130" y="120" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.55">αρχείο, δίκτυο, μνήμη</text>
+  <line x1="240" y1="103" x2="288" y2="103" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#rw-ar)"/>
+  <text x="264" y="92" text-anchor="middle" font-size="12" fill="var(--tone-4)">bytes</text>
+  <rect x="300" y="76" width="46" height="54" rx="6" fill="rgba(var(--tone-4-rgb),0.20)" stroke="var(--tone-4)" stroke-width="1.8"/>
+  <text x="323" y="110" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">a</text>
+  <rect x="354" y="76" width="46" height="54" rx="6" fill="rgba(var(--tone-4-rgb),0.20)" stroke="var(--tone-4)" stroke-width="1.8"/>
+  <text x="377" y="110" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">b</text>
+  <rect x="408" y="76" width="46" height="54" rx="6" fill="rgba(var(--tone-4-rgb),0.20)" stroke="var(--tone-4)" stroke-width="1.8"/>
+  <text x="431" y="110" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">c</text>
+  <rect x="462" y="76" width="46" height="54" rx="6" fill="rgba(var(--tone-4-rgb),0.20)" stroke="var(--tone-4)" stroke-width="1.8"/>
+  <text x="485" y="110" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">d</text>
+  <rect x="516" y="76" width="46" height="54" rx="6" fill="rgba(var(--tone-4-rgb),0.20)" stroke="var(--tone-4)" stroke-width="1.8"/>
+  <text x="539" y="110" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">e</text>
+  <rect x="570" y="76" width="46" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.4"/>
+  <rect x="624" y="76" width="46" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.4"/>
+  <rect x="678" y="76" width="46" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.4"/>
+  <text x="300" y="62" font-family="Menlo, Consolas, monospace" font-size="14" fill="currentColor" opacity="0.75">p := make([]byte, 8)</text>
+  <line x1="300" y1="146" x2="568" y2="146" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <line x1="300" y1="141" x2="300" y2="151" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <line x1="568" y1="141" x2="568" y2="151" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <text x="434" y="166" text-anchor="middle" font-size="14" fill="var(--tone-4)">n = 5 &#8212; μόνο αυτά είναι έγκυρα</text>
+  <line x1="574" y1="146" x2="730" y2="146" stroke="currentColor" stroke-width="1.2" opacity="0.35"/>
+  <text x="652" y="166" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.5">παλιά ή μηδενικά bytes</text>
+  <rect x="30" y="208" width="880" height="62" rx="8" fill="none" stroke="var(--tone-5)" stroke-width="1.4" opacity="0.8"/>
+  <text x="52" y="234" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-5)">data := p[:n]</text>
+  <text x="52" y="256" font-size="13" fill="currentColor" opacity="0.75">Πάντα κόβεις στο n. Το Read γεμίζει όσα προλάβει, όχι όσα χωράνε.</text>
+</svg>
 
-<pre><code class="lang-go">var r io.Reader = someFile  // OK — *os.File ταιριάζει σε io.Reader
-var w io.Writer = someFile  // OK — ΚΑΙ σε io.Writer, το ΙΔΙΟ value
-var rw io.ReadWriter = someFile // OK — ΚΑΙ στο σύνθετο interface</code></pre>
+<p>Αυτό είναι το σημείο που ξαφνιάζει: το <code class="inline-code">n</code> δεν είναι το μήκος του slice. Είναι το πόσα γράφτηκαν πραγματικά, και μπορεί να είναι λιγότερα — τα δεδομένα από το δίκτυο φτάνουν σταδιακά, ένα αρχείο μπορεί να τελειώνει στη μέση του buffer. Ό,τι υπάρχει μετά το <code class="inline-code">n</code> είναι σκουπίδια από προηγούμενη κλήση.</p>
+
+<p>Όταν δεν υπάρχουν άλλα δεδομένα, το <code class="inline-code">Read</code> επιστρέφει το ειδικό error <code class="inline-code">io.EOF</code> ("end of file"). Δεν είναι αποτυχία — είναι ο κανονικός τρόπος να δηλωθεί το τέλος, και ο κώδικας που διαβάζει πρέπει να το ξεχωρίζει από τα πραγματικά σφάλματα.</p>
 
 <div class="callout">
-  <span class="tag">Σύνδεση με προηγούμενες ενότητες</span>
-  Αυτό είναι το ΙΔΙΟ implicit implementation που είδαμε στην Ενότητα 5 — το <code class="inline-code">*os.File</code> δεν δηλώνει πουθενά "I implement io.Reader" — απλά έχει το σωστό method, και ταιριάζει αυτόματα, σε ΠΟΛΛΑΠΛΑ interfaces ταυτόχρονα.
+  <span class="tag">Γι' αυτό σπάνια καλείς Read μόνος σου</span>
+  Ο <code class="inline-code">bufio.Scanner</code> της Ενότητας 2 και το <code class="inline-code">io.ReadAll</code> χειρίζονται και το μερικό γέμισμα και το <code class="inline-code">io.EOF</code> για λογαριασμό σου. Το <code class="inline-code">Read</code> είναι το θεμέλιο, όχι το εργαλείο καθημερινής χρήσης.
+</div>
+
+<h2>io.Writer</h2>
+<pre><code class="lang-go">type Writer interface {
+    Write(p []byte) (n int, err error)
+}</code></pre>
+
+<p>Συμμετρικό: παίρνει τα bytes του <code class="inline-code">p</code> και τα στέλνει κάπου, επιστρέφοντας πόσα γράφτηκαν. Με μία διαφορά που αξίζει να ξέρεις — ένας σωστός <code class="inline-code">Writer</code> είναι υποχρεωμένος να γράψει <em>όλα</em> τα bytes ή να επιστρέψει error. Το μερικό γράψιμο χωρίς error δεν επιτρέπεται, ενώ το μερικό διάβασμα είναι φυσιολογικό.</p>
+
+<h2>Ένα type, πολλά interfaces ταυτόχρονα</h2>
+<p>Το <code class="inline-code">*os.File</code> έχει και <code class="inline-code">Read</code> και <code class="inline-code">Write</code>. Άρα ταιριάζει και στα δύο, χωρίς να έχει γραφτεί τίποτα επιπλέον γι' αυτό.</p>
+
+<pre><code class="lang-go">var r io.Reader = someFile // OK - it has Read
+var w io.Writer = someFile // OK - the SAME value, it also has Write</code></pre>
+
+<h2>Σύνθετα interfaces</h2>
+<p>Η standard library ενώνει τα μικρά interfaces σε μεγαλύτερα με embedding — το ίδιο interface composition που είδαμε στην Ενότητα 5:</p>
+
+<pre><code class="lang-go">type ReadWriter interface {
+    Reader
+    Writer
+}
+
+type ReadCloser interface {
+    Reader
+    Closer
+}</code></pre>
+
+<p>Το <code class="inline-code">io.ReadWriter</code> δεν προσθέτει τίποτα καινούριο: απαιτεί απλώς και τα δύο methods. Και επειδή το <code class="inline-code">*os.File</code> τα έχει, ταιριάζει και εκεί.</p>
+
+<div class="callout">
+  <span class="tag">Μικρά interfaces, μεγάλη εμβέλεια</span>
+  Η αιτία που δεκάδες εντελώς άσχετα types της standard library ταιριάζουν στο <code class="inline-code">io.Reader</code> είναι ακριβώς ότι ζητάει <strong>ένα</strong> method. Όσο περισσότερα methods απαιτεί ένα interface, τόσο λιγότερα types το ικανοποιούν — και τόσο λιγότερο χρήσιμο γίνεται.
 </div>
 `);
 
+    addQuiz([
+      {
+        q: "Τι κρατάει η μεταβλητή data μετά την εκτέλεση;",
+        lang: "go",
+        code:
+          `buf := make([]byte, 1024)
+n, err := r.Read(buf)
+if err != nil && err != io.EOF {
+    return err
+}
+data := buf[:n]`,
+        options: [
+          "Μόνο τα bytes που διαβάστηκαν πραγματικά σε αυτή την κλήση",
+          "Και τα 1024 bytes του buf, αφού το Read γεμίζει πάντα ολόκληρο το slice που του δίνεις",
+          "Ένα αντίγραφο του buf, ώστε η επόμενη κλήση Read να μην το αλλοιώσει",
+          "Όλο το περιεχόμενο της πηγής, ανεξάρτητα από το μέγεθος του buf"
+        ],
+        correct: 0,
+        explain: "Το n είναι το πόσα bytes γράφτηκαν στο buf, και μπορεί να είναι οτιδήποτε από 0 μέχρι 1024. Το buf[:n] κόβει ακριβώς εκεί. Η υπόθεση ότι το Read γεμίζει πάντα το slice είναι η πιο συχνή αιτία για δεδομένα με σκουπίδια στο τέλος."
+      },
+      {
+        q: "Γιατί το io.Reader ορίζει ένα μόνο method;",
+        options: [
+          "Επειδή έτσι το ικανοποιούν πολύ περισσότερα types, χωρίς κανένα να χρειάζεται να αλλάξει",
+          "Επειδή ο compiler της Go δεν επιτρέπει σε interface της standard library να έχει πάνω από ένα method",
+          "Επειδή το Read είναι η μοναδική πράξη που μπορεί να γίνει πάνω σε δεδομένα εισόδου",
+          "Επειδή τα interfaces με πολλά methods είναι πιο αργά κατά την εκτέλεση"
+        ],
+        correct: 0,
+        explain: "Κάθε επιπλέον απαίτηση αποκλείει types. Με ένα μόνο method, ένα αρχείο, μια σύνδεση δικτύου και ένα string στη μνήμη ταιριάζουν όλα. Δεν υπάρχει κόστος ταχύτητας εδώ — το κόστος είναι σχεδιαστικό, και το πληρώνεις σε ευελιξία."
+      }
+    ]);
     // ── Section 6.3 ──────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@piping">Ενότητα 6 / 7 — Πολυμορφισμός στην Πράξη</div>
 <h1>Πραγματικός Πολυμορφισμός: Piping Data Anywhere</h1>
-<p class="lede">Εδώ είναι το πιο εντυπωσιακό κομμάτι: η ΙΔΙΑ ακριβώς function επεξεργασίας δεδομένων μπορεί να δουλέψει ΑΔΙΑΦΟΡΑ πάνω σε εντελώς διαφορετικές πηγές, αρκεί να δηλώνει ότι δέχεται <code class="inline-code">io.Reader</code> αντί για κάποιον συγκεκριμένο τύπο.</p>
+<p class="lede">Η ίδια ακριβώς function δουλεύει πάνω σε εντελώς διαφορετικές πηγές, αρκεί να δηλώνει ότι δέχεται <code class="inline-code">io.Reader</code> αντί για κάποιον συγκεκριμένο τύπο.</p>
+
+<svg viewBox="0 0 920 360" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:940px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <defs><marker id="pl-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/></marker>
+  <marker id="pl-ar5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-5)"/></marker></defs>
+  <rect x="20" y="30" width="250" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.3" opacity="0.55"/>
+  <text x="40" y="55" font-family="Menlo, Consolas, monospace" font-size="15" fill="currentColor">*os.File</text>
+  <text x="40" y="75" font-size="12" fill="currentColor" opacity="0.55">αρχείο στον δίσκο</text>
+  <line x1="278" y1="59" x2="398" y2="180" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.8" marker-end="url(#pl-ar)"/>
+  <rect x="20" y="110" width="250" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.3" opacity="0.55"/>
+  <text x="40" y="135" font-family="Menlo, Consolas, monospace" font-size="15" fill="currentColor">net.Conn</text>
+  <text x="40" y="155" font-size="12" fill="currentColor" opacity="0.55">δεδομένα από δίκτυο</text>
+  <line x1="278" y1="139" x2="398" y2="180" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.8" marker-end="url(#pl-ar)"/>
+  <rect x="20" y="190" width="250" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.3" opacity="0.55"/>
+  <text x="40" y="215" font-family="Menlo, Consolas, monospace" font-size="15" fill="currentColor">*strings.Reader</text>
+  <text x="40" y="235" font-size="12" fill="currentColor" opacity="0.55">string στη μνήμη</text>
+  <line x1="278" y1="219" x2="398" y2="180" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.8" marker-end="url(#pl-ar)"/>
+  <rect x="20" y="270" width="250" height="58" rx="8" fill="none" stroke="currentColor" stroke-width="1.3" opacity="0.55"/>
+  <text x="40" y="295" font-family="Menlo, Consolas, monospace" font-size="15" fill="currentColor">os.Stdin</text>
+  <text x="40" y="315" font-size="12" fill="currentColor" opacity="0.55">ό,τι πληκτρολογείς</text>
+  <line x1="278" y1="299" x2="398" y2="180" stroke="var(--tone-4)" stroke-width="1.8" opacity="0.8" marker-end="url(#pl-ar)"/>
+  <text x="330" y="168" text-anchor="middle" font-size="13" fill="var(--tone-4)">io.Reader</text>
+  <rect x="408" y="140" width="240" height="80" rx="10" fill="rgba(var(--tone-5-rgb),0.12)" stroke="var(--tone-5)" stroke-width="2"/>
+  <text x="528" y="172" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-5)">CountLines(r io.Reader)</text>
+  <text x="528" y="196" text-anchor="middle" font-size="12" fill="currentColor" opacity="0.7">μία function, καμία αλλαγή</text>
+  <line x1="656" y1="180" x2="720" y2="180" stroke="var(--tone-5)" stroke-width="2" marker-end="url(#pl-ar5)"/>
+  <rect x="728" y="150" width="170" height="60" rx="8" fill="none" stroke="currentColor" stroke-width="1.3" opacity="0.55"/>
+  <text x="813" y="186" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="18" fill="currentColor">int</text>
+  <text x="460" y="330" font-size="13" fill="currentColor" opacity="0.6">Η function δεν ρωτάει ποτέ «τι είσαι;» — μόνο «ξέρεις να διαβάζεσαι;»</text>
+</svg>
 
 <div class="grid2">
   <div class="card"><h3>*os.File</h3><p>Αρχείο στο δίσκο.</p></div>
@@ -2578,6 +3171,13 @@ io.Copy(dstFile, srcFile) // αρχείο -> αρχείο
 var buf bytes.Buffer
 io.Copy(&buf, srcFile) // αρχείο -> μνήμη (buffer)
 io.Copy(os.Stdout, srcFile) // αρχείο -> τερματικό</code></pre>
+
+<h2>Δύο ακόμα functions που θα συναντήσεις</h2>
+
+<pre><code class="lang-go">data, err := io.ReadAll(src)        // reads everything into []byte
+limited := io.LimitReader(src, 100) // a Reader that stops after 100 bytes</code></pre>
+
+<p>Το <code class="inline-code">io.ReadAll</code> είναι το <code class="inline-code">os.ReadFile</code> της Ενότητας 2, χωρίς το αρχείο: δέχεται οποιονδήποτε Reader. Το <code class="inline-code">io.LimitReader</code> είναι ενδιαφέρον για διαφορετικό λόγο — παίρνει έναν Reader και επιστρέφει έναν άλλο Reader. Ένα interface μπορεί να τυλίγει ένα άλλο value του ίδιου interface, και ο κώδικας που το χρησιμοποιεί δεν καταλαβαίνει τη διαφορά.</p>
 `);
 
     addQuiz([
@@ -2675,7 +3275,7 @@ func main() {
           { id: "blank1", answer: "Reader" },
           { id: "blank2", answer: "NewReader" }
         ],
-        explain: "Δηλώνοντας το όρισμα ως io.Reader (αφαίρεση) αντί για *os.File (concrete type), η function δουλεύει πολυμορφικά με οποιαδήποτε πηγή — αρχείο ή strings.NewReader για testing."
+        explain: "Δηλώνοντας το όρισμα ως io.Reader (abstraction) αντί για *os.File (concrete type), η function δουλεύει πολυμορφικά με οποιαδήποτε πηγή — αρχείο ή strings.NewReader για testing."
       }
     ], {
       note: "Συμπλήρωσε ώστε η CountLines να δουλεύει πολυμορφικά με αρχείο ΚΑΙ με string."
@@ -3654,7 +4254,7 @@ func NewServer(opts ...Option) *Server {
           { id: "blank1", answer: "Server" },
           { id: "blank2", answer: "opt" }
         ],
-        explain: "Ο τύπος Option είναι func(*Server) -- μια function που δέχεται δείκτη σε Server. Στο loop, κάθε option (opt) καλείται με το s ως όρισμα, εφαρμόζοντας την τροποποίησή του."
+        explain: "Ο τύπος Option είναι func(*Server) -- μια function που δέχεται pointer σε Server. Στο loop, κάθε option (opt) καλείται με το s ως όρισμα, εφαρμόζοντας την τροποποίησή του."
       }
     ], {
       note: "Συμπλήρωσε το Functional Options Pattern."
@@ -3817,7 +4417,7 @@ func main() {
           "Επειδή το io.Reader περιέχει ενσωματωμένη υποστήριξη assertions, ενώ το *os.File όχι"
         ],
         correct: 1,
-        explain: "Η αφαίρεση (io.Reader) αποσυνδέει τη function από τη συγκεκριμένη πηγή δεδομένων — στα tests μπορείς να χρησιμοποιήσεις γρήγορες, in-memory εναλλακτικές αντί για πραγματικά αρχεία."
+        explain: "Η abstraction (io.Reader) αποσυνδέει τη function από τη συγκεκριμένη πηγή δεδομένων — στα tests μπορείς να χρησιμοποιήσεις γρήγορες, in-memory εναλλακτικές αντί για πραγματικά αρχεία."
       },
       {
         q: "Ποιο πρόβλημα σχεδίασης λύνουν ΚΑΙ το Builder Pattern ΚΑΙ το Functional Options Pattern, το καθένα με διαφορετικό τρόπο;",
