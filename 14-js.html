@@ -1278,78 +1278,114 @@ console.log(profile.address.city)   // "Athens"   — fully independent
   <tr><td style="padding:6px">Θέλεις έλεγχο στο τι αντιγράφεται</td><td style="padding:6px">δική σου recursive</td></tr>
 </table>
 `);
-
     addContent(`
 <div class="eyebrow" id="@immutability">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
-<h1>Πραγματικό κλείδωμα και μη τροποποιητικός κώδικας</h1>
-<p class="lede">Είδαμε ότι το <code>const</code> δεν προστατεύει το περιεχόμενο. Εδώ θα δεις τι πραγματικά το προστατεύει, και γιατί συνήθως υπάρχει καλύτερη λύση από το κλείδωμα.</p>
+<h1>Πραγματικό κλείδωμα και αμετάβλητος κώδικας</h1>
+<p class="lede">Το <code>const</code> προστατεύει τη μεταβλητή, όχι το περιεχόμενό της. Εδώ θα δούμε πώς κλειδώνουμε πραγματικά τα δεδομένα, αλλά και γιατί η καλύτερη άμυνα είναι συχνά να μην τα τροποποιούμε εξ αρχής.</p>
 
 <h2>Object.freeze</h2>
+<p>Για να αποτρέψεις κάθε αλλαγή σε ένα αντικείμενο, χρησιμοποιείς το <code>Object.freeze</code>:</p>
+
 <pre><code class="lang-js">const config = Object.freeze({ retries: 3, timeout: 5000 })
 
-config.retries = 10        // silently ignored in normal mode
-delete config.timeout      // silently ignored
+config.retries = 10        // Fails silently in normal mode
+delete config.timeout      // Fails silently in normal mode
 console.log(config.retries) // 3
 
 Object.isFrozen(config)    // true
 </code></pre>
 
 <div class="callout">
+
   <span class="tag">Use strict</span>
-  Το "use strict" (αυστηρή λειτουργία) είναι μια οδηγία (literal expression) που προστέθηκε στην ECMAScript 5 (ES5) και αναγκάζει τη JavaScript να εκτελείται κάτω από ένα πιο αυστηρό σύνολο κανόνων. Όταν το ενεργοποιείς, αλλάζει η συμπεριφορά της γλώσσας: σφάλματα που πριν η JavaScript τα "αγνοούσε στα κρυφά" (silently ignored), τώρα πετάνε κανονικό σφάλμα (throw error) και σταματούν την εκτέλεση του κώδικα. Χωρίς <code>"use strict"</code>, μια ανάθεση σε παγωμένο object <em>δεν πετάει σφάλμα</em>.
+
+  Το "use strict" (αυστηρή λειτουργία) είναι μια οδηγία (literal expression) που προστέθηκε στην ECMAScript 5 (ES5) και αναγκάζει τη JavaScript να εκτελείται κάτω από ένα πιο αυστηρό σύνολο κανόνων. Όταν το ενεργοποιείς, αλλάζει η συμπεριφορά της γλώσσας: σφάλματα που πριν η JavaScript τα "αγνοούσε στα κρυφά" (silently ignored), τώρα πετάνε κανονικό σφάλμα (throw error) και σταματούν την εκτέλεση του κώδικα. Χωρίς <code>"use strict"</code>, μια ανάθεση σε παγωμένο object <em>δεν πετάει σφάλμα — ούτε αλλάζει την τιμή.</em>.
+
 </div>
 
-<p>Και όπως όλα σε αυτή την ενότητα, το <code>Object.freeze</code> δουλεύει μόνο σε ένα επίπεδο:</p>
+<p>Όμως, όπως όλα σε αυτή την ενότητα, το πάγωμα είναι <strong>ρηχό (shallow)</strong>. Εφαρμόζεται μόνο στο πρώτο επίπεδο του αντικειμένου:</p>
 
 <pre><code class="lang-js">const config = Object.freeze({ limits: { maxUsers: 10 } })
 
-config.limits.maxUsers = 999      // works — the inner object was never frozen
+config.limits.maxUsers = 999      // Works — the inner object was never frozen
 console.log(config.limits.maxUsers) // 999
 </code></pre>
 
-<p>Το πάγωμα σε βάθος είναι πάλι recursion πάνω στην ίδια δομή, με τη διαφορά ότι δεν χτίζεις τίποτα καινούργιο — απλώς επισκέπτεσαι τα πάντα και κλειδώνεις.</p>
+<p>Για να παγώσεις το αντικείμενο σε βάθος (deep freeze), χρειάζεσαι και πάλι αναδρομή (recursion): πρέπει να διασχίσεις τη δομή και να εφαρμόσεις το κλείδωμα σε κάθε φωλιασμένο αντικείμενο.</p>
 
-<h2>Η άλλη απάντηση: μην τροποποιείς</h2>
-<p>Το κλείδωμα λύνει το πρόβλημα αμυντικά. Η εναλλακτική είναι να μην δημιουργείς το πρόβλημα: αντί να αλλάζεις μια δομή, να παράγεις καινούργια. Οι περισσότερες σύγχρονες βιβλιοθήκες, και ο τρόπος που χτίζουμε UI στην Ενότητα 8, βασίζονται ακριβώς σε αυτό.</p>
+<h2>Η εναλλακτική προσέγγιση: Μην τροποποιείς</h2>
+<p>Το κλείδωμα λύνει το πρόβλημα αμυντικά. Η καλύτερη πρακτική είναι να μην δημιουργείς καν το πρόβλημα: αντί να αλλάζεις (mutate) την υπάρχουσα δομή, <strong>να παράγεις μια καινούργια</strong>. Σε αυτήν τη φιλοσοφία (immutability) βασίζονται οι περισσότερες σύγχρονες βιβλιοθήκες, καθώς και ο τρόπος που χτίζουμε UI στην Ενότητα 8.</p>
 
-<pre><code class="lang-js">// mutating: changes what the caller gave us
+<pre><code class="lang-js">// Mutating: changes the array we passed
 function addItemBad(cart, item) {
   cart.push(item)
   return cart
 }
 
-// non-mutating: leaves the input alone, returns something new
+// Non-mutating: leaves the original array intact, returns a new one
 function addItem(cart, item) {
   return [...cart, item]
 }
 
 const cart = ["bread"]
 const bigger = addItem(cart, "milk")
-console.log(cart)     // ["bread"]          — untouched
+console.log(cart)     // ["bread"]          — Untouched!
 console.log(bigger)   // ["bread", "milk"]
 </code></pre>
 
-<h2 id="@mutate-methods">Ποια array methods τροποποιούν και ποια όχι</h2>
-<p>Αυτός ο πίνακας αξίζει να τον ξέρεις απ' έξω, γιατί τα ονόματα δεν βοηθούν καθόλου στο να μαντέψεις.</p>
+<h2 id="@mutate-methods">Ποια array methods τροποποιούν και ποια όχι;</h2>
+<p>Αυτός ο διαχωρισμός πρέπει να σου γίνει δεύτερη φύση, καθώς τα ονόματα των μεθόδων δεν προδίδουν πάντα τη συμπεριφορά τους.</p>
 
 <div class="grid2">
-  <div class="card"><h3>Τροποποιούν το αρχικό</h3>
-    <p><code>push</code>, <code>pop</code>, <code>shift</code>, <code>unshift</code>, <code>splice</code>, <code>sort</code>, <code>reverse</code>, <code>fill</code></p></div>
-  <div class="card"><h3>Επιστρέφουν καινούργιο</h3>
-    <p><code>slice</code>, <code>concat</code>, <code>map</code>, <code>filter</code>, <code>flat</code>, <code>toSorted</code>, <code>toReversed</code>, <code>toSpliced</code>, <code>with</code></p></div>
+  <div class="card">
+    <h3>Τροποποιούν το αρχικό (mutating)</h3>
+    <table class="glossary-table">
+      <tr><td class="gt-term"><code>push</code></td><td class="gt-def">προσθέτει στο τέλος· επιστρέφει το νέο μήκος</td></tr>
+      <tr><td class="gt-term"><code>pop</code></td><td class="gt-def">αφαιρεί το τελευταίο και το επιστρέφει</td></tr>
+      <tr><td class="gt-term"><code>shift</code></td><td class="gt-def">αφαιρεί το πρώτο και το επιστρέφει</td></tr>
+      <tr><td class="gt-term"><code>unshift</code></td><td class="gt-def">προσθέτει στην αρχή· επιστρέφει το νέο μήκος</td></tr>
+      <tr><td class="gt-term"><code>splice</code></td><td class="gt-def">αφαιρεί ή/και εισάγει σε δοσμένη θέση· επιστρέφει όσα αφαιρέθηκαν</td></tr>
+      <tr><td class="gt-term"><code>sort</code></td><td class="gt-def">ταξινομεί επιτόπου· χωρίς comparator συγκρίνει ως strings</td></tr>
+      <tr><td class="gt-term"><code>reverse</code></td><td class="gt-def">αντιστρέφει τη σειρά επιτόπου</td></tr>
+      <tr><td class="gt-term"><code>fill</code></td><td class="gt-def">γεμίζει ένα εύρος θέσεων με την ίδια τιμή</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Επιστρέφουν καινούργιο (non-mutating)</h3>
+    <table class="glossary-table">
+      <tr><td class="gt-term"><code>slice</code></td><td class="gt-def">αντίγραφο ενός τμήματος, χωρίς το τέλος</td></tr>
+      <tr><td class="gt-term"><code>concat</code></td><td class="gt-def">ενώνει arrays ή τιμές σε ένα νέο array</td></tr>
+      <tr><td class="gt-term"><code>map</code></td><td class="gt-def">νέο array με μετασχηματισμένο κάθε στοιχείο· ίδιο μήκος</td></tr>
+      <tr><td class="gt-term"><code>filter</code></td><td class="gt-def">νέο array με όσα στοιχεία περνούν τον έλεγχο</td></tr>
+      <tr><td class="gt-term"><code>flat</code></td><td class="gt-def">ξεδιπλώνει φωλιασμένα arrays· βάθος 1 αν δεν πεις άλλο</td></tr>
+      <tr><td class="gt-term"><code>toSorted</code></td><td class="gt-def">ταξινομημένο αντίγραφο· το αρχικό μένει ως έχει</td></tr>
+      <tr><td class="gt-term"><code>toReversed</code></td><td class="gt-def">αντεστραμμένο αντίγραφο</td></tr>
+      <tr><td class="gt-term"><code>toSpliced</code></td><td class="gt-def">αντίγραφο με την splice ήδη εφαρμοσμένη</td></tr>
+      <tr><td class="gt-term"><code>with</code></td><td class="gt-def">αντίγραφο με ένα στοιχείο αλλαγμένο σε δοσμένο index</td></tr>
+    </table>
+  </div>
 </div>
 
 <pre><code class="lang-js">const scores = [3, 1, 2]
 
-const sortedWrong = scores.sort()      // scores itself is now [1, 2, 3]
-const sortedRight = scores.toSorted()  // scores stays as it was
+const sortedWrong = scores.sort()      // Warning: scores itself is now mutated to [1, 2, 3]
+const sortedRight = scores.toSorted()  // scores remains untouched [3, 1, 2]
 </code></pre>
 
-<p>Οι τέσσερις μέθοδοι της δεξιάς στήλης με πρόθεμα <code>to</code> είναι πρόσφατη προσθήκη (2023) και υπάρχουν ακριβώς επειδή το ζευγάρι <code>sort</code>/<code>reverse</code> προκαλούσε αυτό το bug επί δεκαετίες. Αν πρέπει να υποστηρίξεις παλιότερα περιβάλλοντα, γράφεις <code>[...scores].sort()</code> και έχεις το ίδιο αποτέλεσμα.</p>
+<div class="callout">
+  <span class="tag">Οι τέσσερις τελευταίες είναι καινούργιες</span>
+  <p>Τα <code>toSorted</code>, <code>toReversed</code>, <code>toSpliced</code> και <code>with</code> μπήκαν στη γλώσσα το 2023. Δουλεύουν σε σύγχρονους browsers και σε Node 20 και πάνω, αλλά σε παλιότερο περιβάλλον δεν υπάρχουν καθόλου. Το ισοδύναμό τους είναι πάντα ένα αντίγραφο πρώτα: <code>[...arr].sort()</code> κάνει ό,τι και το <code>arr.toSorted()</code>.</p>
+</div>
+
+<div class="callout">
+  <span class="tag">Το sort δεν συγκρίνει αριθμούς</span>
+  <p>Χωρίς comparator, το <code>sort</code> μετατρέπει τα στοιχεία σε strings και τα συγκρίνει αλφαβητικά. Γι' αυτό το <code>[10, 9, 100].sort()</code> δίνει <code>[10, 100, 9]</code>. Για αριθμούς χρειάζεται πάντα <code>sort((a, b) =&gt; a - b)</code>.</p>
+</div>
 
 <div class="callout good">
-  <span class="tag">Κανόνας εργασίας</span>
-  Μια function που δέχεται δεδομένα και τα τροποποιεί πρέπει να το λέει στο όνομά της. Αν το όνομα ακούγεται σαν ερώτηση ή σαν υπολογισμός, δεν επιτρέπεται να αλλάζει τίποτα. Αυτός ο κανόνας γλιτώνει περισσότερα bugs από κάθε τεχνική αυτής της ενότητας.
+  <span class="tag">Χρυσός Κανόνας</span>
+  Μια συνάρτηση που δέχεται δεδομένα και τα τροποποιεί, <strong>πρέπει να το δηλώνει ξεκάθαρα στο όνομά της</strong>. Αν το όνομά της μοιάζει με ερώτηση (π.χ. <code>hasItem</code>) ή με απλό υπολογισμό (π.χ. <code>getTotal</code>), απαγορεύεται να αλλάζει την κατάσταση των δεδομένων. Αυτός ο κανόνας θα σε γλιτώσει από αμέτρητα bugs.
 </div>
 `);
 
