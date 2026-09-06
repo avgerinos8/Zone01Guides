@@ -600,11 +600,16 @@ func validateUsername(name string) error {
 
 s := "Hello, Zone01!"
 
+// Does string s contain "Zone01"?
 strings.Contains(s, "Zone01")    // true
+// Does string s start with "Hello"?
 strings.HasPrefix(s, "Hello")    // true
+// Does string s end with "!"?
 strings.HasSuffix(s, "!")        // true
-strings.Index(s, "Zone01")       // 7 (θέση έναρξης, -1 αν δεν βρεθεί)
-strings.Count(s, "l")            // 3 (πόσες φορές εμφανίζεται)</code></pre>
+// Return the int index of the first instance of "Zone01" in s string (-1 if not found)
+strings.Index(s, "Zone01")       // 7 
+// Return the int count of instances of "l" in s string
+strings.Count(s, "l")            // 3</code></pre>
 
 <div class="callout">
   <span class="tag">Σημείωση</span>
@@ -616,10 +621,15 @@ strings.Count(s, "l")            // 3 (πόσες φορές εμφανίζετ�
 
 <pre><code class="lang-go">s := "  Hello, World!  "
 
+// Transform the string s to lowercase
 strings.ToLower(s)              // "  hello, world!  "
+// Transform the string s to uppercase
 strings.ToUpper(s)              // "  HELLO, WORLD!  "
+// Removes all leading and trailing whitespace from a string s
 strings.TrimSpace(s)            // "Hello, World!" (αφαιρεί κενά αρχή/τέλος)
+// Removes all trailing/leading " !" from a string s
 strings.Trim(s, " !")           // αφαιρεί συγκεκριμένους χαρακτήρες αρχή/τέλος
+// Replaces all instances of "o" with "0" in a string s
 strings.ReplaceAll(s, "o", "0") // "  Hell0, W0rld!  "</code></pre>
 
 <div class="callout">
@@ -631,12 +641,15 @@ strings.ReplaceAll(s, "o", "0") // "  Hell0, W0rld!  "</code></pre>
 <p>Το να "σπάσεις" ένα string σε κομμάτια, ή να ενώσεις πολλά κομμάτια σε ένα, είναι εξαιρετικά συχνή ανάγκη — π.χ. διάβασμα CSV γραμμών, ή δεδομένα χωρισμένα με κόμμα.</p>
 
 <pre><code class="lang-go">csv := "apple,banana,cherry"
+// Split a string s into substrings separated by sep and return the result as a slice
 parts := strings.Split(csv, ",")   // []string{"apple", "banana", "cherry"}
 
-sentence := "the   quick  brown fox"
+sentence := "the   quick  brown fox"S
+// Split a string into a slice of substrings based on whitespace, returning a []string
 words := strings.Fields(sentence) // []string{"the","quick","brown","fox"}
                                     // (Fields αγνοεί πολλαπλά/ανομοιόμορφα κενά!)
 
+// Join a slice of strings s with a separator sep and return the resulting string
 joined := strings.Join(parts, " - ") // "apple - banana - cherry"</code></pre>
 
 <div class="callout">
@@ -676,7 +689,7 @@ joined := strings.Join(parts, " - ") // "apple - banana - cherry"</code></pre>
 <h1><code class="inline-code">strings.Builder</code> &amp; Συγκρίσεις</h1>
 
 <h2>Το πρόβλημα με την επαναλαμβανόμενη συνένωση</h2>
-<p>Θυμήσου: τα strings είναι <a href="https://guides01.devs.surf/01-go-01.html#@immutability">immutable</a>. Αυτό σημαίνει ότι κάθε φορά που κάνεις <code class="inline-code">s = s + "κάτι"</code> μέσα σε ένα loop, η Go δημιουργεί ΚΑΙΝΟΥΡΙΟ string από την αρχή — αντιγράφοντας ό,τι υπήρχε ήδη, συν το νέο κομμάτι. Σε ένα loop με χιλιάδες επαναλήψεις, αυτό γίνεται εξαιρετικά αναποδοτικό (πολλές περιττές αντιγραφές μνήμης).</p>
+<p>Θυμήσου: τα strings είναι <a href="https://guides01.devs.surf/01-go-01.html#@immutability">immutable</a>. Αυτό σημαίνει ότι κάθε φορά που κάνεις <code class="inline-code">s = s + "κάτι"</code> μέσα σε ένα loop, η Go δημιουργεί ΚΑΙΝΟΥΡΙΟ string από την αρχή — αντιγράφοντας ό,τι υπήρχε ήδη, συν το νέο κομμάτι. Σε ένα loop με χιλιάδες επαναλήψεις, αυτό γίνεται εξαιρετικά ΜΗ αποδοτικό (πολλές περιττές αντιγραφές μνήμης).</p>
 
 <pre><code class="lang-go">// Αναποδοτικό: κάθε += δημιουργεί ολόκληρο νέο string
 result := ""
@@ -692,6 +705,50 @@ for i := 0; i < 1000; i++ {
     b.WriteString("x") // προσθέτει στο εσωτερικό buffer, όχι νέο string κάθε φορά
 }
 result := b.String() // μόνο ΤΩΡΑ παίρνουμε το τελικό string</code></pre>
+
+<svg viewBox="0 0 960 330" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:940px; height:auto; display:block; margin:18px auto; color:inherit;">
+  <defs><marker id="sb-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/></marker></defs>
+  <rect x="20" y="64" width="290" height="196" rx="10" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.4"/>
+  <text x="165" y="50" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.6">1 — δήλωση</text>
+  <text x="165" y="98" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-5)">var b strings.Builder</text>
+  <text x="165" y="242" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.6">άδειο buffer, καμία δέσμευση</text>
+  <rect x="335" y="64" width="290" height="196" rx="10" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.4"/>
+  <text x="480" y="50" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.6">2 — μέσα στο loop</text>
+  <text x="480" y="98" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-5)">b.WriteString(&quot;x&quot;)</text>
+  <text x="480" y="242" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.6">γράφει στο ίδιο buffer</text>
+  <rect x="650" y="64" width="290" height="196" rx="10" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.4"/>
+  <text x="795" y="50" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.6">3 — μία φορά στο τέλος</text>
+  <text x="795" y="98" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-5)">s := b.String()</text>
+  <text x="795" y="242" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.6">τελική διαμόρφωση, επιστροφή σε string</text>
+  <rect x="47" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="77" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="107" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="137" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="167" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="197" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="227" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="257" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="362" y="120" width="26" height="34" rx="5" fill="rgba(var(--tone-4-rgb),0.18)" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <text x="375" y="144" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">x</text>
+  <rect x="392" y="120" width="26" height="34" rx="5" fill="rgba(var(--tone-4-rgb),0.18)" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <text x="405" y="144" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">x</text>
+  <rect x="422" y="120" width="26" height="34" rx="5" fill="rgba(var(--tone-4-rgb),0.18)" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <text x="435" y="144" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">x</text>
+  <rect x="452" y="120" width="26" height="34" rx="5" fill="rgba(var(--tone-4-rgb),0.18)" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <text x="465" y="144" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">x</text>
+  <rect x="482" y="120" width="26" height="34" rx="5" fill="rgba(var(--tone-4-rgb),0.18)" stroke="var(--tone-4)" stroke-width="1.6"/>
+  <text x="495" y="144" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-4)">x</text>
+  <rect x="512" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="542" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <rect x="572" y="120" width="26" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.35"/>
+  <path d="M 495 172 C 482 208 362 208 375 176" fill="none" stroke="var(--tone-4)" stroke-width="1.8" marker-end="url(#sb-ar)"/>
+  <text x="480" y="206" text-anchor="middle" font-size="13" fill="var(--tone-4)">επανάληψη — χωρίς νέο string</text>
+  <rect x="677" y="120" width="236" height="34" rx="6" fill="rgba(var(--tone-5-rgb),0.16)" stroke="var(--tone-5)" stroke-width="1.8"/>
+  <text x="795" y="144" text-anchor="middle" font-family="Menlo, Consolas, monospace" font-size="15" fill="var(--tone-5)">&quot;xxxxx…&quot;</text>
+  <line x1="315" y1="137" x2="330" y2="137" stroke="currentColor" stroke-width="1.6" opacity="0.5" marker-end="url(#sb-ar)"/>
+  <line x1="630" y1="137" x2="645" y2="137" stroke="currentColor" stroke-width="1.6" opacity="0.5" marker-end="url(#sb-ar)"/>
+  <text x="20" y="300" font-size="13" fill="currentColor" opacity="0.6">Οι διακεκομμένες θέσεις είναι δεσμευμένος χώρος που δεν έχει γραφτεί ακόμα — το buffer μεγαλώνει μόνο του όταν γεμίσει.</text>
+</svg>
 
 <div class="callout">
   <span class="tag">Πότε να το χρησιμοποιήσεις</span>
@@ -770,20 +827,39 @@ s3 := strconv.FormatFloat(3.14159, 'f', 2, 64) // "3.14" (2 δεκαδικά ψ�
   Παρατήρησε ότι η κατεύθυνση αριθμός→string ΔΕΝ επιστρέφει error — δεν υπάρχει τρόπος αυτή η μετατροπή να αποτύχει (κάθε αριθμός έχει έγκυρη κειμενική αναπαράσταση). Μόνο η κατεύθυνση string→αριθμός χρειάζεται error handling, γιατί όχι κάθε string είναι έγκυρος αριθμός.
 </div>
 
-<h2>Αναγνώριση Συγκεκριμένων Σφαλμάτων</h2>
-<p>Το πακέτο <code class="inline-code">strconv</code> ορίζει δύο ειδικά, ονομασμένα σφάλματα που μπορείς να αναγνωρίσεις: <code class="inline-code">strconv.ErrSyntax</code> (το string δεν έχει καν τη σωστή "μορφή" αριθμού — π.χ. <code class="inline-code">"abc"</code>) και <code class="inline-code">strconv.ErrRange</code> (το string ΕΙΝΑΙ έγκυρος αριθμός, αλλά είναι πολύ μεγάλος/μικρός για τον τύπο-στόχο — π.χ. προσπαθείς να χωρέσεις έναν τεράστιο αριθμό σε <code class="inline-code">int8</code>).</p>
+<h2>Δύο τιμές επιστροφής: το αποτέλεσμα και το σφάλμα</h2>
 
-<pre><code class="lang-go">_, err := strconv.Atoi("not-a-number")
-// err "τυλίγει" (wraps) το strconv.ErrSyntax
+<p> Οι functions του <code class="inline-code">strconv</code> δεν επιστρέφουν μία τιμή αλλά δύο: τον αριθμό, και ένα <code class="inline-code">error</code> που λέει αν η μετατροπή πέτυχε.</p>
 
-_, err2 := strconv.ParseInt("99999999999999999999", 10, 64)
-// err2 "τυλίγει" το strconv.ErrRange — ο αριθμός είναι υπερβολικά μεγάλος για int64</code></pre>
+<p> Δύο πράγματα μπορούν να πάνε στραβά: το string να μην έχει μορφή αριθμού (<code class="inline-code">"abc"</code>), ή να είναι έγκυρος αριθμός που δεν χωράει στον τύπο (<code>overflow</code>). Και στις δύο περιπτώσεις το <code class="inline-code">err</code> δεν είναι <code class="inline-code">nil</code>, οπότε κάνουμε το κλασσικό <code class="inline-code">if err != nil</code> (αν το error δεν ειναι κενό, δηλαδή αν το error υπάρχει) και κάνουμε handle μέσα στο if αυτές τις περιπτώσεις.</p>
 
-<h2>Parsing Λογικών Τιμών &amp; Quote/Unquote</h2>
-<pre><code class="lang-go">b, err := strconv.ParseBool("true")  // δέχεται: "1","t","T","TRUE","true","True" κ.ά.
+<pre><code class="lang-go">n, err := strconv.Atoi("42")
+if err != nil {
+    fmt.Println("could not convert:", err)
+    return
+}
 
-quoted := strconv.Quote("Hello\nWorld")   // "\"Hello\\nWorld\"" (escaped μορφή)
-original, err := strconv.Unquote(quoted)  // επιστροφή στην αρχική μορφή</code></pre>
+fmt.Println(n * 2) // 84 - safe to use, err was nil
+</code></pre>
+
+<p> Το <code class="inline-code">err != nil</code> ελέγχεται <strong>πριν</strong> χρησιμοποιηθεί το <code class="inline-code">n</code>. Αν το προσπεράσεις, το <code class="inline-code">n</code> θα είναι 0 και ο κώδικας θα συνεχίσει σαν να πήρε έγκυρη είσοδο — τα σφάλματα στη Go δεν σταματούν μόνα τους το πρόγραμμα, τα σταματάς εσύ. </p>
+
+<h2>Το ίδιο, με if και short statement</h2>
+
+<p> Επειδή αυτό το ζευγάρι (κλήση, μετά έλεγχος) εμφανίζεται συνέχεια, μπορεί να γραφτεί ισοδύναμα ως ένα <code class="inline-code">if</code> με short statement: </p>
+
+<pre><code class="lang-go">if n, err := strconv.Atoi("42"); err != nil {
+    fmt.Println("could not convert:", err)
+} else {
+    fmt.Println(n * 2)
+}
+</code></pre>
+
+<div class="callout">
+    <span class="tag">Γιατί χρειάζεται το else εδώ</span>
+    <p> Τα <code class="inline-code">n</code> και <code class="inline-code">err</code> δηλώνονται μέσα στο <code class="inline-code">if</code>, οπότε ζουν μόνο μέσα σε αυτό το <a href="https://guides01.devs.surf/01-go-01.html#@scope">scope</a>. Μετά το κλείσιμο του αγκύλου δεν υπάρχουν. Γι' αυτό η χρήση του <code class="inline-code">n</code> πρέπει να μπει σε <code class="inline-code">else</code>. </p>
+    <p> Οι δύο μορφές δεν είναι εντελώς ισοδύναμες σε όλα: η πρώτη αφήνει το <code class="inline-code">n</code> διαθέσιμο σε ό,τι ακολουθεί, η δεύτερη το περιορίζει. Διάλεξε τη δεύτερη όταν ο αριθμός χρειάζεται μόνο εκεί, την πρώτη όταν η συνέχεια της function τον χρειάζεται. </p>
+</div>
 `);
 
     addQuiz([
@@ -811,16 +887,6 @@ original, err := strconv.Unquote(quoted)  // επιστροφή στην αρχ�
       }
     ]);
 
-    addMatching([
-      { term: "strconv.Atoi", def: "Μετατρέπει string σε int, επιστρέφοντας (int, error)" },
-      { term: "strconv.Itoa", def: "Μετατρέπει int σε string, χωρίς error" },
-      { term: "strconv.ParseFloat", def: "Μετατρέπει string σε float64 δεδομένης ακρίβειας bits" },
-      { term: "strconv.ParseBool", def: "Μετατρέπει string (π.χ. \"true\", \"1\") σε bool" },
-      { term: "strconv.ErrSyntax", def: "Το string δεν έχει καθόλου έγκυρη αριθμητική μορφή" },
-      { term: "strconv.ErrRange", def: "Ο αριθμός είναι έγκυρος αλλά υπερχειλίζει τον τύπο-στόχο" }
-    ], {
-      note: "Ταίριαξε κάθε function/error του strconv με τη σωστή περιγραφή του."
-    });
     // ── Section 2.3 ──────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@os">Ενότητα 2 / 7 — Standard Packages</div>
@@ -863,18 +929,34 @@ if err == nil {
   Αυτός ο αριθμός είναι σε οκταδική (octal) μορφή και αντιπροσωπεύει δικαιώματα Unix: ο ιδιοκτήτης (owner) έχει read+write+execute (7), η ομάδα (group) και όλοι οι υπόλοιποι (others) έχουν μόνο read+execute (5 το καθένα). Δεν χρειάζεται να το απομνημονεύσεις πλήρως τώρα — απλά αναγνώρισε ότι <code class="inline-code">os.FileMode</code> είναι ο τύπος που κωδικοποιεί αυτά τα δικαιώματα.
 </div>
 
-<h2>Περιβαλλοντικές Μεταβλητές</h2>
-<p>Περιβαλλοντικές μεταβλητές (environment variables) είναι key-value ζεύγη που "ζουν" έξω από το πρόγραμμά σου, στο ίδιο το λειτουργικό σύστημα ή το terminal session — π.χ. το <code class="inline-code">PATH</code> που ξέρει πού να ψάξει για εκτελέσιμα προγράμματα.</p>
+<h2>Environment Variables</h2>
 
-<pre><code class="lang-go">path := os.Getenv("PATH")           // διάβασμα (κενό string αν δεν υπάρχει)
-os.Setenv("MY_APP_MODE", "debug")   // ορισμός για την τρέχουσα διεργασία
-os.Unsetenv("MY_APP_MODE")          // αφαίρεση
+<p>Περιβαλλοντικές μεταβλητές (environment variables) είναι key-value ζεύγη που "ζουν" έξω από το πρόγραμμά σου, στο λειτουργικό ή στο terminal session. Το πρόγραμμα τις διαβάζει όταν ξεκινάει, χωρίς να τις έχει γραμμένες πουθενά μέσα του.</p>
 
-all := os.Environ() // []string με ΟΛΕΣ τις μεταβλητές, μορφής "KEY=VALUE"</code></pre>
+<p>Το τυπικό παράδειγμα είναι το <code class="inline-code">PORT</code>: στον υπολογιστή σου θέλεις 8080, στον server που θα ανέβει το πρόγραμμα η θύρα ορίζεται από αλλού — και δεν αλλάζεις τον κώδικα γι' αυτό.</p>
+
+<pre><code class="lang-go">port := os.Getenv("PORT")
+if port == "" {
+    port = "8080" // not set, so fall back to a default
+}
+</code></pre>
+
+<p>Το <code class="inline-code">os.Getenv</code> δεν επιστρέφει error: αν η μεταβλητή δεν υπάρχει, παίρνεις κενό string. Ο έλεγχος είναι δική σου δουλειά.</p>
+
+<pre><code class="lang-go">os.Setenv("LOG_LEVEL", "debug") // set it, for this process only
+os.Unsetenv("LOG_LEVEL")        // remove it
+
+all := os.Environ() // []string with every variable, as "KEY=VALUE"
+</code></pre>
 
 <div class="callout">
   <span class="tag">Συνηθισμένη χρήση</span>
-  Environment variables χρησιμοποιούνται συχνά για ρυθμίσεις που ΔΕΝ θέλεις hardcoded στον κώδικα — π.χ. API keys, database URLs, "mode" (development vs production). Είναι πιο ασφαλές από το να γράφεις ευαίσθητα δεδομένα απευθείας στον πηγαίο κώδικα.
+  <p>Ρυθμίσεις που αλλάζουν ανάλογα με το πού τρέχει το πρόγραμμα, και ό,τι δεν πρέπει να μπει στον πηγαίο κώδικα: θύρες, database URLs, API keys, development ή production. Το ίδιο εκτελέσιμο δουλεύει παντού, αλλάζοντας μόνο το περιβάλλον.</p>
+</div>
+
+<div class="callout">
+  <span class="tag">Το Setenv δεν βγαίνει έξω</span>
+  <p>Αλλάζει το περιβάλλον <strong>μόνο της τρέχουσας διεργασίας</strong>. Μόλις τερματίσει το πρόγραμμα, η αλλαγή χάνεται — το terminal δεν επηρεάζεται. Για να θέσεις μεταβλητή πριν την εκτέλεση, τη γράφεις στο shell: <code class="inline-code">PORT=3000 go run main.go</code>.</p>
 </div>
 `);
 
@@ -907,7 +989,7 @@ all := os.Environ() // []string με ΟΛΕΣ τις μεταβλητές, μο�
     addContent(`
 <div class="eyebrow" id="@exit">Ενότητα 2 / 7 — Standard Packages</div>
 <h1><code class="inline-code">os.Exit</code>: Άμεσος Τερματισμός</h1>
-<p class="lede">Η <code class="inline-code">os.Exit(code int)</code> τερματίζει το πρόγραμμα ΑΜΕΣΩΣ, επιστρέφοντας τον συγκεκριμένο κωδικό εξόδου (exit code) στο λειτουργικό σύστημα — συμβατικά, <code class="inline-code">0</code> σημαίνει επιτυχία και οποιοσδήποτε άλλος αριθμός σημαίνει κάποιο είδος αποτυχίας.</p>
+<p class="lede">Η <code class="inline-code">os.Exit(code int)</code> τερματίζει το πρόγραμμα ΑΜΕΣΩΣ, επιστρέφοντας τον συγκεκριμένο κωδικό εξόδου (exit code) στο λειτουργικό σύστημα — έχουμε κάνει την σύμβαση πώς <code class="inline-code">0</code> σημαίνει επιτυχία και οποιοσδήποτε άλλος αριθμός σημαίνει κάποιο είδος αποτυχίας.</p>
 
 <pre><code class="lang-go">func main() {
     if len(os.Args) < 2 {
@@ -931,7 +1013,7 @@ all := os.Environ() // []string με ΟΛΕΣ τις μεταβλητές, μο�
 
 <div class="callout">
   <span class="tag">Πρακτική συνέπεια</span>
-  Αν το πρόγραμμά σου χρησιμοποιεί <code class="inline-code">os.Exit</code>, πρέπει να είσαι σίγουρος/η ότι δεν αφήνεις πίσω "μισάνοιχτους" πόρους (ανοιχτά αρχεία, ημιτελείς εγγραφές) που περίμεναν το defer τους για να κλείσουν σωστά. Γι' αυτό, η κοινή σύμβαση είναι να καλείς <code class="inline-code">os.Exit</code> ΜΟΝΟ πολύ κοντά στην αρχή του <code class="inline-code">main()</code> — πριν ανοίξεις σημαντικούς πόρους — ή αφού έχεις ήδη κάνει το δικό σου χειροκίνητο cleanup.
+  Αν το πρόγραμμά σου χρησιμοποιεί <code class="inline-code">os.Exit</code>, πρέπει να είσαι σίγουρος/η ότι δεν αφήνεις πίσω "μισάνοιχτους" πόρους (ανοιχτά αρχεία, ημιτελείς εγγραφές) που περίμεναν το defer τους για να κλείσουν σωστά. Γι' αυτό, η κοινή σύμβαση είναι να καλείς <code class="inline-code">os.Exit</code> ΜΟΝΟ πολύ κοντά στην αρχή του <code class="inline-code">main()</code> — πριν ανοίξεις σημαντικούς πόρους — ή αφού έχεις ήδη κάνει το δικό σου χειροκίνητο cleanup. Αν υπάρχουν defer που πρέπει να εκτελεστούν στο συγκεκριμένο block, προτιμάται ένα <code class="inline-code">return</code> στην main με err (ώστε να εκτελεστούν τα defer), και η main μπορεί να κάνει os.Exit(1).
 </div>
 `);
 
@@ -957,7 +1039,7 @@ all := os.Environ() // []string με ΟΛΕΣ τις μεταβλητές, μο�
     // ── Section 2.4 ──────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@io">Ενότητα 2 / 7 — Standard Packages</div>
-<h1>Το πακέτο <code class="inline-code">io</code>: Αφαιρέσεις Εισόδου/Εξόδου</h1>
+<h1>Το πακέτο <code class="inline-code">io</code>: Reader και Writer</h1>
 <p class="lede">Το πακέτο <code class="inline-code">io</code> δεν περιέχει "έτοιμες" λειτουργίες για συγκεκριμένες πηγές δεδομένων — περιέχει κάτι πιο θεμελιώδες: <strong>interfaces</strong> που περιγράφουν τι σημαίνει γενικά "διάβασμα" και "γράψιμο", ανεξάρτητα από το ΤΙ βρίσκεται στην άλλη άκρη (αρχείο, δίκτυο, μνήμη, οτιδήποτε).</p>
 
 <h2>Το θεμελιώδες interface: io.Reader</h2>
