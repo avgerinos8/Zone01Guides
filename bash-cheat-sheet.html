@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bash Cheat Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,800;0,900;1,400&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ── palette ─────────────────────────────────────────────────── ⊃ */
+    --bg:#141D27;
+    --panel:#1C2836;
+    --well:#0D141C;
+    --shadow:#070B10;
+    --line:#33465A;
+    --text:#DEE8F2;
+    --text-dim:#93A6BA;
+    --amber:#FFB454;
+    --cyan:#5CC8DC;
+
+    --radius:8px;
+    --sp1:4px; --sp2:8px; --sp3:16px; --sp4:24px; --sp5:32px; --sp6:48px; --sp7:64px;
+    --header-h:112px;
+    --content-w:1120px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background-color:var(--bg);
+    background-image:repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,0.018) 0px,
+      rgba(255,255,255,0.018) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+    color:var(--text);
+    font-family:"Inter", -apple-system, "Segoe UI", sans-serif;
+    font-size:16px;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+    counter-reset:sect;
+  }
+  ::selection{ background:var(--amber); color:var(--shadow); }
+  a{ color:var(--cyan); text-decoration:none; }
+  a:hover{ text-decoration:underline; }
+  a:focus-visible, button:focus-visible, .chip:focus-visible{
+    outline:2px solid var(--amber);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+  code, pre, .mono{
+    font-family:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ── header ──────────────────────────────────────────────────── ⊃ */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:var(--panel);
+    border-bottom:3px solid var(--shadow);
+    box-shadow:0 4px 0 rgba(7,11,16,0.35);
+  }
+  header::before{
+    content:"";
+    display:block;
+    height:4px;
+    background-image:repeating-linear-gradient(
+      90deg,
+      var(--amber) 0px, var(--amber) 14px,
+      transparent 14px, transparent 24px
+    );
+  }
+  .header-top{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:var(--sp3);
+    padding:14px var(--sp5) 12px;
+    max-width:1280px; margin:0 auto;
+    border-bottom:1px dashed var(--line);
+  }
+  .brand{
+    display:flex; align-items:baseline; gap:var(--sp2);
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    font-size:19px;
+    white-space:nowrap;
+    color:var(--text);
+    min-width:0;
+  }
+  .brand .dollar{ color:var(--amber); font-weight:700; }
+  .brand .sub{
+    color:var(--text-dim); font-weight:400; font-size:12px;
+    letter-spacing:0.04em; text-transform:uppercase;
+    overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .dl-btn{
+    display:inline-flex; align-items:center; gap:var(--sp2);
+    background:var(--amber);
+    color:var(--shadow);
+    border:2px solid var(--shadow);
+    border-radius:var(--radius);
+    padding:9px 18px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:0.02em;
+    cursor:pointer;
+    box-shadow:4px 4px 0 var(--shadow);
+    transition:transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
+    flex-shrink:0;
+  }
+  .dl-btn:hover{ background:#FFC878; }
+  .dl-btn:active{ transform:translate(4px,4px); box-shadow:0 0 0 var(--shadow); }
+  .dl-btn:disabled{
+    background:var(--panel); color:var(--text-dim);
+    border-color:var(--line); box-shadow:2px 2px 0 var(--shadow);
+    cursor:not-allowed; transform:none;
+  }
+  .dl-btn svg{ width:15px; height:15px; flex-shrink:0; }
+
+  .header-toc{
+    max-width:1280px; margin:0 auto;
+    padding:12px var(--sp5) 14px;
+  }
+  .header-toc-inner{
+    display:flex; gap:6px;
+    overflow-x:auto;
+    scrollbar-width:none;
+    padding-bottom:4px;
+  }
+  .header-toc-inner::-webkit-scrollbar{ display:none; }
+  .chip{
+    flex:0 0 auto;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    background:var(--well);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:5px 9px;
+    white-space:nowrap;
+    box-shadow:2px 2px 0 var(--shadow);
+    transition:color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  }
+  .chip:hover{ color:var(--amber); border-color:var(--amber); text-decoration:none; }
+  .chip:active{ transform:translate(2px,2px); box-shadow:0 0 0 var(--shadow); }
+  .chip.active{
+    color:var(--shadow);
+    background:var(--amber);
+    border-color:var(--shadow);
+  }
+
+  /* ── layout ──────────────────────────────────────────────────── ⊃ */
+  main{
+    max-width:var(--content-w);
+    margin:0 auto;
+    padding:var(--sp7) var(--sp5) var(--sp7);
+  }
+
+  /* ── hero ────────────────────────────────────────────────────── ⊃ */
+  .intro{
+    margin-bottom:var(--sp7);
+    padding-bottom:var(--sp6);
+    border-bottom:3px solid var(--line);
+    position:relative;
+  }
+  .intro::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-9px;
+    border-bottom:1px dashed var(--line);
+  }
+  .intro h1{
+    font-family:"Inter", sans-serif;
+    font-weight:900;
+    font-size:clamp(46px, 8.5vw, 104px);
+    letter-spacing:-0.045em;
+    line-height:0.92;
+    margin:0 0 var(--sp5);
+    color:var(--text);
+    text-shadow:6px 6px 0 var(--shadow);
+    max-width:14ch;
+  }
+  .intro h1::after{
+    content:"";
+    display:inline-block;
+    width:0.42em; height:0.72em;
+    margin-left:0.14em;
+    vertical-align:-0.03em;
+    background:var(--amber);
+    box-shadow:6px 6px 0 var(--shadow);
+    animation:blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+  @media (prefers-reduced-motion:reduce){
+    .intro h1::after{ animation:none; }
+  }
+
+  .setup-box{
+    background:var(--panel);
+    border:2px solid var(--shadow);
+    border-left:8px solid var(--amber);
+    border-radius:var(--radius);
+    padding:var(--sp4) var(--sp5);
+    max-width:660px;
+    box-shadow:6px 6px 0 var(--shadow);
+  }
+  .setup-box .label{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    padding-bottom:var(--sp2);
+    margin-bottom:var(--sp3);
+    border-bottom:1px dashed var(--line);
+  }
+  .setup-box pre.code{
+    margin-bottom:0; border:none; background:transparent;
+    padding:0; box-shadow:none;
+  }
+
+  /* ── sections ────────────────────────────────────────────────── ⊃ */
+  section{
+    scroll-margin-top:calc(var(--header-h) + var(--sp3));
+    margin-bottom:var(--sp7);
+  }
+  section h2{
+    display:flex; align-items:center; gap:var(--sp3);
+    flex-wrap:wrap;
+    font-family:"Inter", sans-serif;
+    font-weight:900;
+    font-size:clamp(24px, 3.4vw, 40px);
+    letter-spacing:-0.035em;
+    line-height:1.1;
+    margin:0 0 var(--sp5);
+    padding-bottom:var(--sp3);
+    border-bottom:3px solid var(--amber);
+    color:var(--text);
+    text-shadow:4px 4px 0 var(--shadow);
+    position:relative;
+  }
+  section h2::before{
+    counter-increment:sect;
+    content:counter(sect, decimal-leading-zero);
+    flex-shrink:0;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:0;
+    color:var(--shadow);
+    background:var(--cyan);
+    border:2px solid var(--shadow);
+    border-radius:4px;
+    padding:2px 8px;
+    text-shadow:none;
+    box-shadow:3px 3px 0 var(--shadow);
+  }
+  section h2::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-8px;
+    border-bottom:1px dashed var(--line);
+  }
+  section h3{
+    font-family:"Inter", sans-serif;
+    font-weight:800;
+    font-size:19px;
+    letter-spacing:-0.02em;
+    color:var(--text);
+    margin:var(--sp6) 0 var(--sp3);
+    padding-top:var(--sp4);
+    border-top:1px dashed var(--line);
+    text-shadow:3px 3px 0 var(--shadow);
+  }
+  section h3.sub{
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    text-shadow:none;
+    margin:var(--sp6) 0 var(--sp3);
+  }
+  section h3.sub::before{
+    content:"── ";
+    color:var(--line);
+  }
+  section p{ margin:0 0 var(--sp4); max-width:72ch; color:var(--text-dim); }
+  section p.note{
+    font-size:15.5px;
+    padding-left:var(--sp4);
+    border-left:2px solid var(--line);
+  }
+  section p strong{ color:var(--text); }
+
+  code.inline{
+    background:var(--well);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:1px 6px;
+    font-size:0.86em;
+    font-weight:600;
+    color:var(--cyan);
+    overflow-wrap:break-word;
+  }
+
+  /* ── code blocks ─────────────────────────────────────────────── ⊃ */
+  pre.code{
+    background:var(--well);
+    border:2px solid var(--shadow);
+    border-left:8px solid var(--cyan);
+    border-radius:var(--radius);
+    padding:var(--sp4) var(--sp5);
+    overflow-x:auto;
+    font-size:14.5px;
+    font-weight:600;
+    line-height:1.95;
+    margin:0 0 var(--sp4);
+    white-space:pre;
+    color:var(--text);
+    box-shadow:6px 6px 0 var(--shadow);
+  }
+  pre.code .cmd{
+    color:var(--amber);
+    font-weight:700;
+  }
+  pre.code .cm{
+    font-family:"Inter", sans-serif;
+    font-weight:400;
+    font-style:italic;
+    font-size:0.94em;
+    color:var(--text-dim);
+  }
+
+  /* ── tables ──────────────────────────────────────────────────── ⊃ */
+  .table-wrap{
+    overflow-x:auto;
+    margin:0 0 var(--sp4);
+    border-top:3px solid var(--amber);
+    border-bottom:1px dashed var(--line);
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:15.5px;
+  }
+  table th{
+    text-align:left;
+    font-family:"IBM Plex Mono", monospace;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    padding:10px var(--sp3);
+    border-bottom:1px dashed var(--line);
+  }
+  table td{
+    padding:12px var(--sp3);
+    border-bottom:1px dashed var(--line);
+    vertical-align:top;
+    color:var(--text-dim);
+  }
+  table tr:last-child td{ border-bottom:none; }
+  table td:first-child, table th:first-child{ padding-left:0; white-space:nowrap; }
+  table td:first-child code.inline{
+    background:var(--panel);
+    border:1px solid var(--shadow);
+    color:var(--amber);
+    font-weight:700;
+    font-size:0.94em;
+    padding:3px 8px;
+    box-shadow:2px 2px 0 var(--shadow);
+  }
+  table td:last-child{ min-width:16ch; }
+
+  @media (max-width:760px){
+    :root{ --header-h:104px; }
+    .header-top{ padding:12px var(--sp3) 10px; }
+    .header-toc{ padding:10px var(--sp3) 12px; }
+    .brand{ font-size:16px; }
+    .brand .sub{ display:none; }
+    main{ padding:var(--sp6) var(--sp3) var(--sp6); }
+    .intro{ margin-bottom:var(--sp6); padding-bottom:var(--sp5); }
+    .intro h1{ text-shadow:4px 4px 0 var(--shadow); }
+    .intro h1::after{ box-shadow:4px 4px 0 var(--shadow); }
+    section{ margin-bottom:var(--sp6); }
+    section h2{ text-shadow:3px 3px 0 var(--shadow); gap:var(--sp2); }
+    pre.code{ font-size:13px; padding:var(--sp3); box-shadow:4px 4px 0 var(--shadow); }
+    .setup-box{ padding:var(--sp3) var(--sp4); box-shadow:4px 4px 0 var(--shadow); }
+    section p.note{ padding-left:var(--sp3); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand"><span class="dollar">$</span> bash <span class="sub">cheat sheet</span></div>
+    <button class="dl-btn" id="dlBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+      <span>.md</span>
+    </button>
+  </div>
+  <nav class="header-toc" aria-label="Περιεχόμενα">
+    <div class="header-toc-inner" id="tocChips">
+      <a class="chip" href="#quick-ref" title="quick reference">QREF</a>
+      <a class="chip" href="#navigate" title="navigate directories">NAV</a>
+      <a class="chip" href="#create-dirs" title="create directories">MKDIR</a>
+      <a class="chip" href="#delete-dirs" title="delete directories">RMDIR</a>
+      <a class="chip" href="#create-files" title="create files">TOUCH</a>
+      <a class="chip" href="#stdio" title="stdin / stdout / stderr">STDIO</a>
+      <a class="chip" href="#reading" title="reading files">READ</a>
+      <a class="chip" href="#permissions" title="file permissions">CHMOD</a>
+      <a class="chip" href="#find" title="find files">FIND</a>
+      <a class="chip" href="#grep" title="find in files — grep">GREP</a>
+      <a class="chip" href="#curl" title="curl">CURL</a>
+      <a class="chip" href="#cut" title="cut">CUT</a>
+      <a class="chip" href="#tr" title="tr (replace)">TR</a>
+      <a class="chip" href="#sed" title="replace in files — sed">SED</a>
+      <a class="chip" href="#jq" title="jq">JQ</a>
+      <a class="chip" href="#running" title="running &amp; customizing">RUNSH</a>
+      <a class="chip" href="#scripts" title="bash scripts">SCRPT</a>
+      <a class="chip" href="#regex" title="regular expressions">REGEX</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+  <div class="intro">
+    <h1>Bash cheat sheet</h1>
+
+    <div class="setup-box">
+      <div class="label">setup</div>
+      <pre class="code">
+# Save credentials
+git config --global credential.helper store
+
+# Clone repository
+git clone https://platform.zone01.gr/git/username/piscine-go.git</pre>
+    </div>
+  </div>
+
+  <section id="quick-ref">
+    <h2>Quick reference</h2>
+
+    <h3 class="sub">everyday commands</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>command</th><th>description</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">man</code></td><td>help</td></tr>
+          <tr><td><code class="inline">ls</code></td><td>list folders</td></tr>
+          <tr><td><code class="inline">cp</code></td><td>copy — <code class="inline">cp source_file destination_file</code></td></tr>
+          <tr><td><code class="inline">mkdir</code></td><td>create directory</td></tr>
+          <tr><td><code class="inline">cd</code></td><td>change directory</td></tr>
+          <tr><td><code class="inline">mv</code></td><td>move directory</td></tr>
+          <tr><td><code class="inline">rm</code></td><td>remove directory</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">display files</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>command</th><th>description</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">cat</code></td><td>concatenate</td></tr>
+          <tr><td><code class="inline">less</code></td><td>pager</td></tr>
+          <tr><td><code class="inline">head</code></td><td>beginning of file</td></tr>
+          <tr><td><code class="inline">tail</code></td><td>end of file</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">look at files</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>command</th><th>description</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">wc</code></td><td>word count (<code class="inline">-w</code> word, <code class="inline">-l</code> line, <code class="inline">-m</code> char)</td></tr>
+          <tr><td><code class="inline">grep</code></td><td>filter matching text</td></tr>
+          <tr><td><code class="inline">find</code></td><td>search for files</td></tr>
+          <tr><td><code class="inline">locate</code></td><td>search for file names (fast)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:var(--sp3);"><code class="inline">whoami</code> → USERNAME</p>
+  </section>
+
+  <section id="navigate">
+    <h2>Navigate directories</h2>
+    <pre class="code">pwd                          # Print current directory path
+ls                           # List directories
+ls -a | --all                # List directories including hidden
+ls -l                        # List directories in long form
+ls -l -h | --human-readable  # List directories in long form with human readable sizes
+ls -t                        # List directories by modification time, newest first
+stat foo.txt                 # List size, created and modified timestamps for a file
+stat foo                     # List size, created and modified timestamps for a directory
+tree                         # List directory and file tree
+tree -a                      # List directory and file tree including hidden
+tree -d                      # List directory tree
+cd foo                       # Go to foo sub-directory
+cd                           # Go to home directory
+cd ~                         # Go to home directory
+cd -                         # Go to last directory
+
+ls | grep ".txt" | wc -l     # (advanced) μέτρα πόσα .txt files υπάρχουν στον φάκελο</pre>
+  </section>
+
+  <section id="create-dirs">
+    <h2>Create directories</h2>
+    <pre class="code">mkdir foo                          # Create a directory
+mkdir foo bar                      # Create multiple directories
+mkdir -p foo/bar                   # Create nested directory (--parents)
+mkdir -p|--parents {foo,bar}/baz   # Create multiple nested directories
+mktemp -d|--directory              # Create a temporary directory
+cp --recursive foo bar             # Copy directory
+mv foo bar                         # Move directory</pre>
+    <p class="note">Δημιουργία αρχείων: <code class="inline">touch foo.txt</code>, <code class="inline">touch {foo,bar}.txt</code>, <code class="inline">touch test{1..3}</code>, <code class="inline">touch test{a..c}</code> — δείτε αναλυτικά στο επόμενο section.</p>
+  </section>
+
+  <section id="delete-dirs">
+    <h2>Delete directories</h2>
+    <pre class="code">rmdir foo                          # Delete empty directory
+rm -r|--recursive foo              # Delete directory including contents
+rm -r|--recursive -f|--force foo   # Delete directory including contents, ignore nonexistent files and never prompt</pre>
+  </section>
+
+  <section id="create-files">
+    <h2>Create files</h2>
+    <pre class="code">touch foo.txt            # Create file or update existing file's modified timestamp
+touch foo.txt bar.txt    # Create multiple files
+touch {foo,bar}.txt      # Create multiple files
+touch test{1..3}         # Create test1, test2 and test3 files
+touch test{a..c}         # Create testa, testb and testc files</pre>
+    <p class="note">Άνοιγμα αρχείου στο VS Code: <code class="inline">code foo.sh</code></p>
+  </section>
+
+  <section id="stdio">
+    <h2>Standard output, error and input</h2>
+    <pre class="code">echo "foo" > bar.txt        # Overwrite file with content
+echo "foo" >> bar.txt       # Append to file with content
+ls exists 1> stdout.txt     # Redirect the standard output to a file
+ls noexist 2> stderror.txt  # Redirect the standard error output to a file
+ls 2>&1 > out.txt           # Redirect standard output and error to a file
+ls > /dev/null              # Discard standard output and error
+read foo                    # Read from standard input and write to the variable foo</pre>
+  </section>
+
+  <section id="reading">
+    <h2>Reading files</h2>
+    <pre class="code">cat foo.txt    # Print all contents of a file (view file)
+less foo.txt   # Print some contents at a time (g = top, SHIFT+g = bottom, /foo = search for 'foo')
+head foo.txt   # Print top 10 lines of file
+tail foo.txt   # Print bottom 10 lines of file
+open foo.txt   # Open file in the default editor
+wc foo.txt     # List number of lines, words and characters in the file</pre>
+  </section>
+
+  <section id="permissions">
+    <h2>File permissions</h2>
+    <pre class="code">ls -l /foo.sh              # List file permissions
+chmod +100 foo.sh          # Add 1 to the user permission
+chmod -100 foo.sh          # Subtract 1 from the user permission
+chmod u+x foo.sh           # Give the user execute permission
+chmod g+x foo.sh           # Give the group execute permission
+chmod u-x,g-x foo.sh       # Take away the user and group execute permission
+chmod u+x,g+x,o+x foo.sh   # Give everybody execute permission
+chmod a+x foo.sh           # Give everybody execute permission
+chmod +x foo.sh            # Give everybody execute permission</pre>
+  </section>
+
+  <section id="find">
+    <h2>Find files</h2>
+    <pre class="code">find /path -name foo.txt              # Find a file
+find -iname foo.txt                   # Find a file with case insensitive search
+find -name "*.txt"                    # Find all text files
+find -name foo.txt -delete            # Find a file and delete it
+find -name "*.png" -exec pngquant {}  # Find all .png files and execute pngquant on them
+find -type f -name foo.txt            # Find a file
+find -type d -name foo                # Find a directory
+find -type l -name foo.txt            # Find a symbolic link
+find -type f -mtime +30               # Find files that haven't been modified in 30 days
+find -type f -mtime +30 -delete       # Delete files that haven't been modified in 30 days
+find . -name "*.txt" -print0          # Αναζητά αρχεία και εκτυπώνει τα ονόματά τους διαχωρισμένα
+                                       # με null byte αντί για αλλαγή γραμμής</pre>
+  </section>
+
+  <section id="grep">
+    <h2>Find in files — grep</h2>
+    <p class="note">grep = Global Regular Expression Print</p>
+    <pre class="code">grep 'foo' /bar.txt                          # Search for 'foo' in file 'bar.txt'
+grep 'foo' /bar -r|--recursive               # Search for 'foo' in directory 'bar'
+grep 'foo' /bar -R|--dereference-recursive   # Search in 'bar' and follow symbolic links
+grep 'foo' /bar -l|--files-with-matches      # Show only files that match
+grep 'foo' /bar -L|--files-without-match     # Show only files that don't match
+grep 'Foo' /bar -i|--ignore-case             # Case insensitive search
+grep 'foo' /bar -x|--line-regexp             # Match the entire line
+grep 'foo' /bar -C|--context 1               # Add N lines of context above/below match
+grep 'foo' /bar -v|--invert-match            # Show only lines that don't match
+grep 'foo' /bar -c|--count                   # Count the number of lines that match
+grep 'foo' /bar -n|--line-number             # Add line numbers
+grep 'foo' /bar --colour                     # Add colour to output
+grep 'foo\|bar' /baz -R                      # Search for 'foo' or 'bar' in directory 'baz'
+grep --extended-regexp|-E 'foo|bar' /baz -R  # Use regular expressions
+egrep 'foo|bar' /baz -R                      # Use regular expressions
+
+grep -Z / grep --null   # Εκτυπώνει το όνομα του αρχείου που βρέθηκε ακολουθούμενο από null byte,
+                         # ώστε άλλες εντολές να ξέρουν πού τελειώνει το ένα όνομα και πού αρχίζει το άλλο</pre>
+    <p class="note">Advanced παράδειγμα — αλλαγή σε filenames της λέξης <code class="inline">palio</code> σε <code class="inline">neo</code>:</p>
+    <pre class="code">find . -name "*.txt" -print0 | xargs -0 grep -lZ "palio" | xargs -0 sed -i 's/palio/neo/g'</pre>
+  </section>
+
+  <section id="curl">
+    <h2>Curl</h2>
+    <pre class="code">curl https://example.com                    # prints the content of the URL
+curl http://site.{one,two,three}.com        # multiple URLs: site.one.com, site.two.com, site.three.com
+curl ftp://ftp.example.com/file[1-20].jpeg  # numeric sequence 1 to 20
+curl -s|--silent https://example.com        # without progress bar
+curl -# https://example.com                 # shows a simple progress bar</pre>
+  </section>
+
+  <section id="cut">
+    <h2>Cut</h2>
+    <pre class="code">cut -d "c" -f1      # use 'c' as delimiter and get field (-f1 or -f2)
+cut -f&lt;n&gt;          # get the nth field
+cut -f&lt;n-m&gt;        # get fields nth to mth
+cut -d " " -f 1,2   # using space as delimiter, extract fields 1 and 2
+cut -c 2,5,7        # extract the characters at positions 2, 5, and 7 from each line</pre>
+  </section>
+
+  <section id="tr">
+    <h2>tr (replace)</h2>
+    <pre class="code">echo "hello" | tr 'l' '1'      # replaces l with 1 → he11o
+echo "aaabbbccc" | tr -s 'a'   # συμπίεση χαρακτήρων → abbbccc</pre>
+    <p class="note">Η <code class="inline">tr</code> δεν δέχεται απευθείας ονόματα αρχείων, αλλά λειτουργεί με ανακατεύθυνση (π.χ. <code class="inline">tr 'a' 'b' &lt; input.txt</code>).</p>
+  </section>
+
+  <section id="sed">
+    <h2>Replace in files — sed</h2>
+    <pre class="code">sed 's/fox/bear/g' foo.txt              # (s = substitute) replace fox with bear in foo.txt
+sed 's|fox|bear|g'                      # χρήση pipe ως delimiter
+sed 's:fox:bear:g'                      # χρήση άνω-κάτω τελείας ως delimiter
+sed 's#fox#bear#g'                      # χρήση hashtag ως delimiter
+
+sed 's/fox/bear/gi' foo.txt             # replace fox (case insensitive) with bear
+sed 's/red fox/blue bear/g' foo.txt     # replace red with blue and fox with bear
+sed 's/fox/bear/g' foo.txt > bar.txt    # replace and save the result to bar.txt
+sed 's/fox/bear/g' foo.txt -i|--in-place  # replace and overwrite foo.txt
+
+sed -e 's/apple/orange/' -e 's/cat/dog/' file.txt   # multiple replacements with -e
+sed -n 's/apple/orange/p' file.txt      # print only lines that matched (-n silent + p print)
+sed -i 's/apple/orange/' file.txt       # modify the file directly (-i.bak keeps a backup)
+sed -f my_script.sed file.txt           # read the replacements from a script file
+sed -z 's/\n/ /g'                       # lines split by null byte (\0) instead of \n —
+                                         # often used with `find -print0` or `grep -Z`</pre>
+    <p class="note">Βάζω μονά <code class="inline">'</code> εισαγωγικά στο 95% των περιπτώσεων, διπλά <code class="inline">"</code> όταν έχω variables (ή τον χαρακτήρα <code class="inline">'</code> μέσα στο πεδίο, π.χ. <code class="inline">don't</code>). Με διπλά <code class="inline">"</code> το τερματικό "διαβάζει" το περιεχόμενο πριν το στείλει στο <code class="inline">sed</code>.</p>
+
+    <h3>Εντολές (sed)</h3>
+    <pre class="code">sed '/fox/d'                    # (delete) διαγράφει όλες τις γραμμές που περιέχουν fox
+sed '3d'                        # διαγράφει μόνο την 3η γραμμή
+sed '/^$/d'                     # διαγράφει όλες τις κενές γραμμές
+sed '/fox/i NewText'            # (insert) νέα γραμμή πριν από κάθε γραμμή με fox
+sed '/fox/a NewText'            # (append) νέα γραμμή μετά από κάθε γραμμή με fox
+sed '/fox/c This is replaced'   # (change) αντικαθιστά ολόκληρη τη γραμμή που έχει fox
+sed 'y/abc/ABC/' foo.txt        # (transform) αντιστοιχίζει χαρακτήρα προς χαρακτήρα, σαν tr</pre>
+
+    <h3>Flags (sed)</h3>
+    <p class="note">Το <code class="inline">g</code> στο τέλος είναι flag και ορίζει πώς θα γίνει η αντικατάσταση στη γραμμή.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>flag</th><th>σημασία</th></tr></thead>
+        <tbody>
+          <tr><td>(κανένα)</td><td>Αντικαθιστά μόνο την πρώτη εμφάνιση στη γραμμή</td></tr>
+          <tr><td><code class="inline">g</code> (global)</td><td>Αντικαθιστά όλες τις εμφανίσεις στη γραμμή</td></tr>
+          <tr><td>αριθμός, π.χ. <code class="inline">2</code></td><td>Αντικαθιστά μόνο τη συγκεκριμένη εμφάνιση, π.χ. <code class="inline">sed 's/fox/bear/2'</code></td></tr>
+          <tr><td><code class="inline">i</code> (ignore case)</td><td>Αναζήτηση χωρίς διάκριση πεζών/κεφαλαίων</td></tr>
+          <tr><td><code class="inline">p</code></td><td>Τυπώνει τη γραμμή αν η αντικατάσταση πέτυχε (συχνά με <code class="inline">sed -n ... p</code>)</td></tr>
+          <tr><td><code class="inline">w file.txt</code></td><td>Γράφει το αποτέλεσμα σε νέο αρχείο</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="jq">
+    <h2>jq</h2>
+    <p class="note">Σαν <code class="inline">sed</code> για JSON δεδομένα — εξωτερικό library.</p>
+    <pre class="code">jq '.'                        # pretty-prints ολόκληρο το JSON
+jq '.foo'                     # τιμή του κλειδιού "foo" στο root object
+jq '.["foo"]'                 # εναλλακτικό syntax για keys με ειδικούς χαρακτήρες/κενά
+jq '.user.profile.id'         # πρόσβαση σε nested fields
+
+jq --raw-output | -r          # raw strings χωρίς εισαγωγικά (για shell variables)
+jq --raw-output0              # raw strings, τυπώνει NUL αντί για newline μετά από κάθε output
+
+jq '.items[0]'                # πρώτο στοιχείο ενός array
+jq '.items[]'                 # iterate πάνω σε array, κάθε στοιχείο ξεχωριστό output
+jq '.items[].name'            # πεδίο "name" από κάθε object μέσα σε array
+
+jq -c | --compact-output      # minify output, ένα object ανά γραμμή
+jq -s | --slurp                # διαβάζει πολλά JSON objects σε ένα μεγάλο array
+jq -S | --sort-keys           # αλφαβητική ταξινόμηση των keys
+jq 'keys'                     # array με όλα τα keys του object
+jq 'length'                   # πλήθος στοιχείων array ή χαρακτήρων string
+
+jq '[.id, .name]'                             # μετατροπή πεδίων σε νέο array
+jq '.[] | select(.id == 100)'                 # φιλτράρισμα όπου "id" == 100
+jq '.[] | select(.name | contains("test"))'   # φιλτράρισμα όπου "name" περιέχει "test"
+jq 'map(.price * 1.25)'                       # υπολογισμός (π.χ. 25% φόρος) σε κάθε στοιχείο</pre>
+
+    <h3>Advanced logic</h3>
+    <pre class="code">jq 'if .status == 200 then "Success" else "Fail" end'   # conditional logic
+jq '.optional_field // "N/A"'                            # default τιμή αν είναι null/missing
+jq 'try .id catch "error"'                                # αποφυγή crash σε access error
+jq '.tags | join(", ")'                                   # συνδυασμός στοιχείων σε string</pre>
+
+    <h3>Pipe chain</h3>
+    <p class="note">Για να συνδυάσεις πολλές εντολές, χρησιμοποιείς το pipe <code class="inline">|</code> μέσα στα εισαγωγικά — το αποτέλεσμα του αριστερού φίλτρου περνάει ως είσοδος στο δεξί.</p>
+    <pre class="code">jq '.items[] | try .id catch "N/A" | select(. != "N/A")'
+# προσπαθεί να πάρει τα IDs, αντικαθιστά errors με "N/A", και φιλτράρει τα "N/A"
+
+jq '.data[] | {user: .name, score: .points} | select(.score > 50)'
+# δημιουργεί νέο object με μετονομασμένα keys, μετά φιλτράρει με βάση το νέο "score"
+
+jq 'map(try .price catch 0) | add'
+# προσπαθεί να πάρει όλες τις τιμές (0 σε errors) και τις αθροίζει
+
+user_id=$(curl -s "https://api.example.com/user" | jq -r '.id')
+# αποθηκεύει μια τιμή JSON σε shell variable με το -r (raw) flag
+
+curl -s "https://api.github.com/users/octocat/repos" | jq -c '.[] | {name, stars: .stargazers_count}'
+# φέρνει όλα τα repos και τυπώνει minified λίστα με name + star count</pre>
+
+    <h3>Useful chaining patterns</h3>
+    <pre class="code">jq 'del(.unused_field) | .updated_at = "2026-02-02"'
+# αφαιρεί ένα field και προσθέτει/ενημερώνει ένα άλλο στο ίδιο flow
+
+jq '.[] | select(.status == "active") | .email' | tr 'A-Z' 'a-z'
+# συνδυάζει jq με tr για emails σε lowercase
+
+jq '.results | length as $len | .[] | {total: $len, item: .name}'
+# αποθηκεύει το μήκος του array σε μεταβλητή ($len) για να το χρησιμοποιήσει σε κάθε item</pre>
+    <p class="note"><strong style="color:var(--text)">Key rule for chaining:</strong> όταν χρησιμοποιείς <code class="inline">|</code> μέσα στο <code class="inline">jq '...'</code>, σκέψου το σαν γραμμή παραγωγής — κάθε κομμάτι φιλτράρει ή αλλάζει τα δεδομένα και τα δίνει στο επόμενο.</p>
+  </section>
+
+  <section id="running">
+    <h2>Running &amp; customizing</h2>
+    <h3 class="sub">edit ~/.bashrc to run ls after cd</h3>
+    <pre class="code"># Always run ls after cd
+function cd {
+  builtin cd "$@" && ls
+}</pre>
+
+    <h3 class="sub">run a bash script (.sh)</h3>
+    <pre class="code">chmod +x /path/to/yourscript.sh   # give everybody execute permission
+bash /path/to/yourscript.sh</pre>
+    <p class="note"><code class="inline">#!/bin/bash</code> λέει στο λειτουργικό σύστημα να χρησιμοποιήσει bash ως command interpreter.</p>
+  </section>
+
+  <section id="scripts">
+    <h2>Bash scripts</h2>
+
+    <h3 class="sub">variables</h3>
+    <pre class="code">#!/bin/bash
+
+foo=123                 # Initialize variable foo with 123
+declare -i foo=123      # Initialize an integer foo with 123
+declare -r foo=123      # Initialize readonly variable foo with 123
+echo $foo               # Print variable foo
+echo ${foo}_'bar'       # Print variable foo followed by _bar
+echo ${foo:-'default'}  # Print variable foo if it exists, otherwise print default
+
+export foo               # Make foo available to child processes
+unset foo                # Make foo unavailable to child processes</pre>
+    <p class="note">Παράδειγμα configure env. variable: <code class="inline">export PATH="$PATH:/my/path"</code></p>
+
+    <h3 class="sub">environment variables</h3>
+    <pre class="code">#!/bin/bash
+
+env             # List all environment variables
+echo $PATH      # Print PATH environment variable
+export FOO=Bar  # Set an environment variable</pre>
+
+    <h3 class="sub">functions</h3>
+    <pre class="code">#!/bin/bash
+
+greet() {
+  local world = "World"
+  echo "$1 $world"
+  return "$1 $world"
+}
+
+greet "Hello"
+greeting=$(greet "Hello")</pre>
+
+    <h3 class="sub">exit codes</h3>
+    <pre class="code">#!/bin/bash
+
+exit 0   # Exit the script successfully
+exit 1   # Exit the script unsuccessfully
+echo $?  # Print the last exit code</pre>
+
+    <h3 class="sub">if statements</h3>
+    <pre class="code">#!/bin/bash
+
+if [[$foo = 'bar']]; then
+  echo 'one'
+elif [[$foo = 'bar']] || [[$foo = 'baz']]; then
+  echo 'two'
+elif [[$foo = 'ban']] && [[$USER = 'bat']]; then
+  echo 'three'
+else
+  echo 'four'
+fi</pre>
+
+    <h3 class="sub">inline if statements</h3>
+    <pre class="code">#!/bin/bash
+
+[[ $USER = 'zone01' ]] && echo 'yes' || echo 'no'</pre>
+
+    <h3 class="sub">while loops</h3>
+    <pre class="code">#!/bin/bash
+
+declare -i counter
+counter=10
+while [$counter -gt 2]; do
+  echo The counter is $counter
+  counter=counter-1
+done</pre>
+
+    <h3 class="sub">for loops</h3>
+    <pre class="code">#!/bin/bash
+
+for i in {0..10..2}
+  do
+    echo "Index: $i"
+  done
+
+for filename in file1 file2 file3
+  do
+    echo "Content: " >> $filename
+  done
+
+for filename in *;
+  do
+    echo "Content: " >> $filename
+  done</pre>
+
+    <h3 class="sub">case statements</h3>
+    <pre class="code">#!/bin/bash
+
+echo "What's the weather like tomorrow?"
+read weather
+
+case $weather in
+  sunny | warm ) echo "Nice weather: " $weather
+  ;;
+  cloudy | cool ) echo "Not bad weather: " $weather
+  ;;
+  rainy | cold ) echo "Terrible weather: " $weather
+  ;;
+  * ) echo "Don't understand"
+  ;;
+esac</pre>
+  </section>
+
+  <section id="regex">
+    <h2>Regular expressions</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>pattern</th><th>meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code class="inline">\</code></td><td>escape the next character, e.g. <code class="inline">\^</code> matches "^" and not "start of line"</td></tr>
+          <tr><td><code class="inline">^</code></td><td>start of line</td></tr>
+          <tr><td><code class="inline">$</code></td><td>match end of line</td></tr>
+          <tr><td><code class="inline">[ ]</code></td><td>match any character in brackets, e.g. <code class="inline">[abc]</code> matches a, b or c</td></tr>
+          <tr><td><code class="inline">-</code></td><td>match a range, e.g. <code class="inline">[0-9]</code> matches numbers 0 to 9</td></tr>
+          <tr><td><code class="inline">[^ ]</code></td><td>match all except listed in brackets, e.g. <code class="inline">[^0-9]</code> matches everything except numbers</td></tr>
+          <tr><td><code class="inline">.</code></td><td>single character of any value</td></tr>
+          <tr><td><code class="inline">*</code></td><td>zero or more characters of any value</td></tr>
+          <tr><td><code class="inline">A</code></td><td>upper case A</td></tr>
+          <tr><td><code class="inline">a</code></td><td>lowercase a</td></tr>
+          <tr><td><code class="inline">\d</code></td><td>any single digit</td></tr>
+          <tr><td><code class="inline">\D</code></td><td>any single non-digit character</td></tr>
+          <tr><td><code class="inline">\w</code></td><td>any alphanumeric character</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function(){
+  // ── code block renderer: leading command + trailing comment ──────── ⊃
+  function escapeHtml(s){
+    return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+  function highlight(pre){
+    var lines = pre.textContent.split("\n");
+    var out = lines.map(function(line){
+      var idx = -1;
+      for (var i = 0; i < line.length; i++){
+        if (line[i] === "#" && (i === 0 || /\s/.test(line[i-1]))){
+          idx = i; break;
+        }
+      }
+      var codePart = idx === -1 ? line : line.slice(0, idx);
+      var commentPart = idx === -1 ? "" : line.slice(idx);
+      var out = "";
+      var lead = codePart.match(/^([A-Za-z_][A-Za-z0-9_.\-]*)/);
+      if (lead){
+        out = '<span class="cmd">' + escapeHtml(lead[1]) + '</span>'
+            + escapeHtml(codePart.slice(lead[1].length));
+      } else {
+        out = escapeHtml(codePart);
+      }
+      if (commentPart){
+        out += '<span class="cm">' + escapeHtml(commentPart) + '</span>';
+      }
+      return out;
+    });
+    pre.innerHTML = out.join("\n");
+  }
+  document.querySelectorAll("pre.code").forEach(highlight);
+
+  // ── download as .md ──────────────────────────────────────────────────
+  var MD_CONTENT = "# Bash Cheat Sheet\n\n## \n\nSave credentials:\n```bash\ngit config --global credential.helper store\n```\n\nClone repository:\n```bash\ngit clone https://platform.zone01.gr/git/username/piscine-go.git\n```\n\nComment in a bash script: `# comment`\n\n## Everyday commands\n\n| Command | Description |\n|---|---|\n| `man` | help |\n| `ls` | list folders |\n| `cp` | copy \u2014 `cp source_file destination_file` |\n| `mkdir` | create directory |\n| `cd` | change directory |\n| `mv` | move directory |\n| `rm` | remove directory |\n\n## Display files\n\n| Command | Description |\n|---|---|\n| `cat` | concatenate |\n| `less` | pager |\n| `head` | beginning of file |\n| `tail` | end of file |\n\n## Look at files\n\n| Command | Description |\n|---|---|\n| `wc` | word count (`-w` word, `-l` line, `-m` char) |\n| `grep` | filter matching text |\n| `find` | search for files |\n| `locate` | search for file names (fast) |\n\n## Detailed and examples\n\n`whoami` \u2192 USERNAME\n\n### Navigate directories\n\n```bash\npwd                       # Print current directory path\nls                        # List directories\nls -a | --all             # List directories including hidden\nls -l                     # List directories in long form\nls -l -h | --human-readable  # List directories in long form with human readable sizes\nls -t                     # List directories by modification time, newest first\nstat foo.txt              # List size, created and modified timestamps for a file\nstat foo                  # List size, created and modified timestamps for a directory\ntree                      # List directory and file tree\ntree -a                   # List directory and file tree including hidden\ntree -d                   # List directory tree\ncd foo                    # Go to foo sub-directory\ncd                        # Go to home directory\ncd ~                      # Go to home directory\ncd -                      # Go to last directory\n\nls | grep \".txt\" | wc -l  # (advanced) \u03bc\u03ad\u03c4\u03c1\u03b1 \u03c0\u03cc\u03c3\u03b1 .txt files \u03c5\u03c0\u03ac\u03c1\u03c7\u03bf\u03c5\u03bd \u03c3\u03c4\u03bf\u03bd \u03c6\u03ac\u03ba\u03b5\u03bb\u03bf\n```\n\n### Create directories\n\n```bash\nmkdir foo                          # Create a directory\nmkdir foo bar                      # Create multiple directories\nmkdir -p foo/bar                   # Create nested directory (--parents)\nmkdir -p|--parents {foo,bar}/baz   # Create multiple nested directories\nmktemp -d|--directory              # Create a temporary directory\ncp --recursive foo bar             # Copy directory\nmv foo bar                         # Move directory\n```\n\n### Delete directories\n\n```bash\nrmdir foo                            # Delete empty directory\nrm -r|--recursive foo                # Delete directory including contents\nrm -r|--recursive -f|--force foo     # Delete directory including contents, ignore nonexistent files and never prompt\n```\n\n### Create files\n\n```bash\ntouch foo.txt                # Create file or update existing file's modified timestamp\ntouch foo.txt bar.txt        # Create multiple files\ntouch {foo,bar}.txt          # Create multiple files\ntouch test{1..3}             # Create test1, test2 and test3 files\ntouch test{a..c}             # Create testa, testb and testc files\n```\n\n### Open file with Visual Studio\n\n```bash\ncode foo.sh\n```\n\n### Standard output, standard error and standard input\n\n```bash\necho \"foo\" > bar.txt      # Overwrite file with content\necho \"foo\" >> bar.txt     # Append to file with content\nls exists 1> stdout.txt   # Redirect the standard output to a file\nls noexist 2> stderror.txt   # Redirect the standard error output to a file\nls 2>&1 > out.txt         # Redirect standard output and error to a file\nls > /dev/null            # Discard standard output and error\nread foo                  # Read from standard input and write to the variable foo\n```\n\n### Reading files\n\n```bash\ncat foo.txt      # Print all contents of a file (view file)\nless foo.txt      # Print some contents at a time (g = top, SHIFT+g = bottom, /foo = search for 'foo')\nhead foo.txt      # Print top 10 lines of file\ntail foo.txt      # Print bottom 10 lines of file\nopen foo.txt      # Open file in the default editor\nwc foo.txt        # List number of lines, words and characters in the file\n```\n\n### File permissions\n\n```bash\nls -l /foo.sh              # List file permissions\nchmod +100 foo.sh          # Add 1 to the user permission\nchmod -100 foo.sh          # Subtract 1 from the user permission\nchmod u+x foo.sh           # Give the user execute permission\nchmod g+x foo.sh           # Give the group execute permission\nchmod u-x,g-x foo.sh       # Take away the user and group execute permission\nchmod u+x,g+x,o+x foo.sh   # Give everybody execute permission\nchmod a+x foo.sh           # Give everybody execute permission\nchmod +x foo.sh            # Give everybody execute permission\n```\n\n### Find files\n\n```bash\nfind /path -name foo.txt              # Find a file\nfind -iname foo.txt                   # Find a file with case insensitive search\nfind -name \"*.txt\"                    # Find all text files\nfind -name foo.txt -delete            # Find a file and delete it\nfind -name \"*.png\" -exec pngquant {}  # Find all .png files and execute pngquant on them\nfind -type f -name foo.txt            # Find a file\nfind -type d -name foo                # Find a directory\nfind -type l -name foo.txt            # Find a symbolic link\nfind -type f -mtime +30               # Find files that haven't been modified in 30 days\nfind -type f -mtime +30 -delete       # Delete files that haven't been modified in 30 days\nfind . -name \"*.txt\" -print0          # \u0391\u03bd\u03b1\u03b6\u03b7\u03c4\u03ac \u03b1\u03c1\u03c7\u03b5\u03af\u03b1 \u03ba\u03b1\u03b9 \u03b5\u03ba\u03c4\u03c5\u03c0\u03ce\u03bd\u03b5\u03b9 \u03c4\u03b1 \u03bf\u03bd\u03cc\u03bc\u03b1\u03c4\u03ac \u03c4\u03bf\u03c5\u03c2 \u03b4\u03b9\u03b1\u03c7\u03c9\u03c1\u03b9\u03c3\u03bc\u03ad\u03bd\u03b1 \u03bc\u03b5 null byte \u03b1\u03bd\u03c4\u03af \u03b3\u03b9\u03b1 \u03b1\u03bb\u03bb\u03b1\u03b3\u03ae \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae\u03c2\n```\n\n### Find in files \u2014 grep (Global Regular Expression Print)\n\n```bash\ngrep 'foo' /bar.txt                          # Search for 'foo' in file 'bar.txt'\ngrep 'foo' /bar -r|--recursive               # Search for 'foo' in directory 'bar'\ngrep 'foo' /bar -R|--dereference-recursive   # Search for 'foo' in directory 'bar' and follow symbolic links\ngrep 'foo' /bar -l|--files-with-matches      # Show only files that match\ngrep 'foo' /bar -L|--files-without-match     # Show only files that don't match\ngrep 'Foo' /bar -i|--ignore-case             # Case insensitive search\ngrep 'foo' /bar -x|--line-regexp             # Match the entire line\ngrep 'foo' /bar -C|--context 1               # Add N lines of context above and below each match\ngrep 'foo' /bar -v|--invert-match            # Show only lines that don't match\ngrep 'foo' /bar -c|--count                   # Count the number of lines that match\ngrep 'foo' /bar -n|--line-number             # Add line numbers\ngrep 'foo' /bar --colour                     # Add colour to output\ngrep 'foo\\|bar' /baz -R                      # Search for 'foo' or 'bar' in directory 'baz'\ngrep --extended-regexp|-E 'foo|bar' /baz -R  # Use regular expressions\negrep 'foo|bar' /baz -R                      # Use regular expressions\n\ngrep -Z / grep --null   # \u0395\u03ba\u03c4\u03c5\u03c0\u03ce\u03bd\u03b5\u03b9 \u03c4\u03bf \u03cc\u03bd\u03bf\u03bc\u03b1 \u03c4\u03bf\u03c5 \u03b1\u03c1\u03c7\u03b5\u03af\u03bf\u03c5 \u03c0\u03bf\u03c5 \u03b2\u03c1\u03ad\u03b8\u03b7\u03ba\u03b5 \u03b1\u03ba\u03bf\u03bb\u03bf\u03c5\u03b8\u03bf\u03cd\u03bc\u03b5\u03bd\u03bf \u03b1\u03c0\u03cc null byte,\n                         # \u03ce\u03c3\u03c4\u03b5 \u03ac\u03bb\u03bb\u03b5\u03c2 \u03b5\u03bd\u03c4\u03bf\u03bb\u03ad\u03c2 \u03bd\u03b1 \u03be\u03ad\u03c1\u03bf\u03c5\u03bd \u03c0\u03bf\u03cd \u03c4\u03b5\u03bb\u03b5\u03b9\u03ce\u03bd\u03b5\u03b9 \u03c4\u03bf \u03ad\u03bd\u03b1 \u03cc\u03bd\u03bf\u03bc\u03b1 \u03ba\u03b1\u03b9 \u03c0\u03bf\u03cd \u03b1\u03c1\u03c7\u03af\u03b6\u03b5\u03b9 \u03c4\u03bf \u03b5\u03c0\u03cc\u03bc\u03b5\u03bd\u03bf\n```\n\nAdvanced \u03c0\u03b1\u03c1\u03ac\u03b4\u03b5\u03b9\u03b3\u03bc\u03b1 \u2014 \u03b1\u03bb\u03bb\u03b1\u03b3\u03ae \u03c3\u03b5 filenames \u03c4\u03b7\u03c2 \u03bb\u03ad\u03be\u03b7\u03c2 `palio` \u03c3\u03b5 `neo`:\n```bash\nfind . -name \"*.txt\" -print0 | xargs -0 grep -lZ \"palio\" | xargs -0 sed -i 's/palio/neo/g'\n```\n\n### Curl\n\n```bash\ncurl https://example.com                        # prints the content of the URL\ncurl http://site.{one,two,three}.com             # for multiple URLs: site.one.com, site.two.com, site.three.com\ncurl ftp://ftp.example.com/file[1-20].jpeg       # numeric sequence 1 to 20\ncurl -s|--silent https://example.com             # without progress bar\ncurl -# https://example.com                      # shows a simple progress bar\n```\n\n### Cut\n\n```bash\ncut -d \"c\" -f1          # use 'c' as delimiter and get field (-f1 or -f2)\ncut -f<n>                # get the nth field\ncut -f<n-m>               # get fields nth to mth\ncut -d \" \" -f 1,2        # using space as delimiter, extract fields 1 and 2\ncut -c 2,5,7             # extract the characters at positions 2, 5, and 7 from each line\n```\n\n### tr (replace)\n\n```bash\necho \"hello\" | tr 'l' '1'         # replaces l with 1 \u2192 he11o\necho \"aaabbbccc\" | tr -s 'a'      # \u03c3\u03c5\u03bc\u03c0\u03af\u03b5\u03c3\u03b7 \u03c7\u03b1\u03c1\u03b1\u03ba\u03c4\u03ae\u03c1\u03c9\u03bd \u2192 abbbccc\n```\n\n\u0397 `tr` \u03b4\u03b5\u03bd \u03b4\u03ad\u03c7\u03b5\u03c4\u03b1\u03b9 \u03b1\u03c0\u03b5\u03c5\u03b8\u03b5\u03af\u03b1\u03c2 \u03bf\u03bd\u03cc\u03bc\u03b1\u03c4\u03b1 \u03b1\u03c1\u03c7\u03b5\u03af\u03c9\u03bd, \u03b1\u03bb\u03bb\u03ac \u03bb\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af \u03bc\u03b5 \u03b1\u03bd\u03b1\u03ba\u03b1\u03c4\u03b5\u03cd\u03b8\u03c5\u03bd\u03c3\u03b7 (\u03c0.\u03c7. `tr 'a' 'b' < input.txt`).\n\n### Replace in files \u2014 sed\n\n```bash\nsed 's/fox/bear/g' foo.txt              # (s = substitute) replace fox with bear in foo.txt\nsed 's|fox|bear|g'                      # \u03c7\u03c1\u03ae\u03c3\u03b7 pipe \u03c9\u03c2 delimiter\nsed 's:fox:bear:g'                      # \u03c7\u03c1\u03ae\u03c3\u03b7 \u03ac\u03bd\u03c9-\u03ba\u03ac\u03c4\u03c9 \u03c4\u03b5\u03bb\u03b5\u03af\u03b1\u03c2 \u03c9\u03c2 delimiter\nsed 's#fox#bear#g'                      # \u03c7\u03c1\u03ae\u03c3\u03b7 hashtag \u03c9\u03c2 delimiter\n\nsed 's/fox/bear/gi' foo.txt             # replace fox (case insensitive) with bear\nsed 's/red fox/blue bear/g' foo.txt     # replace red with blue and fox with bear\nsed 's/fox/bear/g' foo.txt > bar.txt    # replace and save the result to bar.txt\nsed 's/fox/bear/g' foo.txt -i|--in-place  # replace and overwrite foo.txt\n\nsed -e 's/apple/orange/' -e 's/cat/dog/' file.txt   # multiple replacements with -e\nsed -n 's/apple/orange/p' file.txt      # print only the lines that matched (-n silent + p print)\nsed -i 's/apple/orange/' file.txt       # modify the file directly (-i.bak keeps a backup)\nsed -f my_script.sed file.txt           # read the replacements from a script file\nsed -z 's/\\n/ /g'                       # lines are split by the null byte (\\0) instead of \\n \u2014\n                                         # often used together with `find -print0` or `grep -Z`\n```\n\n\u0392\u03ac\u03b6\u03c9 \u03bc\u03bf\u03bd\u03ac `'` \u03b5\u03b9\u03c3\u03b1\u03b3\u03c9\u03b3\u03b9\u03ba\u03ac \u03c3\u03c4\u03bf 95% \u03c4\u03c9\u03bd \u03c0\u03b5\u03c1\u03b9\u03c0\u03c4\u03ce\u03c3\u03b5\u03c9\u03bd, \u03b4\u03b9\u03c0\u03bb\u03ac `\"` \u03cc\u03c4\u03b1\u03bd \u03ad\u03c7\u03c9 variables (\u03ae \u03c4\u03bf\u03bd \u03c7\u03b1\u03c1\u03b1\u03ba\u03c4\u03ae\u03c1\u03b1 `'` \u03bc\u03ad\u03c3\u03b1 \u03c3\u03c4\u03bf \u03c0\u03b5\u03b4\u03af\u03bf, \u03c0.\u03c7. `don't`). \u039c\u03b5 \u03b4\u03b9\u03c0\u03bb\u03ac `\"` \u03c4\u03bf \u03c4\u03b5\u03c1\u03bc\u03b1\u03c4\u03b9\u03ba\u03cc \"\u03b4\u03b9\u03b1\u03b2\u03ac\u03b6\u03b5\u03b9\" \u03c4\u03bf \u03c0\u03b5\u03c1\u03b9\u03b5\u03c7\u03cc\u03bc\u03b5\u03bd\u03bf \u03c0\u03c1\u03b9\u03bd \u03c4\u03bf \u03c3\u03c4\u03b5\u03af\u03bb\u03b5\u03b9 \u03c3\u03c4\u03bf `sed`.\n\n**\u0395\u03bd\u03c4\u03bf\u03bb\u03ad\u03c2 (sed)**\n\n```bash\nsed '/fox/d'                       # (delete) \u03b4\u03b9\u03b1\u03b3\u03c1\u03ac\u03c6\u03b5\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03c4\u03b9\u03c2 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ad\u03c2 \u03c0\u03bf\u03c5 \u03c0\u03b5\u03c1\u03b9\u03ad\u03c7\u03bf\u03c5\u03bd fox\nsed '3d'                           # \u03b4\u03b9\u03b1\u03b3\u03c1\u03ac\u03c6\u03b5\u03b9 \u03bc\u03cc\u03bd\u03bf \u03c4\u03b7\u03bd 3\u03b7 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae\nsed '/^$/d'                        # \u03b4\u03b9\u03b1\u03b3\u03c1\u03ac\u03c6\u03b5\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03c4\u03b9\u03c2 \u03ba\u03b5\u03bd\u03ad\u03c2 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ad\u03c2\nsed '/fox/i NewText'               # (insert) \u03c0\u03c1\u03bf\u03c3\u03b8\u03ad\u03c4\u03b5\u03b9 \u03bd\u03ad\u03b1 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae \u03c0\u03c1\u03b9\u03bd \u03b1\u03c0\u03cc \u03ba\u03ac\u03b8\u03b5 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae \u03bc\u03b5 fox\nsed '/fox/a NewText'               # (append) \u03c0\u03c1\u03bf\u03c3\u03b8\u03ad\u03c4\u03b5\u03b9 \u03bd\u03ad\u03b1 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae \u03bc\u03b5\u03c4\u03ac \u03b1\u03c0\u03cc \u03ba\u03ac\u03b8\u03b5 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae \u03bc\u03b5 fox\nsed '/fox/c This is replaced'      # (change) \u03b1\u03bd\u03c4\u03b9\u03ba\u03b1\u03b8\u03b9\u03c3\u03c4\u03ac \u03bf\u03bb\u03cc\u03ba\u03bb\u03b7\u03c1\u03b7 \u03c4\u03b7 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae \u03c0\u03bf\u03c5 \u03ad\u03c7\u03b5\u03b9 fox\nsed 'y/abc/ABC/' foo.txt           # (transform) \u03b1\u03bd\u03c4\u03b9\u03c3\u03c4\u03bf\u03b9\u03c7\u03af\u03b6\u03b5\u03b9 \u03c7\u03b1\u03c1\u03b1\u03ba\u03c4\u03ae\u03c1\u03b1 \u03c0\u03c1\u03bf\u03c2 \u03c7\u03b1\u03c1\u03b1\u03ba\u03c4\u03ae\u03c1\u03b1, \u03c3\u03b1\u03bd tr\n```\n\n**Flags (sed)**\n\n\u03a4\u03bf `g` \u03c3\u03c4\u03bf \u03c4\u03ad\u03bb\u03bf\u03c2 \u03b5\u03af\u03bd\u03b1\u03b9 flag \u03ba\u03b1\u03b9 \u03bf\u03c1\u03af\u03b6\u03b5\u03b9 \u03c0\u03ce\u03c2 \u03b8\u03b1 \u03b3\u03af\u03bd\u03b5\u03b9 \u03b7 \u03b1\u03bd\u03c4\u03b9\u03ba\u03b1\u03c4\u03ac\u03c3\u03c4\u03b1\u03c3\u03b7 \u03c3\u03c4\u03b7 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae.\n\n| Flag | \u03a3\u03b7\u03bc\u03b1\u03c3\u03af\u03b1 |\n|---|---|\n| (\u03ba\u03b1\u03bd\u03ad\u03bd\u03b1) | \u0391\u03bd\u03c4\u03b9\u03ba\u03b1\u03b8\u03b9\u03c3\u03c4\u03ac \u03bc\u03cc\u03bd\u03bf \u03c4\u03b7\u03bd \u03c0\u03c1\u03ce\u03c4\u03b7 \u03b5\u03bc\u03c6\u03ac\u03bd\u03b9\u03c3\u03b7 \u03c3\u03c4\u03b7 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae |\n| `g` (global) | \u0391\u03bd\u03c4\u03b9\u03ba\u03b1\u03b8\u03b9\u03c3\u03c4\u03ac \u03cc\u03bb\u03b5\u03c2 \u03c4\u03b9\u03c2 \u03b5\u03bc\u03c6\u03b1\u03bd\u03af\u03c3\u03b5\u03b9\u03c2 \u03c3\u03c4\u03b7 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae |\n| \u03b1\u03c1\u03b9\u03b8\u03bc\u03cc\u03c2, \u03c0.\u03c7. `2` | \u0391\u03bd\u03c4\u03b9\u03ba\u03b1\u03b8\u03b9\u03c3\u03c4\u03ac \u03bc\u03cc\u03bd\u03bf \u03c4\u03b7 \u03c3\u03c5\u03b3\u03ba\u03b5\u03ba\u03c1\u03b9\u03bc\u03ad\u03bd\u03b7 \u03b5\u03bc\u03c6\u03ac\u03bd\u03b9\u03c3\u03b7, \u03c0.\u03c7. `sed 's/fox/bear/2'` |\n| `i` (ignore case) | \u0391\u03bd\u03b1\u03b6\u03ae\u03c4\u03b7\u03c3\u03b7 \u03c7\u03c9\u03c1\u03af\u03c2 \u03b4\u03b9\u03ac\u03ba\u03c1\u03b9\u03c3\u03b7 \u03c0\u03b5\u03b6\u03ce\u03bd/\u03ba\u03b5\u03c6\u03b1\u03bb\u03b1\u03af\u03c9\u03bd, \u03c0.\u03c7. `sed 's/fox/bear/gi'` |\n| `p` | \u03a4\u03c5\u03c0\u03ce\u03bd\u03b5\u03b9 \u03c4\u03b7 \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae \u03b1\u03bd \u03b7 \u03b1\u03bd\u03c4\u03b9\u03ba\u03b1\u03c4\u03ac\u03c3\u03c4\u03b1\u03c3\u03b7 \u03c0\u03ad\u03c4\u03c5\u03c7\u03b5 (\u03c3\u03c5\u03c7\u03bd\u03ac \u03bc\u03b5 `sed -n ... p`) |\n| `w file.txt` | \u0393\u03c1\u03ac\u03c6\u03b5\u03b9 \u03c4\u03bf \u03b1\u03c0\u03bf\u03c4\u03ad\u03bb\u03b5\u03c3\u03bc\u03b1 \u03c3\u03b5 \u03bd\u03ad\u03bf \u03b1\u03c1\u03c7\u03b5\u03af\u03bf |\n\n### jq (\u03c3\u03b1\u03bd sed \u03b3\u03b9\u03b1 JSON \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1 \u2014 \u03b5\u03be\u03c9\u03c4\u03b5\u03c1\u03b9\u03ba\u03cc library)\n\n```bash\njq '.'                          # pretty-prints \u03bf\u03bb\u03cc\u03ba\u03bb\u03b7\u03c1\u03bf \u03c4\u03bf JSON\njq '.foo'                       # \u03c4\u03b9\u03bc\u03ae \u03c4\u03bf\u03c5 \u03ba\u03bb\u03b5\u03b9\u03b4\u03b9\u03bf\u03cd \"foo\" \u03c3\u03c4\u03bf root object\njq '.[\"foo\"]'                   # \u03b5\u03bd\u03b1\u03bb\u03bb\u03b1\u03ba\u03c4\u03b9\u03ba\u03cc syntax \u03b3\u03b9\u03b1 keys \u03bc\u03b5 \u03b5\u03b9\u03b4\u03b9\u03ba\u03bf\u03cd\u03c2 \u03c7\u03b1\u03c1\u03b1\u03ba\u03c4\u03ae\u03c1\u03b5\u03c2/\u03ba\u03b5\u03bd\u03ac\njq '.user.profile.id'           # \u03c0\u03c1\u03cc\u03c3\u03b2\u03b1\u03c3\u03b7 \u03c3\u03b5 nested fields\n\njq --raw-output | -r            # raw strings \u03c7\u03c9\u03c1\u03af\u03c2 \u03b5\u03b9\u03c3\u03b1\u03b3\u03c9\u03b3\u03b9\u03ba\u03ac (\u03b3\u03b9\u03b1 shell variables)\njq --raw-output0                # raw strings, \u03c4\u03c5\u03c0\u03ce\u03bd\u03b5\u03b9 NUL \u03b1\u03bd\u03c4\u03af \u03b3\u03b9\u03b1 newline \u03bc\u03b5\u03c4\u03ac \u03b1\u03c0\u03cc \u03ba\u03ac\u03b8\u03b5 output\n\njq '.items[0]'                  # \u03c0\u03c1\u03ce\u03c4\u03bf \u03c3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03bf \u03b5\u03bd\u03cc\u03c2 array\njq '.items[]'                   # iterate \u03c0\u03ac\u03bd\u03c9 \u03c3\u03b5 array, \u03ba\u03ac\u03b8\u03b5 \u03c3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03bf \u03be\u03b5\u03c7\u03c9\u03c1\u03b9\u03c3\u03c4\u03cc output\njq '.items[].name'              # \u03c0\u03b5\u03b4\u03af\u03bf \"name\" \u03b1\u03c0\u03cc \u03ba\u03ac\u03b8\u03b5 object \u03bc\u03ad\u03c3\u03b1 \u03c3\u03b5 array\n\njq -c | --compact-output        # minify output, \u03ad\u03bd\u03b1 object \u03b1\u03bd\u03ac \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae\njq -s | --slurp                 # \u03b4\u03b9\u03b1\u03b2\u03ac\u03b6\u03b5\u03b9 \u03c0\u03bf\u03bb\u03bb\u03ac JSON objects \u03c3\u03b5 \u03ad\u03bd\u03b1 \u03bc\u03b5\u03b3\u03ac\u03bb\u03bf array\njq -S | --sort-keys             # \u03b1\u03bb\u03c6\u03b1\u03b2\u03b7\u03c4\u03b9\u03ba\u03ae \u03c4\u03b1\u03be\u03b9\u03bd\u03cc\u03bc\u03b7\u03c3\u03b7 \u03c4\u03c9\u03bd keys\njq 'keys'                       # array \u03bc\u03b5 \u03cc\u03bb\u03b1 \u03c4\u03b1 keys \u03c4\u03bf\u03c5 object\njq 'length'                     # \u03c0\u03bb\u03ae\u03b8\u03bf\u03c2 \u03c3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03c9\u03bd array \u03ae \u03c7\u03b1\u03c1\u03b1\u03ba\u03c4\u03ae\u03c1\u03c9\u03bd string\n\njq '[.id, .name]'               # \u03bc\u03b5\u03c4\u03b1\u03c4\u03c1\u03bf\u03c0\u03ae \u03c3\u03c5\u03b3\u03ba\u03b5\u03ba\u03c1\u03b9\u03bc\u03ad\u03bd\u03c9\u03bd \u03c0\u03b5\u03b4\u03af\u03c9\u03bd \u03c3\u03b5 \u03bd\u03ad\u03bf array\njq '.[] | select(.id == 100)'   # \u03c6\u03b9\u03bb\u03c4\u03c1\u03ac\u03c1\u03b9\u03c3\u03bc\u03b1 array \u03cc\u03c0\u03bf\u03c5 \"id\" == 100\njq '.[] | select(.name | contains(\"test\"))'   # \u03c6\u03b9\u03bb\u03c4\u03c1\u03ac\u03c1\u03b9\u03c3\u03bc\u03b1 \u03cc\u03c0\u03bf\u03c5 \"name\" \u03c0\u03b5\u03c1\u03b9\u03ad\u03c7\u03b5\u03b9 \"test\"\njq 'map(.price * 1.25)'         # \u03b5\u03c6\u03b1\u03c1\u03bc\u03cc\u03b6\u03b5\u03b9 \u03c5\u03c0\u03bf\u03bb\u03bf\u03b3\u03b9\u03c3\u03bc\u03cc (\u03c0.\u03c7. 25% \u03c6\u03cc\u03c1\u03bf\u03c2) \u03c3\u03b5 \u03ba\u03ac\u03b8\u03b5 \u03c3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03bf\n```\n\n**Advanced logic**\n\n```bash\njq 'if .status == 200 then \"Success\" else \"Fail\" end'   # conditional logic\njq '.optional_field // \"N/A\"'                            # default \u03c4\u03b9\u03bc\u03ae \u03b1\u03bd \u03c4\u03bf field \u03b5\u03af\u03bd\u03b1\u03b9 null/missing\njq 'try .id catch \"error\"'                                # \u03b1\u03c0\u03bf\u03c6\u03c5\u03b3\u03ae crash \u03c3\u03b5 access error\njq '.tags | join(\", \")'                                   # \u03c3\u03c5\u03bd\u03b4\u03c5\u03b1\u03c3\u03bc\u03cc\u03c2 \u03c3\u03c4\u03bf\u03b9\u03c7\u03b5\u03af\u03c9\u03bd array \u03c3\u03b5 comma-separated string\n```\n\n**Pipe chain**\n\n\u0393\u03b9\u03b1 \u03bd\u03b1 \u03c3\u03c5\u03bd\u03b4\u03c5\u03ac\u03c3\u03b5\u03b9\u03c2 \u03c0\u03bf\u03bb\u03bb\u03ad\u03c2 \u03b5\u03bd\u03c4\u03bf\u03bb\u03ad\u03c2 \u03c3\u03c4\u03bf jq, \u03c7\u03c1\u03b7\u03c3\u03b9\u03bc\u03bf\u03c0\u03bf\u03b9\u03b5\u03af\u03c2 \u03c4\u03bf pipe (`|`) \u03bc\u03ad\u03c3\u03b1 \u03c3\u03c4\u03b1 \u03b5\u03b9\u03c3\u03b1\u03b3\u03c9\u03b3\u03b9\u03ba\u03ac. \u039b\u03b5\u03b9\u03c4\u03bf\u03c5\u03c1\u03b3\u03b5\u03af \u03cc\u03c0\u03c9\u03c2 \u03c4\u03bf pipe \u03c3\u03c4\u03bf Linux \u2014 \u03c4\u03bf \u03b1\u03c0\u03bf\u03c4\u03ad\u03bb\u03b5\u03c3\u03bc\u03b1 \u03c4\u03bf\u03c5 \u03b1\u03c1\u03b9\u03c3\u03c4\u03b5\u03c1\u03bf\u03cd \u03c6\u03af\u03bb\u03c4\u03c1\u03bf\u03c5 \u03c0\u03b5\u03c1\u03bd\u03ac\u03b5\u03b9 \u03c9\u03c2 \u03b5\u03af\u03c3\u03bf\u03b4\u03bf\u03c2 \u03c3\u03c4\u03bf \u03b4\u03b5\u03be\u03af.\n\n```bash\njq '.items[] | try .id catch \"N/A\" | select(. != \"N/A\")'\n# \u03c0\u03c1\u03bf\u03c3\u03c0\u03b1\u03b8\u03b5\u03af \u03bd\u03b1 \u03c0\u03ac\u03c1\u03b5\u03b9 \u03c4\u03b1 IDs, \u03b1\u03bd\u03c4\u03b9\u03ba\u03b1\u03b8\u03b9\u03c3\u03c4\u03ac errors \u03bc\u03b5 \"N/A\", \u03ba\u03b1\u03b9 \u03c6\u03b9\u03bb\u03c4\u03c1\u03ac\u03c1\u03b5\u03b9 \u03c4\u03b1 \"N/A\"\n\njq '.data[] | {user: .name, score: .points} | select(.score > 50)'\n# \u03b4\u03b7\u03bc\u03b9\u03bf\u03c5\u03c1\u03b3\u03b5\u03af \u03bd\u03ad\u03bf object \u03bc\u03b5 \u03bc\u03b5\u03c4\u03bf\u03bd\u03bf\u03bc\u03b1\u03c3\u03bc\u03ad\u03bd\u03b1 keys, \u03bc\u03b5\u03c4\u03ac \u03c6\u03b9\u03bb\u03c4\u03c1\u03ac\u03c1\u03b5\u03b9 \u03bc\u03b5 \u03b2\u03ac\u03c3\u03b7 \u03c4\u03bf \u03bd\u03ad\u03bf \"score\"\n\njq 'map(try .price catch 0) | add'\n# \u03c0\u03c1\u03bf\u03c3\u03c0\u03b1\u03b8\u03b5\u03af \u03bd\u03b1 \u03c0\u03ac\u03c1\u03b5\u03b9 \u03cc\u03bb\u03b5\u03c2 \u03c4\u03b9\u03c2 \u03c4\u03b9\u03bc\u03ad\u03c2 (0 \u03c3\u03b5 errors) \u03ba\u03b1\u03b9 \u03c4\u03b9\u03c2 \u03b1\u03b8\u03c1\u03bf\u03af\u03b6\u03b5\u03b9\n\nuser_id=$(curl -s \"https://api.example.com/user\" | jq -r '.id')\n# \u03b1\u03c0\u03bf\u03b8\u03b7\u03ba\u03b5\u03cd\u03b5\u03b9 \u03bc\u03b9\u03b1 \u03c4\u03b9\u03bc\u03ae JSON \u03c3\u03b5 shell variable \u03bc\u03b5 \u03c4\u03bf -r (raw) flag\n\ncurl -s \"https://api.github.com/users/octocat/repos\" | jq -c '.[] | {name, stars: .stargazers_count}'\n# \u03c6\u03ad\u03c1\u03bd\u03b5\u03b9 \u03cc\u03bb\u03b1 \u03c4\u03b1 repos \u03ba\u03b1\u03b9 \u03c4\u03c5\u03c0\u03ce\u03bd\u03b5\u03b9 minified \u03bb\u03af\u03c3\u03c4\u03b1 \u03bc\u03b5 name + star count\n```\n\n**Useful chaining patterns**\n\n```bash\njq 'del(.unused_field) | .updated_at = \"2026-02-02\"'\n# \u03b1\u03c6\u03b1\u03b9\u03c1\u03b5\u03af \u03ad\u03bd\u03b1 field \u03ba\u03b1\u03b9 \u03c0\u03c1\u03bf\u03c3\u03b8\u03ad\u03c4\u03b5\u03b9/\u03b5\u03bd\u03b7\u03bc\u03b5\u03c1\u03ce\u03bd\u03b5\u03b9 \u03ad\u03bd\u03b1 \u03ac\u03bb\u03bb\u03bf \u03c3\u03c4\u03bf \u03af\u03b4\u03b9\u03bf flow\n\njq '.[] | select(.status == \"active\") | .email' | tr 'A-Z' 'a-z'\n# \u03c3\u03c5\u03bd\u03b4\u03c5\u03ac\u03b6\u03b5\u03b9 jq \u03bc\u03b5 tr \u03b3\u03b9\u03b1 \u03bd\u03b1 \u03c0\u03ac\u03c1\u03b5\u03b9 emails \u03ba\u03b1\u03b9 \u03bd\u03b1 \u03c4\u03b1 \u03ba\u03ac\u03bd\u03b5\u03b9 lowercase\n\njq '.results | length as $len | .[] | {total: $len, item: .name}'\n# \u03b1\u03c0\u03bf\u03b8\u03b7\u03ba\u03b5\u03cd\u03b5\u03b9 \u03c4\u03bf \u03bc\u03ae\u03ba\u03bf\u03c2 \u03c4\u03bf\u03c5 array \u03c3\u03b5 \u03bc\u03b5\u03c4\u03b1\u03b2\u03bb\u03b7\u03c4\u03ae ($len \u2014 \u03c4\u03bf length \u03bc\u03b5\u03c4\u03c1\u03ac\u03b5\u03b9 \u03c0\u03cc\u03c3\u03b1 \u03b1\u03bd\u03c4\u03b9\u03ba\u03b5\u03af\u03bc\u03b5\u03bd\u03b1 \u03ad\u03c7\u03b5\u03b9 \u03bf \u03c0\u03af\u03bd\u03b1\u03ba\u03b1\u03c2,\n# \u03b4\u03b7\u03bb\u03b1\u03b4\u03ae \u03b5\u03af\u03bd\u03b1\u03b9 \u03ad\u03bd\u03b1 int) \u03b3\u03b9\u03b1 \u03bd\u03b1 \u03c4\u03bf \u03c7\u03c1\u03b7\u03c3\u03b9\u03bc\u03bf\u03c0\u03bf\u03b9\u03ae\u03c3\u03b5\u03b9 \u03c3\u03b5 \u03bd\u03ad\u03bf object \u03b3\u03b9\u03b1 \u03ba\u03ac\u03b8\u03b5 item\n```\n\n**Key rule for chaining**: \u03cc\u03c4\u03b1\u03bd \u03c7\u03c1\u03b7\u03c3\u03b9\u03bc\u03bf\u03c0\u03bf\u03b9\u03b5\u03af\u03c2 `|` \u03bc\u03ad\u03c3\u03b1 \u03c3\u03c4\u03bf `jq '...'`, \u03c3\u03ba\u03ad\u03c8\u03bf\u03c5 \u03c4\u03bf \u03c3\u03b1\u03bd \u03b3\u03c1\u03b1\u03bc\u03bc\u03ae \u03c0\u03b1\u03c1\u03b1\u03b3\u03c9\u03b3\u03ae\u03c2 \u2014 \u03ba\u03ac\u03b8\u03b5 \u03ba\u03bf\u03bc\u03bc\u03ac\u03c4\u03b9 \u03c6\u03b9\u03bb\u03c4\u03c1\u03ac\u03c1\u03b5\u03b9 \u03ae \u03b1\u03bb\u03bb\u03ac\u03b6\u03b5\u03b9 \u03c4\u03b1 \u03b4\u03b5\u03b4\u03bf\u03bc\u03ad\u03bd\u03b1 \u03ba\u03b1\u03b9 \u03c4\u03b1 \u03b4\u03af\u03bd\u03b5\u03b9 \u03c3\u03c4\u03bf \u03b5\u03c0\u03cc\u03bc\u03b5\u03bd\u03bf.\n\n### Edit ~/.bashrc to run ls after cd\n\n```bash\n# Always run ls after cd\nfunction cd {\n  builtin cd \"$@\" && ls\n}\n```\n\n### Run a bash script (.sh)\n\n```bash\nchmod +x /path/to/yourscript.sh   # give everybody execute permission\nbash /path/to/yourscript.sh\n```\n\n`#!/bin/bash` instructs the operating system to use bash as the command interpreter.\n\n## Bash scripts\n\n### Variables\n\n```bash\n#!/bin/bash\n\nfoo=123                 # Initialize variable foo with 123\ndeclare -i foo=123      # Initialize an integer foo with 123\ndeclare -r foo=123      # Initialize readonly variable foo with 123\necho $foo               # Print variable foo\necho ${foo}_'bar'       # Print variable foo followed by _bar\necho ${foo:-'default'}  # Print variable foo if it exists, otherwise print default\n\nexport foo              # Make foo available to child processes\nunset foo               # Make foo unavailable to child processes\n```\n\n`export PATH=\"$PATH:/my/path\"` \u2014 example: configure an environment variable.\n\n### Environment variables\n\n```bash\n#!/bin/bash\n\nenv             # List all environment variables\necho $PATH      # Print PATH environment variable\nexport FOO=Bar  # Set an environment variable\n```\n\n### Functions\n\n```bash\n#!/bin/bash\n\ngreet() {\n  local world = \"World\"\n  echo \"$1 $world\"\n  return \"$1 $world\"\n}\n\ngreet \"Hello\"\ngreeting=$(greet \"Hello\")\n```\n\n### Exit codes\n\n```bash\n#!/bin/bash\n\nexit 0   # Exit the script successfully\nexit 1   # Exit the script unsuccessfully\necho $?  # Print the last exit code\n```\n\n### If statements\n\n```bash\n#!/bin/bash\n\nif [[$foo = 'bar']]; then\n  echo 'one'\nelif [[$foo = 'bar']] || [[$foo = 'baz']]; then\n  echo 'two'\nelif [[$foo = 'ban']] && [[$USER = 'bat']]; then\n  echo 'three'\nelse\n  echo 'four'\nfi\n```\n\n### Inline if statements\n\n```bash\n#!/bin/bash\n\n[[ $USER = 'zone01' ]] && echo 'yes' || echo 'no'\n```\n\n### While loops\n\n```bash\n#!/bin/bash\n\ndeclare -i counter\ncounter=10\nwhile [$counter -gt 2]; do\n  echo The counter is $counter\n  counter=counter-1\ndone\n```\n\n### For loops\n\n```bash\n#!/bin/bash\n\nfor i in {0..10..2}\n  do\n    echo \"Index: $i\"\n  done\n\nfor filename in file1 file2 file3\n  do\n    echo \"Content: \" >> $filename\n  done\n\nfor filename in *;\n  do\n    echo \"Content: \" >> $filename\n  done\n```\n\n### Case statements\n\n```bash\n#!/bin/bash\n\necho \"What's the weather like tomorrow?\"\nread weather\n\ncase $weather in\n  sunny | warm ) echo \"Nice weather: \" $weather\n  ;;\n  cloudy | cool ) echo \"Not bad weather: \" $weather\n  ;;\n  rainy | cold ) echo \"Terrible weather: \" $weather\n  ;;\n  * ) echo \"Don't understand\"\n  ;;\nesac\n```\n\n## Regular expressions\n\n| Pattern | Meaning |\n|---|---|\n| `\\` | escape the next character, e.g. `\\^` matches the character \"^\" and not \"start of line\" |\n| `^` | start of line |\n| `$` | match end of line |\n| `[ ]` | match any character in brackets, e.g. `[abc]` matches a, b or c |\n| `-` | match a range, e.g. `[0-9]` matches numbers 0 to 9 |\n| `[^ ]` | match all except listed in brackets, e.g. `[^0-9]` matches everything except numbers |\n| `.` | single character of any value |\n| `*` | zero or more characters of any value |\n| `A` | upper case A |\n| `a` | lowercase a |\n| `\\d` | any single digit |\n| `\\D` | any single non-digit character |\n| `\\w` | any alphanumeric character |\n";
+  var btn = document.getElementById("dlBtn");
+  btn.addEventListener("click", function(){
+    var blob = new Blob([MD_CONTENT], { type: "text/markdown;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "bash-cheat-sheet.md";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+})();
+
+(function(){
+  // ── scrollspy: highlight the active TOC chip while scrolling ────── ⊃
+  var chips = Array.prototype.slice.call(document.querySelectorAll("#tocChips .chip"));
+  var map = {};
+  chips.forEach(function(c){ map[c.getAttribute("href").slice(1)] = c; });
+  var sections = Object.keys(map).map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  if (!("IntersectionObserver" in window) || !sections.length) return;
+
+  var current = null;
+  function setActive(id){
+    if (id === current) return;
+    if (current && map[current]) map[current].classList.remove("active");
+    if (id && map[id]) map[id].classList.add("active");
+    current = id;
+  }
+
+  var observer = new IntersectionObserver(function(entries){
+    var visible = entries.filter(function(e){ return e.isIntersecting; });
+    if (!visible.length) return;
+    visible.sort(function(a,b){ return a.boundingClientRect.top - b.boundingClientRect.top; });
+    setActive(visible[0].target.id);
+  }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
+
+  sections.forEach(function(s){ observer.observe(s); });
+})();
+</script>
+
+</body>
+</html>
