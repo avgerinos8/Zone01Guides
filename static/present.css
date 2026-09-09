@@ -383,9 +383,13 @@ h3 {
 /* p and li have no margin rule in style.css, so they fall back to the
    browser default of 1em top and bottom. At the boosted size that is
    about 19px of collapsed space between paragraphs. */
+/* Top margin is not redundant with bottom: adjacent paragraph margins
+   collapse to the larger of the two (14px), while a paragraph that follows
+   a margin-less block — a grid, a table, an inline SVG — keeps its 10px of
+   air. Setting only the bottom margin is what made those touch. */
 p,
 li {
-  margin: 0 0 14px 0;
+  margin: 10px 0 14px 0;
 }
 
 .lede {
@@ -415,14 +419,18 @@ pre code {
 
 /* ── cards, callouts, grids ───────────────────────────────────────────── ⊃ */
 
+/* style.css declares no vertical margin on either grid, so they relied
+   entirely on the neighbouring element's margin for separation. */
 .grid2 {
   gap: 22px;
-  /* was 28px */
+  margin: 20px 0;
+  /* was gap 28px, no margin */
 }
 
 .grid3 {
   gap: 17px;
-  /* was 20px */
+  margin: 20px 0;
+  /* was gap 20px, no margin */
 }
 
 .card {
@@ -439,6 +447,16 @@ pre code {
 .callout .tag {
   margin-bottom: 5px;
   /* was 6px */
+}
+
+.card p:first-child,
+.callout p:first-child {
+  margin-top: 0;
+}
+
+.card p:last-child,
+.callout p:last-child {
+  margin-bottom: 0;
 }
 
 /* ── quiz ─────────────────────────────────────────────────────────────── ⊃ */
