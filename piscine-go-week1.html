@@ -176,16 +176,16 @@
     addContent(`
 <div class="title-slide">
   <div class="title-badge"><img src="./icons/go-one.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
-  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <div class="kicker-line">Zone01 Athens · Piscine 9 · Author: AVGERINOS PAVLOS</div>
   <h1>Piscine Go<br>Week 1 Review</h1>
-  <p class="lede">Μεταβλητές, Τιμές, (πίνακες) Slices, Κείμενο, Functions και Pointers. Κάθε ενότητα εξηγεί τον μηχανισμό και κλείνει με ερωτήσεις για να ελέγξεις τι κράτησες.</p>
+  <p class="lede">Μεταβλητές, Τιμές, Slices, Κείμενο, Functions και Pointers.</p>
 `);
 
     // ── §1 · Πακέτα και ορατότητα ─────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@paketa-kai-oratotita">Ενότητα 1 / 8 — Πακέτα και ορατότητα</div>
 <h1>Πακέτα και ορατότητα</h1>
-<p class="lede">Ο κώδικας της Go οργανώνεται σε πακέτα. Κάθε φορά που καλείς κάτι γραμμένο αλλού, το όνομα που γράφεις έχει δύο μέρη.</p>
+<p class="lede">Ο κώδικας της Go οργανώνεται σε πακέτα. Κάθε φορά που καλείς κάτι γραμμένο σε άλλο πακέτο, το όνομα που γράφεις έχει δύο μέρη.</p>
 
 <svg viewBox="0 0 440 150" xmlns="http://www.w3.org/2000/svg"
      style="width:100%;max-width:600px;height:auto;display:block;margin:6px auto 20px;color:var(--ink)">
@@ -205,36 +205,57 @@
 <pre><code class="lang-go">import "fmt"</code></pre>
 
 <h2>Ποια ονόματα βλέπει το άλλο πακέτο</h2>
-<p>Δεν είναι όλα τα ονόματα ενός πακέτου προσβάσιμα από έξω. Η Go δεν έχει ξεχωριστή λέξη γι' αυτό: το κρίνει από το πρώτο γράμμα του ονόματος.</p>
+<p>Δεν είναι όλα τα "πράγματα" ενός πακέτου προσβάσιμα από έξω. Αν το πρώτο γράμμα τους είναι κεφαλαίο, είναι προσβάσιμο από άλλα πακέτα. Αν είναι πεζό: μόνο μέσα στο ίδιο</p>
+`);
 
-<svg viewBox="0 0 920 250" xmlns="http://www.w3.org/2000/svg"
-     style="width:100%;max-width:920px;height:auto;display:block;margin:14px auto 6px;color:var(--ink)">
-  <defs>
-    <marker id="fig-scope-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-      <path d="M 0 0 L 10 5 L 0 10 z" style="fill:var(--correct)"/>
-    </marker>
-  </defs>
-  <text x="32" y="42" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">package counter</text>
-  <rect x="20" y="56" width="360" height="150" rx="10" style="fill:rgba(var(--ink-rgb),0.04);stroke:currentColor;stroke-opacity:.28"/>
-  <rect x="44" y="80" width="312" height="42" rx="6" style="fill:rgba(var(--correct-rgb),0.10)"/>
-  <text x="60" y="107" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">func Total() int</text>
-  <rect x="44" y="136" width="312" height="42" rx="6" style="fill:rgba(var(--wrong-rgb),0.10)"/>
-  <text x="60" y="163" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">func reset()</text>
-  <text x="552" y="42" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">package main</text>
-  <rect x="540" y="56" width="360" height="150" rx="10" style="fill:rgba(var(--ink-rgb),0.04);stroke:currentColor;stroke-opacity:.28"/>
-  <rect x="564" y="80" width="312" height="42" rx="6" style="fill:rgba(var(--correct-rgb),0.10)"/>
-  <text x="580" y="107" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">counter.Total()</text>
-  <rect x="564" y="136" width="312" height="42" rx="6" style="fill:rgba(var(--wrong-rgb),0.10)"/>
-  <text x="580" y="163" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">counter.reset()</text>
-  <text x="460" y="88" font-size="14" text-anchor="middle" style="fill:var(--correct)">προσβάσιμο</text>
-  <line x1="392" y1="101" x2="528" y2="101" marker-end="url(#fig-scope-head)" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round"/>
-  <line x1="392" y1="157" x2="528" y2="157" style="stroke:var(--wrong);stroke-width:2;stroke-dasharray:6 6;stroke-linecap:round;opacity:.6"/>
-  <line x1="448" y1="145" x2="472" y2="169" style="stroke:var(--wrong);stroke-width:3;stroke-linecap:round"/>
-  <line x1="472" y1="145" x2="448" y2="169" style="stroke:var(--wrong);stroke-width:3;stroke-linecap:round"/>
-  <text x="460" y="190" font-size="14" text-anchor="middle" style="fill:var(--wrong)">δεν μεταγλωττίζεται</text>
-  <text x="460" y="232" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.65">Κεφαλαίο πρώτο γράμμα: προσβάσιμο από άλλα πακέτα. Πεζό: μόνο μέσα στο ίδιο.</text>
+    addContent(`
+<div class="eyebrow" id="@paketa-kai-oratotita">Ενότητα 1 / 8 — Πακέτα και ορατότητα</div>
+<h1>Κάθε φάκελος, ένα μόνο πακέτο</h1>
+<p>Όλα τα αρχεία <code>.go</code> μέσα στον ίδιο φάκελο δηλώνουν το ίδιο όνομα πακέτου, στην πρώτη τους γραμμή. Δεν γίνεται δύο αρχεία του ίδιου φακέλου να ανήκουν σε διαφορετικά πακέτα, και δεν γίνεται ένα πακέτο να απλώνεται σε δύο φακέλους. Ο φάκελος και το πακέτο είναι το ίδιο πράγμα, ιδωμένο από δύο μεριές.</p>
+
+<svg viewBox="0 0 760 296" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto 6px;color:var(--ink)">
+  <g font-family="Menlo, Consolas, monospace" font-size="19">
+    <text x="40" y="46" style="fill:var(--accent)">myapp/</text>
+
+    <text x="40" y="86" style="fill:currentColor;opacity:.45">├──</text>
+    <text x="96" y="86" style="fill:currentColor">main.go</text>
+
+    <text x="40" y="122" style="fill:currentColor;opacity:.45">├──</text>
+    <text x="96" y="122" style="fill:currentColor">helpers.go</text>
+
+    <text x="40" y="158" style="fill:currentColor;opacity:.45">└──</text>
+    <text x="96" y="158" style="fill:var(--accent)">counter/</text>
+
+    <text x="96" y="194" style="fill:currentColor;opacity:.45">├──</text>
+    <text x="152" y="194" style="fill:currentColor">total.go</text>
+
+    <text x="96" y="230" style="fill:currentColor;opacity:.45">└──</text>
+    <text x="152" y="230" style="fill:currentColor">reset.go</text>
+  </g>
+
+  <path d="M 356 70 h 10 v 62 h -10" fill="none"
+        style="stroke:var(--correct);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+  <text x="384" y="108" font-size="17" font-family="Menlo, Consolas, monospace"
+        style="fill:var(--correct)">package main</text>
+
+  <path d="M 356 178 h 10 v 62 h -10" fill="none"
+        style="stroke:var(--correct);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+  <text x="384" y="216" font-size="17" font-family="Menlo, Consolas, monospace"
+        style="fill:var(--correct)">package counter</text>
+
+  <text x="380" y="278" font-size="15" text-anchor="middle"
+        style="fill:currentColor;opacity:.65">Δύο φάκελοι, δύο πακέτα. Τα αρχεία του καθενός δηλώνουν όλα το ίδιο όνομα.</text>
 </svg>
 
+<h2>Το πακέτο <code>main</code></h2>
+<p>Ένα από τα πακέτα έχει ειδική σημασία. Το <code>main</code> είναι αυτό που περιέχει τη <code>func main()</code>, το σημείο από το οποίο ξεκινάει η ροή εκτέλεσης του προγράμματος. Όταν τρέχεις το πρόγραμμα, η πρώτη γραμμή που εκτελείται είναι η πρώτη γραμμή αυτής της function, και όταν αυτή τελειώσει, το πρόγραμμα τερματίζει.</p>
+
+<pre><code class="lang-go">package main
+
+func main() {
+	<span class="cm">// execution starts here</span>
+}</code></pre>
 `);
 
     addQuiz([
@@ -251,6 +272,8 @@
       },
       {
         q: "Ποια από τις δύο functions μπορεί να κληθεί από άλλο πακέτο;",
+        code: "package counter\n\nfunc Total() int {\n\t// ...\n}\n\nfunc reset() {\n\t// ...\n}",
+        lang: "go",
         options: [
           "Η Total, επειδή αρχίζει με κεφαλαίο",
           "Η reset, επειδή τα πεζά ονόματα προορίζονται για χρήση από άλλα πακέτα",
@@ -258,7 +281,20 @@
           "Καμία, χωρίς ρητή δήλωση εξαγωγής"
         ],
         correct: 0,
-        explain: "Το import δίνει πρόσβαση στο πακέτο, όχι σε όλα τα περιεχόμενά του. Ό,τι αρχίζει με πεζό παραμένει προσβάσιμο μόνο μέσα στο πακέτο όπου ορίστηκε."
+        explain: "Το import δίνει πρόσβαση στο πακέτο, όχι σε όλα τα περιεχόμενά του. Ό,τι αρχίζει με πεζό, όπως η <code>reset</code>, παραμένει προσβάσιμο μόνο μέσα στο πακέτο όπου ορίστηκε."
+      },
+      {
+        q: "Πώς καλείς την Total από το main.go;",
+        code: "package main\n\nimport \"example/counter\"\n\nfunc main() {\n\t// which line goes here?\n}",
+        lang: "go",
+        options: [
+          "counter.Total()",
+          "example.counter.Total()",
+          "main.Total()",
+          "counter.total()"
+        ],
+        correct: 0,
+        explain: "Το όνομα του πακέτου μπαίνει πριν από την τελεία και το όνομα της function μετά, ακριβώς όπως γράφτηκε στο πακέτο <code>counter</code>. Σκέτο <code>Total()</code> θα το έψαχνε η Go μέσα στο <code>main</code>."
       },
       {
         q: "Τι κάνει η γραμμή import;",
@@ -279,6 +315,7 @@
 <h1>Τι κρατάει μια μεταβλητή</h1>
 <p class="lede">Μια μεταβλητή είναι ένα όνομα που δίνεις σε μια θέση της μνήμης. Τρία πράγματα την ορίζουν, και μόνο το ένα από αυτά αλλάζει στη διάρκεια του προγράμματος.</p>
 
+<pre><code class="lang-go">var count int = 42</code></pre>
 <svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"
      style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto;color:var(--ink)">
   <text x="120" y="40" font-size="16" text-anchor="middle" style="fill:var(--accent)">όνομα</text>
@@ -313,25 +350,23 @@
     addContent(`
 <div class="eyebrow" id="@dilosi-choris-archiki-timi">Ενότητα 2 / 8 — Δήλωση μεταβλητών</div>
 <h1>Δήλωση χωρίς αρχική τιμή</h1>
-<p class="lede">Η βασική μορφή δήλωσης δίνει όνομα και τύπο. Την τιμή την αναλαμβάνει η Go.</p>
 
 <pre><code class="lang-go">var count int
 var name string
 var ready bool</code></pre>
 
-<p>Καμία από αυτές τις τρεις μεταβλητές δεν είναι άδεια ή απροσδιόριστη. Η Go δίνει σε κάθε τύπο μία προκαθορισμένη αρχική τιμή, τη μηδενική τιμή του τύπου, ώστε να μην υπάρχει περίπτωση να διαβάσεις σκουπίδια από τη μνήμη.</p>
+<p>Καμία από αυτές τις τρεις μεταβλητές δεν είναι άδεια ή απροσδιόριστη. Η Go δίνει σε κάθε τύπο μία προκαθορισμένη αρχική τιμή, τη μηδενική τιμή του τύπου, ώστε να μην υπάρχει περίπτωση να διαβάσεις τυχαίες τιμές που έχουν απομείνει στην μνήμη.</p>
 
 <table class="glossary-table">
   <tr><td class="gt-term">int</td><td class="gt-def">0</td></tr>
   <tr><td class="gt-term">float64</td><td class="gt-def">0</td></tr>
   <tr><td class="gt-term">string</td><td class="gt-def">"" — κείμενο μηδενικού μήκους</td></tr>
   <tr><td class="gt-term">bool</td><td class="gt-def">false</td></tr>
-  <tr><td class="gt-term">rune</td><td class="gt-def">0 — ο κωδικός μηδέν, όχι το ψηφίο μηδέν</td></tr>
+  <tr><td class="gt-term">rune</td><td class="gt-def">Null character \\x00</td></tr>
 </table>
 
 <div class="callout">
-  <span class="tag">ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ</span>
-  Ένας μετρητής που δηλώνεις με <code>var total int</code> ξεκινάει σίγουρα από το μηδέν. Δεν χρειάζεται να γράψεις <code>total = 0</code> από κάτω, και δεν υπάρχει κίνδυνος να προσθέτεις πάνω σε άγνωστη τιμή.
+  Μια μεταβλητή που δηλώνεις με <code>var total int</code> ξεκινάει σίγουρα από το μηδέν. Δεν χρειάζεται να γράψεις <code>total = 0</code> από κάτω, και δεν υπάρχει κίνδυνος να προσθέτεις πάνω σε άγνωστη τιμή.
 </div>
 `);
 
@@ -396,12 +431,22 @@ count := 42</code></pre>
   <text x="620" y="126" font-size="14" text-anchor="end" style="fill:var(--correct);opacity:.85">το i ζει μόνο εδώ μέσα</text>
 </svg>
 
-<p>Το <code>total</code> δηλώνεται στην εξωτερική περιοχή, οπότε ο κώδικας μέσα στην εσωτερική το βλέπει κανονικά. Το <code>i</code> δηλώνεται στην εσωτερική, οπότε μετά το κλείσιμο του loop δεν υπάρχει πια και κάθε αναφορά σε αυτό είναι σφάλμα μεταγλώττισης.</p>
-
 <div class="callout">
   <span class="tag">ΣΥΧΝΟ ΛΑΘΟΣ</span>
   Αν χρειάζεσαι μια τιμή και μετά το τέλος του loop, δήλωσέ την πριν από το loop. Μια μεταβλητή που δηλώνεται μέσα, χάνεται μαζί με την περιοχή της.
 </div>
+
+<pre><code class="lang-go">func main() {
+	total := 0
+
+	for i := 0; i &lt; 3; i++ {
+		total = total + i
+	}
+
+	fmt.Println(total) <span class="cm">// 3 — total is still here</span>
+	fmt.Println(i)     <span class="cm">// compile error: undefined: i</span>
+}</code></pre>
+
 `);
 
     addQuiz([
@@ -425,18 +470,7 @@ count := 42</code></pre>
           "Η δεύτερη επιτρέπει αλλαγή τύπου αργότερα"
         ],
         correct: 0,
-        explain: "Και οι δύο δηλώνουν μια μεταβλητή int με τιμή 42. Ο περιορισμός του := είναι θέση, όχι αποτέλεσμα: έξω από function χρησιμοποιείται μόνο το var."
-      },
-      {
-        q: "Γιατί η μηδενική τιμή είναι χρήσιμη σε έναν μετρητή;",
-        options: [
-          "Ξεκινάει σίγουρα από το μηδέν χωρίς επιπλέον γραμμή",
-          "Επιτρέπει στον μετρητή να αλλάξει τύπο αν χρειαστεί να κρατήσει δεκαδικό αριθμό αργότερα",
-          "Κάνει τον μετρητή σταθερό μέχρι την πρώτη ανάθεση",
-          "Δεσμεύει λιγότερη μνήμη από έναν αρχικοποιημένο μετρητή"
-        ],
-        correct: 0,
-        explain: "Το var total int είναι ήδη μηδέν. Η γραμμή total = 0 από κάτω δεν προσθέτει τίποτα."
+        explain: "Και οι δύο δηλώνουν μια μεταβλητή int με τιμή 42. Έξω από function (global variable) χρησιμοποιείται μόνο το var."
       },
       {
         q: "Πού υπάρχει η μεταβλητή i μετά το τέλος ενός for loop που τη δηλώνει;",
@@ -458,7 +492,7 @@ count := 42</code></pre>
           "Όταν δηλώνονται δύο μεταβλητές στην ίδια γραμμή"
         ],
         correct: 0,
-        explain: "Σε επίπεδο πακέτου κάθε δήλωση ξεκινάει με λέξη-κλειδί. Το := είναι διαθέσιμο μόνο μέσα σε function."
+        explain: "Σε επίπεδο πακέτου (package level ή global variable) κάθε δήλωση ξεκινάει με λέξη-κλειδί. Το := είναι διαθέσιμο μόνο μέσα σε function."
       }
     ]);
 
@@ -480,17 +514,17 @@ var ready __type__        // declare a flag, starts as false`,
     // ── §3 · Ανάθεση και τιμές ────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@i-anathesi">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
-<h1>Η ανάθεση αλλάζει την τιμή, όχι τον τύπο</h1>
+<h1>Ανάθεση τιμής</h1>
 <p class="lede">Το <code>=</code> παίρνει ό,τι υπάρχει στα δεξιά και το τοποθετεί στη μεταβλητή που βρίσκεται στα αριστερά. Η προηγούμενη τιμή χάνεται.</p>
 
 <pre><code class="lang-go">count := 42
 count = 7      <span class="cm">// the 42 is gone, count now holds 7</span>
 count = count + 1</code></pre>
 
-<p>Η τρίτη γραμμή διαβάζεται από τα δεξιά προς τα αριστερά: πρώτα υπολογίζεται το <code>count + 1</code> με την τρέχουσα τιμή, και μετά το αποτέλεσμα μπαίνει πίσω στο <code>count</code>. Δεν είναι εξίσωση, είναι εντολή.</p>
+<p>Η τρίτη γραμμή διαβάζεται από τα δεξιά προς τα αριστερά: πρώτα υπολογίζεται το <code>count + 1</code> με την τρέχουσα τιμή, και μετά το αποτέλεσμα μπαίνει πίσω στο <code>count</code>. Δεν είναι εξίσωση, είναι εντολή ανάθεσης. Ο έλεγχος ισότητας είναι ξεχωριστός τελεστής, το <code>==</code>, και δεν αλλάζει καμία τιμή.</p>
 
 <h2>Ο τύπος δεν συζητιέται ξανά</h2>
-<p>Από τη στιγμή που το <code>count</code> δηλώθηκε ως <code>int</code>, δέχεται μόνο ακέραιους. Η ανάθεση κειμένου σε αυτό δεν είναι λάθος που θα εμφανιστεί κατά την εκτέλεση, είναι σφάλμα μεταγλώττισης και το πρόγραμμα δεν παράγεται καν.</p>
+<p>Από τη στιγμή που το <code>count</code> δηλώθηκε ως <code>int</code>, δέχεται μόνο ακέραιους. Αν προσπαθήσουμε να αναθέσουμε <em>κείμενο</em> στην μεταβλητή <code>count</code> το πρόγραμμα δεν "παράγεται" καν (δεν γίνεται μεταγλώττιση).</p>
 
 <pre><code class="lang-go">count := 42
 count = "42"   <span class="cm">// compile error: cannot use "42" as int</span></code></pre>
@@ -511,43 +545,28 @@ x, y, z := 10, 20, 30</code></pre>
 
 <p>Η σειρά αντιστοιχίζεται θέση προς θέση: το πρώτο όνομα παίρνει την πρώτη τιμή, το δεύτερο τη δεύτερη. Το σημαντικό είναι πότε υπολογίζεται η δεξιά πλευρά. Υπολογίζεται ολόκληρη πρώτη, με τις παλιές τιμές, και μόνο μετά γίνονται οι αναθέσεις.</p>
 
-<svg viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg"
-     style="width:100%;max-width:760px;height:auto;display:block;margin:16px auto;color:var(--ink)">
-  <text x="30" y="34" font-size="16" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">a, b = b, a</text>
+<pre><code class="lang-go">var a, b int
+a, b = 1, 2
+a, b = b, a
+fmt.Println(a, b) <span class="cm">// 2 1</span></code></pre>
 
-  <text x="150" y="78" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">πριν</text>
-  <rect x="90" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
-  <text x="133" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">1</text>
-  <text x="133" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">a</text>
-  <rect x="196" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
-  <text x="239" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">2</text>
-  <text x="239" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">b</text>
+<p>Η τρίτη γραμμή εκτελείται σε δύο φάσεις. Πρώτα διαβάζονται και οι δύο τιμές της δεξιάς πλευράς, το <code>b</code> που είναι 2 και το <code>a</code> που είναι 1, ενώ οι μεταβλητές έχουν ακόμη το αρχικό τους περιεχόμενο. Μόνο αφού ολοκληρωθεί αυτό, οι δύο τιμές γράφονται στις μεταβλητές της αριστερής πλευράς, με την ίδια σειρά. Έτσι το <code>a</code> παίρνει το 2 και το <code>b</code> το 1.</p>
 
-  <text x="380" y="104" font-size="15" text-anchor="middle" style="fill:var(--correct)">το 2 και το 1</text>
-  <text x="380" y="124" font-size="15" text-anchor="middle" style="fill:var(--correct)">διαβάζονται πρώτα</text>
-  <line x1="300" y1="140" x2="460" y2="140" style="stroke:var(--correct);stroke-width:2;stroke-dasharray:5 5;stroke-linecap:round"/>
+<p>Η σημασία της σειράς φαίνεται αν επιχειρήσεις το ίδιο με δύο ξεχωριστές αναθέσεις. Η πρώτη γράφει πάνω στο <code>a</code> πριν προλάβει η δεύτερη να διαβάσει την παλιά του τιμή, οπότε το 1 χάνεται και καταλήγουν και οι δύο μεταβλητές με 2.</p>
 
-  <text x="620" y="78" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">μετά</text>
-  <rect x="560" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--correct-rgb),0.12);stroke:var(--correct);stroke-width:2"/>
-  <text x="603" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">2</text>
-  <text x="603" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">a</text>
-  <rect x="666" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--correct-rgb),0.12);stroke:var(--correct);stroke-width:2"/>
-  <text x="709" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">1</text>
-  <text x="709" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">b</text>
-</svg>
-
-<p>Γι' αυτό η γραμμή <code>a, b = b, a</code> ανταλλάσσει τις δύο τιμές σωστά, χωρίς τρίτη μεταβλητή. Σε μια γλώσσα όπου οι αναθέσεις γίνονταν μία-μία, η πρώτη θα κατέστρεφε την τιμή που χρειάζεται η δεύτερη.</p>
+<pre><code class="lang-go">a = b <span class="cm">// a is now 2, the old 1 is gone</span>
+b = a <span class="cm">// b reads the new a, so it gets 2 as well</span></code></pre>
 
 <div class="callout">
   <span class="tag">ΤΟ ΠΛΗΘΟΣ ΠΡΕΠΕΙ ΝΑ ΤΑΙΡΙΑΖΕΙ</span>
-  Τρία ονόματα αριστερά απαιτούν τρεις τιμές δεξιά. Κάθε άλλος συνδυασμός είναι σφάλμα μεταγλώττισης.
+  Τρία ονόματα αριστερά απαιτούν τρεις τιμές δεξιά. Κάθε άλλος συνδυασμός είναι σφάλμα μεταγλώττισης. Αν κάποια από τις τιμές δεν σε ενδιαφέρει, μπορείς να την αγνοήσεις με <code>a, _, c := 1, 2, 3</code>.
 </div>
 `);
 
     addContent(`
 <div class="eyebrow" id="@treis-morfes-tou-idiou-symvolou">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
 <h1>Τρεις μορφές του ίδιου συμβόλου</h1>
-<p class="lede">Το πεντάρι μπορεί να γραφτεί με τρεις τρόπους, και κάθε τρόπος δίνει διαφορετικό τύπο. Η διαφορά φαίνεται μόλις προσπαθήσεις να κάνεις πράξη.</p>
+<p class="lede">Ο αριθμός 5 μπορεί να γραφτεί με τρεις τρόπους, και κάθε τρόπος δίνει διαφορετικό τύπο. Η διαφορά φαίνεται μόλις προσπαθήσεις να κάνεις κάποια πράξη.</p>
 
 <svg viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg"
      style="width:100%;max-width:900px;height:auto;display:block;margin:16px auto;color:var(--ink)">
@@ -581,62 +600,198 @@ fmt.Println(r + 1)   <span class="cm">// 54, the code of the character '6'</span
 fmt.Println(s + 1)   <span class="cm">// compile error: mismatched types</span></code></pre>
 
 <div class="callout">
-  <span class="tag">ΤΟ ΚΕΝΤΡΙΚΟ ΣΗΜΕΙΟ</span>
-  Ένα κείμενο που περιέχει ψηφία δεν είναι αριθμός. Ο compiler δεν το μετατρέπει από μόνος του, ούτε στην πρόσθεση ούτε πουθενά αλλού.
+  <span class="tag">invalid operation: n + s (mismatched types int and string)</span>
+  Ένα κείμενο που περιέχει ψηφία δεν είναι αριθμός. Ο compiler δεν το μετατρέπει από μόνος του, χρειαζόμαστε τις functions:<br>
+  <code>Atoi(s)</code> που σημαίνει <code>ASCII to Integer</code><br>
+  <code>Itoa(n)</code> που σημαίνει <code>Integer to ASCII</code>.
 </div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@o-pinakas-ascii">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
+<h1>Ο πίνακας ASCII</h1>
+<p class="lede">Οι κωδικοί 0 έως 127 είναι το αρχικό σύνολο χαρακτήρων. Οι πρώτοι 32 δεν τυπώνονται: ήταν εντολές προς τερματικά και εκτυπωτές. Ό,τι πληκτρολογείς ξεκινά από το 32.</p>
+<p>Το <code>LF</code> στο 10 είναι το <code>'\\n'</code>, δηλαδή η αλλαγή γραμμής.</p>
+<svg viewBox="0 0 900 494" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:1200px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <text x="14" y="30" font-size="16" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">int &#8594; rune</text>
+  <g font-size="14" style="fill:currentColor;opacity:.75">
+    <rect x="14" y="46" width="16" height="16" rx="4" style="fill:rgba(var(--wrong-rgb),0.13)"/><text x="38" y="60">μη εκτυπώσιμοι</text>
+    <rect x="180" y="46" width="16" height="16" rx="4" style="fill:rgba(var(--accent-rgb),0.20)"/><text x="204" y="60">ψηφία</text>
+    <rect x="285" y="46" width="16" height="16" rx="4" style="fill:rgba(var(--correct-rgb),0.90)"/><text x="309" y="60">κεφαλαία</text>
+    <rect x="415" y="46" width="16" height="16" rx="4" style="fill:rgba(var(--correct-rgb),0.50)"/><text x="439" y="60">πεζά</text>
+    <rect x="512" y="46" width="16" height="16" rx="4" style="fill:rgba(var(--ink-rgb),0.045)"/><text x="536" y="60">σύμβολα και κενό</text>
+  </g>
+  <line x1="14" y1="74" x2="886" y2="74" style="stroke:currentColor;stroke-opacity:.18"/>
+
+  <g style="fill:rgba(var(--wrong-rgb),0.13)">
+    <rect x="14" y="86" width="51" height="42" rx="5"/> <rect x="69" y="86" width="51" height="42" rx="5"/> <rect x="124" y="86" width="51" height="42" rx="5"/> <rect x="179" y="86" width="51" height="42" rx="5"/>
+    <rect x="234" y="86" width="51" height="42" rx="5"/> <rect x="289" y="86" width="51" height="42" rx="5"/> <rect x="344" y="86" width="51" height="42" rx="5"/> <rect x="399" y="86" width="51" height="42" rx="5"/>
+    <rect x="454" y="86" width="51" height="42" rx="5"/> <rect x="509" y="86" width="51" height="42" rx="5"/> <rect x="564" y="86" width="51" height="42" rx="5"/> <rect x="619" y="86" width="51" height="42" rx="5"/>
+    <rect x="674" y="86" width="51" height="42" rx="5"/> <rect x="729" y="86" width="51" height="42" rx="5"/> <rect x="784" y="86" width="51" height="42" rx="5"/> <rect x="839" y="86" width="51" height="42" rx="5"/>
+    <rect x="14" y="132" width="51" height="42" rx="5"/> <rect x="69" y="132" width="51" height="42" rx="5"/> <rect x="124" y="132" width="51" height="42" rx="5"/> <rect x="179" y="132" width="51" height="42" rx="5"/>
+    <rect x="234" y="132" width="51" height="42" rx="5"/> <rect x="289" y="132" width="51" height="42" rx="5"/> <rect x="344" y="132" width="51" height="42" rx="5"/> <rect x="399" y="132" width="51" height="42" rx="5"/>
+    <rect x="454" y="132" width="51" height="42" rx="5"/> <rect x="509" y="132" width="51" height="42" rx="5"/> <rect x="564" y="132" width="51" height="42" rx="5"/> <rect x="619" y="132" width="51" height="42" rx="5"/>
+    <rect x="674" y="132" width="51" height="42" rx="5"/> <rect x="729" y="132" width="51" height="42" rx="5"/> <rect x="784" y="132" width="51" height="42" rx="5"/> <rect x="839" y="132" width="51" height="42" rx="5"/>
+    <rect x="839" y="408" width="51" height="42" rx="5"/>
+  </g>
+  <g style="fill:rgba(var(--ink-rgb),0.045)">
+    <rect x="14" y="178" width="51" height="42" rx="5"/> <rect x="69" y="178" width="51" height="42" rx="5"/> <rect x="124" y="178" width="51" height="42" rx="5"/> <rect x="179" y="178" width="51" height="42" rx="5"/>
+    <rect x="234" y="178" width="51" height="42" rx="5"/> <rect x="289" y="178" width="51" height="42" rx="5"/> <rect x="344" y="178" width="51" height="42" rx="5"/> <rect x="399" y="178" width="51" height="42" rx="5"/>
+    <rect x="454" y="178" width="51" height="42" rx="5"/> <rect x="509" y="178" width="51" height="42" rx="5"/> <rect x="564" y="178" width="51" height="42" rx="5"/> <rect x="619" y="178" width="51" height="42" rx="5"/>
+    <rect x="674" y="178" width="51" height="42" rx="5"/> <rect x="729" y="178" width="51" height="42" rx="5"/> <rect x="784" y="178" width="51" height="42" rx="5"/> <rect x="839" y="178" width="51" height="42" rx="5"/>
+    <rect x="564" y="224" width="51" height="42" rx="5"/> <rect x="619" y="224" width="51" height="42" rx="5"/> <rect x="674" y="224" width="51" height="42" rx="5"/> <rect x="729" y="224" width="51" height="42" rx="5"/>
+    <rect x="784" y="224" width="51" height="42" rx="5"/> <rect x="839" y="224" width="51" height="42" rx="5"/> <rect x="14" y="270" width="51" height="42" rx="5"/> <rect x="619" y="316" width="51" height="42" rx="5"/>
+    <rect x="674" y="316" width="51" height="42" rx="5"/> <rect x="729" y="316" width="51" height="42" rx="5"/> <rect x="784" y="316" width="51" height="42" rx="5"/> <rect x="839" y="316" width="51" height="42" rx="5"/>
+    <rect x="14" y="362" width="51" height="42" rx="5"/> <rect x="619" y="408" width="51" height="42" rx="5"/> <rect x="674" y="408" width="51" height="42" rx="5"/> <rect x="729" y="408" width="51" height="42" rx="5"/>
+    <rect x="784" y="408" width="51" height="42" rx="5"/>
+  </g>
+  <g style="fill:rgba(var(--accent-rgb),0.20)">
+    <rect x="14" y="224" width="51" height="42" rx="5"/> <rect x="69" y="224" width="51" height="42" rx="5"/> <rect x="124" y="224" width="51" height="42" rx="5"/> <rect x="179" y="224" width="51" height="42" rx="5"/>
+    <rect x="234" y="224" width="51" height="42" rx="5"/> <rect x="289" y="224" width="51" height="42" rx="5"/> <rect x="344" y="224" width="51" height="42" rx="5"/> <rect x="399" y="224" width="51" height="42" rx="5"/>
+    <rect x="454" y="224" width="51" height="42" rx="5"/> <rect x="509" y="224" width="51" height="42" rx="5"/>
+  </g>
+  <g style="fill:rgba(var(--correct-rgb),0.40)">
+    <rect x="69" y="270" width="51" height="42" rx="5"/> <rect x="124" y="270" width="51" height="42" rx="5"/> <rect x="179" y="270" width="51" height="42" rx="5"/> <rect x="234" y="270" width="51" height="42" rx="5"/>
+    <rect x="289" y="270" width="51" height="42" rx="5"/> <rect x="344" y="270" width="51" height="42" rx="5"/> <rect x="399" y="270" width="51" height="42" rx="5"/> <rect x="454" y="270" width="51" height="42" rx="5"/>
+    <rect x="509" y="270" width="51" height="42" rx="5"/> <rect x="564" y="270" width="51" height="42" rx="5"/> <rect x="619" y="270" width="51" height="42" rx="5"/> <rect x="674" y="270" width="51" height="42" rx="5"/>
+    <rect x="729" y="270" width="51" height="42" rx="5"/> <rect x="784" y="270" width="51" height="42" rx="5"/> <rect x="839" y="270" width="51" height="42" rx="5"/> <rect x="14" y="316" width="51" height="42" rx="5"/>
+    <rect x="69" y="316" width="51" height="42" rx="5"/> <rect x="124" y="316" width="51" height="42" rx="5"/> <rect x="179" y="316" width="51" height="42" rx="5"/> <rect x="234" y="316" width="51" height="42" rx="5"/>
+    <rect x="289" y="316" width="51" height="42" rx="5"/> <rect x="344" y="316" width="51" height="42" rx="5"/> <rect x="399" y="316" width="51" height="42" rx="5"/> <rect x="454" y="316" width="51" height="42" rx="5"/>
+    <rect x="509" y="316" width="51" height="42" rx="5"/> <rect x="564" y="316" width="51" height="42" rx="5"/>
+  </g>
+  <g style="fill:rgba(var(--correct-rgb),0.20)">
+    <rect x="69" y="362" width="51" height="42" rx="5"/> <rect x="124" y="362" width="51" height="42" rx="5"/> <rect x="179" y="362" width="51" height="42" rx="5"/> <rect x="234" y="362" width="51" height="42" rx="5"/>
+    <rect x="289" y="362" width="51" height="42" rx="5"/> <rect x="344" y="362" width="51" height="42" rx="5"/> <rect x="399" y="362" width="51" height="42" rx="5"/> <rect x="454" y="362" width="51" height="42" rx="5"/>
+    <rect x="509" y="362" width="51" height="42" rx="5"/> <rect x="564" y="362" width="51" height="42" rx="5"/> <rect x="619" y="362" width="51" height="42" rx="5"/> <rect x="674" y="362" width="51" height="42" rx="5"/>
+    <rect x="729" y="362" width="51" height="42" rx="5"/> <rect x="784" y="362" width="51" height="42" rx="5"/> <rect x="839" y="362" width="51" height="42" rx="5"/> <rect x="14" y="408" width="51" height="42" rx="5"/>
+    <rect x="69" y="408" width="51" height="42" rx="5"/> <rect x="124" y="408" width="51" height="42" rx="5"/> <rect x="179" y="408" width="51" height="42" rx="5"/> <rect x="234" y="408" width="51" height="42" rx="5"/>
+    <rect x="289" y="408" width="51" height="42" rx="5"/> <rect x="344" y="408" width="51" height="42" rx="5"/> <rect x="399" y="408" width="51" height="42" rx="5"/> <rect x="454" y="408" width="51" height="42" rx="5"/>
+    <rect x="509" y="408" width="51" height="42" rx="5"/> <rect x="564" y="408" width="51" height="42" rx="5"/>
+  </g>
+  <g font-size="11" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor;opacity:.5">
+    <text x="39" y="104">0</text> <text x="94" y="104">1</text> <text x="149" y="104">2</text> <text x="204" y="104">3</text> <text x="259" y="104">4</text> <text x="314" y="104">5</text> <text x="369" y="104">6</text> <text x="424" y="104">7</text>
+    <text x="479" y="104">8</text> <text x="534" y="104">9</text> <text x="589" y="104">10</text> <text x="644" y="104">11</text> <text x="699" y="104">12</text> <text x="754" y="104">13</text> <text x="809" y="104">14</text> <text x="864" y="104">15</text>
+    <text x="39" y="150">16</text> <text x="94" y="150">17</text> <text x="149" y="150">18</text> <text x="204" y="150">19</text> <text x="259" y="150">20</text> <text x="314" y="150">21</text> <text x="369" y="150">22</text> <text x="424" y="150">23</text>
+    <text x="479" y="150">24</text> <text x="534" y="150">25</text> <text x="589" y="150">26</text> <text x="644" y="150">27</text> <text x="699" y="150">28</text> <text x="754" y="150">29</text> <text x="809" y="150">30</text> <text x="864" y="150">31</text>
+    <text x="39" y="196">32</text> <text x="94" y="196">33</text> <text x="149" y="196">34</text> <text x="204" y="196">35</text> <text x="259" y="196">36</text> <text x="314" y="196">37</text> <text x="369" y="196">38</text> <text x="424" y="196">39</text>
+    <text x="479" y="196">40</text> <text x="534" y="196">41</text> <text x="589" y="196">42</text> <text x="644" y="196">43</text> <text x="699" y="196">44</text> <text x="754" y="196">45</text> <text x="809" y="196">46</text> <text x="864" y="196">47</text>
+    <text x="39" y="242">48</text> <text x="94" y="242">49</text> <text x="149" y="242">50</text> <text x="204" y="242">51</text> <text x="259" y="242">52</text> <text x="314" y="242">53</text> <text x="369" y="242">54</text> <text x="424" y="242">55</text>
+    <text x="479" y="242">56</text> <text x="534" y="242">57</text> <text x="589" y="242">58</text> <text x="644" y="242">59</text> <text x="699" y="242">60</text> <text x="754" y="242">61</text> <text x="809" y="242">62</text> <text x="864" y="242">63</text>
+    <text x="39" y="288">64</text> <text x="94" y="288">65</text> <text x="149" y="288">66</text> <text x="204" y="288">67</text> <text x="259" y="288">68</text> <text x="314" y="288">69</text> <text x="369" y="288">70</text> <text x="424" y="288">71</text>
+    <text x="479" y="288">72</text> <text x="534" y="288">73</text> <text x="589" y="288">74</text> <text x="644" y="288">75</text> <text x="699" y="288">76</text> <text x="754" y="288">77</text> <text x="809" y="288">78</text> <text x="864" y="288">79</text>
+    <text x="39" y="334">80</text> <text x="94" y="334">81</text> <text x="149" y="334">82</text> <text x="204" y="334">83</text> <text x="259" y="334">84</text> <text x="314" y="334">85</text> <text x="369" y="334">86</text> <text x="424" y="334">87</text>
+    <text x="479" y="334">88</text> <text x="534" y="334">89</text> <text x="589" y="334">90</text> <text x="644" y="334">91</text> <text x="699" y="334">92</text> <text x="754" y="334">93</text> <text x="809" y="334">94</text> <text x="864" y="334">95</text>
+    <text x="39" y="380">96</text> <text x="94" y="380">97</text> <text x="149" y="380">98</text> <text x="204" y="380">99</text> <text x="259" y="380">100</text> <text x="314" y="380">101</text> <text x="369" y="380">102</text> <text x="424" y="380">103</text>
+    <text x="479" y="380">104</text> <text x="534" y="380">105</text> <text x="589" y="380">106</text> <text x="644" y="380">107</text> <text x="699" y="380">108</text> <text x="754" y="380">109</text> <text x="809" y="380">110</text> <text x="864" y="380">111</text>
+    <text x="39" y="426">112</text> <text x="94" y="426">113</text> <text x="149" y="426">114</text> <text x="204" y="426">115</text> <text x="259" y="426">116</text> <text x="314" y="426">117</text> <text x="369" y="426">118</text> <text x="424" y="426">119</text>
+    <text x="479" y="426">120</text> <text x="534" y="426">121</text> <text x="589" y="426">122</text> <text x="644" y="426">123</text> <text x="699" y="426">124</text> <text x="754" y="426">125</text> <text x="809" y="426">126</text> <text x="864" y="426">127</text>
+  </g>
+  <g font-size="17" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">
+    <text x="94" y="214">&#33;</text> <text x="149" y="214">&#34;</text> <text x="204" y="214">&#35;</text> <text x="259" y="214">&#36;</text> <text x="314" y="214">&#37;</text> <text x="369" y="214">&#38;</text> <text x="424" y="214">&#39;</text> <text x="479" y="214">&#40;</text>
+    <text x="534" y="214">&#41;</text> <text x="589" y="214">&#42;</text> <text x="644" y="214">&#43;</text> <text x="699" y="214">&#44;</text> <text x="754" y="214">&#45;</text> <text x="809" y="214">&#46;</text> <text x="864" y="214">&#47;</text> <text x="39" y="260">0</text>
+    <text x="94" y="260">1</text> <text x="149" y="260">2</text> <text x="204" y="260">3</text> <text x="259" y="260">4</text> <text x="314" y="260">5</text> <text x="369" y="260">6</text> <text x="424" y="260">7</text> <text x="479" y="260">8</text>
+    <text x="534" y="260">9</text> <text x="589" y="260">&#58;</text> <text x="644" y="260">&#59;</text> <text x="699" y="260">&#60;</text> <text x="754" y="260">&#61;</text> <text x="809" y="260">&#62;</text> <text x="864" y="260">&#63;</text> <text x="39" y="306">&#64;</text>
+    <text x="94" y="306">A</text> <text x="149" y="306">B</text> <text x="204" y="306">C</text> <text x="259" y="306">D</text> <text x="314" y="306">E</text> <text x="369" y="306">F</text> <text x="424" y="306">G</text> <text x="479" y="306">H</text>
+    <text x="534" y="306">I</text> <text x="589" y="306">J</text> <text x="644" y="306">K</text> <text x="699" y="306">L</text> <text x="754" y="306">M</text> <text x="809" y="306">N</text> <text x="864" y="306">O</text> <text x="39" y="352">P</text>
+    <text x="94" y="352">Q</text> <text x="149" y="352">R</text> <text x="204" y="352">S</text> <text x="259" y="352">T</text> <text x="314" y="352">U</text> <text x="369" y="352">V</text> <text x="424" y="352">W</text> <text x="479" y="352">X</text>
+    <text x="534" y="352">Y</text> <text x="589" y="352">Z</text> <text x="644" y="352">&#91;</text> <text x="699" y="352">&#92;</text> <text x="754" y="352">&#93;</text> <text x="809" y="352">&#94;</text> <text x="864" y="352">&#95;</text> <text x="39" y="398">&#96;</text>
+    <text x="94" y="398">a</text> <text x="149" y="398">b</text> <text x="204" y="398">c</text> <text x="259" y="398">d</text> <text x="314" y="398">e</text> <text x="369" y="398">f</text> <text x="424" y="398">g</text> <text x="479" y="398">h</text>
+    <text x="534" y="398">i</text> <text x="589" y="398">j</text> <text x="644" y="398">k</text> <text x="699" y="398">l</text> <text x="754" y="398">m</text> <text x="809" y="398">n</text> <text x="864" y="398">o</text> <text x="39" y="444">p</text>
+    <text x="94" y="444">q</text> <text x="149" y="444">r</text> <text x="204" y="444">s</text> <text x="259" y="444">t</text> <text x="314" y="444">u</text> <text x="369" y="444">v</text> <text x="424" y="444">w</text> <text x="479" y="444">x</text>
+    <text x="534" y="444">y</text> <text x="589" y="444">z</text> <text x="644" y="444">&#123;</text> <text x="699" y="444">&#124;</text> <text x="754" y="444">&#125;</text> <text x="809" y="444">&#126;</text>
+  </g>
+  <g font-size="12" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor;opacity:.8">
+    <text x="39" y="122">NUL</text> <text x="94" y="122">SOH</text> <text x="149" y="122">STX</text> <text x="204" y="122">ETX</text> <text x="259" y="122">EOT</text> <text x="314" y="122">ENQ</text>
+    <text x="369" y="122">ACK</text> <text x="424" y="122">BEL</text> <text x="479" y="122">BS</text> <text x="534" y="122">HT</text> <text x="589" y="122">LF</text> <text x="644" y="122">VT</text>
+    <text x="699" y="122">FF</text> <text x="754" y="122">CR</text> <text x="809" y="122">SO</text> <text x="864" y="122">SI</text> <text x="39" y="168">DLE</text> <text x="94" y="168">DC1</text>
+    <text x="149" y="168">DC2</text> <text x="204" y="168">DC3</text> <text x="259" y="168">DC4</text> <text x="314" y="168">NAK</text> <text x="369" y="168">SYN</text> <text x="424" y="168">ETB</text>
+    <text x="479" y="168">CAN</text> <text x="534" y="168">EM</text> <text x="589" y="168">SUB</text> <text x="644" y="168">ESC</text> <text x="699" y="168">FS</text> <text x="754" y="168">GS</text>
+    <text x="809" y="168">RS</text> <text x="864" y="168">US</text> <text x="39" y="214">SP</text> <text x="864" y="444">DEL</text>
+  </g>
+
+  <text x="450" y="480" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.65">Κάθε ομάδα καταλαμβάνει συνεχόμενους κωδικούς. Και γι'αυτό οι πράξεις ανάμεσα σε runes έχουν νόημα.</text>
+</svg>
 `);
 
     addContent(`
 <div class="eyebrow" id="@o-charaktiras-os-arithmos">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
 <h1>Ο χαρακτήρας ως αριθμός</h1>
-<p class="lede">Κάθε χαρακτήρας έχει έναν κωδικό. Επειδή ένα <code>rune</code> κρατάει αυτόν τον κωδικό, οι πράξεις πάνω σε χαρακτήρες είναι απλή αριθμητική.</p>
+<p class="lede">Κάθε χαρακτήρας αναπαρίσταται από έναν ακέραιο κωδικό. Επειδή το <code>rune</code> αποθηκεύει ακριβώς αυτόν τον κωδικό, οι πράξεις με χαρακτήρες καταλήγουν να είναι απλή αριθμητική.</p>
 
 <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg"
+
      style="width:100%;max-width:900px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+
   <text x="30" y="34" font-size="16" style="fill:var(--accent)">τα γράμματα είναι διαδοχικά</text>
+
   <line x1="30" y1="86" x2="640" y2="86" style="stroke:currentColor;stroke-opacity:.3;stroke-width:2"/>
+
   <g font-family="Menlo, Consolas, monospace" style="fill:currentColor">
+
     <text x="60" y="72" font-size="24" text-anchor="middle">'a'</text><text x="60" y="112" font-size="16" text-anchor="middle" style="opacity:.6">97</text>
+
     <text x="180" y="72" font-size="24" text-anchor="middle">'b'</text><text x="180" y="112" font-size="16" text-anchor="middle" style="opacity:.6">98</text>
+
     <text x="300" y="72" font-size="24" text-anchor="middle">'c'</text><text x="300" y="112" font-size="16" text-anchor="middle" style="opacity:.6">99</text>
+
     <text x="420" y="72" font-size="24" text-anchor="middle">'d'</text><text x="420" y="112" font-size="16" text-anchor="middle" style="opacity:.6">100</text>
+
     <text x="540" y="72" font-size="24" text-anchor="middle">'e'</text><text x="540" y="112" font-size="16" text-anchor="middle" style="opacity:.6">101</text>
+
   </g>
+
   <text x="620" y="72" font-size="24" style="fill:currentColor;opacity:.45">…</text>
 
+
+
   <text x="30" y="164" font-size="16" style="fill:var(--correct)">τα ψηφία επίσης</text>
+
   <line x1="30" y1="216" x2="640" y2="216" style="stroke:currentColor;stroke-opacity:.3;stroke-width:2"/>
+
   <g font-family="Menlo, Consolas, monospace" style="fill:currentColor">
+
     <text x="60" y="202" font-size="24" text-anchor="middle">'0'</text><text x="60" y="240" font-size="16" text-anchor="middle" style="opacity:.6">48</text>
+
     <text x="180" y="202" font-size="24" text-anchor="middle">'1'</text><text x="180" y="240" font-size="16" text-anchor="middle" style="opacity:.6">49</text>
+
     <text x="300" y="202" font-size="24" text-anchor="middle">'2'</text><text x="300" y="240" font-size="16" text-anchor="middle" style="opacity:.6">50</text>
+
     <text x="420" y="202" font-size="24" text-anchor="middle">'3'</text><text x="420" y="240" font-size="16" text-anchor="middle" style="opacity:.6">51</text>
+
     <text x="540" y="202" font-size="24" text-anchor="middle">'4'</text><text x="540" y="240" font-size="16" text-anchor="middle" style="opacity:.6">52</text>
+
   </g>
+
   <text x="620" y="202" font-size="24" style="fill:currentColor;opacity:.45">…</text>
 
+
+
   <text x="700" y="72" font-size="17" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">'a' + 2</text>
+
   <text x="700" y="100" font-size="16" style="fill:currentColor;opacity:.7">δίνει 99, τον κωδικό του 'c'</text>
+
   <text x="700" y="202" font-size="17" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">'7' - '0'</text>
+
   <text x="700" y="230" font-size="16" style="fill:currentColor;opacity:.7">δίνει 7, τον ίδιο τον αριθμό</text>
+
 </svg>
-
-<p>Η αφαίρεση δύο χαρακτήρων δίνει την απόσταση ανάμεσά τους. Επειδή τα ψηφία είναι αποθηκευμένα σε συνεχόμενους κωδικούς, το <code>'7' - '0'</code> ισούται με 55 μείον 48, δηλαδή 7. Έτσι ένας χαρακτήρας-ψηφίο γίνεται ο αριθμός που παριστάνει.</p>
-
-<div class="callout">
-  <span class="tag">ΠΡΟΣΟΧΗ ΣΤΑ ΕΛΛΗΝΙΚΑ</span>
-  Η συνέχεια των κωδικών ισχύει για το λατινικό αλφάβητο και τα ψηφία. Για ελληνικά γράμματα οι κωδικοί είναι επίσης διαδοχικοί, αλλά πολύ μεγαλύτεροι, και το τελικό σίγμα βρίσκεται ανάμεσα στα κεφαλαία και τα πεζά.
-</div>
+<br>
+<p>Η αφαίρεση δύο χαρακτήρων μάς δίνει την απόσταση μεταξύ τους. Επειδή οι κωδικοί των ψηφίων είναι συνεχόμενοι, η πράξη <code>'7' - '0'</code> ισοδυναμεί με 55 μείον 48, που κάνει <code>7</code>.
+<h2>Από rune σε int, και από string σε int</h2>
+<p>Το <code>'7' - '0'</code> δίνει <code>rune</code> και όχι <code>int</code>: ο τύπος ακολουθεί τον τύπο των μελών της πράξης. Η τιμή είναι 7, οπότε το <code>fmt.Println</code> τυπώνει 7. Αν θέλεις ρητά <code>int</code>, το γράφεις.</p>
 `);
 
     addContent(`
 <div class="eyebrow" id="@metatropes-typon">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
 <h1>Μετατροπές τύπων</h1>
-<p class="lede">Η Go δεν μετατρέπει τύπους σιωπηλά. Αν θέλεις μια τιμή σε άλλον τύπο, το γράφεις ρητά με το όνομα του τύπου και παρενθέσεις.</p>
+<pre><code class="lang-go">letter := 'a'
+code := int(letter)          <span class="cm">// 97 — plain conversion, nothing computed</span>
+intDiff := int('7' - '0')    <span class="cm">// 7 — the same, after the subtraction</span>
 
-<pre><code class="lang-go">r := 'a'
-n := int(r)        <span class="cm">// 97, the code as a plain int</span>
-back := rune(98)   <span class="cm">// 'b'</span></code></pre>
+n, _ := strconv.Atoi("742")  <span class="cm">// 742 — three digits composed into one number</span>
+bad := int("742")            <span class="cm">// compile error: cannot convert</span></code></pre>
+<pre><code class="lang-go">back := rune(98)   <span class="cm">// 'b'</span></code></pre>
 
 <p>Και οι δύο μετατροπές παραπάνω κρατούν τον ίδιο αριθμό και αλλάζουν μόνο τον τύπο με τον οποίο τον βλέπει ο compiler. Η μετατροπή σε <code>string</code> όμως κάνει κάτι διαφορετικό, και εκεί δημιουργείται η πιο συνηθισμένη παρανόηση.</p>
 
@@ -644,12 +799,7 @@ back := rune(98)   <span class="cm">// 'b'</span></code></pre>
 fmt.Println(string(rune(5)))    <span class="cm">// an invisible control character, not "5"</span></code></pre>
 
 <h2>Τι δεν κάνει η μετατροπή</h2>
-<p>Το <code>string(n)</code> δεν γράφει τον αριθμό με ψηφία. Ψάχνει τον χαρακτήρα που έχει αυτόν τον κωδικό. Και το αντίστροφο δεν υπάρχει καν ως μετατροπή: το <code>int("42")</code> δεν μεταγλωττίζεται, γιατί κείμενο και αριθμός δεν είναι συγγενικοί τύποι.</p>
-
-<div class="callout">
-  <span class="tag">ΤΙ ΙΣΧΥΕΙ ΤΕΛΙΚΑ</span>
-  Μετατροπή γίνεται ανάμεσα σε αριθμητικούς τύπους, και ανάμεσα σε <code>rune</code> και <code>string</code> με τη σημασία του κωδικού χαρακτήρα. Η μετάφραση κειμένου σε αριθμό είναι υπολογισμός, όχι μετατροπή: τη γράφεις ψηφίο-ψηφίο, όπως θα δούμε στην πέμπτη ενότητα.
-</div>
+<p>Το <code>string(n)</code> δεν γράφει τον αριθμό με ψηφία. Ψάχνει τον χαρακτήρα που έχει αυτόν τον κωδικό. Και το <code>int("742")</code> δεν μεταγλωττίζεται, γιατί κείμενο και αριθμός δεν είναι συγγενικοί τύποι.</p>
 `);
 
     addQuiz([
@@ -662,7 +812,7 @@ fmt.Println(string(rune(5)))    <span class="cm">// an invisible control charact
           "Αυξάνει την τιμή μόνο αν αυτή είναι ήδη γνωστή"
         ],
         correct: 0,
-        explain: "Η δεξιά πλευρά υπολογίζεται πρώτη με την παλιά τιμή, και μετά το αποτέλεσμα ανατίθεται. Δεν υπάρχει έννοια εξίσωσης εδώ."
+        explain: "Η δεξιά πλευρά υπολογίζεται πρώτη με την παλιά τιμή, και μετά το αποτέλεσμα ανατίθεται. Η σύντομη έκδοση της είναι <code>count++</code>."
       },
       {
         q: "Γιατί το a, b = b, a ανταλλάσσει σωστά τις τιμές;",
@@ -689,13 +839,13 @@ fmt.Println(string(rune(5)))    <span class="cm">// an invisible control charact
       {
         q: "Πόσο κάνει το '7' - '0';",
         options: [
-          "7",
-          "0, επειδή η αφαίρεση δύο χαρακτήρων δεν ορίζεται και το αποτέλεσμα μηδενίζεται",
-          "55",
-          "103"
+          "'7'",
+          "'0'",
+          "'256'",
+          "'48'"
         ],
         correct: 0,
-        explain: "Οι κωδικοί των ψηφίων είναι διαδοχικοί: 55 μείον 48 δίνει 7, δηλαδή τον αριθμό που παριστάνει ο χαρακτήρας."
+        explain: "Οι κωδικοί των ψηφίων είναι διαδοχικοί: 55 μείον 48 δίνει 7, δηλαδή τον αριθμό που αναπαριστά ο χαρακτήρας."
       },
       {
         q: "Τι επιστρέφει το string(rune(65));",
@@ -731,7 +881,6 @@ digit := '9' - __zero__      // turn the character into the number 9`,
 
     addMatching([
       { term: "<code>5</code>", def: "int — ο αριθμός πέντε" },
-      { term: "<code>\"5\"</code>", def: "string — κείμενο ενός χαρακτήρα" },
       { term: "<code>'5'</code>", def: "rune — ο κωδικός 53" },
       { term: "<code>'5' - '0'</code>", def: "int — ο αριθμός 5, υπολογισμένος από τον κωδικό" },
       { term: "<code>string(rune(53))</code>", def: "string — το κείμενο «5»" },
@@ -741,37 +890,32 @@ digit := '9' - __zero__      // turn the character into the number 9`,
       note: "Ταίριαξε κάθε έκφραση με τον τύπο και την τιμή που παράγει."
     });
 
-    // ── §4 · Arrays, slices και επανάληψη ─────────────────────────────────── ⊃
+    // ── section 4: overview of fixed arrays versus dynamic slices ─────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@array-kai-slice">Ενότητα 4 / 8 — Arrays, slices και επανάληψη</div>
 <h1>Array και slice</h1>
-<p class="lede">Και τα δύο κρατούν πολλές τιμές του ίδιου τύπου, στη σειρά. Διαφέρουν στο αν το πλήθος τους είναι σταθερό.</p>
+<p class="lede">Και οι δύο αυτές δομές αποθηκεύουν μια σειρά από τιμές του ίδιου τύπου. Η ουσιαστική διαφορά τους έγκειται στο αν το μέγεθός τους είναι σταθερό ή δυναμικό.</p>
 
-<pre><code class="lang-go"><span class="cm">// array: the length is part of the type itself</span>
+<pre><code class="lang-go"><span class="cm">// array: fixed size, length is part of the type signature</span>
 var scores [3]int
 days := [4]string{"Mon", "Tue", "Wed", "Thu"}
 
-<span class="cm">// slice: no length in the brackets, grows and shrinks</span>
+<span class="cm">// slice: dynamic size, bracket is empty, can grow or shrink</span>
 var names []string
 values := []int{10, 20, 30}</code></pre>
 
 <div class="grid2">
   <div class="card">
     <h3>Array</h3>
-    <p>Το μήκος γράφεται μέσα στις αγκύλες και αποτελεί μέρος του τύπου. Ένα <code>[3]int</code> και ένα <code>[4]int</code> είναι δύο διαφορετικοί τύποι και δεν ανατίθενται μεταξύ τους.</p>
+    <p>Το μέγεθος ορίζεται μέσα στις αγκύλες και αποτελεί δομικό μέρος του τύπου. Για παράδειγμα, ένα <code>[3]int</code> και ένα <code>[4]int</code> θεωρούνται διαφορετικοί τύποι και δεν μπορούν να εκχωρηθούν το ένα στο άλλο.</p>
   </div>
   <div class="card">
     <h3>Slice</h3>
-    <p>Οι αγκύλες μένουν άδειες. Το μήκος είναι ιδιότητα της τιμής, όχι του τύπου, οπότε μπορεί να αλλάξει όσο τρέχει το πρόγραμμα.</p>
+    <p>Οι αγκύλες παραμένουν κενές. Το μήκος μπορεί και αυξομειώνεται κατά την εκτέλεση του προγράμματος.</p>
   </div>
 </div>
 
-<p>Στην πράξη γράφεις σχεδόν πάντα slice. Το array εμφανίζεται όταν το πλήθος είναι γνωστό εξαρχής και δεν πρόκειται να αλλάξει.</p>
-
-<div class="callout">
-  <span class="tag">ΤΟ ΑΔΕΙΟ SLICE</span>
-  Η μηδενική τιμή ενός slice είναι <code>nil</code>, δηλαδή ένα slice χωρίς κανένα στοιχείο. Δεν είναι σφάλμα: το <code>len</code> του δίνει 0 και μπορείς κανονικά να προσθέσεις στοιχεία σε αυτό.
-</div>
+<p>Στην Go, θα χρησιμοποιείς σχεδόν αποκλειστικά slices. Τα arrays χρησιμοποιούνται σπανιότερα, κυρίως όταν το πλήθος των στοιχείων είναι εκ των προτέρων γνωστό και εγγυημένα σταθερό.</p>
 `);
 
     addContent(`
@@ -1920,23 +2064,19 @@ Swap(__arg1__, &y)            // pass the addresses, not the values`,
 `);
 
     addContent(`
-<div class="eyebrow">Έφτασες στο τέλος</div>
-<h1 id="@telos">Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
-<p>Αν κρατήσεις τρία πράγματα από όλα τα παραπάνω: ο τύπος μιας τιμής καθορίζει τι μπορείς να κάνεις μαζί της, οι θέσεις ενός string δίνουν bytes και όχι χαρακτήρες, και κάθε παράμετρος είναι αντίγραφο εκτός αν δώσεις διεύθυνση.</p>
+<div class="eyebrow">Φτάσαμε στο τέλος</div>
+<h1 id="@telos">Η πρώτη εβδομάδα στο Zone01 φτάνει στο τέλος της</h1>
+<p>Μπορείς να βρεις τις διαφάνειες (slides) αυτού του οδηγού στη διεύθυνση <a href="https://guides01.devs.surf/" target="_blank">guides01.devs.surf</a>.</p>
+
 <div class="callout">
-  <span class="tag">ΤΙ ΜΕΝΕΙ ΓΙΑ ΑΡΓΟΤΕΡΑ</span>
-  Δεν είδαμε maps, structs, interfaces και διαχείριση σφαλμάτων. Μέχρι να έρθουν, ένα slice και μια function καλύπτουν όσα χρειάζεσαι.
+  <span class="tag">ΜΗΝ ΞΕΧΑΣΕΙΣ</span>
+  Μπες στο Intra για να δεις τα μέλη της ομάδας σου. Επικοινώνησε μαζί τους είτε μέσα από την πλατφόρμα είτε στο Discord και συντονιστείτε για το πότε μπορείτε να βρεθείτε όλοι μαζί. Το campus θα είναι ανοιχτό τα Σαββατοκύριακα από τις 12:00 έως τις 20:00. Αν χρειαστεί να εργαστείτε από το σπίτι, βεβαιώσου ότι έχεις ρυθμίσει το VS Code — αν χρησιμοποιείς Windows, θα χρειαστείς απαραίτητα το WSL2.
 </div>
-<p class="lede">Για περαιτέρω εμβάθυνση:</p>
-<div class="sources-list">
-  <a href="https://go.dev/tour/welcome/1" target="_blank" rel="noopener">A Tour of Go</a>
-  <a href="https://go.dev/ref/spec" target="_blank" rel="noopener">The Go Programming Language Specification</a>
-  <a href="https://go.dev/blog/strings" target="_blank" rel="noopener">Strings, bytes, runes and characters in Go</a>
-  <a href="https://go.dev/blog/slices-intro" target="_blank" rel="noopener">Go Slices: usage and internals</a>
-</div>
+
 <div id="final-score"></div>
+
 <p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
-  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+  Η παρούσα παρουσίαση δημιουργήθηκε από τον pavgerin/avgerinos8.
 </p>
 `);
 

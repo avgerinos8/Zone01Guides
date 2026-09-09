@@ -1,75 +1,137 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
 /* ══════════════════════════════════════════════════════════════════════════
    present.css — presentation overlay for the Zone01 slide-deck template.
 
-   LOAD ORDER (index.html): style.css → theme-*.css → present.css
-   This file ONLY enlarges text. It never touches colors, layout, spacing,
-   borders or behaviour, so the deck looks identical to the normal guides,
-   just bigger. Every rule here mirrors a font-size declaration that already
-   exists in style.css — same selector, same base value, multiplied.
+   LOAD ORDER: style.css → theme-*.css → present.css (must be last).
+   style.css is never edited; everything here wins on cascade order alone.
 
-   TUNING: change the three numbers in :root below. Nothing else.
+   SCOPE. The first version of this file only enlarged text. This one is a
+   full legibility pass for a projector: family, weight, tracking, contrast
+   and line length, on top of the size boosts. It still changes no palette
+   color, no background, no border and no behaviour — the deck keeps its
+   identity, it just stops reading like a document.
+
+   WHY EACH GROUP EXISTS
+   - Family: style.css sets --font-display to a SERIF (Iowan/Georgia). Thin
+     serif strokes disappear at projector distance and under ambient light.
+     Display and body both move to Inter, which has full Greek coverage and
+     a tall x-height, so the same px reads larger.
+   - Weight: light text on a dark background looks thinner than the same
+     weight dark-on-light. Body moves 400 → 500, headings to 700/800.
+   - Contrast: style.css sets most body text at 85-92% opacity, which is
+     right at 50cm and wrong at 5m. Those are lifted to full --ink.
+   - Density: bigger, heavier type costs vertical room, so every margin,
+     padding and gap in the deck is scaled down to keep slides on one
+     screen. That is the --pres-density block at the end of this file.
+
+   TUNING: the three boosts in :root, then --pres-weight-body if the text
+   still looks thin in the room you are actually presenting in, then the
+   density block at the end if slides still scroll.
    ══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* slide content — headings, prose, quiz, glossary, matching 1.25*/
-  --pres-boost: 1.05;
+  /* slide content — headings, prose, quiz, glossary, matching */
+  --pres-boost: 1.12;
 
   /* code blocks — kept lower on purpose: code lines are fixed-width and a
-     large boost pushes long lines into horizontal scroll inside <pre>. 1.18 */
-  --pres-boost-code: 1.00;
+     large boost pushes long lines into horizontal scroll inside <pre>. */
+  --pres-boost-code: 1.04;
 
   /* chrome — nav bar, TOC sidebar, dots, copy buttons. Kept lower so the
-     UI does not eat the projector screen. Set equal to --pres-boost if you
-     want literally everything at the same scale. 1.12 */
+     UI does not eat the projector screen. */
   --pres-boost-ui: 1.05;
+
+  /* body weight. 500 is the presentation default; drop to 400 in a dark
+     room if the text starts to look heavy, raise to 600 for a washed-out
+     projector in daylight. */
+  --pres-weight-body: 500;
+
+  /* Overriding the two family tokens retypes the whole deck: every rule in
+     style.css reads the font through these. The fallback stack is the
+     original one from style.css, so nothing breaks offline. */
+  --font-display: "Inter", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Inter", -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
 /* ── slide headings ───────────────────────────────────────────────────── ⊃ */
+/* Negative tracking on headings only. Large type set at 0 tracking reads
+   loose; -0.02em to -0.035em is what makes it look set rather than typed. */
 
 .eyebrow {
   font-size: calc(13px * var(--pres-boost));
+  font-weight: 600;
 }
 
 h1 {
-  font-size: clamp(calc(25px * var(--pres-boost)),
+  font-size: clamp(calc(30px * var(--pres-boost)),
       calc(4vw * var(--pres-boost)),
-      calc(44px * var(--pres-boost)));
+      calc(52px * var(--pres-boost)));
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
 h2 {
-  font-size: clamp(calc(18px * var(--pres-boost)),
+  font-size: clamp(calc(22px * var(--pres-boost)),
       calc(2.6vw * var(--pres-boost)),
-      calc(25px * var(--pres-boost)));
+      calc(31px * var(--pres-boost)));
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 h3 {
   font-size: calc(19px * var(--pres-boost));
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 /* ── slide body text ──────────────────────────────────────────────────── ⊃ */
 /* code / .inline-code is sized in em (0.92em) in style.css, so it follows
-   its parent automatically — deliberately NOT overridden here. */
+   its parent automatically — deliberately NOT size-overridden here. */
 
 p,
 li {
   font-size: calc(17px * var(--pres-boost));
+  font-weight: var(--pres-weight-body);
+  color: var(--ink);
+  line-height: 1.58;
 }
 
 .lede {
-  font-size: calc(19px * var(--pres-boost));
+  font-size: calc(19.5px * var(--pres-boost));
+  font-weight: var(--pres-weight-body);
+  color: var(--ink);
+  line-height: 1.65;
+}
+
+/* A .callout usually holds raw text with no <p> around it, so it inherits
+   body's unset 16px — the one place the size-only overlay left behind. */
+.callout {
+  font-size: calc(17px * var(--pres-boost));
+  font-weight: var(--pres-weight-body);
+  line-height: 1.58;
+  color: var(--ink);
+}
+
+strong {
+  font-weight: 700;
 }
 
 .callout .tag,
 .feedback-box .tag {
   font-size: calc(12px * var(--pres-boost));
+  font-weight: 600;
 }
 
 .kicker-line {
   font-size: calc(14px * var(--pres-boost));
+  font-weight: 500;
 }
 
 .sources-list a {
   font-size: calc(15px * var(--pres-boost));
+  font-weight: 500;
 }
 
 #final-score {
@@ -77,9 +139,17 @@ li {
 }
 
 /* ── code blocks & spoilers ───────────────────────────────────────────── ⊃ */
+/* Monospace runs visually lighter than the sans beside it, so code gets a
+   weight lift rather than a size one — size here costs horizontal room. */
 
 pre code {
   font-size: calc(14.5px * var(--pres-boost-code));
+  font-weight: 500;
+}
+
+code,
+.inline-code {
+  font-weight: 600;
 }
 
 .spoiler-lock {
@@ -88,35 +158,45 @@ pre code {
 
 .spoiler-lock span {
   font-size: calc(18px * var(--pres-boost));
+  font-weight: 600;
 }
 
 /* ── quiz ─────────────────────────────────────────────────────────────── ⊃ */
 
 .quiz-q {
   font-size: calc(19px * var(--pres-boost));
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 
 .quiz-opt {
   font-size: calc(15.5px * var(--pres-boost));
+  font-weight: var(--pres-weight-body);
+  color: var(--ink);
 }
 
 .quiz-explain {
   font-size: calc(15px * var(--pres-boost));
+  color: var(--ink);
 }
 
 .quiz-badge,
 .score-badge {
   font-size: calc(12px * var(--pres-boost));
+  font-weight: 600;
 }
 
 .reset-quiz-btn {
   font-size: calc(12px * var(--pres-boost));
+  font-weight: 600;
 }
 
 /* ── fill in the blanks ───────────────────────────────────────────────── ⊃ */
 
 .fb-blank {
   font-size: calc(14.5px * var(--pres-boost));
+  font-weight: 600;
 }
 
 .fb-correction {
@@ -137,10 +217,12 @@ pre code {
 
 .matching-set-label {
   font-size: calc(13px * var(--pres-boost));
+  font-weight: 600;
 }
 
 .match-btn {
   font-size: calc(15px * var(--pres-boost));
+  font-weight: 500;
 }
 
 /* NOTE: style.css also declares .match-btn at 13px/11px inside two
@@ -153,18 +235,22 @@ pre code {
 
 .glossary-table td {
   font-size: calc(14.5px * var(--pres-boost));
+  color: var(--ink);
 }
 
 .gs-pill .gs-name {
   font-size: calc(13.5px * var(--pres-boost));
+  font-weight: 600;
 }
 
 .gs-pill .gs-def {
   font-size: calc(13px * var(--pres-boost));
+  color: var(--ink);
 }
 
 .glossary-columns .gc-def {
   font-size: calc(14.5px * var(--pres-boost));
+  color: var(--ink);
 }
 
 /* ── chrome: nav bar, dots, TOC, copy button ──────────────────────────── ⊃ */
@@ -241,4 +327,226 @@ pre code {
 
 .feedback-status {
   font-size: calc(13px * var(--pres-boost));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DENSITY — vertical rhythm, tightened.
+
+   Bigger and heavier type costs vertical room, and the deck was spaced for
+   a document you scroll, not a slide you project. Every value below mirrors
+   a spacing declaration that already exists in style.css, cut to roughly
+   60-70% of its original. Only margin, padding, gap and line-height are
+   touched here — no sizes, no weights, no colors.
+
+   Original values are noted next to each rule, so raising one back is a
+   single edit and there is never a need to open style.css.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── slide frame ──────────────────────────────────────────────────────── ⊃ */
+/* Bottom padding must clear #nav-bar, which is 74px tall. 96px leaves the
+   same visual gap the original 120px did, minus the document-style slack. */
+.slide {
+  padding: 52px 7.5vw 108px 7.5vw;
+  /* was 64px 9vw 120px */
+}
+
+@media (max-width: 480px) {
+  .slide {
+    padding: 22px 5.5vw 96px 5.5vw;
+    /* mirrors style.css's own mobile rule, kept tighter */
+  }
+}
+
+/* ── headings and prose ───────────────────────────────────────────────── ⊃ */
+
+.eyebrow {
+  margin-bottom: 11px;
+  /* was 14px */
+}
+
+h1 {
+  margin: 0 0 18px 0;
+  /* was 0 0 22px */
+}
+
+h2 {
+  margin: 28px 0 12px 0;
+  padding-bottom: 7px;
+  /* was 34px 0 14px, padding-bottom 8px */
+}
+
+h3 {
+  margin: 19px 0 7px 0;
+  /* was 22px 0 8px */
+}
+
+/* p and li have no margin rule in style.css, so they fall back to the
+   browser default of 1em top and bottom. At the boosted size that is
+   about 19px of collapsed space between paragraphs. */
+p,
+li {
+  margin: 0 0 14px 0;
+}
+
+.lede {
+  margin: 0 0 16px 0;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+/* ── code blocks ──────────────────────────────────────────────────────── ⊃ */
+
+.code-wrap {
+  margin: 15px 0;
+  /* was 18px 0 */
+}
+
+pre {
+  padding: 15px 18px;
+  /* was 18px 20px */
+}
+
+pre code {
+  line-height: 1.52;
+  /* was 1.6 — the biggest single saving on code-heavy slides */
+}
+
+/* ── cards, callouts, grids ───────────────────────────────────────────── ⊃ */
+
+.grid2 {
+  gap: 22px;
+  /* was 28px */
+}
+
+.grid3 {
+  gap: 17px;
+  /* was 20px */
+}
+
+.card {
+  padding: 16px 18px;
+  /* was 18px 20px */
+}
+
+.callout {
+  padding: 13px 17px;
+  margin: 15px 0;
+  /* was 14px 18px, margin 18px 0 */
+}
+
+.callout .tag {
+  margin-bottom: 5px;
+  /* was 6px */
+}
+
+/* ── quiz ─────────────────────────────────────────────────────────────── ⊃ */
+
+.quiz-box {
+  padding: 22px 24px;
+  /* was 26px 28px */
+}
+
+.quiz-q {
+  margin-bottom: 15px;
+  /* was 18px */
+}
+
+.quiz-options {
+  gap: 9px;
+  /* was 10px */
+}
+
+.quiz-opt {
+  padding: 11px 15px;
+  /* was 13px 16px */
+}
+
+.quiz-explain {
+  margin-top: 15px;
+  padding: 13px 15px;
+  line-height: 1.55;
+  /* was margin-top 18px, padding 14px 16px, line-height 1.6 */
+}
+
+.quiz-head-row {
+  margin-bottom: 12px;
+  /* was 14px */
+}
+
+/* ── fill in the blanks ───────────────────────────────────────────────── ⊃ */
+
+.fb-hints {
+  margin-top: 12px;
+  gap: 5px;
+  /* was 14px, gap 6px */
+}
+
+.fb-check-btn {
+  padding: 7px 15px;
+  /* was 8px 16px */
+}
+
+/* ── matching ─────────────────────────────────────────────────────────── ⊃ */
+
+.matching-wrap {
+  gap: 32px;
+  /* was 40px */
+}
+
+.matching-set-label {
+  margin-bottom: 9px;
+  /* was 10px */
+}
+
+.matching-container+.matching-container {
+  margin-top: 23px;
+  padding-top: 20px;
+  /* was 28px / 24px */
+}
+
+/* ── glossary ─────────────────────────────────────────────────────────── ⊃ */
+
+.glossary-group {
+  margin-bottom: 27px;
+  /* was 34px */
+}
+
+.glossary-table td {
+  padding: 8px 11px;
+  /* was 10px 12px */
+}
+
+.glossary-strip {
+  gap: 10px;
+  /* was 12px */
+}
+
+.glossary-strip .gs-pill {
+  padding: 9px 11px;
+  /* was 10px 12px */
+}
+
+.glossary-columns .gc-line {
+  margin-bottom: 13px;
+  padding-bottom: 10px;
+  /* was 16px / 12px */
+}
+
+.glossary-columns .gc-term {
+  margin-bottom: 3px;
+  /* was 4px */
+}
+
+.glossary-columns .gc-def {
+  line-height: 1.55;
+  /* was 1.6 */
+}
+
+/* ── closing slide ────────────────────────────────────────────────────── ⊃ */
+
+.sources-list {
+  margin-top: 22px;
+  /* was 28px */
 }
