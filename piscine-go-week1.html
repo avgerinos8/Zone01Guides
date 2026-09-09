@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+  <script>
+    window.__initialHash = location.hash;
+    if (location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  </script>
+  <script>
+    (function () {
+      var shown = false;
+      window.addEventListener("error", function () {
+        if (shown) return
+        if (window.__pageInitialized) return;
+        shown = true;
+        showContentChangedFallback();
+      });
+
+      function showContentChangedFallback() {
+        var overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:999999;background:#1a1a1a;" +
+          "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+          "gap:20px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#e0e0e0;" +
+          "text-align:center;padding:24px;";
+
+        var msg = document.createElement("div");
+        msg.textContent = "Internal Error";
+        msg.style.cssText = "font-size:22px;font-weight:600;letter-spacing:.02em;";
+        overlay.appendChild(msg);
+
+        var btn = document.createElement("button");
+        btn.textContent = "Reset Progress";
+        btn.style.cssText = "font-family:inherit;font-size:15px;padding:10px 22px;" +
+          "border-radius:7px;border:1px solid #888;background:transparent;" +
+          "color:#ccc;cursor:pointer;";
+        btn.addEventListener("click", function () {
+
+          var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+          localStorage.removeItem(prefix + "current_slide");
+          localStorage.removeItem(prefix + "answers");
+          localStorage.removeItem(prefix + "scores");
+          localStorage.removeItem(prefix + "notified_100");
+          localStorage.removeItem(prefix + "version");
+          window.location.reload();
+        });
+        overlay.appendChild(btn);
+
+        document.body.appendChild(overlay);
+      }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piscine Go — Week 1 Review</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="static/style.css?v=20260809">
+  <link rel="stylesheet" href="static/theme-go-first-week.css?v=20260809">
+  <link rel="stylesheet" href="static/present.css?v=20260909">
+  <link rel="stylesheet" href="static/viz-style.css?v=20260818">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-toc">
+        <span class="desktop-text">☰</span>
+        <span class="mobile-text">☰</span>
+      </button>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots">
+      <div class="dots-arrow dots-arrow-left" id="dots-arrow-left"><span class="dots-arrow-triangle"></span></div>
+      <div id="dots-track"></div>
+      <div class="dots-arrow dots-arrow-right" id="dots-arrow-right"><span class="dots-arrow-triangle"></span></div>
+    </div>
+    <div class="nav-group-right">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="toc-backdrop"></div>
+  <div id="toc-sidebar">
+    <div id="toc-header">
+      <span id="toc-title">Contents</span>
+      <div class="toc-header-actions">
+        <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress" aria-label="Reset Progress">Reset
+          Progress</button>
+        <button id="toc-close" class="toc-icon-btn" aria-label="Κλείσιμο">✕</button>
+      </div>
+    </div>
+
+    <div id="toc-search-wrap">
+      <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+    </div>
+
+    <div id="toc-list">
+      <div class="toc-section">ΕΝΟΤΗΤΑ 1 — ΠΑΚΕΤΑ</div>
+      <a class="toc-link toc-h1" href="#@paketa-kai-oratotita">Πακέτα και ορατότητα</a>
+      <div class="toc-section">ΕΝΟΤΗΤΑ 2 — ΜΕΤΑΒΛΗΤΕΣ</div>
+      <a class="toc-link toc-h1" href="#@ti-kratai-mia-metavliti">Τι κρατάει μια μεταβλητή</a>
+      <a class="toc-link toc-h1" href="#@dilosi-choris-archiki-timi">Δήλωση χωρίς αρχική τιμή</a>
+      <a class="toc-link toc-h1" href="#@dilosi-me-archiki-timi">Δήλωση με αρχική τιμή</a>
+      <a class="toc-link toc-h1" href="#@pou-ischyei-mia-metavliti">Μέχρι πού ισχύει μια μεταβλητή</a>
+      <div class="toc-section">ΕΝΟΤΗΤΑ 3 — ΑΝΑΘΕΣΗ ΚΑΙ ΤΙΜΕΣ</div>
+      <a class="toc-link toc-h1" href="#@i-anathesi">Η ανάθεση αλλάζει την τιμή</a>
+      <a class="toc-link toc-h1" href="#@pollapli-anathesi">Πολλαπλή ανάθεση</a>
+      <a class="toc-link toc-h1" href="#@treis-morfes-tou-idiou-symvolou">Τρεις μορφές του ίδιου συμβόλου</a>
+      <a class="toc-link toc-h1" href="#@o-charaktiras-os-arithmos">Ο χαρακτήρας ως αριθμός</a>
+      <a class="toc-link toc-h1" href="#@metatropes-typon">Μετατροπές τύπων</a>
+      <div class="toc-section">ΕΝΟΤΗΤΑ 4 — ARRAYS, SLICES, LOOPS</div>
+      <a class="toc-link toc-h1" href="#@array-kai-slice">Array και slice</a>
+      <a class="toc-link toc-h1" href="#@theseis-kai-mikos">Θέσεις και μήκος</a>
+      <a class="toc-link toc-h1" href="#@prosthiki-me-append">Προσθήκη με append</a>
+      <a class="toc-link toc-h1" href="#@epanalipsi-me-metriti">Επανάληψη με μετρητή</a>
+      <a class="toc-link toc-h1" href="#@epanalipsi-me-range">Επανάληψη με range</a>
+      <div class="toc-section">ΕΝΟΤΗΤΑ 5 — ΚΕΙΜΕΝΟ</div>
+      <a class="toc-link toc-h1" href="#@to-string-os-akolouthia-bytes">Το string ως ακολουθία από bytes</a>
+      <a class="toc-link toc-h1" href="#@ti-dinei-to-s-i">Τι δίνει το s[i] και τι μετράει το len</a>
+      <a class="toc-link toc-h1" href="#@runes-otan-ta-megethi-diaferoun">Runes: όταν θέλεις χαρακτήρες</a>
+      <a class="toc-link toc-h1" href="#@metatropes-kai-enosi">Μετατροπές και ένωση</a>
+      <div class="toc-section">ΕΝΟΤΗΤΑ 6 — ΕΞΟΔΟΣ</div>
+      <a class="toc-link toc-h1" href="#@fmt-print-println-printf">fmt: Print, Println, Printf</a>
+      <a class="toc-link toc-h1" href="#@enas-charaktiras-ti-fora">Ένας χαρακτήρας τη φορά</a>
+      <a class="toc-link toc-h1" href="#@i-diki-mas-printtext">Μια δική μας PrintText</a>
+      <div class="toc-section">ΕΝΟΤΗΤΑ 7 — FUNCTIONS</div>
+      <a class="toc-link toc-h1" href="#@ypografi-parametroi-kai-epistrofi">Υπογραφή: παράμετροι και επιστροφή</a>
+      <a class="toc-link toc-h1" href="#@perissoteres-times-epistrofis">Περισσότερες από μία τιμές επιστροφής</a>
+      <a class="toc-link toc-h1" href="#@i-parametros-einai-antigrafo">Η παράμετρος είναι αντίγραφο</a>
+      <a class="toc-link toc-h1" href="#@to-slice-os-parametros">Το slice ως παράμετρος</a>
+      <div class="toc-section">ΕΝΟΤΗΤΑ 8 — POINTERS</div>
+      <a class="toc-link toc-h1" href="#@i-diefthynsi-mias-metavlitis">Η διεύθυνση μιας μεταβλητής</a>
+      <a class="toc-link toc-h1" href="#@o-telestis-asteriskos">Ο τελεστής *</a>
+      <a class="toc-link toc-h1" href="#@allagi-tis-metavlitis-tou-kalounta">Αλλαγή της μεταβλητής του καλούντος</a>
+      <a class="toc-link toc-h1" href="#@pointer-pros-pointer">Δείκτης προς δείκτη</a>
+      <div class="toc-section">ΚΛΕΙΣΙΜΟ</div>
+      <a class="toc-link toc-h1" href="#@sygkentrotiko-glossari">Συγκεντρωτικό Γλωσσάρι</a>
+      <a class="toc-link toc-h1" href="#@telos">Έφτασες στο τέλος</a>
+    </div>
+
+    <div id="toc-footer">
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
+        <span class="desktop-text">Return Home</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-toc-close-footer">
+        <span class="desktop-text">Close</span>
+        <span class="mobile-text">Close</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260809"></script>
+  <script src="static/highlighter.js?v=20260809"></script>
+  <script src="static/notify-progress.js?v=20260809"></script>
+  <script src="static/viz-common.js?v=20260818"></script>
+  <script src="static/viz-slice-loop.js?v=20260909"></script>
+  <script src="static/viz-bytes-runes.js?v=20260909"></script>
+  <script src="static/viz-pointer-swap.js?v=20260909"></script>
+  <script>
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/go-one.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
+  <h1>Piscine Go<br>Week 1 Review</h1>
+  <p class="lede">Μεταβλητές, Τιμές, (πίνακες) Slices, Κείμενο, Functions και Pointers. Κάθε ενότητα εξηγεί τον μηχανισμό και κλείνει με ερωτήσεις για να ελέγξεις τι κράτησες.</p>
+`);
+
+    // ── §1 · Πακέτα και ορατότητα ─────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@paketa-kai-oratotita">Ενότητα 1 / 8 — Πακέτα και ορατότητα</div>
+<h1>Πακέτα και ορατότητα</h1>
+<p class="lede">Ο κώδικας της Go οργανώνεται σε πακέτα. Κάθε φορά που καλείς κάτι γραμμένο αλλού, το όνομα που γράφεις έχει δύο μέρη.</p>
+
+<svg viewBox="0 0 440 150" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:600px;height:auto;display:block;margin:6px auto 20px;color:var(--ink)">
+  <text x="86" y="60" font-size="38" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">fmt</text>
+  <text x="154" y="60" font-size="38" font-family="Menlo, Consolas, monospace" style="fill:currentColor;opacity:.5">.</text>
+  <text x="176" y="60" font-size="38" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">Println</text>
+  <line x1="86" y1="78" x2="150" y2="78" style="stroke:var(--accent);stroke-width:2;stroke-linecap:round"/>
+  <line x1="118" y1="78" x2="118" y2="100" style="stroke:var(--accent);stroke-width:2;stroke-linecap:round"/>
+  <text x="118" y="122" font-size="16" text-anchor="middle" style="fill:var(--accent)">όνομα πακέτου</text>
+  <line x1="176" y1="78" x2="342" y2="78" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round"/>
+  <line x1="259" y1="78" x2="259" y2="100" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round"/>
+  <text x="259" y="122" font-size="16" text-anchor="middle" style="fill:var(--correct)">όνομα function</text>
+</svg>
+
+<p>Το πρώτο μέρος είναι το πακέτο στο οποίο ανήκει ο κώδικας, το δεύτερο είναι το όνομα μέσα σε αυτό. Για να γίνει διαθέσιμο το πακέτο, το αρχείο πρέπει να το δηλώσει στην αρχή του με <code>import</code>.</p>
+
+<pre><code class="lang-go">import "fmt"</code></pre>
+
+<h2>Ποια ονόματα βλέπει το άλλο πακέτο</h2>
+<p>Δεν είναι όλα τα ονόματα ενός πακέτου προσβάσιμα από έξω. Η Go δεν έχει ξεχωριστή λέξη γι' αυτό: το κρίνει από το πρώτο γράμμα του ονόματος.</p>
+
+<svg viewBox="0 0 920 250" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:920px;height:auto;display:block;margin:14px auto 6px;color:var(--ink)">
+  <defs>
+    <marker id="fig-scope-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" style="fill:var(--correct)"/>
+    </marker>
+  </defs>
+  <text x="32" y="42" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">package counter</text>
+  <rect x="20" y="56" width="360" height="150" rx="10" style="fill:rgba(var(--ink-rgb),0.04);stroke:currentColor;stroke-opacity:.28"/>
+  <rect x="44" y="80" width="312" height="42" rx="6" style="fill:rgba(var(--correct-rgb),0.10)"/>
+  <text x="60" y="107" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">func Total() int</text>
+  <rect x="44" y="136" width="312" height="42" rx="6" style="fill:rgba(var(--wrong-rgb),0.10)"/>
+  <text x="60" y="163" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">func reset()</text>
+  <text x="552" y="42" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">package main</text>
+  <rect x="540" y="56" width="360" height="150" rx="10" style="fill:rgba(var(--ink-rgb),0.04);stroke:currentColor;stroke-opacity:.28"/>
+  <rect x="564" y="80" width="312" height="42" rx="6" style="fill:rgba(var(--correct-rgb),0.10)"/>
+  <text x="580" y="107" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">counter.Total()</text>
+  <rect x="564" y="136" width="312" height="42" rx="6" style="fill:rgba(var(--wrong-rgb),0.10)"/>
+  <text x="580" y="163" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:currentColor">counter.reset()</text>
+  <text x="460" y="88" font-size="14" text-anchor="middle" style="fill:var(--correct)">προσβάσιμο</text>
+  <line x1="392" y1="101" x2="528" y2="101" marker-end="url(#fig-scope-head)" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round"/>
+  <line x1="392" y1="157" x2="528" y2="157" style="stroke:var(--wrong);stroke-width:2;stroke-dasharray:6 6;stroke-linecap:round;opacity:.6"/>
+  <line x1="448" y1="145" x2="472" y2="169" style="stroke:var(--wrong);stroke-width:3;stroke-linecap:round"/>
+  <line x1="472" y1="145" x2="448" y2="169" style="stroke:var(--wrong);stroke-width:3;stroke-linecap:round"/>
+  <text x="460" y="190" font-size="14" text-anchor="middle" style="fill:var(--wrong)">δεν μεταγλωττίζεται</text>
+  <text x="460" y="232" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.65">Κεφαλαίο πρώτο γράμμα: προσβάσιμο από άλλα πακέτα. Πεζό: μόνο μέσα στο ίδιο.</text>
+</svg>
+
+`);
+
+    addQuiz([
+      {
+        q: "Πώς διαβάζεται η κλήση fmt.Println;",
+        options: [
+          "fmt είναι το πακέτο και Println η function",
+          "fmt είναι το αρχείο και Println η μεταβλητή που δηλώνεται μέσα σε αυτό το αρχείο",
+          "fmt είναι η function και Println η παράμετρός της",
+          "και τα δύο είναι ονόματα πακέτων, ενωμένα με τελεία"
+        ],
+        correct: 0,
+        explain: "Πριν από την τελεία μπαίνει το όνομα του πακέτου, μετά το όνομα που θέλεις από αυτό. Χωρίς το πρώτο μέρος, η Go ψάχνει το όνομα μόνο μέσα στο τρέχον πακέτο."
+      },
+      {
+        q: "Ποια από τις δύο functions μπορεί να κληθεί από άλλο πακέτο;",
+        options: [
+          "Η Total, επειδή αρχίζει με κεφαλαίο",
+          "Η reset, επειδή τα πεζά ονόματα προορίζονται για χρήση από άλλα πακέτα",
+          "Και οι δύο, εφόσον γίνει import",
+          "Καμία, χωρίς ρητή δήλωση εξαγωγής"
+        ],
+        correct: 0,
+        explain: "Το import δίνει πρόσβαση στο πακέτο, όχι σε όλα τα περιεχόμενά του. Ό,τι αρχίζει με πεζό παραμένει προσβάσιμο μόνο μέσα στο πακέτο όπου ορίστηκε."
+      },
+      {
+        q: "Τι κάνει η γραμμή import;",
+        options: [
+          "Δηλώνει ποιο πακέτο θα χρησιμοποιήσει το αρχείο",
+          "Αντιγράφει τον κώδικα του πακέτου μέσα στο αρχείο, ώστε να μεταγλωττιστεί μαζί του",
+          "Κατεβάζει το πακέτο από το διαδίκτυο κάθε φορά",
+          "Δίνει πρόσβαση και στα πεζά ονόματα"
+        ],
+        correct: 0,
+        explain: "Η δήλωση ισχύει ανά αρχείο: αν δύο αρχεία του ίδιου πακέτου χρειάζονται το fmt, το γράφουν και τα δύο."
+      }
+    ]);
+
+    // ── §2 · Δήλωση μεταβλητών ────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@ti-kratai-mia-metavliti">Ενότητα 2 / 8 — Δήλωση μεταβλητών</div>
+<h1>Τι κρατάει μια μεταβλητή</h1>
+<p class="lede">Μια μεταβλητή είναι ένα όνομα που δίνεις σε μια θέση της μνήμης. Τρία πράγματα την ορίζουν, και μόνο το ένα από αυτά αλλάζει στη διάρκεια του προγράμματος.</p>
+
+<svg viewBox="0 0 760 200" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto;color:var(--ink)">
+  <text x="120" y="40" font-size="16" text-anchor="middle" style="fill:var(--accent)">όνομα</text>
+  <line x1="120" y1="52" x2="120" y2="76" style="stroke:var(--accent);stroke-width:2;stroke-linecap:round"/>
+  <text x="120" y="106" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">count</text>
+
+  <rect x="240" y="70" width="180" height="70" rx="8" style="fill:rgba(var(--accent-rgb),0.10);stroke:var(--accent);stroke-width:2"/>
+  <text x="330" y="116" font-size="30" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">42</text>
+  <text x="330" y="40" font-size="16" text-anchor="middle" style="fill:var(--correct)">τιμή</text>
+  <line x1="330" y1="52" x2="330" y2="66" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round"/>
+  <text x="330" y="168" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">αλλάζει όσες φορές θέλεις</text>
+
+  <rect x="470" y="82" width="120" height="46" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+  <text x="530" y="112" font-size="20" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">int</text>
+  <text x="530" y="40" font-size="16" text-anchor="middle" style="fill:currentColor;opacity:.75">τύπος</text>
+  <line x1="530" y1="52" x2="530" y2="78" style="stroke:currentColor;stroke-opacity:.5;stroke-width:2;stroke-linecap:round"/>
+  <text x="530" y="168" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">ορίζεται μία φορά</text>
+
+  <line x1="176" y1="105" x2="232" y2="105" style="stroke:currentColor;stroke-opacity:.35;stroke-width:2;stroke-dasharray:4 5"/>
+  <line x1="428" y1="105" x2="462" y2="105" style="stroke:currentColor;stroke-opacity:.35;stroke-width:2;stroke-dasharray:4 5"/>
+</svg>
+
+<p>Ο τύπος καθορίζεται τη στιγμή της δήλωσης και δεν αλλάζει ποτέ μετά. Αυτό επιτρέπει στον compiler να ελέγξει πριν καν τρέξει το πρόγραμμα ότι δεν βάζεις κείμενο εκεί που περιμένεις αριθμό.</p>
+
+<div class="grid3">
+  <div class="card"><h3>int</h3><p>Ακέραιος αριθμός, θετικός ή αρνητικός.</p></div>
+  <div class="card"><h3>string</h3><p>Κείμενο, οσοδήποτε μεγάλο ή και άδειο.</p></div>
+  <div class="card"><h3>bool</h3><p>Μία από δύο τιμές, <code>true</code> ή <code>false</code>.</p></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@dilosi-choris-archiki-timi">Ενότητα 2 / 8 — Δήλωση μεταβλητών</div>
+<h1>Δήλωση χωρίς αρχική τιμή</h1>
+<p class="lede">Η βασική μορφή δήλωσης δίνει όνομα και τύπο. Την τιμή την αναλαμβάνει η Go.</p>
+
+<pre><code class="lang-go">var count int
+var name string
+var ready bool</code></pre>
+
+<p>Καμία από αυτές τις τρεις μεταβλητές δεν είναι άδεια ή απροσδιόριστη. Η Go δίνει σε κάθε τύπο μία προκαθορισμένη αρχική τιμή, τη μηδενική τιμή του τύπου, ώστε να μην υπάρχει περίπτωση να διαβάσεις σκουπίδια από τη μνήμη.</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">int</td><td class="gt-def">0</td></tr>
+  <tr><td class="gt-term">float64</td><td class="gt-def">0</td></tr>
+  <tr><td class="gt-term">string</td><td class="gt-def">"" — κείμενο μηδενικού μήκους</td></tr>
+  <tr><td class="gt-term">bool</td><td class="gt-def">false</td></tr>
+  <tr><td class="gt-term">rune</td><td class="gt-def">0 — ο κωδικός μηδέν, όχι το ψηφίο μηδέν</td></tr>
+</table>
+
+<div class="callout">
+  <span class="tag">ΓΙΑΤΙ ΕΧΕΙ ΣΗΜΑΣΙΑ</span>
+  Ένας μετρητής που δηλώνεις με <code>var total int</code> ξεκινάει σίγουρα από το μηδέν. Δεν χρειάζεται να γράψεις <code>total = 0</code> από κάτω, και δεν υπάρχει κίνδυνος να προσθέτεις πάνω σε άγνωστη τιμή.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@dilosi-me-archiki-timi">Ενότητα 2 / 8 — Δήλωση μεταβλητών</div>
+<h1>Δήλωση με αρχική τιμή</h1>
+<p class="lede">Όταν ξέρεις ήδη την τιμή, υπάρχουν τρεις τρόποι να τη δώσεις μαζί με τη δήλωση.</p>
+
+<pre><code class="lang-go"><span class="cm">// full form: type and value, both written out</span>
+var count int = 42
+
+<span class="cm">// the type is left out; Go reads it from the value</span>
+var count = 42
+
+<span class="cm">// short form: declaration and assignment in one operator</span>
+count := 42</code></pre>
+
+<p>Και οι τρεις γραμμές παράγουν το ίδιο ακριβώς αποτέλεσμα, μια μεταβλητή τύπου <code>int</code> με τιμή 42. Η δεύτερη και η τρίτη αφήνουν τον compiler να συμπεράνει τον τύπο από την τιμή που του δίνεις.</p>
+
+<h2>Πότε χρησιμοποιείς ποια</h2>
+<table style="width:100%;border-collapse:collapse;margin-top:6px">
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.25)">
+    <th style="text-align:left;padding:9px 8px">Μορφή</th>
+    <th style="text-align:left;padding:9px 8px">Πού ταιριάζει</th>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.12)">
+    <td style="padding:9px 8px"><code>var x int</code></td>
+    <td style="padding:9px 8px">Θέλεις τη μηδενική τιμή, ή θα δώσεις τιμή αργότερα</td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.12)">
+    <td style="padding:9px 8px"><code>var x int = 42</code></td>
+    <td style="padding:9px 8px">Θέλεις να φαίνεται ο τύπος, ή διαφέρει από τον προεπιλεγμένο</td>
+  </tr>
+  <tr>
+    <td style="padding:9px 8px"><code>x := 42</code></td>
+    <td style="padding:9px 8px">Μέσα σε function, όταν η τιμή είναι προφανής από μόνη της</td>
+  </tr>
+</table>
+
+<div class="callout">
+  <span class="tag">ΠΕΡΙΟΡΙΣΜΟΣ ΤΟΥ :=</span>
+  Το <code>:=</code> δουλεύει μόνο μέσα σε function. Σε επίπεδο πακέτου, δηλαδή έξω από κάθε function, η μόνη μορφή που επιτρέπεται είναι το <code>var</code>.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@pou-ischyei-mia-metavliti">Ενότητα 2 / 8 — Δήλωση μεταβλητών</div>
+<h1>Μέχρι πού ισχύει μια μεταβλητή</h1>
+<p class="lede">Κάθε ζεύγος αγκίστρων ορίζει μια περιοχή. Μια μεταβλητή υπάρχει από τη γραμμή που δηλώνεται μέχρι το άγκιστρο που κλείνει την περιοχή της.</p>
+
+<svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:700px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <rect x="20" y="20" width="660" height="210" rx="10" style="fill:rgba(var(--ink-rgb),0.03);stroke:var(--accent);stroke-opacity:.5;stroke-width:2"/>
+  <text x="40" y="50" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">func main() {</text>
+  <text x="66" y="84" font-size="16" font-family="Menlo, Consolas, monospace" style="fill:currentColor">total := 0</text>
+  <rect x="60" y="100" width="580" height="94" rx="8" style="fill:rgba(var(--correct-rgb),0.07);stroke:var(--correct);stroke-opacity:.55;stroke-width:2"/>
+  <text x="80" y="126" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">for i := 0; i &lt; 3; i++ {</text>
+  <text x="104" y="158" font-size="16" font-family="Menlo, Consolas, monospace" style="fill:currentColor">total = total + i</text>
+  <text x="80" y="184" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">}</text>
+  <text x="40" y="220" font-size="15" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">}</text>
+  <text x="600" y="84" font-size="14" text-anchor="end" style="fill:var(--accent);opacity:.85">το total ζει σε όλη τη function</text>
+  <text x="620" y="126" font-size="14" text-anchor="end" style="fill:var(--correct);opacity:.85">το i ζει μόνο εδώ μέσα</text>
+</svg>
+
+<p>Το <code>total</code> δηλώνεται στην εξωτερική περιοχή, οπότε ο κώδικας μέσα στην εσωτερική το βλέπει κανονικά. Το <code>i</code> δηλώνεται στην εσωτερική, οπότε μετά το κλείσιμο του loop δεν υπάρχει πια και κάθε αναφορά σε αυτό είναι σφάλμα μεταγλώττισης.</p>
+
+<div class="callout">
+  <span class="tag">ΣΥΧΝΟ ΛΑΘΟΣ</span>
+  Αν χρειάζεσαι μια τιμή και μετά το τέλος του loop, δήλωσέ την πριν από το loop. Μια μεταβλητή που δηλώνεται μέσα, χάνεται μαζί με την περιοχή της.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι τιμή έχει η count μετά τη γραμμή var count int;",
+        options: [
+          "0",
+          "Καμία, μέχρι να της ανατεθεί ρητά κάποια τιμή αργότερα μέσα στον κώδικα",
+          "Μια τυχαία τιμή από τη μνήμη",
+          "Εξαρτάται από το πού δηλώνεται"
+        ],
+        correct: 0,
+        explain: "Κάθε τύπος στη Go έχει μηδενική τιμή, και για τους ακέραιους είναι το 0. Δεν υπάρχει απροσδιόριστη μεταβλητή."
+      },
+      {
+        q: "Ποια διαφορά έχουν οι γραμμές var x = 42 και x := 42;",
+        options: [
+          "Καμία στο αποτέλεσμα, αλλά η δεύτερη γράφεται μόνο μέσα σε function",
+          "Η πρώτη δίνει τύπο int και η δεύτερη τύπο float64, επειδή ο συμπερασμός τύπου λειτουργεί διαφορετικά",
+          "Η πρώτη δηλώνει και η δεύτερη μόνο αναθέτει",
+          "Η δεύτερη επιτρέπει αλλαγή τύπου αργότερα"
+        ],
+        correct: 0,
+        explain: "Και οι δύο δηλώνουν μια μεταβλητή int με τιμή 42. Ο περιορισμός του := είναι θέση, όχι αποτέλεσμα: έξω από function χρησιμοποιείται μόνο το var."
+      },
+      {
+        q: "Γιατί η μηδενική τιμή είναι χρήσιμη σε έναν μετρητή;",
+        options: [
+          "Ξεκινάει σίγουρα από το μηδέν χωρίς επιπλέον γραμμή",
+          "Επιτρέπει στον μετρητή να αλλάξει τύπο αν χρειαστεί να κρατήσει δεκαδικό αριθμό αργότερα",
+          "Κάνει τον μετρητή σταθερό μέχρι την πρώτη ανάθεση",
+          "Δεσμεύει λιγότερη μνήμη από έναν αρχικοποιημένο μετρητή"
+        ],
+        correct: 0,
+        explain: "Το var total int είναι ήδη μηδέν. Η γραμμή total = 0 από κάτω δεν προσθέτει τίποτα."
+      },
+      {
+        q: "Πού υπάρχει η μεταβλητή i μετά το τέλος ενός for loop που τη δηλώνει;",
+        options: [
+          "Πουθενά, έχει τελειώσει η περιοχή της",
+          "Στην υπόλοιπη function, κρατώντας την τελευταία τιμή που πήρε μέσα στο loop",
+          "Στο πακέτο, ως μεταβλητή επιπέδου αρχείου",
+          "Μόνο μέσα σε άλλα loop της ίδιας function"
+        ],
+        correct: 0,
+        explain: "Η μεταβλητή του for δηλώνεται στην περιοχή του loop. Μετά το κλείσιμο των αγκίστρων, το όνομα δεν είναι πια γνωστό."
+      },
+      {
+        q: "Πού απαγορεύεται το :=",
+        options: [
+          "Έξω από κάθε function",
+          "Μέσα σε for loop, όπου η μεταβλητή του μετρητή απαιτεί οπωσδήποτε τη μορφή var",
+          "Όταν η τιμή είναι string",
+          "Όταν δηλώνονται δύο μεταβλητές στην ίδια γραμμή"
+        ],
+        correct: 0,
+        explain: "Σε επίπεδο πακέτου κάθε δήλωση ξεκινάει με λέξη-κλειδί. Το := είναι διαθέσιμο μόνο μέσα σε function."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code:
+          `__kw__ total int          // declare a counter, no value given yet
+name __op__ "Zone01"      // declare and assign in one step
+var ready __type__        // declare a flag, starts as false`,
+        blanks: [
+          { id: "kw", answer: "var" },
+          { id: "op", answer: ":=" },
+          { id: "type", answer: "bool" }
+        ],
+        explain: "Η πρώτη γραμμή δίνει τύπο χωρίς τιμή, οπότε το total ξεκινά από 0. Η δεύτερη αφήνει τον τύπο στον compiler. Η τρίτη δηλώνει bool, που ξεκινά από false."
+      }
+    ], { note: "Συμπλήρωσε τα κενά ώστε και οι τρεις δηλώσεις να είναι έγκυρες." });
+
+    // ── §3 · Ανάθεση και τιμές ────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@i-anathesi">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
+<h1>Η ανάθεση αλλάζει την τιμή, όχι τον τύπο</h1>
+<p class="lede">Το <code>=</code> παίρνει ό,τι υπάρχει στα δεξιά και το τοποθετεί στη μεταβλητή που βρίσκεται στα αριστερά. Η προηγούμενη τιμή χάνεται.</p>
+
+<pre><code class="lang-go">count := 42
+count = 7      <span class="cm">// the 42 is gone, count now holds 7</span>
+count = count + 1</code></pre>
+
+<p>Η τρίτη γραμμή διαβάζεται από τα δεξιά προς τα αριστερά: πρώτα υπολογίζεται το <code>count + 1</code> με την τρέχουσα τιμή, και μετά το αποτέλεσμα μπαίνει πίσω στο <code>count</code>. Δεν είναι εξίσωση, είναι εντολή.</p>
+
+<h2>Ο τύπος δεν συζητιέται ξανά</h2>
+<p>Από τη στιγμή που το <code>count</code> δηλώθηκε ως <code>int</code>, δέχεται μόνο ακέραιους. Η ανάθεση κειμένου σε αυτό δεν είναι λάθος που θα εμφανιστεί κατά την εκτέλεση, είναι σφάλμα μεταγλώττισης και το πρόγραμμα δεν παράγεται καν.</p>
+
+<pre><code class="lang-go">count := 42
+count = "42"   <span class="cm">// compile error: cannot use "42" as int</span></code></pre>
+
+<div class="callout">
+  <span class="tag">ΔΗΛΩΣΗ ΚΑΙ ΑΝΑΘΕΣΗ</span>
+  Το <code>:=</code> δημιουργεί μεταβλητή, το <code>=</code> αλλάζει μία που ήδη υπάρχει. Αν γράψεις <code>:=</code> δεύτερη φορά για το ίδιο όνομα στην ίδια περιοχή, ο compiler διαμαρτύρεται ότι η μεταβλητή έχει ήδη δηλωθεί.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@pollapli-anathesi">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
+<h1>Πολλαπλή ανάθεση</h1>
+<p class="lede">Η Go επιτρέπει περισσότερα από ένα ονόματα αριστερά και ισάριθμες τιμές δεξιά, σε μία γραμμή.</p>
+
+<pre><code class="lang-go">a, b := 1, 2
+x, y, z := 10, 20, 30</code></pre>
+
+<p>Η σειρά αντιστοιχίζεται θέση προς θέση: το πρώτο όνομα παίρνει την πρώτη τιμή, το δεύτερο τη δεύτερη. Το σημαντικό είναι πότε υπολογίζεται η δεξιά πλευρά. Υπολογίζεται ολόκληρη πρώτη, με τις παλιές τιμές, και μόνο μετά γίνονται οι αναθέσεις.</p>
+
+<svg viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:760px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <text x="30" y="34" font-size="16" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">a, b = b, a</text>
+
+  <text x="150" y="78" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">πριν</text>
+  <rect x="90" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+  <text x="133" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">1</text>
+  <text x="133" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">a</text>
+  <rect x="196" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+  <text x="239" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">2</text>
+  <text x="239" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">b</text>
+
+  <text x="380" y="104" font-size="15" text-anchor="middle" style="fill:var(--correct)">το 2 και το 1</text>
+  <text x="380" y="124" font-size="15" text-anchor="middle" style="fill:var(--correct)">διαβάζονται πρώτα</text>
+  <line x1="300" y1="140" x2="460" y2="140" style="stroke:var(--correct);stroke-width:2;stroke-dasharray:5 5;stroke-linecap:round"/>
+
+  <text x="620" y="78" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">μετά</text>
+  <rect x="560" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--correct-rgb),0.12);stroke:var(--correct);stroke-width:2"/>
+  <text x="603" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">2</text>
+  <text x="603" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">a</text>
+  <rect x="666" y="90" width="86" height="56" rx="8" style="fill:rgba(var(--correct-rgb),0.12);stroke:var(--correct);stroke-width:2"/>
+  <text x="709" y="126" font-size="24" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">1</text>
+  <text x="709" y="168" font-size="15" text-anchor="middle" style="fill:var(--accent)">b</text>
+</svg>
+
+<p>Γι' αυτό η γραμμή <code>a, b = b, a</code> ανταλλάσσει τις δύο τιμές σωστά, χωρίς τρίτη μεταβλητή. Σε μια γλώσσα όπου οι αναθέσεις γίνονταν μία-μία, η πρώτη θα κατέστρεφε την τιμή που χρειάζεται η δεύτερη.</p>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΠΛΗΘΟΣ ΠΡΕΠΕΙ ΝΑ ΤΑΙΡΙΑΖΕΙ</span>
+  Τρία ονόματα αριστερά απαιτούν τρεις τιμές δεξιά. Κάθε άλλος συνδυασμός είναι σφάλμα μεταγλώττισης.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@treis-morfes-tou-idiou-symvolou">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
+<h1>Τρεις μορφές του ίδιου συμβόλου</h1>
+<p class="lede">Το πεντάρι μπορεί να γραφτεί με τρεις τρόπους, και κάθε τρόπος δίνει διαφορετικό τύπο. Η διαφορά φαίνεται μόλις προσπαθήσεις να κάνεις πράξη.</p>
+
+<svg viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:900px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <rect x="20" y="30" width="270" height="150" rx="10" style="fill:rgba(var(--ink-rgb),0.04);stroke:var(--accent);stroke-opacity:.5;stroke-width:2"/>
+  <text x="155" y="70" font-size="30" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">5</text>
+  <text x="155" y="104" font-size="16" text-anchor="middle" style="fill:currentColor;opacity:.75">τύπος int</text>
+  <text x="155" y="136" font-size="15" text-anchor="middle" style="fill:currentColor">η μνήμη κρατάει</text>
+  <text x="155" y="158" font-size="15" text-anchor="middle" style="fill:currentColor">τον αριθμό πέντε</text>
+
+  <rect x="315" y="30" width="270" height="150" rx="10" style="fill:rgba(var(--ink-rgb),0.04);stroke:var(--accent);stroke-opacity:.5;stroke-width:2"/>
+  <text x="450" y="70" font-size="30" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">"5"</text>
+  <text x="450" y="104" font-size="16" text-anchor="middle" style="fill:currentColor;opacity:.75">τύπος string</text>
+  <text x="450" y="136" font-size="15" text-anchor="middle" style="fill:currentColor">η μνήμη κρατάει</text>
+  <text x="450" y="158" font-size="15" text-anchor="middle" style="fill:currentColor">κείμενο ενός χαρακτήρα</text>
+
+  <rect x="610" y="30" width="270" height="150" rx="10" style="fill:rgba(var(--ink-rgb),0.04);stroke:var(--accent);stroke-opacity:.5;stroke-width:2"/>
+  <text x="745" y="70" font-size="30" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">'5'</text>
+  <text x="745" y="104" font-size="16" text-anchor="middle" style="fill:currentColor;opacity:.75">τύπος rune</text>
+  <text x="745" y="136" font-size="15" text-anchor="middle" style="fill:currentColor">η μνήμη κρατάει</text>
+  <text x="745" y="158" font-size="15" text-anchor="middle" style="fill:currentColor">τον κωδικό 53</text>
+
+  <text x="450" y="212" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.65">Διπλά εισαγωγικά: κείμενο. Μονά εισαγωγικά: ένας χαρακτήρας, αποθηκευμένος ως αριθμός.</text>
+</svg>
+
+<pre><code class="lang-go">n := 5      <span class="cm">// int</span>
+s := "5"    <span class="cm">// string</span>
+r := '5'    <span class="cm">// rune, which is really the number 53</span>
+
+fmt.Println(n + 1)   <span class="cm">// 6</span>
+fmt.Println(r + 1)   <span class="cm">// 54, the code of the character '6'</span>
+fmt.Println(s + 1)   <span class="cm">// compile error: mismatched types</span></code></pre>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΚΕΝΤΡΙΚΟ ΣΗΜΕΙΟ</span>
+  Ένα κείμενο που περιέχει ψηφία δεν είναι αριθμός. Ο compiler δεν το μετατρέπει από μόνος του, ούτε στην πρόσθεση ούτε πουθενά αλλού.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@o-charaktiras-os-arithmos">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
+<h1>Ο χαρακτήρας ως αριθμός</h1>
+<p class="lede">Κάθε χαρακτήρας έχει έναν κωδικό. Επειδή ένα <code>rune</code> κρατάει αυτόν τον κωδικό, οι πράξεις πάνω σε χαρακτήρες είναι απλή αριθμητική.</p>
+
+<svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:900px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <text x="30" y="34" font-size="16" style="fill:var(--accent)">τα γράμματα είναι διαδοχικά</text>
+  <line x1="30" y1="86" x2="640" y2="86" style="stroke:currentColor;stroke-opacity:.3;stroke-width:2"/>
+  <g font-family="Menlo, Consolas, monospace" style="fill:currentColor">
+    <text x="60" y="72" font-size="24" text-anchor="middle">'a'</text><text x="60" y="112" font-size="16" text-anchor="middle" style="opacity:.6">97</text>
+    <text x="180" y="72" font-size="24" text-anchor="middle">'b'</text><text x="180" y="112" font-size="16" text-anchor="middle" style="opacity:.6">98</text>
+    <text x="300" y="72" font-size="24" text-anchor="middle">'c'</text><text x="300" y="112" font-size="16" text-anchor="middle" style="opacity:.6">99</text>
+    <text x="420" y="72" font-size="24" text-anchor="middle">'d'</text><text x="420" y="112" font-size="16" text-anchor="middle" style="opacity:.6">100</text>
+    <text x="540" y="72" font-size="24" text-anchor="middle">'e'</text><text x="540" y="112" font-size="16" text-anchor="middle" style="opacity:.6">101</text>
+  </g>
+  <text x="620" y="72" font-size="24" style="fill:currentColor;opacity:.45">…</text>
+
+  <text x="30" y="164" font-size="16" style="fill:var(--correct)">τα ψηφία επίσης</text>
+  <line x1="30" y1="216" x2="640" y2="216" style="stroke:currentColor;stroke-opacity:.3;stroke-width:2"/>
+  <g font-family="Menlo, Consolas, monospace" style="fill:currentColor">
+    <text x="60" y="202" font-size="24" text-anchor="middle">'0'</text><text x="60" y="240" font-size="16" text-anchor="middle" style="opacity:.6">48</text>
+    <text x="180" y="202" font-size="24" text-anchor="middle">'1'</text><text x="180" y="240" font-size="16" text-anchor="middle" style="opacity:.6">49</text>
+    <text x="300" y="202" font-size="24" text-anchor="middle">'2'</text><text x="300" y="240" font-size="16" text-anchor="middle" style="opacity:.6">50</text>
+    <text x="420" y="202" font-size="24" text-anchor="middle">'3'</text><text x="420" y="240" font-size="16" text-anchor="middle" style="opacity:.6">51</text>
+    <text x="540" y="202" font-size="24" text-anchor="middle">'4'</text><text x="540" y="240" font-size="16" text-anchor="middle" style="opacity:.6">52</text>
+  </g>
+  <text x="620" y="202" font-size="24" style="fill:currentColor;opacity:.45">…</text>
+
+  <text x="700" y="72" font-size="17" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">'a' + 2</text>
+  <text x="700" y="100" font-size="16" style="fill:currentColor;opacity:.7">δίνει 99, τον κωδικό του 'c'</text>
+  <text x="700" y="202" font-size="17" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">'7' - '0'</text>
+  <text x="700" y="230" font-size="16" style="fill:currentColor;opacity:.7">δίνει 7, τον ίδιο τον αριθμό</text>
+</svg>
+
+<p>Η αφαίρεση δύο χαρακτήρων δίνει την απόσταση ανάμεσά τους. Επειδή τα ψηφία είναι αποθηκευμένα σε συνεχόμενους κωδικούς, το <code>'7' - '0'</code> ισούται με 55 μείον 48, δηλαδή 7. Έτσι ένας χαρακτήρας-ψηφίο γίνεται ο αριθμός που παριστάνει.</p>
+
+<div class="callout">
+  <span class="tag">ΠΡΟΣΟΧΗ ΣΤΑ ΕΛΛΗΝΙΚΑ</span>
+  Η συνέχεια των κωδικών ισχύει για το λατινικό αλφάβητο και τα ψηφία. Για ελληνικά γράμματα οι κωδικοί είναι επίσης διαδοχικοί, αλλά πολύ μεγαλύτεροι, και το τελικό σίγμα βρίσκεται ανάμεσα στα κεφαλαία και τα πεζά.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@metatropes-typon">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
+<h1>Μετατροπές τύπων</h1>
+<p class="lede">Η Go δεν μετατρέπει τύπους σιωπηλά. Αν θέλεις μια τιμή σε άλλον τύπο, το γράφεις ρητά με το όνομα του τύπου και παρενθέσεις.</p>
+
+<pre><code class="lang-go">r := 'a'
+n := int(r)        <span class="cm">// 97, the code as a plain int</span>
+back := rune(98)   <span class="cm">// 'b'</span></code></pre>
+
+<p>Και οι δύο μετατροπές παραπάνω κρατούν τον ίδιο αριθμό και αλλάζουν μόνο τον τύπο με τον οποίο τον βλέπει ο compiler. Η μετατροπή σε <code>string</code> όμως κάνει κάτι διαφορετικό, και εκεί δημιουργείται η πιο συνηθισμένη παρανόηση.</p>
+
+<pre><code class="lang-go">fmt.Println(string(rune(65)))   <span class="cm">// A — the character with code 65</span>
+fmt.Println(string(rune(5)))    <span class="cm">// an invisible control character, not "5"</span></code></pre>
+
+<h2>Τι δεν κάνει η μετατροπή</h2>
+<p>Το <code>string(n)</code> δεν γράφει τον αριθμό με ψηφία. Ψάχνει τον χαρακτήρα που έχει αυτόν τον κωδικό. Και το αντίστροφο δεν υπάρχει καν ως μετατροπή: το <code>int("42")</code> δεν μεταγλωττίζεται, γιατί κείμενο και αριθμός δεν είναι συγγενικοί τύποι.</p>
+
+<div class="callout">
+  <span class="tag">ΤΙ ΙΣΧΥΕΙ ΤΕΛΙΚΑ</span>
+  Μετατροπή γίνεται ανάμεσα σε αριθμητικούς τύπους, και ανάμεσα σε <code>rune</code> και <code>string</code> με τη σημασία του κωδικού χαρακτήρα. Η μετάφραση κειμένου σε αριθμό είναι υπολογισμός, όχι μετατροπή: τη γράφεις ψηφίο-ψηφίο, όπως θα δούμε στην πέμπτη ενότητα.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι κάνει η γραμμή count = count + 1;",
+        options: [
+          "Διαβάζει την τρέχουσα τιμή, προσθέτει ένα και αποθηκεύει το αποτέλεσμα",
+          "Δηλώνει μια εξίσωση που ο compiler προσπαθεί να λύσει ως προς την τιμή του count",
+          "Δημιουργεί νέα μεταβλητή με το ίδιο όνομα",
+          "Αυξάνει την τιμή μόνο αν αυτή είναι ήδη γνωστή"
+        ],
+        correct: 0,
+        explain: "Η δεξιά πλευρά υπολογίζεται πρώτη με την παλιά τιμή, και μετά το αποτέλεσμα ανατίθεται. Δεν υπάρχει έννοια εξίσωσης εδώ."
+      },
+      {
+        q: "Γιατί το a, b = b, a ανταλλάσσει σωστά τις τιμές;",
+        options: [
+          "Επειδή όλη η δεξιά πλευρά υπολογίζεται πριν από κάθε ανάθεση",
+          "Επειδή η Go κρατάει αυτόματα ένα προσωρινό αντίγραφο για κάθε μεταβλητή που εμφανίζεται και στις δύο πλευρές",
+          "Επειδή οι αναθέσεις εκτελούνται από δεξιά προς αριστερά",
+          "Επειδή το a και το b έχουν τον ίδιο τύπο"
+        ],
+        correct: 0,
+        explain: "Και οι δύο τιμές διαβάζονται πρώτα, με το παλιό τους περιεχόμενο. Μόνο μετά γράφονται στις μεταβλητές."
+      },
+      {
+        q: "Τι τύπο έχει η τιμή '5';",
+        options: [
+          "rune",
+          "string, επειδή οποιοδήποτε σύμβολο μέσα σε εισαγωγικά θεωρείται κείμενο",
+          "int",
+          "byte μόνο όταν ανατίθεται σε μεταβλητή"
+        ],
+        correct: 0,
+        explain: "Τα μονά εισαγωγικά δηλώνουν έναν χαρακτήρα, δηλαδή rune. Στη μνήμη αποθηκεύεται ο κωδικός του, το 53."
+      },
+      {
+        q: "Πόσο κάνει το '7' - '0';",
+        options: [
+          "7",
+          "0, επειδή η αφαίρεση δύο χαρακτήρων δεν ορίζεται και το αποτέλεσμα μηδενίζεται",
+          "55",
+          "103"
+        ],
+        correct: 0,
+        explain: "Οι κωδικοί των ψηφίων είναι διαδοχικοί: 55 μείον 48 δίνει 7, δηλαδή τον αριθμό που παριστάνει ο χαρακτήρας."
+      },
+      {
+        q: "Τι επιστρέφει το string(rune(65));",
+        options: [
+          "A",
+          "65, γραμμένο ως κείμενο δύο χαρακτήρων που περιέχει τα ψηφία έξι και πέντε",
+          "Σφάλμα μεταγλώττισης",
+          "Το κενό string"
+        ],
+        correct: 0,
+        explain: "Η μετατροπή σε string ψάχνει τον χαρακτήρα με αυτόν τον κωδικό. Ο κωδικός 65 αντιστοιχεί στο κεφαλαίο A."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code:
+          `a, b := 1, 2
+a, b = __rhs__          // swap the two values in a single line
+
+letter := 'a'
+third := letter + __step__   // the code of 'c'
+
+digit := '9' - __zero__      // turn the character into the number 9`,
+        blanks: [
+          { id: "rhs", answer: "b, a" },
+          { id: "step", answer: "2" },
+          { id: "zero", answer: "'0'" }
+        ],
+        explain: "Η δεξιά πλευρά υπολογίζεται πρώτη, οπότε το b, a αρκεί για την ανταλλαγή. Οι κωδικοί των γραμμάτων απέχουν κατά ένα, οπότε από το 'a' στο 'c' η απόσταση είναι 2. Η αφαίρεση του '0' δίνει την απόσταση από το πρώτο ψηφίο."
+      }
+    ]);
+
+    addMatching([
+      { term: "<code>5</code>", def: "int — ο αριθμός πέντε" },
+      { term: "<code>\"5\"</code>", def: "string — κείμενο ενός χαρακτήρα" },
+      { term: "<code>'5'</code>", def: "rune — ο κωδικός 53" },
+      { term: "<code>'5' - '0'</code>", def: "int — ο αριθμός 5, υπολογισμένος από τον κωδικό" },
+      { term: "<code>string(rune(53))</code>", def: "string — το κείμενο «5»" },
+      { term: "<code>int('5')</code>", def: "int — ο αριθμός 53" }
+    ], {
+      allowHTML: true,
+      note: "Ταίριαξε κάθε έκφραση με τον τύπο και την τιμή που παράγει."
+    });
+
+    // ── §4 · Arrays, slices και επανάληψη ─────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@array-kai-slice">Ενότητα 4 / 8 — Arrays, slices και επανάληψη</div>
+<h1>Array και slice</h1>
+<p class="lede">Και τα δύο κρατούν πολλές τιμές του ίδιου τύπου, στη σειρά. Διαφέρουν στο αν το πλήθος τους είναι σταθερό.</p>
+
+<pre><code class="lang-go"><span class="cm">// array: the length is part of the type itself</span>
+var scores [3]int
+days := [4]string{"Mon", "Tue", "Wed", "Thu"}
+
+<span class="cm">// slice: no length in the brackets, grows and shrinks</span>
+var names []string
+values := []int{10, 20, 30}</code></pre>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Array</h3>
+    <p>Το μήκος γράφεται μέσα στις αγκύλες και αποτελεί μέρος του τύπου. Ένα <code>[3]int</code> και ένα <code>[4]int</code> είναι δύο διαφορετικοί τύποι και δεν ανατίθενται μεταξύ τους.</p>
+  </div>
+  <div class="card">
+    <h3>Slice</h3>
+    <p>Οι αγκύλες μένουν άδειες. Το μήκος είναι ιδιότητα της τιμής, όχι του τύπου, οπότε μπορεί να αλλάξει όσο τρέχει το πρόγραμμα.</p>
+  </div>
+</div>
+
+<p>Στην πράξη γράφεις σχεδόν πάντα slice. Το array εμφανίζεται όταν το πλήθος είναι γνωστό εξαρχής και δεν πρόκειται να αλλάξει.</p>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΑΔΕΙΟ SLICE</span>
+  Η μηδενική τιμή ενός slice είναι <code>nil</code>, δηλαδή ένα slice χωρίς κανένα στοιχείο. Δεν είναι σφάλμα: το <code>len</code> του δίνει 0 και μπορείς κανονικά να προσθέσεις στοιχεία σε αυτό.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@theseis-kai-mikos">Ενότητα 4 / 8 — Arrays, slices και επανάληψη</div>
+<h1>Θέσεις και μήκος</h1>
+<p class="lede">Η αρίθμηση των θέσεων ξεκινάει από το μηδέν. Αυτό κάνει την τελευταία θέση να είναι πάντα μία λιγότερη από το μήκος.</p>
+
+<svg viewBox="0 0 900 190" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:900px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <text x="30" y="34" font-size="16" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">values := []int{10, 20, 30, 40, 50}</text>
+  <g>
+    <rect x="60" y="60" width="140" height="62" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+    <text x="130" y="101" font-size="26" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">10</text>
+    <text x="130" y="146" font-size="18" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">0</text>
+  </g>
+  <g>
+    <rect x="212" y="60" width="140" height="62" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+    <text x="282" y="101" font-size="26" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">20</text>
+    <text x="282" y="146" font-size="18" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">1</text>
+  </g>
+  <g>
+    <rect x="364" y="60" width="140" height="62" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+    <text x="434" y="101" font-size="26" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">30</text>
+    <text x="434" y="146" font-size="18" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">2</text>
+  </g>
+  <g>
+    <rect x="516" y="60" width="140" height="62" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+    <text x="586" y="101" font-size="26" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">40</text>
+    <text x="586" y="146" font-size="18" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">3</text>
+  </g>
+  <g>
+    <rect x="668" y="60" width="140" height="62" rx="8" style="fill:rgba(var(--correct-rgb),0.12);stroke:var(--correct);stroke-width:2"/>
+    <text x="738" y="101" font-size="26" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">50</text>
+    <text x="738" y="146" font-size="18" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">4</text>
+  </g>
+  <text x="838" y="101" font-size="16" style="fill:currentColor;opacity:.6">len = 5</text>
+  <text x="738" y="176" font-size="15" text-anchor="middle" style="fill:var(--correct)">τελευταία θέση: len - 1</text>
+</svg>
+
+<pre><code class="lang-go">first := values[0]
+last  := values[len(values)-1]
+values[2] = 99            <span class="cm">// assignment works on a position too</span></code></pre>
+
+<div class="callout">
+  <span class="tag">ΕΚΤΟΣ ΟΡΙΩΝ</span>
+  Το <code>values[5]</code> σε slice πέντε στοιχείων δεν είναι σφάλμα μεταγλώττισης, γιατί ο δείκτης μπορεί να είναι μεταβλητή που ο compiler δεν γνωρίζει. Είναι σφάλμα εκτέλεσης: το πρόγραμμα σταματάει με μήνυμα <code>index out of range</code>.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@prosthiki-me-append">Ενότητα 4 / 8 — Arrays, slices και επανάληψη</div>
+<h1>Προσθήκη με append</h1>
+<p class="lede">Το <code>append</code> προσθέτει στοιχεία στο τέλος ενός slice. Δεν αλλάζει το slice που του δίνεις, επιστρέφει ένα καινούργιο.</p>
+
+<pre><code class="lang-go">values := []int{10, 20}
+values = append(values, 30)
+values = append(values, 40, 50)   <span class="cm">// more than one at a time</span></code></pre>
+
+<p>Η ανάθεση πίσω στην ίδια μεταβλητή είναι υποχρεωτική. Αν γράψεις μόνο <code>append(values, 30)</code>, το αποτέλεσμα δημιουργείται και πετιέται, ενώ το <code>values</code> μένει όπως ήταν.</p>
+
+<h2>Γιατί επιστρέφει αντί να τροποποιεί</h2>
+<p>Ένα slice κρατάει τα στοιχεία του σε μια περιοχή μνήμης συγκεκριμένου μεγέθους. Όταν η περιοχή γεμίσει, το <code>append</code> δεσμεύει μεγαλύτερη, αντιγράφει τα παλιά στοιχεία εκεί και επιστρέφει slice που δείχνει στη νέα περιοχή. Επειδή η θέση μπορεί να αλλάξει, το αποτέλεσμα πρέπει να το κρατήσεις.</p>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΣΥΝΗΘΕΣ ΛΑΘΟΣ</span>
+  Μια γραμμή <code>append(values, x)</code> χωρίς <code>values =</code> μπροστά μεταγλωττίζεται κανονικά αν το αποτέλεσμα αγνοηθεί σε άλλο σημείο, αλλά δεν προσθέτει τίποτα εκεί που περιμένεις. Αν κάτι δεν εμφανίζεται στο slice σου, αυτό είναι το πρώτο που ελέγχεις.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@epanalipsi-me-metriti">Ενότητα 4 / 8 — Arrays, slices και επανάληψη</div>
+<h1>Επανάληψη με μετρητή</h1>
+<p class="lede">Η Go έχει μία μόνο λέξη για επανάληψη, το <code>for</code>. Στην πλήρη μορφή του δηλώνει έναν μετρητή, τη συνθήκη συνέχισης και τη μεταβολή του μετρητή.</p>
+
+<pre><code class="lang-go">for i := 0; i &lt; len(values); i++ {
+	fmt.Println(values[i])
+}</code></pre>
+
+<div class="grid3">
+  <div class="card"><h3><code>i := 0</code></h3><p>Εκτελείται μία φορά, πριν από την πρώτη επανάληψη.</p></div>
+  <div class="card"><h3><code>i &lt; len(values)</code></h3><p>Ελέγχεται πριν από κάθε επανάληψη. Όταν γίνει ψευδής, το loop τελειώνει.</p></div>
+  <div class="card"><h3><code>i++</code></h3><p>Εκτελείται μετά το σώμα, πριν τον επόμενο έλεγχο.</p></div>
+</div>
+
+<p>Το <code>&lt;</code> και όχι το <code>&lt;=</code> είναι αυτό που κρατάει τον μετρητή μέσα στα όρια. Με μήκος 5, ο μετρητής παίρνει τις τιμές 0 έως 4 και σταματάει πριν φτάσει στο 5, που δεν αντιστοιχεί σε καμία θέση.</p>
+
+<span class="vz-tag">Βήμα-βήμα</span>
+<div id="slice-loop-viz"></div>
+
+<div class="callout">
+  <span class="tag">ΠΟΤΕ ΤΟ ΘΕΛΕΙΣ</span>
+  Ο μετρητής χρειάζεται όταν σε ενδιαφέρει η ίδια η θέση: όταν διαβάζεις δύο θέσεις ταυτόχρονα, όταν προχωράς ανάποδα, ή όταν το βήμα δεν είναι ένα.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@epanalipsi-me-range">Ενότητα 4 / 8 — Arrays, slices και επανάληψη</div>
+<h1>Επανάληψη με range</h1>
+<p class="lede">Όταν θέλεις απλώς να περάσεις από όλα τα στοιχεία, το <code>range</code> γράφει το ίδιο πράγμα χωρίς μετρητή και χωρίς συνθήκη.</p>
+
+<pre><code class="lang-go">for i, v := range values {
+	fmt.Println(i, v)
+}</code></pre>
+
+<p>Σε κάθε επανάληψη το <code>i</code> παίρνει τη θέση και το <code>v</code> ένα αντίγραφο της τιμής σε αυτή τη θέση. Επειδή είναι αντίγραφο, η αλλαγή του <code>v</code> δεν αγγίζει το slice.</p>
+
+<h2>Όταν δεν χρειάζεσαι και τα δύο</h2>
+<pre><code class="lang-go">for _, v := range values {   <span class="cm">// only the values</span>
+	fmt.Println(v)
+}
+
+for i := range values {      <span class="cm">// only the positions</span>
+	values[i] = values[i] * 2
+}</code></pre>
+
+<p>Η κάτω παύλα είναι το όνομα που δηλώνει ότι η τιμή δεν σε ενδιαφέρει. Χρειάζεται επειδή η Go δεν επιτρέπει δηλωμένη μεταβλητή που δεν χρησιμοποιείται πουθενά.</p>
+
+<div class="callout">
+  <span class="tag">ΤΡΟΠΟΠΟΙΗΣΗ ΜΕΣΑ ΣΕ RANGE</span>
+  Για να αλλάξεις τα ίδια τα στοιχεία, γράψε <code>values[i] = ...</code> με τη θέση. Ανάθεση στο <code>v</code> αλλάζει μόνο το τοπικό αντίγραφο και χάνεται στην επόμενη επανάληψη.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια είναι η διαφορά ανάμεσα σε [3]int και []int;",
+        options: [
+          "Το πρώτο έχει σταθερό μήκος τριών στοιχείων, το δεύτερο μεταβλητό",
+          "Το πρώτο κρατάει ακέραιους και το δεύτερο κρατάει δείκτες προς ακέραιους που δεσμεύονται χωριστά",
+          "Το πρώτο ξεκινάει από τη θέση 1 και το δεύτερο από τη θέση 0",
+          "Κανένα, είναι δύο γραφές του ίδιου τύπου"
+        ],
+        correct: 0,
+        explain: "Στο array το μήκος είναι μέρος του τύπου. Στο slice οι αγκύλες μένουν άδειες και το μήκος αλλάζει όσο τρέχει το πρόγραμμα."
+      },
+      {
+        q: "Ποια είναι η τελευταία έγκυρη θέση ενός slice με len 5;",
+        options: [
+          "4",
+          "5, αφού το μήκος μετράει και την τελευταία θέση μαζί με όλες τις προηγούμενες",
+          "6",
+          "Εξαρτάται από το πώς δημιουργήθηκε το slice"
+        ],
+        correct: 0,
+        explain: "Η αρίθμηση ξεκινάει από το μηδέν, οπότε πέντε στοιχεία καταλαμβάνουν τις θέσεις 0 έως 4."
+      },
+      {
+        q: "Τι συμβαίνει αν γράψεις append(values, 30) χωρίς ανάθεση;",
+        options: [
+          "Το values μένει αμετάβλητο",
+          "Το στοιχείο προστίθεται κανονικά, επειδή το append τροποποιεί απευθείας το slice που δέχεται ως όρισμα",
+          "Το πρόγραμμα σταματάει με σφάλμα εκτέλεσης",
+          "Προστίθεται μόνο αν υπάρχει ελεύθερος χώρος"
+        ],
+        correct: 0,
+        explain: "Το append επιστρέφει το νέο slice. Χωρίς ανάθεση, το αποτέλεσμα πετιέται."
+      },
+      {
+        q: "Τι δίνουν οι δύο μεταβλητές στο for i, v := range values;",
+        options: [
+          "Τη θέση και ένα αντίγραφο της τιμής",
+          "Δύο διαδοχικές τιμές του slice, ώστε να μπορείς να τις συγκρίνεις μεταξύ τους σε κάθε επανάληψη",
+          "Το πρώτο και το τελευταίο στοιχείο",
+          "Την τιμή και τον τύπο της"
+        ],
+        correct: 0,
+        explain: "Η πρώτη μεταβλητή είναι η θέση και η δεύτερη αντίγραφο της τιμής. Η αλλαγή του αντιγράφου δεν επηρεάζει το slice."
+      },
+      {
+        q: "Γιατί γράφουμε i < len(values) και όχι i <= len(values);",
+        options: [
+          "Επειδή η θέση len δεν υπάρχει",
+          "Επειδή το len επιστρέφει τη μεγαλύτερη θέση και όχι το πλήθος των στοιχείων του slice",
+          "Επειδή το loop θα ξεκινούσε από λάθος σημείο",
+          "Για λόγους ταχύτητας"
+        ],
+        correct: 0,
+        explain: "Με μήκος 5 οι θέσεις είναι 0 έως 4. Το <= θα ζητούσε τη θέση 5, που προκαλεί σφάλμα εκτέλεσης."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code:
+          `values := []int{10, 20, 30}
+values = __fn__(values, 40)          // add one element at the end
+
+for i := 0; i < __bound__; i++ {     // visit every valid position
+	fmt.Println(values[i])
+}
+
+for __skip__, v := range values {    // values only, positions ignored
+	fmt.Println(v)
+}`,
+        blanks: [
+          { id: "fn", answer: "append" },
+          { id: "bound", answer: "len(values)" },
+          { id: "skip", answer: "_" }
+        ],
+        explain: "Το append επιστρέφει το νέο slice, γι' αυτό η ανάθεση είναι μέρος της γραμμής. Το όριο του μετρητή είναι το μήκος, με αυστηρή ανισότητα. Η κάτω παύλα δηλώνει ότι η θέση δεν χρησιμοποιείται."
+      }
+    ]);
+
+    addMatching([
+      { term: "<code>len(s)</code>", def: "Το πλήθος των στοιχείων" },
+      { term: "<code>s[0]</code>", def: "Το πρώτο στοιχείο" },
+      { term: "<code>s[len(s)-1]</code>", def: "Το τελευταίο στοιχείο" },
+      { term: "<code>append(s, x)</code>", def: "Νέο slice με ένα στοιχείο παραπάνω στο τέλος" },
+      { term: "<code>for i := range s</code>", def: "Επανάληψη μόνο πάνω στις θέσεις" },
+      { term: "<code>for _, v := range s</code>", def: "Επανάληψη μόνο πάνω στις τιμές" }
+    ], {
+      allowHTML: true,
+      note: "Ταίριαξε κάθε έκφραση με αυτό που δίνει."
+    });
+
+    // ── §5 · Κείμενο ──────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@to-string-os-akolouthia-bytes">Ενότητα 5 / 8 — Κείμενο</div>
+<h1>Το string ως ακολουθία από bytes</h1>
+<p class="lede">Ένα <code>string</code> στη Go δεν είναι μια αδιαίρετη τιμή. Είναι μια σειρά από bytes, αριθμημένη όπως ένα slice, με μία σημαντική διαφορά.</p>
+
+<pre><code class="lang-go">s := "Go"
+fmt.Println(len(s))    <span class="cm">// 2</span>
+fmt.Println(s[0])      <span class="cm">// 71</span>
+s[0] = 'X'             <span class="cm">// compile error: cannot assign</span></code></pre>
+
+<p>Οι δύο πρώτες γραμμές δείχνουν ότι το κείμενο συμπεριφέρεται σαν ακολουθία με μήκος και θέσεις. Η τρίτη δείχνει τη διαφορά: το περιεχόμενο ενός string δεν τροποποιείται μετά τη δημιουργία του.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Τι επιτρέπεται</h3>
+    <p>Να διαβάσεις μια θέση, να μετρήσεις το μήκος, να πάρεις ένα κομμάτι, να φτιάξεις νέο string ενώνοντας άλλα.</p>
+  </div>
+  <div class="card">
+    <h3>Τι δεν επιτρέπεται</h3>
+    <p>Να αλλάξεις μια θέση επιτόπου. Για να τροποποιήσεις κείμενο, φτιάχνεις καινούργιο από τα κομμάτια που θέλεις.</p>
+  </div>
+</div>
+
+<div class="callout">
+  <span class="tag">ΓΙΑΤΙ ΕΤΣΙ</span>
+  Επειδή το κείμενο δεν αλλάζει, δύο μεταβλητές μπορούν να μοιράζονται με ασφάλεια την ίδια περιοχή μνήμης. Καμία από τις δύο δεν μπορεί να χαλάσει το περιεχόμενο για την άλλη.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@ti-dinei-to-s-i">Ενότητα 5 / 8 — Κείμενο</div>
+<h1>Τι δίνει το <code>s[i]</code> και τι μετράει το <code>len</code></h1>
+<p class="lede">Και τα δύο δουλεύουν σε bytes, όχι σε χαρακτήρες. Στα λατινικά η διαφορά δεν φαίνεται, γιατί κάθε χαρακτήρας πιάνει ακριβώς ένα byte. Στα ελληνικά φαίνεται αμέσως.</p>
+
+<svg viewBox="0 0 900 250" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:900px;height:auto;display:block;margin:14px auto;color:var(--ink)">
+  <text x="30" y="30" font-size="16" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">s := "Γεια"</text>
+
+  <text x="30" y="72" font-size="15" style="fill:currentColor;opacity:.65">bytes</text>
+  <g font-family="Menlo, Consolas, monospace">
+    <rect x="120" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="163" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">206</text>
+    <rect x="212" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="255" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">147</text>
+    <rect x="304" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="347" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">206</text>
+    <rect x="396" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="439" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">181</text>
+    <rect x="488" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="531" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">206</text>
+    <rect x="580" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="623" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">185</text>
+    <rect x="672" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="715" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">206</text>
+    <rect x="764" y="52" width="86" height="52" rx="7" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="807" y="86" font-size="19" text-anchor="middle" style="fill:currentColor">177</text>
+  </g>
+  <g font-family="Menlo, Consolas, monospace" font-size="14" text-anchor="middle" style="fill:var(--accent)">
+    <text x="163" y="122">0</text><text x="255" y="122">1</text><text x="347" y="122">2</text><text x="439" y="122">3</text>
+    <text x="531" y="122">4</text><text x="623" y="122">5</text><text x="715" y="122">6</text><text x="807" y="122">7</text>
+  </g>
+
+  <text x="30" y="182" font-size="15" style="fill:currentColor;opacity:.65">χαρακτήρες</text>
+  <g font-family="Menlo, Consolas, monospace">
+    <rect x="120" y="152" width="178" height="52" rx="7" style="fill:rgba(var(--correct-rgb),0.10);stroke:var(--correct);stroke-opacity:.7"/>
+    <text x="209" y="188" font-size="24" text-anchor="middle" style="fill:currentColor">Γ</text>
+    <rect x="304" y="152" width="178" height="52" rx="7" style="fill:rgba(var(--correct-rgb),0.10);stroke:var(--correct);stroke-opacity:.7"/>
+    <text x="393" y="188" font-size="24" text-anchor="middle" style="fill:currentColor">ε</text>
+    <rect x="488" y="152" width="178" height="52" rx="7" style="fill:rgba(var(--correct-rgb),0.10);stroke:var(--correct);stroke-opacity:.7"/>
+    <text x="577" y="188" font-size="24" text-anchor="middle" style="fill:currentColor">ι</text>
+    <rect x="672" y="152" width="178" height="52" rx="7" style="fill:rgba(var(--correct-rgb),0.10);stroke:var(--correct);stroke-opacity:.7"/>
+    <text x="761" y="188" font-size="24" text-anchor="middle" style="fill:currentColor">α</text>
+  </g>
+  <text x="30" y="238" font-size="15" style="fill:currentColor;opacity:.65">len(s) = 8, χαρακτήρες = 4</text>
+</svg>
+
+<p>Κάθε ελληνικό γράμμα χρειάζεται δύο bytes. Το <code>len(s)</code> επιστρέφει 8, το <code>s[0]</code> επιστρέφει 206, δηλαδή το πρώτο μισό του γράμματος, και όχι κάτι που να μπορείς να τυπώσεις μόνο του.</p>
+
+<span class="vz-tag">Βήμα-βήμα</span>
+<div id="bytes-runes-viz"></div>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΚΡΙΣΙΜΟ</span>
+  Το μήκος σε bytes και το πλήθος των χαρακτήρων ταυτίζονται μόνο όταν το κείμενο είναι αποκλειστικά λατινικοί χαρακτήρες, ψηφία και σύμβολα. Μην στηρίζεσαι στο <code>len</code> για να μετρήσεις χαρακτήρες.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@runes-otan-ta-megethi-diaferoun">Ενότητα 5 / 8 — Κείμενο</div>
+<h1>Runes: όταν θέλεις χαρακτήρες</h1>
+<p class="lede">Υπάρχουν δύο τρόποι να δουλέψεις με χαρακτήρες αντί για bytes, και και οι δύο δίνουν <code>rune</code>.</p>
+
+<pre><code class="lang-go">s := "Γεια"
+
+<span class="cm">// 1. range walks characters, not bytes</span>
+for i, r := range s {
+	fmt.Println(i, string(r))
+}
+<span class="cm">// prints positions 0, 2, 4, 6 — byte offsets, one per character</span>
+
+<span class="cm">// 2. convert once, then use plain positions</span>
+runes := []rune(s)
+fmt.Println(len(runes))   <span class="cm">// 4</span>
+fmt.Println(runes[1])     <span class="cm">// the code of ε</span></code></pre>
+
+<p>Η πρώτη μορφή προχωράει χαρακτήρα-χαρακτήρα, αλλά η θέση που δίνει είναι η θέση σε bytes, γι' αυτό πηδάει από το 0 στο 2. Η δεύτερη φτιάχνει ένα slice από runes, όπου οι θέσεις είναι 0, 1, 2, 3 όπως σε κάθε slice.</p>
+
+<h2>Ποιο διαλέγεις</h2>
+<table style="width:100%;border-collapse:collapse;margin-top:6px">
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.25)">
+    <th style="text-align:left;padding:9px 8px">Θέλεις</th>
+    <th style="text-align:left;padding:9px 8px">Γράφεις</th>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.12)">
+    <td style="padding:9px 8px">Να περάσεις από όλους τους χαρακτήρες μία φορά</td>
+    <td style="padding:9px 8px"><code>for _, r := range s</code></td>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.12)">
+    <td style="padding:9px 8px">Να μετρήσεις χαρακτήρες</td>
+    <td style="padding:9px 8px"><code>len([]rune(s))</code></td>
+  </tr>
+  <tr>
+    <td style="padding:9px 8px">Να διαβάσεις τον τρίτο χαρακτήρα, ή να προχωρήσεις ανάποδα</td>
+    <td style="padding:9px 8px"><code>[]rune(s)</code> και μετά θέσεις</td>
+  </tr>
+</table>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΚΟΣΤΟΣ</span>
+  Η μετατροπή <code>[]rune(s)</code> διαβάζει όλο το κείμενο και δεσμεύει νέα μνήμη. Για ένα πέρασμα, το <code>range</code> είναι φθηνότερο. Για πολλαπλή πρόσβαση σε θέσεις, η μετατροπή γίνεται μία φορά και μετά όλα είναι απλά.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@metatropes-kai-enosi">Ενότητα 5 / 8 — Κείμενο</div>
+<h1>Μετατροπές και ένωση</h1>
+<p class="lede">Το κείμενο μετατρέπεται σε slice και το slice πίσω σε κείμενο. Οι δύο διαδρομές είναι συμμετρικές.</p>
+
+<pre><code class="lang-go">s := "Γεια"
+
+runes := []rune(s)     <span class="cm">// 4 characters</span>
+bytes := []byte(s)     <span class="cm">// 8 bytes</span>
+
+back := string(runes)  <span class="cm">// "Γεια" again</span></code></pre>
+
+<p>Η μετατροπή ενός slice από runes πίσω σε string είναι ο κανονικός τρόπος να φτιάξεις κείμενο που το έχεις χτίσει χαρακτήρα-χαρακτήρα. Χτίζεις το slice, το μετατρέπεις μία φορά στο τέλος.</p>
+
+<h2>Ένωση</h2>
+<pre><code class="lang-go">first := "Γεια"
+second := "σου"
+joined := first + " " + second</code></pre>
+
+<p>Ο τελεστής <code>+</code> ανάμεσα σε δύο strings παράγει τρίτο, καινούργιο string. Τα δύο αρχικά μένουν ως έχουν, όπως επιβάλλει το ότι το κείμενο δεν τροποποιείται.</p>
+
+<div class="callout">
+  <span class="tag">ΣΕ ΕΠΑΝΑΛΗΨΗ</span>
+  Ένωση μέσα σε loop δημιουργεί ένα καινούργιο string σε κάθε επανάληψη, με αντιγραφή όλων των προηγούμενων. Για λίγα κομμάτια δεν έχει σημασία. Για πολλά, μαζεύεις τα κομμάτια σε ένα slice και ενώνεις μία φορά στο τέλος.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι επιστρέφει το len(\"Γεια\");",
+        options: [
+          "8",
+          "4, επειδή το len μετράει πάντα τους χαρακτήρες που βλέπει ο αναγνώστης στην οθόνη",
+          "2",
+          "Εξαρτάται από τη γλώσσα του λειτουργικού"
+        ],
+        correct: 0,
+        explain: "Το len μετράει bytes. Κάθε ελληνικό γράμμα καταλαμβάνει δύο, οπότε τέσσερα γράμματα δίνουν οκτώ."
+      },
+      {
+        q: "Τι τύπο έχει το s[0] όταν το s είναι string;",
+        options: [
+          "byte",
+          "string μήκους ενός χαρακτήρα, έτοιμο να τυπωθεί ή να ενωθεί με άλλο κείμενο",
+          "rune",
+          "int"
+        ],
+        correct: 0,
+        explain: "Η θέση ενός string δίνει ένα byte. Για ολόκληρο χαρακτήρα χρειάζεσαι range ή μετατροπή σε slice από runes."
+      },
+      {
+        q: "Τι θέσεις δίνει το for i, r := range \"Γεια\";",
+        options: [
+          "0, 2, 4, 6",
+          "0, 1, 2, 3, επειδή το range αριθμεί χαρακτήρες",
+          "1, 2, 3, 4",
+          "0 έως 7"
+        ],
+        correct: 0,
+        explain: "Το range προχωράει έναν χαρακτήρα τη φορά, αλλά η θέση που δίνει μετριέται σε bytes. Κάθε ελληνικό γράμμα προχωράει τον μετρητή κατά δύο."
+      },
+      {
+        q: "Γιατί δεν μεταγλωττίζεται η γραμμή s[0] = 'X';",
+        options: [
+          "Το περιεχόμενο ενός string δεν αλλάζει",
+          "Ο τύπος rune δεν χωράει σε μία θέση string, οπότε χρειάζεται μετατροπή σε byte",
+          "Η θέση 0 είναι δεσμευμένη",
+          "Χρειάζεται διπλά εισαγωγικά αντί για μονά"
+        ],
+        correct: 0,
+        explain: "Ένα string δημιουργείται και μένει ως έχει. Η τροποποίηση γίνεται φτιάχνοντας νέο κείμενο από τα κομμάτια που θέλεις."
+      },
+      {
+        q: "Πώς μετράς πόσους χαρακτήρες έχει ένα string;",
+        options: [
+          "len([]rune(s))",
+          "len(s) διαιρεμένο με δύο, αφού κάθε χαρακτήρας πέρα από τα λατινικά πιάνει σταθερά δύο bytes",
+          "len(s)",
+          "len([]byte(s))"
+        ],
+        correct: 0,
+        explain: "Η μετατροπή σε slice από runes δίνει ένα στοιχείο ανά χαρακτήρα, οπότε το μήκος του είναι το πλήθος των χαρακτήρων."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code:
+          `s := "Γεια"
+
+count := len(__conv__)        // how many characters, not bytes
+
+for _, r := __kw__ s {        // walk one character at a time
+	fmt.Println(string(r))
+}
+
+joined := s __op__ " σου"     // build a new string from two others`,
+        blanks: [
+          { id: "conv", answer: "[]rune(s)" },
+          { id: "kw", answer: "range" },
+          { id: "op", answer: "+" }
+        ],
+        explain: "Η μετατροπή σε slice από runes δίνει ένα στοιχείο ανά χαρακτήρα. Το range προχωράει χαρακτήρα-χαρακτήρα. Ο τελεστής + παράγει καινούργιο string και αφήνει τα δύο αρχικά ανέπαφα."
+      }
+    ]);
+
+    addMatching([
+      { term: "<code>len(s)</code>", def: "Πλήθος bytes" },
+      { term: "<code>len([]rune(s))</code>", def: "Πλήθος χαρακτήρων" },
+      { term: "<code>s[0]</code>", def: "Ένα byte" },
+      { term: "<code>[]rune(s)[0]</code>", def: "Ένας ολόκληρος χαρακτήρας" },
+      { term: "<code>string(runes)</code>", def: "Κείμενο φτιαγμένο από slice χαρακτήρων" },
+      { term: "<code>s[0] = 'X'</code>", def: "Σφάλμα μεταγλώττισης" }
+    ], {
+      allowHTML: true,
+      note: "Ταίριαξε κάθε έκφραση με το αποτέλεσμά της."
+    });
+
+    // ── §6 · Εμφάνιση στην οθόνη ──────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@fmt-print-println-printf">Ενότητα 6 / 8 — Εμφάνιση στην οθόνη</div>
+<h1><code>fmt</code>: Print, Println, Printf</h1>
+<p class="lede">Τρεις functions του ίδιου πακέτου γράφουν στην οθόνη. Διαφέρουν σε αυτό που προσθέτουν γύρω από τα δεδομένα σου.</p>
+
+<pre><code class="lang-go">fmt.Print("a", "b")       <span class="cm">// ab</span>
+fmt.Println("a", "b")      <span class="cm">// a b, then a newline</span>
+fmt.Printf("%d-%s\\n", 7, "ok")   <span class="cm">// 7-ok, then a newline</span></code></pre>
+
+<div class="grid3">
+  <div class="card"><h3>Print</h3><p>Γράφει τα ορίσματα το ένα μετά το άλλο. Δεν προσθέτει ούτε κενά ούτε αλλαγή γραμμής.</p></div>
+  <div class="card"><h3>Println</h3><p>Βάζει ένα κενό ανάμεσα στα ορίσματα και μία αλλαγή γραμμής στο τέλος.</p></div>
+  <div class="card"><h3>Printf</h3><p>Πρώτο όρισμα το πρότυπο, με σύμβολα που αντικαθίστανται από τα υπόλοιπα ορίσματα.</p></div>
+</div>
+
+<h2>Τα συνηθισμένα σύμβολα του Printf</h2>
+<div class="glossary-strip">
+  <div class="gs-pill"><span class="gs-name">%d</span><span class="gs-def">ακέραιος</span></div>
+  <div class="gs-pill"><span class="gs-name">%s</span><span class="gs-def">κείμενο</span></div>
+  <div class="gs-pill"><span class="gs-name">%c</span><span class="gs-def">ο χαρακτήρας ενός κωδικού</span></div>
+  <div class="gs-pill"><span class="gs-name">%v</span><span class="gs-def">οποιαδήποτε τιμή, στην προεπιλεγμένη μορφή της</span></div>
+  <div class="gs-pill"><span class="gs-name">%q</span><span class="gs-def">κείμενο μέσα σε εισαγωγικά</span></div>
+</div>
+
+<div class="callout">
+  <span class="tag">ΤΟ NEWLINE ΕΙΝΑΙ ΔΙΚΗ ΣΟΥ ΕΥΘΥΝΗ</span>
+  Μόνο το <code>Println</code> προσθέτει αλλαγή γραμμής μόνο του. Στο <code>Printf</code> τη γράφεις εσύ μέσα στο πρότυπο, ως <code>\\n</code>.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@enas-charaktiras-ti-fora">Ενότητα 6 / 8 — Εμφάνιση στην οθόνη</div>
+<h1>Ένας χαρακτήρας τη φορά</h1>
+<p class="lede">Το πακέτο <code>z01</code> της σχολής δίνει μία function με μία δουλειά: τυπώνει έναν χαρακτήρα, χωρίς τίποτα γύρω του.</p>
+
+<pre><code class="lang-go">import "github.com/01-edu/z01"
+
+z01.PrintRune('H')
+z01.PrintRune('i')
+z01.PrintRune('\\n')</code></pre>
+
+<p>Η έξοδος είναι <code>Hi</code> και μετά αλλαγή γραμμής. Δεν μπαίνει κενό ανάμεσα στις κλήσεις, γιατί η function δεν προσθέτει τίποτα δικό της. Ό,τι φαίνεται στην οθόνη το έχεις ζητήσει ρητά.</p>
+
+<h2>Τι δέχεται</h2>
+<p>Δέχεται ένα <code>rune</code>, δηλαδή έναν χαρακτήρα σε μονά εισαγωγικά ή τον κωδικό του. Οι δύο γραμμές παρακάτω τυπώνουν το ίδιο πράγμα, επειδή ένα <code>rune</code> είναι ο κωδικός του χαρακτήρα.</p>
+
+<pre><code class="lang-go">z01.PrintRune('A')
+z01.PrintRune(rune(65))</code></pre>
+
+<div class="callout">
+  <span class="tag">ΓΙΑΤΙ ΝΑ ΤΟ ΘΕΛΕΙΣ</span>
+  Όταν χτίζεις την έξοδο χαρακτήρα-χαρακτήρα, ελέγχεις ακριβώς τι βγαίνει και με ποια σειρά. Καμία function δεν προσθέτει κενά ή αλλαγές γραμμής που δεν ζήτησες.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@i-diki-mas-printtext">Ενότητα 6 / 8 — Εμφάνιση στην οθόνη</div>
+<h1>Μια δική μας <code>PrintText</code></h1>
+<p class="lede">Με όσα είδαμε ως εδώ, μπορούμε να γράψουμε μια function που τυπώνει ένα ολόκληρο κείμενο χρησιμοποιώντας μόνο την εκτύπωση ενός χαρακτήρα.</p>
+
+<pre><code class="lang-go"><span class="cm">// PrintText writes every character of s, one at a time.</span>
+func PrintText(s string) {
+	for _, r := range s {
+		z01.PrintRune(r)
+	}
+}</code></pre>
+
+<p>Τρία πράγματα από τις προηγούμενες ενότητες συναντιούνται εδώ. Το <code>range</code> προχωράει χαρακτήρα-χαρακτήρα, οπότε το <code>r</code> είναι ολόκληρος χαρακτήρας και όχι μισό γράμμα. Η κάτω παύλα λέει ότι η θέση δεν μας ενδιαφέρει. Και το κεφαλαίο <code>P</code> κάνει τη function προσβάσιμη από άλλο πακέτο.</p>
+
+<h2>Τι αλλάζει αν χρησιμοποιήσεις θέσεις</h2>
+<pre><code class="lang-go">for i := 0; i &lt; len(s); i++ {
+	z01.PrintRune(rune(s[i]))   <span class="cm">// breaks on Greek text</span>
+}</code></pre>
+
+<p>Αυτή η μορφή περνάει από τα bytes. Για λατινικό κείμενο δίνει το ίδιο αποτέλεσμα, γιατί κάθε χαρακτήρας είναι ένα byte. Για ελληνικό, τυπώνει το κάθε μισό γράμμα ξεχωριστά και η έξοδος βγαίνει αλλοιωμένη.</p>
+
+<div class="callout">
+  <span class="tag">Ο ΚΑΝΟΝΑΣ</span>
+  Όταν δουλεύεις με χαρακτήρες, δούλεψε με <code>range</code> ή με <code>[]rune</code>. Οι θέσεις ενός string οδηγούν σε bytes, και τα bytes δεν είναι πάντα χαρακτήρες.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Ποια διαφορά έχουν το fmt.Print και το fmt.Println;",
+        options: [
+          "Το δεύτερο προσθέτει κενά ανάμεσα στα ορίσματα και αλλαγή γραμμής στο τέλος",
+          "Το δεύτερο δέχεται μόνο ένα όρισμα, ενώ το πρώτο δέχεται όσα θέλεις χωρισμένα με κόμμα",
+          "Το πρώτο γράφει σε αρχείο και το δεύτερο στην οθόνη",
+          "Καμία, είναι δύο ονόματα για την ίδια function"
+        ],
+        correct: 0,
+        explain: "Το Print γράφει τα ορίσματα το ένα μετά το άλλο, χωρίς προσθήκες. Το Println παρεμβάλλει κενά και κλείνει με αλλαγή γραμμής."
+      },
+      {
+        q: "Τι κάνει το %c στο Printf;",
+        options: [
+          "Τυπώνει τον χαρακτήρα που αντιστοιχεί σε έναν κωδικό",
+          "Τυπώνει τον κωδικό ενός χαρακτήρα ως ακέραιο αριθμό, στη δεκαδική του μορφή",
+          "Τυπώνει κείμενο μέσα σε εισαγωγικά",
+          "Προσθέτει αλλαγή γραμμής"
+        ],
+        correct: 0,
+        explain: "Το %c ερμηνεύει την τιμή ως κωδικό χαρακτήρα και τυπώνει τον χαρακτήρα. Για τον ίδιο τον αριθμό χρησιμοποιείς %d."
+      },
+      {
+        q: "Τι τυπώνουν δύο διαδοχικές κλήσεις z01.PrintRune('H') και z01.PrintRune('i');",
+        options: [
+          "Hi χωρίς τίποτα ανάμεσα",
+          "H και i σε δύο ξεχωριστές γραμμές, αφού κάθε κλήση κλείνει με δική της αλλαγή γραμμής",
+          "H i με ένα κενό ανάμεσα",
+          "Τους κωδικούς 72 και 105"
+        ],
+        correct: 0,
+        explain: "Η function τυπώνει μόνο τον χαρακτήρα. Κενά και αλλαγές γραμμής μπαίνουν μόνο αν τα ζητήσεις με ξεχωριστή κλήση."
+      },
+      {
+        q: "Γιατί η PrintText γράφεται με range και όχι με θέσεις;",
+        options: [
+          "Επειδή το range δίνει ολόκληρους χαρακτήρες αντί για bytes",
+          "Επειδή οι θέσεις ενός string δεν επιτρέπονται σε function που δέχεται παράμετρο τύπου string",
+          "Επειδή το range είναι ταχύτερο σε κάθε περίπτωση",
+          "Επειδή χωρίς range δεν γίνεται να αγνοήσεις τη θέση"
+        ],
+        correct: 0,
+        explain: "Με θέσεις παίρνεις bytes, και ένα ελληνικό γράμμα αποτελείται από δύο. Το range προχωράει χαρακτήρα-χαρακτήρα."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code:
+          `func PrintText(s string) {
+	for __skip__, r := __kw__ s {   // one character at a time
+		z01.__fn__(r)
+	}
+}`,
+        blanks: [
+          { id: "skip", answer: "_" },
+          { id: "kw", answer: "range" },
+          { id: "fn", answer: "PrintRune" }
+        ],
+        explain: "Η θέση δεν χρησιμεύει, οπότε μπαίνει κάτω παύλα. Το range δίνει runes και όχι bytes, και η PrintRune τυπώνει έναν χαρακτήρα χωρίς προσθήκες."
+      }
+    ]);
+
+    // ── §7 · Functions ────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@ypografi-parametroi-kai-epistrofi">Ενότητα 7 / 8 — Functions</div>
+<h1>Υπογραφή: παράμετροι και επιστροφή</h1>
+<p class="lede">Η πρώτη γραμμή μιας function δηλώνει τι δέχεται και τι δίνει πίσω. Όλα όσα χρειάζεται να ξέρει ο καλών βρίσκονται εκεί.</p>
+
+<svg viewBox="0 0 880 150" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:880px;height:auto;display:block;margin:14px auto;color:var(--ink)">
+  <text x="30" y="60" font-size="26" font-family="Menlo, Consolas, monospace" style="fill:currentColor;opacity:.55">func</text>
+  <text x="112" y="60" font-size="26" font-family="Menlo, Consolas, monospace" style="fill:var(--ink)">Double</text>
+  <text x="212" y="60" font-size="26" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">(n int)</text>
+  <text x="332" y="60" font-size="26" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">int</text>
+  <text x="386" y="60" font-size="26" font-family="Menlo, Consolas, monospace" style="fill:currentColor;opacity:.55">{</text>
+
+  <line x1="212" y1="76" x2="316" y2="76" style="stroke:var(--accent);stroke-width:2;stroke-linecap:round"/>
+  <line x1="264" y1="76" x2="264" y2="98" style="stroke:var(--accent);stroke-width:2;stroke-linecap:round"/>
+  <text x="264" y="120" font-size="16" text-anchor="middle" style="fill:var(--accent)">τι δέχεται: όνομα και τύπος</text>
+
+  <line x1="332" y1="76" x2="376" y2="76" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round"/>
+  <line x1="600" y1="76" x2="600" y2="98" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round"/>
+  <line x1="354" y1="76" x2="600" y2="76" style="stroke:var(--correct);stroke-width:2;stroke-linecap:round;stroke-dasharray:4 5"/>
+  <text x="600" y="120" font-size="16" text-anchor="middle" style="fill:var(--correct)">τι επιστρέφει: μόνο τύπος</text>
+</svg>
+
+<pre><code class="lang-go">func Double(n int) int {
+	return n * 2
+}
+
+result := Double(21)   <span class="cm">// 42</span></code></pre>
+
+<p>Η παράμετρος έχει όνομα και τύπο, γιατί μέσα στο σώμα τη χρησιμοποιείς με το όνομά της. Η επιστροφή έχει μόνο τύπο, γιατί την τιμή τη δίνεις με το <code>return</code> και όνομα δεν χρειάζεται.</p>
+
+<h2>Όταν δεν επιστρέφει τίποτα</h2>
+<pre><code class="lang-go">func Announce(name string) {
+	fmt.Println("hello", name)
+}</code></pre>
+
+<p>Αν λείπει ο τύπος επιστροφής, η function δεν δίνει τιμή πίσω. Κάνει κάτι, όπως εκτύπωση, και ο καλών δεν έχει τι να κρατήσει από αυτήν.</p>
+
+<div class="callout">
+  <span class="tag">ΙΔΙΟΣ ΤΥΠΟΣ, ΜΙΑ ΦΟΡΑ</span>
+  Όταν δύο παράμετροι έχουν τον ίδιο τύπο, ο τύπος γράφεται μόνο στο τέλος: <code>func Add(a, b int) int</code>. Η μορφή <code>(a int, b int)</code> είναι εξίσου σωστή, απλώς πιο μακροσκελής.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@perissoteres-times-epistrofis">Ενότητα 7 / 8 — Functions</div>
+<h1>Περισσότερες από μία τιμές επιστροφής</h1>
+<p class="lede">Η Go επιτρέπει σε μια function να επιστρέψει δύο ή περισσότερες τιμές. Οι τύποι μπαίνουν σε παρενθέσεις.</p>
+
+<pre><code class="lang-go">func DivMod(a, b int) (int, int) {
+	return a / b, a % b
+}
+
+d, m := DivMod(13, 2)   <span class="cm">// 6 and 1</span></code></pre>
+
+<p>Η κλήση αντιστοιχίζει τις τιμές θέση προς θέση, όπως η πολλαπλή ανάθεση της τρίτης ενότητας. Αν κάποια από τις δύο δεν σε ενδιαφέρει, τη σβήνεις με κάτω παύλα.</p>
+
+<pre><code class="lang-go">_, remainder := DivMod(13, 2)</code></pre>
+
+<h2>Πού χρησιμεύει</h2>
+<p>Δύο αποτελέσματα που παράγονται μαζί, όπως το πηλίκο και το υπόλοιπο, δεν έχει νόημα να τα υπολογίζεις με δύο ξεχωριστές κλήσεις. Η δεύτερη συνηθισμένη χρήση είναι μια τιμή μαζί με μια ένδειξη για το αν ο υπολογισμός πέτυχε.</p>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΠΛΗΘΟΣ ΕΙΝΑΙ ΔΕΣΜΕΥΤΙΚΟ</span>
+  Μια function που επιστρέφει δύο τιμές πρέπει να κληθεί με δύο ονόματα αριστερά. Ένα μόνο όνομα είναι σφάλμα μεταγλώττισης, ακόμη κι αν σε ενδιαφέρει μόνο η πρώτη.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@i-parametros-einai-antigrafo">Ενότητα 7 / 8 — Functions</div>
+<h1>Η παράμετρος είναι αντίγραφο</h1>
+<p class="lede">Όταν καλείς μια function, η τιμή που δίνεις αντιγράφεται στην παράμετρο. Η function δουλεύει πάνω στο αντίγραφο και δεν βλέπει τη δική σου μεταβλητή.</p>
+
+<pre><code class="lang-go">func Reset(n int) {
+	n = 0
+}
+
+count := 42
+Reset(count)
+fmt.Println(count)   <span class="cm">// still 42</span></code></pre>
+
+<svg viewBox="0 0 860 210" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:860px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <text x="150" y="34" font-size="16" text-anchor="middle" style="fill:var(--accent)">η μνήμη της main</text>
+  <rect x="70" y="52" width="160" height="70" rx="9" style="fill:rgba(var(--accent-rgb),0.10);stroke:var(--accent);stroke-width:2"/>
+  <text x="150" y="98" font-size="28" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">42</text>
+  <text x="150" y="146" font-size="17" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">count</text>
+  <text x="150" y="180" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">μένει 42</text>
+
+  <text x="430" y="82" font-size="16" text-anchor="middle" style="fill:var(--correct)">αντιγραφή της τιμής</text>
+  <line x1="250" y1="96" x2="600" y2="96" style="stroke:var(--correct);stroke-width:2;stroke-dasharray:6 6;stroke-linecap:round"/>
+
+  <text x="710" y="34" font-size="16" text-anchor="middle" style="fill:var(--wrong)">η μνήμη της Reset</text>
+  <rect x="630" y="52" width="160" height="70" rx="9" style="fill:rgba(var(--wrong-rgb),0.10);stroke:var(--wrong);stroke-width:2"/>
+  <text x="710" y="98" font-size="28" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">0</text>
+  <text x="710" y="146" font-size="17" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--wrong)">n</text>
+  <text x="710" y="180" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">χάνεται στο return</text>
+</svg>
+
+<p>Οι δύο μεταβλητές είναι δύο ξεχωριστές θέσεις στη μνήμη. Η ανάθεση μέσα στη function γράφει στη δεύτερη, και όταν η function τελειώσει, η δεύτερη παύει να υπάρχει.</p>
+
+<div class="callout">
+  <span class="tag">ΠΩΣ ΕΠΙΣΤΡΕΦΕΙΣ ΑΠΟΤΕΛΕΣΜΑ</span>
+  Ο κανονικός τρόπος να δώσει μια function κάτι πίσω είναι το <code>return</code>. Η όγδοη ενότητα δείχνει τον δεύτερο τρόπο, για τις περιπτώσεις όπου το <code>return</code> δεν αρκεί.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@to-slice-os-parametros">Ενότητα 7 / 8 — Functions</div>
+<h1>Το slice ως παράμετρος</h1>
+<p class="lede">Με τα slices η εικόνα φαίνεται διαφορετική: οι αλλαγές μέσα στη function φαίνονται και απ' έξω. Ο κανόνας της αντιγραφής όμως δεν έχει σπάσει.</p>
+
+<pre><code class="lang-go">func ZeroFirst(s []int) {
+	s[0] = 0
+}
+
+values := []int{7, 8, 9}
+ZeroFirst(values)
+fmt.Println(values)   <span class="cm">// [0 8 9]</span></code></pre>
+
+<p>Ένα slice είναι μια μικρή δομή που κρατάει τρία πράγματα: πού βρίσκονται τα στοιχεία, πόσα είναι, και πόσος χώρος έχει δεσμευτεί. Αυτή η δομή αντιγράφεται κανονικά. Το αντίγραφο όμως δείχνει στην ίδια περιοχή μνήμης, οπότε γράφοντας σε μια θέση, γράφεις στα ίδια δεδομένα.</p>
+
+<svg viewBox="0 0 860 200" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:860px;height:auto;display:block;margin:14px auto;color:var(--ink)">
+  <defs>
+    <marker id="fig-slice-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" style="fill:var(--accent)"/>
+    </marker>
+  </defs>
+  <rect x="30" y="30" width="180" height="56" rx="8" style="fill:rgba(var(--accent-rgb),0.10);stroke:var(--accent);stroke-width:2"/>
+  <text x="120" y="65" font-size="17" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">values</text>
+  <rect x="30" y="110" width="180" height="56" rx="8" style="fill:rgba(var(--accent-rgb),0.10);stroke:var(--accent);stroke-width:2"/>
+  <text x="120" y="145" font-size="17" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">s</text>
+  <text x="120" y="188" font-size="14" text-anchor="middle" style="fill:currentColor;opacity:.6">δύο ξεχωριστά αντίγραφα</text>
+
+  <line x1="216" y1="58" x2="470" y2="88" marker-end="url(#fig-slice-head)" style="stroke:var(--accent);stroke-width:2"/>
+  <line x1="216" y1="138" x2="470" y2="108" marker-end="url(#fig-slice-head)" style="stroke:var(--accent);stroke-width:2"/>
+
+  <text x="660" y="52" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">τα ίδια δεδομένα</text>
+  <g font-family="Menlo, Consolas, monospace">
+    <rect x="490" y="68" width="110" height="58" rx="8" style="fill:rgba(var(--correct-rgb),0.12);stroke:var(--correct);stroke-width:2"/>
+    <text x="545" y="106" font-size="24" text-anchor="middle" style="fill:currentColor">7</text>
+    <rect x="608" y="68" width="110" height="58" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="663" y="106" font-size="24" text-anchor="middle" style="fill:currentColor">8</text>
+    <rect x="726" y="68" width="110" height="58" rx="8" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.3"/>
+    <text x="781" y="106" font-size="24" text-anchor="middle" style="fill:currentColor">9</text>
+  </g>
+  <text x="545" y="152" font-size="14" text-anchor="middle" style="fill:var(--correct)">εδώ γράφει η function</text>
+</svg>
+
+<div class="callout">
+  <span class="tag">ΟΠΟΥ ΣΤΑΜΑΤΑΕΙ ΑΥΤΟ</span>
+  Ένα <code>append</code> μέσα στη function μπορεί να μη φανεί έξω. Αν ο χώρος γεμίσει, το <code>append</code> μετακινεί τα δεδομένα αλλού και ενημερώνει μόνο το τοπικό αντίγραφο. Γι' αυτό μια function που προσθέτει στοιχεία επιστρέφει το νέο slice, αντί να βασίζεται στην παράμετρο.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι δηλώνει ο τύπος μετά τις παρενθέσεις στη γραμμή func Double(n int) int;",
+        options: [
+          "Τον τύπο της τιμής που επιστρέφει",
+          "Τον τύπο της παραμέτρου, γραμμένο δεύτερη φορά για να τον επιβεβαιώσει ο compiler",
+          "Τον τύπο μιας δεύτερης παραμέτρου χωρίς όνομα",
+          "Τον τύπο των τοπικών μεταβλητών της function"
+        ],
+        correct: 0,
+        explain: "Οι παρενθέσεις περιέχουν τις παραμέτρους. Ό,τι ακολουθεί πριν από το άγκιστρο είναι ο τύπος επιστροφής."
+      },
+      {
+        q: "Γιατί η επιστροφή δηλώνεται μόνο με τύπο, χωρίς όνομα;",
+        options: [
+          "Επειδή την τιμή τη δίνει το return και δεν χρειάζεται να αναφερθεί με όνομα",
+          "Επειδή το όνομα της επιστρεφόμενης τιμής ορίζεται από τον καλούντα τη στιγμή που γράφει την ανάθεση στη δική του μεταβλητή",
+          "Επειδή η Go δεν επιτρέπει ονόματα σε επιστροφές",
+          "Επειδή ο τύπος αρκεί για να συμπεράνει ο compiler και το όνομα"
+        ],
+        correct: 0,
+        explain: "Η παράμετρος χρειάζεται όνομα γιατί τη χρησιμοποιείς μέσα στο σώμα. Η επιστρεφόμενη τιμή φεύγει με το return, οπότε αρκεί ο τύπος."
+      },
+      {
+        q: "Τι τυπώνει το πρόγραμμα όταν η Reset(n int) θέτει n = 0 και ο καλών έχει count 42;",
+        options: [
+          "42",
+          "0, επειδή η ανάθεση μέσα στη function εφαρμόζεται στη μεταβλητή που δόθηκε ως όρισμα",
+          "Τυχαία τιμή",
+          "Σφάλμα εκτέλεσης"
+        ],
+        correct: 0,
+        explain: "Η παράμετρος είναι αντίγραφο. Η ανάθεση αλλάζει το αντίγραφο, που παύει να υπάρχει μόλις τελειώσει η function."
+      },
+      {
+        q: "Γιατί το s[0] = 0 μέσα σε function φαίνεται και έξω από αυτήν;",
+        options: [
+          "Επειδή το αντίγραφο του slice δείχνει στα ίδια δεδομένα",
+          "Επειδή τα slices εξαιρούνται από την αντιγραφή και περνούν αυτούσια στη function που τα δέχεται",
+          "Επειδή το slice δηλώθηκε έξω από τη function",
+          "Επειδή η ανάθεση σε θέση αγνοεί τα όρια της function"
+        ],
+        correct: 0,
+        explain: "Αντιγράφεται η μικρή δομή που περιγράφει το slice, όχι τα στοιχεία. Και τα δύο αντίγραφα δείχνουν στην ίδια περιοχή μνήμης."
+      },
+      {
+        q: "Γιατί μια function που προσθέτει στοιχεία επιστρέφει το slice;",
+        options: [
+          "Επειδή το append μπορεί να μετακινήσει τα δεδομένα αλλού",
+          "Επειδή η Go απαγορεύει σε function χωρίς τύπο επιστροφής να καλέσει το append στο σώμα της",
+          "Επειδή αλλιώς χάνεται το μήκος",
+          "Επειδή το append δεν δέχεται παράμετρο"
+        ],
+        correct: 0,
+        explain: "Όταν ο δεσμευμένος χώρος γεμίσει, το append δεσμεύει νέα περιοχή. Το τοπικό αντίγραφο ενημερώνεται, το δικό σου όχι."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code:
+          `func DivMod(a, b int) __ret__ {   // two results, quotient and remainder
+	return a / b, a __op__ b
+}
+
+d, m := DivMod(13, 2)
+__skip__, only := DivMod(13, 2)   // keep the remainder only`,
+        blanks: [
+          { id: "ret", answer: "(int, int)" },
+          { id: "op", answer: "%" },
+          { id: "skip", answer: "_" }
+        ],
+        explain: "Δύο τιμές επιστροφής δηλώνονται σε παρενθέσεις. Το υπόλοιπο της διαίρεσης δίνεται από τον τελεστή %. Η κάτω παύλα απορρίπτει την τιμή που δεν χρειάζεσαι."
+      }
+    ]);
+
+    // ── §8 · Pointers ─────────────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow" id="@i-diefthynsi-mias-metavlitis">Ενότητα 8 / 8 — Pointers</div>
+<h1>Η διεύθυνση μιας μεταβλητής</h1>
+<p class="lede">Κάθε μεταβλητή βρίσκεται κάπου στη μνήμη. Ο τελεστής <code>&amp;</code> δίνει αυτό το «κάπου» ως τιμή που μπορείς να αποθηκεύσεις.</p>
+
+<pre><code class="lang-go">count := 42
+p := &amp;count
+
+fmt.Println(count)   <span class="cm">// 42</span>
+fmt.Println(p)       <span class="cm">// something like 0xc000012345</span></code></pre>
+
+<svg viewBox="0 0 820 190" xmlns="http://www.w3.org/2000/svg"
+     style="width:100%;max-width:820px;height:auto;display:block;margin:16px auto;color:var(--ink)">
+  <defs>
+    <marker id="fig-ptr-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" style="fill:var(--accent)"/>
+    </marker>
+  </defs>
+  <rect x="60" y="56" width="220" height="72" rx="9" style="fill:rgba(var(--ink-rgb),0.06);stroke:currentColor;stroke-opacity:.35"/>
+  <text x="170" y="104" font-size="22" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">0xc000012345</text>
+  <text x="170" y="42" font-size="17" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--accent)">p</text>
+  <text x="170" y="154" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">τύπος *int</text>
+
+  <line x1="292" y1="92" x2="516" y2="92" marker-end="url(#fig-ptr-head)" style="stroke:var(--accent);stroke-width:2"/>
+  <text x="404" y="76" font-size="15" text-anchor="middle" style="fill:var(--accent)">δείχνει σε</text>
+
+  <rect x="530" y="56" width="220" height="72" rx="9" style="fill:rgba(var(--correct-rgb),0.12);stroke:var(--correct);stroke-width:2"/>
+  <text x="640" y="106" font-size="30" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:currentColor">42</text>
+  <text x="640" y="42" font-size="17" text-anchor="middle" font-family="Menlo, Consolas, monospace" style="fill:var(--correct)">count</text>
+  <text x="640" y="154" font-size="15" text-anchor="middle" style="fill:currentColor;opacity:.6">τύπος int</text>
+</svg>
+
+<p>Το <code>p</code> είναι κανονική μεταβλητή, με δική της θέση στη μνήμη. Αυτό που την ξεχωρίζει είναι το περιεχόμενό της: αντί για αριθμό ή κείμενο, κρατάει τη διεύθυνση μιας άλλης μεταβλητής. Ο τύπος της γράφεται <code>*int</code>, δηλαδή «δείχνει σε <code>int</code>».</p>
+
+<div class="callout">
+  <span class="tag">Ο ΤΥΠΟΣ ΕΙΝΑΙ ΣΥΓΚΕΚΡΙΜΕΝΟΣ</span>
+  Ένα <code>*int</code> δείχνει μόνο σε ακέραιο. Δεν μπορείς να του αναθέσεις τη διεύθυνση ενός <code>string</code>, ακριβώς όπως δεν μπορείς να βάλεις κείμενο σε μεταβλητή <code>int</code>.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@o-telestis-asteriskos">Ενότητα 8 / 8 — Pointers</div>
+<h1>Ο τελεστής <code>*</code></h1>
+<p class="lede">Το <code>&amp;</code> πάει από τη μεταβλητή στη διεύθυνση. Το <code>*</code> κάνει τη διαδρομή αντίστροφα, από τη διεύθυνση στην τιμή.</p>
+
+<pre><code class="lang-go">count := 42
+p := &amp;count
+
+fmt.Println(*p)   <span class="cm">// 42 — read through the pointer</span>
+*p = 7            <span class="cm">// write through the pointer</span>
+fmt.Println(count) <span class="cm">// 7 — the original changed</span></code></pre>
+
+<p>Η γραμμή <code>*p = 7</code> είναι το κρίσιμο σημείο. Δεν αλλάζει το <code>p</code>, που εξακολουθεί να δείχνει στο ίδιο σημείο. Αλλάζει την τιμή που βρίσκεται εκεί, δηλαδή το ίδιο το <code>count</code>.</p>
+
+<h2>Δύο σημασίες του ίδιου συμβόλου</h2>
+<table style="width:100%;border-collapse:collapse;margin-top:6px">
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.25)">
+    <th style="text-align:left;padding:9px 8px">Πού εμφανίζεται</th>
+    <th style="text-align:left;padding:9px 8px">Τι σημαίνει</th>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.12)">
+    <td style="padding:9px 8px">Σε δήλωση τύπου: <code>var p *int</code></td>
+    <td style="padding:9px 8px">Ο τύπος «δείκτης προς int»</td>
+  </tr>
+  <tr>
+    <td style="padding:9px 8px">Σε έκφραση: <code>*p</code></td>
+    <td style="padding:9px 8px">Η τιμή στη διεύθυνση που κρατάει το p</td>
+  </tr>
+</table>
+
+<div class="callout">
+  <span class="tag">Ο ΜΗΔΕΝΙΚΟΣ ΔΕΙΚΤΗΣ</span>
+  Η μηδενική τιμή ενός δείκτη είναι <code>nil</code>, δηλαδή δεν δείχνει πουθενά. Το <code>*p</code> πάνω σε δείκτη <code>nil</code> σταματάει το πρόγραμμα κατά την εκτέλεση, με μήνυμα <code>nil pointer dereference</code>.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@allagi-tis-metavlitis-tou-kalounta">Ενότητα 8 / 8 — Pointers</div>
+<h1>Function που αλλάζει τη μεταβλητή του καλούντος</h1>
+<p class="lede">Στην έβδομη ενότητα η <code>Reset</code> δεν κατάφερε να αλλάξει το <code>count</code>, γιατί δούλευε πάνω σε αντίγραφο. Με δείκτη, το αντίγραφο δείχνει στο πρωτότυπο.</p>
+
+<pre><code class="lang-go">func Reset(n *int) {
+	*n = 0
+}
+
+count := 42
+Reset(&amp;count)
+fmt.Println(count)   <span class="cm">// 0</span></code></pre>
+
+<p>Ο κανόνας της αντιγραφής ισχύει και εδώ: το <code>n</code> είναι αντίγραφο της διεύθυνσης. Επειδή όμως το αντίγραφο μιας διεύθυνσης δείχνει στο ίδιο ακριβώς σημείο, η γραφή μέσω αυτού φτάνει στη μεταβλητή του καλούντος.</p>
+
+<h2>Τι αλλάζει στην κλήση</h2>
+<p>Ο καλών δίνει <code>&amp;count</code> και όχι <code>count</code>. Αυτό κάνει τη διαφορά ορατή στο σημείο της κλήσης: διαβάζοντας μια γραμμή με <code>&amp;</code>, ξέρεις ότι η function μπορεί να αλλάξει τη μεταβλητή σου.</p>
+
+<div class="callout">
+  <span class="tag">ΠΟΤΕ ΤΟ ΕΠΙΛΕΓΕΙΣ</span>
+  Όταν χρειάζεται να αλλάξεις μια μεταβλητή του καλούντος και το <code>return</code> δεν βολεύει, για παράδειγμα επειδή τα αποτελέσματα είναι πολλά ή επειδή η υπογραφή είναι δεδομένη. Αν το <code>return</code> αρκεί, προτίμησέ το: διαβάζεται ευκολότερα.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@pointer-pros-pointer">Ενότητα 8 / 8 — Pointers</div>
+<h1>Δείκτης προς δείκτη</h1>
+<p class="lede">Ένας δείκτης είναι μεταβλητή, άρα έχει και αυτός διεύθυνση. Τίποτα δεν εμποδίζει έναν δεύτερο δείκτη να δείχνει σε αυτόν.</p>
+
+<pre><code class="lang-go">a := 0
+b := &amp;a      <span class="cm">// *int</span>
+c := &amp;b      <span class="cm">// **int</span>
+
+**c = 1
+fmt.Println(a)   <span class="cm">// 1</span></code></pre>
+
+<p>Κάθε <code>*</code> κάνει ένα βήμα προς τα πίσω στην αλυσίδα. Το <code>*c</code> δίνει το <code>b</code>, που είναι ακόμη δείκτης. Το <code>**c</code> δίνει το <code>a</code>, που είναι η τιμή. Ο αριθμός των αστερίσκων στον τύπο δείχνει πόσα βήματα χρειάζονται.</p>
+
+<span class="vz-tag">Βήμα-βήμα</span>
+<div id="pointer-swap-viz"></div>
+
+<div class="callout">
+  <span class="tag">ΠΩΣ ΤΟ ΔΙΑΒΑΖΕΙΣ</span>
+  Μέτρησε τους αστερίσκους στον τύπο και βάλε τόσους στην έκφραση για να φτάσεις στην τιμή. Ένα <code>***int</code> χρειάζεται τρεις.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι κρατάει η μεταβλητή p μετά τη γραμμή p := &count;",
+        options: [
+          "Τη διεύθυνση της count στη μνήμη",
+          "Ένα αντίγραφο της τιμής της count, το οποίο ενημερώνεται αυτόματα σε κάθε αλλαγή της",
+          "Το όνομα της count ως κείμενο",
+          "Τον τύπο της count"
+        ],
+        correct: 0,
+        explain: "Ο τελεστής & δίνει τη θέση της μεταβλητής στη μνήμη. Το p είναι μεταβλητή τύπου *int που κρατάει αυτή τη θέση."
+      },
+      {
+        q: "Τι κάνει η γραμμή *p = 7;",
+        options: [
+          "Γράφει το 7 στη μεταβλητή που δείχνει το p",
+          "Κάνει το p να δείχνει στη θέση μνήμης με διεύθυνση επτά, αφήνοντας την παλιά τιμή ανέπαφη",
+          "Δίνει στο p την τιμή 7",
+          "Δημιουργεί νέο δείκτη"
+        ],
+        correct: 0,
+        explain: "Το * μπροστά από δείκτη σε έκφραση σημαίνει «η τιμή εκεί που δείχνει». Η ανάθεση γράφει σε εκείνη τη θέση, όχι στον ίδιο τον δείκτη."
+      },
+      {
+        q: "Γιατί η Reset(n *int) καταφέρνει να αλλάξει τη μεταβλητή του καλούντος;",
+        options: [
+          "Επειδή το αντίγραφο της διεύθυνσης δείχνει στο ίδιο σημείο",
+          "Επειδή οι παράμετροι τύπου δείκτη εξαιρούνται από την αντιγραφή και περνούν αυτούσιες στη function",
+          "Επειδή ο καλών γράφει & στην κλήση",
+          "Επειδή η function δεν έχει τύπο επιστροφής"
+        ],
+        correct: 0,
+        explain: "Και η διεύθυνση αντιγράφεται, όπως κάθε παράμετρος. Το αντίγραφο όμως οδηγεί στην ίδια θέση μνήμης, οπότε η γραφή φτάνει στο πρωτότυπο."
+      },
+      {
+        q: "Πόσους αστερίσκους χρειάζεσαι για να φτάσεις στην τιμή, αν το c είναι **int;",
+        options: [
+          "Δύο",
+          "Έναν, επειδή ο πρώτος αστερίσκος οδηγεί κατευθείαν στην τελική τιμή της αλυσίδας",
+          "Τρεις",
+          "Κανέναν"
+        ],
+        correct: 0,
+        explain: "Κάθε αστερίσκος κάνει ένα βήμα. Το *c δίνει τον ενδιάμεσο δείκτη και το **c την τιμή."
+      },
+      {
+        q: "Τι συμβαίνει αν γράψεις *p όταν το p είναι nil;",
+        options: [
+          "Το πρόγραμμα σταματάει κατά την εκτέλεση",
+          "Ο compiler αρνείται να μεταγλωττίσει το πρόγραμμα, επειδή αναγνωρίζει τον μηδενικό δείκτη εκ των προτέρων",
+          "Επιστρέφεται η μηδενική τιμή του τύπου",
+          "Δημιουργείται αυτόματα νέα μεταβλητή"
+        ],
+        correct: 0,
+        explain: "Ο δείκτης nil δεν δείχνει σε καμία θέση, οπότε δεν υπάρχει τιμή να διαβαστεί. Το σφάλμα εμφανίζεται τη στιγμή της εκτέλεσης."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code:
+          `func Swap(a *int, b *int) {
+	temp := __read__          // read the value a points to
+	*a = *b
+	*b = temp
+}
+
+x, y := 1, 2
+Swap(__arg1__, &y)            // pass the addresses, not the values`,
+        blanks: [
+          { id: "read", answer: "*a" },
+          { id: "arg1", answer: "&x" }
+        ],
+        explain: "Μέσα στη function δουλεύεις πάντα μέσω των δεικτών: το *a διαβάζει την τιμή του καλούντος. Στην κλήση δίνεις διευθύνσεις, γιατί οι παράμετροι είναι τύπου *int."
+      }
+    ]);
+
+    addMatching([
+      { term: "<code>&amp;count</code>", def: "Η διεύθυνση της μεταβλητής" },
+      { term: "<code>*int</code>", def: "Τύπος: δείκτης προς ακέραιο" },
+      { term: "<code>*p</code>", def: "Η τιμή στη θέση που δείχνει ο δείκτης" },
+      { term: "<code>*p = 7</code>", def: "Γραφή στη μεταβλητή του καλούντος" },
+      { term: "<code>nil</code>", def: "Δείκτης που δεν δείχνει πουθενά" },
+      { term: "<code>**int</code>", def: "Τύπος: δείκτης προς δείκτη" }
+    ], {
+      allowHTML: true,
+      note: "Ταίριαξε κάθε γραφή με τη σημασία της."
+    });
+
+    // ── Τελική επανάληψη, γλωσσάρι, κλείσιμο ──────────────────────────────── ⊃
+    addQuiz([
+      {
+        q: "Ποια δύο πράγματα αντιγράφονται όταν περνάς ένα slice σε function;",
+        options: [
+          "Η δομή που περιγράφει το slice, όχι τα ίδια τα στοιχεία",
+          "Και η δομή και τα στοιχεία, ώστε η function να δουλεύει σε εντελώς ανεξάρτητο αντίγραφο",
+          "Μόνο τα στοιχεία",
+          "Τίποτα, το slice περνάει αυτούσιο"
+        ],
+        correct: 0,
+        explain: "Αντιγράφεται η μικρή δομή με τη θέση, το μήκος και τη χωρητικότητα. Τα στοιχεία μένουν στην ίδια περιοχή μνήμης, γι' αυτό οι αλλαγές σε θέσεις φαίνονται και έξω."
+      },
+      {
+        q: "Πού συναντιούνται το rune και το string στο ίδιο πρόβλημα;",
+        options: [
+          "Όταν θέλεις χαρακτήρες από κείμενο που δεν είναι μόνο λατινικό",
+          "Όταν θέλεις να μετρήσεις πόσα bytes καταλαμβάνει το κείμενο στη μνήμη πριν το τυπώσεις",
+          "Όταν ενώνεις δύο strings",
+          "Όταν συγκρίνεις δύο strings"
+        ],
+        correct: 0,
+        explain: "Οι θέσεις ενός string δίνουν bytes. Για ολόκληρους χαρακτήρες χρειάζεσαι range ή μετατροπή σε slice από runes."
+      },
+      {
+        q: "Ποιο είναι το κοινό ανάμεσα στο & μιας function με δείκτη και στο append που επιστρέφει slice;",
+        options: [
+          "Και τα δύο υπάρχουν επειδή οι παράμετροι αντιγράφονται",
+          "Και τα δύο δεσμεύουν νέα μνήμη κάθε φορά που εκτελούνται, ανεξάρτητα από το μέγεθος των δεδομένων",
+          "Και τα δύο δουλεύουν μόνο σε ακέραιους",
+          "Και τα δύο επιστρέφουν δύο τιμές"
+        ],
+        correct: 0,
+        explain: "Επειδή η function δουλεύει πάνω σε αντίγραφο, χρειάζεται είτε τη διεύθυνση του πρωτοτύπου είτε να επιστρέψει το αποτέλεσμα στον καλούντα."
+      }
+    ]);
+
+    addContent(`
+<div class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
+<h1 id="@sygkentrotiko-glossari">Όλοι οι όροι σε ένα σημείο</h1>
+<p class="lede">Γρήγορη αναφορά, όχι νέα εξήγηση.</p>
+
+<div class="glossary-group">
+  <h2>Μεταβλητές και τιμές</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">var</td><td class="gt-def">Δήλωση μεταβλητής, παντού</td></tr>
+    <tr><td class="gt-term">:=</td><td class="gt-def">Δήλωση με τιμή, μόνο μέσα σε function</td></tr>
+    <tr><td class="gt-term">μηδενική τιμή</td><td class="gt-def">Η αρχική τιμή κάθε τύπου χωρίς ρητή αρχικοποίηση</td></tr>
+    <tr><td class="gt-term">περιοχή</td><td class="gt-def">Το ζεύγος αγκίστρων μέσα στο οποίο υπάρχει μια μεταβλητή</td></tr>
+    <tr><td class="gt-term">μετατροπή</td><td class="gt-def">Ρητή αλλαγή τύπου με τη μορφή <code>τύπος(τιμή)</code></td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Ακολουθίες</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">array</span><span class="gs-def">σταθερό μήκος, μέρος του τύπου</span></div>
+    <div class="gs-pill"><span class="gs-name">slice</span><span class="gs-def">μεταβλητό μήκος</span></div>
+    <div class="gs-pill"><span class="gs-name">len</span><span class="gs-def">πλήθος στοιχείων ή bytes</span></div>
+    <div class="gs-pill"><span class="gs-name">append</span><span class="gs-def">επιστρέφει slice με ένα στοιχείο παραπάνω</span></div>
+    <div class="gs-pill"><span class="gs-name">range</span><span class="gs-def">επανάληψη χωρίς μετρητή</span></div>
+    <div class="gs-pill"><span class="gs-name">_</span><span class="gs-def">όνομα για τιμή που αγνοείται</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>Κείμενο</h2>
+  <div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">string</span><span class="gc-def">ακολουθία από bytes, δεν τροποποιείται</span></div>
+    <div class="gc-line"><span class="gc-term">byte</span><span class="gc-def">ό,τι δίνει το <code>s[i]</code></span></div>
+    <div class="gc-line"><span class="gc-term">rune</span><span class="gc-def">ένας ολόκληρος χαρακτήρας, ως κωδικός</span></div>
+    <div class="gc-line"><span class="gc-term">[]rune(s)</span><span class="gc-def">slice με έναν χαρακτήρα ανά θέση</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>Functions και δείκτες</h2>
+  <div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">παράμετρος</span><span class="gc-def">αντίγραφο της τιμής που δόθηκε</span></div>
+    <div class="gc-line"><span class="gc-term">return</span><span class="gc-def">επιστροφή μίας ή περισσότερων τιμών</span></div>
+    <div class="gc-line"><span class="gc-term">&amp;x</span><span class="gc-def">η διεύθυνση της μεταβλητής</span></div>
+    <div class="gc-line"><span class="gc-term">*p</span><span class="gc-def">η τιμή στη θέση που δείχνει ο δείκτης</span></div>
+    <div class="gc-line"><span class="gc-term">nil</span><span class="gc-def">δείκτης χωρίς προορισμό</span></div>
+  </div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<h1 id="@telos">Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+<p>Αν κρατήσεις τρία πράγματα από όλα τα παραπάνω: ο τύπος μιας τιμής καθορίζει τι μπορείς να κάνεις μαζί της, οι θέσεις ενός string δίνουν bytes και όχι χαρακτήρες, και κάθε παράμετρος είναι αντίγραφο εκτός αν δώσεις διεύθυνση.</p>
+<div class="callout">
+  <span class="tag">ΤΙ ΜΕΝΕΙ ΓΙΑ ΑΡΓΟΤΕΡΑ</span>
+  Δεν είδαμε maps, structs, interfaces και διαχείριση σφαλμάτων. Μέχρι να έρθουν, ένα slice και μια function καλύπτουν όσα χρειάζεσαι.
+</div>
+<p class="lede">Για περαιτέρω εμβάθυνση:</p>
+<div class="sources-list">
+  <a href="https://go.dev/tour/welcome/1" target="_blank" rel="noopener">A Tour of Go</a>
+  <a href="https://go.dev/ref/spec" target="_blank" rel="noopener">The Go Programming Language Specification</a>
+  <a href="https://go.dev/blog/strings" target="_blank" rel="noopener">Strings, bytes, runes and characters in Go</a>
+  <a href="https://go.dev/blog/slices-intro" target="_blank" rel="noopener">Go Slices: usage and internals</a>
+</div>
+<div id="final-score"></div>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
+  Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.
+</p>
+`);
+
+    initSlideDeck({
+      version: "1.0.0",
+      notifyUrl: "https://script.google.com/macros/s/AKfycbzZRFWgg0WwQXHE6H0yg-QS-cem-d4qaYYYNmZ58Fss-fZmSXqmuu-u7DPXyLzn1Lc/exec"
+    });
+
+  </script>
+</body>
+
+</html>
