@@ -1,0 +1,244 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   present.css — presentation overlay for the Zone01 slide-deck template.
+
+   LOAD ORDER (index.html): style.css → theme-*.css → present.css
+   This file ONLY enlarges text. It never touches colors, layout, spacing,
+   borders or behaviour, so the deck looks identical to the normal guides,
+   just bigger. Every rule here mirrors a font-size declaration that already
+   exists in style.css — same selector, same base value, multiplied.
+
+   TUNING: change the three numbers in :root below. Nothing else.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* slide content — headings, prose, quiz, glossary, matching 1.25*/
+  --pres-boost: 1.05;
+
+  /* code blocks — kept lower on purpose: code lines are fixed-width and a
+     large boost pushes long lines into horizontal scroll inside <pre>. 1.18 */
+  --pres-boost-code: 1.00;
+
+  /* chrome — nav bar, TOC sidebar, dots, copy buttons. Kept lower so the
+     UI does not eat the projector screen. Set equal to --pres-boost if you
+     want literally everything at the same scale. 1.12 */
+  --pres-boost-ui: 1.05;
+}
+
+/* ── slide headings ───────────────────────────────────────────────────── ⊃ */
+
+.eyebrow {
+  font-size: calc(13px * var(--pres-boost));
+}
+
+h1 {
+  font-size: clamp(calc(25px * var(--pres-boost)),
+      calc(4vw * var(--pres-boost)),
+      calc(44px * var(--pres-boost)));
+}
+
+h2 {
+  font-size: clamp(calc(18px * var(--pres-boost)),
+      calc(2.6vw * var(--pres-boost)),
+      calc(25px * var(--pres-boost)));
+}
+
+h3 {
+  font-size: calc(19px * var(--pres-boost));
+}
+
+/* ── slide body text ──────────────────────────────────────────────────── ⊃ */
+/* code / .inline-code is sized in em (0.92em) in style.css, so it follows
+   its parent automatically — deliberately NOT overridden here. */
+
+p,
+li {
+  font-size: calc(17px * var(--pres-boost));
+}
+
+.lede {
+  font-size: calc(19px * var(--pres-boost));
+}
+
+.callout .tag,
+.feedback-box .tag {
+  font-size: calc(12px * var(--pres-boost));
+}
+
+.kicker-line {
+  font-size: calc(14px * var(--pres-boost));
+}
+
+.sources-list a {
+  font-size: calc(15px * var(--pres-boost));
+}
+
+#final-score {
+  font-size: calc(15px * var(--pres-boost));
+}
+
+/* ── code blocks & spoilers ───────────────────────────────────────────── ⊃ */
+
+pre code {
+  font-size: calc(14.5px * var(--pres-boost-code));
+}
+
+.spoiler-lock {
+  font-size: calc(14px * var(--pres-boost));
+}
+
+.spoiler-lock span {
+  font-size: calc(18px * var(--pres-boost));
+}
+
+/* ── quiz ─────────────────────────────────────────────────────────────── ⊃ */
+
+.quiz-q {
+  font-size: calc(19px * var(--pres-boost));
+}
+
+.quiz-opt {
+  font-size: calc(15.5px * var(--pres-boost));
+}
+
+.quiz-explain {
+  font-size: calc(15px * var(--pres-boost));
+}
+
+.quiz-badge,
+.score-badge {
+  font-size: calc(12px * var(--pres-boost));
+}
+
+.reset-quiz-btn {
+  font-size: calc(12px * var(--pres-boost));
+}
+
+/* ── fill in the blanks ───────────────────────────────────────────────── ⊃ */
+
+.fb-blank {
+  font-size: calc(14.5px * var(--pres-boost));
+}
+
+.fb-correction {
+  font-size: calc(12px * var(--pres-boost));
+}
+
+.fb-check-btn,
+.fb-result,
+.fb-hint-line {
+  font-size: calc(13px * var(--pres-boost));
+}
+
+.fb-hint-btn {
+  font-size: calc(12px * var(--pres-boost));
+}
+
+/* ── matching ─────────────────────────────────────────────────────────── ⊃ */
+
+.matching-set-label {
+  font-size: calc(13px * var(--pres-boost));
+}
+
+.match-btn {
+  font-size: calc(15px * var(--pres-boost));
+}
+
+/* NOTE: style.css also declares .match-btn at 13px/11px inside two
+   @media blocks (900px / 480px), but those blocks sit ABOVE the plain
+   .match-btn rule in the same file and have equal specificity, so they
+   never actually apply. They are deliberately NOT mirrored here — doing
+   so would change existing behaviour rather than just enlarge text. */
+
+/* ── glossary ─────────────────────────────────────────────────────────── ⊃ */
+
+.glossary-table td {
+  font-size: calc(14.5px * var(--pres-boost));
+}
+
+.gs-pill .gs-name {
+  font-size: calc(13.5px * var(--pres-boost));
+}
+
+.gs-pill .gs-def {
+  font-size: calc(13px * var(--pres-boost));
+}
+
+.glossary-columns .gc-def {
+  font-size: calc(14.5px * var(--pres-boost));
+}
+
+/* ── chrome: nav bar, dots, TOC, copy button ──────────────────────────── ⊃ */
+
+.nav-btn {
+  font-size: calc(14px * var(--pres-boost-ui));
+}
+
+#slide-counter {
+  font-size: calc(13px * var(--pres-boost-ui));
+}
+
+.dot-group-badge {
+  font-size: calc(10px * var(--pres-boost-ui));
+}
+
+.dot-tooltip {
+  font-size: calc(12px * var(--pres-boost-ui));
+}
+
+.copy-btn {
+  font-size: calc(12px * var(--pres-boost-ui));
+}
+
+#toc-title {
+  font-size: calc(13px * var(--pres-boost-ui));
+}
+
+.toc-icon-btn {
+  font-size: calc(12px * var(--pres-boost-ui));
+}
+
+#toc-search-wrap::before {
+  font-size: calc(15px * var(--pres-boost-ui));
+}
+
+#toc-search {
+  font-size: calc(14px * var(--pres-boost-ui));
+}
+
+#toc-list .toc-section {
+  font-size: calc(0.62rem * var(--pres-boost-ui));
+}
+
+.toc-link {
+  font-size: calc(14px * var(--pres-boost-ui));
+}
+
+.toc-search-empty {
+  font-size: calc(13px * var(--pres-boost-ui));
+}
+
+@media (max-width: 920px) {
+  .nav-btn {
+    font-size: calc(12px * var(--pres-boost-ui));
+  }
+
+  #btn-prev,
+  #btn-next {
+    font-size: calc(16px * var(--pres-boost-ui));
+  }
+}
+
+/* ── feedback box ─────────────────────────────────────────────────────── ⊃ */
+
+.feedback-box p {
+  font-size: calc(14.5px * var(--pres-boost));
+}
+
+.feedback-input,
+.feedback-textarea {
+  font-size: calc(14px * var(--pres-boost));
+}
+
+.feedback-status {
+  font-size: calc(13px * var(--pres-boost));
+}
