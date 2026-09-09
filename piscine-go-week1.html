@@ -602,8 +602,8 @@ fmt.Println(s + 1)   <span class="cm">// compile error: mismatched types</span><
 <div class="callout">
   <span class="tag">invalid operation: n + s (mismatched types int and string)</span>
   Ένα κείμενο που περιέχει ψηφία δεν είναι αριθμός. Ο compiler δεν το μετατρέπει από μόνος του, χρειαζόμαστε τις functions:<br>
-  <code>Atoi(s)</code> που σημαίνει <code>ASCII to Integer</code><br>
-  <code>Itoa(n)</code> που σημαίνει <code>Integer to ASCII</code>.
+  <code>strconv.Atoi(s)</code> που σημαίνει <code>ASCII to Integer</code><br>
+  <code>strconv.Itoa(n)</code> που σημαίνει <code>Integer to ASCII</code>.
 </div>
 `);
 
@@ -717,7 +717,7 @@ fmt.Println(s + 1)   <span class="cm">// compile error: mismatched types</span><
     addContent(`
 <div class="eyebrow" id="@o-charaktiras-os-arithmos">Ενότητα 3 / 8 — Ανάθεση και τιμές</div>
 <h1>Ο χαρακτήρας ως αριθμός</h1>
-<p class="lede">Κάθε χαρακτήρας αναπαρίσταται από έναν ακέραιο κωδικό. Επειδή το <code>rune</code> αποθηκεύει ακριβώς αυτόν τον κωδικό, οι πράξεις με χαρακτήρες καταλήγουν να είναι απλή αριθμητική.</p>
+<p class="lede">Κάθε χαρακτήρας αναπαρίσταται από έναν ακέραιο κωδικό. Έτσι μπορούν να πραγματοποιηθούν οι πράξεις με χαρακτήρες</p>
 
 <svg viewBox="0 0 900 240" xmlns="http://www.w3.org/2000/svg"
 
