@@ -175,7 +175,7 @@
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 5 — Slices</div>
+<div class="eyebrow" id="@arrays">Ενότητα 1 / 5 — Slices</div>
 <h1>Arrays</h1>
 <p class="lede">Ο πιο απλός τρόπος να δηλώσουμε μια μεταβλητή τύπου array (πίνακας).</p>
 
@@ -201,7 +201,7 @@ fmt.Println(numbers[2]) // prints 36</code></pre>
 
 `);
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 5 — Slices</div>
+<div class="eyebrow" id="@slices">Ενότητα 1 / 5 — Slices</div>
 
 <h1>Ο περιορισμός των arrays</h1>
 <p>Ένα <strong>array</strong> στη Go έχει ένα θεμελιώδες χαρακτηριστικό: το μέγεθός του (3) είναι μέρος του τύπου του και <strong>δεν μπορεί να αλλάξει ποτέ</strong>. Ένα <code>[3]int</code> και ένα <code>[4]int</code> είναι δύο εντελώς διαφορετικοί τύποι δεδομένων, όπως το <code>int</code> και το <code>string</code>.</p>
@@ -247,7 +247,7 @@ var mySlice []int  // slice: no size specified</code></pre>
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 5 — Slices</div>
+<div class="eyebrow" id="@iteration-slice">Ενότητα 1 / 5 — Slices</div>
 <h1>Iteration σε Slice</h1>
 <p>Έστω ότι έχουμε ένα slice με τυχαία στοιχεία:</p>
 <pre><code class="lang-go">var numbers []int = []int{ 24, 96, 31, 36, 72, 12, 48, 81}
@@ -272,7 +272,7 @@ fmt.Println(numbers[len(numbers)-1]) // 81</code></pre>
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 5 — Slices</div>
+<div class="eyebrow" id="@make">Ενότητα 1 / 5 — Slices</div>
 <h1>Αρχικοποίηση με make</h1>
 <p class="lede">Παρόλο που ένα slice δεν έχει προκαθορισμένο μέγεθος στον τύπο του, πολλές φορές ξέρουμε από πριν πόσα στοιχεία θα χρειαστούμε.</p>
 
@@ -291,7 +291,7 @@ fmt.Println(scores) // prints [100 0 0 0 95]</code></pre>
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 1 / 5 — Slices</div>
+<div class="eyebrow" id="@append">Ενότητα 1 / 5 — Slices</div>
 <h1>Προσθήκη με append</h1>
 <p class="lede">Το μεγαλύτερο πλεονέκτημα των slices είναι ότι μπορούμε να προσθέτουμε νέα στοιχεία "στο τέλος" τους δυναμικά.</p>
 
@@ -370,7 +370,7 @@ __assign__ = __append__(scores, 42)`,
         ], { label: "Matching — Έννοιες και Λειτουργίες" });
 
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 5 — Command Line Arguments</div>
+<div class="eyebrow" id="@os-args">Ενότητα 2 / 5 — Command Line Arguments</div>
 <h1>Είσοδος από το Terminal (os.Args)</h1>
 <p class="lede">Πώς διαβάζουμε τις λέξεις που γράφει ο χρήστης δίπλα στο <code>go run .</code> κατά την εκτέλεση του προγράμματος.</p>
 
@@ -418,7 +418,7 @@ func main() {
 `);
         addContent(`
 <div class="eyebrow">Ενότητα 2 / 5 — Command Line Arguments</div>
-<h2>Η σωστή λύση (Guard Clause)</h2>
+<h2 id="@guard-clause">Η σωστή λύση (Guard Clause)</h2>
 <p>Εφόσον το <code>os.Args</code> είναι ένα κανονικό slice, πρέπει <strong>πάντα</strong> να ελέγχουμε το μήκος του με την <code>len()</code> πριν προσπελάσουμε συγκεκριμένα indexes.</p>
 
 <pre><code class="lang-go">func main() {
@@ -433,7 +433,7 @@ func main() {
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 2 / 5 — Command Line Arguments</div>
+<div class="eyebrow" id="@iteration-args">Ενότητα 2 / 5 — Command Line Arguments</div>
 <h1>Περνώντας από τα ορίσματα (Iteration)</h1>
 <p class="lede">Συνήθως θέλουμε να επεξεργαστούμε <strong>όλα</strong> τα ορίσματα. Επειδή το index 0 είναι το όνομα του προγράμματος, παίρνουμε ένα sub-slice από το 1 και μετά: <code>os.Args[1:]</code>.</p>
 
@@ -719,7 +719,7 @@ func ToUpper(s string) string {
 
 
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<div class="eyebrow" id="@recursion">Ενότητα 4 / 5 — Recursion</div>
 <h1>Αναδρομή (Recursion)</h1>
 <p class="lede">Όταν μια function καλεί τον εαυτό της.</p>
 
@@ -742,7 +742,7 @@ func ToUpper(s string) string {
 
 
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<div class="eyebrow" id="@base-case">Ενότητα 4 / 5 — Recursion</div>
 <h1>Το Base Case</h1>
 <p class="lede">Για να δουλέψει σωστά η αναδρομή, χρειαζόμαστε <strong>απαραίτητα</strong> μια συνθήκη τερματισμού.</p>
 
@@ -772,7 +772,7 @@ func ToUpper(s string) string {
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<div class="eyebrow" id="@russian-dolls">Ενότητα 4 / 5 — Recursion</div>
 <h1>Russian Dolls</h1>
 <p class="lede">Για να καταλάβουμε την αναδρομή, πρέπει να σταματήσουμε να τη βλέπουμε σαν ένα απλό loop. Κάθε κλήση δεν αντικαθιστά την προηγούμενη — δημιουργεί <strong>ένα νέο αντίγραφο</strong> <em>μέσα</em> στο ήδη υπάρχον.</p>
 
@@ -925,7 +925,7 @@ func ToUpper(s string) string {
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<div class="eyebrow" id="@unwinding-phase">Ενότητα 4 / 5 — Recursion</div>
 <h1 style="letter-spacing: -0.03em;">Η Φάση της Ανάδυσης (Unwinding Phase)</h1>
 <p class="lede">Τι συμβαίνει <strong>μετά</strong> το recursive call; Οι συναρτήσεις που βρίσκονταν σε παύση συνεχίζουν για να ολοκληρώσουν τη δουλειά τους.</p>
 
@@ -965,7 +965,7 @@ func ToUpper(s string) string {
 `);
 
         addContent(`
-<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<div class="eyebrow" id="@unwinding-praxi">Ενότητα 4 / 5 — Recursion</div>
 <h1 style="letter-spacing: -0.03em;">Πώς λειτουργεί η Ανάδυση στην πράξη</h1>
 <p class="lede">Όταν ο πυρήνας (base case) τερματίσει, οι παγωμένες συναρτήσεις δεν συνεχίζουν τυχαία. Η unwinding phase ακολουθεί τρεις κανόνες.</p>
 
