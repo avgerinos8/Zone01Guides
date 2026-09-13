@@ -1,0 +1,61 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Graphite & Amber Theme
+   Color scheme ONLY. Load this AFTER style.css
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --tone-1: #0d1117ff;
+    --tone-2: #161b22ff;
+    --tone-3: #21262dff;
+    --tone-4: #8b949eff;
+    --tone-5: #e3b341ff;
+
+    --tone-1-rgb: 13, 17, 23;
+    --tone-2-rgb: 22, 27, 34;
+    --tone-3-rgb: 33, 38, 45;
+    --tone-4-rgb: 139, 148, 158;
+    --tone-5-rgb: 227, 179, 65;
+
+    --tone-text: #c9d1d9ff;
+    --tone-text-rgb: 201, 209, 217;
+
+    --code-bg: #010409ff;
+    --code-bg-rgb: 1, 4, 9;
+
+    --bg: var(--tone-1);
+    --panel: var(--tone-3);
+    --panel-rgb: var(--tone-3-rgb);
+    --ink: var(--tone-text);
+    --ink-rgb: var(--tone-text-rgb);
+    --accent: var(--tone-5);
+    --accent-rgb: var(--tone-5-rgb);
+
+    --danger: #f85149ff;
+    --danger-rgb: 248, 81, 73;
+    --correct: #2ea043ff;
+    --correct-rgb: 46, 160, 67;
+    --wrong: #f85149ff;
+    --wrong-rgb: 248, 81, 73;
+
+    --h1-color: var(--tone-text);
+    --h1-shadow: var(--tone-2);
+    --h1-outline: var(--code-bg);
+}
+
+/* Guardrail: Heading Tracking for editorial feel */
+h1,
+h2,
+h3 {
+    letter-spacing: -0.03em;
+}
+
+h1 {
+    color: var(--h1-color);
+    text-shadow:
+        -0.035em -0.035em 0 var(--code-bg),
+        0.035em 0.035em 0 var(--code-bg),
+        0px 0.04em 0 var(--h1-shadow),
+        0px 0.06em 0 var(--h1-shadow),
+        0px 0.08em 0 var(--h1-shadow),
+        0px 0.10em 0 var(--h1-shadow);
+}
