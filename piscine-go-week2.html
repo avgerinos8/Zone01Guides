@@ -110,15 +110,40 @@
         </div>
 
         <div id="toc-list">
-            <div class="toc-section">ΕΝΟΤΗΤΑ 1 — RECURSION</div>
-            <a class="toc-link toc-h1" href="#@i-techni-tis-anadromis">Η Τέχνη της Αναδρομής</a>
-            <a class="toc-link toc-h1" href="#@to-base-case">Το Base Case</a>
-            <a class="toc-link toc-h1" href="#@to-call-stack">Πώς δουλεύει το Call Stack</a>
-            <div class="toc-section">ΕΝΟΤΗΤΑ 2 — BACKTRACKING</div>
-            <a class="toc-link toc-h1" href="#@brute-force-me-exodo">Brute Force με έξοδο κινδύνου</a>
-            <a class="toc-link toc-h1" href="#@o-michanismos-tou-backtracking">Ο μηχανισμός του Backtracking</a>
-            <div class="toc-section">ΚΛΕΙΣΙΜΟ</div>
-            <a class="toc-link toc-h1" href="#@telos">Φτάσαμε στο τέλος</a>
+            <div id="toc-list">
+                <div class="toc-section">ΕΝΟΤΗΤΑ 1 — SLICES</div>
+                <a class="toc-link toc-h1" href="#@arrays">Arrays</a>
+                <a class="toc-link toc-h1" href="#@slices">Ο περιορισμός των arrays / Slices</a>
+                <a class="toc-link toc-h1" href="#@iteration-slice">Iteration σε Slice</a>
+                <a class="toc-link toc-h1" href="#@make">Αρχικοποίηση με make</a>
+                <a class="toc-link toc-h1" href="#@append">Προσθήκη με append</a>
+
+                <div class="toc-section">ΕΝΟΤΗΤΑ 2 — CLI ARGUMENTS</div>
+                <a class="toc-link toc-h1" href="#@os-args">Είσοδος από το Terminal (os.Args)</a>
+                <a class="toc-link toc-h2" href="#@guard-clause">Η σωστή λύση (Guard Clause)</a>
+                <a class="toc-link toc-h1" href="#@iteration-args">Περνώντας από τα ορίσματα</a>
+
+                <div class="toc-section">ΕΝΟΤΗΤΑ 3 — STRINGS & LOOPS</div>
+                <a class="toc-link toc-h1" href="#@strings-and-runes">Το μυστικό των strings: []rune</a>
+                <a class="toc-link toc-h1" href="#@string-iteration">Iteration: Περνώντας από κάθε χαρακτήρα</a>
+                <a class="toc-link toc-h1" href="#@string-modification">Τροποποίηση και Επανασύνθεση</a>
+
+                <div class="toc-section">ΕΝΟΤΗΤΑ 4 — RECURSION</div>
+                <a class="toc-link toc-h1" href="#@recursion">Αναδρομή (Recursion)</a>
+                <a class="toc-link toc-h1" href="#@base-case">Το Base Case</a>
+                <a class="toc-link toc-h1" href="#@russian-dolls">Russian Dolls</a>
+                <a class="toc-link toc-h1" href="#@unwinding-phase">Η Φάση της Ανάδυσης</a>
+                <a class="toc-link toc-h2" href="#@unwinding-praxi">Πώς λειτουργεί στην πράξη</a>
+
+                <div class="toc-section">ΕΝΟΤΗΤΑ 5 — N QUEENS</div>
+                <a class="toc-link toc-h1" href="#@n-vasilisses">Το κλασικό: N βασίλισσες</a>
+                <a class="toc-link toc-h1" href="#@i-domi-dedomenon">Η δομή δεδομένων που προκύπτει</a>
+                <a class="toc-link toc-h1" href="#@elenchos-apeilis">Ο έλεγχος: απειλείται αυτό το τετράγωνο?</a>
+                <a class="toc-link toc-h1" href="#@issafe-kodikas">Η isSafe, γραμμή προς γραμμή</a>
+                <a class="toc-link toc-h1" href="#@paradeigma-elenchou">Ενδεικτική κλήση isSafe</a>
+                <a class="toc-link toc-h1" href="#@queens-algo">Ο αλγόριθμος</a>
+                <a class="toc-link toc-h1" href="#@queens-viz">4 Queens Visualization</a>
+            </div>
         </div>
 
         <div id="toc-footer">
@@ -497,7 +522,7 @@ func main() {
         ], { label: "Συμπλήρωσε τα κενά" });
 
         addContent(`
-<div class="eyebrow" id="@strings-and-runes">Ενότητα 3 — Strings &amp; Loops</div>
+<div class="eyebrow" id="@strings-and-runes">Ενότητα 3 / 5 — Strings &amp; Loops</div>
 <h1>Το μυστικό των strings: <code>[]rune</code></h1>
 
 <p>Τα strings στη Go είναι <strong>immutable</strong> (αμετάβλητα). Αν έχεις ένα <code>s := "hello"</code>, δεν μπορείς να γράψεις <code>s[0] = 'H'</code> για να το κάνεις κεφαλαίο. Ο compiler θα αρνηθεί να το κάνει compile. Για να επεξεργαστούμε το κείμενο, πρέπει πρώτα να το «απλώσουμε» σε έναν πίνακα (slice) όπου κάθε κελί θα περιέχει έναν χαρακτήρα. Αυτό ακριβώς κάνει το <code>text := []rune(s)</code>.</p>
@@ -561,7 +586,7 @@ func main() {
 `);
 
         addContent(`
-<div class="eyebrow" id="@string-iteration">Ενότητα 3 — Strings &amp; Loops</div>
+<div class="eyebrow" id="@string-iteration">Ενότητα 3 / 5 — Strings &amp; Loops</div>
 <h1>Iteration: Περνώντας από κάθε χαρακτήρα</h1>
 <p class="lede">Έχοντας πλέον τον πίνακα <code>text</code>, μπορούμε να τον περπατήσουμε (iterate) με ένα απλό loop, εξετάζοντας τα περιεχόμενά του κελί-κελί.</p>
 
@@ -610,7 +635,7 @@ func main() {
 `);
 
         addContent(`
-<div class="eyebrow" id="@string-modification">Ενότητα 3 — Strings &amp; Loops</div>
+<div class="eyebrow" id="@string-modification">Ενότητα 3 / 5 — Strings &amp; Loops</div>
 <h1>Τροποποίηση και Επανασύνθεση</h1>
 <p class="lede">Όταν ο στόχος είναι να φτιάξουμε ένα <em>νέο</em> string βασισμένο στο παλιό (π.χ. μετατροπή σε κεφαλαία), οι αλλαγές γίνονται πάνω στο slice των runes.</p>
 
@@ -1096,9 +1121,7 @@ board := make([]int, 8)</code></pre>
 
 <p>Η στήλη ελέγχεται με μία σύγκριση. Οι διαγώνιοι φαίνονται δυσκολότερες, αλλά κάθε διαγώνιος έχει μια τιμή σταθερή σε όλα της τα τετράγωνα: το άθροισμα (<code>γραμμή + στήλη</code>) και η  διαφορά (<code>γραμμή − στήλη</code>).</p>
 
-<svg viewBox="0 0 700 296" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;height:auto;display:block;margin:18px auto;color:inherit"><style>@import url(https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&amp;display=swap);</style><text x="192" y="22" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή + στήλη</text><text x="512" y="22" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή − στήλη</text><path d="M238 60h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46z" fill="rgba(var(--tone-5-rgb),0.28)"/><path d="M466 60h46v46h-46zm46 46h46v46h-46zm46 46h46v46h-46z" fill="rgba(var(--tone-4-rgb),0.28)"/><path d="M100 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184M420 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184" stroke="currentColor" stroke-opacity=".3" fill="none"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13" fill="currentColor" opacity=".6" text-anchor="middle"><text x="123" y="52">0</text><text x="169" y="52">1</text><text x="215" y="52">2</text><text x="261" y="52">3</text><text x="84" y="88">0</text><text x="84" y="134">1</text><text x="84" y="180">2</text><text x="84" y="226">3</text><text x="443" y="52">0</text><text x="489" y="52">1</text><text x="535" y="52">2</text><text x="581" y="52">3</text><text x="404" y="88">0</text><text x="404" y="134">1</text><text x="404" y="180">2</text><text x="404" y="226">3</text></g><g font-family="'Playpen Sans', cursive" font-size="11" font-weight="700" fill="currentColor" opacity=".18" text-anchor="middle"><text x="123" y="74">0+0</text><text x="169" y="74">0+1</text><text x="215" y="74">0+2</text><text x="123" y="120">1+0</text><text x="169" y="120">1+1</text><text x="261" y="120">1+3</text><text x="123" y="166">2+0</text><text x="215" y="166">2+2</text><text x="261" y="166">2+3</text><text x="169" y="212">3+1</text><text x="215" y="212">3+2</text><text x="261" y="212">3+3</text><text x="443" y="74">0-0</text><text x="535" y="74">0-2</text><text x="581" y="74">0-3</text><text x="443" y="120">1-0</text><text x="489" y="120">1-1</text><text x="581" y="120">1-3</text><text x="443" y="166">2-0</text><text x="489" y="166">2-1</text><text x="535" y="166">2-2</text><text x="443" y="212">3-0</text><text x="489" y="212">3-1</text><text x="535" y="212">3-2</text><text x="581" y="212">3-3</text></g><g font-family="'Playpen Sans', cursive" font-size="11" font-weight="700" text-anchor="middle"><g fill="var(--tone-5)" opacity=".22"><text x="261" y="74">0+3</text><text x="215" y="120">1+2</text><text x="169" y="166">2+1</text><text x="123" y="212">3+0</text></g><g fill="var(--tone-4)" opacity=".22"><text x="489" y="74">0-1</text><text x="535" y="120">1-2</text><text x="581" y="166">2-3</text></g></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="currentColor" opacity=".9" text-anchor="middle"><text x="123" y="95">0</text><text x="169" y="95">1</text><text x="215" y="95">2</text><text x="123" y="141">1</text><text x="169" y="141">2</text><text x="261" y="141">4</text><text x="123" y="187">2</text><text x="215" y="187">4</text><text x="261" y="187">5</text><text x="169" y="233">4</text><text x="215" y="233">5</text><text x="261" y="233">6</text><text x="443" y="95">0</text><text x="535" y="95">-2</text><text x="581" y="95">-3</text><text x="443" y="141">1</text><text x="489" y="141">0</text><text x="581" y="141">-2</text><text x="443" y="187">2</text><text x="489" y="187">1</text><text x="535" y="187">0</text><text x="443" y="233">3</text><text x="489" y="233">2</text><text x="535" y="233">1</text><text x="581" y="233">0</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" font-weight="700" text-anchor="middle"><g fill="var(--tone-5)"><text x="261" y="95">3</text><text x="215" y="141">3</text><text x="169" y="187">3</text><text x="123" y="233">3</text></g><g fill="var(--tone-4)"><text x="489" y="95">-1</text><text x="535" y="141">-1</text><text x="581" y="187">-1</text></g></g><g font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity=".7" text-anchor="middle"><text x="192" y="270">το άθροισμα μένει σταθερό</text><text x="192" y="288">κατά μήκος της «/» διαγωνίου</text><text x="512" y="270">η διαφορά μένει σταθερή</text><text x="512" y="288">κατά μήκος της «\\» διαγωνίου</text></g></svg>
-
-<p> Δύο τετράγωνα βρίσκονται στην ίδια διαγώνιο ακριβώς όταν έχουν ίδια διαφορά ή ίδιο άθροισμα. Δύο συγκρίσεις απαντούν και για τις δύο κατευθύνσεις. </p>
+<svg viewBox="0 0 700 296" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:990px;height:auto;display:block;margin:18px auto;color:inherit"><style>@import url(https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&amp;display=swap);</style><text x="192" y="22" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή + στήλη</text><text x="512" y="22" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή − στήλη</text><path d="M238 60h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46z" fill="rgba(var(--tone-5-rgb),0.28)"/><path d="M466 60h46v46h-46zm46 46h46v46h-46zm46 46h46v46h-46z" fill="rgba(var(--tone-4-rgb),0.28)"/><path d="M100 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184M420 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184" stroke="currentColor" stroke-opacity=".3" fill="none"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13" fill="currentColor" opacity=".6" text-anchor="middle"><text x="123" y="52">0</text><text x="169" y="52">1</text><text x="215" y="52">2</text><text x="261" y="52">3</text><text x="84" y="88">0</text><text x="84" y="134">1</text><text x="84" y="180">2</text><text x="84" y="226">3</text><text x="443" y="52">0</text><text x="489" y="52">1</text><text x="535" y="52">2</text><text x="581" y="52">3</text><text x="404" y="88">0</text><text x="404" y="134">1</text><text x="404" y="180">2</text><text x="404" y="226">3</text></g><g font-family="'Playpen Sans', cursive" font-size="11" font-weight="700" fill="currentColor" opacity=".18" text-anchor="middle"><text x="123" y="74">0+0</text><text x="169" y="74">0+1</text><text x="215" y="74">0+2</text><text x="123" y="120">1+0</text><text x="169" y="120">1+1</text><text x="261" y="120">1+3</text><text x="123" y="166">2+0</text><text x="215" y="166">2+2</text><text x="261" y="166">2+3</text><text x="169" y="212">3+1</text><text x="215" y="212">3+2</text><text x="261" y="212">3+3</text><text x="443" y="74">0-0</text><text x="535" y="74">0-2</text><text x="581" y="74">0-3</text><text x="443" y="120">1-0</text><text x="489" y="120">1-1</text><text x="581" y="120">1-3</text><text x="443" y="166">2-0</text><text x="489" y="166">2-1</text><text x="535" y="166">2-2</text><text x="443" y="212">3-0</text><text x="489" y="212">3-1</text><text x="535" y="212">3-2</text><text x="581" y="212">3-3</text></g><g font-family="'Playpen Sans', cursive" font-size="11" font-weight="700" text-anchor="middle"><g fill="var(--tone-5)" opacity=".22"><text x="261" y="74">0+3</text><text x="215" y="120">1+2</text><text x="169" y="166">2+1</text><text x="123" y="212">3+0</text></g><g fill="var(--tone-4)" opacity=".22"><text x="489" y="74">0-1</text><text x="535" y="120">1-2</text><text x="581" y="166">2-3</text></g></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="currentColor" opacity=".9" text-anchor="middle"><text x="123" y="95">0</text><text x="169" y="95">1</text><text x="215" y="95">2</text><text x="123" y="141">1</text><text x="169" y="141">2</text><text x="261" y="141">4</text><text x="123" y="187">2</text><text x="215" y="187">4</text><text x="261" y="187">5</text><text x="169" y="233">4</text><text x="215" y="233">5</text><text x="261" y="233">6</text><text x="443" y="95">0</text><text x="535" y="95">-2</text><text x="581" y="95">-3</text><text x="443" y="141">1</text><text x="489" y="141">0</text><text x="581" y="141">-2</text><text x="443" y="187">2</text><text x="489" y="187">1</text><text x="535" y="187">0</text><text x="443" y="233">3</text><text x="489" y="233">2</text><text x="535" y="233">1</text><text x="581" y="233">0</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" font-weight="700" text-anchor="middle"><g fill="var(--tone-5)"><text x="261" y="95">3</text><text x="215" y="141">3</text><text x="169" y="187">3</text><text x="123" y="233">3</text></g><g fill="var(--tone-4)"><text x="489" y="95">-1</text><text x="535" y="141">-1</text><text x="581" y="187">-1</text></g></g><g font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity=".7" text-anchor="middle"><text x="192" y="270">το άθροισμα μένει σταθερό</text><text x="192" y="288">κατά μήκος της «/» διαγωνίου</text><text x="512" y="270">η διαφορά μένει σταθερή</text><text x="512" y="288">κατά μήκος της «\\» διαγωνίου</text></g></svg>
 `);
 
         addContent(`
@@ -1131,7 +1154,7 @@ func isSafe(board []int, row, col int) bool {
 
         addContent(`
 <div class="eyebrow" id="@paradeigma-elenchou">Ενότητα 5 / 5 — N Queens</div>
-<h1>Μια ενδεικτική κλήση για <code>isSafe([]int{0,2}, 2, 3)</code></h1>
+<h1>Μια ενδεικτική κλήση <code>isSafe([]int{0,2}, 2, 3)</code></h1>
 <p class="lede"> Έστω <code>board = [0, 2]</code>: βασίλισσα στο (0,0) και στο (1,2). Δοκιμάζουμε το τετράγωνο (2, 3), με <code>row+col = 5</code> και <code>row-col = -1</code>. </p>
 
 <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:920px;height:auto;display:block;margin:18px auto;color:inherit"><path d="M146 60h46v46h-46zm46 46h46v46h-46zm46 46h46v46h-46z" fill="rgba(var(--tone-5-rgb),0.12)"/><path fill="rgba(var(--tone-4-rgb),0.30)" d="M100 60h46v46h-46zm92 46h46v46h-46z"/><path fill="none" stroke="#e05252" stroke-width="2" stroke-dasharray="5 3" d="M238 152h46v46h-46z"/><path stroke="var(--tone-5)" stroke-width="2" stroke-opacity=".8" stroke-dasharray="4 3" d="m215 129 46 46"/><path d="M100 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184" stroke="currentColor" stroke-opacity=".3" fill="none"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="18" font-weight="700" fill="var(--tone-4)" text-anchor="middle"><text x="123" y="90">Q</text><text x="215" y="126">Q</text></g><text x="261" y="172" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="18" font-weight="700" fill="#e05252">?</text><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="var(--tone-5)" text-anchor="middle"><text x="215" y="145">-1</text><text x="261" y="191">-1</text></g><text x="169" y="86" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="var(--tone-5)" opacity=".45">-1</text><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity=".5" text-anchor="middle"><text x="123" y="52">0</text><text x="169" y="52">1</text><text x="215" y="52">2</text><text x="261" y="52">3</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity=".5" text-anchor="end"><text x="90" y="88">0</text><text x="90" y="134">1</text><text x="90" y="180">2</text><text x="90" y="226">3</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" fill="currentColor"><text x="340" y="76" opacity=".85">board = [0, 2]</text><text x="340" y="98" fill="#e05252">δοκιμάζουμε το (2, 3)</text></g><path stroke="currentColor" stroke-opacity=".2" d="M340 116h280"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13.5" fill="currentColor" opacity=".8"><text x="340" y="142">βασίλισσα (1,2):  1 - 2 = <tspan fill="var(--tone-5)" font-weight="700">-1</tspan></text><text x="340" y="166">τετράγωνο (2,3):  2 - 3 = <tspan fill="var(--tone-5)" font-weight="700">-1</tspan></text></g><g font-family="var(--font-display, system-ui, sans-serif)" font-size="13.5" fill="currentColor"><text x="340" y="204" opacity=".75">ίδια διαφορά → ίδια διαγώνιος</text><text x="340" y="228" fill="#e05252" font-weight="700">isSafe → false</text></g><g font-family="var(--font-display, system-ui, sans-serif)" font-size="12.5" fill="currentColor" opacity=".55"><text x="340" y="258">( η στήλη δεν συγκρούεται (2 ≠ 3) ),</text><text x="340" y="276">( ούτε το άθροισμα (3 ≠ 5) )</text></g></svg>
