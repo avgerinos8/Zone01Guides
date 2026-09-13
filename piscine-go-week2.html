@@ -482,7 +482,7 @@ func main() {
 func main() {
     // We want to print the second user argument.
     // Assuming the user runs: go run . first second third
-    if len(os.Args) &gt;= __len__ {
+    if len(os.Args) <= __len__ {
         fmt.Println(os.Args[__index__])
     }
 }`,
@@ -495,6 +495,573 @@ func main() {
                 lang: "go"
             }
         ], { label: "Συμπλήρωσε τα κενά" });
+
+        addContent(`
+<div class="eyebrow" id="@strings-and-runes">Ενότητα 3 — Strings &amp; Loops</div>
+<h1>Το μυστικό των strings: <code>[]rune</code></h1>
+
+<p>Τα strings στη Go είναι <strong>immutable</strong> (αμετάβλητα). Αν έχεις ένα <code>s := "hello"</code>, δεν μπορείς να γράψεις <code>s[0] = 'H'</code> για να το κάνεις κεφαλαίο. Ο compiler θα αρνηθεί να το κάνει compile. Για να επεξεργαστούμε το κείμενο, πρέπει πρώτα να το «απλώσουμε» σε έναν πίνακα (slice) όπου κάθε κελί θα περιέχει έναν χαρακτήρα. Αυτό ακριβώς κάνει το <code>text := []rune(s)</code>.</p>
+
+<svg viewBox="0 0 680 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:1080px;height:auto;display:block;margin:32px auto;color:inherit">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.4"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Left Side: String (Locked) -->
+  <g>
+    <text x="160" y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="14" fill="var(--danger)" font-weight="bold">s := "Hi!"</text>
+    <text x="160" y="42" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--danger)" opacity="0.75">Read-Only String</text>
+    
+    <rect x="90" y="56" width="140" height="50" fill="rgba(var(--danger-rgb), 0.08)" stroke="var(--danger)" stroke-width="2" rx="6"/>
+    
+    <!-- Lock Icon -->
+    <g stroke="var(--danger)" stroke-width="1.5" fill="none" transform="translate(98, 62)">
+      <path d="M 3 6 V 4 A 3 3 0 0 1 9 4 V 6 M 1 6 H 11 V 12 H 1 Z" opacity="0.8"/>
+    </g>
+    
+    <text x="160" y="89" text-anchor="middle" font-family="var(--font-mono)" font-size="22" fill="currentColor" letter-spacing="4px">Hi!</text>
+  </g>
+
+  <!-- Connection / Conversion Arrow -->
+  <g>
+    <path d="M 240 81 L 420 81" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity="0.4" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+    <!-- Code Pill -->
+    <rect x="285" y="70" width="90" height="22" rx="11" fill="var(--bg)" stroke="currentColor" stroke-opacity="0.3" stroke-width="1.5"/>
+    <text x="330" y="85" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="currentColor" opacity="0.8">[]rune(s)</text>
+  </g>
+
+  <!-- Right Side: Rune Slice (Editable) -->
+  <g>
+    <text x="520" y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="14" fill="var(--accent)" font-weight="bold">text</text>
+    <text x="520" y="42" text-anchor="middle" font-family="var(--font-body)" font-size="12" fill="var(--accent)" opacity="0.75">Editable Slice ([]rune)</text>
+    
+    <!-- Slice Cells -->
+    <g filter="url(#shadow)">
+      <rect x="435" y="56" width="50" height="50" fill="rgba(var(--panel-rgb), 0.8)" stroke="var(--accent)" stroke-width="2" rx="6"/>
+      <rect x="495" y="56" width="50" height="50" fill="rgba(var(--panel-rgb), 0.8)" stroke="var(--accent)" stroke-width="2" rx="6"/>
+      <rect x="555" y="56" width="50" height="50" fill="rgba(var(--panel-rgb), 0.8)" stroke="var(--accent)" stroke-width="2" rx="6"/>
+    </g>
+    
+    <!-- Cell Contents -->
+    <text x="460" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="20" fill="currentColor">'H'</text>
+    <text x="520" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="20" fill="currentColor">'i'</text>
+    <text x="580" y="88" text-anchor="middle" font-family="var(--font-mono)" font-size="20" fill="currentColor">'!'</text>
+    
+    <!-- Indices -->
+    <text x="460" y="126" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="currentColor" opacity="0.5">[0]</text>
+    <text x="520" y="126" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="currentColor" opacity="0.5">[1]</text>
+    <text x="580" y="126" text-anchor="middle" font-family="var(--font-mono)" font-size="12" fill="currentColor" opacity="0.5">[2]</text>
+  </g>
+</svg>
+`);
+
+        addContent(`
+<div class="eyebrow" id="@string-iteration">Ενότητα 3 — Strings &amp; Loops</div>
+<h1>Iteration: Περνώντας από κάθε χαρακτήρα</h1>
+<p class="lede">Έχοντας πλέον τον πίνακα <code>text</code>, μπορούμε να τον περπατήσουμε (iterate) με ένα απλό loop, εξετάζοντας τα περιεχόμενά του κελί-κελί.</p>
+
+<p>Χρησιμοποιούμε το <code>len(text)</code> για να βρούμε το συνολικό μέγεθος του πίνακα. Σε κάθε επανάληψη, το <code>text[i]</code> μας δίνει τον τρέχοντα χαρακτήρα. Επειδή οι χαρακτήρες (runes) στη Go συμπεριφέρονται κάτω από το καπό ως αριθμοί, μπορούμε να τους συγκρίνουμε απευθείας χρησιμοποιώντας τα σύμβολα <code>&gt;=</code> και <code>&lt;=</code>.</p>
+
+<pre><code class="lang-go"><span class="tok-com">// example: counting how many lowercase letters exist</span>
+<span class="tok-kw">func</span> <span class="tok-func">AlphaCount</span>(s <span class="tok-type">string</span>) <span class="tok-type">int</span> {
+    text = []<span class="tok-type">rune</span>(s)
+    count := <span class="tok-num">0</span>
+
+    <span class="tok-kw">for</span> i := <span class="tok-num">0</span>; i &lt; <span class="tok-func">len</span>(text); i++ {
+        <span class="tok-com">// check if the current rune is between 'a' and 'z'</span>
+        <span class="tok-kw">if</span> text[i] &gt;= <span class="tok-str">'a'</span> &amp;&amp; text[i] &lt;= <span class="tok-str">'z'</span> {
+            count++
+        }
+    }
+    <span class="tok-kw">return</span> count
+}</code></pre>
+
+<svg viewBox="0 0 760 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;height:auto;display:block;margin:24px auto;color:inherit">
+  <g transform="translate(100, 40)">
+    <rect x="0" y="0" width="56" height="46" fill="rgba(var(--panel-rgb), 0.6)" stroke="var(--accent)" stroke-width="2" rx="4"/>
+    <rect x="64" y="0" width="56" height="46" fill="rgba(var(--panel-rgb), 0.6)" stroke="var(--accent)" stroke-width="2" rx="4"/>
+    <rect x="128" y="0" width="56" height="46" fill="rgba(var(--correct-rgb), 0.15)" stroke="var(--correct)" stroke-width="2" rx="4"/>
+    <rect x="192" y="0" width="56" height="46" fill="rgba(var(--panel-rgb), 0.6)" stroke="var(--accent)" stroke-width="2" rx="4"/>
+    
+    <text x="28" y="30" font-family="var(--font-mono)" font-size="20" fill="currentColor" text-anchor="middle">'H'</text>
+    <text x="92" y="30" font-family="var(--font-mono)" font-size="20" fill="currentColor" text-anchor="middle">'!'</text>
+    <text x="156" y="30" font-family="var(--font-mono)" font-size="20" fill="currentColor" text-anchor="middle">'c'</text>
+    <text x="220" y="30" font-family="var(--font-mono)" font-size="20" fill="currentColor" text-anchor="middle">' '</text>
+
+    <!-- Pointer -->
+    <path d="M 156 80 L 156 60" stroke="var(--correct)" stroke-width="3" marker-end="url(#arrow-correct)"/>
+    <text x="156" y="100" font-family="var(--font-mono)" font-size="14" fill="var(--correct)" text-anchor="middle" font-weight="bold">i = 2</text>
+    
+    <text x="320" y="28" font-family="var(--font-mono)" font-size="14" fill="currentColor" opacity="0.8">text[2] == 'c'</text>
+    <text x="320" y="52" font-family="var(--font-mono)" font-size="14" fill="currentColor" opacity="0.8">Άρα: 'c' &gt;= 'a' &amp;&amp; 'c' &lt;= 'z'</text>
+    <text x="320" y="76" font-family="var(--font-mono)" font-size="14" fill="var(--correct)" font-weight="bold">count++ (Η συνθήκη ισχύει)</text>
+  </g>
+  <defs>
+    <marker id="arrow-correct" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--correct)"/>
+    </marker>
+  </defs>
+</svg>
+`);
+
+        addContent(`
+<div class="eyebrow" id="@string-modification">Ενότητα 3 — Strings &amp; Loops</div>
+<h1>Τροποποίηση και Επανασύνθεση</h1>
+<p class="lede">Όταν ο στόχος είναι να φτιάξουμε ένα <em>νέο</em> string βασισμένο στο παλιό (π.χ. μετατροπή σε κεφαλαία), οι αλλαγές γίνονται πάνω στο slice των runes.</p>
+
+<p>Εφόσον τα μικρά και τα κεφαλαία γράμματα έχουν σταθερή απόσταση μεταξύ τους στον πίνακα του ASCII (το <code>'a'</code> απέχει ακριβώς 32 θέσεις από το <code>'A'</code>), μπορούμε να μετατρέψουμε ένα μικρό γράμμα σε κεφαλαίο αφαιρώντας το 32. Μόλις τελειώσουμε με τις αλλαγές στον πίνακα, τον πακετάρουμε ξανά σε string με την εντολή <code>string(text)</code>.</p>
+
+<pre><code class="lang-go"><span class="tok-kw">func</span> <span class="tok-func">ToUpper</span>(s <span class="tok-type">string</span>) <span class="tok-type">string</span> {
+    text := []<span class="tok-type">rune</span>(s)
+
+    <span class="tok-kw">for</span> i := <span class="tok-num">0</span>; i &lt; <span class="tok-func">len</span>(text); i++ {
+        <span class="tok-com">// if lowercase, make it uppercase</span>
+        <span class="tok-kw">if</span> text[i] &gt;= <span class="tok-str">'a'</span> &amp;&amp; text[i] &lt;= <span class="tok-str">'z'</span> {
+            text[i] = text[i] - <span class="tok-num">32</span>
+        }
+    }
+    
+    <span class="tok-com">// repack the modified rune slice back into a string</span>
+    <span class="tok-kw">return</span> <span class="tok-func">string</span>(text)
+}</code></pre>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Αναγνώριση</h3>
+    <p>Όταν η άσκηση ζητάει <code>string</code> ως παράμετρο και επιστρέφει ένα νέο, τροποποιημένο <code>string</code>. Το pattern είναι πάντα: <code>[]rune</code> στην αρχή, loop στη μέση, type conversion <code>string()</code> στο τέλος.</p>
+  </div>
+  <div class="card">
+    <h3>Προσοχή / Συχνό λάθος</h3>
+    <p>Μην αφαιρείς το 32 τυφλά. Πάντα ελέγχουμε με μια <code>if</code> αν ο χαρακτήρας είναι όντως μικρό γράμμα, αλλιώς κινδυνεύουμε να παραμορφώσουμε αριθμούς ή σύμβολα (π.χ. το <code>'!'</code> να γίνει κάτι άλλο).</p>
+  </div>
+</div>
+`);
+
+        addQuiz([
+            {
+                q: "Γιατί ξεκινάμε τις περισσότερες ασκήσεις κειμένου μετατρέποντας το string σε []rune;",
+                options: [
+                    "Επειδή τα strings στη Go είναι read-only (immutable) και δεν επιτρέπουν απευθείας αλλαγή των χαρακτήρων τους.",
+                    "Επειδή ο compiler της Go απαιτεί να μετατρέψουμε το string σε byte slice αν θέλουμε να αλλάξουμε το πρώτο γράμμα του αλφαβήτου.",
+                    "Επειδή ο πίνακας του string είναι κρυφός και χρειαζόμαστε ειδική συνάρτηση για να τον διαβάσουμε.",
+                    "Επειδή τα strings αποθηκεύονται πάντα στην cache του επεξεργαστή με διαφορετικό format."
+                ],
+                correct: 0,
+                explain: "Η σωστή απάντηση είναι η πρώτη: τα strings δεν μπορούν να αλλάξουν. Δημιουργούμε το slice των runes ακριβώς επειδή θέλουμε έναν ανοιχτό, τροποποιήσιμο χώρο εργασίας. Η δεύτερη επιλογή είναι λάθος διότι τα bytes δεν σχετίζονται με αυτή την ανάγκη."
+            },
+            {
+                q: "Τι ακριβώς πετυχαίνουμε με την εντολή text := []rune(s);",
+                options: [
+                    "Δημιουργούμε έναν νέο, τροποποιήσιμο πίνακα όπου κάθε θέση περιέχει έναν χαρακτήρα του αρχικού κειμένου.",
+                    "Κάνουμε το string να καταλαμβάνει λιγότερο χώρο στη μνήμη RAM του υπολογιστή μας, επειδή τα runes είναι πάντα πιο ελαφριά από τα bytes.",
+                    "Μετατρέπουμε το κείμενο απευθείας σε αριθμούς ASCII για να κάνουμε μαθηματικές πράξεις.",
+                    "Διαγράφουμε τα κενά από το string για να το προετοιμάσουμε για έλεγχο."
+                ],
+                correct: 0,
+                explain: "Η σωστή απάντηση είναι η πρώτη. Παίρνουμε μια νέα δομή δεδομένων που μπορούμε να κάνουμε iterate και να μεταβάλλουμε. Η δεύτερη επιλογή είναι λάθος διότι τα runes (32-bit) καταλαμβάνουν περισσότερο χώρο από τα bytes (8-bit)."
+            }
+        ], { label: "Quiz Checkpoint" });
+
+        addFillBlank([
+            {
+                code: `// Function that capitalizes all letters in a string
+func ToUpper(s string) string {
+    text := __type__(__s__)
+
+    for i := 0; i < len(text); i++ {
+        if text[i] >= 'a' __op__ text[i] <= 'z' {
+            __text__[i] = text[i] - 32
+        }
+    }
+    return __ret__(text)
+}`,
+                blanks: [
+                    { id: "type", answer: "[]rune" },
+                    { id: "op", answer: "&&" },
+                    { id: "text", answer: "text" },
+                    { id: "ret", answer: "string" },
+                    { id: "s", answer: "s" }
+                ],
+                explain: "Αρχικά μετατρέπουμε το string σε πίνακα <code>[]rune</code>. Στη συνθήκη θέλουμε ΚΑΙ τα δύο όρια να ισχύουν, άρα χρησιμοποιούμε τον τελεστή <code>&amp;&amp;</code>. Τέλος, πακετάρουμε ξανά τον πίνακα κάνοντας μετατροπή τύπου από <code>[]rune</code> σε <code>string</code> με την <code>string()</code>.",
+                lang: "go"
+            }
+        ], { label: "Συμπλήρωσε τα κενά", note: "Εφάρμοσε το pattern που μόλις είδαμε για να ολοκληρώσεις την ToUpper." });
+
+
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<h1>Αναδρομή (Recursion)</h1>
+<p class="lede">Όταν μια function καλεί τον εαυτό της.</p>
+
+<pre><code class="lang-go">func Countdown(n int) {
+    fmt.Println(n)
+    Countdown(n - 1) // Η function καλεί τον εαυτό της!
+}</code></pre>
+
+<div class="callout">
+  Η αναδρομή είναι ένα εργαλείο που στην αρχή μοιάζει με τέχνασμα. Φαντάσου έναν καθρέφτη να κοιτάζει τον καθρέφτη απέναντί του – τι βλέπεις; Άπειρες αντανακλάσεις. Κάτι παρόμοιο συμβαίνει και στον κώδικα, κάτι που είναι δυσνόητο στην αρχή.
+</div>
+
+<p>Τι θα γίνει αν καλέσουμε <code>Countdown(3)</code>; Θα τυπώσει το 3 και θα καλέσει την <code>Countdown(2)</code>. Εκείνη θα τυπώσει το 2 και θα καλέσει την <code>Countdown(1)</code>. Και αυτό θα συνεχίζεται επ' άπειρον, μέχρι να γεμίσει η μνήμη από τις κλήσεις που είναι ανοιχτές, κάτι που ονομάζεται <code>stack overflow</code>.</p>
+
+<div class="callout">
+  <span class="tag">Με άλλα λόγια</span>
+  Αν δεν βρούμε έναν τρόπο να μπει ένα όριο το πρόγραμμα θα συνεχίζει στο -1, -2, ..., -1000, ..., -10000000, κ.ο.κ. και θα καταρρέει επειδή τελειώνει η μνήμη στο <strong>call stack</strong>.
+</div>
+`);
+
+
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<h1>Το Base Case</h1>
+<p class="lede">Για να δουλέψει σωστά η αναδρομή, χρειαζόμαστε <strong>απαραίτητα</strong> μια συνθήκη τερματισμού.</p>
+
+<pre><code class="lang-go">func Countdown(n int) {
+    // 1. BASE CASE (Η έξοδος)
+    if n &lt;= 0 {
+        fmt.Println("BOOM!!")
+        return
+    }
+    // 2. CALL PHASE (Πράγματα που συμβαίνουν πριν την αναδρομή)
+    fmt.Println(n)
+    
+    // 3. RECURSIVE CALL (Το βήμα)
+    Countdown(n - 1)
+}</code></pre>
+
+<div class="grid2">
+    <div class="card">
+        <h3>Base Case</h3>
+        <p>Η συνθήκη που σταματάει την αναδρομή. Επιστρέφει χωρίς να κάνει νέα κλήση, συνήθως γιατί φτάσαμε στο μικρότερο δυνατό πρόβλημα (π.χ. <code>n = 0</code>).</p>
+    </div>
+    <div class="card">
+        <h3>Recursive Call</h3>
+        <p>Η κλήση της ίδιας της function, με όρισμα που πλησιάζει προς το base case (εδώ <code>n - 1</code>), ώστε το πρόβλημα να μικραίνει σε κάθε βήμα.</p>
+    </div>
+</div>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<h1>Russian Dolls</h1>
+<p class="lede">Για να καταλάβουμε την αναδρομή, πρέπει να σταματήσουμε να τη βλέπουμε σαν ένα απλό loop. Κάθε κλήση δεν αντικαθιστά την προηγούμενη — δημιουργεί <strong>ένα νέο αντίγραφο</strong> <em>μέσα</em> στο ήδη υπάρχον.</p>
+
+<svg viewBox="0 0 1600 900" style="width: 100%; max-width: 960px; height: auto; display: block; margin: 0 auto; color: var(--ink);">
+  <defs>
+    <style>
+      .t-bold { font-family: var(--font-mono); font-size: 26px; font-weight: bold; fill: var(--accent); paint-order: stroke fill; stroke: var(--bg); stroke-width: 7px; }
+      .t-desc { font-family: var(--font-body); font-size: 21px; font-weight: 600; fill: currentColor; paint-order: stroke fill; stroke: var(--bg); stroke-width: 7px; }
+      .t-note { font-family: var(--font-body); font-size: 19px; fill: currentColor; opacity: 0.85; paint-order: stroke fill; stroke: var(--bg); stroke-width: 6px; }
+      .arr-in { fill: none; stroke: currentColor; stroke-width: 3px; stroke-dasharray: 8 6; opacity: 0.6; marker-end: url(#arrow-in); }
+      .arr-out { fill: none; stroke: var(--accent); stroke-width: 5px; marker-end: url(#arrow-out); }
+    </style>
+    <marker id="arrow-in" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="currentColor" opacity="0.6"/>
+    </marker>
+    <marker id="arrow-out" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--accent)"/>
+    </marker>
+    <!-- Το τόξο στον πάτο της κούκλας για το curved text -->
+    <path id="text-arc" d="M 40 430 Q 215 610 390 430" fill="none" />
+    
+    <g id="doll">
+      <path d="M339.38,276.61c24.03-28.23,38.54-64.82,38.54-104.8,0-89.36-72.44-161.81-161.81-161.81S54.31,82.44,54.31,171.81c0,39.41,14.1,75.53,37.52,103.6-49.69,37.37-81.82,96.82-81.82,163.78,0,113.12,91.7,204.82,204.82,204.82s204.82-91.7,204.82-204.82c0-66.25-31.46-125.14-80.25-162.58Z"/>
+      <circle cx="214.82" cy="173.21" r="126.28"/>
+      <path d="M88.68,179.23c124.89-18.15,126.14-125.65,126.14-125.65,0,0-6.41,125.65,126.29,125.65"/>
+      <line x1="150.76" y1="189.58" x2="189.86" y2="189.58"/>
+      <line x1="227.24" y1="189.58" x2="269.96" y2="189.58"/>
+      <line x1="164.46" y1="248.75" x2="258.06" y2="248.75"/>
+    </g>
+  </defs>
+
+  <!-- ΜΕΓΑΛΟ ΣΧΗΜΑ ΣΤΟ ΚΕΝΤΡΟ (Nesting) -->
+  <g transform="translate(800, 400)">
+    <!-- Doll 3 -->
+    <g transform="scale(1.35) translate(-215, -300)">
+      <use href="#doll" stroke="currentColor" stroke-opacity="0.3" stroke-width="12" fill="rgba(var(--tone-3-rgb), 0.1)"/>
+    </g>
+    <!-- Doll 2 -->
+    <g transform="scale(0.95) translate(-215, -300)">
+      <use href="#doll" stroke="currentColor" stroke-opacity="0.5" stroke-width="14" fill="rgba(var(--tone-3-rgb), 0.25)"/>
+    </g>
+    <!-- Doll 1 -->
+    <g transform="scale(0.6) translate(-215, -300)">
+      <use href="#doll" stroke="currentColor" stroke-opacity="0.8" stroke-width="18" fill="rgba(var(--tone-3-rgb), 0.4)"/>
+    </g>
+    <!-- Doll 0 (Base Case) -->
+    <g transform="scale(0.3) translate(-215, -300)">
+      <use href="#doll" stroke="var(--bg)" stroke-width="24" fill="var(--accent)"/>
+      <text x="215" y="380" font-family="var(--font-mono)" font-size="65" font-weight="bold" fill="var(--bg)" text-anchor="middle">0 &lt;= 0</text>
+    </g>
+  </g>
+
+  <!-- WINDING (Κάθοδος - Αριστερά) -->
+  <!-- Βέλος 3 -> 2 -->
+  <text x="40" y="100" class="t-bold">Countdown(3)</text>
+  <text x="40" y="130" class="t-desc">Τυπώνει 3, καλεί την 2</text>
+  <text x="40" y="155" class="t-note">↳ Μπαίνει σε παύση (sleeps)</text>
+  <path d="M 300 145 C 450 145, 550 190, 580 210" class="arr-in"/>
+
+  <!-- Βέλος 2 -> 1 -->
+  <text x="120" y="250" class="t-bold">Countdown(2)</text>
+  <text x="120" y="280" class="t-desc">Τυπώνει 2, καλεί την 1</text>
+  <text x="120" y="305" class="t-note">↳ Μπαίνει σε παύση (sleeps)</text>
+  <path d="M 380 295 C 490 295, 550 310, 650 320" class="arr-in"/>
+
+  <!-- Βέλος 1 -> 0 -->
+  <text x="200" y="400" class="t-bold">Countdown(1)</text>
+  <text x="200" y="430" class="t-desc">Τυπώνει 1, καλεί την 0</text>
+  <text x="200" y="455" class="t-note">↳ Μπαίνει σε παύση (sleeps)</text>
+  <path d="M 460 445 C 540 445, 600 440, 680 430" class="arr-in"/>
+
+  <!-- BASE CASE (Κέντρο Κάτω) -->
+  <text x="800" y="530" font-family="var(--font-mono)" font-size="28" font-weight="bold" fill="var(--accent)" text-anchor="middle" paint-order="stroke fill" stroke="var(--bg)" stroke-width="8">Base Case!</text>
+  <text x="800" y="566" font-family="var(--font-body)" font-size="26" font-weight="bold" fill="currentColor" text-anchor="middle" paint-order="stroke fill" stroke="var(--bg)" stroke-width="8">Τυπώνει "BOOM!!"</text>
+
+  <!-- UNWINDING (Άνοδος - Δεξιά) -->
+  <!-- Επιστροφή 0 -->
+  <path d="M 850 440 C 900 410, 930 390, 1000 440" class="arr-out"/>
+  <text x="990" y="485" class="t-bold">Η 0 τερματίζει</text>
+  <text x="990" y="515" class="t-desc">Η 1 ξυπνάει &amp; συνεχίζει</text>
+
+  <!-- Επιστροφή 1 -->
+  <path d="M 894 340 C 980 360, 1030 360, 1080 360" class="arr-in"/>
+  <text x="1100" y="355" class="t-bold">Η 1 τερματίζει</text>
+  <text x="1100" y="385" class="t-desc">Η 2 ξυπνάει &amp; συνεχίζει</text>
+
+  <!-- Επιστροφή 2 -->
+  <path d="M 942 220 C 1070 220, 1140 220, 1200 220" class="arr-in"/>
+  <text x="1220" y="215" class="t-bold">Η 2 τερματίζει</text>
+  <text x="1220" y="245" class="t-desc">Η 3 ξυπνάει &amp; συνεχίζει</text>
+
+  <!-- Επιστροφή 3 -->
+  <path d="M 959 80 C 1180 60, 1250 60, 1310 60" class="arr-in"/>
+  <text x="1330" y="55" class="t-bold">Η 3 τερματίζει</text>
+  <text x="1330" y="85" class="t-desc" style="color: var(--accent);">Τέλος Αναδρομής!</text>
+
+
+  <!-- ΥΠΟΜΝΗΜΑ ΚΟΥΚΛΩΝ (Κάτω Αριστερά) -->
+
+  <g transform="translate(150, 800)">
+    <g transform="scale(0.35) translate(-215, -600)">
+      <use href="#doll" stroke="currentColor" stroke-opacity="0.3" stroke-width="12" fill="rgba(var(--tone-3-rgb), 0.1)"/>
+      <text font-size="50" font-family="var(--font-mono)" font-weight="bold" fill="currentColor" paint-order="stroke fill" stroke="var(--bg)" stroke-width="12">
+         
+      </text>
+    </g>
+  </g>
+
+  <g transform="translate(290, 800)">
+    <g transform="scale(0.28) translate(-215, -600)">
+      <use href="#doll" stroke="currentColor" stroke-opacity="0.5" stroke-width="14" fill="rgba(var(--tone-3-rgb), 0.25)"/>
+      <text font-size="65" font-family="var(--font-mono)" font-weight="bold" fill="currentColor" paint-order="stroke fill" stroke="var(--bg)" stroke-width="16">
+         
+      </text>
+    </g>
+  </g>
+
+  <g transform="translate(400, 800)">
+    <g transform="scale(0.21) translate(-215, -600)">
+      <use href="#doll" stroke="currentColor" stroke-opacity="0.8" stroke-width="18" fill="rgba(var(--tone-3-rgb), 0.4)"/>
+      <text font-size="85" font-family="var(--font-mono)" font-weight="bold" fill="currentColor" paint-order="stroke fill" stroke="var(--bg)" stroke-width="20">
+         
+      </text>
+    </g>
+  </g>
+
+  <g transform="translate(0, 0)">
+      <path d="M 50 174 C 0 190, 0 210, 112 240" class="arr-out"/>
+      <path d="M 120 320 C 0 340, 0 380, 184 390" class="arr-out"/>
+      <path d="M 360 470 C 500 540, 500 580, 744 470" class="arr-out"/>
+     <path d="M 1220 480 C 1550 440, 1550 390, 1350 360" class="arr-out"/>
+          <path d="M 1350 340 C 1550 300, 1550 220, 1450 210" class="arr-out"/>
+           <path d="M 1450 192 C 1550 169, 1550 140, 1490 110" class="arr-out"/>
+  </g>
+
+  <g transform="translate(482, 800)">
+    <g transform="scale(0.16) translate(-215, -600)">
+      <use href="#doll" stroke="var(--bg)" stroke-width="24" fill="var(--accent)"/>
+      <text font-size="130" font-family="var(--font-mono)" font-weight="bold" fill="currentColor" paint-order="stroke fill" stroke="var(--bg)" stroke-width="30">
+        
+      </text>
+    </g>
+  </g>
+</svg>
+
+<div class="callout good">
+    <span class="tag">Βύθιση &amp; Ανάδυση</span>
+    Η αναδρομή έχει πάντα δύο φάσεις. Στην αρχή <strong>βυθιζόμαστε (Call Phase)</strong> ανοίγοντας το ένα κουτί μέσα στο άλλο, μέχρι να χτυπήσουμε τον πάτο (Base Case). Μόλις ο πυρήνας τερματίσει, ξεκινάει <strong>η ανάδυση (Unwinding Phase)</strong>. Οι παγωμένες συναρτήσεις "ξυπνάνε" μία-μία, με την αντίστροφη ακριβώς σειρά, για να ολοκληρώσουν τη δουλειά τους.
+</div>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<h1 style="letter-spacing: -0.03em;">Η Φάση της Ανάδυσης (Unwinding Phase)</h1>
+<p class="lede">Τι συμβαίνει <strong>μετά</strong> το recursive call; Οι συναρτήσεις που βρίσκονταν σε παύση συνεχίζουν για να ολοκληρώσουν τη δουλειά τους.</p>
+
+<p>Όταν μια αναδρομική κλήση φτάσει στο base case και τερματίσει, ο έλεγχος επιστρέφει στην προηγούμενη κλήση — ακριβώς στο σημείο που είχε μείνει. Οποιοσδήποτε κώδικας υπάρχει <em>κάτω</em> από το recursive call θα εκτελεστεί τώρα, κατά τη διάρκεια της <strong>ανάδυσης</strong>.</p>
+
+<pre><code class="lang-go">func Walk(steps int) {
+    // 1. BASE CASE
+    if steps == 0 {
+        fmt.Println("Reached destination!")
+        return
+    }
+
+    // 2. CALL PHASE: This runs before diving deeper
+    fmt.Println("Taking step forward:", steps)
+
+    // 3. RECURSIVE CALL
+    Walk(steps - 1)
+
+    // 4. UNWINDING PHASE: This runs AFTER the inner call returns in opposite order
+    fmt.Println("Taking step back:", steps)
+}</code></pre>
+
+<div class="grid3" style="margin-top: 36px;">
+    <div class="card">
+        <h3 style="letter-spacing: -0.02em;">Base Case</h3>
+        <p>Η συνθήκη που σταματάει την αναδρομή. Επιστρέφει χωρίς να κάνει νέα κλήση, συνήθως γιατί φτάσαμε στο μικρότερο δυνατό πρόβλημα (π.χ. <code>steps = 0</code>).</p>
+    </div>
+    <div class="card">
+        <h3 style="letter-spacing: -0.02em;">Recursive Call</h3>
+        <p>Η κλήση της ίδιας της function, με όρισμα που πλησιάζει προς το base case (εδώ <code>steps - 1</code>), ώστε το πρόβλημα να μικραίνει σε κάθε βήμα.</p>
+    </div>
+    <div class="card">
+        <h3 style="letter-spacing: -0.02em;">Unwinding Phase</h3>
+        <p>Ο κώδικας <strong>μετά</strong> το recursive case. Εκτελείται καθώς οι κλήσεις που ήταν σε παύση "ξυπνάνε" μία-μία για να ολοκληρώσουν τη δουλειά τους.</p>
+    </div>
+</div>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 4 / 5 — Recursion</div>
+<h1 style="letter-spacing: -0.03em;">Πώς λειτουργεί η Ανάδυση στην πράξη</h1>
+<p class="lede">Όταν ο πυρήνας (base case) τερματίσει, οι παγωμένες συναρτήσεις δεν συνεχίζουν τυχαία. Η unwinding phase ακολουθεί τρεις κανόνες.</p>
+
+<h2 style="letter-spacing: -0.02em;">1. LIFO (Last In, First Out)</h2>
+<p>Η τελευταία κλήση που μπήκε σε παύση είναι η πρώτη που συνεχίζει. Οι συναρτήσεις ολοκληρώνονται με την αντίστροφη ακριβώς σειρά από αυτήν που ξεκίνησαν.</p>
+
+<h2 style="letter-spacing: -0.02em;">2. Διατήρηση State</h2>
+<p>Κάθε κλήση θυμάται τις δικές της τοπικές μεταβλητές, εντελώς απομονωμένη από τις άλλες. Κατά την ανάδυση, η μεταβλητή (όπως το <code>steps</code>) διατηρεί την τιμή που είχε ακριβώς <em>πριν</em> γίνει η παύση, σαν να μην πέρασε ούτε ένα δευτερόλεπτο.</p>
+
+<h2 style="letter-spacing: -0.02em;">3. Ολοκλήρωση</h2>
+<p>Ο κώδικας συνεχίζει <strong>ακριβώς</strong> από τη γραμμή κάτω από το recursive call και εκτελεί τις εντολές που απέμειναν. Όταν φτάσει στο κλείσιμο <code>}</code>, η συγκεκριμένη κλήση τερματίζει και επιστρέφει οριστικά τον έλεγχο στην αμέσως προηγούμενη.</p>
+`);
+
+        addQuiz([
+            {
+                q: "Τι θα συμβεί αν παραλείψουμε το base case σε μια αναδρομική function;",
+                options: [
+                    "Θα τερματίσει βίαια λόγω σφάλματος stack overflow.",
+                    "Θα εκτελεστεί άπειρες φορές αλλά ο compiler θα το διορθώσει αυτόματα κρυφά.",
+                    "Ο compiler θα μας βγάλει error πριν καν τρέξει.",
+                    "Η κλήση θα αγνοηθεί και θα επιστρέψει άμεσα 0."
+                ],
+                correct: 0,
+                explain: "Χωρίς base case, οι κλήσεις συνεχίζονται στο άπειρο. Ο compiler δεν μπορεί να προβλέψει τον αριθμό των κλήσεων (δεν είναι compile error), με αποτέλεσμα να γεμίσει η μνήμη και να προκύψει ένα μη ανακτήσιμο runtime error (stack overflow)."
+            },
+            {
+                "q": "Δίνεται ο παρακάτω κώδικας Countdown. Τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    if n == 0 {
+        return
+    }
+    fmt.Println(n)
+    Countdown(n-1)
+}`,
+                "lang": "go",
+                "options": [
+                    "1 2 3 4 5",
+                    "5 4 3 2 1",
+                    "5 4 3 2 1 0",
+                    "0 1 2 3 4 5"
+                ],
+                "correct": 1,
+                "explain": "Η συνάρτηση τυπώνει το n πριν καλέσει τον εαυτό της με n-1. Για n=5: τυπώνει 5, μετά καλεί Countdown(4) που τυπώνει 4, μετά 3, μετά 2, μετά 1, και τέλος Countdown(0) που κάνει return χωρίς να τυπώσει τίποτα. Η έξοδος είναι \"5 4 3 2 1\"."
+            },
+            {
+                "q": "Δίνεται ο παρακάτω κώδικας Countdown, όπου το fmt.Println(n) τοποθετείται ΜΕΤΑ την αναδρομική κλήση. Τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    if n == 0 {
+        return
+    }
+    Countdown(n-1)
+    fmt.Println(n)
+}`,
+                "lang": "go",
+                "options": [
+                    "1 2 3 4 5",
+                    "5 4 3 2 1",
+                    "5 4 3 2 1 0",
+                    "0 1 2 3 4 5"
+                ],
+                "correct": 0,
+                "explain": "Επειδή το fmt.Println(n) βρίσκεται ΜΕΤΑ την αναδρομική κλήση, κάθε επίπεδο περιμένει να ολοκληρωθεί ολόκληρη η βαθύτερη αναδρομή προτού τυπώσει το δικό του n. Το Countdown(0) είναι base case και απλώς κάνει return χωρίς να τυπώσει τίποτα. Έτσι, η πρώτη εκτύπωση γίνεται στην πιο βαθιά κλήση (n=1), μετά n=2, και φτάνει μέχρι την αρχική (n=5). Η έξοδος είναι \"1 2 3 4 5\" (unwinding phase)."
+            },
+            {
+                "q": "Εδώ τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    if n <= 0 {
+        return
+    }
+    fmt.Println(n)
+    Countdown(n-1)
+    fmt.Println(n)
+}`,
+                "lang": "go",
+                "options": [
+                    "5 4 3 2 1 1 2 3 4 5",
+                    "5 4 3 2 1 2 3 4 5",
+                    "1 2 3 4 5 4 3 2 1",
+                    "1 2 3 4 5 5 4 3 2 1",
+                    "0 1 2 3 4 5 4 3 2 1 0",
+                    "0 1 2 3 4 5 5 4 3 2 1 0",
+                    "5 4 3 2 1 0 1 2 3 4 5"
+                ],
+                "correct": 0,
+                "explain": "Το base case είναι n <= 0, οπότε όταν φτάσει στο 0 η αναδρομή σταματά χωρίς να εκτελέσει κανένα fmt.Println για το 0 — το πρώτο Println βρίσκεται ΜΕΤΑ τον έλεγχο, άρα καλείται μόνο για n>0. Στην κάθοδο (πριν την αναδρομή) τυπώνει 5,4,3,2,1. Μετά το base case, κατά την άνοδο (μετά την αναδρομή) τυπώνει ξανά 1,2,3,4,5. Η έξοδος είναι \"5 4 3 2 1 1 2 3 4 5\"."
+            },
+            {
+                "q": "Τα πράγματα περιπλέκονται. Τι θα τυπώσει η Countdown(5);",
+                "code": `func Countdown(n int) {
+    fmt.Println(n)
+    if n <= 0 {
+        return
+    }
+    Countdown(n-1)
+    fmt.Println(n)
+}`,
+                "lang": "go",
+                "options": [
+                    "5 4 3 2 1 0 1 2 3 4 5",
+                    "5 4 3 2 1 1 2 3 4 5",
+                    "5 4 3 2 1 2 3 4 5",
+                    "1 2 3 4 5 4 3 2 1",
+                    "1 2 3 4 5 5 4 3 2 1",
+                    "0 1 2 3 4 5 4 3 2 1 0",
+                    "0 1 2 3 4 5 5 4 3 2 1 0"
+                ],
+                "correct": 0,
+                "explain": "Εδώ το fmt.Println(n) βρίσκεται ΠΡΙΝ το base case. Άρα ακόμα και για n=0 θα τυπωθεί το 0, και ΜΕΤΑ θα μπει στο if n <= 0 και θα κάνει return. Στην κάθοδο τυπώνει 5,4,3,2,1,0. Το δεύτερο Println μετά την αναδρομή δεν εκτελείται για n=0 (γιατί έχει ήδη γίνει return), αλλά εκτελείται για n=1,2,3,4,5 κατά την άνοδο. Έτσι η έξοδος είναι \"5 4 3 2 1 0 1 2 3 4 5\"."
+            }
+        ]);
+
+
+        addMatching([
+            [
+                { term: "Recursion", def: "Ο τεχνικός όρος για μια function που καλεί τον εαυτό της." },
+                { term: "Base Case", def: "Η μικρότερη δυνατή περίπτωση όπου η function επιστρέφει απάντηση χωρίς άλλη κλήση." },
+                { term: "Recursive Call", def: "Η περίπτωση όπου η function καλεί ξανά τον εαυτό της μεταβιβάζοντας μικρότερο μέγεθος προβλήματος." },
+                { term: "Call Stack", def: "Η δομή μνήμης του υπολογιστή όπου αποθηκεύονται και περιμένουν οι ενεργές κλήσεις." }
+            ]
+        ]);
+
         // ── N βασίλισσες ──────────────────────────────────────────────────────── ⊃
         addContent(`
 <div class="eyebrow" id="@n-vasilisses">Ενότητα 5 / 5 — N Queens</div>
@@ -527,9 +1094,9 @@ board := make([]int, 8)</code></pre>
 
 <p> Δύο πράγματα μας γλιτώνουν από δουλειά. Δεν ελέγχουμε ποτέ γραμμές: το μονοδιάστατο slice κάνει αδύνατο να υπάρχουν δύο βασίλισσες στην ίδια γραμμή. Και δεν ελέγχουμε μετά από την τιμή της <code>row</code>, γιατί γεμίζουμε από πάνω προς τα κάτω, αυτή τη στιγμή ξέρουμε ότι βρισκόμαστε στο γραμμή <code>row</code> και όλα τα κάτω row είναι ακόμα άδεια. Συμπερασματικά: μένουν στήλες και διαγώνιοι, και οι γραμμές <code>0</code> έως και <code>row-1</code>.</p>
 
-<p>Η στήλη ελέγχεται με μία σύγκριση. Οι διαγώνιοι φαίνονται δυσκολότερες, αλλά κάθε διαγώνιος έχει μια τιμή σταθερή σε όλα της τα τετράγωνα: η διαφορά (<code>γραμμή − στήλη</code>) και το άθροισμα (<code>γραμμή + στήλη</code>).</p>
+<p>Η στήλη ελέγχεται με μία σύγκριση. Οι διαγώνιοι φαίνονται δυσκολότερες, αλλά κάθε διαγώνιος έχει μια τιμή σταθερή σε όλα της τα τετράγωνα: το άθροισμα (<code>γραμμή + στήλη</code>) και η  διαφορά (<code>γραμμή − στήλη</code>).</p>
 
-<svg viewBox="0 0 700 296" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;height:auto;display:block;margin:18px auto;color:inherit"><text x="192" y="34" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή − στήλη</text><path d="M146 60h46v46h-46zm46 46h46v46h-46zm46 46h46v46h-46z" fill="rgba(var(--tone-4-rgb),0.28)"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" font-weight="700" fill="var(--tone-4)" text-anchor="middle"><text x="169" y="89">-1</text><text x="215" y="135">-1</text><text x="261" y="181">-1</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".4" text-anchor="middle"><text x="123" y="89">0</text><text x="215" y="89">-2</text><text x="261" y="89">-3</text><text x="123" y="135">1</text><text x="169" y="135">0</text><text x="261" y="135">-2</text><text x="123" y="181">2</text><text x="169" y="181">1</text><text x="215" y="181">0</text><text x="123" y="227">3</text><text x="169" y="227">2</text><text x="215" y="227">1</text><text x="261" y="227">0</text></g><path d="M100 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184" stroke="currentColor" stroke-opacity=".3" fill="none"/><text x="512" y="34" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή + στήλη</text><path d="M558 60h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46z" fill="rgba(var(--tone-5-rgb),0.28)"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="16" font-weight="700" fill="var(--tone-5)" text-anchor="middle"><text x="581" y="89">3</text><text x="535" y="135">3</text><text x="489" y="181">3</text><text x="443" y="227">3</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".4" text-anchor="middle"><text x="443" y="89">0</text><text x="489" y="89">1</text><text x="535" y="89">2</text><text x="443" y="135">1</text><text x="489" y="135">2</text><text x="581" y="135">4</text><text x="443" y="181">2</text><text x="535" y="181">4</text><text x="581" y="181">5</text><text x="489" y="227">4</text><text x="535" y="227">5</text><text x="581" y="227">6</text></g><path d="M420 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184" stroke="currentColor" stroke-opacity=".3" fill="none"/><g font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity=".7" text-anchor="middle"><text x="192" y="270">η διαφορά μένει σταθερή</text><text x="192" y="288">κατά μήκος της «\\» διαγωνίου</text><text x="512" y="270">το άθροισμα μένει σταθερό</text><text x="512" y="288">κατά μήκος της «/» διαγωνίου</text></g></svg>
+<svg viewBox="0 0 700 296" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:820px;height:auto;display:block;margin:18px auto;color:inherit"><style>@import url(https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&amp;display=swap);</style><text x="192" y="22" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή + στήλη</text><text x="512" y="22" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" fill="currentColor" opacity=".85">γραμμή − στήλη</text><path d="M238 60h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46zm-46 46h46v46h-46z" fill="rgba(var(--tone-5-rgb),0.28)"/><path d="M466 60h46v46h-46zm46 46h46v46h-46zm46 46h46v46h-46z" fill="rgba(var(--tone-4-rgb),0.28)"/><path d="M100 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184M420 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184" stroke="currentColor" stroke-opacity=".3" fill="none"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13" fill="currentColor" opacity=".6" text-anchor="middle"><text x="123" y="52">0</text><text x="169" y="52">1</text><text x="215" y="52">2</text><text x="261" y="52">3</text><text x="84" y="88">0</text><text x="84" y="134">1</text><text x="84" y="180">2</text><text x="84" y="226">3</text><text x="443" y="52">0</text><text x="489" y="52">1</text><text x="535" y="52">2</text><text x="581" y="52">3</text><text x="404" y="88">0</text><text x="404" y="134">1</text><text x="404" y="180">2</text><text x="404" y="226">3</text></g><g font-family="'Playpen Sans', cursive" font-size="11" font-weight="700" fill="currentColor" opacity=".18" text-anchor="middle"><text x="123" y="74">0+0</text><text x="169" y="74">0+1</text><text x="215" y="74">0+2</text><text x="123" y="120">1+0</text><text x="169" y="120">1+1</text><text x="261" y="120">1+3</text><text x="123" y="166">2+0</text><text x="215" y="166">2+2</text><text x="261" y="166">2+3</text><text x="169" y="212">3+1</text><text x="215" y="212">3+2</text><text x="261" y="212">3+3</text><text x="443" y="74">0-0</text><text x="535" y="74">0-2</text><text x="581" y="74">0-3</text><text x="443" y="120">1-0</text><text x="489" y="120">1-1</text><text x="581" y="120">1-3</text><text x="443" y="166">2-0</text><text x="489" y="166">2-1</text><text x="535" y="166">2-2</text><text x="443" y="212">3-0</text><text x="489" y="212">3-1</text><text x="535" y="212">3-2</text><text x="581" y="212">3-3</text></g><g font-family="'Playpen Sans', cursive" font-size="11" font-weight="700" text-anchor="middle"><g fill="var(--tone-5)" opacity=".22"><text x="261" y="74">0+3</text><text x="215" y="120">1+2</text><text x="169" y="166">2+1</text><text x="123" y="212">3+0</text></g><g fill="var(--tone-4)" opacity=".22"><text x="489" y="74">0-1</text><text x="535" y="120">1-2</text><text x="581" y="166">2-3</text></g></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" fill="currentColor" opacity=".9" text-anchor="middle"><text x="123" y="95">0</text><text x="169" y="95">1</text><text x="215" y="95">2</text><text x="123" y="141">1</text><text x="169" y="141">2</text><text x="261" y="141">4</text><text x="123" y="187">2</text><text x="215" y="187">4</text><text x="261" y="187">5</text><text x="169" y="233">4</text><text x="215" y="233">5</text><text x="261" y="233">6</text><text x="443" y="95">0</text><text x="535" y="95">-2</text><text x="581" y="95">-3</text><text x="443" y="141">1</text><text x="489" y="141">0</text><text x="581" y="141">-2</text><text x="443" y="187">2</text><text x="489" y="187">1</text><text x="535" y="187">0</text><text x="443" y="233">3</text><text x="489" y="233">2</text><text x="535" y="233">1</text><text x="581" y="233">0</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="22" font-weight="700" text-anchor="middle"><g fill="var(--tone-5)"><text x="261" y="95">3</text><text x="215" y="141">3</text><text x="169" y="187">3</text><text x="123" y="233">3</text></g><g fill="var(--tone-4)"><text x="489" y="95">-1</text><text x="535" y="141">-1</text><text x="581" y="187">-1</text></g></g><g font-family="var(--font-display, system-ui, sans-serif)" font-size="13" fill="currentColor" opacity=".7" text-anchor="middle"><text x="192" y="270">το άθροισμα μένει σταθερό</text><text x="192" y="288">κατά μήκος της «/» διαγωνίου</text><text x="512" y="270">η διαφορά μένει σταθερή</text><text x="512" y="288">κατά μήκος της «\\» διαγωνίου</text></g></svg>
 
 <p> Δύο τετράγωνα βρίσκονται στην ίδια διαγώνιο ακριβώς όταν έχουν ίδια διαφορά ή ίδιο άθροισμα. Δύο συγκρίσεις απαντούν και για τις δύο κατευθύνσεις. </p>
 `);
@@ -565,7 +1132,7 @@ func isSafe(board []int, row, col int) bool {
         addContent(`
 <div class="eyebrow" id="@paradeigma-elenchou">Ενότητα 5 / 5 — N Queens</div>
 <h1>Μια ενδεικτική κλήση για <code>isSafe([]int{0,2}, 2, 3)</code></h1>
-<p class="lede"> Έστω <code>board = [0, 2]</code>: βασίλισσα στο (0,0) και στο (1,2). Δοκιμάζουμε το τετράγωνο (2, 3), με <code>row-col = -1</code> και <code>row+col = 5</code>. </p>
+<p class="lede"> Έστω <code>board = [0, 2]</code>: βασίλισσα στο (0,0) και στο (1,2). Δοκιμάζουμε το τετράγωνο (2, 3), με <code>row+col = 5</code> και <code>row-col = -1</code>. </p>
 
 <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:920px;height:auto;display:block;margin:18px auto;color:inherit"><path d="M146 60h46v46h-46zm46 46h46v46h-46zm46 46h46v46h-46z" fill="rgba(var(--tone-5-rgb),0.12)"/><path fill="rgba(var(--tone-4-rgb),0.30)" d="M100 60h46v46h-46zm92 46h46v46h-46z"/><path fill="none" stroke="#e05252" stroke-width="2" stroke-dasharray="5 3" d="M238 152h46v46h-46z"/><path stroke="var(--tone-5)" stroke-width="2" stroke-opacity=".8" stroke-dasharray="4 3" d="m215 129 46 46"/><path d="M100 60v184m0-184h184m-138 0v184m-46-138h184m-92-46v184m-92-92h184m-46-92v184m-138-46h184m0-138v184m-184 0h184" stroke="currentColor" stroke-opacity=".3" fill="none"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="18" font-weight="700" fill="var(--tone-4)" text-anchor="middle"><text x="123" y="90">Q</text><text x="215" y="126">Q</text></g><text x="261" y="172" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="18" font-weight="700" fill="#e05252">?</text><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="var(--tone-5)" text-anchor="middle"><text x="215" y="145">-1</text><text x="261" y="191">-1</text></g><text x="169" y="86" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="var(--tone-5)" opacity=".45">-1</text><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity=".5" text-anchor="middle"><text x="123" y="52">0</text><text x="169" y="52">1</text><text x="215" y="52">2</text><text x="261" y="52">3</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12.5" fill="currentColor" opacity=".5" text-anchor="end"><text x="90" y="88">0</text><text x="90" y="134">1</text><text x="90" y="180">2</text><text x="90" y="226">3</text></g><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" fill="currentColor"><text x="340" y="76" opacity=".85">board = [0, 2]</text><text x="340" y="98" fill="#e05252">δοκιμάζουμε το (2, 3)</text></g><path stroke="currentColor" stroke-opacity=".2" d="M340 116h280"/><g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="13.5" fill="currentColor" opacity=".8"><text x="340" y="142">βασίλισσα (1,2):  1 - 2 = <tspan fill="var(--tone-5)" font-weight="700">-1</tspan></text><text x="340" y="166">τετράγωνο (2,3):  2 - 3 = <tspan fill="var(--tone-5)" font-weight="700">-1</tspan></text></g><g font-family="var(--font-display, system-ui, sans-serif)" font-size="13.5" fill="currentColor"><text x="340" y="204" opacity=".75">ίδια διαφορά → ίδια διαγώνιος</text><text x="340" y="228" fill="#e05252" font-weight="700">isSafe → false</text></g><g font-family="var(--font-display, system-ui, sans-serif)" font-size="12.5" fill="currentColor" opacity=".55"><text x="340" y="258">( η στήλη δεν συγκρούεται (2 ≠ 3) ),</text><text x="340" y="276">( ούτε το άθροισμα (3 ≠ 5) )</text></g></svg>
 
@@ -609,7 +1176,7 @@ func SolveQueens(board []int, row int) []int {
         addContent(`
 <div class="eyebrow" id="@queens-viz">Ενότητα 5 / 5 — N Queens</div>
 <h1>Δες το να τρέχει</h1>
-<p class="lede">Σκακιέρα 4×4. Πάτα βήμα-βήμα: κάθε χρώμα δείχνει αν μια βασίλισσα μπαίνει, απορρίπτεται, ή αφαιρείται όταν το branch αδιεξοδεύει.</p>
+<p class="lede">Σκακιέρα 4×4. Οπτικοποίηση βήμα-βήμα: κάθε χρώμα δείχνει αν μια βασίλισσα μπαίνει, απορρίπτεται, ή αφαιρείται (backtracking) όταν το branch φτάνει σε αδιέξοδο.</p>
 
 <span class="vz-tag">Βήμα-βήμα</span>
 <div id="nqueens-viz"></div>
@@ -621,14 +1188,14 @@ func SolveQueens(board []int, row int) []int {
   <p> Σημαίνει «δοκίμασα κάθε στήλη αυτής της γραμμής, καμία δεν οδηγεί σε λύση». Ο καλών παίρνει <code>nil</code>, ακυρώνει τη δική του βασίλισσα, δοκιμάζει την επόμενη στήλη του. Δεν υπάρχει πουθενά κώδικας που «διαχειρίζεται την υποχώρηση» — προκύπτει από το ότι κάθε επίπεδο κάνει σωστά τα τρία του βήματα. </p>
 </div>
 `);
+
         addContent(`
 <div class="eyebrow">Φτάσαμε στο τέλος</div>
-<h1 id="@telos">Η δεύτερη εβδομάδα ισοδυναμεί με ολόκληρο semester</h1>
-<p>Η αναδρομή είναι δύσκολο concept. Αν νιώθετε ότι δεν τoποθέτετε καταλαβαίνετε πλήρως ακόμα, είναι απολύτως φυσιολογικό. Ξεκινήστε με τα <code>factorial</code> και <code>power</code> σε ένα τετράδιο, σχεδιάζοντας το call stack.</p>
+<p>Η αναδρομή (recursion) αποτελεί μια από τις πιο απαιτητικές έννοιες. Είναι απολύτως φυσιολογικό να χρειάζεται επιπλέον χρόνος για την πλήρη αφομοίωσή της. Ξεκινήστε αποτυπώνοντας την εκτέλεση των <code>factorial</code> και <code>power</code> στο χαρτί, σχεδιάζοντας αναλυτικά την εξέλιξη του call stack.</p>
 
 <div class="callout">
   <span class="tag">BACKTRACKING</span>
-  Το <code>eightqueens</code> είναι το πιο απαιτητικό exercise αυτής της εβδομάδας. Ανήκει στην κατηγορία προβλημάτων με το sudoku και ονομάζονται <code>exact cover problems</code>. Η κατανόηση του θα σας βοηθήσει πολύ στο raid του σαββατοκύριακου.
+  Το <code>eightqueens</code> είναι το πιο απαιτητικό exercise αυτής της εβδομάδας. Ανήκει στην ίδια κατηγορία προβλημάτων με το sudoku, που ονομάζονται <code>exact cover problems</code>. Η κατανόηση του θα σας βοηθήσει πολύ στο raid του σαββατοκύριακου.
 </div>
 
 <div id="final-score"></div>
@@ -636,7 +1203,14 @@ func SolveQueens(board []int, row int) []int {
 <p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">
   Η παρούσα παρουσίαση δημιουργήθηκε για το Zone01 Athens από τον pavgerin/avgerinos8.
 </p>
-`);
+
+`, {
+            bg: "../images/nQueens.jpg",
+            overlayAlpha: 0.6,
+            backgroundSize: "auto 100%",
+            backgroundRepeat: "repeat",
+            backgroundPosition: "center center"
+        });
 
         initSlideDeck({
             version: "1.4.0",

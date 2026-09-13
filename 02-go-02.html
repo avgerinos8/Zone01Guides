@@ -248,6 +248,7 @@
     <script src="static/vizJS/viz-sliding-window.js?v=20260826"></script>
     <script src="static/vizJS/viz-merge-sort.js?v=20260826"></script>
     <script src="static/vizJS/viz-sudoku.js?v=20260826"></script>
+    <script src="static/vizJS/viz-nqueens.js?v=20260913"></script>
     <script>
         // Course content below.
 
@@ -6642,113 +6643,13 @@ func main() {
     <p> Εδώ, επειδή σταματάμε στην πρώτη λύση, το αντίγραφο δεν είναι απολύτως απαραίτητο. Γίνεται απαραίτητο τη στιγμή που θα θελήσεις να μαζέψεις <strong>όλες</strong> τις λύσεις σε ένα <code>[][]int</code> — τότε χωρίς αντίγραφο θα κατέληγες με ένα slice γεμάτο δείκτες προς το ίδιο πράγμα. </p>
 </div>
 
-<p> Σε σκακιέρα 4×4 ολόκληρη η εκτέλεση χωράει σε εννέα εικόνες. Ο κώδικας είναι ο ίδιος — μόνο το <code>len(board)</code> αλλάζει. </p>
+<h2>Δες το να τρέχει</h2>
+<p class="lede">Σκακιέρα 4×4. Οπτικοποίηση βήμα-βήμα: κάθε χρώμα δείχνει αν μια βασίλισσα μπαίνει, απορρίπτεται, ή αφαιρείται (backtracking) όταν το branch φτάνει σε αδιέξοδο.</p>
 
-<svg viewBox="0 0 740 520" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:900px; height:auto; display:block; margin:18px auto; color:inherit;">
-  <g fill="rgba(var(--tone-4-rgb),0.30)">
-    <rect x="90" y="14" width="26" height="26"/><rect x="320" y="14" width="26" height="26"/><rect x="372" y="40" width="26" height="26"/>
-    <rect x="550" y="14" width="26" height="26"/><rect x="602" y="40" width="26" height="26"/><rect x="90" y="188" width="26" height="26"/>
-    <rect x="168" y="214" width="26" height="26"/><rect x="116" y="240" width="26" height="26"/><rect x="320" y="188" width="26" height="26"/>
-    <rect x="398" y="214" width="26" height="26"/><rect x="346" y="240" width="26" height="26"/><rect x="576" y="188" width="26" height="26"/>
-    <rect x="116" y="362" width="26" height="26"/><rect x="168" y="388" width="26" height="26"/><rect x="346" y="362" width="26" height="26"/>
-    <rect x="398" y="388" width="26" height="26"/><rect x="320" y="414" width="26" height="26"/>
-  </g>
-  <g fill="rgba(76,175,80,0.32)">
-    <rect x="576" y="362" width="26" height="26"/><rect x="628" y="388" width="26" height="26"/><rect x="550" y="414" width="26" height="26"/>
-    <rect x="602" y="440" width="26" height="26"/>
-  </g>
+<span class="vz-tag">Βήμα-βήμα</span>
+<div id="nqueens-viz"></div>
 
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" font-weight="700" fill="var(--tone-4)" text-anchor="middle">
-    <text x="103" y="33">Q</text><text x="333" y="33">Q</text><text x="385" y="59">Q</text>
-    <text x="563" y="33">Q</text><text x="615" y="59">Q</text><text x="103" y="207">Q</text>
-    <text x="181" y="233">Q</text><text x="129" y="259">Q</text><text x="333" y="207">Q</text>
-    <text x="411" y="233">Q</text><text x="359" y="259">Q</text><text x="589" y="207">Q</text>
-    <text x="129" y="381">Q</text><text x="181" y="407">Q</text><text x="359" y="381">Q</text>
-    <text x="411" y="407">Q</text><text x="333" y="433">Q</text>
-  </g>
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="14" font-weight="700" fill="#4caf50" text-anchor="middle">
-    <text x="589" y="381">Q</text><text x="641" y="407">Q</text><text x="563" y="433">Q</text><text x="615" y="459">Q</text>
-  </g>
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="15" font-weight="700" fill="#e05252" text-anchor="middle">
-    <text x="563" y="85">✕</text><text x="589" y="85">✕</text><text x="615" y="85">✕</text><text x="641" y="85">✕</text>
-    <text x="333" y="285">✕</text><text x="359" y="285">✕</text><text x="385" y="285">✕</text><text x="411" y="285">✕</text>
-  </g>
-
-  <g stroke="currentColor" stroke-opacity="0.28" stroke-width="1" fill="none">
-    <line x1="90" y1="14" x2="90" y2="118"/><line x1="90" y1="14" x2="194" y2="14"/>
-    <line x1="116" y1="14" x2="116" y2="118"/><line x1="90" y1="40" x2="194" y2="40"/>
-    <line x1="142" y1="14" x2="142" y2="118"/><line x1="90" y1="66" x2="194" y2="66"/>
-    <line x1="168" y1="14" x2="168" y2="118"/><line x1="90" y1="92" x2="194" y2="92"/>
-    <line x1="194" y1="14" x2="194" y2="118"/><line x1="90" y1="118" x2="194" y2="118"/>
-    <line x1="320" y1="14" x2="320" y2="118"/><line x1="320" y1="14" x2="424" y2="14"/>
-    <line x1="346" y1="14" x2="346" y2="118"/><line x1="320" y1="40" x2="424" y2="40"/>
-    <line x1="372" y1="14" x2="372" y2="118"/><line x1="320" y1="66" x2="424" y2="66"/>
-    <line x1="398" y1="14" x2="398" y2="118"/><line x1="320" y1="92" x2="424" y2="92"/>
-    <line x1="424" y1="14" x2="424" y2="118"/><line x1="320" y1="118" x2="424" y2="118"/>
-    <line x1="550" y1="14" x2="550" y2="118"/><line x1="550" y1="14" x2="654" y2="14"/>
-    <line x1="576" y1="14" x2="576" y2="118"/><line x1="550" y1="40" x2="654" y2="40"/>
-    <line x1="602" y1="14" x2="602" y2="118"/><line x1="550" y1="66" x2="654" y2="66"/>
-    <line x1="628" y1="14" x2="628" y2="118"/><line x1="550" y1="92" x2="654" y2="92"/>
-    <line x1="654" y1="14" x2="654" y2="118"/><line x1="550" y1="118" x2="654" y2="118"/>
-    <line x1="90" y1="188" x2="90" y2="292"/><line x1="90" y1="188" x2="194" y2="188"/>
-    <line x1="116" y1="188" x2="116" y2="292"/><line x1="90" y1="214" x2="194" y2="214"/>
-    <line x1="142" y1="188" x2="142" y2="292"/><line x1="90" y1="240" x2="194" y2="240"/>
-    <line x1="168" y1="188" x2="168" y2="292"/><line x1="90" y1="266" x2="194" y2="266"/>
-    <line x1="194" y1="188" x2="194" y2="292"/><line x1="90" y1="292" x2="194" y2="292"/>
-    <line x1="320" y1="188" x2="320" y2="292"/><line x1="320" y1="188" x2="424" y2="188"/>
-    <line x1="346" y1="188" x2="346" y2="292"/><line x1="320" y1="214" x2="424" y2="214"/>
-    <line x1="372" y1="188" x2="372" y2="292"/><line x1="320" y1="240" x2="424" y2="240"/>
-    <line x1="398" y1="188" x2="398" y2="292"/><line x1="320" y1="266" x2="424" y2="266"/>
-    <line x1="424" y1="188" x2="424" y2="292"/><line x1="320" y1="292" x2="424" y2="292"/>
-    <line x1="550" y1="188" x2="550" y2="292"/><line x1="550" y1="188" x2="654" y2="188"/>
-    <line x1="576" y1="188" x2="576" y2="292"/><line x1="550" y1="214" x2="654" y2="214"/>
-    <line x1="602" y1="188" x2="602" y2="292"/><line x1="550" y1="240" x2="654" y2="240"/>
-    <line x1="628" y1="188" x2="628" y2="292"/><line x1="550" y1="266" x2="654" y2="266"/>
-    <line x1="654" y1="188" x2="654" y2="292"/><line x1="550" y1="292" x2="654" y2="292"/>
-    <line x1="90" y1="362" x2="90" y2="466"/><line x1="90" y1="362" x2="194" y2="362"/>
-    <line x1="116" y1="362" x2="116" y2="466"/><line x1="90" y1="388" x2="194" y2="388"/>
-    <line x1="142" y1="362" x2="142" y2="466"/><line x1="90" y1="414" x2="194" y2="414"/>
-    <line x1="168" y1="362" x2="168" y2="466"/><line x1="90" y1="440" x2="194" y2="440"/>
-    <line x1="194" y1="362" x2="194" y2="466"/><line x1="90" y1="466" x2="194" y2="466"/>
-    <line x1="320" y1="362" x2="320" y2="466"/><line x1="320" y1="362" x2="424" y2="362"/>
-    <line x1="346" y1="362" x2="346" y2="466"/><line x1="320" y1="388" x2="424" y2="388"/>
-    <line x1="372" y1="362" x2="372" y2="466"/><line x1="320" y1="414" x2="424" y2="414"/>
-    <line x1="398" y1="362" x2="398" y2="466"/><line x1="320" y1="440" x2="424" y2="440"/>
-    <line x1="424" y1="362" x2="424" y2="466"/><line x1="320" y1="466" x2="424" y2="466"/>
-    <line x1="550" y1="362" x2="550" y2="466"/><line x1="550" y1="362" x2="654" y2="362"/>
-    <line x1="576" y1="362" x2="576" y2="466"/><line x1="550" y1="388" x2="654" y2="388"/>
-    <line x1="602" y1="362" x2="602" y2="466"/><line x1="550" y1="414" x2="654" y2="414"/>
-    <line x1="628" y1="362" x2="628" y2="466"/><line x1="550" y1="440" x2="654" y2="440"/>
-    <line x1="654" y1="362" x2="654" y2="466"/><line x1="550" y1="466" x2="654" y2="466"/>
-  </g>
-
-  <g font-family="var(--font-display, system-ui, sans-serif)" font-size="12.5" fill="currentColor" opacity="0.75" text-anchor="middle">
-    <text x="142" y="140">1 · τοποθετώ στο (0,0)</text>
-    <text x="372" y="140">2 · τοποθετώ στο (1,2)</text>
-    <text x="602" y="140">3 · γραμμή 2: καμία στήλη</text>
-    <text x="142" y="314">4 · πίσω· (1,3) και (2,1)</text>
-    <text x="372" y="314">5 · γραμμή 3: πάλι καμία</text>
-    <text x="602" y="314">6 · πίσω ως τη γραμμή 0</text>
-    <text x="142" y="488">7 · τοποθετώ στο (1,3)</text>
-    <text x="372" y="488">8 · τοποθετώ στο (2,0)</text>
-    <text x="602" y="488">9 · τοποθετώ στο (3,2)</text>
-  </g>
-  <g font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" fill="currentColor" opacity="0.55" text-anchor="middle">
-    <text x="142" y="156">board = [0]</text>
-    <text x="372" y="156">board = [0 2]</text>
-    <text x="602" y="156">αδιέξοδο</text>
-    <text x="142" y="330">board = [0 3 1]</text>
-    <text x="372" y="330">αδιέξοδο</text>
-    <text x="602" y="330">board = [1]</text>
-    <text x="142" y="504">board = [1 3]</text>
-    <text x="372" y="504">board = [1 3 0]</text>
-  </g>
-  <text x="602" y="504" text-anchor="middle" font-family="var(--font-mono, ui-monospace, Menlo, monospace)" font-size="12" font-weight="700" fill="#4caf50">[1 3 0 2] — λύση</text>
-</svg>
-
-<p> Η καρδιά της εκτέλεσης βρίσκεται ανάμεσα στην εικόνα 5 και την 6. Το αδιέξοδο στη γραμμή 3 ακύρωσε τη βασίλισσα της γραμμής 2· η γραμμή 2 δεν είχε άλλη στήλη να δοκιμάσει, οπότε ακύρωσε τη γραμμή 1· ούτε εκείνη είχε άλλη, οπότε ακύρωσε τη γραμμή 0. Η πρώτη βασίλισσα, που φαινόταν αθώα για οκτώ ολόκληρα βήματα, ήταν το πραγματικό λάθος — και χρειάστηκαν <strong>τέσσερα επίπεδα υποχώρησης</strong> για να αποδειχθεί. </p>
-
-<p> Από την εικόνα 6 και μετά τα πράγματα κυλάνε χωρίς εμπόδιο: με τη βασίλισσα στο <code>(0,1)</code>, κάθε επόμενη γραμμή βρίσκει αμέσως έγκυρη στήλη και δεν χρειάζεται καμία δεύτερη δοκιμή. Έτσι δουλεύει συνήθως το backtracking — δεν ψάχνει ομοιόμορφα, αλλά εναλλάσσει μεγάλα διαστήματα ομαλής προόδου με απότομες υποχωρήσεις. </p>
+<p> Παρακολούθησε ιδίως το σημείο όπου η πρώτη βασίλισσα, αφού φαινόταν αθώα για πολλά βήματα, τελικά ακυρώνεται: χρειάζονται τέσσερα επίπεδα υποχώρησης για να αποδειχθεί λάθος επιλογή, ενώ από εκεί και μετά κάθε επόμενη γραμμή βρίσκει αμέσως έγκυρη στήλη.</p>
 
 <div class="callout">
     <span class="tag">Τι λέει το <code>return nil</code> της τελευταίας γραμμής</span>
