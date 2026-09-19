@@ -14,8 +14,8 @@
             let left = 0;
             let windowSum = 0;
             let bestLength = 0;
-            let start = 0;
-            let end = 0;
+            let resultstart = 0;
+            let resultend = 0;
 
             for (let right = 0; right < prices.length; right++) {
                 windowSum += prices[right];
@@ -24,7 +24,7 @@
                     right, left, windowSum,
                     diff: prices[right],
                     length: windowSum <= limit ? right - left + 1 : null,
-                    bestLength, start, end
+                    bestLength, resultstart, resultend
                 });
 
                 while (windowSum > limit) {
@@ -36,7 +36,7 @@
                         right, left, windowSum,
                         diff: -removed,
                         length: right - left + 1,
-                        bestLength, start, end
+                        bestLength, resultstart, resultend
                     });
                 }
 
@@ -44,14 +44,14 @@
                 const improved = length > bestLength;
                 if (improved) {
                     bestLength = length;
-                    start = left;
-                    end = right;
+                    resultstart = left;
+                    resultend = right;
                 }
                 steps.push({
                     type: "measure",
                     right, left, windowSum,
                     diff: null,
-                    length, bestLength, start, end, improved
+                    length, bestLength, resultstart, resultend, improved
                 });
             }
 
@@ -177,6 +177,12 @@
             );
             statePanel.appendChild(
                 statePill("bestLength", step.bestLength, step.type === "measure" && step.improved)
+            );
+            statePanel.appendChild(
+                statePill("resultstart", step.resultstart, step.type === "measure" && step.improved)
+            );
+            statePanel.appendChild(
+                statePill("resultend", step.resultend, step.type === "measure" && step.improved)
             );
 
             prevBtn.disabled = current === 0;
