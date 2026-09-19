@@ -175,6 +175,47 @@
 `);
 
         addContent(`
+<div class="eyebrow">Εισαγωγή</div>
+<h1>Τι είναι ο Πίνακας (Array);</h1>
+<p class="lede">Στον πραγματικό κόσμο, σκέψου τον πίνακα σαν <strong>ένα ράφι με αποθηκευτικά κουτιά στη σειρά</strong>. Κάθε κουτί έχει το δικό του νούμερο (δείκτη) για να το βρίσκεις και μέσα χωράει ένα συγκεκριμένο πράγμα.</p>
+
+<svg viewBox="0 0 800 260" style="width: 100%; max-width: 800px; height: auto; color: inherit; display: block; margin: 24px auto; font-family: var(--font-mono); font-size: 14px;">
+<defs>
+  <pattern id="hatch-array" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="0" y2="10" stroke="var(--accent)" stroke-width="2" opacity="0.15"/>
+  </pattern>
+</defs>
+<rect x="50" y="30" width="700" height="150" rx="12" fill="url(#hatch-array)" stroke="none" opacity="0.8"/>
+<rect transform="rotate(-90 65 105)" x="55" y="95" width="100" height="20" rx="4" fill="var(--code-bg)" opacity="0.9"/>
+<text transform="rotate(-90 65 105)" x="105" y="105" fill="var(--accent)" font-weight="bold" letter-spacing="6px" font-size="14px" text-anchor="middle" dominant-baseline="middle">ARRAY</text>
+<g fill="rgba(var(--accent-rgb), 0.15)" stroke="var(--accent)" stroke-width="3">
+  <rect x="140" y="55" width="120" height="100" rx="8" />
+  <rect x="280" y="55" width="120" height="100" rx="8" />
+  <rect x="420" y="55" width="120" height="100" rx="8" />
+  <rect x="560" y="55" width="120" height="100" rx="8" />
+</g>
+<text x="200" y="120" text-anchor="middle" class="blacked-shadow" fill="var(--accent)" stroke="var(--accent)">42</text>
+<text x="340" y="120" text-anchor="middle" class="blacked-shadow" fill="var(--accent)" stroke="var(--accent)">7</text>
+<text x="480" y="120" text-anchor="middle" class="blacked-shadow" fill="var(--accent)" stroke="var(--accent)">19</text>
+<text x="620" y="120" text-anchor="middle" class="blacked-shadow" fill="var(--accent)" stroke="var(--accent)">100</text>
+<rect x="175" y="195" width="50" height="28" rx="8" fill="var(--accent)" opacity="0.4"/>
+<text x="200" y="214" fill="var(--accent)" font-weight="bold" font-size="15px" text-anchor="middle">0</text>
+<rect x="315" y="195" width="50" height="28" rx="8" fill="var(--accent)" opacity="0.4"/>
+<text x="340" y="214" fill="var(--accent)" font-weight="bold" font-size="15px" text-anchor="middle">1</text>
+<rect x="455" y="195" width="50" height="28" rx="8" fill="var(--accent)" opacity="0.4"/>
+<text x="480" y="214" fill="var(--accent)" font-weight="bold" font-size="15px" text-anchor="middle">2</text>
+<rect x="595" y="195" width="50" height="28" rx="8" fill="var(--accent)" opacity="0.4"/>
+<text x="620" y="214" fill="var(--accent)" font-weight="bold" font-size="15px" text-anchor="middle">3</text>
+<line x1="200" y1="160" x2="200" y2="190" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"/>
+<line x1="340" y1="160" x2="340" y2="190" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"/>
+<line x1="480" y1="160" x2="480" y2="190" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"/>
+<line x1="620" y1="160" x2="620" y2="190" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-dasharray="4 4" opacity="0.6"/>
+</svg>
+
+<p>Στη μνήμη του υπολογιστή, ένα array εξασφαλίζει ότι όλα αυτά τα "κουτιά" του είναι κολλημένα <strong>το ένα ακριβώς δίπλα στο άλλο</strong>. Αν ξέρεις πού είναι το πρώτο κουτί, βρίσκεις αστραπιαία όλα τα υπόλοιπα!</p>
+`);
+
+        addContent(`
 <div class="eyebrow" id="@arrays">Ενότητα 1 / 5 — Slices</div>
 <h1>Arrays</h1>
 <p class="lede">Ο πιο απλός τρόπος να δηλώσουμε μια μεταβλητή τύπου array (πίνακας).</p>
@@ -191,18 +232,15 @@
 fmt.Println(numbers[1]) // prints 24
 fmt.Println(numbers[2]) // prints 36</code></pre>
 
-<div style="display:flex;justify-content:center;margin:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" style="width:100%;max-width:420px;height:auto;color:inherit"><text x="160" y="25" text-anchor="middle" font-family="var(--font-mono)" font-size="15" fill="currentColor">[3]int = {12, 24, 36}</text><g stroke="currentColor" stroke-width="2" fill="rgba(var(--panel-rgb), 0.45)"><rect x="40" y="45" width="240" height="60" rx="6"/><path d="M120 45v60m80-60v60"/></g><g text-anchor="middle" font-family="var(--font-mono)" font-size="20" fill="currentColor"><text x="80" y="83">12</text><text x="160" y="83">24</text><text x="240" y="83">36</text></g><g text-anchor="middle" font-family="var(--font-mono)" font-size="14" fill="var(--accent)"><text x="80" y="185">0</text><text x="160" y="185">1</text><text x="240" y="185">2</text></g><g fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M80 165q-10-25 0-50"/><path d="m74 122 6-7 6 5m74 45q-10-25 0-50"/><path d="m154 122 6-7 6 5m74 45q-10-25 0-50"/><path d="m234 122 6-7 6 5"/></g></svg></div>
+<div style="display:flex;justify-content:center;margin:0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" style="width:100%;max-width:420px;height:auto;color:inherit"><text x="160" y="25" text-anchor="middle" font-family="var(--font-mono)" font-size="15" fill="currentColor">[3]int = {12, 24, 36}</text><g stroke="currentColor" stroke-width="2" fill="rgba(var(--panel-rgb), 0.45)"><rect x="40" y="45" width="240" height="60" rx="6"/><path d="M120 45v60m80-60v60"/></g><g text-anchor="middle" font-family="var(--font-mono)" font-size="28" class="blacked-shadow" fill="var(--accent)" stroke="var(--accent)"><text x="80" y="86">12</text><text x="160" y="86">24</text><text x="240" y="86">36</text></g><g text-anchor="middle" font-family="var(--font-mono)" font-size="14" fill="var(--accent)"><text x="80" y="185">0</text><text x="160" y="185">1</text><text x="240" y="185">2</text></g><g fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M80 165q-10-25 0-50"/><path d="m74 122 6-7 6 5m74 45q-10-25 0-50"/><path d="m154 122 6-7 6 5m74 45q-10-25 0-50"/><path d="m234 122 6-7 6 5"/></g></svg></div>
 
 <div class="callout">
   <span class="tag">Προσοχή / Συχνό λάθος</span>
   Η αρίθμηση των θέσεων ξεκινάει <strong>πάντα από το 0</strong>. Το <code>numbers[0]</code> είναι το πρώτο στοιχείο του array (στο παράδειγμά μας το 12), όχι το <code>numbers[1]</code>. Αντίστοιχα, το τελευταίο στοιχείο ενός array μεγέθους 3 είναι το <code>numbers[2]</code>. Δηλαδή <code>numbers[len(numbers)-1]</code>. Αν προσπαθήσεις να διαβάσεις το <code>numbers[3]</code>, το πρόγραμμα θα καταρρεύσει (panic: index out of range).
 </div>
-
-
 `);
         addContent(`
-<div class="eyebrow" id="@slices">Ενότητα 1 / 5 — Slices</div>
-
+        <div class="eyebrow" id="@arrays">Ενότητα 1 / 5 — Slices</div>
 <h1>Ο περιορισμός των arrays</h1>
 <p>Ένα <strong>array</strong> στη Go έχει ένα θεμελιώδες χαρακτηριστικό: το μέγεθός του (3) είναι μέρος του τύπου του και <strong>δεν μπορεί να αλλάξει ποτέ</strong>. Ένα <code>[3]int</code> και ένα <code>[4]int</code> είναι δύο εντελώς διαφορετικοί τύποι δεδομένων, όπως το <code>int</code> και το <code>string</code>.</p>
 

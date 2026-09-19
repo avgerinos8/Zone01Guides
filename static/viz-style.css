@@ -703,3 +703,62 @@
     font-size: 12px;
     color: rgba(var(--ink-rgb), .5);
 }
+/* ══════════════════════════════════════════════════════════════════════════
+   FREQUENCY COUNTING VISUALIZER (.vzf-*) 
+   ══════════════════════════════════════════════════════════════════════════ */
+.vzf-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 10px;
+}
+.vzf-map-container {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-height: 60px;
+    padding: 16px;
+    border: 2px dashed rgba(var(--ink-rgb), .2);
+    border-radius: 8px;
+    align-items: flex-start;
+}
+.vzf-map-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(var(--ink-rgb), .05);
+    border-radius: 6px;
+    overflow: hidden;
+    min-width: 40px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.vzf-map-entry.vzf-show {
+    opacity: 1;
+    transform: scale(1);
+}
+.vzf-map-key {
+    background: rgba(var(--accent-rgb), .15);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: bold;
+    padding: 4px 10px;
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid rgba(var(--accent-rgb), .2);
+}
+.vzf-map-val {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    color: var(--ink);
+    padding: 6px 10px;
+    width: 100%;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+}
+.vzf-map-val.vzf-highlight {
+    background: rgba(var(--correct-rgb), .2);
+    color: var(--correct);
+}

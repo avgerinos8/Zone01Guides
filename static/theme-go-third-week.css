@@ -1,0 +1,43 @@
+/* ══════════════════════════════════════════════════════════════════════════ 
+Color scheme ONLY. Load this AFTER style.css in index.html (a second <link>) 
+to apply this palette. To make a new color scheme, copy this file, rename it 
+(theme-<name>.css), and change only the values below — nothing else in the 
+site needs to know about it. 
+══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+   /* Original dark teal backgrounds, but with crisp mint/lime green accents */
+   --tone-1: #142022ff;
+   --tone-2: #1e3d3fff;
+   --tone-3: #277a54ff;
+   --tone-4: #5fe394ff;
+   --tone-5: #fed202ff;
+
+   --tone-1-rgb: 20, 32, 34;
+   --tone-2-rgb: 30, 61, 63;
+   --tone-3-rgb: 39, 122, 84;
+   --tone-4-rgb: 95, 227, 148;
+   --tone-5-rgb: 254, 210, 2;
+
+   --tone-text: #f8fafcff;
+   --tone-text-rgb: 248, 250, 252;
+
+   --code-bg: #0e1618ff;
+   --code-bg-rgb: 14, 22, 24;
+
+   --h1-color: #f8fafcff;
+   --h1-shadow: #3b5740ff;
+   --h1-outline: #d4ac61ff;
+}
+
+h1 {
+   color: var(--h1-color);
+
+   text-shadow:
+      -0.035em -0.035em 0 var(--code-bg),
+      0.035em 0.035em 0 var(--code-bg),
+      0px 0.04em 0 var(--h1-shadow),
+      0px 0.06em 0 var(--h1-shadow),
+      0px 0.08em 0 var(--h1-shadow),
+      0px 0.10em 0 var(--h1-shadow);
+}

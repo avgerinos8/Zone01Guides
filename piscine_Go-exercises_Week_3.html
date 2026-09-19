@@ -1,0 +1,1554 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>01-edu JS Piscine — subjects</title>
+<style>
+:root{
+  --bg:#0f1115; --fg:#e6e6e6; --dim:#8b929e; --acc:#7aa2f7; --acc-soft:#7aa2f71a;
+  --card:#141821; --line:#232936; --code:#1b202a; --nav-w:290px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased}
+
+/* ── sidebar ─────────────────────────────────────────────────────────────── */
+nav{position:fixed;top:0;left:0;width:var(--nav-w);height:100dvh;
+  display:flex;flex-direction:column;background:var(--card);
+  border-right:1px solid var(--line);z-index:40}
+.brand{padding:1.1rem 1.1rem .7rem;border-bottom:1px solid var(--line)}
+.brand b{display:block;font-size:.95rem;letter-spacing:.04em}
+.brand span{font-size:.72rem;color:var(--dim)}
+.search{margin:.7rem 1.1rem 0;padding:.5rem .7rem;width:calc(100% - 2.2rem);
+  background:#0e121a;border:1px solid var(--line);border-radius:8px;
+  color:var(--fg);font:inherit;font-size:.85rem;outline:none}
+.search:focus{border-color:var(--acc)}
+.toc{flex:1;overflow-y:auto;padding:.6rem 1.1rem 2rem;scrollbar-width:thin;
+  scrollbar-color:#2d3444 transparent}
+.toc::-webkit-scrollbar{width:8px}
+.toc::-webkit-scrollbar-thumb{background:#2d3444;border-radius:99px}
+.toc::-webkit-scrollbar-thumb:hover{background:#3b4356}
+.toc h3{margin:1.1rem 0 .35rem;font-size:.68rem;letter-spacing:.16em;
+  color:var(--dim);text-transform:uppercase}
+.toc a{display:block;padding:.26rem .55rem;margin:1px 0;border-radius:6px;
+  color:#c8cdd6;text-decoration:none;font-size:.875rem;
+  border-left:2px solid transparent;transition:background .12s,color .12s}
+.toc a:hover{background:#1d2330;color:#fff}
+.toc a.active{background:var(--acc-soft);color:var(--acc);
+  border-left-color:var(--acc);font-weight:600}
+.toc a.missing{color:#6f4a4a}
+.toc a[hidden]{display:none}
+
+/* ── content ─────────────────────────────────────────────────────────────── */
+main{margin-left:var(--nav-w);padding:2.6rem 3rem 6rem;max-width:900px}
+.crumb{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+article h2{margin:.2rem 0 1.4rem;font-size:1.9rem;color:var(--acc);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--code);padding:1rem;border-radius:10px;overflow-x:auto;
+  border:1px solid var(--line);font-size:.88rem}
+code{background:var(--code);padding:.15em .4em;border-radius:5px;font-size:.9em}
+pre code{background:none;padding:0;border:0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:.45rem .75rem;text-align:left}
+th{background:#1a1f2a}
+blockquote{margin:1rem 0;padding:.4rem 1rem;border-left:3px solid var(--acc);
+  color:#c3c9d3;background:#141922}
+img{max-width:100%}
+a{color:var(--acc)}
+hr{border:0;border-top:1px solid var(--line)}
+.missing{color:#e07a7a}
+
+/* prev / next */
+.pager{display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;
+  padding-top:1.4rem;border-top:1px solid var(--line)}
+.pager button{background:#1a1f2a;border:1px solid var(--line);color:var(--fg);
+  padding:.55rem 1rem;border-radius:8px;font:inherit;font-size:.88rem;cursor:pointer}
+.pager button:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.pager button:disabled{opacity:.35;cursor:default}
+
+/* ── mobile ──────────────────────────────────────────────────────────────── */
+.bar{display:none;position:sticky;top:0;z-index:30;align-items:center;gap:.8rem;
+  padding:.7rem 1rem;background:#141821e6;backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line)}
+.burger{background:none;border:1px solid var(--line);border-radius:8px;
+  color:var(--fg);padding:.35rem .6rem;font-size:1.1rem;line-height:1;cursor:pointer}
+.scrim{display:none;position:fixed;inset:0;background:#000a;z-index:35}
+@media(max-width:820px){
+  .bar{display:flex}
+  nav{transform:translateX(-100%);transition:transform .22s ease;width:80vw;max-width:320px}
+  body.menu-open nav{transform:translateX(0)}
+  body.menu-open .scrim{display:block}
+  main{margin-left:0;padding:1.4rem 1.1rem 5rem}
+  article h2{font-size:1.45rem;word-break:break-word}
+}
+</style></head>
+<body>
+
+<nav id="nav">
+  <div class="brand"><b>01-edu · JS Piscine</b><span>37 exercises</span></div>
+  <input id="q" class="search" type="search" placeholder="filter…" autocomplete="off">
+  <div class="toc" id="toc"><h3>QUEST8</h3>
+<a class='ex' href='#quest8-boolean'>boolean</a>
+<a class='ex' href='#quest8-point'>point</a>
+<a class='ex' href='#quest8-displayfile'>displayfile</a>
+<a class='ex' href='#quest8-cat'>cat</a>
+<a class='ex' href='#quest8-ztail'>ztail</a>
+<h3>QUEST9</h3>
+<a class='ex' href='#quest9-foreach'>foreach</a>
+<a class='ex' href='#quest9-map'>map</a>
+<a class='ex' href='#quest9-any'>any</a>
+<a class='ex' href='#quest9-countif'>countif</a>
+<a class='ex' href='#quest9-issorted'>issorted</a>
+<a class='ex' href='#quest9-doop'>doop</a>
+<a class='ex' href='#quest9-sortwordarr'>sortwordarr</a>
+<a class='ex' href='#quest9-advancedsortwordarr'>advancedsortwordarr</a>
+<h3>HACKATHON</h3>
+<a class='ex' href='#hackathon-rot14'>rot14</a>
+<a class='ex' href='#hackathon-descendcomb'>descendcomb</a>
+<a class='ex' href='#hackathon-unmatch'>unmatch</a>
+<a class='ex' href='#hackathon-fooddeliverytime'>fooddeliverytime</a>
+<a class='ex' href='#hackathon-collatzcountdown'>collatzcountdown</a>
+<a class='ex' href='#hackathon-abort'>abort</a>
+<a class='ex' href='#hackathon-shoppingsummarycounter'>shoppingsummarycounter</a>
+<a class='ex' href='#hackathon-compact'>compact</a>
+<a class='ex' href='#hackathon-dealapackofcards'>dealapackofcards</a>
+<a class='ex' href='#hackathon-jumpover'>jumpover</a>
+<a class='ex' href='#hackathon-stringtointslice'>stringtointslice</a>
+<a class='ex' href='#hackathon-join'>join</a>
+<a class='ex' href='#hackathon-enigma'>enigma</a>
+<a class='ex' href='#hackathon-descendappendrange'>descendappendrange</a>
+<a class='ex' href='#hackathon-shoppinglistsort'>shoppinglistsort</a>
+<a class='ex' href='#hackathon-comcheck'>comcheck</a>
+<a class='ex' href='#hackathon-reversemenuindex'>reversemenuindex</a>
+<a class='ex' href='#hackathon-podiumposition'>podiumposition</a>
+<a class='ex' href='#hackathon-activebits'>activebits</a>
+<a class='ex' href='#hackathon-pilot'>pilot</a>
+<a class='ex' href='#hackathon-fixthemain'>fixthemain</a>
+<a class='ex' href='#hackathon-max'>max</a>
+<a class='ex' href='#hackathon-rockandroll'>rockandroll</a>
+<a class='ex' href='#hackathon-loafofbread'>loafofbread</a>
+</div>
+</nav>
+<div class="scrim" id="scrim"></div>
+
+<div class="bar">
+  <button class="burger" id="burger" aria-label="menu">☰</button>
+  <strong id="barTitle" style="font-size:.95rem"></strong>
+</div>
+
+<main id="main">
+<article id='quest8-boolean' hidden><div class='crumb'>QUEST8</div><h2>boolean</h2>
+<h2>boolean</h2>
+<h3>Instructions</h3>
+<p>Create a new directory called <code>boolean</code>.</p>
+<ul>
+<li>
+<p>The code below must be copied into a file called <code>main.go</code> inside of the <code>boolean</code> directory.</p>
+</li>
+<li>
+<p>The necessary changes must be applied for the program to work.</p>
+</li>
+</ul>
+<h3>Code to be copied</h3>
+<pre><code class="language-go">func printStr(s string) {
+	for _, r := range s {
+		z01.PrintRune(r)
+	}
+	z01.PrintRune('\n')
+}
+
+func isEven(nbr int) boolean {
+	if even(nbr) == 1 {
+		return yes
+	} else {
+		return no
+	}
+}
+
+func main() {
+	if isEven(lengthOfArg) == 1 {
+		printStr(EvenMsg)
+	} else {
+		printStr(OddMsg)
+	}
+}
+</code></pre>
+<h3>Usage</h3>
+<pre><code class="language-console">$ go run . &quot;not&quot; &quot;odd&quot;
+I have an even number of arguments
+$ go run . &quot;not even&quot;
+I have an odd number of arguments
+</code></pre>
+</article>
+<article id='quest8-point' hidden><div class='crumb'>QUEST8</div><h2>point</h2>
+<h2>point</h2>
+<h3>Instructions</h3>
+<p>Create a new directory called <code>point</code>.</p>
+<ul>
+<li>
+<p>The code below must be copied into a file called <code>main.go</code> inside the <code>point</code> directory.</p>
+</li>
+<li>
+<p>The necessary changes must be applied so that the program works.</p>
+</li>
+<li>
+<p>The function <code>setPoint()</code> must work with <code>int</code>.</p>
+</li>
+</ul>
+<h3>Code to be copied</h3>
+<pre><code class="language-go">func setPoint(ptr *point) {
+	ptr.x = 42
+	ptr.y = 21
+}
+
+func main() {
+	points := &amp;point{}
+
+	setPoint(points)
+
+	fmt.Printf(&quot;x = %d, y = %d\n&quot;,points.x, points.y)
+}
+</code></pre>
+<h3>Usage</h3>
+<pre><code class="language-console">$ go run .
+x = 42, y = 21
+$
+</code></pre>
+</article>
+<article id='quest8-displayfile' hidden><div class='crumb'>QUEST8</div><h2>displayfile</h2>
+<h2>displayfile</h2>
+<h3>Instructions</h3>
+<p>Write a program that displays, on the standard output, the content of a file given as argument.</p>
+<h3>Usage :</h3>
+<pre><code class="language-console">$ go run .
+File name missing
+$ echo 'Almost there!!' &gt; quest8.txt
+$ go run . quest8.txt main.go
+Too many arguments
+$ go run . quest8.txt
+Almost there!!
+</code></pre>
+</article>
+<article id='quest8-cat' hidden><div class='crumb'>QUEST8</div><h2>cat</h2>
+<h2>cat</h2>
+<h3>Instructions</h3>
+<p>Write a program that behaves like a simplified <code>cat</code> command.</p>
+<ul>
+<li>
+<p>The options do not have to be handled.</p>
+</li>
+<li>
+<p>If the program is called without arguments it should take the standard input (stdin) and print it back on the standard output (stdout).</p>
+</li>
+</ul>
+<pre><code class="language-console">$ echo '&quot;Programming is a skill best acquired by practice and example rather than from books&quot; by Alan Turing' &gt; quest8.txt
+$ cat &lt;&lt;EOF&gt; quest8T.txt
+&quot;Alan Mathison Turing was an English mathematician, computer scientist, logician, cryptanalyst. Turing was highly influential in the development of theoretical computer science, providing a formalisation of the concepts of algorithm and computation with the Turing machine, which can be considered a model of a general-purpose computer. Turing is widely considered to be the father of theoretical computer science and artificial intelligence.&quot;
+EOF
+$ go run . abc
+ERROR: open abc: no such file or directory
+exit status 1
+$ go run . quest8.txt
+&quot;Programming is a skill best acquired by pratice and example rather than from books&quot; by Alan Turing
+$ go run . quest8.txt abc
+&quot;Programming is a skill best acquired by pratice and example rather than from books&quot; by Alan Turing
+ERROR: open abc: No such file or directory
+$ cat quest8.txt | ./cat
+&quot;Programming is a skill best acquired by pratice and example rather than from books&quot; by Alan Turing
+$ go run .
+Hello
+Hello
+^C
+$ go run . quest8.txt quest8T.txt
+&quot;Programming is a skill best acquired by pratice and example rather than from books&quot; by Alan Turing
+&quot;Alan Mathison Turing was an English mathematician, computer scientist, logician, cryptanalyst. Turing was highly influential in the development of theoretical computer science, providing a formalisation of the concepts of algorithm and computation with the Turing machine, which can be considered a model of a general-purpose computer. Turing is widely considered to be the father of theoretical computer science and artificial intelligence.&quot;
+$
+</code></pre>
+</article>
+<article id='quest8-ztail' hidden><div class='crumb'>QUEST8</div><h2>ztail</h2>
+<h2>ztail</h2>
+<h3>Instructions</h3>
+<p>Write a program that behaves like a simplified <code>tail</code> command that takes at least one file as an argument.</p>
+<p>The only option to be handled is <code>-c</code> and will be used in all the tests as the first argument, with positive values.</p>
+<p>For this program the <code>os</code> package can be used.</p>
+<p>Handle the errors by returning a non-zero exit status but process all the files.</p>
+<p>If several files are given, print a newline and the file name between each one of them (see below).</p>
+<h3>Usage</h3>
+<p>If <code>file1.txt</code> &amp; <code>file2.txt</code> contains :</p>
+<pre><code>abcdefghijklmnopqrstuvwxyz
+
+</code></pre>
+<p><strong>Note</strong> that the files above end with a new line.</p>
+<p>Normal cases :</p>
+<pre><code class="language-console">$ go run . -c 4 file1.txt
+xyz
+$ go run . -c 4 file1.txt file2.txt
+==&gt; file1.txt &lt;==
+xyz
+
+==&gt; file2.txt &lt;==
+xyz
+$
+</code></pre>
+<p>Error cases :</p>
+<pre><code class="language-console">$ go run . -c 4 file1.txt nonexisting1.txt file2.txt nonexisting2.txt
+==&gt; file1.txt &lt;==
+xyz
+open nonexisting1.txt: no such file or directory
+
+==&gt; file2.txt &lt;==
+xyz
+open nonexisting2.txt: no such file or directory
+$ echo $?
+1
+$
+</code></pre>
+</article>
+<article id='quest9-foreach' hidden><div class='crumb'>QUEST9</div><h2>foreach</h2>
+<h2>foreach</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ForEach</code> that, for an <code>int</code> slice, applies a function on each element of that slice.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func ForEach(f func(int), a []int) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import &quot;piscine&quot;
+
+func main() {
+	a := []int{1, 2, 3, 4, 5, 6}
+	piscine.ForEach(piscine.PrintNbr, a)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+123456
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/ref/spec#Function_literals">Function literals</a></li>
+<li><a href="https://golang.org/ref/spec#Function_declarations">Function declaration</a></li>
+<li><a href="https://golang.org/ref/spec#Function_types">Function types</a></li>
+</ul>
+</article>
+<article id='quest9-map' hidden><div class='crumb'>QUEST9</div><h2>map</h2>
+<h2>map</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>Map</code> that, for an <code>int</code> slice, applies a function of this type <code>func(int) bool</code> on each element of that slice and returns a slice of all the return values.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Map(f func(int) bool, a []int) []bool {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	a := []int{1, 2, 3, 4, 5, 6}
+	result := piscine.Map(piscine.IsPrime, a)
+	fmt.Println(result)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+[false true true false true false]
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/ref/spec#Function_literals">Function literals</a></li>
+<li><a href="https://golang.org/ref/spec#Function_declarations">Function declaration</a></li>
+<li><a href="https://golang.org/ref/spec#Function_types">Function types</a></li>
+</ul>
+</article>
+<article id='quest9-any' hidden><div class='crumb'>QUEST9</div><h2>any</h2>
+<h2>any</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>Any</code> that returns <code>true</code>, for a <code>string</code> slice :</p>
+<ul>
+<li>if, when that <code>string</code> slice is passed through an <code>f</code> function, at least one element returns <code>true</code>.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Any(f func(string) bool, a []string) bool {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	a1 := []string{&quot;Hello&quot;, &quot;how&quot;, &quot;are&quot;, &quot;you&quot;}
+	a2 := []string{&quot;This&quot;, &quot;is&quot;, &quot;4&quot;, &quot;you&quot;}
+
+	result1 := piscine.Any(piscine.IsNumeric, a1)
+	result2 := piscine.Any(piscine.IsNumeric, a2)
+
+	fmt.Println(result1)
+	fmt.Println(result2)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+false
+true
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/ref/spec#Function_literals">Function literals</a></li>
+<li><a href="https://golang.org/ref/spec#Function_declarations">Function declaration</a></li>
+<li><a href="https://golang.org/ref/spec#Function_types">Function types</a></li>
+</ul>
+</article>
+<article id='quest9-countif' hidden><div class='crumb'>QUEST9</div><h2>countif</h2>
+<h2>countif</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>CountIf</code> that returns, the number of elements of a <code>string</code> slice, for which the <code>f</code> function returns <code>true</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func CountIf(f func(string) bool, tab []string) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	tab1 := []string{&quot;Hello&quot;, &quot;how&quot;, &quot;are&quot;, &quot;you&quot;}
+	tab2 := []string{&quot;This&quot;,&quot;1&quot;, &quot;is&quot;, &quot;4&quot;, &quot;you&quot;}
+	answer1 := piscine.CountIf(piscine.IsNumeric, tab1)
+	answer2 := piscine.CountIf(piscine.IsNumeric, tab2)
+	fmt.Println(answer1)
+	fmt.Println(answer2)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+0
+2
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/ref/spec#Function_literals">Function literals</a></li>
+<li><a href="https://golang.org/ref/spec#Function_declarations">Function declaration</a></li>
+<li><a href="https://golang.org/ref/spec#Function_types">Function types</a></li>
+</ul>
+</article>
+<article id='quest9-issorted' hidden><div class='crumb'>QUEST9</div><h2>issorted</h2>
+<h2>issorted</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>IsSorted()</code> that returns <code>true</code>, if the slice of <code>int</code> is sorted, otherwise returns <code>false</code>.</p>
+<ul>
+<li>
+<p>The function passed as an argument <code>func(a, b int)</code> returns a positive <code>int</code> if the first argument is greater than the second argument, it returns <code>0</code> if they are equal and it returns a negative <code>int</code> otherwise.</p>
+</li>
+<li>
+<p>To do your testing you have to write your own <code>f</code> function.</p>
+</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func IsSorted(f func(a, b int) int, a []int) bool {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function (without <code>f</code>):</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+)
+
+func main() {
+	a1 := []int{0, 1, 2, 3, 4, 5}
+	a2 := []int{0, 2, 1, 3}
+
+	result1 := IsSorted(f, a1)
+	result2 := IsSorted(f, a2)
+
+	fmt.Println(result1)
+	fmt.Println(result2)
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run .
+true
+false
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/ref/spec#Function_literals">Function literals</a></li>
+<li><a href="https://golang.org/ref/spec#Function_declarations">Function declaration</a></li>
+<li><a href="https://golang.org/ref/spec#Function_types">Function types</a></li>
+</ul>
+</article>
+<article id='quest9-doop' hidden><div class='crumb'>QUEST9</div><h2>doop</h2>
+<h2>doop</h2>
+<h3>Instructions</h3>
+<p>Write a program that is called <code>doop</code>.</p>
+<p>The program has to be used with three arguments:</p>
+<ul>
+<li>A value</li>
+<li>An operator, one of : <code>+</code>, <code>-</code>, <code>/</code>, <code>*</code>, <code>%</code></li>
+<li>Another value</li>
+</ul>
+<p>In case of an invalid operator, value, number of arguments or an overflow, the programs prints nothing.</p>
+<p>The program has to handle the modulo and division operations by 0 as shown on the output examples below.</p>
+<h3>Usage</h3>
+<pre><code class="language-console">$ go run .
+$ go run . 1 + 1 | cat -e
+2
+$
+$ go run . hello + 1
+$ go run . 1 p 1
+$ go run . 1 / 0 | cat -e
+No division by 0
+$
+$ go run . 1 % 0 | cat -e
+No modulo by 0
+$
+$ go run . 9223372036854775807 + 1
+$ go run . -9223372036854775809 - 3
+$ go run . 9223372036854775807 &quot;*&quot; 3
+$ go run . 1 &quot;*&quot; 1
+1
+$ go run . 1 &quot;*&quot; -1
+-1
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/ref/spec#Numeric_types">Numeric Types</a></li>
+<li><a href="https://golang.org/ref/spec#Arithmetic_operators">Arithmetic Operators</a></li>
+</ul>
+</article>
+<article id='quest9-sortwordarr' hidden><div class='crumb'>QUEST9</div><h2>sortwordarr</h2>
+<h2>sortwordarr</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>SortWordArr</code> that sorts by <code>ascii</code> (in ascending order) a <code>string</code> slice.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func SortWordArr(a []string) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	result := []string{&quot;a&quot;, &quot;A&quot;, &quot;1&quot;, &quot;b&quot;, &quot;B&quot;, &quot;2&quot;, &quot;c&quot;, &quot;C&quot;, &quot;3&quot;}
+	piscine.SortWordArr(result)
+
+	fmt.Println(result)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+[1 2 3 A B C a b c]
+$
+</code></pre>
+</article>
+<article id='quest9-advancedsortwordarr' hidden><div class='crumb'>QUEST9</div><h2>advancedsortwordarr</h2>
+<h2>advancedsortwordarr</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>AdvancedSortWordArr</code> that sorts a slice of <code>string</code>, based on the function <code>f</code> passed in parameter.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func AdvancedSortWordArr(a []string, f func(a, b string) int) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+
+	result := []string{&quot;a&quot;, &quot;A&quot;, &quot;1&quot;, &quot;b&quot;, &quot;B&quot;, &quot;2&quot;, &quot;c&quot;, &quot;C&quot;, &quot;3&quot;}
+	piscine.AdvancedSortWordArr(result, piscine.Compare)
+
+	fmt.Println(result)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+[1 2 3 A B C a b c]
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/ref/spec#Function_literals">Function literals</a></li>
+<li><a href="https://golang.org/ref/spec#Function_declarations">Function declaration</a></li>
+<li><a href="https://golang.org/ref/spec#Function_types">Function types</a></li>
+</ul>
+</article>
+<article id='hackathon-rot14' hidden><div class='crumb'>HACKATHON</div><h2>rot14</h2>
+<h2>rot14</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>rot14</code> that returns the <code>string</code> within the parameter transformed into a <code>rot14 string</code>.
+Each letter will be replaced by the letter 14 spots ahead in the alphabetical order.</p>
+<ul>
+<li>'z' becomes 'n' and 'Z' becomes 'N'. The case of the letter stays the same.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Rot14(s string) string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;piscine&quot;
+
+	&quot;github.com/01-edu/z01&quot;
+)
+
+func main() {
+	result := piscine.Rot14(&quot;Hello! How are You?&quot;)
+
+	for _, r := range result {
+		z01.PrintRune(r)
+	}
+	z01.PrintRune('\n')
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+Vszzc! Vck ofs Mci?
+$
+</code></pre>
+</article>
+<article id='hackathon-descendcomb' hidden><div class='crumb'>HACKATHON</div><h2>descendcomb</h2>
+<h2>descendcomb</h2>
+<h3>Instructions</h3>
+<p>Write a function that prints in descending order and on a single line all possible combinations of two different two-digit numbers.</p>
+<p>These combinations are separated by a comma and a space.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func DescendComb() {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import &quot;piscine&quot;
+
+func main() {
+	piscine.DescendComb()
+}
+</code></pre>
+<p>This is the incomplete output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+99 98, 99 97, 99 96, 99 95, 99 94, ..., 03 01, 03 00, 02 01, 02 00, 01 00$
+</code></pre>
+</article>
+<article id='hackathon-unmatch' hidden><div class='crumb'>HACKATHON</div><h2>unmatch</h2>
+<h2>unmatch</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>Unmatch</code>, that returns the element of the slice that does not have a correspondent pair.</p>
+<ul>
+<li>If all the number have a correspondent pair, it should return <code>-1</code>.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Unmatch(a []int) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	a := []int{1, 2, 3, 1, 2, 3, 4}
+	unmatch := piscine.Unmatch(a)
+	fmt.Println(unmatch)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+4
+$
+</code></pre>
+</article>
+<article id='hackathon-fooddeliverytime' hidden><div class='crumb'>HACKATHON</div><h2>fooddeliverytime</h2>
+<h2>fooddeliverytime</h2>
+<h3>Instructions</h3>
+<p>Given the following menu with the corresponding times that each item takes to cook (burger takes 15 min, chips takes 10 min and nuggets takes 12 min), return the time that each order item takes to be prepared and the total amount of time for the order to be ready assuming the items are cooked one after the other.</p>
+<p>Write a function <code>FoodDeliveryTime()</code> that takes a <code>string</code> and returns an <code>int</code>.</p>
+<ul>
+<li>Use structs to answer the subject.</li>
+<li>If any of the order items don't exist in the menu above return the error message <code>404</code>.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">type food struct {
+  preptime int
+}
+
+func FoodDeliveryTime(order string) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	fmt.Println(piscine.FoodDeliveryTime(&quot;burger&quot;))
+	fmt.Println(piscine.FoodDeliveryTime(&quot;chips&quot;))
+	fmt.Println(piscine.FoodDeliveryTime(&quot;nuggets&quot;))
+	fmt.Println(piscine.FoodDeliveryTime(&quot;burger&quot;) + piscine.FoodDeliveryTime(&quot;chips&quot;) + piscine.FoodDeliveryTime(&quot;nuggets&quot;))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+15$
+10$
+12$
+37$
+</code></pre>
+</article>
+<article id='hackathon-collatzcountdown' hidden><div class='crumb'>HACKATHON</div><h2>collatzcountdown</h2>
+<h2>collatzcountdown</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>CollatzCountdown</code>, that returns the number of steps necessary to reach 1 using the <a href="https://en.wikipedia.org/wiki/Collatz_conjecture">collatz countdown</a>.</p>
+<ul>
+<li>It must return <code>-1</code> if <code>start</code> is equal to <code>0</code> or negative.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func CollatzCountdown(start int) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	steps := piscine.CollatzCountdown(12)
+	fmt.Println(steps)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+9
+$
+</code></pre>
+</article>
+<article id='hackathon-abort' hidden><div class='crumb'>HACKATHON</div><h2>abort</h2>
+<h2>abort</h2>
+<h3>Instructions</h3>
+<p>Write a function that returns the median of five <code>int</code> arguments.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Abort(a, b, c, d, e int) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	middle := piscine.Abort(2, 3, 8, 5, 7)
+	fmt.Println(middle)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+5
+$
+</code></pre>
+</article>
+<article id='hackathon-shoppingsummarycounter' hidden><div class='crumb'>HACKATHON</div><h2>shoppingsummarycounter</h2>
+<h2>shoppingsummarycounter</h2>
+<h3>Instructions</h3>
+<p>You have a receipt from the grocery store and you want to know how many of each item you bought. Write a function that returns this summary.</p>
+<p>Given a <code>string</code> count the total amount of times each item appears in it and return a summary including the item and its number of appearances as an <code>int</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func ShoppingSummaryCounter(str string) map[string]int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	summary := &quot;Burger Water Carrot Coffee Water Water Chips Carrot Carrot Burger Carrot Water&quot;
+	for index, element := range piscine.ShoppingSummaryCounter(summary) {
+		fmt.Println(index, &quot;=&gt;&quot;, element)
+	}
+}
+
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+Burger =&gt; 2$
+Water =&gt; 4$
+Carrot =&gt; 4$
+Coffee =&gt; 1$
+Chips =&gt; 1$
+</code></pre>
+</article>
+<article id='hackathon-compact' hidden><div class='crumb'>HACKATHON</div><h2>compact</h2>
+<h2>Compact</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>Compact</code> that takes a pointer to a slice of <code>string</code>s as the argument.
+This function must:</p>
+<ul>
+<li>
+<p>Return the number of elements with <a href="https://tour.golang.org/basics/12">non-zero value</a>.</p>
+</li>
+<li>
+<p>Compact, i.e., delete the elements with zero-values in the slice.</p>
+</li>
+</ul>
+<h3>Expected functions</h3>
+<pre><code class="language-go">func Compact(ptr *[]string) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+const N = 6
+
+func main() {
+	a := make([]string, N)
+	a[0] = &quot;a&quot;
+	a[2] = &quot;b&quot;
+	a[4] = &quot;c&quot;
+
+	for _, v := range a {
+		fmt.Println(v)
+	}
+
+	fmt.Println(&quot;Size after compacting:&quot;, piscine.Compact(&amp;a))
+
+	for _, v := range a {
+		fmt.Println(v)
+	}
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+a
+
+b
+
+c
+
+Size after compacting: 3
+a
+b
+c
+$
+</code></pre>
+</article>
+<article id='hackathon-dealapackofcards' hidden><div class='crumb'>HACKATHON</div><h2>dealapackofcards</h2>
+<h2>dealapackofcards</h2>
+<h3>Instructions</h3>
+<p>Deal a pack of <code>12</code> cards evenly between 4 players, <code>Player 1</code>, <code>Player 2</code>, <code>Player 3</code> and <code>Player 4</code>.</p>
+<p>Write a function <code>DealAPackOfCards()</code> that takes the argument, <code>deck</code>, as a slice of <code>int</code> and prints the desired output.</p>
+<ul>
+<li>Each player must be printed in a different line.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func DealAPackOfCards (deck []int) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import &quot;piscine&quot;
+
+func main() {
+	deck := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
+	piscine.DealAPackOfCards(deck)
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+Player 1: 1, 2, 3$
+Player 2: 4, 5, 6$
+Player 3: 7, 8, 9$
+Player 4: 10, 11, 12$
+$
+</code></pre>
+</article>
+<article id='hackathon-jumpover' hidden><div class='crumb'>HACKATHON</div><h2>jumpover</h2>
+<h2>jumpover</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>JumpOver()</code> that takes a <code>string</code> and returns another <code>string</code> with every third character.</p>
+<ul>
+<li>Prints the output followed by newline <code>\n</code>.</li>
+<li>If the <code>string</code> is empty, return newline <code>\n</code>.</li>
+<li>If there is no third character, return newline <code>\n</code>.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func JumpOver(str string) string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	fmt.Print(piscine.JumpOver(&quot;1010101010&quot;))
+	fmt.Print(piscine.JumpOver(&quot;&quot;))
+	fmt.Print(piscine.JumpOver(&quot;t w e l v e&quot;))
+	fmt.Print(piscine.JumpOver(&quot;12&quot;))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-go">$ go run . | cat -e
+101$
+$
+w v$
+$
+</code></pre>
+</article>
+<article id='hackathon-stringtointslice' hidden><div class='crumb'>HACKATHON</div><h2>stringtointslice</h2>
+<h2>stringtointslice</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>StringToIntSlice()</code> that takes a <code>string</code> and returns the corresponding <code>int</code> slice.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func StringToIntSlice(str string) []int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	fmt.Println(piscine.StringToIntSlice(&quot;A quick brown fox jumps over the lazy dog&quot;))
+	fmt.Println(piscine.StringToIntSlice(&quot;Converted this string into an int&quot;))
+	fmt.Println(piscine.StringToIntSlice(&quot;hello THERE&quot;))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+[65 32 113 117 105 99 107 32 98 114 111 119 110 32 102 111 120 32 106 117 109 112 115 32 111 118 101 114 32 116 104 101 32 108 97 122 121 32 100 111 103]$
+[67 111 110 118 101 114 116 101 100 32 116 104 105 115 32 115 116 114 105 110 103 32 105 110 116 111 32 97 110 32 105 110 116]$
+[104 101 108 108 111 32 84 72 69 82 69]$
+</code></pre>
+</article>
+<article id='hackathon-join' hidden><div class='crumb'>HACKATHON</div><h2>join</h2>
+<h2>join</h2>
+<h3>Instructions</h3>
+<p>Write a function that returns the concatenation of all the <code>string</code>s of a slice of <code>string</code>s <strong>separated</strong> by the separator passed as the argument <code>sep</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Join(strs []string, sep string) string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	toConcat := []string{&quot;Hello!&quot;, &quot; How&quot;, &quot; are&quot;, &quot; you?&quot;}
+	fmt.Println(piscine.Join(toConcat, &quot;:&quot;))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+Hello!: How: are: you?
+$
+</code></pre>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://golang.org/pkg/strings/#Join">strings/Join</a></li>
+</ul>
+</article>
+<article id='hackathon-enigma' hidden><div class='crumb'>HACKATHON</div><h2>enigma</h2>
+<h2>enigma</h2>
+<h3>Instructions</h3>
+<p>Write a function called <code>Enigma</code> that receives pointers as arguments and move its values around to hide them.</p>
+<p>This function will put :</p>
+<ul>
+<li><code>a</code> into <code>c</code>.</li>
+<li><code>c</code> into <code>d</code>.</li>
+<li><code>d</code> into <code>b</code>.</li>
+<li><code>b</code> into <code>a</code>.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Enigma(a ***int, b *int, c *******int, d ****int) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	x := 5
+	y := &amp;x
+	z := &amp;y
+	a := &amp;z
+
+	w := 2
+	b := &amp;w
+
+	u := 7
+	e := &amp;u
+	f := &amp;e
+	g := &amp;f
+	h := &amp;g
+	i := &amp;h
+	j := &amp;i
+	c := &amp;j
+
+	k := 6
+	l := &amp;k
+	m := &amp;l
+	n := &amp;m
+	d := &amp;n
+
+	fmt.Println(***a)
+	fmt.Println(*b)
+	fmt.Println(*******c)
+	fmt.Println(****d)
+
+	piscine.Enigma(a, b, c, d)
+
+	fmt.Println(&quot;After using Enigma&quot;)
+	fmt.Println(***a)
+	fmt.Println(*b)
+	fmt.Println(*******c)
+	fmt.Println(****d)
+
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+5
+2
+7
+6
+After using Enigma
+2
+6
+5
+7
+$
+</code></pre>
+</article>
+<article id='hackathon-descendappendrange' hidden><div class='crumb'>HACKATHON</div><h2>descendappendrange</h2>
+<h2>descendappendrange</h2>
+<h3>Instructions</h3>
+<ul>
+<li>
+<p>Write a function that takes an <code>int</code> max and an <code>int</code> min as parameters. The function should return a slice of <code>int</code>s with all the values between the max and min.</p>
+</li>
+<li>
+<p>The <code>max</code> must be included, and <code>min</code> must be excluded.</p>
+</li>
+<li>
+<p>If <code>max</code> is inferior than or equal to <code>min</code>, return an empty slice.</p>
+</li>
+<li>
+<p><code>make()</code> is not allowed for this exercise.</p>
+</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func DescendAppendRange(max, min int) []int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	fmt.Println(piscine.DescendAppendRange(10, 5))
+	fmt.Println(piscine.DescendAppendRange(5, 10))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+[10 9 8 7 6]
+[]
+$
+</code></pre>
+</article>
+<article id='hackathon-shoppinglistsort' hidden><div class='crumb'>HACKATHON</div><h2>shoppinglistsort</h2>
+<h2>shoppinglistsort</h2>
+<h3>Instructions</h3>
+<p>You were sent to the supermarket with a shopping list. To make your shopping faster, write a function <code>ShoppingListSort()</code> that takes a slice of strings and sorts it, according to the string length, returning a slice in which the strings appear in ascending order.</p>
+<ul>
+<li>Strings within the input slice must be of different lengths.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func ShoppingListSort(slice []string) []string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	slice := []string{&quot;Pineapple&quot;, &quot;Honey&quot;, &quot;Mushroom&quot;, &quot;Tea&quot;, &quot;Pepper&quot;, &quot;Milk&quot;}
+	fmt.Println(piscine.ShoppingListSort(slice))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+[Tea Milk Honey Pepper Mushroom Pineapple]$
+</code></pre>
+</article>
+<article id='hackathon-comcheck' hidden><div class='crumb'>HACKATHON</div><h2>comcheck</h2>
+<h2>comcheck</h2>
+<h3>Instructions</h3>
+<p>Write a program <code>comcheck</code> that displays on the standard output <code>Alert!!!</code> followed by newline (<code>'\n'</code>) if at least one of the arguments passed in parameter matches the <code>string</code>:</p>
+<ul>
+<li>
+<p><code>01</code>, <code>galaxy</code> or <code>galaxy 01</code>.</p>
+</li>
+<li>
+<p>If none of the parameters match, the program displays nothing.</p>
+</li>
+</ul>
+<h3>Usage</h3>
+<pre><code class="language-console">$ go run . &quot;I&quot; &quot;Will&quot; &quot;Enter&quot; &quot;the&quot; &quot;galaxy&quot;
+Alert!!!
+$ go run . &quot;galaxy 01&quot; &quot;do&quot; &quot;you&quot; &quot;hear&quot; &quot;me&quot;
+Alert!!!
+$
+</code></pre>
+</article>
+<article id='hackathon-reversemenuindex' hidden><div class='crumb'>HACKATHON</div><h2>reversemenuindex</h2>
+<h2>reversemenuindex</h2>
+<h3>Instructions</h3>
+<p>The restaurant employees are having a really tough day and are delivering the customers' food in the wrong order. You need to fix the problem so that they can deliver it correctly.</p>
+<p>Write a function <code>ReverseMenuIndex()</code> that takes a <code>slice</code> of strings as an argument and returns another <code>slice</code> of strings with the menu in the correct order.</p>
+<ul>
+<li><code>append()</code> is not allowed for this exercise.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func ReverseMenuIndex(menu []string) []string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+        &quot;fmt&quot;
+        &quot;piscine&quot;
+)
+
+func main() {
+        fmt.Println(piscine.ReverseMenuIndex([]string{&quot;desserts&quot;, &quot;mains&quot;, &quot;drinks&quot;, &quot;starters&quot;}))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+[starters drinks mains desserts]$
+</code></pre>
+</article>
+<article id='hackathon-podiumposition' hidden><div class='crumb'>HACKATHON</div><h2>podiumposition</h2>
+<h2>podiumposition</h2>
+<h3>Instructions</h3>
+<p>A F1 race just finished and the commentator is calling the finishing positions incorrectly.
+Help to fix this before the contestants arrive at the podium by providing the commentator with the correct podium position.</p>
+<p>Write a function <code>PodiumPosition</code> that takes a slice of slices of type <code>string</code> and returns the competitor positions correctly.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func PodiumPosition(podium [][]string) [][]string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;piscine&quot;
+)
+
+func main() {
+
+    p4 := []string{&quot;4th Place&quot;}
+    p3 := []string{&quot;3rd Place&quot;}
+    p2 := []string{&quot;2nd Place&quot;}
+    p1 := []string{&quot;1st Place&quot;}
+
+    position := [][]string{p4, p3, p2, p1}
+    fmt.Println(piscine.PodiumPosition(position))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+[[1st Place] [2nd Place] [3rd Place] [4th Place]]$
+</code></pre>
+</article>
+<article id='hackathon-activebits' hidden><div class='crumb'>HACKATHON</div><h2>activebits</h2>
+<h2>activebits</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>ActiveBits</code>, that returns the number of active <code>bits</code> (bits with the value 1) in the binary representation of an integer number.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func ActiveBits(n int) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	fmt.Println(piscine.ActiveBits(7))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+3
+$
+</code></pre>
+</article>
+<article id='hackathon-pilot' hidden><div class='crumb'>HACKATHON</div><h2>pilot</h2>
+<h2>pilot</h2>
+<h3>Instructions</h3>
+<ul>
+<li>Create a directory called <code>pilot</code>.</li>
+<li>Inside the directory <code>pilot</code> create a file <code>main.go</code>.</li>
+<li>Copy the code below to <code>main.go</code> and add the code needed so that the program compiles.</li>
+</ul>
+<blockquote>
+<p>Note: You can only add code, not delete.</p>
+</blockquote>
+<h3>Usage</h3>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+func main() {
+	var donnie Pilot
+	donnie.Name = &quot;Donnie&quot;
+	donnie.Life = 100.0
+	donnie.Age = 24
+	donnie.Aircraft = AIRCRAFT1
+
+	fmt.Println(donnie)
+}
+
+const AIRCRAFT1 = 1
+</code></pre>
+</article>
+<article id='hackathon-fixthemain' hidden><div class='crumb'>HACKATHON</div><h2>fixthemain</h2>
+<h2>Fix the Main</h2>
+<h3>Instructions</h3>
+<p>Fix the following program.</p>
+<h3>Program to fix</h3>
+<pre><code class="language-go">package piscine
+
+func PrintStr(s string) {
+	for _, r := range s {
+		z01.PrintRune(r)
+	}
+}
+
+func CloseDoor(ptrDoor *Door) bool {
+	PrintStr(&quot;Door Closing...&quot;)
+	state = CLOSE
+	return true
+}
+
+func IsDoorOpen(Door Door) {
+	PrintStr(&quot;is the Door opened ?&quot;)
+	return Door.state = OPEN
+}
+
+func IsDoorClose(ptrDoor *Door) bool {
+	PrintStr(&quot;is the Door closed ?&quot;)
+}
+
+func main() {
+	door := &amp;Door{}
+
+	OpenDoor(door)
+	if IsDoorClose(door) {
+		OpenDoor(door)
+	}
+	if IsDoorOpen(door) {
+		CloseDoor(door)
+	}
+	if door.state == OPEN {
+		CloseDoor(door)
+	}
+}
+</code></pre>
+</article>
+<article id='hackathon-max' hidden><div class='crumb'>HACKATHON</div><h2>max</h2>
+<h2>max</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>Max</code> that will return the maximum value in a slice of integers. If the slice is empty it will return 0.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func Max(a []int) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	a := []int{23, 123, 1, 11, 55, 93}
+	max := piscine.Max(a)
+	fmt.Println(max)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+123
+$
+</code></pre>
+</article>
+<article id='hackathon-rockandroll' hidden><div class='crumb'>HACKATHON</div><h2>rockandroll</h2>
+<h2>rockandroll</h2>
+<h3>Instructions</h3>
+<p>Write a function called <code>RockAndRoll()</code> that takes an <code>int</code> and returns a <code>string</code>.</p>
+<ul>
+<li>If the number is divisible by 2, print <code>rock</code> followed by a newline <code>\n</code>.</li>
+<li>If the number is divisible by 3, print <code>roll</code> followed by a newline <code>\n</code>.</li>
+<li>If the number is divisible by 2 and 3, print <code>rock and roll</code> followed by a newline <code>\n</code>.</li>
+<li>If the number is negative return <code>error: number is negative</code> followed by a newline <code>\n</code>.</li>
+<li>If the number is non divisible return <code>error: non divisible</code> followed by a newline <code>\n</code>.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func RockAndRoll(n int) string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	fmt.Println(piscine.RockAndRoll(4))
+	fmt.Println(piscine.RockAndRoll(9))
+	fmt.Println(piscine.RockAndRoll(6))
+}
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-console">$ go run . | cat -e
+rock$
+$
+roll$
+$
+rock and roll$
+$
+</code></pre>
+</article>
+<article id='hackathon-loafofbread' hidden><div class='crumb'>HACKATHON</div><h2>loafofbread</h2>
+<h2>loafofbread</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>LoafOfBread()</code> that takes a <code>string</code> and returns another one with words of 5 characters and skips the next character followed by newline <code>\n</code>.</p>
+<ul>
+<li>If there is a space in the middle of a <code>string</code> it should ignore it and get the next character until getting to a length of 5.</li>
+<li>If the <code>string</code> is less than 5 characters return &quot;Invalid Output\n&quot;.</li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func LoafOfBread(str string) string {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function:</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	fmt.Print(piscine.LoafOfBread(&quot;deliciousbread&quot;))
+	fmt.Print(piscine.LoafOfBread(&quot;This is a loaf of bread&quot;))
+	fmt.Print(piscine.LoafOfBread(&quot;loaf&quot;))
+}
+
+</code></pre>
+<p>And its output:</p>
+<pre><code class="language-go">$ go run . | cat -e
+delic ousbr ad$
+Thisi aloaf ofbre d$
+Invalid Output$
+</code></pre>
+</article>
+
+  <div class="pager">
+    <button id="prev">← previous</button>
+    <button id="next">next →</button>
+  </div>
+</main>
+
+<script>
+// ── single-exercise router ───────────────────────────────────────────────── ⊃
+const arts  = [...document.querySelectorAll('article')];
+const links = [...document.querySelectorAll('.toc a.ex')];
+const ids   = arts.map(a => a.id);
+
+function show(id){
+  const i = ids.indexOf(id) >= 0 ? ids.indexOf(id) : 0;
+  arts.forEach((a, n) => a.hidden = n !== i);
+  links.forEach(l => l.classList.toggle('active', l.hash === '#' + ids[i]));
+  document.getElementById('barTitle').textContent = arts[i].querySelector('h2').textContent;
+  document.getElementById('prev').disabled = i === 0;
+  document.getElementById('next').disabled = i === ids.length - 1;
+  document.body.classList.remove('menu-open');
+  window.scrollTo(0, 0);
+  const on = links[i];
+  if (on) on.scrollIntoView({block:'nearest'});
+}
+addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1));
+
+const go = step => {
+  const i = ids.indexOf(arts.find(a => !a.hidden).id);
+  const j = i + step;
+  if (j >= 0 && j < ids.length) location.hash = ids[j];
+};
+prev.onclick = () => go(-1);
+next.onclick = () => go(1);
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowLeft')  go(-1);
+  if (e.key === 'ArrowRight') go(1);
+});
+
+// ── menu + filter ────────────────────────────────────────────────────────── ⊃
+burger.onclick = () => document.body.classList.toggle('menu-open');
+scrim.onclick  = () => document.body.classList.remove('menu-open');
+
+q.oninput = () => {
+  const t = q.value.trim().toLowerCase();
+  links.forEach(l => l.hidden = t && !l.textContent.toLowerCase().includes(t));
+  document.querySelectorAll('.toc h3').forEach(h => {
+    let any = false;
+    for (let n = h.nextElementSibling; n && n.tagName === 'A'; n = n.nextElementSibling)
+      if (!n.hidden) any = true;
+    h.hidden = !any;
+  });
+};
+</script>
+</body></html>
