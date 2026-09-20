@@ -135,26 +135,26 @@
             <div class="toc-section">PATTERN 4</div>
             <a class="toc-link toc-h1" href="#@4-early-exit-gua">4. Early Exit (Guard Clauses)</a>
             <div class="toc-section">PATTERN 5</div>
-            <a class="toc-link toc-h1" href="#@5-universal-check">5. Universal Check</a>
+            <a class="toc-link toc-h1" href="#@5-loop-control">5. Loop Control (Break/Continue)</a>
             <div class="toc-section">PATTERN 6</div>
-            <a class="toc-link toc-h1" href="#@6-previous-value">6. Previous Value</a>
+            <a class="toc-link toc-h1" href="#@6-universal-check">6. Universal Check</a>
             <div class="toc-section">PATTERN 7</div>
-            <a class="toc-link toc-h1" href="#@7-two-pointers">7. Two Pointers</a>
-            <a class="toc-link toc-h1" href="#@two-pointers-fas">Two Pointers: Fast &amp; Slow</a>
+            <a class="toc-link toc-h1" href="#@7-previous-value">7. Previous Value</a>
             <div class="toc-section">PATTERN 8</div>
-            <a class="toc-link toc-h1" href="#@8-sliding-window">8. Sliding Window</a>
+            <a class="toc-link toc-h1" href="#@8-two-pointers">8. Two Pointers</a>
+            <a class="toc-link toc-h1" href="#@two-pointers-fas">Two Pointers: Fast &amp; Slow</a>
             <div class="toc-section">PATTERN 9</div>
-            <a class="toc-link toc-h1" href="#@9-array-cleaning">9. Array Cleaning (In-Place)</a>
+            <a class="toc-link toc-h1" href="#@9-sliding-window">9. Sliding Window</a>
             <div class="toc-section">PATTERN 10</div>
-            <a class="toc-link toc-h1" href="#@10-target-lookup">10. Target Lookup (Complement)</a>
+            <a class="toc-link toc-h1" href="#@10-array-cleaning">10. Array Cleaning (In-Place)</a>
             <div class="toc-section">PATTERN 11</div>
-            <a class="toc-link toc-h1" href="#@11-frequency">11. Frequency Counting</a>
+            <a class="toc-link toc-h1" href="#@11-target-lookup">11. Target Lookup (Complement)</a>
             <div class="toc-section">PATTERN 12</div>
-            <a class="toc-link toc-h1" href="#@12-two-pass">12. Two-Pass Algorithm</a>
+            <a class="toc-link toc-h1" href="#@12-frequency">12. Frequency Counting</a>
             <div class="toc-section">PATTERN 13</div>
-            <a class="toc-link toc-h1" href="#@13-custom-iter">13. Custom Iteration</a>
+            <a class="toc-link toc-h1" href="#@13-two-pass">13. Two-Pass Algorithm</a>
             <div class="toc-section">PATTERN 14</div>
-            <a class="toc-link toc-h1" href="#@14-chunking">14. Data Chunking</a>
+            <a class="toc-link toc-h1" href="#@14-custom-iter">14. Custom Iteration</a>
             <div class="toc-section">PATTERN 15</div>
             <a class="toc-link toc-h1" href="#@15-digit-extract">15. Digit Extraction</a>
             <div class="toc-section">PATTERN 16</div>
@@ -162,7 +162,7 @@
             <a class="toc-link toc-h1" href="#@16-modulo-days">Modulo: Ημέρες Εβδομάδας</a>
             <a class="toc-link toc-h1" href="#@16-base-conv">Modulo: Μετατροπή Βάσης</a>
             <div class="toc-section">PATTERN 17</div>
-            <a class="toc-link toc-h1" href="#@17-stack">17. Slice as a Stack</a>
+            <a class="toc-link toc-h1" href="#@17-stack">17. Stack (LIFO)</a>
             <div class="toc-section">PATTERN 18</div>
             <a class="toc-link toc-h1" href="#@18-greedy">18. Greedy Algorithms</a>
         </div>
@@ -332,7 +332,7 @@ for name, score := range grades {
             {
                 lang: "go",
                 code:
-                    `// 6. Μόλις δεχθήκαμε ένα... ύποπτο τηλεφώνημα.
+                    `// 7. Μόλις δεχθήκαμε ένα... ύποπτο τηλεφώνημα.
 // Ο Λευτέρης "πρέπει" να περάσει το μάθημα!
 // Πώς μπορούμε να του αυξήσουμε τον βαθμό κατά 10;
 // Έπειτα να τυπώσουμε τον νεο βαθμό του.
@@ -617,12 +617,116 @@ m[1000000] = "hello" // Έφτιαξε μόνο ΕΝΑ κουτάκι!</code></p
     year  int
 }</code></pre>
 <p>Το παραπάνω δεν δημιουργεί κάποιο αυτοκίνητο. Δημιουργεί ένα "καλούπι" (τύπο). Λέει στη Go: <em>"Από εδώ και πέρα, υπάρχει ένας τύπος Car που περιέχει αυτά τα 3 κομμάτια πληροφορίας"</em>.</p>
+
+<svg viewBox="0 0 820 280" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 860px; height: auto; display: block; margin: 32px auto; font-family: 'Courier New', monospace;">
+  <defs>
+    <pattern id="bp-grid-sm" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#3a6b8c" stroke-width="0.4" opacity="0.5"/>
+    </pattern>
+    <pattern id="bp-grid-lg" width="100" height="100" patternUnits="userSpaceOnUse">
+      <rect width="100" height="100" fill="url(#bp-grid-sm)"/>
+      <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#4a8ab0" stroke-width="0.8" opacity="0.6"/>
+    </pattern>
+    <filter id="bp-glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <symbol id="bp-corner-tl" viewBox="0 0 20 20">
+      <path d="M 0 15 L 0 0 L 15 0" fill="none" stroke="#6ec6e6" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="bp-corner-tr" viewBox="0 0 20 20">
+      <path d="M 5 0 L 20 0 L 20 15" fill="none" stroke="#6ec6e6" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="bp-corner-bl" viewBox="0 0 20 20">
+      <path d="M 0 5 L 0 20 L 15 20" fill="none" stroke="#6ec6e6" stroke-width="1.5"/>
+    </symbol>
+    <symbol id="bp-corner-br" viewBox="0 0 20 20">
+      <path d="M 5 20 L 20 20 L 20 5" fill="none" stroke="#6ec6e6" stroke-width="1.5"/>
+    </symbol>
+  </defs>
+
+  <!-- Background -->
+  <rect width="820" height="280" rx="12" fill="#0d1f2d"/>
+  <rect x="2" y="2" width="816" height="276" rx="11" fill="url(#bp-grid-lg)"/>
+  <rect x="4" y="4" width="812" height="272" rx="10" fill="none" stroke="#3a6b8c" stroke-width="1.5"/>
+  <rect x="12" y="12" width="796" height="256" rx="6" fill="none" stroke="#3a6b8c" stroke-width="0.8" stroke-dasharray="8 4"/>
+
+  <!-- Title block -->
+  <rect x="530" y="18" width="278" height="42" rx="4" fill="rgba(106,198,230,0.08)" stroke="#6ec6e6" stroke-width="1"/>
+  <text x="669" y="35" fill="#6ec6e6" font-size="10" text-anchor="middle" letter-spacing="3" opacity="0.7">BLUEPRINT</text>
+  <text x="669" y="50" fill="#b8e6f8" font-size="13" text-anchor="middle" font-weight="bold" letter-spacing="1">type Car struct — Go Lang</text>
+
+  <!-- LEFT SIDE: Scattered variables -->
+  <text x="145" y="50" fill="#e07050" font-size="11" text-anchor="middle" letter-spacing="2" opacity="0.8">✗ ΠΡΙΝ (Χάος)</text>
+
+  <g transform="translate(42, 68) rotate(-2)">
+    <rect width="190" height="36" rx="4" fill="none" stroke="#e07050" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.7"/>
+    <text x="14" y="24" fill="#e07050" font-size="14" opacity="0.9">brand string</text>
+  </g>
+  <g transform="translate(58, 118) rotate(1.5)">
+    <rect width="190" height="36" rx="4" fill="none" stroke="#e07050" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.7"/>
+    <text x="14" y="24" fill="#e07050" font-size="14" opacity="0.9">model string</text>
+  </g>
+  <g transform="translate(36, 168) rotate(-1)">
+    <rect width="190" height="36" rx="4" fill="none" stroke="#e07050" stroke-width="1.2" stroke-dasharray="5 3" opacity="0.7"/>
+    <text x="14" y="24" fill="#e07050" font-size="14" opacity="0.9">year  int</text>
+  </g>
+
+  <!-- Arrow -->
+  <line x1="260" y1="140" x2="330" y2="140" stroke="#6ec6e6" stroke-width="1.5" stroke-dasharray="6 3" opacity="0.6"/>
+  <polygon points="330,134 344,140 330,146" fill="#6ec6e6" opacity="0.6"/>
+
+  <!-- RIGHT SIDE: Struct blueprint -->
+  <rect x="360" y="68" width="420" height="168" rx="6" fill="rgba(106,198,230,0.04)" stroke="#6ec6e6" stroke-width="2"/>
+  <use href="#bp-corner-tl" x="352" y="60" width="20" height="20"/>
+  <use href="#bp-corner-tr" x="768" y="60" width="20" height="20"/>
+  <use href="#bp-corner-bl" x="352" y="220" width="20" height="20"/>
+  <use href="#bp-corner-br" x="768" y="220" width="20" height="20"/>
+
+  <!-- Struct header -->
+  <rect x="360" y="68" width="420" height="38" rx="6" fill="rgba(106,198,230,0.12)"/>
+  <rect x="360" y="98" width="420" height="8" rx="0" fill="rgba(106,198,230,0.12)"/>
+  <line x1="360" y1="106" x2="780" y2="106" stroke="#6ec6e6" stroke-width="1.5"/>
+  <text x="570" y="93" fill="#b8e6f8" font-size="17" text-anchor="middle" font-weight="bold" filter="url(#bp-glow)">type Car struct</text>
+
+  <!-- brand -->
+  <line x1="375" y1="140" x2="765" y2="140" stroke="#3a6b8c" stroke-width="0.5" stroke-dasharray="3 3"/>
+  <text x="395" y="134" fill="#6ec6e6" font-size="15">brand</text>
+  <text x="580" y="134" fill="#4a8ab0" font-size="14" opacity="0.8">string</text>
+
+  <!-- model -->
+  <line x1="375" y1="175" x2="765" y2="175" stroke="#3a6b8c" stroke-width="0.5" stroke-dasharray="3 3"/>
+  <text x="395" y="169" fill="#6ec6e6" font-size="15">model</text>
+  <text x="580" y="169" fill="#4a8ab0" font-size="14" opacity="0.8">string</text>
+
+  <!-- year -->
+  <line x1="375" y1="210" x2="765" y2="210" stroke="#3a6b8c" stroke-width="0.5" stroke-dasharray="3 3"/>
+  <text x="395" y="204" fill="#6ec6e6" font-size="15">year</text>
+  <text x="580" y="204" fill="#4a8ab0" font-size="14" opacity="0.8">int</text>
+
+  <!-- Dimension line -->
+  <line x1="360" y1="248" x2="360" y2="258" stroke="#4a8ab0" stroke-width="0.8"/>
+  <line x1="780" y1="248" x2="780" y2="258" stroke="#4a8ab0" stroke-width="0.8"/>
+  <line x1="360" y1="254" x2="780" y2="254" stroke="#4a8ab0" stroke-width="0.8"/>
+  <text x="570" y="267" fill="#4a8ab0" font-size="10" text-anchor="middle" letter-spacing="1">3 FIELDS</text>
+
+  <!-- Crosshairs -->
+  <circle cx="360" cy="68" r="2" fill="none" stroke="#6ec6e6" stroke-width="0.8" opacity="0.5"/>
+  <circle cx="780" cy="68" r="2" fill="none" stroke="#6ec6e6" stroke-width="0.8" opacity="0.5"/>
+  <circle cx="360" cy="236" r="2" fill="none" stroke="#6ec6e6" stroke-width="0.8" opacity="0.5"/>
+  <circle cx="780" cy="236" r="2" fill="none" stroke="#6ec6e6" stroke-width="0.8" opacity="0.5"/>
+
+  <!-- Stamp -->
+  <text x="28" y="267" fill="#3a6b8c" font-size="9" letter-spacing="2" opacity="0.5">ZONE01 — GO STRUCTS</text>
+  <text x="270" y="267" fill="#3a6b8c" font-size="9" opacity="0.5">REV 1.0</text>
+</svg>
 `);
 
         addContent(`
 <div class="eyebrow" id="@dimioyrgia-kai-p">Κεφάλαιο 2 / 3 — Structs</div>
 <h1>Δημιουργία και Πρόσβαση</h1>
 <p>Αφού φτιάξαμε το καλούπι, μπορούμε να δημιουργήσουμε μεταβλητές αυτού του τύπου. Υπάρχουν δύο τρόποι: ο "κλασικός" βήμα-βήμα, και το <strong>struct literal</strong> που τα κάνει όλα με τη μία.</p>
+<p>Ουσιαστικά, κάνουμε ακριβώς ό,τι θα κάναμε αν δηλώναμε ένα <code>int</code> — μόνο που εδώ δηλώνουμε <code>Car</code>, γιατί το <code>Car</code> πλέον είναι ένας τύπος που ορίσαμε εμείς ακριβώς πριν.</p>
 
 <pre><code class="lang-go">// Τρόπος 1: Δήλωση και μετά γέμισμα
 var c1 Car
@@ -637,7 +741,7 @@ c2 := Car{brand: "Honda", model: "Civic", year: 2022}
 // Ή ακόμα πιο σύντομα (Positional fields):
 c3 := Car{"Ford", "Focus", 2018}
 </code></pre>
-<div class="callout warning"><span class="tag">Προσοχή</span>Το positional <code>{"Ford", "Focus", 2018}</code> είναι γρήγορο, αλλά επικίνδυνο. Αν κάποιος προσθέσει ένα νέο πεδίο στο <code>Car</code> στο μέλλον, ο κώδικας θα σπάσει. Προτίμα <strong>πάντα</strong> τα named fields!</div>
+<div class="callout warning"><span class="tag">Προσοχή</span>Το positional <code>{"Ford", "Focus", 2018}</code> είναι γρήγορο, αλλά επικίνδυνο. Αν κάποιος αλλάξει/προσθέσει τα πεδία του <code>Car</code> στο μέλλον, ο κώδικας θα σπάσει. Προτίμα <strong>πάντα</strong> τα named fields!</div>
 `);
 
         addFillBlank([
@@ -890,54 +994,54 @@ func main() {
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Early Exit</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Guard Clauses</div></div>
   </a>
 
-  <a href="#@5-universal-check" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+  <a href="#@5-loop-control" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
     <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">05</div>
+    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Loop Control</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Break &amp; Continue</div></div>
+  </a>
+
+  <a href="#@6-universal-check" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">06</div>
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Universal Check</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">All Match</div></div>
   </a>
 
-  <a href="#@6-previous-value" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">06</div>
+  <a href="#@7-previous-value" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">07</div>
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Previous Value</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Deduplication</div></div>
   </a>
 
-  <a href="#@7-two-pointers" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">07</div>
-    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Two Pointers</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Fast & Slow</div></div>
+  <a href="#@8-two-pointers" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">08</div>
+    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Two Pointers</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Fast &amp; Slow</div></div>
   </a>
 
-  <a href="#@8-sliding-window" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">08</div>
+  <a href="#@9-sliding-window" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">09</div>
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Sliding Window</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Κυλιόμενο παράθυρο</div></div>
   </a>
 
-  <a href="#@9-array-cleaning" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">09</div>
+  <a href="#@10-array-cleaning" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">10</div>
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Array Cleaning</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">In-Place Slicing</div></div>
   </a>
 
-  <a href="#@10-target-lookup" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">10</div>
+  <a href="#@11-target-lookup" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">11</div>
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Target Lookup</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Complement Map</div></div>
   </a>
 
-  <a href="#@11-frequency" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">11</div>
+  <a href="#@12-frequency" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">12</div>
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Frequency Counting</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Ιστόγραμμα</div></div>
   </a>
 
-  <a href="#@12-two-pass" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">12</div>
+  <a href="#@13-two-pass" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">13</div>
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Two-Pass</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Μάζεψε → Χρησιμοποίησε</div></div>
   </a>
 
-  <a href="#@13-custom-iter" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
-    <div class="blacked-shadow" style="color: var(--tone-5); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">13</div>
-    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Custom Iteration</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Index Control</div></div>
-  </a>
-
-  <a href="#@14-chunking" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+  <a href="#@14-custom-iter" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
     <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">14</div>
-    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Data Chunking</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Batches / Paging</div></div>
+    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Custom Iteration</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Index Control</div></div>
   </a>
 
   <a href="#@15-digit-extract" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
@@ -991,9 +1095,9 @@ for _, letter := range word {
         addContent(`
 <div class="eyebrow" id="@2-minmax">Pattern 2</div>
 <h1>2. Min/Max Tracking</h1>
-<p class="lede">Ένα εξαιρετικά συνηθισμένο πρόβλημα: βρες τη μεγαλύτερη ή μικρότερη τιμή από μια συλλογή. Η λύση είναι σχεδόν πανομοιότυπη με τον Accumulator — ξεκινάμε με την πρώτη τιμή ως "καλύτερη μέχρι τώρα" και ενημερώνουμε κάθε φορά που βρίσκουμε κάτι καλύτερο.</p>
+<p class="lede">Ένα από τα πιο συχνά ερωτήματα πάνω σε δεδομένα: ποιο είναι το μεγαλύτερο ή μικρότερο στοιχείο; Η λύση είναι σχεδόν πανομοιότυπη με τον Accumulator — ξεκινάμε με το <strong>πρώτο στοιχείο</strong> ως "καλύτερο μέχρι τώρα" και ενημερώνουμε κάθε φορά που βρίσκουμε κάτι καλύτερο.</p> <p>Αν δεν χρησιμοποιούσαμε το πρώτο στοιχείο του πίνακα, θα έπρεπε αναγκαστικά να αρχικοποιήσουμε τη μεταβλητή μας με τη μικρότερη (ή μεγαλύτερη) δυνατή θεωρητική τιμή (π.χ. <code>math.MinInt</code>), για να εξασφαλίσουμε ότι η πρώτη σύγκριση θα πετύχει.</p>
 
-<h2>Ο Κανόνας</h2>
+<h2>Εύρεση Μεγίστου / Ελαχίστου</h2>
 <p>Η μεταβλητή <code>best</code> κρατάει πάντα το καλύτερο αποτέλεσμα που έχουμε δει <em>μέχρι τώρα</em>. Ποτέ δεν μηδενίζεται — μόνο αναβαθμίζεται όταν βρούμε κάτι καλύτερο. Αν χρειαζόμαστε και τη <em>θέση</em> (index) του max, απλώς κρατάμε και ένα <code>bestIndex</code>.</p>
 <pre><code class="lang-go">scores := []int{42, 17, 85, 63, 91, 28}
 
@@ -1021,27 +1125,26 @@ fmt.Println(bestIndex) // 4</code></pre>
 <h2>Παρακολούθηση Λέξης & Αγνοώντας Κενά</h2>
 <p>Δες πώς ένας διακόπτης <code>inWord</code> μας βοηθάει να απομονώσουμε τις λέξεις αγνοώντας τα πολλαπλά, συνεχόμενα κενά. Όσο ο διακόπτης παραμένει κλειστός, τα περιττά κενά απλώς προσπερνιούνται!</p>
 <pre><code class="lang-go">var words []string
-current := ""
-inWord := false
-
+currentWord := ""
+inWord := false // Ξεκινάμε εκτός λέξης (στο false)
 for _, char := range text {
     if char == ' ' {
-        // Αν βρήκαμε κενό, αποθηκεύουμε τη λέξη ΜΟΝΟ αν ήμασταν μέσα σε λέξη
-        if inWord {
-            words = append(words, currentWord)
-            current = ""
-            inWord = false
+        // ΒΡΗΚΑΜΕ ΚΕΝΟ: Πρέπει να κλείσουμε τη λέξη
+        if inWord == true {
+            // Αν όντως ήμασταν ΜΕΣΑ σε λέξη, τώρα τελείωσε!
+            words = append(words, currentWord) // 1. Την αποθηκεύουμε
+            currentWord = ""                   // 2. Αδειάζουμε το string για την επόμενη
+            inWord = false                     // 3. ΣΗΜΑΝΤΙΚΟ: Κατεβάζουμε τον διακόπτη (βγήκαμε!)
         }
-        // Αν δεν ήμασταν σε λέξη (συνεχόμενα κενά), δεν κάνουμε ΤΙΠΟΤΑ!
+        // Αν το inWord ήταν ήδη false (συνεχόμενα κενά), δεν κάνουμε απολύτως τίποτα. Απλώς τα προσπερνάμε!
     } else {
-        // Αν βρήκαμε γράμμα, είμαστε σίγουρα μέσα σε λέξη
-        inWord = true
-        current = current + string(char)
+        // ΒΡΗΚΑΜΕ ΓΡΑΜΜΑ: Είμαστε σίγουρα μέσα σε λέξη
+        inWord = true // Ανεβάζουμε τον διακόπτη...
+        currentWord = currentWord + string(char) // Χτίζουμε τη λέξη
     }
 }
-
-// Μην ξεχάσεις την τελευταία λέξη αν το κείμενο δεν τελείωνε σε κενό
-if inWord {
+// Αν το κείμενο ΔΕΝ τελείωνε σε κενό, ο διακόπτης μένει ανοιχτός (true). Σώζουμε την τελευταία λέξη χειροκίνητα!
+if inWord == true {
     words = append(words, currentWord)
 }</code></pre>
 `);
@@ -1081,8 +1184,8 @@ for _, char := range text {
 <h1>4. Early Exit (Guard Clauses)</h1>
 <p class="lede">Είναι κακή πρακτική να έχεις πολλά εμφωλευμένα (nested) if μέσα σε άλλα if — κάνουν τον κώδικα δύσκολο να διαβαστεί και να συντηρηθεί. Συχνά μπορούμε να ξεφορτωθούμε αρκετά από αυτά αντιστρέφοντας τη λογική: αντί να ελέγχουμε "αν όλα είναι ΟΚ, κάνε το πράγμα", ελέγχουμε "αν κάτι ΔΕΝ είναι ΟΚ, βγες νωρίς".</p>
 
-<h2>Επίπεδος (Flat) Κώδικας</h2>
-<p>Αντιστρέφουμε τις συνθήκες! Αν κάτι δεν πάει καλά (π.χ. λάθος ορίσματα, κακά δεδομένα), κάνουμε <code>return</code> ή <code>continue</code> αμέσως. Έτσι, ο κύριος αλγόριθμος μένει εντελώς "επίπεδος".</p>
+<h2>Μετά το return δεν εκτελείται τίποτα από κάτω</h2>
+<p>Το <code>return</code> σημαίνει "τέλος η συνάρτηση, φύγε αμέσως". Έτσι, αντί να ρωτάμε αν όλα είναι καλά για να μπούμε σε ένα μεγάλο <code>if</code>, ελέγχουμε το αντίθετο: Αν κάτι πάει στραβά, κάνουμε <code>return</code> και φεύγουμε. Επειδή η συνάρτηση σταματάει, <strong>δεν χρειαζόμαστε καθόλου <code>else</code></strong>! Οτιδήποτε γραφτεί κάτω από αυτό το σημείο εκτελείται μόνο αν δεν έχει γίνει return, άρα ξέρουμε με σιγουριά ότι το πρόβλημα δεν υφίσταται.</p>
 <pre><code class="lang-go">func processUser(user User) {
     if !user.IsActive { 
         return // Guard clause 1
@@ -1097,14 +1200,51 @@ for _, char := range text {
 }</code></pre>
 `);
 
-        // 5. Universal Check
+        // 5. Loop Control
         addContent(`
-<div class="eyebrow" id="@5-universal-check">Pattern 5</div>
-<h1>5. Universal Check (All Match)</h1>
+<div class="eyebrow" id="@5-loop-control">Pattern 5</div>
+<h1>5. Loop Control: Break & Continue</h1>
+<p class="lede">Όπως το <code>return</code> μας βγάζει από μια συνάρτηση, έτσι τα <code>continue</code> και <code>break</code> είναι οι έξοδοι κινδύνου για τα loops. Μας γλυτώνουν από τεράστια <code>if-else</code> μπλοκ και άσκοπες επαναλήψεις.</p>
+
+<h2>Οι διαφορές (τι κάνει skip το καθένα)</h2>
+<ul>
+  <li><code>continue</code>: Κάνει skip <strong>μόνο τη σημερινή "στροφή"</strong> του loop. Πάει κατευθείαν στο επόμενο στοιχείο.</li>
+  <li><code>break</code>: "Σπάει" <strong>όλο το loop</strong> και βγαίνει από αυτό εντελώς.</li>
+  <li><code>return</code>: Κάνει skip <strong>όλη τη συνάρτηση</strong>. Σταματάει το loop ΚΑΙ τον υπόλοιπο κώδικα κάτω από αυτό.</li>
+</ul>
+
+<h2>Continue: Προσπέρασε αυτό που δεν θες</h2>
+<p>Αντί να γράφεις <code>if thelo_na_to_diabaso { ... }</code>, γράψε <code>if skoupidi { continue }</code>.</p>
+<pre><code class="lang-go">for _, letter := range word {
+    if letter == ' ' || letter == '_' {
+        continue // Βρήκαμε "σκουπίδι"; SKIP, πάμε κατευθείαν στο επόμενο γράμμα!
+    }
+    
+    // Αν φτάσαμε εδώ, είμαστε σίγουροι ότι έχουμε κανονικό γράμμα
+    fmt.Println(string(letter))
+}</code></pre>
+
+<h2>Break: Μόλις το βρεις, σταμάτα!</h2>
+<p>Αν ψάχνεις κάτι μέσα σε 1.000.000 στοιχεία και το βρεις στη 2η θέση, γιατί να κάνεις τις υπόλοιπες 999.998 επαναλήψεις;</p>
+<pre><code class="lang-go">hasFoundAdmin := false
+
+for _, user := range users {
+    if user == "admin" {
+        hasFoundAdmin = true
+        break // Τον βρήκαμε! "Σπάσε" το loop, δεν υπάρχει λόγος να κοιτάξουμε τους υπόλοιπους.
+    }
+}
+</code></pre>
+`);
+
+        // 6. Universal Check
+        addContent(`
+<div class="eyebrow" id="@6-universal-check">Pattern 6</div>
+<h1>6. Universal Check (All Match)</h1>
 <p class="lede">Όταν θέλουμε να ελέγξουμε αν μια συνθήκη ισχύει για ΟΛΑ τα στοιχεία, δεν ψάχνουμε να αποδείξουμε ότι "ισχύει". Ψάχνουμε να βρούμε έστω και <b>ΜΙΑ</b> εξαίρεση για να την καταρρίψουμε (Falsification).</p>
 
 <h2>Αρκεί μια αποτυχία</h2>
-<p>Αν βρούμε έστω και ένα στοιχείο που <i>δεν</i> ταιριάζει, ξέρουμε αμέσως ότι η απάντηση είναι <code>false</code>. Για να επιστρέψουμε <code>true</code>, πρέπει υποχρεωτικά να έχει ολοκληρωθεί όλος ο βρόγχος χωρίς να "σκοντάψουμε". Γι' αυτό το <code>return true</code> μπαίνει ΠΑΝΤΑ στο τέλος.</p>
+<p>Αν βρούμε έστω και ένα στοιχείο που <i>δεν</i> ταιριάζει, ξέρουμε αμέσως ότι η απάντηση είναι <code>false</code>.</p>
 <pre><code class="lang-go">func isAllLowercase(text string) bool {
     for _, char := range text {
         // Ψάχνουμε τον ΕΝΑΝ "ένοχο"
@@ -1116,12 +1256,188 @@ for _, char := range text {
     // Αν το loop ολοκληρωθεί κανονικά, τότε ΟΛΟΙ ήταν αθώοι!
     return true
 }</code></pre>
+
+<p>Για να επιστρέψουμε <code>true</code>, πρέπει υποχρεωτικά να έχει ολοκληρωθεί όλος ο βρόγχος χωρίς να "σκοντάψουμε". Γι' αυτό το <code>return true</code> μπαίνει ΠΑΝΤΑ <strong>έξω και κάτω</strong> από το for loop — είναι το σημείο που, για να καταφέρουμε να φτάσουμε ως εκεί, σημαίνει ότι εκτελέστηκαν όλες οι επαναλήψεις και δεν βρήκαμε κανένα στοιχείο να παραβιάζει τον κανόνα μας.</p>
 `);
 
-        // 6. Previous Value
+        addQuiz([
+            {
+                q: "Τι θα επιστρέψει η κλήση της συνάρτησης;",
+                lang: "go",
+                code: `func main(){
+    fmt.Println(isAllUpperCase("Hello"))
+}
+                
+func isAllUpperCase(word string) bool {
+    for _, char := range word {
+        if char >= 'A' && char <= 'Z' {
+            return true
+        }
+    }
+    return false
+}`,
+                options: [
+                    "false, γιατί υπάρχουν πεζά γράμματα ('e', 'l', 'l', 'o').",
+                    "true, γιατί το 'H' είναι κεφαλαίο.",
+                    "Panic, γιατί το string έχει ανακατεμένα πεζά και κεφαλαία.",
+                    "false, γιατί λείπει το continue."
+                ],
+                correct: 1,
+                explain: "Παγίδα! Η συνάρτηση κάνει return true (early exit) <strong>μόλις</strong> βρει το πρώτο κεφαλαίο γράμμα ('H')! Για να λειτουργήσει το Universal Check σωστά, πρέπει να ελέγχουμε το αντίθετο (falsification) και να κάνουμε return false αν βρούμε έστω και ΕΝΑ πεζό, ενώ το return true να μπει στο τέλος του loop."
+            },
+            {
+                q: "Διορθώνουμε λοιπόν τον παραπάνω λάθος κώδικα. Όμως τι θα επιστρέψει η κλήση isAllUpperCase(\"\"); (ένα εντελώς κενό string χωρίς γράμματα);",
+                lang: "go",
+                code: `func isAllUpperCase(word string) bool {
+    for _, char := range word {
+        if char < 'A' || char > 'Z' {
+            return false // Μόλις βρούμε ΕΝΑ "κακό" γράμμα, τέλος!
+        }
+    }
+    return true // Αν επιβιώσουμε, είναι όλα κεφαλαία!
+}`,
+                options: [
+                    "true",
+                    "false",
+                    "Panic, γιατί δεν υπάρχουν γράμματα για να ελέγξει.",
+                    "Το πρόγραμμα θα κολλήσει σε ένα άπειρο loop."
+                ],
+                correct: 0,
+                explain: "Σωστά! Επιστρέφει true. Επειδή το string είναι άδειο, το for δεν τρέχει ποτέ. Έτσι, προσπερνάμε το loop και πάμε κατευθείαν στο return true! Αυτό βγάζει νόημα: αφού δεν βρέθηκε ΟΥΤΕ ΕΝΑ γράμμα που να παραβιάζει τον κανόνα, ο έλεγχος θεωρείται επιτυχής."
+            },
+            {
+                q: "Αν τρέξουμε τον παρακάτω κώδικα, ποιος θα είναι ο ΜΕΓΑΛΥΤΕΡΟΣ αριθμός που θα τυπωθεί στην οθόνη;",
+                lang: "go",
+                code: `for i := 1; i <= 100; i++ {
+    if i % 2 == 0 {
+        continue
+    }
+    if i == 50 {
+        break
+    }
+    fmt.Println(i)
+}`,
+                options: [
+                    "49",
+                    "50",
+                    "99",
+                    "100"
+                ],
+                correct: 0,
+                explain: "Pattern 5 (Loop Control): Οι ζυγοί αριθμοί αγνοούνται λόγω του continue. Όταν το i φτάσει στο 50, το break τερματίζει εντελώς το loop πριν προλάβει να ελέγξει τους επόμενους αριθμούς (άρα το 51 δεν θα τυπωθεί ποτέ). Έτσι, ο τελευταίος και μεγαλύτερος αριθμός που πρόλαβε να τυπωθεί είναι το 49!"
+            },
+            {
+                q: "Τι θα επιστρέψει η κλήση mystery(\"Alexander\"); (το Alexander έχει 9 γράμματα).",
+                lang: "go",
+                code: `func mystery(word string) string {
+    if len(word) == 0 {
+        return "Empty"
+    }
+    if word[0] == 'A' {
+        return \"Starts with A\"
+    }
+    if len(word) > 5 {
+        return \"Long\"
+    }
+    return \"Normal\"
+}`,
+                options: [
+                    "\"Starts with A\"",
+                    "\"Long\"",
+                    "\"Starts with A\" και \"Long\"",
+                    "\"Normal\""
+                ],
+                correct: 0,
+                explain: "Pattern 4 (Early Exit): Η λέξη ξεκινάει από 'A' αλλά είναι ΕΠΙΣΗΣ πάνω από 5 γράμματα. Όμως, επειδή το if word[0] == 'A' είναι πιο πάνω, κάνει return αμέσως (Early Exit) και η συνάρτηση τερματίζεται! Δεν φτάνει ποτέ στον έλεγχο για το μήκος."
+            },
+            {
+                q: "Στον παρακάτω κώδικα που απομονώνει κείμενο μέσα σε εισαγωγικά, τι ακριβώς κάνει το inQuote = !inQuote μόλις συναντήσει εισαγωγικό;",
+                lang: "go",
+                code: `inQuote := false
+for _, char := range text {
+    if char == '"' {
+        inQuote = !inQuote
+    } else if inQuote {
+        fmt.Print(string(char))
+    }
+}`,
+                options: [
+                    "Αλλάζει τον διακόπτη από true σε false (και το αντίστροφο), λειτουργώντας σαν On/Off.",
+                    "Κάνει πάντα τον διακόπτη true.",
+                    "Συγκρίνει τον διακόπτη με το εισαγωγικό.",
+                    "Προκαλεί Error γιατί δεν είναι έγκυρος κώδικας Go."
+                ],
+                correct: 0,
+                explain: "Pattern 3 (Boolean Switch): Το !inQuote σημαίνει το αντίθετο του inQuote. Είναι ένας έξυπνος τρόπος (toggle) να ανοιγοκλείνουμε έναν διακόπτη με την ίδια ακριβώς γραμμή κώδικα! Αν ήταν false γίνεται true, και αν ήταν true γίνεται false."
+            },
+            {
+                q: "Τι θα συμβεί αν το slice weights είναι εντελώς άδειο (μήκος 0) και τρέξει ο παρακάτω κώδικας;",
+                lang: "go",
+                code: `maxWeight := weights[0]
+for _, w := range weights {
+    if w > maxWeight {
+        maxWeight = w
+    }
+}`,
+                options: [
+                    "Το πρόγραμμα θα κρασάρει (Panic) στην πρώτη γραμμή, επειδή δεν υπάρχει στοιχείο στη θέση 0.",
+                    "Η μεταβλητή maxWeight θα πάρει αυτόματα την τιμή 0.",
+                    "Το loop απλώς δεν θα εκτελεστεί και δεν θα υπάρξει κανένα πρόβλημα.",
+                    "Η Go θα μας προειδοποιήσει κατά το compile (το πρόγραμμα δεν θα τρέξει καν)."
+                ],
+                correct: 0,
+                explain: "Pattern 2 (Min/Max Tracking): Πολύ κλασικό λάθος! Όταν αρχικοποιούμε το min/max με το πρώτο στοιχείο (weights[0]), πρέπει ΠΑΝΤΑ να ελέγχουμε πρώτα αν το slice είναι άδειο (κάνοντας ένα Early Exit), αλλιώς το πρόγραμμα θα κρασάρει ακαριαία με 'index out of range'."
+            },
+            {
+                q: "Στον παρακάτω κώδικα που αθροίζει τους ζυγούς αριθμούς, γιατί είναι κρίσιμο η μεταβλητή total να έχει δηλωθεί ΕΞΩ από το loop;",
+                lang: "go",
+                code: `total := 0
+for _, num := range arr {
+    if num % 2 == 0 {
+        total = total + num
+    }
+}`,
+                options: [
+                    "Αν δηλωνόταν μέσα στο loop, θα μηδενιζόταν σε κάθε επανάληψη, χάνοντας την 'μνήμη' του.",
+                    "Γιατί η Go δεν επιτρέπει να δηλώνουμε μεταβλητές μέσα σε loop.",
+                    "Γιατί αν είναι μέσα στο loop, δεν μπορεί να πάρει την τιμή 0.",
+                    "Είναι το ίδιο, θα δούλευε κανονικά και μέσα στο loop."
+                ],
+                correct: 0,
+                explain: "Pattern 1 (Accumulator): Η μεταβλητή (accumulator) πρέπει να ζει ΠΡΙΝ ξεκινήσει το loop και να 'επιβιώσει' ΜΕΤΑ το τέλος του. Αν δηλωθεί μέσα, τότε σε κάθε γύρο του loop δημιουργείται μια νέα μεταβλητή από το μηδέν!"
+            },
+            {
+                q: "Τι τιμή θα έχει το sum στο τέλος της εκτέλεσης του κώδικα; (Το i παίρνει τις τιμές 1, 2, 3, 4, 5).",
+                lang: "go",
+                code: `sum := 0
+isAdding := true
+
+for i := 1; i <= 5; i++ {
+    if i == 3 {
+        isAdding = false
+    }
+    
+    if isAdding {
+        sum = sum + i
+    } else {
+        sum = sum - i
+    }
+}`,
+                options: [
+                    "-9",
+                    "15",
+                    "0",
+                    "3"
+                ],
+                correct: 0,
+                explain: "Συνδυασμός (Bonus): Έχουμε Accumulator + Boolean Switch! Στα 1 και 2 ο διακόπτης (isAdding) είναι ανοιχτός (true), άρα προσθέτουμε: sum = 0 + 1 + 2 = 3. Στο 3 ο διακόπτης κατεβαίνει (false) και ΜΕΝΕΙ κατεβασμένος για το 3, το 4 και το 5. Οπότε αφαιρούμε: 3 - 3 - 4 - 5 = -9!"
+            }
+        ]);
+
+        // 7. Previous Value
         addContent(`
-<div class="eyebrow" id="@6-previous-value">Pattern 6</div>
-<h1>6. Previous Value (Ιστορικό)</h1>
+<div class="eyebrow" id="@7-previous-value">Pattern 7</div>
+<h1>7. Previous Value (Ιστορικό)</h1>
 <p class="lede">Όταν διατρέχουμε ένα πίνακα ή ένα string, συχνά χρειαζόμαστε να συγκρίνουμε το <em>τρέχον</em> στοιχείο με το <em>αμέσως προηγούμενο</em>. Το κόλπο είναι να κρατάμε μια μεταβλητή <code>prev</code> και να την ενημερώνουμε στο τέλος του loop.</p>
 
 <h2>Αφαίρεση Διπλότυπων (Deduplication)</h2>
@@ -1152,10 +1468,10 @@ for _, current := range text {
 }</code></pre>
 `);
 
-        // 7. Two Pointers
+        // 8. Two Pointers
         addContent(`
-<div class="eyebrow" id="@7-two-pointers">Pattern 7</div>
-<h1>7. Two Pointers (Δύο Δείκτες)</h1>
+<div class="eyebrow" id="@8-two-pointers">Pattern 8</div>
+<h1>8. Two Pointers (Δύο Δείκτες)</h1>
 <p class="lede">Συχνά το <code>for ... range</code> μας περιορίζει γιατί κινείται μόνο προς τα εμπρός, βήμα-βήμα. Με το μοτίβο των δύο δεικτών (indices) μπορούμε να ελέγχουμε δύο πράγματα ταυτόχρονα, αποφεύγοντας εντελώς τα αργά, εμφωλευμένα (nested) loops.</p>
 
 <h2>Opposite Ends (Αντίθετα Άκρα)</h2>
@@ -1171,7 +1487,7 @@ for left < right {
 `);
 
         addContent(`
-<div class="eyebrow" id="@two-pointers-fas">Pattern 7</div>
+<div class="eyebrow" id="@two-pointers-fas">Pattern 8</div>
 <h1>Two Pointers: Fast & Slow</h1>
 <p>Η άλλη μορφή είναι και οι δύο δείκτες να ξεκινάνε από την αρχή, αλλά να κινούνται ανεξάρτητα. Ο <strong>γρήγορος</strong> σαρώνει κάθε στοιχείο. Ο <strong>αργός</strong> προχωράει μόνο όταν βρούμε κάτι που μας ενδιαφέρει — αποτελεσματικά "γράφει" πίσω στο ίδιο array φιλτράροντας ανεπιθύμητα στοιχεία.</p>
 
@@ -1193,10 +1509,10 @@ for fast := 0; fast < len(nums); fast++ {
 fmt.Println(nums[:slow])</code></pre>
 `);
 
-        // 8. Sliding Window
+        // 9. Sliding Window
         addContent(`
-<div class="eyebrow" id="@8-sliding-window">Pattern 8</div>
-<h1>8. Sliding Window</h1>
+<div class="eyebrow" id="@9-sliding-window">Pattern 9</div>
+<h1>9. Sliding Window</h1>
 <p class="lede">Φαντάσου ότι κοιτάς έξω από το παράθυρο ενός τρένου: βλέπεις πάντα τα ίδια 3 δέντρα δίπλα-δίπλα, αλλά καθώς το τρένο κινείται, το "παράθυρο" τσουλάει πάνω στο τοπίο. Αυτό ακριβώς κάνουμε με τα δεδομένα — βλέπουμε ένα σταθερό κομμάτι, το αναλύουμε, και μετά τσουλάμε ένα βήμα δεξιά.</p>
 
 <h2>Μέγιστο άθροισμα 3 συνεχόμενων αριθμών</h2>
@@ -1225,10 +1541,10 @@ for i := windowSize; i < len(nums); i++ {
 fmt.Println(maxSum) // 9  (τα [5, 1, 3])</code></pre>
 `);
 
-        // 9. Array Cleaning (In-Place)
+        // 10. Array Cleaning (In-Place)
         addContent(`
-<div class="eyebrow" id="@9-array-cleaning">Pattern 9</div>
-<h1>9. Array Cleaning (In-Place)</h1>
+<div class="eyebrow" id="@10-array-cleaning">Pattern 10</div>
+<h1>10. Array Cleaning (In-Place)</h1>
 <p class="lede">Όταν θέλουμε να "καθαρίσουμε" τις άκρες ενός slice (π.χ. να διώξουμε τα κενά ή τα σημεία στίξης), η βέλτιστη πρακτική είναι να μην φτιάξουμε νέο slice, αλλά να βρούμε τα σωστά όρια του υπάρχοντος.</p>
 
 <h2>Κόψιμο χωρίς Memory Allocation</h2>
@@ -1247,10 +1563,10 @@ for end > start && isGarbage(s[end-1]) {
 </code></pre>
 `);
 
-        // 10. Target Lookup
+        // 11. Target Lookup
         addContent(`
-<div class="eyebrow" id="@10-target-lookup">Pattern 10</div>
-<h1>10. Target Lookup (Complement)</h1>
+<div class="eyebrow" id="@11-target-lookup">Pattern 11</div>
+<h1>11. Target Lookup (Complement)</h1>
 <p class="lede">Όταν ψάχνουμε να βρούμε αν δύο στοιχεία πληρούν μια συνθήκη (π.χ. αθροίζουν στο 100), το ένστικτο λέει να κάνουμε nested loops. Αυτό όμως σημαίνει ότι ελέγχουμε ξανά και ξανά τα ίδια πράγματα.</p>
 
 <h2>Η Λογική του Συμπληρώματος</h2>
@@ -1265,10 +1581,10 @@ for _, num := range arr {
 }</code></pre>
 `);
 
-        // 11. Frequency Counting
+        // 12. Frequency Counting
         addContent(`
-<div class="eyebrow" id="@11-frequency">Pattern 11</div>
-<h1>11. Frequency Counting (Ιστόγραμμα)</h1>
+<div class="eyebrow" id="@12-frequency">Pattern 12</div>
+<h1>12. Frequency Counting (Ιστόγραμμα)</h1>
 <p class="lede">Όταν θέλουμε να μελετήσουμε ένα σύνολο δεδομένων (π.χ. αναγραμματισμούς, στατιστικές), συχνά χρειαζόμαστε να ξέρουμε όχι μόνο "αν υπάρχει" κάτι, αλλά και <strong>πόσες φορές</strong> εμφανίζεται. Η λύση είναι ένα ιστόγραμμα συχνοτήτων (Frequency Map).</p>
 
 <h2>Ιστόγραμμα Συχνοτήτων</h2>
@@ -1286,10 +1602,31 @@ for char, count := range freq {
 }</code></pre>
 `);
 
-        // 12. Two-Pass
+        addQuiz([
+            {
+                q: "Πόσα στοιχεία έχει μέσα το map seen στο τέλος του loop (δηλαδή πόσο είναι το len(seen));",
+                lang: "go",
+                code: `words := []string{"Go", "Rust", "Go"}
+seen := make(map[string]bool)
+
+for _, w := range words {
+    seen[w] = true
+}`,
+                options: [
+                    "3 στοιχεία: {\"Go\": true, \"Rust\": true, \"Go\": true}",
+                    "2 στοιχεία: {\"Go\": true, \"Rust\": true}",
+                    "1 στοιχείο, γιατί το \"Go\" γράφτηκε πάνω από το \"Rust\"",
+                    "Error, γιατί βάλαμε 2 φορές το ίδιο κλειδί στο map."
+                ],
+                correct: 1,
+                explain: "Στα maps τα κλειδιά είναι αυστηρά ΜΟΝΑΔΙΚΑ. Η δεύτερη φορά που κάνουμε seen[\"Go\"] = true, απλώς γράφει πάνω στην παλιά εγγραφή. Έτσι τα maps είναι ιδανικά για να φιλτράρουμε διπλότυπα (Deduplication) ή για να κρατάμε ποιες λέξεις έχουμε ήδη δει."
+            }
+        ]);
+
+        // 13. Two-Pass
         addContent(`
-<div class="eyebrow" id="@12-two-pass">Pattern 12</div>
-<h1>12. Two-Pass Algorithm</h1>
+<div class="eyebrow" id="@13-two-pass">Pattern 13</div>
+<h1>13. Two-Pass Algorithm</h1>
 <p class="lede">Μερικά προβλήματα δεν μπορούν να λυθούν σε ένα μόνο πέρασμα, γιατί χρειάζεσαι πληροφορία που δεν έχεις ακόμα — θα την ανακαλύψεις αργότερα στο loop. Η λύση είναι να χωρίσεις τη δουλειά σε δύο ξεχωριστά περάσματα πάνω στα ίδια δεδομένα.</p>
 
 <h2>1ο Πέρασμα: Μάζεψε. 2ο Πέρασμα: Χρησιμοποίησε.</h2>
@@ -1320,10 +1657,10 @@ for _, word := range words {
 // Rust       |</code></pre>
 `);
 
-        // 13. Custom Iteration
+        // 14. Custom Iteration
         addContent(`
-<div class="eyebrow" id="@13-custom-iter">Pattern 13</div>
-<h1>13. Stepped / Custom Iteration</h1>
+<div class="eyebrow" id="@14-custom-iter">Pattern 14</div>
+<h1>14. Stepped / Custom Iteration</h1>
 <p class="lede">Το ` + "`for ... range`" + ` είναι βολικό, αλλά προχωράει αυστηρά βήμα-βήμα. Αν ένα πρόβλημα ζητάει πολύπλοκα μοτίβα πλοήγησης (π.χ. διάβασε 3 στοιχεία, αγνόησε 2, και πήγαινε ανάποδα), επιστρέφουμε στον πλήρη έλεγχο του index.</p>
 
 <h2>Απόλυτος Έλεγχος</h2>
@@ -1340,25 +1677,6 @@ for i < len(arr) {
 }</code></pre>
 `);
 
-        // 14. Data Chunking
-        addContent(`
-<div class="eyebrow" id="@14-chunking">Pattern 14</div>
-<h1>14. Data Chunking (Ομαδοποίηση)</h1>
-<p class="lede">Στη μηχανική λογισμικού σπάνια στέλνουμε 1 εκατομμύριο δεδομένα μονοκοπανιά (στο δίκτυο, στη βάση κλπ). Τα "σπάμε" σε μικρότερα, ασφαλή πακέτα (chunks ή batches) σταθερού μεγέθους.</p>
-
-<h2>Κόψιμο σε Σελίδες (Pagination)</h2>
-<p>Προχωράμε το index ανά το μέγεθος του πακέτου, φροντίζοντας πάντα το τελευταίο πακέτο να μην βγει εκτός ορίων, γιατί ίσως δεν είναι "γεμάτο".</p>
-<pre><code class="lang-go">chunkSize := 10
-for i := 0; i < len(arr); i += chunkSize {
-    end := i + chunkSize
-    if end > len(arr) { 
-        end = len(arr) // Το τελευταίο μισογεμάτο πακέτο!
-    }
-    
-    processBatch(arr[i:end])
-}</code></pre>
-`);
-
         // 15. Digit Extraction
         addContent(`
 <div class="eyebrow" id="@15-digit-extract">Pattern 15</div>
@@ -1369,10 +1687,10 @@ for i := 0; i < len(arr); i += chunkSize {
 <p>Το <code>% 10</code> μάς δίνει <strong>πάντα το τελευταίο ψηφίο</strong> (το 824 / 10 αφήνει υπόλοιπο 4). Το <code>/ 10</code> <strong>πετάει το τελευταίο ψηφίο</strong>, μικραίνοντας τον αριθμό (το 824 γίνεται 82). Επαναλαμβάνοντας, "ξεφλουδίζουμε" τον αριθμό.</p>
 <pre><code class="lang-go">num := 824
 for num > 0 {
-    digit := num % 10  // 1ο πέρασμα: 4,  2ο: 2,  3ο: 8
-    fmt.Println(digit) // Εκτυπώνει τα ψηφία ανάποδα!
+    digit := num % 10  // Μας δίνει ΠΑΝΤΑ το τελευταίο ψηφίο (στο 824 θα δώσει 4)
+    fmt.Println(digit) // Εκτυπώνει τα ψηφία ένα-ένα, από το τέλος προς την αρχή
     
-    num = num / 10     // "Κόβουμε" το τελευταίο ψηφίο
+    num = num / 10     // "Πετάει" το τελευταίο ψηφίο (το 824 γίνεται 82)
 }</code></pre>
 
 <div class="callout">
@@ -1516,22 +1834,21 @@ for num > 0 {
 
 <h2>Πότε χρειάζεσαι Stack;</h2>
 <p>Όταν το πρόβλημα έχει "βάθος" — δηλαδή πρέπει να θυμάσαι <em>πού ήσουν</em> πριν κάνεις το επόμενο βήμα, για να επιστρέψεις μετά. Παράδειγμα: ο έλεγχος παρενθέσεων. Όταν ανοίγεις μια παρένθεση <code>(</code> θέλεις να θυμάσαι ότι τελικά πρέπει να την κλείσεις — όταν βρεις <code>)</code>, ελέγχεις αν η <em>τελευταία ανοιχτή</em> παρένθεση ταιριάζει.</p>
-<pre><code class="lang-go">stack := []rune{}
+<pre><code class="lang-go">stack := []rune{} // Η στοίβα μας (ξεκινάει άδεια)
 
 for _, char := range "(hello (world))" {
     if char == '(' {
-        stack = append(stack, char) // PUSH: Θυμάμαι ότι άνοιξα
+        stack = append(stack, char) // PUSH: Βάζουμε ένα πιάτο στην κορυφή
     } else if char == ')' {
         if len(stack) == 0 {
-            // Βρήκα ) χωρίς να έχω ανοιχτή ( — λάθος!
-            return false
+            return false            // Πάμε να βγάλουμε πιάτο αλλά η στοίβα είναι άδεια (λάθος!)
         }
-        // POP: Η τελευταία ( κλείστηκε, αφαίρεσέ την
+        // POP: Βγάζουμε το πιάτο από την κορυφή της στοίβας (κόβουμε το slice)
         stack = stack[:len(stack)-1]
     }
 }
 
-// Αν το stack δεν είναι άδειο, έμειναν ανοιχτές παρενθέσεις!
+// Αν το stack δεν είναι άδειο στο τέλος, έχουν μείνει ανοιχτές παρενθέσεις (πιάτα στη στοίβα)!
 return len(stack) == 0</code></pre>
 `);
 
@@ -1554,6 +1871,29 @@ for _, coin := range coins {
     }
 }</code></pre>
 `);
+
+        addQuiz([
+            {
+                q: "Τι υπολογίζει ο παρακάτω κώδικας;",
+                lang: "go",
+                code: `num := 123
+sum := 0
+
+for num > 0 {
+    sum = sum + num % 10
+    num = num / 10
+}
+fmt.Println(sum)`,
+                options: [
+                    "Μετατρέπει τον αριθμό στο δεκαεξαδικό του σύστημα (hex).",
+                    "Βρίσκει τον αριθμό των ψηφίων (δηλαδή 3 ψηφία).",
+                    "Παίρνει το τελευταίο ψηφίο και επιστρέφει το 3.",
+                    "Προσθέτει τα ψηφία (3, μετά 2, μετά 1) καταλήγοντας στο 6."
+                ],
+                correct: 3,
+                explain: "Αυτό είναι το κλασικό Digit Extraction pattern! Το <code>num % 10</code> μας δίνει το τελευταίο ψηφίο, το οποίο προσθέτουμε στο sum (Accumulator). Μετά, το <code>num / 10</code> πετάει αυτό το ψηφίο. Έτσι τα παίρνουμε και τα προσθέτουμε ένα-ένα από το τέλος προς την αρχή!"
+            }
+        ]);
 
         addContent(`
 <div class="eyebrow">Φτάσαμε στο τέλος</div>
