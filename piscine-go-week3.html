@@ -880,50 +880,61 @@ Paint(&myCar, "Red")
 </code></pre>
 `);
 
-        addFillBlank({
-            lang: "go",
-            code:
-                `type CarColor struct {
-    ColorName   string
-    ColorRGB    string
-    PaintFinish string
+        addFillBlank([
+            {
+                lang: "go",
+                code:
+                    `// 1. Βάλε τον κινητήρα (Engine) μέσα στο αυτοκίνητο!
+type Engine struct {
+    hp int
 }
 
 type Car struct {
     brand string
-    model string
-    color __ctype__
+    motor __id1__
+}`,
+                blanks: [
+                    { id: "id1", answer: "Engine" }
+                ],
+                explain: "Ένα struct μπορεί να περιέχει ένα άλλο struct! Απλά δηλώνουμε το πεδίο με τον τύπο του (π.χ. motor Engine)."
+            },
+            {
+                lang: "go",
+                code:
+                    `// 2. Πώς βρίσκουμε τους ίππους (hp) του myCar;
+myCar := Car{
+    brand: "Fiat",
+    motor: Engine{hp: 100},
 }
 
-// Βάφει το αυτοκίνητο (αλλάζει το original!)
-func PaintCar(c __rtype__, newFinish string) {
-    c.__cfield__.__ffield__ = newFinish
+// Διάβασε την ιπποδύναμη χρησιμοποιώντας διπλή τελεία
+horsePower := myCar.__id1__.__id2__`,
+                blanks: [
+                    { id: "id1", answer: "motor" },
+                    { id: "id2", answer: "hp" }
+                ],
+                explain: "Με την πρώτη τελεία (myCar.motor) μπαίνουμε στον κινητήρα, και με τη δεύτερη (.hp) παίρνουμε τους ίππους!"
+            },
+            {
+                lang: "go",
+                code:
+                    `// 3. Η συνάρτηση αλλάζει τον κινητήρα. Τι λείπει;
+func Upgrade(c __id1__) {
+    c.motor.hp += 50
 }
 
 func main() {
-    myCar := Car{
-        brand: "Toyota",
-        color: CarColor{
-            ColorName:   "Red", 
-            ColorRGB:    "#FF0000", 
-            PaintFinish: "Glossy",
-        },
-    }
-    
-    // Κάλεσε τη συνάρτηση δίνοντας τη διεύθυνση
-    PaintCar(__ref__myCar, "Matte")
+    myCar := Car{motor: Engine{hp: 100}}
+    // Στείλε τη "διεύθυνση" του αυτοκινήτου
+    Upgrade(__id2__)
 }`,
-            blanks: [
-                { id: "ctype", answer: "CarColor" },
-                { id: "rtype", answer: "*Car" },
-                { id: "cfield", answer: "color" },
-                { id: "ffield", answer: "PaintFinish" },
-                { id: "ref", answer: "&" }
-            ],
-            explain: "Το πεδίο color είναι τύπου CarColor. Η συνάρτηση δέχεται pointer (*Car) και στην κλήση της στέλνουμε τη διεύθυνση (&myCar). Μέσα στη συνάρτηση χρησιμοποιούμε διπλή τελεία (c.color.PaintFinish) για να αλλάξουμε το φινίρισμα."
-        }, {
-            note: "Συμπλήρωσε τα κενά ώστε η συνάρτηση PaintCar να λειτουργεί με Nested Structs και Pointers."
-        });
+                blanks: [
+                    { id: "id1", answer: "*Car" },
+                    { id: "id2", answer: "&myCar" }
+                ],
+                explain: "Για να αλλάξει το αρχικό struct, η συνάρτηση πρέπει να δέχεται pointer (*Car) και εμείς να της στείλουμε τη διεύθυνση μνήμης (&myCar)."
+            }
+        ]);
 
         addQuiz([
             {
@@ -1604,7 +1615,7 @@ for char, count := range freq {
 
         addQuiz([
             {
-                q: "Πόσα στοιχεία έχει μέσα το map seen στο τέλος του loop (δηλαδή πόσο είναι το len(seen));",
+                q: "Πόσα στοιχεία έχει μέσα το map 'seen' στο τέλος του loop (δηλαδή πόσο είναι το len(seen));",
                 lang: "go",
                 code: `words := []string{"Go", "Rust", "Go"}
 seen := make(map[string]bool)
@@ -1615,11 +1626,114 @@ for _, w := range words {
                 options: [
                     "3 στοιχεία: {\"Go\": true, \"Rust\": true, \"Go\": true}",
                     "2 στοιχεία: {\"Go\": true, \"Rust\": true}",
-                    "1 στοιχείο, γιατί το \"Go\" γράφτηκε πάνω από το \"Rust\"",
-                    "Error, γιατί βάλαμε 2 φορές το ίδιο κλειδί στο map."
+                    "1 στοιχείο",
+                    "Error, γιατί βάλαμε 2 φορές το ίδιο κλειδί"
                 ],
                 correct: 1,
-                explain: "Στα maps τα κλειδιά είναι αυστηρά ΜΟΝΑΔΙΚΑ. Η δεύτερη φορά που κάνουμε seen[\"Go\"] = true, απλώς γράφει πάνω στην παλιά εγγραφή. Έτσι τα maps είναι ιδανικά για να φιλτράρουμε διπλότυπα (Deduplication) ή για να κρατάμε ποιες λέξεις έχουμε ήδη δει."
+                explain: "Pattern 12 (Frequency / Maps): Στα maps τα κλειδιά είναι αυστηρά ΜΟΝΑΔΙΚΑ. Τη δεύτερη φορά που κάνουμε seen[\"Go\"] = true, απλώς γράφει πάνω στην παλιά εγγραφή."
+            },
+            {
+                q: "Ποια θα είναι η τελική τιμή του 'count' μόλις τελειώσει το loop;",
+                lang: "go",
+                code: `numbers := []int{5, 5, 5, 2, 2}
+count := 0
+prev := -1
+
+for _, num := range numbers {
+    if num != prev {
+        count++
+        prev = num
+    }
+}`,
+                options: [
+                    "5 (Μετράει όλους τους αριθμούς)",
+                    "2",
+                    "3 (Γιατί υπάρχουν τρία πεντάρια)",
+                    "0 (Το prev ξεκινάει από -1 και χαλάει τον κώδικα)"
+                ],
+                correct: 1,
+                explain: "Pattern 7 (Previous Value): Κάθε φορά που βλέπει έναν αριθμό ΔΙΑΦΟΡΕΤΙΚΟ από τον προηγούμενο, τον μετράει. Το 5 το μετράει (1). Τα επόμενα πεντάρια τα αγνοεί. Μετά βλέπει το 2, το μετράει (γίνονται 2) και αγνοεί το επόμενο! Σύνολο: 2."
+            },
+            {
+                q: "Πόσες ΦΟΡΕΣ θα εκτελεστεί το εσωτερικό του συγκεκριμένου loop;",
+                lang: "go",
+                code: `word := "hello"
+start := 0
+end := len(word) - 1
+
+for start < end {
+    start++
+    end--
+}`,
+                options: [
+                    "5 φορές (όσο το μήκος της λέξης)",
+                    "3 φορές",
+                    "2 φορές",
+                    "Ούτε μία φορά"
+                ],
+                correct: 2,
+                explain: "Pattern 8 (Two Pointers): Το start (0) και το end (4) πλησιάζουν. 1η φορά: γίνονται 1 και 3. 2η φορά: γίνονται 2 και 2. Στην 3η απόπειρα, η συνθήκη 2 < 2 είναι false, οπότε σταματάει. Κάνουμε ακριβώς τη ΜΙΣΗ δουλειά!"
+            },
+            {
+                q: "Αν τρέξουμε τον παρακάτω (λάθος) κώδικα για ένα Sliding Window, τι θα συμβεί;",
+                lang: "go",
+                code: `nums := []int{10, 20, 30}
+windowSum := 0
+
+for i := 0; i < 5; i++ {
+    windowSum += nums[i]
+}`,
+                options: [
+                    "Το windowSum θα γίνει 60 και το loop θα τερματίσει.",
+                    "Η Go θα συμπληρώσει αυτόματα τις 2 θέσεις που λείπουν με μηδενικά.",
+                    "Το πρόγραμμα θα κρασάρει με μήνυμα 'panic: index out of range'.",
+                    "Το loop θα σταματήσει αυτόματα στο τελευταίο στοιχείο (i = 2)."
+                ],
+                correct: 2,
+                explain: "Pattern 9 (Sliding Window): Παγίδα! Το array έχει μόνο 3 στοιχεία (index 0, 1, 2), αλλά το loop προσπαθεί να φτάσει μέχρι το 4. Όταν ζητήσει το nums[3], η Go θα 'σκάσει' (Panic) ακαριαία."
+            },
+            {
+                q: "Μετά το τέλος αυτού του loop (και ΜΟΝΟ αυτού), ποια θα είναι η τιμή της μεταβλητής start;",
+                lang: "go",
+                code: `words := []string{"", "hello", "world", ""}
+start := 0
+
+for start < len(words) && words[start] == "" {
+    start++
+}`,
+                options: [
+                    "0",
+                    "1",
+                    "3",
+                    "4"
+                ],
+                correct: 1,
+                explain: "Pattern 10 (Array Cleaning): Το loop ελέγχει τα στοιχεία από την αρχή. Το words[0] είναι κενό, άρα το start γίνεται 1. Στην 2η επανάληψη, το words[1] είναι 'hello' (ΟΧΙ κενό), άρα η συνθήκη σπάει και το loop σταματάει στο 1!"
+            },
+            {
+                q: "Σε ποια ακριβώς επανάληψη του loop η συνάρτηση θα επιστρέψει true (βρίσκοντας το ζευγάρι 2+8=10);",
+                lang: "go",
+                code: `func findPair(nums []int, target int) bool {
+    seen := make(map[int]bool)
+    for _, num := range nums {
+        complement := target - num
+        if seen[complement] {
+            return true
+        }
+        seen[num] = true
+    }
+    return false
+}
+
+findPair([]int{5, 2, 8}, 10)`,
+                options: [
+                    "Στην πρώτη επανάληψη (όταν num = 5)",
+                    "Στη δεύτερη επανάληψη (όταν num = 2)",
+                    "Στην τρίτη επανάληψη (όταν num = 8)",
+                    "Ποτέ, θα επιστρέψει false"
+                ],
+                correct: 2,
+                explain: "Pattern 11 (Target Lookup): Στην 1η βλέπει το 5 (αποθηκεύεται). Στη 2η βλέπει το 2 (αποθηκεύεται). Στην 3η επανάληψη, το num είναι 8 και το complement που ψάχνουμε είναι το 2 (10-8). Επειδή το 2 υπάρχει ΗΔΗ στο map από πριν, επιστρέφει true!"
             }
         ]);
 
@@ -1874,7 +1988,47 @@ for _, coin := range coins {
 
         addQuiz([
             {
-                q: "Τι υπολογίζει ο παρακάτω κώδικας;",
+                q: "Αν το array είναι το [2, 5, 1], τι θα περιέχει μετά το τέλος αυτού του αλγορίθμου Two-Pass;",
+                lang: "go",
+                code: `maxVal := 0
+for _, num := range arr {
+    if num > maxVal {
+        maxVal = num
+    }
+}
+for i := 0; i < len(arr); i++ {
+    arr[i] = maxVal - arr[i]
+}`,
+                options: [
+                    "[3, 0, 4]",
+                    "[5, 5, 5]",
+                    "[2, 5, 1]",
+                    "[0, 3, 4]"
+                ],
+                correct: 0,
+                explain: "Pattern 13 (Two-Pass): Το πρώτο πέρασμα βρίσκει το μεγαλύτερο στοιχείο (maxVal = 5). Το δεύτερο πέρασμα αντικαθιστά κάθε στοιχείο με τη διαφορά του από το 5. Έτσι: 5-2=3, 5-5=0, 5-1=4."
+            },
+            {
+                q: "Πόσα θαυμαστικά ('!') θα τυπωθούν συνολικά στην οθόνη για τη λέξη 'AABBC';",
+                lang: "go",
+                code: `text := "AABBC"
+for i := 0; i < len(text)-1; i++ {
+    if text[i] == text[i+1] {
+        fmt.Print("!")
+        i++ // Έξτρα άλμα
+    }
+}`,
+                options: [
+                    "2",
+                    "3",
+                    "4",
+                    "1"
+                ],
+                correct: 0,
+                explain: "Pattern 14 (Custom Iteration): Στο i=0 βλέπει 'A' και 'A'. Τυπώνει '!' και κάνει i++ (πηδώντας το 2ο A). Στο i=2 βλέπει 'B' και 'B'. Τυπώνει 2ο '!' και πηδάει το 2ο B. Σύνολο: 2 θαυμαστικά."
+            },
+            {
+                q: "Τι υπολογίζει ο παρακάτω κώδικας για τον αριθμό num = 123;",
                 lang: "go",
                 code: `num := 123
 sum := 0
@@ -1882,16 +2036,73 @@ sum := 0
 for num > 0 {
     sum = sum + num % 10
     num = num / 10
-}
-fmt.Println(sum)`,
+}`,
                 options: [
-                    "Μετατρέπει τον αριθμό στο δεκαεξαδικό του σύστημα (hex).",
-                    "Βρίσκει τον αριθμό των ψηφίων (δηλαδή 3 ψηφία).",
+                    "Προσθέτει τα ψηφία (3, μετά 2, μετά 1) καταλήγοντας στο 6.",
+                    "Μετατρέπει τον αριθμό στο δεκαεξαδικό του σύστημα.",
                     "Παίρνει το τελευταίο ψηφίο και επιστρέφει το 3.",
-                    "Προσθέτει τα ψηφία (3, μετά 2, μετά 1) καταλήγοντας στο 6."
+                    "Βρίσκει τον αριθμό των ψηφίων (δηλαδή 3)."
                 ],
-                correct: 3,
-                explain: "Αυτό είναι το κλασικό Digit Extraction pattern! Το <code>num % 10</code> μας δίνει το τελευταίο ψηφίο, το οποίο προσθέτουμε στο sum (Accumulator). Μετά, το <code>num / 10</code> πετάει αυτό το ψηφίο. Έτσι τα παίρνουμε και τα προσθέτουμε ένα-ένα από το τέλος προς την αρχή!"
+                correct: 0,
+                explain: "Pattern 15 (Digit Extraction): Το num % 10 μας δίνει το τελευταίο ψηφίο, το οποίο προσθέτουμε στο sum. Μετά, το num / 10 κόβει (πετάει) αυτό το ψηφίο. Έτσι τα παίρνουμε και τα προσθέτουμε ένα-ένα!"
+            },
+            {
+                q: "Τι ακριβώς θα τυπώσει το παρακάτω loop;",
+                lang: "go",
+                code: `colors := []string{"Red", "Green", "Blue"}
+for i := 0; i < 5; i++ {
+    fmt.Print(colors[i % 3] + " ")
+}`,
+                options: [
+                    "Red Green Blue Red Green",
+                    "Red Green Blue Panic",
+                    "Red Green Blue Blue Blue",
+                    "Red Red Red Red Red"
+                ],
+                correct: 0,
+                explain: "Pattern 16 (Modulo Cycles): Όταν το index i ξεπεράσει το 2 (που είναι η τελευταία έγκυρη θέση στο array), το modulo % 3 το 'διπλώνει' ξανά στο 0. Έτσι: 0, 1, 2, 0, 1 (κυκλικότητα)!"
+            },
+            {
+                q: "Στο τέλος αυτού του κώδικα, ποιος αριθμός βρίσκεται στην κορυφή του stack;",
+                lang: "go",
+                code: `stack := []int{}
+stack = append(stack, 10)
+stack = append(stack, 20)
+
+// Αφαίρεση του τελευταίου
+stack = stack[:len(stack)-1] 
+
+stack = append(stack, 30)`,
+                options: [
+                    "30",
+                    "20",
+                    "10",
+                    "Το stack είναι άδειο"
+                ],
+                correct: 0,
+                explain: "Pattern 17 (Stack): Push το 10. Push το 20. Μετά κάνουμε Pop, βγάζοντας (κόβοντας) το 20, άρα μένει μόνο το 10. Τέλος κάνουμε Push το 30. Η κορυφή είναι πλέον το 30!"
+            },
+            {
+                q: "Αν καλέσουμε αυτόν τον άπληστο αλγόριθμο (Greedy) για 30 σεντς ρέστα (change=30), πόσα νομίσματα θα χρησιμοποιήσει συνολικά;",
+                lang: "go",
+                code: `coins := []int{25, 10, 5, 1}
+change := 30
+count := 0
+
+for _, coin := range coins {
+    for change >= coin {
+        change -= coin
+        count++
+    }
+}`,
+                options: [
+                    "2 νομίσματα (ένα των 25, ένα των 5)",
+                    "3 νομίσματα (τρία των 10)",
+                    "6 νομίσματα (έξι των 5)",
+                    "30 νομίσματα (του 1 σεντ)"
+                ],
+                correct: 0,
+                explain: "Pattern 18 (Greedy): Ο άπληστος αλγόριθμος παίρνει ΠΑΝΤΑ το μεγαλύτερο που χωράει. Χωράει το 25; Ναι. Μένουν 5. Χωράει άλλο 25; Όχι. Πάει στο 10 (όχι). Πάει στο 5 (Ναι). Τέλος! 2 νομίσματα."
             }
         ]);
 
