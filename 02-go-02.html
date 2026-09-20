@@ -144,7 +144,7 @@
             <a href="#@break-continue" class="toc-link toc-h1">Break, continue, early return</a>
             <a href="#@sentinel" class="toc-link toc-h1">Sentinel value</a>
             <a href="#@patterns-value" class="toc-link toc-h1">Η αξία των patterns</a>
-            <a href="#@extremum" class="toc-link toc-h1">Extremum</a>
+            <a href="#@extremum" class="toc-link toc-h1">Min/Max Tracking</a>
             <a href="#@prev-value" class="toc-link toc-h1">Προηγούμενη τιμή</a>
             <a href="#@two-pointers" class="toc-link toc-h1">Two pointers</a>
             <a href="#@sliding-window" class="toc-link toc-h1">Sliding window</a>
@@ -1705,7 +1705,7 @@ func SumNumbers(input string) (sum int, __okname__ bool) {
 <h1>Η αξία των patterns</h1>
 <p>Δεν χρειάζεται να απομνημονεύσεις τα παρακάτω patterns. Όσα περισσότερα patterns γνωρίζεις, τόσες περισσότερες ιδέες θα έχεις διαθέσιμες όταν σκέφτεσαι πώς να λύσεις ένα πρόβλημα — είτε πρόκειται για ένα εντελώς άσχετο πρόβλημα που απλά «μοιάζει» με κάτι που έχεις ξαναδεί, είτε για ένα πιο σύνθετο πρόβλημα που χρειάζεται να συνδυάσεις δύο ή περισσότερα patterns μαζί. Οπότε απλά κατανόησε πώς δουλεύουν.</p>
 
-<h1 id="@extremum">Extremum: Εύρεση Μεγίστου/Ελαχίστου</h1>
+<h1 id="@extremum">Min/Max Tracking</h1>
 <p>Ένα από τα πιο συχνά ερωτήματα πάνω σε δεδομένα: ποιο είναι το μεγαλύτερο (ή μικρότερο) στοιχείο;</p>
 
 <pre><code class="lang-go">// looks reasonable... but is it?
@@ -1740,7 +1740,7 @@ func Max(numbers []int) int {
 
 <p>Ας πούμε τώρα, πώς το πρόβλημα ήταν βρες τον μεγαλύτερο <strong>άρτιο</strong> αριθμό ενός slice. Αν δοκίμαζες να «σπείρεις» τη μεταβλητή σου με το πρώτο στοιχείο του slice, θα είχες πρόβλημα αν αυτό το πρώτο στοιχείο ήταν μονός — δεν είναι καν υποψήφια απάντηση, οπότε αν τελικά δεν υπάρχει κανένας άρτιος στο slice, θα κατέληγες να επιστρέφεις έναν μονό αριθμό σαν να ήταν σωστό αποτέλεσμα, χωρίς κανένα σήμα ότι κάτι πήγε στραβά.</p>
 
-<p>Η εναλλακτική λύση εδώ: αντί για κάποιο στοιχείο του slice, ξεκίνα από τη <strong>μικρότερη δυνατή τιμή</strong> που θα μπορούσε ποτέ να υπάρξει — αυτό είναι το <strong>extremum pattern</strong>. Η Go δίνει έτοιμη μια τέτοια τιμή στο πακέτο <code>math</code>:</p>
+<p>Η εναλλακτική λύση εδώ: αντί για κάποιο στοιχείο του slice, ξεκίνα από τη <strong>μικρότερη δυνατή τιμή</strong> που θα μπορούσε ποτέ να υπάρξει — αυτό είναι το <strong>Min/Max Tracking pattern</strong>. Η Go δίνει έτοιμη μια τέτοια τιμή στο πακέτο <code>math</code>:</p>
 
 <pre><code class="lang-go">import "math"
 
@@ -1760,7 +1760,7 @@ func MaxEven(numbers []int) int {
 
 <div class="callout good"><span class="tag">Η λεπτομέρεια που μετράει</span>Και οι δύο προσεγγίσεις δουλεύουν όταν βρεθεί έστω ένας άρτιος. Η διαφορά φαίνεται στην αποτυχημένη περίπτωση: με το <code>numbers[0]</code> trick, αν δεν υπάρχει κανένας άρτιος, θα κατέληγες να επιστρέφεις έναν μονό αριθμό σαν να ήταν έγκυρη απάντηση — τίποτα δεν σου λέει ότι κάτι πήγε στραβά. Με το <code>math.MinInt</code>, το ίδιο το αποτέλεσμα σου το λέει: αν το τελικό <code>best</code> ισούται με <code>math.MinInt</code>, ξέρεις με σιγουριά ότι δεν βρέθηκε κανένας άρτιος — μπορείς να το ελέγξεις ρητά με <code>if best == math.MinInt</code>, αντί να το ανακαλύψεις αργότερα σαν bug.</div>
 
-<p>Στην πραγματικότητα, το extremum pattern από μόνο του δεν έχει ιδιαίτερο ενδιαφέρον — υπάρχουν αρκετές καλύτερες εναλλακτικές, ανάλογα με το πρόβλημα. Το παρουσιάσαμε εδώ κυρίως για να μπεις στη διαδικασία να σκέφτεσαι πόσο σημαντικό ρόλο παίζει η αρχικοποίηση μιας μεταβλητής — και, ένα βήμα παραπέρα, ότι η καλύτερη λύση συχνά δεν είναι ούτε το <code>numbers[0]</code> ούτε το <code>math.MinInt</code>, αλλά ένα <strong>τυχαίο στοιχείο από το ίδιο το δείγμα</strong> σου.</p>
+<p>Στην πραγματικότητα, η αρχικοποίηση με μια σταθερά όπως το math.MinInt (το Min/Max Tracking δηλαδή) από μόνη της δεν έχει ιδιαίτερο ενδιαφέρον — υπάρχουν αρκετές καλύτερες εναλλακτικές, ανάλογα με το πρόβλημα. Το παρουσιάσαμε εδώ κυρίως για να μπεις στη διαδικασία να σκέφτεσαι πόσο σημαντικό ρόλο παίζει η αρχικοποίηση μιας μεταβλητής — και, ένα βήμα παραπέρα, ότι η καλύτερη λύση συχνά δεν είναι ούτε το <code>numbers[0]</code> ούτε το <code>math.MinInt</code>, αλλά ένα <strong>τυχαίο στοιχείο από το ίδιο το δείγμα</strong> σου.</p>
 
 <br>
 <h1 id="@prev-value">Παρακολούθηση Προηγούμενης Τιμής</h1>
@@ -1813,7 +1813,7 @@ func MaxEven(numbers []int) int {
 <div class="callout good"><span class="tag">Τι κάνει το prev</span>Το <code>prev</code> "ταξιδεύει" μαζί με το loop: πρώτα χρησιμοποιείται για τη σύγκριση, <em>μετά</em> ενημερώνεται με την τρέχουσα τιμή. Αν η σειρά ήταν ανάποδη — ενημέρωση πρώτα, σύγκριση μετά — κάθε τιμή θα συγκρινόταν με τον εαυτό της, και το <code>p > prev</code> θα ήταν πάντα false.</div>
 
 <p>Θα μπορούσαμε βέβαια να συγκρίνουμε το τρέχον στοιχείο απευθείας με <code>prices[i-1]</code>, αντί να κρατάμε ξεχωριστή μεταβλητή <code>prev</code> — αλλά αυτό χρειάζεται έλεγχο <code>i > 0</code> σε κάθε iteration (αλλιώς <code>prices[-1]</code> δεν υπάρχει → panic). Το <code>prev</code> σαν μεταβλητή είναι συνολικά καλύτερη λύση — είναι ένα πολύ ωραίο pattern που θα χρησιμοποιήσεις αρκετά σε loops. Αποφεύγει εντελώς αυτόν τον έλεγχο, αφού αρχικοποιείται πριν καν ξεκινήσει το loop — και δουλεύει το ίδιο, ακόμα κι αν οι τιμές δεν έρχονταν από ένα slice με index, αλλά μία-μία από κάπου αλλού.</p>
-<p>Παρατήρησε επίσης το "αόριστο" <code>best := 1</code> — σαν να μην είχαν προηγηθεί όσα είπαμε με αφορμή το extremum pattern παραπάνω. Ας προβληματιστούμε λίγο για την αρχική τιμή που έχουμε βάλει. Δοκίμασέ το νοερά με μια εντελώς φθίνουσα ακολουθία, π.χ. <code>{15, 12, 9, 6, 3}</code>: κάθε μέρα «σπάει» την πορεία, το <code>current</code> ξαναγυρίζει σε 1 συνέχεια. Αφού καμία μέρα δεν ήταν πραγματικά ανοδική, θα περίμενες το τελικό <code>best</code> να είναι 0 ή 1;</p>
+<p>Παρατήρησε επίσης το "αόριστο" <code>best := 1</code> — σαν να μην είχαν προηγηθεί όσα είπαμε με αφορμή το Min/Max Tracking παραπάνω. Ας προβληματιστούμε λίγο για την αρχική τιμή που έχουμε βάλει. Δοκίμασέ το νοερά με μια εντελώς φθίνουσα ακολουθία, π.χ. <code>{15, 12, 9, 6, 3}</code>: κάθε μέρα «σπάει» την πορεία, το <code>current</code> ξαναγυρίζει σε 1 συνέχεια. Αφού καμία μέρα δεν ήταν πραγματικά ανοδική, θα περίμενες το τελικό <code>best</code> να είναι 0 ή 1;</p>
 
 <div class="callout"><span class="tag">Πότε το αναγνωρίζεις</span>
 Χρειάζεσαι previous value όποτε η ερώτηση του προβλήματος περιέχει τη λέξη <em>"διαδοχικά"</em> ή μια σύγκριση με κάτι που ήρθε πριν: «πόσες φορές ανέβηκε σε σχέση με χθες», «υπάρχουν δύο ίδια στοιχεία δίπλα-δίπλα», «πόσο μεγάλη είναι η μεγαλύτερη σερί». Το σήμα είναι ότι η απάντηση για το τρέχον στοιχείο <strong>δεν μπορεί να δοθεί κοιτάζοντας μόνο αυτό</strong> — χρειάζεται και τον γείτονά του. Το <code>range</code> σου δίνει ένα στοιχείο τη φορά, οπότε το προηγούμενο πρέπει να το κουβαλήσεις εσύ.
@@ -1975,7 +1975,7 @@ limit := 20</code></pre>
 </div>
 <p>Τελικό αποτέλεσμα: το καλύτερο window βρίσκεται στα <code>start=6, end=11</code> — δηλαδή <code>prices[6:12]</code> — με τιμές <code>[4, 3, 2, 1, 8, 2]</code>, άθροισμα ακριβώς 20, μήκος 6.</p>
 
-<div class="callout good"><span class="tag">Το σχήμα expand-then-shrink</span>Πρόσεξε τη δομή: το <code>right</code> ΠΑΝΤΑ επεκτείνεται πρώτα (εξωτερικό loop). Μετά, ένα ΕΣΩΤΕΡΙΚΟ loop συρρικνώνει από αριστερά ΟΣΟ χρειάζεται, μέχρι η συνθήκη να ξαναϊσχύσει. Αυτό το σχήμα είναι σχεδόν πάντα το ίδιο σε κάθε variable sliding window πρόβλημα, όποιο κι αν είναι το ακριβές κριτήριο εγκυρότητας — και το <code>start</code>/<code>end</code> είναι απλά μια δεύτερη «καταγραφή θέσης» πάνω στο ήδη γνωστό extremum pattern, ώστε να θυμόμαστε ΠΟΥ ήταν το καλύτερο, όχι μόνο πόσο μεγάλο.</div>
+<div class="callout good"><span class="tag">Το σχήμα expand-then-shrink</span>Πρόσεξε τη δομή: το <code>right</code> ΠΑΝΤΑ επεκτείνεται πρώτα (εξωτερικό loop). Μετά, ένα ΕΣΩΤΕΡΙΚΟ loop συρρικνώνει από αριστερά ΟΣΟ χρειάζεται, μέχρι η συνθήκη να ξαναϊσχύσει. Αυτό το σχήμα είναι σχεδόν πάντα το ίδιο σε κάθε variable sliding window πρόβλημα, όποιο κι αν είναι το ακριβές κριτήριο εγκυρότητας — και το <code>start</code>/<code>end</code> είναι απλά μια δεύτερη «καταγραφή θέσης» πάνω στο ήδη γνωστό Min/Max Tracking, ώστε να θυμόμαστε ΠΟΥ ήταν το καλύτερο, όχι μόνο πόσο μεγάλο.</div>
 <br>
 
 <h1 id="@complement">Complement Lookup</h1>
@@ -2106,7 +2106,7 @@ limit := 20</code></pre>
 
 `);
 
-        // ── Fill-in-the-blank: Extremum / Previous Value / Sliding Window / Complement Lookup ─ ⊃
+        // ── Fill-in-the-blank: Min/Max Tracking / Previous Value / Sliding Window / Complement Lookup ─ ⊃
         addFillBlank([
             {
                 code:
@@ -2211,7 +2211,7 @@ func findPairs(arr []int, targetSum int) [][]int {
 <p>Γράψε μια function που δέχεται ένα μη κενό slice από <code>int</code> και επιστρέφει τον <strong>δεύτερο μεγαλύτερο</strong> διαφορετικό αριθμό μέσα του (όχι απλά τον δεύτερο στη σειρά — αν το slice είναι <code>{5, 5, 3}</code>, ο δεύτερος μεγαλύτερος ΔΙΑΦΟΡΕΤΙΚΟΣ αριθμός είναι το 3, όχι το 5). Αν δεν υπάρχει δεύτερος διαφορετικός αριθμός (π.χ. το slice έχει μόνο ένα μοναδικό στοιχείο, όπως <code>{7, 7, 7}</code>), επίστρεψε ένα sentinel value της επιλογής σου.</p>
 
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 1 — Drag to reveal →</span></div>
-    <p>Χρειάζεσαι ΔΥΟ μεταβλητές "μέχρι τώρα μέγιστο" — μία για τον απόλυτο μεγαλύτερο, μία για τον δεύτερο μεγαλύτερο. Σκέψου το extremum pattern, αλλά διπλό.</p>
+    <p>Χρειάζεσαι ΔΥΟ μεταβλητές "μέχρι τώρα μέγιστο" — μία για τον απόλυτο μεγαλύτερο, μία για τον δεύτερο μεγαλύτερο. Σκέψου το Min/Max Tracking, αλλά διπλό.</p>
 </div>
 <br>
 <div class="spoiler"><div class="spoiler-lock"><span>HINT 2 — Drag to reveal →</span></div>
@@ -2261,7 +2261,7 @@ func secondLargest(numbers []int) int {
                 q: "Διαβάζεις τις βαθμολογίες ενός παίκτη με τη σειρά και θέλεις να μετρήσεις πόσες φορές η βαθμολογία έπεσε σε σχέση με την προηγούμενη μέτρηση. Ποιο pattern χρειάζεσαι;",
                 options: [
                     "Previous value — κρατάς μια μεταβλητή prev που ταξιδεύει μαζί με το loop",
-                    "Extremum — αρκεί να βρεις το μικρότερο στοιχείο",
+                    "Min/Max Tracking — αρκεί να βρεις το μικρότερο στοιχείο",
                     "Sentinel value — επιστρέφεις μια ειδική τιμή που δηλώνει ότι κάτι πήγε στραβά κατά την ανάγνωση",
                     "Two pointers — δύο δείκτες στα ίδια δεδομένα"
                 ],
@@ -2285,7 +2285,7 @@ func secondLargest(numbers []int) int {
                     "Boolean switch — μια μεταβλητή bool θυμάται αν βρίσκεσαι αυτή τη στιγμή μέσα σε εισαγωγικά",
                     "Accumulator — χτίζεις το αποτέλεσμα σε μια result variable",
                     "Guard clause — κάνεις early return στην αρχή της function για τις ειδικές περιπτώσεις που ξέρεις ήδη",
-                    "Extremum — ξεκινάς από math.MinInt"
+                    "Min/Max Tracking — ξεκινάς από math.MinInt"
                 ],
                 correct: 0,
                 explain: "Το τι κάνεις με έναν χαρακτήρα δεν εξαρτάται από τον ίδιο τον χαρακτήρα, αλλά από το αν έχει προηγηθεί ένα ανοιχτό εισαγωγικό. Αυτό είναι ακριβώς η υπογραφή του boolean switch: η συμπεριφορά εξαρτάται από το ιστορικό του loop."
@@ -2293,7 +2293,7 @@ func secondLargest(numbers []int) int {
             {
                 q: "Θέλεις να βρεις το μεγαλύτερο συνεχόμενο διάστημα ημερών όπου η τιμή ανέβαινε συνέχεια, και να επιστρέψεις πόσο μεγάλο ήταν. Πόσα και ποια patterns χρειάζεσαι;",
                 options: [
-                    "Τρία μαζί — previous value για τη σύγκριση, accumulator για το τρέχον μήκος, extremum για το καλύτερο",
+                    "Τρία μαζί — previous value για τη σύγκριση, accumulator για το τρέχον μήκος, min/max για το καλύτερο",
                     "Μόνο ένα — αρκεί το sliding window σταθερού μεγέθους",
                     "Δύο — two pointers και complement lookup, αφού κάθε πρόβλημα με διαστήματα λύνεται πάντα με δείκτες και map μαζί",
                     "Κανένα — το πρόβλημα λύνεται μόνο με έτοιμη function"
@@ -2339,7 +2339,7 @@ func secondLargest(numbers []int) int {
   <div class="gs-pill"><span class="gs-name">Continue</span><span class="gs-def">αυτό το πέρασμα δεν σε ενδιαφέρει — πήγαινε κατευθείαν στο επόμενο</span></div>
   <div class="gs-pill"><span class="gs-name">Early Return</span><span class="gs-def">ξέρεις την απάντηση εκ των προτέρων — τερμάτισε όλη τη function αμέσως</span></div>
   <div class="gs-pill"><span class="gs-name">Sentinel Value</span><span class="gs-def">ειδική τιμή αδύνατη ως πραγματικό αποτέλεσμα, δηλώνει "κάτι πήγε στραβά" — ή, καλύτερα, multi-return (value, ok bool)</span></div>
-  <div class="gs-pill"><span class="gs-name">Extremum</span><span class="gs-def">ψάχνεις μέγιστο/ελάχιστο — πρόσεξε την αρχική τιμή: πραγματικό στοιχείο του slice ή math.MinInt/MaxInt</span></div>
+  <div class="gs-pill"><span class="gs-name">Min/Max</span><span class="gs-def">ψάχνεις μέγιστο/ελάχιστο — πρόσεξε την αρχική τιμή: πραγματικό στοιχείο του slice ή math.MinInt/MaxInt</span></div>
   <div class="gs-pill"><span class="gs-name">Previous Value</span><span class="gs-def">συγκρίνεις διαδοχικά στοιχεία — μια μεταβλητή prev "ταξιδεύει" μαζί με το loop</span></div>
   <div class="gs-pill"><span class="gs-name">Two Pointers</span><span class="gs-def">δύο ξεχωριστές θέσεις index μέσα στα ίδια δεδομένα ταυτόχρονα, συνήθως σε ταξινομημένα δεδομένα</span></div>
   <div class="gs-pill"><span class="gs-name">Sliding Window (fixed)</span><span class="gs-def">συνεχόμενο κομμάτι σταθερού μεγέθους k — πρόσθεσε δεξιά, αφαίρεσε αριστερά, αντί να ξαναϋπολογίζεις</span></div>
@@ -7677,7 +7677,7 @@ best[0] = 0 // zero coins are needed to make zero
 
 <p> Ο πίνακας έχει <code>amount+1</code> θέσεις γιατί χρειαζόμαστε και το index 0. Η <code>make</code> γεμίζει με μηδενικά, οπότε η γραμμή <code>best[0] = 0</code> είναι τεχνικά περιττή — τη γράφουμε επειδή είναι το base case και αξίζει να φαίνεται. </p>
 
-<p><strong>2.</strong> Χρειαζόμαστε έναν τρόπο να λέμε «δεν έχω βρει τίποτα ακόμα» μια τιμή μεγαλύτερη από κάθε πιθανή λύση (το pattern Extremum της Ενότητας 3):</p>
+<p><strong>2.</strong> Χρειαζόμαστε έναν τρόπο να λέμε «δεν έχω βρει τίποτα ακόμα» μια τιμή μεγαλύτερη από κάθε πιθανή λύση (το Min/Max Tracking της Ενότητας 3):</p>
 
 <pre><code class="lang-go">// Bigger than any real answer: the smallest coin is at least 1, so you can
 // never need more than "amount" coins in total.
@@ -7762,7 +7762,7 @@ func MinCoins(coins []int, amount int) int {
 
 <div class="callout">
     <span class="tag">Τα αδύνατα ποσά "διαδίδονται" μόνα τους</span>
-    <p>Αν είχαμε μόνο κέρματα <code>{4, 3}</code> (και όχι κέρμα με αξία <code>1</code>) το ποσό 1 δεν μπορεί να δοθεί, οπότε το <code>best[1]</code> θα έμενε <code>impossible</code>. Όταν αργότερα κάποιο <code>i</code> δοκιμάσει να διαβάσει το <code>best[1]</code>, ο υποψήφιος βγαίνει <code>impossible + 1</code> — μεγαλύτερος από το <code>impossible</code>, άρα δεν κερδίζει ποτέ τη σύγκριση. Δεν χρειάζεται ξεχωριστός έλεγχος: το ίδιο το μέγεθος του αριθμού και το extremum pattern κάνει τη δουλειά.</p>
+    <p>Αν είχαμε μόνο κέρματα <code>{4, 3}</code> (και όχι κέρμα με αξία <code>1</code>) το ποσό 1 δεν μπορεί να δοθεί, οπότε το <code>best[1]</code> θα έμενε <code>impossible</code>. Όταν αργότερα κάποιο <code>i</code> δοκιμάσει να διαβάσει το <code>best[1]</code>, ο υποψήφιος βγαίνει <code>impossible + 1</code> — μεγαλύτερος από το <code>impossible</code>, άρα δεν κερδίζει ποτέ τη σύγκριση. Δεν χρειάζεται ξεχωριστός έλεγχος: το ίδιο το μέγεθος του αριθμού και το Min/Max Tracking κάνει τη δουλειά.</p>
 </div>
 
 <h2>Πώς γεμίζει ο πίνακας</h2>
@@ -8787,7 +8787,7 @@ func CountWays(n int) int {
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>3. Patterns</strong></td>
-        <td style="padding:8px;">τα δομικά υλικά — accumulator, boolean switch, sentinel, extremum, previous value, two pointers, sliding window, complement lookup</td>
+        <td style="padding:8px;">τα δομικά υλικά — accumulator, boolean switch, sentinel, min/max, previous value, two pointers, sliding window, complement lookup</td>
     </tr>
     <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.15);">
         <td style="padding:8px;"><strong>4. Δομές δεδομένων</strong></td>
@@ -9043,7 +9043,7 @@ func CountWays(n int) int {
   <tr><td class="gt-term">boolean switch</td><td class="gt-def">bool που θυμάται αν κάτι έχει ήδη συμβεί μέσα στο loop</td></tr>
   <tr><td class="gt-term">guard clause</td><td class="gt-def">early return στην αρχή, για τις περιπτώσεις που ξέρεις ήδη</td></tr>
   <tr><td class="gt-term">sentinel value</td><td class="gt-def">ειδική τιμή που σημαίνει «δεν υπάρχει απάντηση» — προσοχή στη συγκρουόμενη έγκυρη τιμή</td></tr>
-  <tr><td class="gt-term">extremum</td><td class="gt-def">μέγιστο ή ελάχιστο, με αρχικοποίηση από πραγματικό στοιχείο και όχι από το μηδέν</td></tr>
+  <tr><td class="gt-term">min/max</td><td class="gt-def">μέγιστο ή ελάχιστο, με αρχικοποίηση από πραγματικό στοιχείο και όχι από το μηδέν</td></tr>
   <tr><td class="gt-term">previous value</td><td class="gt-def">μεταβλητή που κρατάει το προηγούμενο στοιχείο, για συγκρίσεις με γείτονες</td></tr>
   <tr><td class="gt-term">two pointers</td><td class="gt-def">δύο δείκτες στα ίδια δεδομένα — από τις άκρες, ή με άλματα</td></tr>
   <tr><td class="gt-term">sliding window</td><td class="gt-def">παράθυρο που μετακινείται προσθέτοντας δεξιά και αφαιρώντας αριστερά</td></tr>
