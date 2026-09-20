@@ -1,0 +1,76 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Lem-in Theme (Ant-inspired)
+   Color scheme ONLY. Load this AFTER style.css
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* The 5-tone palette */
+  /* Deepest dark soil for backgrounds */
+  --tone-1: #16110eff;
+  --tone-2: #211a15ff;
+
+  /* Rich earth for panels/cards */
+  --tone-3: #36281eff;
+
+  /* Muted dirt for secondary text/borders */
+  --tone-4: #9c7b64ff;
+
+  /* Vibrant amber/copper for accents (the ant color) */
+  --tone-5: #d96621ff;
+
+  /* RGB variants for opacity usage */
+  --tone-1-rgb: 22, 17, 14;
+  --tone-2-rgb: 33, 26, 21;
+  --tone-3-rgb: 54, 40, 30;
+  --tone-4-rgb: 156, 123, 100;
+  --tone-5-rgb: 217, 102, 33;
+
+  /* Text: Pale bone/sand color */
+  --tone-text: #e3d1c5ff;
+  --tone-text-rgb: 227, 209, 197;
+
+  /* Very dark abyss for code blocks */
+  --code-bg: #0d0a08ff;
+  --code-bg-rgb: 13, 10, 8;
+
+  /* Map semantic aliases to the tones */
+  --bg: var(--tone-1);
+  --panel: var(--tone-3);
+  --panel-rgb: var(--tone-3-rgb);
+  --ink: var(--tone-text);
+  --ink-rgb: var(--tone-text-rgb);
+  --accent: var(--tone-5);
+  --accent-rgb: var(--tone-5-rgb);
+
+  /* Fixed validation colors */
+  --danger: #e63946ff;
+  --danger-rgb: 230, 57, 70;
+  --correct: #6b9942ff;
+  --correct-rgb: 107, 153, 66;
+  --wrong: var(--danger);
+  --wrong-rgb: var(--danger-rgb);
+
+  /* Custom typography effects */
+  --h1-color: var(--accent);
+  --h1-shadow: var(--tone-2);
+  --h1-outline: var(--code-bg);
+}
+
+/* Guardrail: Heading Tracking for editorial feel */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.03em;
+}
+
+/* Ant-styled heavy shadow for h1 */
+h1 {
+  color: var(--h1-color);
+  text-shadow:
+    -0.035em -0.035em 0 var(--h1-outline),
+    0.035em 0.035em 0 var(--h1-outline),
+    0px 0.04em 0 var(--h1-shadow),
+    0px 0.06em 0 var(--h1-shadow),
+    0px 0.08em 0 var(--h1-shadow),
+    0px 0.10em 0 var(--h1-shadow);
+}
