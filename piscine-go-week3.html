@@ -124,7 +124,7 @@
             <a class="toc-link toc-h1" href="#@struct-mesa-se-s">Struct μέσα σε Struct (Nested)</a>
             <a class="toc-link toc-h1" href="#@perasma-se-synar">Πέρασμα σε Συναρτήσεις (Pointers)</a>
             <div class="toc-section">ΚΕΦΑΛΑΙΟ 3 — PROGRAMMING PATTERNS</div>
-            <a class="toc-link toc-h1" href="#@ta-15-motiva-pro">Τα 18 Μοτίβα Προγραμματισμού</a>
+            <a class="toc-link toc-h1" href="#@ta-18-motiva-pro">Τα 18 Μοτίβα Προγραμματισμού</a>
             <div class="toc-section">PATTERN 1</div>
             <a class="toc-link toc-h1" href="#@1-result-variabl">1. The Accumulator</a>
             <div class="toc-section">PATTERN 2</div>
@@ -145,8 +145,9 @@
             <a class="toc-link toc-h1" href="#@two-pointers-fas">Two Pointers: Fast &amp; Slow</a>
             <div class="toc-section">PATTERN 9</div>
             <a class="toc-link toc-h1" href="#@9-sliding-window">9. Sliding Window</a>
+            <a class="toc-link toc-h1" href="#@9-sliding-window-var">Sliding Window: Δυναμικό (Variable)</a>
             <div class="toc-section">PATTERN 10</div>
-            <a class="toc-link toc-h1" href="#@10-array-cleaning">10. Array Cleaning (In-Place)</a>
+            <a class="toc-link toc-h1" href="#@10-map-lookup">10. Map Fast Lookup</a>
             <div class="toc-section">PATTERN 11</div>
             <a class="toc-link toc-h1" href="#@11-target-lookup">11. Target Lookup (Complement)</a>
             <div class="toc-section">PATTERN 12</div>
@@ -979,7 +980,7 @@ func main() {
         // ══════════════════════════════════════════════════════════════════════
 
         addContent(`
-<div class="eyebrow" id="@ta-15-motiva-pro">Κεφάλαιο 3 / 3 — Programming Patterns</div>
+<div class="eyebrow" id="@ta-18-motiva-pro">Κεφάλαιο 3 / 3 — Programming Patterns</div>
 <h1>18 Μοτίβα Προγραμματισμού</h1>
 <p class="lede">Δεν χρειάζεται να ανακαλύπτεις τον τροχό σε κάθε άσκηση. Εδώ συγκεντρώσαμε 18 σημαντικά μοτίβα κώδικα (patterns) που θα συναντήσεις, με παραδείγματα.</p>
 
@@ -1030,9 +1031,9 @@ func main() {
     <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Sliding Window</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Κυλιόμενο παράθυρο</div></div>
   </a>
 
-  <a href="#@10-array-cleaning" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
+  <a href="#@10-map-lookup" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
     <div class="blacked-shadow" style="color: var(--tone-4); font-size: 36px; line-height: 1; flex-shrink: 0; width: 50px; text-align: center;">10</div>
-    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Array Cleaning</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">In-Place Slicing</div></div>
+    <div><div style="font-size: 16px; font-weight: 600; color: var(--tone-text); margin-bottom: 4px;">Map Fast Lookup</div><div style="font-size: 13px; color: rgba(var(--tone-text-rgb), 0.7);">Ακαριαία Εύρεση</div></div>
   </a>
 
   <a href="#@11-target-lookup" class="toc-link" style="text-decoration: none; display: flex; align-items: center; gap: 16px; background: rgba(var(--tone-2-rgb), 0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--tone-3);">
@@ -1169,22 +1170,21 @@ if inWord == true {
 <p>Μεταβάλλοντας τον διακόπτη <code>inParenthesis</code> όποτε βρίσκουμε <code>'('</code> ή <code>')'</code>, ξέρουμε σε ποια από τις δύο μεταβλητές πρέπει να "χτίσουμε" τον κάθε χαρακτήρα.</p>
 <pre><code class="lang-go">normalText := ""
 explanationText := ""
-inParenthesis := false
+inParenthesis := false // Ο διακόπτης μας, αρχικά "κατεβασμένος"
 
 for _, char := range text {
     if char == '(' {
-        inParenthesis = true
-        continue // Δεν θέλουμε να τυπώσουμε την ίδια την παρένθεση
+        inParenthesis = true // Ανεβάζουμε τον διακόπτη! Μπαίνουμε σε παρένθεση
+        continue             // Κάνουμε skip τον ίδιο τον χαρακτήρα '('
     } else if char == ')' {
-        inParenthesis = false
-        continue // Ούτε αυτήν!
+        inParenthesis = false // Κατεβάζουμε τον διακόπτη! Βγήκαμε από την παρένθεση
+        continue              // Κάνουμε skip τον ίδιο τον χαρακτήρα ')'
     }
     
-    // Η διοχέτευση της πληροφορίας:
     if inParenthesis {
-        explanationText = explanationText + string(char)
+        explanationText += string(char) // Δρομολόγηση της πληροφορίας στο ένα...
     } else {
-        normalText = normalText + string(char)
+        normalText += string(char)      // ...ή στο άλλο!
     }
 }</code></pre>
 `);
@@ -1552,26 +1552,77 @@ for i := windowSize; i < len(nums); i++ {
 fmt.Println(maxSum) // 9  (τα [5, 1, 3])</code></pre>
 `);
 
-        // 10. Array Cleaning (In-Place)
+        // 9.2 Variable Sliding Window
         addContent(`
-<div class="eyebrow" id="@10-array-cleaning">Pattern 10</div>
-<h1>10. Array Cleaning (In-Place)</h1>
-<p class="lede">Όταν θέλουμε να "καθαρίσουμε" τις άκρες ενός slice (π.χ. να διώξουμε τα κενά ή τα σημεία στίξης), η βέλτιστη πρακτική είναι να μην φτιάξουμε νέο slice, αλλά να βρούμε τα σωστά όρια του υπάρχοντος.</p>
+<div class="eyebrow" id="@9-sliding-window-var">Pattern 9.2 (Δυναμικό Μέγεθος)</div>
+<h1>Sliding Window: Variable-Size</h1>
+<p>Σε ένα slice τιμών, βρες το <strong>μεγαλύτερο συνεχόμενο διάστημα</strong> του οποίου το άθροισμα δεν ξεπερνάει ένα όριο <code>limit</code> (π.χ. 20). Θα συνδυάσουμε το sliding window με <strong>δύο δείκτες</strong> (left και right) που δουλεύουν μαζί, ο καθένας με διαφορετικό ρόλο.</p>
 
-<h2>Κόψιμο χωρίς Memory Allocation</h2>
-<p>Στη Go, το slicing <code>arr[start:end]</code> δεν αντιγράφει δεδομένα, απλώς φτιάχνει μια νέα "οπτική γωνία" πάνω στα ίδια δεδομένα. Βρίσκουμε πού αρχίζουν τα αληθινά δεδομένα και πού τελειώνουν, και απλά... κλείνουμε το παράθυρο!</p>
-<pre><code class="lang-go">start := 0
-for start < len(s) && isGarbage(s[start]) {
-    start++
-}
+<pre><code class="lang-go">prices := []int{3, 5, 8, 4, 12, 9, 4, 3, 2, 1, 8, 2, 7}
+limit := 20
 
-end := len(s)
-for end > start && isGarbage(s[end-1]) {
-    end--
-}
+left := 0          // Αριστερή άκρη του παραθύρου
+windowSum := 0     // Τρέχον άθροισμα (όσων είναι μέσα στο παράθυρο)
+bestLength := 0    // Το μέγεθος του ΚΑΛΥΤΕΡΟΥ παραθύρου ως τώρα
+bestStart := 0     // Πού ξεκινούσε το καλύτερο παράθυρο
 
-// Το s[start:end] είναι πλέον πεντακάθαρο στις άκρες του.
-</code></pre>
+for right := 0; right < len(prices); right++ {
+    windowSum += prices[right] // Βήμα 1: Επέκτεινε το παράθυρο προς τα δεξιά
+
+    for windowSum > limit {    // Αν το όριο ξεπεραστεί, ΜΙΚΡΥΝΕ το από αριστερά
+        windowSum -= prices[left] // Αφαίρεσε το αριστερότερο στοιχείο
+        left++                    // Προχώρα την αριστερή άκρη
+    }
+
+    length := right - left + 1 // Υπολόγισε το μέγεθος του έγκυρου πια παραθύρου
+    if length > bestLength {   // Είναι το καλύτερο που έχουμε δει;
+        bestLength = length
+        bestStart = left       // Κράτα τη θέση του
+    }
+}</code></pre>
+
+<p>Ας το δούμε οπτικά σε λειτουργία (expand then shrink):</p>
+
+<div id="sw-viz">
+  <span class="vz-tag">Sliding Window — Βήμα προς Βήμα</span>
+  <div class="vz-controls">
+    <button class="reset-quiz-btn" id="sw-prev" disabled>← prev</button>
+    <button class="reset-quiz-btn" id="sw-next">next →</button>
+    <button class="reset-quiz-btn" id="sw-reset">⟲ reset</button>
+    <button class="reset-quiz-btn vz-btn-stable" id="sw-play" title="Play / Pause ↕">▶ autoplay ↕</button>
+  </div>
+  <div class="quiz-code-block" style="position:relative; border-radius:8px; padding:18px 20px;">
+    <div id="sw-diff-badge" class="vz-diff-badge"></div>
+    <div class="vz-pointer-row" id="sw-right-row"></div>
+    <div class="vz-pointer-row" id="sw-left-row"></div>
+    <div class="vz-array-row" id="sw-array-row"></div>
+  </div>
+  <div class="glossary-group" style="margin-top:16px;">
+    <div class="glossary-strip" id="sw-state-panel"></div>
+  </div>
+</div>`);
+
+        // 10. Map Fast Lookup
+        addContent(`
+<div class="eyebrow" id="@10-map-lookup">Pattern 10</div>
+<h1>10. Map Fast Lookup</h1>
+<p class="lede">Όταν έχεις μια λίστα από στοιχεία και θέλεις να βρίσκεις συχνά αν ένα συγκεκριμένο στοιχείο υπάρχει μέσα της, το να τρέχεις ένα loop (for) κάθε φορά για να το ψάξεις είναι εξαιρετικά αργό.</p>
+
+<h2>Εύρεση Χωρίς Loop!</h2>
+<p>Η λύση είναι να μεταφέρεις τα δεδομένα σου σε ένα Map. Η εσωτερική λειτουργία των Maps επιτρέπει να βρίσκεις, να προσθέτεις, ή να ελέγχεις αν υπάρχει ένα κλειδί <strong>ακαριαία</strong>. Δεν γίνεται απολύτως καμία επανάληψη (loop) — πας απευθείας στο στοιχείο. Είναι ο πιο γρήγορος δυνατός τρόπος αναζήτησης!</p>
+<pre><code class="lang-go">allowedUsers := make(map[string]bool)
+allowedUsers["admin"] = true
+allowedUsers["student"] = true
+allowedUsers["guest"] = true
+
+userToFind := "student"
+
+// Αντί για ένα αργό loop, ρωτάμε το map ΑΠΕΥΘΕΙΑΣ:
+if allowedUsers[userToFind] { // Βρέθηκε ακαριαία, χωρίς καμία επανάληψη!
+    fmt.Println("Welcome,", userToFind)
+} else {
+    fmt.Println("Access denied.")
+}</code></pre>
 `);
 
         // 11. Target Lookup
@@ -1582,13 +1633,16 @@ for end > start && isGarbage(s[end-1]) {
 
 <h2>Η Λογική του Συμπληρώματος</h2>
 <p>Ο πολύ πιο αποδοτικός τρόπος είναι να χρησιμοποιήσουμε ένα Map (ή ένα Array). Καθώς διαβάζουμε το στοιχείο <code>40</code>, ξέρουμε ότι ψάχνουμε το <code>60</code>. Απλά αποθηκεύουμε ότι "είδαμε το 40" και συνεχίζουμε. Αν αργότερα πετύχουμε το 60, κοιτάμε τη μνήμη μας: "Έχω δει το 40; Ναι!"</p>
-<pre><code class="lang-go">seen := make(map[int]bool)
+<pre><code class="lang-go">seen := make(map[int]bool) // Η "μνήμη" μας (τι έχουμε ήδη δει)
+
 for _, num := range arr {
-    target := 100 - num
-    if seen[target] {
-        fmt.Println("Βρέθηκε ζευγάρι:", num, target)
+    complement := 100 - num // Υπολογίζουμε τι ακριβώς λείπει (συμπλήρωμα)
+
+    if seen[complement] {   // Υπάρχει αυτό το συμπλήρωμα ήδη στη μνήμη μας;
+        fmt.Println("Βρέθηκε ζευγάρι:", num, complement)
     }
-    seen[num] = true
+    
+    seen[num] = true        // Αποθηκεύουμε τον τρέχοντα αριθμό για το μέλλον
 }</code></pre>
 `);
 
@@ -1693,22 +1747,22 @@ for i := 0; i < 5; i++ {
                 explain: "Pattern 9 (Sliding Window): Παγίδα! Το array έχει μόνο 3 στοιχεία (index 0, 1, 2), αλλά το loop προσπαθεί να φτάσει μέχρι το 4. Όταν ζητήσει το nums[3], η Go θα 'σκάσει' (Panic) ακαριαία."
             },
             {
-                q: "Μετά το τέλος αυτού του loop (και ΜΟΝΟ αυτού), ποια θα είναι η τιμή της μεταβλητής start;",
+                q: "Αν έχουμε 1.000.000 (ένα εκατομμύριο) χρήστες, πόσες φορές θα εκτελεστεί κάποιο 'κρυφό' loop για να βρει το map αν υπάρχει ο 'student';",
                 lang: "go",
-                code: `words := []string{"", "hello", "world", ""}
-start := 0
+                code: `usersMap := make(map[string]bool)
+// ... προσθήκη 1.000.000 χρηστών ...
 
-for start < len(words) && words[start] == "" {
-    start++
+if usersMap["student"] {
+    fmt.Println("Found!")
 }`,
                 options: [
-                    "0",
-                    "1",
-                    "3",
-                    "4"
+                    "Καμία φορά (0), η αναζήτηση γίνεται ακαριαία χωρίς loop.",
+                    "1 φορά, αν ο 'student' είναι ο πρώτος που μπήκε.",
+                    "1.000.000 φορές στη χειρότερη περίπτωση.",
+                    "500.000 φορές κατά μέσο όρο."
                 ],
-                correct: 1,
-                explain: "Pattern 10 (Array Cleaning): Το loop ελέγχει τα στοιχεία από την αρχή. Το words[0] είναι κενό, άρα το start γίνεται 1. Στην 2η επανάληψη, το words[1] είναι 'hello' (ΟΧΙ κενό), άρα η συνθήκη σπάει και το loop σταματάει στο 1!"
+                correct: 0,
+                explain: "Pattern 10 (Map Fast Lookup): Το τεράστιο πλεονέκτημα του map είναι ότι ΔΕΝ ψάχνει ένα-ένα τα στοιχεία (όπως θα έκανε ένα slice). Η εύρεση γίνεται ακαριαία, πηγαίνοντας κατευθείαν στο στοιχείο, χωρίς καμία απολύτως επανάληψη!"
             },
             {
                 q: "Σε ποια ακριβώς επανάληψη του loop η συνάρτηση θα επιστρέψει true (βρίσκοντας το ζευγάρι 2+8=10);",
