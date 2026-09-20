@@ -321,7 +321,116 @@
         word-break: break-word
       }
     }
-  </style>
+  
+    /* New layout styles */
+    main {
+        max-width: none !important; /* take all available width */
+        padding-right: 2rem !important; /* hug the right side */
+    }
+    article[hidden] {
+        display: none !important;
+    }
+    article:has(.sol-container) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 30px;
+    }
+    .exercise-content {
+        flex: 1 1 0%;
+        min-width: 0; 
+    }
+    .sol-container {
+        flex: 1 1 0%; /* exactly same flex as exercise-content for a 50/50 split */
+        min-width: 0; 
+        max-width: none;
+        margin-top: 0;
+        position: sticky;
+        top: 2rem;
+    }
+    @media (max-width: 1200px) {
+        .sol-container {
+            flex: 1 1 100%;
+            max-width: none;
+            position: static;
+            margin-top: 20px;
+        }
+    }
+    /* Petrol Styling */
+    .sol-btn {
+        background: #24362D;
+        color: #e0e6e2;
+        border: 1px solid #364F42;
+        padding: 8px 16px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: bold;
+        font-family: Consolas, "Courier New", monospace;
+        transition: background 0.2s;
+        width: 100%;
+        text-align: left;
+    }
+    .sol-btn:hover {
+        background: #2E453A;
+    }
+    .sol-code {
+        margin-top: 10px;
+        background: #1E2B24;
+        padding: 10px 0;
+        border-radius: 6px;
+        border: 1px solid #364F42;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        color: #ffffff;
+        line-height: 1.6;
+        overflow-x: auto;
+        counter-reset: line;
+        position: relative;
+    }
+    .sol-line {
+        display: flex;
+        border-bottom: 1px solid #2B3D34;
+    }
+    .sol-line:last-child {
+        border-bottom: none;
+    }
+    .sol-line::before {
+        counter-increment: line;
+        content: counter(line);
+        width: 2.5em;
+        text-align: right;
+        padding-right: 12px;
+        color: #556B5F;
+        border-right: 1px solid #2B3D34;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+    .sol-line-content {
+        white-space: pre;
+        flex-grow: 1;
+    }
+    .copy-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(54, 79, 66, 0.8);
+        border: 1px solid #556B5F;
+        color: #e0e6e2;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        opacity: 0.5;
+        transition: opacity 0.2s, background 0.2s;
+    }
+    .sol-code:hover .copy-btn {
+        opacity: 1;
+    }
+    .copy-btn:hover {
+        background: #2E453A;
+    }
+</style>
+
 </head>
 
 <body>
@@ -452,6 +561,8 @@
 
   <main id="main">
     <article id='data-how-2-js' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>how-2-js</h2>
       <h2>How 2 JS</h2>
@@ -492,8 +603,19 @@
       <p>Create a repository named <code>((ROOT))</code> which will hold all your solutions for this piscine. Add your 2
         generated files to it.</p>
       <p>We'll start slow for now... 🐢</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-how-2-js').hidden = !document.getElementById('sol-data-how-2-js').hidden">Toggle Solution</button>
+        <div id="sol-data-how-2-js" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-primitives' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>primitives</h2>
       <h2>Primitives</h2>
@@ -511,8 +633,19 @@
             operators</a></li>
         <li><a href="https://nan-academy.github.io/js-training/examples/variables.js">Variables</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-primitives').hidden = !document.getElementById('sol-data-primitives').hidden">Toggle Solution</button>
+        <div id="sol-data-primitives" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-declarations' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>declarations</h2>
       <h2>Declarations</h2>
@@ -553,8 +686,19 @@
         <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/object/freeze">Freeze</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-declarations').hidden = !document.getElementById('sol-data-declarations').hidden">Toggle Solution</button>
+        <div id="sol-data-declarations" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-mutability' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>mutability</h2>
       <h2>Mutability</h2>
@@ -581,8 +725,19 @@
   country: 'US',
 }
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-mutability').hidden = !document.getElementById('sol-data-mutability').hidden">Toggle Solution</button>
+        <div id="sol-data-mutability" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-more-or-less' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>more-or-less</h2>
       <h2>More Or Less</h2>
@@ -602,8 +757,19 @@
         <li><a href="https://nan-academy.github.io/js-training/examples/primitive-and-operators.js">Primitives and
             Operators</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-more-or-less').hidden = !document.getElementById('sol-data-more-or-less').hidden">Toggle Solution</button>
+        <div id="sol-data-more-or-less" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-returns' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>returns</h2>
       <h2>Returns</h2>
@@ -619,8 +785,19 @@
         <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures</a></li>
         <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-returns').hidden = !document.getElementById('sol-data-returns').hidden">Toggle Solution</button>
+        <div id="sol-data-returns" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-last-first-kiss' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>last-first-kiss</h2>
       <h2>Last First Kiss</h2>
@@ -643,8 +820,19 @@
         <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">Data Structures.js</a></li>
         <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get.js</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-last-first-kiss').hidden = !document.getElementById('sol-data-last-first-kiss').hidden">Toggle Solution</button>
+        <div id="sol-data-last-first-kiss" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-concat-str' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>concat-str</h2>
       <h2>Concat Str</h2>
@@ -656,8 +844,19 @@
         <li><a href="https://nan-academy.github.io/js-training/examples/primitive-and-operators.js">Primitive and
             Operators.js</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-concat-str').hidden = !document.getElementById('sol-data-concat-str').hidden">Toggle Solution</button>
+        <div id="sol-data-concat-str" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-change' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>change</h2>
       <h2>Change</h2>
@@ -691,8 +890,19 @@
   log: console.log,
 }
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-change').hidden = !document.getElementById('sol-data-change').hidden">Toggle Solution</button>
+        <div id="sol-data-change" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-dog-years' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>dog-years</h2>
       <h2>Dog Years</h2>
@@ -713,8 +923,19 @@
       <p>If you were told that a dog was 1,000,000,000 seconds old, you should calculate that the dog would be 221.82
         Earth-years old.</p>
       <p>You will have to format the number so that the result is rounded like the example above.</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-dog-years').hidden = !document.getElementById('sol-data-dog-years').hidden">Toggle Solution</button>
+        <div id="sol-data-dog-years" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-circular' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>circular</h2>
       <h2>Circular</h2>
@@ -727,8 +948,19 @@
         <li><a href="https://nan-academy.github.io/js-training/examples/get.js">Get</a></li>
         <li><a href="https://nan-academy.github.io/js-training/examples/set.js">Sets</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-circular').hidden = !document.getElementById('sol-data-circular').hidden">Toggle Solution</button>
+        <div id="sol-data-circular" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-biggie-smalls' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>biggie-smalls</h2>
       <h2>Biggie Smalls</h2>
@@ -742,8 +974,19 @@
       <ul>
         <li><a href="https://devdocs.io/javascript-number/">Number</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-biggie-smalls').hidden = !document.getElementById('sol-data-biggie-smalls').hidden">Toggle Solution</button>
+        <div id="sol-data-biggie-smalls" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-method-man' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>method-man</h2>
       <h2>Method Man</h2>
@@ -762,8 +1005,19 @@
       <ul>
         <li><a href="https://nan-academy.github.io/js-training/examples/methods.js">Methods</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-method-man').hidden = !document.getElementById('sol-data-method-man').hidden">Toggle Solution</button>
+        <div id="sol-data-method-man" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-abs' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>abs</h2>
       <h2>Abs</h2>
@@ -784,8 +1038,19 @@
       </blockquote>
       <pre><code class="language-js">Math.abs = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-abs').hidden = !document.getElementById('sol-data-abs').hidden">Toggle Solution</button>
+        <div id="sol-data-abs" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-min-max' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>min-max</h2>
       <h2>Min Max</h2>
@@ -811,8 +1076,19 @@
       </blockquote>
       <pre><code class="language-js">Math.min = Math.max = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-min-max').hidden = !document.getElementById('sol-data-min-max').hidden">Toggle Solution</button>
+        <div id="sol-data-min-max" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-sign' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>sign</h2>
       <h2>Sign</h2>
@@ -836,8 +1112,19 @@
       </blockquote>
       <pre><code class="language-js">Math.sign = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-sign').hidden = !document.getElementById('sol-data-sign').hidden">Toggle Solution</button>
+        <div id="sol-data-sign" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-is' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>is</h2>
       <h2>Is</h2>
@@ -878,8 +1165,19 @@ console.log(is.num('ciao'))
       </blockquote>
       <pre><code class="language-js">const is = {}
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-is').hidden = !document.getElementById('sol-data-is').hidden">Toggle Solution</button>
+        <div id="sol-data-is" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-physics' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>physics</h2>
       <h2>physics</h2>
@@ -926,8 +1224,19 @@ t = time
       <p><em>&quot;Truth is ever to be found in simplicity, and not in the multiplicity and confusion of
           things.&quot;</em></p>
       <p>Isaac Newton</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-physics').hidden = !document.getElementById('sol-data-physics').hidden">Toggle Solution</button>
+        <div id="sol-data-physics" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-collections' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>collections</h2>
       <h2>Collections</h2>
@@ -995,8 +1304,19 @@ superTypeOf(superTypeOf) // -&gt; 'Function'
         <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">Object.fromEntries</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/object/entries">Object.entries</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-collections').hidden = !document.getElementById('sol-data-collections').hidden">Toggle Solution</button>
+        <div id="sol-data-collections" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='data-block-chain' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>DATA</div>
       <h2>block-chain</h2>
       <h2>Block Chain</h2>
@@ -1059,8 +1379,19 @@ console.log(fork.index) //  -&gt; 5
     [...str].reduce((h, c) =&gt; (h = (h &lt;&lt; 5) - h + c.charCodeAt(0)) &amp; h, 0) &gt;&gt;&gt; 0
   ).toString(36)
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-data-block-chain').hidden = !document.getElementById('sol-data-block-chain').hidden">Toggle Solution</button>
+        <div id="sol-data-block-chain" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-repeat' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>repeat</h2>
       <h2>Repeat</h2>
@@ -1082,8 +1413,19 @@ console.log(fork.index) //  -&gt; 5
       </blockquote>
       <pre><code class="language-js">String.prototype.repeat = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-repeat').hidden = !document.getElementById('sol-loop-repeat').hidden">Toggle Solution</button>
+        <div id="sol-loop-repeat" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-elementary' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>elementary</h2>
       <h2>Elementary</h2>
@@ -1101,8 +1443,19 @@ console.log(fork.index) //  -&gt; 5
       <pre><code class="language-js">Math.imul = undefined
 eval = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-elementary').hidden = !document.getElementById('sol-loop-elementary').hidden">Toggle Solution</button>
+        <div id="sol-loop-elementary" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-index-of' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>index-of</h2>
       <h2>Index Of</h2>
@@ -1135,8 +1488,19 @@ eval = undefined
 Array.prototype.lastIndexOf = undefined
 Array.prototype.includes = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-index-of').hidden = !document.getElementById('sol-loop-index-of').hidden">Toggle Solution</button>
+        <div id="sol-loop-index-of" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-slicer' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>slicer</h2>
       <h2>Slicer</h2>
@@ -1160,8 +1524,19 @@ Array.prototype.includes = undefined
       <pre><code class="language-js">Array.prototype.slice = undefined
 String.prototype.slice = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-slicer').hidden = !document.getElementById('sol-loop-slicer').hidden">Toggle Solution</button>
+        <div id="sol-loop-slicer" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-keep-cut' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>keep-cut</h2>
       <h2>Keep Cut</h2>
@@ -1192,8 +1567,19 @@ String.prototype.slice = undefined
       <ul>
         <li><a href="https://devdocs.io/javascript/global_objects/array/slice">Array.slice</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-keep-cut').hidden = !document.getElementById('sol-loop-keep-cut').hidden">Toggle Solution</button>
+        <div id="sol-loop-keep-cut" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-cut-corners' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>cut-corners</h2>
       <h2>Cut Corners</h2>
@@ -1236,8 +1622,19 @@ console.log(nums.map(ceil))
       </blockquote>
       <pre><code class="language-js">Math.round = Math.ceil = Math.floor = Math.trunc = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-cut-corners').hidden = !document.getElementById('sol-loop-cut-corners').hidden">Toggle Solution</button>
+        <div id="sol-loop-cut-corners" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-reverser' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>reverser</h2>
       <h2>Reverser</h2>
@@ -1256,8 +1653,19 @@ console.log(nums.map(ceil))
       </blockquote>
       <pre><code class="language-js">Array.prototype.reverse = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-reverser').hidden = !document.getElementById('sol-loop-reverser').hidden">Toggle Solution</button>
+        <div id="sol-loop-reverser" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-unbreakable' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>unbreakable</h2>
       <h2>Unbreakable</h2>
@@ -1287,8 +1695,19 @@ String.prototype.match = undefined
 RegExp.prototype.exec = undefined
 Array.prototype.join = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-unbreakable').hidden = !document.getElementById('sol-loop-unbreakable').hidden">Toggle Solution</button>
+        <div id="sol-loop-unbreakable" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-chunky' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>chunky</h2>
       <h2>Chunky</h2>
@@ -1297,8 +1716,19 @@ Array.prototype.join = undefined
       <p>Your function will chunk the array into sub-arrays, and return an array with each sub-array as its elements.
         The length of each sub-array is denoted by the size argument.</p>
       <p>If the array cannot be split evenly, the last sub-array will contain the remaining elements.</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-chunky').hidden = !document.getElementById('sol-loop-chunky').hidden">Toggle Solution</button>
+        <div id="sol-loop-chunky" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-nasa' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>nasa</h2>
       <h2>Nasa</h2>
@@ -1315,8 +1745,19 @@ Array.prototype.join = undefined
         <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
         <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-nasa').hidden = !document.getElementById('sol-loop-nasa').hidden">Toggle Solution</button>
+        <div id="sol-loop-nasa" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-molecules-cells' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>molecules-cells</h2>
       <h2>Molecules Cells</h2>
@@ -1335,8 +1776,19 @@ Array.prototype.join = undefined
 </code></pre>
       <p>Each strand must be represented as upper case <code>string</code>, without spaces, eg:
         <code>&quot;ATCG&quot;</code> is a valid DNA strand.</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-molecules-cells').hidden = !document.getElementById('sol-loop-molecules-cells').hidden">Toggle Solution</button>
+        <div id="sol-loop-molecules-cells" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-get' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>get</h2>
       <h2>Get</h2>
@@ -1352,8 +1804,19 @@ Array.prototype.join = undefined
 const path = 'nested.key'
 get(src, path) // -&gt; 'peekaboo'
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-get').hidden = !document.getElementById('sol-loop-get').hidden">Toggle Solution</button>
+        <div id="sol-loop-get" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-triangle' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>triangle</h2>
       <h2>Triangle</h2>
@@ -1379,8 +1842,19 @@ get(src, path) // -&gt; 'peekaboo'
         <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
         <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-triangle').hidden = !document.getElementById('sol-loop-triangle').hidden">Toggle Solution</button>
+        <div id="sol-loop-triangle" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-pyramid' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>pyramid</h2>
       <h2>Pyramid</h2>
@@ -1405,8 +1879,19 @@ get(src, path) // -&gt; 'peekaboo'
         <li><a href="https://nan-academy.github.io/js-training/examples/loops.js">Loops</a></li>
         <li><a href="https://nan-academy.github.io/js-training/examples/recursion.js">Recursion</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-pyramid').hidden = !document.getElementById('sol-loop-pyramid').hidden">Toggle Solution</button>
+        <div id="sol-loop-pyramid" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-flat' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>flat</h2>
       <h2>Flat</h2>
@@ -1423,8 +1908,19 @@ get(src, path) // -&gt; 'peekaboo'
       </blockquote>
       <pre><code class="language-js">Array.prototype.flat = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-flat').hidden = !document.getElementById('sol-loop-flat').hidden">Toggle Solution</button>
+        <div id="sol-loop-flat" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-find-expression' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>find-expression</h2>
       <h2>Find Expression</h2>
@@ -1451,8 +1947,19 @@ get(src, path) // -&gt; 'peekaboo'
       <pre><code class="language-js">const add4 = '+4'
 const mul2 = '*2'
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-find-expression').hidden = !document.getElementById('sol-loop-find-expression').hidden">Toggle Solution</button>
+        <div id="sol-loop-find-expression" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='loop-sums' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>LOOP</div>
       <h2>sums</h2>
       <h2>Sums</h2>
@@ -1464,8 +1971,19 @@ const mul2 = '*2'
       <p>Example:</p>
       <pre><code class="language-js">sums(4) // [ [1, 1, 1, 1], [1, 1, 2], [1, 3], [2, 2] ]
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-loop-sums').hidden = !document.getElementById('sol-loop-sums').hidden">Toggle Solution</button>
+        <div id="sol-loop-sums" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-its-a-match' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>its-a-match</h2>
       <h2>Its A Match</h2>
@@ -1493,8 +2011,19 @@ const mul2 = '*2'
       <ul>
         <li><a href="https://github.com/ziishaned/learn-regex#28-anchors">RegEx Anchors</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-its-a-match').hidden = !document.getElementById('sol-find-its-a-match').hidden">Toggle Solution</button>
+        <div id="sol-find-its-a-match" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-letter-space-number' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>letter-space-number</h2>
       <h2>Letter Space Number</h2>
@@ -1511,8 +2040,19 @@ const mul2 = '*2'
         <li><a href="https://github.com/ziishaned/learn-regex#3-shorthand-character-sets">RegEx Shorthand Character
             Sets</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-letter-space-number').hidden = !document.getElementById('sol-find-letter-space-number').hidden">Toggle Solution</button>
+        <div id="sol-find-letter-space-number" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-vowel-dots' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>vowel-dots</h2>
       <h2>Vowel Dots</h2>
@@ -1527,8 +2067,19 @@ const mul2 = '*2'
       <ul>
         <li><a href="https://github.com/ziishaned/learn-regex#22-character-sets">RegEx Character Sets</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-vowel-dots').hidden = !document.getElementById('sol-find-vowel-dots').hidden">Toggle Solution</button>
+        <div id="sol-find-vowel-dots" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-same-amount' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>same-amount</h2>
       <h2>Same Amount</h2>
@@ -1542,8 +2093,19 @@ const mul2 = '*2'
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#Using_regular_expressions_in_JavaScript">Using
             regular expressions in JavaScript</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-same-amount').hidden = !document.getElementById('sol-find-same-amount').hidden">Toggle Solution</button>
+        <div id="sol-find-same-amount" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-ion-out' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>ion-out</h2>
       <h2>Ion Out</h2>
@@ -1555,8 +2117,19 @@ const mul2 = '*2'
       <ul>
         <li><a href="https://github.com/ziishaned/learn-regex#4-lookarounds">Learn RegEx Lookarounds</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-ion-out').hidden = !document.getElementById('sol-find-ion-out').hidden">Toggle Solution</button>
+        <div id="sol-find-ion-out" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-greedy-url' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>greedy-url</h2>
       <h2>Greedy Url</h2>
@@ -1580,8 +2153,19 @@ const mul2 = '*2'
       <ul>
         <li><a href="https://github.com/ziishaned/learn-regex">Learn RegEx</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-greedy-url').hidden = !document.getElementById('sol-find-greedy-url').hidden">Toggle Solution</button>
+        <div id="sol-find-greedy-url" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-group-price' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>group-price</h2>
       <h2>Group Price</h2>
@@ -1593,8 +2177,19 @@ const mul2 = '*2'
       <p>Given price of <code>USD12.31</code>:</p>
       <pre><code>[[&quot;USD12.31&quot;, &quot;12&quot;, &quot;31&quot;]]
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-group-price').hidden = !document.getElementById('sol-find-group-price').hidden">Toggle Solution</button>
+        <div id="sol-find-group-price" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='find-valid-ip' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>FIND</div>
       <h2>valid-ip</h2>
       <h2>Valid Ip</h2>
@@ -1614,8 +2209,19 @@ const mul2 = '*2'
       <ul>
         <li><a href="https://github.com/ziishaned/learn-regex">Learn RegEx</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-find-valid-ip').hidden = !document.getElementById('sol-find-valid-ip').hidden">Toggle Solution</button>
+        <div id="sol-find-valid-ip" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='raid-1-crossword' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>RAID 1</div>
       <h2>crossword</h2>
       <h2>crossword</h2>
@@ -1652,8 +2258,19 @@ anta
 o..n`
 */
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-raid-1-crossword').hidden = !document.getElementById('sol-raid-1-crossword').hidden">Toggle Solution</button>
+        <div id="sol-raid-1-crossword" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-dr-strange' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>dr-strange</h2>
       <h2>Dr Strange</h2>
@@ -1696,8 +2313,19 @@ timeTravel({
 
 // Output: Fri May 29 2020 21:22:22 GMT+0100 (Western European Summer Time)
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-dr-strange').hidden = !document.getElementById('sol-time-dr-strange').hidden">Toggle Solution</button>
+        <div id="sol-time-dr-strange" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-date-is' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>date-is</h2>
       <h2>Date Is</h2>
@@ -1723,8 +2351,19 @@ timeTravel({
         <li><a href="https://date-fns.org/v2.14.0/docs/isFuture">date-fns: isFuture</a></li>
         <li><a href="https://date-fns.org/v2.14.0/docs/isPast">date-fns: isPast</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-date-is').hidden = !document.getElementById('sol-time-date-is').hidden">Toggle Solution</button>
+        <div id="sol-time-date-is" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-get-some-time' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>get-some-time</h2>
       <h2>Get Some Time</h2>
@@ -1740,8 +2379,19 @@ timeTravel({
       <p>The first day of a week is a Monday.</p>
       <p>If the start of the week is in the previous year, then your function should return the first day of the
         specified year.</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-get-some-time').hidden = !document.getElementById('sol-time-get-some-time').hidden">Toggle Solution</button>
+        <div id="sol-time-get-some-time" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-rebecca-black' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>rebecca-black</h2>
       <h2>Rebecca Black</h2>
@@ -1760,8 +2410,19 @@ timeTravel({
         <li><a href="https://date-fns.org/v2.14.0/docs/isAfter">date-fns: isAfter</a></li>
         <li><a href="https://date-fns.org/v2.14.0/docs/isLastDayOfMonth">date-fns: isLastDayOfMonth</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-rebecca-black').hidden = !document.getElementById('sol-time-rebecca-black').hidden">Toggle Solution</button>
+        <div id="sol-time-rebecca-black" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-match-cron' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>match-cron</h2>
       <h2>Match Cron</h2>
@@ -1790,24 +2451,57 @@ matchCron('9 * * * *', new Date('2020-05-30 19:21:00')) // -&gt; false
         <li><a href="https://crontab.guru/">crontab.guru</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/date">Date</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-match-cron').hidden = !document.getElementById('sol-time-match-cron').hidden">Toggle Solution</button>
+        <div id="sol-time-match-cron" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-count-leap-years' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>count-leap-years</h2>
       <h2>Count Leap Years</h2>
       <h3>Instructions</h3>
       <p>Create a function named <code>countLeapYears</code> which accepts a <code>Date</code>. Your function should
         return the number of leap years to have taken place since the year 1.</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-count-leap-years').hidden = !document.getElementById('sol-time-count-leap-years').hidden">Toggle Solution</button>
+        <div id="sol-time-count-leap-years" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-day-of-the-year' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>day-of-the-year</h2>
       <h2>Day Of The Year</h2>
       <h3>Instructions</h3>
       <p>Create a function named <code>dayOfTheYear</code> which accepts a <code>Date</code>. Your function should
         return the number of days since the first day of that year.</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-day-of-the-year').hidden = !document.getElementById('sol-time-day-of-the-year').hidden">Toggle Solution</button>
+        <div id="sol-time-day-of-the-year" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-sunny-sunday' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>sunny-sunday</h2>
       <h2>Sunny Sunday</h2>
@@ -1819,8 +2513,19 @@ matchCron('9 * * * *', new Date('2020-05-30 19:21:00')) // -&gt; false
       <blockquote>
         <p>01/01/0001 is a Monday.</p>
       </blockquote>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-sunny-sunday').hidden = !document.getElementById('sol-time-sunny-sunday').hidden">Toggle Solution</button>
+        <div id="sol-time-sunny-sunday" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='time-unicode-technical-report-35' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>TIME</div>
       <h2>unicode-technical-report-35</h2>
       <h2>Unicode Technical Report 35</h2>
@@ -1861,8 +2566,19 @@ format(d, 'HH(mm)ss [dd] &lt;MMM&gt;') // -&gt; '03(08)19 [07] &lt;Jan&gt;'
         <li><a href="https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table">Unicode Date Field
             Symbol Table</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-time-unicode-technical-report-35').hidden = !document.getElementById('sol-time-unicode-technical-report-35').hidden">Toggle Solution</button>
+        <div id="sol-time-unicode-technical-report-35" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-using-map' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>using-map</h2>
       <h2>Using Map</h2>
@@ -1922,8 +2638,19 @@ format(d, 'HH(mm)ss [dd] &lt;MMM&gt;') // -&gt; '03(08)19 [07] &lt;Jan&gt;'
       <ul>
         <li><a href="https://devdocs.io/javascript/global_objects/array/map">Array.prototype.map</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-using-map').hidden = !document.getElementById('sol-call-me-maybe-using-map').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-using-map" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-using-filter' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>using-filter</h2>
       <h2>Using Filter</h2>
@@ -1964,8 +2691,19 @@ format(d, 'HH(mm)ss [dd] &lt;MMM&gt;') // -&gt; '03(08)19 [07] &lt;Jan&gt;'
       <ul>
         <li><a href="https://devdocs.io/javascript/global_objects/array/filter">Array.prototype.filter</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-using-filter').hidden = !document.getElementById('sol-call-me-maybe-using-filter').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-using-filter" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-using-reduce' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>using-reduce</h2>
       <h2>Using Reduce</h2>
@@ -1998,8 +2736,19 @@ format(d, 'HH(mm)ss [dd] &lt;MMM&gt;') // -&gt; '03(08)19 [07] &lt;Jan&gt;'
       <ul>
         <li><a href="https://devdocs.io/javascript/global_objects/array/reduce">Array.prototype.reduce</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-using-reduce').hidden = !document.getElementById('sol-call-me-maybe-using-reduce').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-using-reduce" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-long-words' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>long-words</h2>
       <h2>Long Words</h2>
@@ -2024,8 +2773,19 @@ format(d, 'HH(mm)ss [dd] &lt;MMM&gt;') // -&gt; '03(08)19 [07] &lt;Jan&gt;'
         <li><a href="https://devdocs.io/javascript/global_objects/array/every">Array.prototype.every</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/array/some">Array.prototype.some</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-long-words').hidden = !document.getElementById('sol-call-me-maybe-long-words').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-long-words" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-for-each' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>for-each</h2>
       <h2>For Each</h2>
@@ -2043,8 +2803,19 @@ format(d, 'HH(mm)ss [dd] &lt;MMM&gt;') // -&gt; '03(08)19 [07] &lt;Jan&gt;'
       </blockquote>
       <pre><code class="language-js">Array.prototype.forEach = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-for-each').hidden = !document.getElementById('sol-call-me-maybe-for-each').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-for-each" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-mapper' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>mapper</h2>
       <h2>Mapper</h2>
@@ -2076,8 +2847,19 @@ Array.prototype.flat = undefined
             href="https://devdocs.io/javascript/global_objects/array/flatmap">devdocs.io/javascript/global_objects/array/flatmap</a>
         </li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-mapper').hidden = !document.getElementById('sol-call-me-maybe-mapper').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-mapper" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-filter' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>filter</h2>
       <h2>Filter</h2>
@@ -2109,8 +2891,19 @@ Array.prototype.flat = undefined
         <li><a href="https://lodash.com/docs/4.17.15#reject">lodash.com/docs/4.17.15#reject</a></li>
         <li><a href="https://lodash.com/docs/4.17.15#partition">lodash.com/docs/4.17.15#partition</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-filter').hidden = !document.getElementById('sol-call-me-maybe-filter').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-filter" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-reduce' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>reduce</h2>
       <h2>Reduce</h2>
@@ -2157,8 +2950,19 @@ reduceRight([1, 2, 3], adder) // returns 6 (3 + 2 + 1)
       <pre><code class="language-js">Array.prototype.reduce = undefined
 Array.prototype.reduceRight = undefined
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-reduce').hidden = !document.getElementById('sol-call-me-maybe-reduce').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-reduce" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-quantifiers' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>quantifiers</h2>
       <h2>Quantifiers</h2>
@@ -2188,8 +2992,19 @@ Array.prototype.reduceRight = undefined
             href="https://devdocs.io/javascript/global_objects/array/every">devdocs.io/javascript/global_objects/array/every</a>
         </li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-quantifiers').hidden = !document.getElementById('sol-call-me-maybe-quantifiers').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-quantifiers" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-sweet-curry' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>sweet-curry</h2>
       <h2>Sweet Curry</h2>
@@ -2208,8 +3023,19 @@ Array.prototype.reduceRight = undefined
             href="https://stackoverflow.com/questions/36314/what-is-currying">stackoverflow.com/questions/36314/what-is-currying</a>
         </li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-sweet-curry').hidden = !document.getElementById('sol-call-me-maybe-sweet-curry').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-sweet-curry" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-has-city' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>has-city</h2>
       <h2>Has City</h2>
@@ -2221,8 +3047,19 @@ Array.prototype.reduceRight = undefined
       <p>If it does, it should return the string <code>&lt;city&gt; is a city from &lt;country&gt;</code>, otherwise
         <code>&lt;city&gt; is not a city from &lt;country&gt;</code>.
       </p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-has-city').hidden = !document.getElementById('sol-call-me-maybe-has-city').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-has-city" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-flow' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>flow</h2>
       <h2>Flow</h2>
@@ -2240,8 +3077,19 @@ flowedFunctions(2, 3) // -&gt; 25
       <ul>
         <li><a href="https://lodash.com/docs/4.17.15#flow">lodash.com/docs/4.17.15#flow</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-flow').hidden = !document.getElementById('sol-call-me-maybe-flow').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-flow" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-currify' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>currify</h2>
       <h2>Currify</h2>
@@ -2262,13 +3110,35 @@ console.log(mult2Curried(2)(2)) // result expected 4
             href="https://stackoverflow.com/questions/36314/what-is-currying">stackoverflow.com/questions/36314/what-is-currying</a>
         </li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-currify').hidden = !document.getElementById('sol-call-me-maybe-currify').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-currify" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-dom' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>DOM</h2>
       <p class='missing'>README not found in repo.</p>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-dom').hidden = !document.getElementById('sol-call-me-maybe-dom').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-dom" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-get-them-all' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>get-them-all</h2>
       <h2>Get them all</h2>
@@ -2362,8 +3232,19 @@ console.log(mult2Curried(2)(2)) // result expected 4
             can also modify it.</p>
         </li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-get-them-all').hidden = !document.getElementById('sol-call-me-maybe-get-them-all').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-get-them-all" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-build-brick-and-break' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>build-brick-and-break</h2>
       <h2>Build brick and break</h2>
@@ -2430,8 +3311,19 @@ console.log(mult2Curried(2)(2)) // result expected 4
             href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/data-*">data-*</a></li>
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ChildNode/remove">remove</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-build-brick-and-break').hidden = !document.getElementById('sol-call-me-maybe-build-brick-and-break').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-build-brick-and-break" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-harder-bigger-bolder-stronger' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>harder-bigger-bolder-stronger</h2>
       <h2>Harder, bigger, bolder, stronger</h2>
@@ -2472,8 +3364,19 @@ console.log(mult2Curried(2)(2)) // result expected 4
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/ElementCSSInlineStyle/style">style</a></li>
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent">textContent</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-harder-bigger-bolder-stronger').hidden = !document.getElementById('sol-call-me-maybe-harder-bigger-bolder-stronger').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-harder-bigger-bolder-stronger" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-pimp-my-style' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>pimp-my-style</h2>
       <h2>Pimp my style</h2>
@@ -2534,8 +3437,19 @@ Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList">classList</a>:
           <code>add()</code>, <code>remove()</code>, <code>toggle()</code></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-pimp-my-style').hidden = !document.getElementById('sol-call-me-maybe-pimp-my-style').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-pimp-my-style" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-fifty-shades-of-cold' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>fifty-shades-of-cold</h2>
       <h2>Fifty shades of cold</h2>
@@ -2588,8 +3502,19 @@ Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/classList">classList</a>:
           <code>contains()</code>, <code>replace()</code></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-fifty-shades-of-cold').hidden = !document.getElementById('sol-call-me-maybe-fifty-shades-of-cold').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-fifty-shades-of-cold" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-keycodes-symphony' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>keycodes-symphony</h2>
       <h2>Keycodes symphony</h2>
@@ -2629,8 +3554,19 @@ Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
             href="https://developer.mozilla.org/en-US/docs/Web/API/Document/keydown_event"><code>keydown</code></a>, <a
             href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key"><code>key</code></a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-keycodes-symphony').hidden = !document.getElementById('sol-call-me-maybe-keycodes-symphony').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-keycodes-symphony" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-mouse-trap' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>mouse-trap</h2>
       <h2>Mouse trap</h2>
@@ -2692,8 +3628,19 @@ Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
             href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect">getBoundingClientRect</a>
         </li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-mouse-trap').hidden = !document.getElementById('sol-call-me-maybe-mouse-trap').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-mouse-trap" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-pick-and-click' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>pick-and-click</h2>
       <h2>Pick &amp; click</h2>
@@ -2760,8 +3707,19 @@ Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
         <li>Take a look at the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Applying_color">HSL
             section</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-pick-and-click').hidden = !document.getElementById('sol-call-me-maybe-pick-and-click').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-pick-and-click" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-gossip-grid' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>gossip-grid</h2>
       <h2>Gossip grid</h2>
@@ -2809,8 +3767,19 @@ Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/text">text</a></li>
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/range">range</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-gossip-grid').hidden = !document.getElementById('sol-call-me-maybe-gossip-grid').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-gossip-grid" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='call-me-maybe-where-do-we-go' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>CALL ME MAYBE</div>
       <h2>where-do-we-go</h2>
       <h2>Where do we go?</h2>
@@ -2884,8 +3853,19 @@ Click 6 --&gt; &lt;button class=&quot;button&quot;&gt;&lt;/button&gt;
         <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/pageYOffset">pageYOffset</a></li>
         <li>Take a look at the <a href="https://en.wikipedia.org/wiki/Decimal_degrees">DMS coordinates system</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-call-me-maybe-where-do-we-go').hidden = !document.getElementById('sol-call-me-maybe-where-do-we-go').hidden">Toggle Solution</button>
+        <div id="sol-call-me-maybe-where-do-we-go" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='raid-2-sortable' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>RAID 2</div>
       <h2>sortable</h2>
       <h2>Sortable</h2>
@@ -2976,8 +3956,19 @@ fetch(&quot;https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json&q
           display the same column filters. If you have implemented detail view, the state of which hero is displayed
           should also form part of the URL.</li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-raid-2-sortable').hidden = !document.getElementById('sol-raid-2-sortable').hidden">Toggle Solution</button>
+        <div id="sol-raid-2-sortable" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-invert' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>invert</h2>
       <h2>Invert</h2>
@@ -2988,8 +3979,19 @@ fetch(&quot;https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json&q
       <ul>
         <li><a href="https://devdocs.io/javascript/global_objects/object">object</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-invert').hidden = !document.getElementById('sol-object-invert').hidden">Toggle Solution</button>
+        <div id="sol-object-invert" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-pick-omit' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>pick-omit</h2>
       <h2>Pick Omit</h2>
@@ -3009,8 +4011,19 @@ fetch(&quot;https://rawcdn.githack.com/akabab/superhero-api/0.2.0/api/all.json&q
       <ul>
         <li><a href="https://devdocs.io/javascript/global_objects/object">object</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-pick-omit').hidden = !document.getElementById('sol-object-pick-omit').hidden">Toggle Solution</button>
+        <div id="sol-object-pick-omit" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-fusion' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>fusion</h2>
       <h2>Fusion</h2>
@@ -3045,8 +4058,19 @@ fusion( { a: { b: [3, 2], c: { d: 8 } } },{ a: { b: [0, 3, 1], c: { d: 3 } } });
       </ul>
       <pre><code class="language-js">fusion({ a: &quot;hello&quot;, b: [] }, { a: 4 }); // -&gt; { a: 4, b: [] }
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-fusion').hidden = !document.getElementById('sol-object-fusion').hidden">Toggle Solution</button>
+        <div id="sol-object-fusion" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-manipulate-values' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>manipulate-values</h2>
       <h2>Manipulate Values</h2>
@@ -3096,8 +4120,19 @@ const nutritionDB = {
         <li><a href="https://devdocs.io/javascript/global_objects/object/entries">entries</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">fromEntries</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-manipulate-values').hidden = !document.getElementById('sol-object-manipulate-values').hidden">Toggle Solution</button>
+        <div id="sol-object-manipulate-values" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-manipulate-keys' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>manipulate-keys</h2>
       <h2>Manipulate Keys</h2>
@@ -3143,8 +4178,19 @@ const nutritionDB = {
         <li><a href="https://devdocs.io/javascript/global_objects/object/entries">entries</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">fromEntries</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-manipulate-keys').hidden = !document.getElementById('sol-object-manipulate-keys').hidden">Toggle Solution</button>
+        <div id="sol-object-manipulate-keys" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-manipulate-entries' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>manipulate-entries</h2>
       <h2>Manipulate Entries</h2>
@@ -3241,8 +4287,19 @@ Total cart nutritional facts:
         <li><a href="https://devdocs.io/javascript/global_objects/object/entries">entries</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/object/fromentries">fromentries</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-manipulate-entries').hidden = !document.getElementById('sol-object-manipulate-entries').hidden">Toggle Solution</button>
+        <div id="sol-object-manipulate-entries" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-curry-entries' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>curry-entries</h2>
       <h2>Curry Entries</h2>
@@ -3328,8 +4385,19 @@ const personnel = {
         <li><a href="https://stackoverflow.com/questions/36314/what-is-currying">stackoverflow what-is-currying?</a>
         </li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-curry-entries').hidden = !document.getElementById('sol-object-curry-entries').hidden">Toggle Solution</button>
+        <div id="sol-object-curry-entries" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-deep-copy' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>deep-copy</h2>
       <h2>Deep Copy</h2>
@@ -3339,8 +4407,19 @@ const personnel = {
       <ul>
         <li><a href="https://devdocs.io/javascript-object/">devdocs.io/javascript-object</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-deep-copy').hidden = !document.getElementById('sol-object-deep-copy').hidden">Toggle Solution</button>
+        <div id="sol-object-deep-copy" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-replica' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>replica</h2>
       <h2>Replica</h2>
@@ -3354,8 +4433,19 @@ const personnel = {
       <ul>
         <li><a href="https://nan-academy.github.io/js-training/examples/data-structures.js">data-structures</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-replica').hidden = !document.getElementById('sol-object-replica').hidden">Toggle Solution</button>
+        <div id="sol-object-replica" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-pronoun' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>pronoun</h2>
       <h2>Pronoun</h2>
@@ -3395,8 +4485,19 @@ const ex = 'If he you want to buy something you have to pay.'
 }
 
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-pronoun').hidden = !document.getElementById('sol-object-pronoun').hidden">Toggle Solution</button>
+        <div id="sol-object-pronoun" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-neuron' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>neuron</h2>
       <h2>Neuron</h2>
@@ -3431,8 +4532,19 @@ const ex = 'If he you want to buy something you have to pay.'
   }
 }
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-neuron').hidden = !document.getElementById('sol-object-neuron').hidden">Toggle Solution</button>
+        <div id="sol-object-neuron" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='object-flagger' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>OBJECT</div>
       <h2>flagger</h2>
       <h2>Flagger</h2>
@@ -3459,8 +4571,19 @@ const ex = 'If he you want to buy something you have to pay.'
   description: '-d, --divide: divides the values',
 }
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-object-flagger').hidden = !document.getElementById('sol-object-flagger').hidden">Toggle Solution</button>
+        <div id="sol-object-flagger" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-debounce' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>debounce</h2>
       <h2>Debounce</h2>
@@ -3476,8 +4599,19 @@ const ex = 'If he you want to buy something you have to pay.'
         <li><a href="https://css-tricks.com/debouncing-throttling-explained-examples/#debounce">css-tricks.com
             debounce</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-debounce').hidden = !document.getElementById('sol-async-debounce').hidden">Toggle Solution</button>
+        <div id="sol-async-debounce" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-throttle' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>throttle</h2>
       <h2>Throttle</h2>
@@ -3496,8 +4630,19 @@ const ex = 'If he you want to buy something you have to pay.'
             href="https://stackoverflow.com/questions/24079736/confused-about-the-maxwait-option-for-lodashs-debounce-method">stackoverflow
             about lodash debounce</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-throttle').hidden = !document.getElementById('sol-async-throttle').hidden">Toggle Solution</button>
+        <div id="sol-async-throttle" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-interpolation' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>interpolation</h2>
       <h2>Interpolation</h2>
@@ -3543,8 +4688,19 @@ duration = 10
       <ul>
         <li><a href="https://javascript.info/settimeout-setinterval">setTimeout &amp; setInterval</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-interpolation').hidden = !document.getElementById('sol-async-interpolation').hidden">Toggle Solution</button>
+        <div id="sol-async-interpolation" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-keep-trying-or-giveup' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>keep-trying-or-giveup</h2>
       <h2>Keep Trying Or Giveup</h2>
@@ -3576,8 +4732,19 @@ duration = 10
         <li><a href="https://devdocs.io/dom/settimeout">setTimeout</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/promise/race">Promise.race</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-keep-trying-or-giveup').hidden = !document.getElementById('sol-async-keep-trying-or-giveup').hidden">Toggle Solution</button>
+        <div id="sol-async-keep-trying-or-giveup" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-get-json' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>get-json</h2>
       <h2>Get Json</h2>
@@ -3605,8 +4772,19 @@ duration = 10
         <li><a href="https://devdocs.io/dom/urlsearchparams">URL search params</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/json">JSON</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-get-json').hidden = !document.getElementById('sol-async-get-json').hidden">Toggle Solution</button>
+        <div id="sol-async-get-json" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-is-winner' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>is-winner</h2>
       <h2>Is Winner</h2>
@@ -3698,8 +4876,19 @@ duration = 10
   }
 })()
 </code></pre>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-is-winner').hidden = !document.getElementById('sol-async-is-winner').hidden">Toggle Solution</button>
+        <div id="sol-async-is-winner" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-gougle-search' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>gougle-search</h2>
       <h2>Gougle Search</h2>
@@ -3737,8 +4926,19 @@ let getJSON = async (url) =&gt; url
         <li><a href="https://devdocs.io/javascript/global_objects/promise/race">Promise.race</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/promise/all">Promise.all</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-gougle-search').hidden = !document.getElementById('sol-async-gougle-search').hidden">Toggle Solution</button>
+        <div id="sol-async-gougle-search" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-all' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>all</h2>
       <h2>All</h2>
@@ -3756,8 +4956,19 @@ let getJSON = async (url) =&gt; url
         <li><a href="https://nan-academy.github.io/js-training/examples/promise.js">Promise.js</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/promise/all">Promise.all</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-all').hidden = !document.getElementById('sol-async-all').hidden">Toggle Solution</button>
+        <div id="sol-async-all" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-series' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>series</h2>
       <h2>Series</h2>
@@ -3768,8 +4979,19 @@ let getJSON = async (url) =&gt; url
       <ul>
         <li><a href="https://nan-academy.github.io/js-training/examples/promise.js">Promise</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-series').hidden = !document.getElementById('sol-async-series').hidden">Toggle Solution</button>
+        <div id="sol-async-series" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
     <article id='async-race' hidden>
+      <div class="exercise-content">
+
       <div class='crumb'>ASYNC</div>
       <h2>race</h2>
       <h2>Race</h2>
@@ -3792,7 +5014,16 @@ let getJSON = async (url) =&gt; url
         <li><a href="https://nan-academy.github.io/js-training/examples/promise.js">Promise</a></li>
         <li><a href="https://devdocs.io/javascript/global_objects/promise/race">Promise.race</a></li>
       </ul>
-    </article>
+    
+      </div>
+      <div class="sol-container">
+        <button class="sol-btn" onclick="document.getElementById('sol-async-race').hidden = !document.getElementById('sol-async-race').hidden">Toggle Solution</button>
+        <div id="sol-async-race" hidden class="sol-code">
+          <div class="sol-line"><div class="sol-line-content"> </div></div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+</article>
 
     <div class="pager">
       <button id="prev">← previous</button>
@@ -3849,6 +5080,19 @@ let getJSON = async (url) =&gt; url
       });
     };
   </script>
+
+  <script>
+    function copySolution(btn) {
+        const codeDiv = btn.parentElement;
+        const lines = Array.from(codeDiv.querySelectorAll('.sol-line-content')).map(d => d.textContent);
+        navigator.clipboard.writeText(lines.join('\n')).then(() => {
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = originalText, 2000);
+        });
+    }
+  </script>
 </body>
+
 
 </html>
