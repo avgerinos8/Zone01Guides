@@ -108,7 +108,8 @@
         <div id="toc-header">
             <span id="toc-title">Contents</span>
             <div class="toc-header-actions">
-                <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress" aria-label="Reset Progress">Reset Progress</button>
+                <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress"
+                    aria-label="Reset Progress">Reset Progress</button>
                 <button id="toc-close" class="toc-icon-btn" aria-label="Κλείσιμο">✕</button>
             </div>
         </div>
@@ -137,10 +138,10 @@
 
     <script>
 
-// ============================================================================
-// ΕΙΣΑΓΩΓΗ & PARSING
-// ============================================================================
-addContent(`
+        // ============================================================================
+        // ΕΙΣΑΓΩΓΗ & PARSING
+        // ============================================================================
+        addContent(`
 <div class="title-slide">
   <div class="title-badge"><img src="./icons/lemin.png" alt="Lem-in icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>L</span>'"></div>
   <div class="kicker-line">Zone01 Athens · Piscine Go · Author: AVGERINOS PAVLOS</div>
@@ -150,7 +151,7 @@ addContent(`
 </div>
 `);
 
-addContent(`
+        addContent(`
 <div class="eyebrow">Ενότητα 1 / 5 — Intro & Parsing</div>
 <h1 id="@intro">Ο Κανόνας του 1 Μυρμηγκιού</h1>
 <p class="lede">Φαινομενικά το <code>lem-in</code> είναι ένα απλό παιχνίδι μετακίνησης. Στην πραγματικότητα, είναι ένα κλασικό πρόβλημα <strong>Network Flow (Ροή Δικτύου)</strong>.</p>
@@ -203,7 +204,7 @@ addContent(`
 </svg>
 `);
 
-addContent(`
+        addContent(`
 <div class="eyebrow">Ενότητα 1 / 5 — Intro & Parsing</div>
 <h1 id="@parsing">Ο State Machine Parser</h1>
 <p class="lede">Πριν βρούμε μονοπάτια, πρέπει να διαβάσουμε τον χάρτη. Το αρχείο έχει τρεις διακριτές φάσεις (Ants, Rooms, Links), αλλά η μετάβαση από τα δωμάτια στις συνδέσεις (Links) καθορίζεται από το πρώτο σύμβολο <code>-</code>.</p>
@@ -215,86 +216,97 @@ addContent(`
     <li><strong>Φάση 3 (Links):</strong> Μορφή <code>name1-name2</code>. <strong>ΠΡΟΣΟΧΗ:</strong> Από τη στιγμή που θα διαβάσετε έστω και ένα Link, ο γράφος έχει "κλειδώσει". Αν μετά από link διαβάσετε πάλι συντεταγμένες δωματίου, το αρχείο είναι άκυρο και πρέπει να τερματίσετε με ERROR.</li>
 </ul>
 
-<svg viewBox="0 0 800 220" style="max-width: 800px; width: 100%; height: auto; margin: 1.5rem 0;">
-    <rect x="10" y="10" width="780" height="200" rx="4" fill="var(--code-bg)"/>
-    <text x="30" y="45" font-family="var(--font-mono)" font-size="16" fill="var(--tone-4)">1. </text><text x="60" y="45" font-family="var(--font-mono)" font-size="16" fill="var(--correct)">50</text>
-    <text x="30" y="70" font-family="var(--font-mono)" font-size="16" fill="var(--tone-4)">2. </text><text x="60" y="70" font-family="var(--font-mono)" font-size="16" fill="var(--tone-5)">##start</text>
-    <text x="30" y="95" font-family="var(--font-mono)" font-size="16" fill="var(--tone-4)">3. </text><text x="60" y="95" font-family="var(--font-mono)" font-size="16" fill="var(--ink)">RoomA 1 2</text>
-    <text x="30" y="120" font-family="var(--font-mono)" font-size="16" fill="var(--tone-4)">4. </text><text x="60" y="120" font-family="var(--font-mono)" font-size="16" fill="var(--ink)">RoomB 3 4</text>
-    <text x="30" y="145" font-family="var(--font-mono)" font-size="16" fill="var(--tone-4)">5. </text><text x="60" y="145" font-family="var(--font-mono)" font-size="16" fill="var(--ink)"># Just a comment</text>
-    <text x="30" y="170" font-family="var(--font-mono)" font-size="16" fill="var(--tone-4)">6. </text><text x="60" y="170" font-family="var(--font-mono)" font-size="16" fill="var(--accent)">RoomA-RoomB</text>
-
-    <!-- Path Arrows -->
-    <path d="M 180 40 Q 250 40 250 80" fill="none" stroke="var(--correct)" stroke-width="2" marker-end="url(#arrow)"/>
-    <text x="260" y="90" font-family="var(--font-sans)" font-size="14" fill="var(--correct)">Ants = 50</text>
-
-    <path d="M 180 70 Q 300 70 300 120" fill="none" stroke="var(--tone-5)" stroke-width="2" stroke-dasharray="4,4"/>
-    <text x="310" y="125" font-family="var(--font-sans)" font-size="14" fill="var(--tone-5)">Ενεργοποιεί State isStart=true</text>
-
-    <path d="M 180 95 Q 230 95 230 145" fill="none" stroke="var(--ink)" stroke-width="2"/>
-    <text x="240" y="150" font-family="var(--font-sans)" font-size="14" fill="var(--ink)">Γίνεται Start Node λόγω του State!</text>
-
-    <path d="M 180 170 Q 550 170 550 120" fill="none" stroke="var(--accent)" stroke-width="2"/>
-    <text x="560" y="125" font-family="var(--font-sans)" font-size="14" fill="var(--accent)">Αλλάζει Phase σε Links. Τα Rooms τελείωσαν.</text>
-</svg>
+<p>Παράδειγμα input:</p>
+<pre><code>50              # Φάση 1: αριθμός μυρμηγκιών
+##start         # Command: το επόμενο δωμάτιο = Start
+RoomA 1 2       # Φάση 2: δωμάτιο (γίνεται Start λόγω ##start)
+##end           # Command: το επόμενο δωμάτιο = End
+RoomB 3 4       # δωμάτιο (γίνεται End)
+RoomC 5 6       # κανονικό δωμάτιο
+# σχόλιο       # αγνοείται
+RoomA-RoomB     # Φάση 3: πρώτο «-» → αλλαγή φάσης σε Links
+RoomA-RoomC     # ακόμα Links
+RoomC-RoomB     # ακόμα Links</code></pre>
 <p>Η λογική του State Machine σημαίνει ότι δεν ψάχνουμε τυχαία με Regex όλο το κείμενο, αλλά τρέχουμε ένα μεγάλο <code>for scanner.Scan()</code> και διατηρούμε μεταβλητές όπως <code>phase = 1</code>, <code>nextIsStart = true</code> κλπ.</p>
 `);
 
-addQuiz({
-  q: "Αν το πρόγραμμά μας βρίσκει μόνο το συντομότερο μονοπάτι (Shortest Path) και στέλνει όλα τα μυρμήγκια από εκεί, τι θα συμβεί στην πράξη;",
-  options: [
-    "Το πρόγραμμα θα ολοκληρώσει τη μεταφορά, αλλά ο αριθμός των turns θα είναι τεράστιος επειδή τα μυρμήγκια θα περιμένουν στην ουρά, αγνοώντας άλλες παράλληλες διαδρομές.",
-    "Το πρόγραμμα θα καταρρεύσει (panic: index out of range) επειδή τα μυρμήγκια θα πέσουν το ένα πάνω στο άλλο στο ίδιο δωμάτιο.",
-    "Τα μυρμήγκια θα χαθούν μέσα στον γράφο ψάχνοντας άπειρα.",
-    "Θα πετύχουμε το βέλτιστο αποτέλεσμα αφού το συντομότερο μονοπάτι είναι εξ ορισμού η γρηγορότερη λύση."
-  ],
-  correct: 0,
-  explain: "Σωστό! Το Shortest Path είναι χρήσιμο μόνο αν έχεις 1 μυρμήγκι. Όταν έχεις 1000 μυρμήγκια, το capacity=1 δημιουργεί traffic jam. Η χρήση πολλαπλών μονοπατιών, έστω κι αν είναι λίγο μακρύτερα, δίνει καλύτερο συνολικό χρόνο."
-});
 
-addFillBlank({
-  code: `// State machine for parsing rooms
-isNextStart := false
 
-for scanner.Scan() {
-    line := scanner.Text()
+        // ============================================================================
+        // GRAPH MODELING
+        // ============================================================================
+        addContent(`
+<div class="eyebrow">Ενότητα 2 / 5 — Graph Modeling</div>
+<h1 id="@graph-intro">Τι είναι ένας Γράφος (Graph);</h1>
+<p class="lede">Για να λύσουμε το Lem-in, πρέπει πρώτα να το μεταφράσουμε στη γλώσσα των υπολογιστών. Χρησιμοποιούμε τη <strong>Θεωρία Γράφων (Graph Theory)</strong>.</p>
+<p>Ένας Γράφος δεν είναι γραφική παράσταση με X και Y. Είναι απλά ένας τρόπος να μοντελοποιούμε δίκτυα (όπως το internet, οι δρόμοι μιας πόλης, ή μια μυρμηγκοφωλιά).</p>
+
+<div class="callout">
+  <span class="tag">ΤΑ ΒΑΣΙΚΑ ΣΥΣΤΑΤΙΚΑ</span>
+  <ul>
+    <li><strong>Κόμβος (Node ή Vertex):</strong> Τα σημεία του δικτύου. Στο Lem-in, κάθε <em>Δωμάτιο (Room)</em> είναι ένας Κόμβος.</li>
+    <li><strong>Ακμή (Edge ή Link):</strong> Οι συνδέσεις μεταξύ των σημείων. Στο Lem-in, κάθε <em>Τούνελ</em> που ενώνει δύο δωμάτια είναι μια Ακμή.</li>
+  </ul>
+</div>
+
+<svg viewBox="0 0 800 200" style="max-width: 800px; width: 100%; height: auto; margin: 1.5rem 0; display: block;" color="var(--ink)">
+    <!-- Simple Graph showing Rooms and Tunnels -->
+    <rect width="800" height="200" fill="var(--code-bg)" rx="8" />
     
-    // Αγνοούμε τα απλά σχόλια
-    if strings.HasPrefix(line, "#") && line != "##start" && line != "##end" {
-        continue
-    }
+    <!-- Real world vs Graph world labels -->
+    <text x="200" y="30" font-family="var(--font-sans)" font-size="12" fill="var(--tone-4)" text-anchor="middle" font-weight="bold">Lem-in (Δωμάτια &amp; Τούνελ)</text>
+    <line x1="400" y1="20" x2="400" y2="180" stroke="var(--tone-4)" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+    <text x="600" y="30" font-family="var(--font-sans)" font-size="12" fill="var(--tone-4)" text-anchor="middle" font-weight="bold">Graph Theory (Nodes &amp; Edges)</text>
+
+    <!-- Left side: The Ant Farm -->
+    <circle cx="100" cy="100" r="30" fill="none" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="100" y="105" font-family="var(--font-sans)" font-size="12" fill="var(--tone-4)" text-anchor="middle">Room A</text>
+    <circle cx="300" cy="100" r="30" fill="none" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="300" y="105" font-family="var(--font-sans)" font-size="12" fill="var(--tone-4)" text-anchor="middle">Room B</text>
     
-    // Command
-    if line == "##start" {
-        isNextStart = __true__
-    } else if isNextStart && isRoom(line) {
-        // Καταχώρηση δωματίου ως Start
-        startNode = parseRoom(__line__)
-        isNextStart = false
-    }
-}`,
-  blanks: [
-    { id: "true", answer: "true" },
-    { id: "line", answer: "line" }
-  ],
-  explain: "Όταν συναντάμε την εντολή <code>##start</code>, η boolean μεταβλητή <code>isNextStart</code> γίνεται true. Στην επόμενη επανάληψη (loop), αν βρούμε έγκυρο <code>line</code> δωματίου, το ορίζουμε ως <code>startNode</code> και κλείνουμε τον διακόπτη."
-}, { lang: "go" });
+    <!-- Tunnel -->
+    <path d="M 130 90 Q 200 80 270 90 L 270 110 Q 200 120 130 110 Z" fill="rgba(255,255,255,0.05)" stroke="var(--tone-4)" stroke-width="1" stroke-dasharray="2,2"/>
+    <text x="200" y="104" font-family="var(--font-sans)" font-size="10" fill="var(--tone-4)" text-anchor="middle">Tunnel</text>
 
-addMatching([
-  { term: "Capacity = 1", def: "Ο θεμελιώδης περιορισμός. Απαγορεύεται να υπάρχουν δύο μυρμήγκια στο ίδιο δωμάτιο." },
-  { term: "Coordinates (X, Y)", def: "Διαβάζονται κατά το parsing για εγκυρότητα, αλλά αγνοούνται πλήρως από τον αλγόριθμο Pathfinding." },
-  { term: "State Machine", def: "Η τεχνική parsing όπου διαβάζουμε γραμμή-γραμμή και αλλάζουμε φάση (Ants -> Rooms -> Links) δυναμικά." },
-  { term: "##start", def: "Ειδικό Command. Δεν είναι κόμβος το ίδιο, αλλά δίνει την ταυτότητα Start στον επόμενο έγκυρο κόμβο." }
-], { label: "Μίνι Γλωσσάρι", note: "Ταίριαξε την έννοια με τον ορισμό της." });
+    <!-- Right side: The Graph -->
+    <circle cx="500" cy="100" r="20" fill="var(--panel)" stroke="var(--accent)" stroke-width="3"/>
+    <text x="500" y="105" font-family="var(--font-mono)" font-weight="bold" fill="var(--ink)" text-anchor="middle">A</text>
+    <text x="500" y="140" font-family="var(--font-sans)" font-size="11" fill="var(--accent)" text-anchor="middle">Node</text>
 
+    <circle cx="700" cy="100" r="20" fill="var(--panel)" stroke="var(--accent)" stroke-width="3"/>
+    <text x="700" y="105" font-family="var(--font-mono)" font-weight="bold" fill="var(--ink)" text-anchor="middle">B</text>
+    <text x="700" y="140" font-family="var(--font-sans)" font-size="11" fill="var(--accent)" text-anchor="middle">Node</text>
 
-// ============================================================================
-// GRAPH MODELING
-// ============================================================================
-addContent(`
+    <line x1="520" y1="100" x2="680" y2="100" stroke="var(--accent)" stroke-width="3"/>
+    <text x="600" y="90" font-family="var(--font-sans)" font-size="12" fill="var(--accent)" text-anchor="middle" font-weight="bold">Edge</text>
+</svg>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 2 / 5 — Graph Modeling</div>
+<h1 id="@graph-types">Ιδιότητες του Γράφου μας</h1>
+<p class="lede">Ο γράφος του Lem-in έχει δύο πολύ συγκεκριμένες ιδιότητες που κάνουν τη ζωή μας ευκολότερη.</p>
+
+<table class="glossary-table">
+  <tr>
+    <td class="gt-term">Undirected<br><span style="font-size: 0.8em; font-weight: normal; opacity: 0.7">(Μη Κατευθυνόμενος)</span></td>
+    <td class="gt-def">
+      <p>Δεν έχει σημασία αν ένα τούνελ δηλώθηκε στο input ως <code>A-B</code> ή <code>B-A</code>. Τα μυρμήγκια μπορούν να το διασχίσουν και προς τις δύο κατευθύνσεις ελεύθερα. Είναι <em>δρόμος διπλής κυκλοφορίας</em>.</p>
+    </td>
+  </tr>
+  <tr>
+    <td class="gt-term">Unweighted<br><span style="font-size: 0.8em; font-weight: normal; opacity: 0.7">(Χωρίς Βάρη)</span></td>
+    <td class="gt-def">
+      <p>Στους πραγματικούς χάρτες (π.χ. Google Maps), οι δρόμοι έχουν "Βάρη" (χιλιομετρικές αποστάσεις). Εκεί χρειαζόμαστε πολύπλοκους αλγόριθμους όπως ο <strong>Dijkstra</strong> για να βρούμε την πιο σύντομη διαδρομή. Στο Lem-in, η απόσταση από το δωμάτιο A στο B είναι <strong>πάντα 1 άλμα (hop)</strong>. Όλα τα τούνελ είναι "ίδια". Γι' αυτό δεν χρειαζόμαστε τον Dijkstra!</p>
+    </td>
+  </tr>
+</table>
+`);
+
+        addContent(`
 <div class="eyebrow">Ενότητα 2 / 5 — Graph Modeling</div>
 <h1 id="@adj-list">Μοντελοποίηση: Adjacency List</h1>
-<p class="lede">Ο χάρτης του Lem-in είναι ένας <strong>Undirected Graph (Μη Κατευθυνόμενος Γράφος)</strong>. Δεν έχει σημασία αν ένα τούνελ δηλώθηκε ως <code>A-B</code> ή <code>B-A</code>, τα μυρμήγκια μπορούν να το διασχίσουν και προς τις δύο κατευθύνσεις.</p>
+<p class="lede">Τώρα που ξέρουμε τι είναι ο Γράφος, πώς τον αποθηκεύουμε στη μνήμη του υπολογιστή;</p>
 <p>Υπάρχουν δύο βασικοί τρόποι να αποθηκεύσουμε έναν γράφο στη μνήμη του υπολογιστή:</p>
 <ol>
     <li><strong>Adjacency Matrix (Πίνακας Γειτνίασης):</strong> Ένας 2D πίνακας [N][N] όπου το κελί [i][j] είναι 1 αν υπάρχει ακμή, 0 αλλιώς. Αυτό είναι καταστροφή για το Lem-in! Αν έχετε 10,000 δωμάτια, ο πίνακας θα πιάσει μνήμη για 100,000,000 κελιά, τα περισσότερα εκ των οποίων θα είναι μηδέν (Sparse Graph).</li>
@@ -342,58 +354,109 @@ addContent(`
 <p><strong>Σημαντικό:</strong> Εκτός από τη δομή του γράφου, θα χρειαστείτε και κάποια "μεταδεδομένα" μέσα στο Struct σας, όπως <code>Visited bool</code> και <code>Parent *Node</code>, τα οποία θα φανούν απαραίτητα στο BFS που ακολουθεί.</p>
 `);
 
-addQuiz({
-  q: "Πώς αποθηκεύουμε σωστά ένα Undirected Edge (αμφίδρομο τούνελ) μεταξύ των Node A και Node B σε μια Adjacency List;",
-  options: [
-    "Κάνουμε append το Node B στο slice του Node A, και ταυτόχρονα append το Node A στο slice του Node B (Διπλή εγγραφή).",
-    "Κάνουμε append το Node B στο slice του Node A, αφήνοντας το B ανέπαφο.",
-    "Φτιάχνουμε ένα ξεχωριστό Edge struct που κρατάει το A και το B, και το αποθηκεύουμε σε ένα κεντρικό Slice του Graph.",
-    "Δεν αποθηκεύουμε pointers, αλλά τα ονόματα των δωματίων σε ένα δισδιάστατο Array (String Array)."
-  ],
-  correct: 0,
-  explain: "Σωστό! Στην Adjacency List, ένα undirected edge <code>A-B</code> σημαίνει ότι το A 'βλέπει' το B, και το B 'βλέπει' το A. Η επιλογή (2) θα δημιουργούσε έναν Directed (μονόδρομο) γράφο. Η επιλογή (3) είναι μεν έγκυρη σε άλλους αλγορίθμους, αλλά είναι πιο αργή για BFS στο Lem-in. Η επιλογή (4) στερείται απόδοσης διότι θα έπρεπε να ψάχνουμε τα strings ξανά και ξανά."
-});
 
-addFillBlank({
-  code: `// Συνάρτηση προσθήκης τούνελ
-func (g *Graph) AddEdge(name1, name2 string) {
-    node1 := g.Nodes[name1]
-    node2 := g.Nodes[name2]
-    
-    // Πριν προσθέσουμε, ελέγχουμε αν υπάρχει ήδη
-    for _, neighbor := range node1.Edges {
-        if neighbor.Name == name2 {
-            // Duplicate link βρέθηκε, το αγνοούμε ή επιστρέφουμε σφάλμα
-            return
-        }
-    }
-    
-    // Undirected link (αμφίδρομο append)
-    node1.Edges = append(node1.Edges, __node2__)
-    node2.Edges = append(node2.Edges, __node1__)
-}`,
-  blanks: [
-    { id: "node2", answer: "node2" },
-    { id: "node1", answer: "node1" }
-  ],
-  explain: "Το Undirected σημαίνει ότι η πληροφορία ρέει και από τις δύο πλευρές. Το <code>node1</code> προσθέτει τον pointer του <code>node2</code>, και αντίστροφα."
-}, { lang: "go" });
-
-addMatching([
-  { term: "Node (ή Vertex)", def: "Η βασική μονάδα του γράφου. Στο Lem-in, αντιπροσωπεύει ένα δωμάτιο." },
-  { term: "Edge", def: "Το τούνελ που ενώνει δύο δωμάτια, επιτρέποντας στα μυρμήγκια να ταξιδέψουν." },
-  { term: "Undirected Graph", def: "Γράφος όπου οι ακμές δεν έχουν αποκλειστική κατεύθυνση. (Η οδός είναι διπλής κατεύθυνσης)." },
-  { term: "Adjacency List", def: "Αποδοτική δομή όπου κάθε Node αποθηκεύει μια λίστα με τους άμεσους γείτονές του." }
-], { label: "Ορολογία Γράφων", note: "Ταίριαξε τους αγγλικούς όρους με τον ορισμό τους." });
+        addMatching([
+            { term: "Node (ή Vertex)", def: "Η βασική μονάδα του γράφου. Στο Lem-in, αντιπροσωπεύει ένα δωμάτιο." },
+            { term: "Edge", def: "Το τούνελ που ενώνει δύο δωμάτια, επιτρέποντας στα μυρμήγκια να ταξιδέψουν." },
+            { term: "Undirected Graph", def: "Γράφος όπου οι ακμές δεν έχουν αποκλειστική κατεύθυνση. (Η οδός είναι διπλής κατεύθυνσης)." },
+            { term: "Adjacency List", def: "Αποδοτική δομή όπου κάθε Node αποθηκεύει μια λίστα με τους άμεσους γείτονές του." }
+        ], { label: "Ορολογία Γράφων", note: "Ταίριαξε τους αγγλικούς όρους με τον ορισμό τους." });
 
 
-// ============================================================================
-// PATHFINDING & DISJOINT PATHS
-// ============================================================================
-addContent(`
+        // ============================================================================
+        // PATHFINDING & DISJOINT PATHS
+        // ============================================================================
+        addContent(`
 <div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
 <h1 id="@bfs-fail">Το Greediness του BFS</h1>
 <p class="lede">Το Pathfinding είναι η καρδιά του Lem-in. Ψάχνουμε αυστηρά <strong>Vertex-Disjoint Paths</strong> — μονοπάτια που <em>δεν έχουν κανένα κοινό δωμάτιο (node)</em> μεταξύ τους. Αν είχαν κοινό δωμάτιο, τα μυρμήγκια θα συγκρούονταν (λόγω του Capacity = 1).</p>
+
+<svg viewBox="0 0 820 200" style="max-width: 920px; width: 100%; height: auto; margin: 1.5rem auto; display: block;" color="var(--ink)">
+    <defs>
+        <marker id="vd-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+        </marker>
+    </defs>
+
+    <!-- ═══ LEFT: NOT Vertex-Disjoint ═══ -->
+    <text x="195" y="18" font-family="var(--font-sans)" font-size="13" fill="var(--danger)" text-anchor="middle" font-weight="bold" letter-spacing="0.05em">✗ NOT Vertex-Disjoint</text>
+
+    <!-- Nodes -->
+    <circle cx="40" cy="100" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2.5"/>
+    <text x="40" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="13" fill="var(--ink)" text-anchor="middle">S</text>
+
+    <circle cx="140" cy="45" r="15" fill="var(--panel)" stroke="var(--correct)" stroke-width="2"/>
+    <text x="140" y="50" font-family="var(--font-mono)" font-size="11" fill="var(--ink)" text-anchor="middle">A</text>
+
+    <circle cx="140" cy="155" r="15" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="140" y="160" font-family="var(--font-mono)" font-size="11" fill="var(--ink)" text-anchor="middle">C</text>
+
+    <!-- Shared node M — highlighted red -->
+    <circle cx="250" cy="100" r="17" fill="rgba(230,57,70,0.15)" stroke="var(--danger)" stroke-width="2.5"/>
+    <text x="250" y="105" font-family="var(--font-mono)" font-size="12" fill="var(--danger)" text-anchor="middle" font-weight="bold">M</text>
+
+    <circle cx="350" cy="100" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2.5"/>
+    <text x="350" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="13" fill="var(--ink)" text-anchor="middle">E</text>
+
+    <!-- Path 1: S → A → M → E (green) -->
+    <line x1="56" y1="88" x2="127" y2="52" stroke="var(--correct)" stroke-width="2.5"/>
+    <line x1="154" y1="50" x2="235" y2="94" stroke="var(--correct)" stroke-width="2.5"/>
+    <line x1="267" y1="100" x2="332" y2="100" stroke="var(--correct)" stroke-width="2.5" marker-end="url(#vd-arr)"/>
+
+    <!-- Path 2: S → C → M → E (orange, dashed) -->
+    <line x1="56" y1="112" x2="127" y2="148" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="6,4"/>
+    <line x1="154" y1="150" x2="235" y2="106" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="6,4"/>
+
+    <!-- Collision label -->
+    <text x="250" y="140" font-family="var(--font-sans)" font-size="10" fill="var(--danger)" text-anchor="middle" opacity="0.9">Collision!</text>
+
+    <!-- Path labels -->
+    <text x="95" y="38" font-family="var(--font-sans)" font-size="10" fill="var(--correct)" opacity="0.8">Path 1</text>
+    <text x="95" y="175" font-family="var(--font-sans)" font-size="10" fill="var(--accent)" opacity="0.8">Path 2</text>
+
+    <!-- ═══ Divider ═══ -->
+    <line x1="405" y1="20" x2="405" y2="185" stroke="var(--tone-4)" stroke-width="0.5" stroke-dasharray="3,5" opacity="0.5"/>
+
+    <!-- ═══ RIGHT: Vertex-Disjoint ═══ -->
+    <text x="620" y="18" font-family="var(--font-sans)" font-size="13" fill="var(--correct)" text-anchor="middle" font-weight="bold" letter-spacing="0.05em">✓ Vertex-Disjoint</text>
+
+    <!-- Nodes -->
+    <circle cx="450" cy="100" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2.5"/>
+    <text x="450" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="13" fill="var(--ink)" text-anchor="middle">S</text>
+
+    <circle cx="555" cy="45" r="15" fill="var(--panel)" stroke="var(--correct)" stroke-width="2"/>
+    <text x="555" y="50" font-family="var(--font-mono)" font-size="11" fill="var(--ink)" text-anchor="middle">A</text>
+
+    <circle cx="680" cy="45" r="15" fill="var(--panel)" stroke="var(--correct)" stroke-width="2"/>
+    <text x="680" y="50" font-family="var(--font-mono)" font-size="11" fill="var(--ink)" text-anchor="middle">B</text>
+
+    <circle cx="555" cy="155" r="15" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="555" y="160" font-family="var(--font-mono)" font-size="11" fill="var(--ink)" text-anchor="middle">C</text>
+
+    <circle cx="680" cy="155" r="15" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="680" y="160" font-family="var(--font-mono)" font-size="11" fill="var(--ink)" text-anchor="middle">D</text>
+
+    <circle cx="790" cy="100" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2.5"/>
+    <text x="790" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="13" fill="var(--ink)" text-anchor="middle">E</text>
+
+    <!-- Path 1: S → A → B → E (green) -->
+    <line x1="466" y1="88" x2="542" y2="52" stroke="var(--correct)" stroke-width="2.5"/>
+    <line x1="570" y1="45" x2="665" y2="45" stroke="var(--correct)" stroke-width="2.5"/>
+    <line x1="693" y1="52" x2="774" y2="88" stroke="var(--correct)" stroke-width="2.5" marker-end="url(#vd-arr)"/>
+
+    <!-- Path 2: S → C → D → E (orange) -->
+    <line x1="466" y1="112" x2="542" y2="148" stroke="var(--accent)" stroke-width="2.5"/>
+    <line x1="570" y1="155" x2="665" y2="155" stroke="var(--accent)" stroke-width="2.5"/>
+    <line x1="693" y1="148" x2="774" y2="112" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#vd-arr)"/>
+
+    <!-- Path labels -->
+    <text x="505" y="38" font-family="var(--font-sans)" font-size="10" fill="var(--correct)" opacity="0.8">Path 1</text>
+    <text x="505" y="175" font-family="var(--font-sans)" font-size="10" fill="var(--accent)" opacity="0.8">Path 2</text>
+
+    <!-- No shared nodes label -->
+    <text x="620" y="105" font-family="var(--font-sans)" font-size="10" fill="var(--correct)" text-anchor="middle" opacity="0.8">0 κοινοί κόμβοι</text>
+</svg>
+
 <p>Το BFS (Breadth-First Search) είναι ένας φανταστικός αλγόριθμος. Όταν τον τρέξεις από το Start στο End, θα σου βρει <em>εγγυημένα</em> το συντομότερο μονοπάτι σε αριθμό αλμάτων (hops). Γιατί λοιπόν δεν τρέχουμε απλά το BFS, βρίσκουμε το Path, διαγράφουμε τα Nodes του από τον γράφο, και το ξανατρέχουμε για το επόμενο Path;</p>
 
 <p>Αυτή η προσέγγιση (Greedy BFS) <strong>αποτυγχάνει παταγωδώς</strong>. Διότι το πρώτο (συντομότερο) μονοπάτι μπορεί να κόψει τον γράφο στη μέση, καταστρέφοντας δύο άλλα, ελαφρώς μεγαλύτερα (αλλά παράλληλα) μονοπάτια.</p>
@@ -447,79 +510,496 @@ addContent(`
     <line x1="490" y1="130" x2="535" y2="180" stroke="var(--tone-4)" stroke-width="2"/>
 </svg>
 <p>Αν το BFS διαλέξει το κεντρικό, κόκκινο μονοπάτι επειδή τυχαίνει να είναι κατά 1 δωμάτιο πιο σύντομο, "ακρωτηριάζει" τον γράφο. Τα πάνω και κάτω μονοπάτια (που αθροιστικά θα μετέφεραν την διπλάσια κίνηση) μένουν αχρησιμοποίητα.</p>
-<p>Ο αλγόριθμος πρέπει με κάποιο τρόπο να μπορεί να <em>αναιρέσει</em> αυτή την κακή επιλογή. Εδώ έρχεται το Suurballe's Algorithm και το concept του Residual Graph.</p>
 `);
 
-addContent(`
+        addContent(`
 <div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
-<h1 id="@node-split">Node Splitting (1 Μυρμήγκι)</h1>
-<p>Στη θεωρία Γράφων, ο κλασικός αλγόριθμος εύρεσης μέγιστης ροής (Max Flow) λέγεται <strong>Edmonds-Karp</strong>. Ο αλγόριθμος αυτός όμως λειτουργεί με "Edge Capacity" (Πόσο νερό χωράει ο σωλήνας). Στο Lem-in δεν έχουμε περιορισμό στα τούνελ, έχουμε <em>Node Capacity</em> (Πόσα μυρμήγκια χωράει το δωμάτιο = 1).</p>
-<p>Πώς το λύνουμε; Χρησιμοποιούμε μια μαθηματική παραίσθηση που λέγεται <strong>Node Splitting</strong>. Χωρίζουμε προγραμματιστικά κάθε δωμάτιο (π.χ. <code>RoomA</code>) σε <strong>δύο</strong> εικονικά δωμάτια: <code>RoomA_in</code> και <code>RoomA_out</code>. <br>Όλα τα εισερχόμενα τούνελ ενώνονται στο <code>_in</code>. Όλα τα εξερχόμενα τούνελ φεύγουν από το <code>_out</code>. <br>Και ανάμεσά τους, υπάρχει ένα <strong>μονοδρομικό τούνελ</strong> <code>RoomA_in -> RoomA_out</code>.</p>
-<p>Αν ο αλγόριθμός μας μαρκάρει αυτή τη μοναδική εσωτερική ακμή ως "χρησιμοποιημένη", είναι <em>αδύνατον</em> για οποιοδήποτε δεύτερο μυρμήγκι να διασχίσει το δωμάτιο! Έτσι, μετατρέπουμε το Node Capacity σε Edge Capacity.</p>
+<h1 id="@bfs-explained">Πώς Λειτουργεί το BFS</h1>
+<p class="lede">Το <strong>BFS (Breadth-First Search)</strong> εξερευνεί τον γράφο <em>κατά επίπεδα</em>. Πρώτα όλους τους γείτονες σε απόσταση 1, μετά σε απόσταση 2, κ.ο.κ. Χρησιμοποιεί μια <strong>ουρά (Queue)</strong> — First In, First Out.</p>
+
+<svg viewBox="0 0 820 280" style="max-width: 920px; width: 100%; height: auto; margin: 1.5rem auto; display: block;" color="var(--ink)">
+    <defs>
+        <marker id="bfs-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/>
+        </marker>
+    </defs>
+
+    <!-- Level labels -->
+    <text x="80" y="18" font-family="var(--font-sans)" font-size="11" fill="var(--tone-4)" text-anchor="middle" letter-spacing="0.08em">Level 0</text>
+    <text x="260" y="18" font-family="var(--font-sans)" font-size="11" fill="var(--tone-4)" text-anchor="middle" letter-spacing="0.08em">Level 1</text>
+    <text x="460" y="18" font-family="var(--font-sans)" font-size="11" fill="var(--tone-4)" text-anchor="middle" letter-spacing="0.08em">Level 2</text>
+    <text x="660" y="18" font-family="var(--font-sans)" font-size="11" fill="var(--tone-4)" text-anchor="middle" letter-spacing="0.08em">Level 3</text>
+
+    <!-- Level dividers -->
+    <line x1="170" y1="25" x2="170" y2="190" stroke="var(--tone-4)" stroke-width="0.5" stroke-dasharray="3,5" opacity="0.3"/>
+    <line x1="360" y1="25" x2="360" y2="190" stroke="var(--tone-4)" stroke-width="0.5" stroke-dasharray="3,5" opacity="0.3"/>
+    <line x1="560" y1="25" x2="560" y2="190" stroke="var(--tone-4)" stroke-width="0.5" stroke-dasharray="3,5" opacity="0.3"/>
+
+    <!-- S node -->
+    <circle cx="80" cy="110" r="22" fill="var(--panel)" stroke="var(--correct)" stroke-width="3"/>
+    <text x="80" y="115" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--correct)" text-anchor="middle">S</text>
+
+    <!-- Level 1 nodes -->
+    <circle cx="260" cy="55" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="260" y="60" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">A</text>
+    <circle cx="260" cy="165" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="260" y="170" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">B</text>
+
+    <!-- Level 2 nodes -->
+    <circle cx="460" cy="55" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="460" y="60" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">C</text>
+    <circle cx="460" cy="165" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="460" y="170" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">D</text>
+
+    <!-- E node -->
+    <circle cx="660" cy="110" r="22" fill="var(--panel)" stroke="var(--accent)" stroke-width="3"/>
+    <text x="660" y="115" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--accent)" text-anchor="middle">E</text>
+
+    <!-- Edges -->
+    <line x1="100" y1="98" x2="244" y2="62" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#bfs-arr)"/>
+    <line x1="100" y1="122" x2="244" y2="158" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#bfs-arr)"/>
+    <line x1="278" y1="55" x2="442" y2="55" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#bfs-arr)"/>
+    <line x1="278" y1="165" x2="442" y2="165" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#bfs-arr)"/>
+    <line x1="476" y1="62" x2="644" y2="98" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#bfs-arr)"/>
+    <line x1="476" y1="158" x2="644" y2="122" stroke="var(--tone-4)" stroke-width="2" marker-end="url(#bfs-arr)"/>
+
+    <!-- Visit order numbers -->
+    <circle cx="80" cy="85" r="10" fill="var(--correct)" opacity="0.8"/>
+    <text x="80" y="89" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">1</text>
+    <circle cx="260" cy="32" r="10" fill="var(--correct)" opacity="0.8"/>
+    <text x="260" y="36" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">2</text>
+    <circle cx="260" cy="142" r="10" fill="var(--correct)" opacity="0.8"/>
+    <text x="260" y="146" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">3</text>
+    <circle cx="460" cy="32" r="10" fill="var(--correct)" opacity="0.8"/>
+    <text x="460" y="36" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">4</text>
+    <circle cx="460" cy="142" r="10" fill="var(--correct)" opacity="0.8"/>
+    <text x="460" y="146" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">5</text>
+    <circle cx="660" cy="85" r="10" fill="var(--correct)" opacity="0.8"/>
+    <text x="660" y="89" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">6</text>
+
+    <!-- Queue visualization -->
+    <rect x="40" y="215" width="740" height="50" rx="6" fill="var(--code-bg)" opacity="0.8"/>
+    <text x="60" y="236" font-family="var(--font-sans)" font-size="11" fill="var(--tone-4)" font-weight="bold">Queue:</text>
+    <text x="120" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--correct)">[S]</text>
+    <text x="165" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="185" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--ink)">[A, B]</text>
+    <text x="250" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="270" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--ink)">[B, C]</text>
+    <text x="340" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="360" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--ink)">[C, D]</text>
+    <text x="430" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="450" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--ink)">[D, E]</text>
+    <text x="520" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="545" y="236" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">E found!</text>
+    <text x="60" y="255" font-family="var(--font-sans)" font-size="10" fill="var(--tone-4)">Πάντα αφαιρούμε από μπροστά, προσθέτουμε πίσω. Γι' αυτό εγγυάται shortest path σε hops.</text>
+</svg>
+
+<p>Ο αλγόριθμος:</p>
+<ol>
+    <li>Ξεκίνα από το <code>Start</code>, βάλ' το στην Queue.</li>
+    <li>Βγάλε τον πρώτο κόμβο από την Queue.</li>
+    <li>Για κάθε <strong>μη-επισκεφθέντα</strong> γείτονά του: σημείωσέ τον ως visited, αποθήκευσε τον parent του, βάλ' τον στο τέλος της Queue.</li>
+    <li>Αν βρεις το <code>End</code>, σταμάτα. Ανακατασκεύασε το Path ακολουθώντας τους parents ανάποδα.</li>
+    <li>Αν η Queue αδειάσει χωρίς να βρεις το End, δεν υπάρχει μονοπάτι.</li>
+</ol>
+<p>Το BFS εγγυάται <strong>shortest path σε αριθμό hops</strong> γιατί εξετάζει πρώτα όλους τους κόμβους σε απόσταση <em>k</em> πριν περάσει στην απόσταση <em>k+1</em>. Γι' αυτό χρησιμοποιείται στο Lem-in.</p>
 `);
 
-addContent(`
+        addContent(`
 <div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
-<h1 id="@residual">Residual Graph & Edge Reversal</h1>
-<p class="lede">Πώς αναιρούμε τις λάθος (Greedy) επιλογές του BFS; Αντιστρέφοντας τα τούνελ!</p>
-<p>Όταν το πρώτο BFS βρίσκει ένα μονοπάτι (π.χ. Start -> A -> B -> End), αντί να διαγράψουμε τους κόμβους, δημιουργούμε έναν <strong>Residual Graph</strong> (Υπολειπόμενο Γράφο). Σε αυτόν τον γράφο, <strong>διαγράφουμε</strong> τα τούνελ που χρησιμοποιήσαμε, και στη θέση τους <strong>προσθέτουμε ανάποδα τούνελ</strong> (B -> A).</p>
-<p>Όταν τρέξουμε το *δεύτερο* BFS στον Residual Graph, αυτό θα ψάξει για το επόμενο μονοπάτι. Αν, στην προσπάθειά του να βρει δρόμο, <strong>περπατήσει πάνω σε μια ανάποδη ακμή</strong> (δηλαδή πάει από το B πίσω στο A), αυτό προγραμματιστικά μεταφράζεται ως <em>ΑΚΥΡΩΣΗ (Cancellation)</em> της προηγούμενης κίνησης!</p>
+<h1 id="@dfs-explained">Πώς Λειτουργεί το DFS</h1>
+<p class="lede">Το <strong>DFS (Depth-First Search)</strong> πηγαίνει <em>όσο πιο βαθιά μπορεί</em> πριν κάνει backtrack. Χρησιμοποιεί μια <strong>στοίβα (Stack)</strong> — Last In, First Out — ή αναδρομή (recursion).</p>
 
-<div class="callout good">
-  <span class="tag">Ο ΜΑΓΙΚΟΣ ΜΗΧΑΝΙΣΜΟΣ</span>
-  Αν το πρώτο μονοπάτι είχε χρησιμοποιήσει την ακμή A->B, και το δεύτερο μονοπάτι περπατήσει ανάποδα την ακμή B->A, οι δύο δυνάμεις αλληλοεξουδετερώνονται. Η σύνδεση A-B "σπάει", και τα δύο μονοπάτια "ξεμπλέκονται" αυτόματα δημιουργώντας δύο εντελώς νέα, <strong>Vertex-Disjoint paths</strong> που δεν διασταυρώνονται πλέον πουθενά!
+<svg viewBox="0 0 820 260" style="max-width: 920px; width: 100%; height: auto; margin: 1.5rem auto; display: block;" color="var(--ink)">
+    <defs>
+        <marker id="dfs-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/>
+        </marker>
+        <marker id="dfs-arr-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+    </defs>
+
+    <!-- Nodes -->
+    <circle cx="80" cy="100" r="22" fill="var(--panel)" stroke="var(--correct)" stroke-width="3"/>
+    <text x="80" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--correct)" text-anchor="middle">S</text>
+
+    <circle cx="240" cy="45" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="240" y="50" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">A</text>
+    <circle cx="240" cy="155" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="240" y="160" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">B</text>
+
+    <circle cx="400" cy="45" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="400" y="50" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">C</text>
+    <circle cx="400" cy="155" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="400" y="160" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">D</text>
+
+    <circle cx="560" cy="45" r="18" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="560" y="50" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">F</text>
+
+    <circle cx="700" cy="100" r="22" fill="var(--panel)" stroke="var(--accent)" stroke-width="3"/>
+    <text x="700" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--accent)" text-anchor="middle">E</text>
+
+    <!-- All edges (grey) -->
+    <line x1="100" y1="88" x2="224" y2="52" stroke="var(--tone-4)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="100" y1="112" x2="224" y2="148" stroke="var(--tone-4)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="258" y1="45" x2="382" y2="45" stroke="var(--tone-4)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="258" y1="155" x2="382" y2="155" stroke="var(--tone-4)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="418" y1="45" x2="542" y2="45" stroke="var(--tone-4)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="416" y1="148" x2="684" y2="108" stroke="var(--tone-4)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="574" y1="52" x2="684" y2="88" stroke="var(--tone-4)" stroke-width="1.5" opacity="0.4"/>
+
+    <!-- DFS path highlighted: S → A → C → F → E (wrong! longer path) -->
+    <line x1="100" y1="88" x2="224" y2="52" stroke="var(--accent)" stroke-width="3" marker-end="url(#dfs-arr-acc)"/>
+    <line x1="258" y1="45" x2="382" y2="45" stroke="var(--accent)" stroke-width="3" marker-end="url(#dfs-arr-acc)"/>
+    <line x1="418" y1="45" x2="542" y2="45" stroke="var(--accent)" stroke-width="3" marker-end="url(#dfs-arr-acc)"/>
+    <line x1="574" y1="52" x2="684" y2="88" stroke="var(--accent)" stroke-width="3" marker-end="url(#dfs-arr-acc)"/>
+
+    <!-- Visit order -->
+    <circle cx="80" cy="75" r="10" fill="var(--accent)" opacity="0.8"/>
+    <text x="80" y="79" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">1</text>
+    <circle cx="240" cy="22" r="10" fill="var(--accent)" opacity="0.8"/>
+    <text x="240" y="26" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">2</text>
+    <circle cx="400" cy="22" r="10" fill="var(--accent)" opacity="0.8"/>
+    <text x="400" y="26" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">3</text>
+    <circle cx="560" cy="22" r="10" fill="var(--accent)" opacity="0.8"/>
+    <text x="560" y="26" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">4</text>
+    <circle cx="700" cy="75" r="10" fill="var(--accent)" opacity="0.8"/>
+    <text x="700" y="79" font-family="var(--font-mono)" font-size="10" fill="var(--tone-1)" text-anchor="middle" font-weight="bold">5</text>
+
+    <!-- Annotation: "Shorter path ignored!" -->
+    <text x="320" y="190" font-family="var(--font-sans)" font-size="11" fill="var(--danger)" text-anchor="middle">S → B → D → E (3 hops) — δεν το βρήκε!</text>
+    <text x="320" y="205" font-family="var(--font-sans)" font-size="11" fill="var(--accent)" text-anchor="middle">S → A → C → F → E (4 hops) — αυτό βρήκε</text>
+
+    <!-- Stack visualization -->
+    <rect x="40" y="220" width="740" height="35" rx="6" fill="var(--code-bg)" opacity="0.8"/>
+    <text x="60" y="242" font-family="var(--font-sans)" font-size="11" fill="var(--tone-4)" font-weight="bold">Stack:</text>
+    <text x="120" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">[S]</text>
+    <text x="155" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="175" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--ink)">[A]</text>
+    <text x="210" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="230" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--ink)">[C]</text>
+    <text x="265" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="285" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--ink)">[F]</text>
+    <text x="320" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--tone-4)">→</text>
+    <text x="345" y="242" font-family="var(--font-mono)" font-size="12" fill="var(--accent)">E found!</text>
+    <text x="455" y="242" font-family="var(--font-sans)" font-size="10" fill="var(--tone-4)">Πάντα αφαιρούμε (και προσθέτουμε) από πάνω. Βουτάει βαθιά πριν πάει πλάι.</text>
+</svg>
+
+<p>Ο αλγόριθμος:</p>
+<ol>
+    <li>Ξεκίνα από το <code>Start</code>, βάλ' το στο Stack (ή κάλεσε αναδρομικά).</li>
+    <li>Βγάλε τον <strong>τελευταίο</strong> κόμβο από το Stack.</li>
+    <li>Για κάθε μη-επισκεφθέντα γείτονά του: σημείωσέ τον και βάλ' τον στην κορυφή του Stack.</li>
+    <li>Αν βρεις το <code>End</code>, σταμάτα. Ο δρόμος που ακολούθησες <em>δεν είναι κατ' ανάγκη ο συντομότερος</em>.</li>
+</ol>
+<div class="callout">
+  <span class="tag">ΓΙΑΤΙ ΟΧΙ DFS ΣΤΟ LEM-IN;</span>
+  Το DFS δεν εγγυάται shortest path. Μπορεί να βρει μονοπάτι μήκους 10 ενώ υπάρχει ένα μήκους 3. Στο Lem-in χρησιμοποιούμε <strong>BFS</strong> γιατί μας δίνει εγγυημένα το συντομότερο μονοπάτι σε κάθε iteration, πράγμα που είναι κρίσιμο για τον Suurballe's.
 </div>
-<p>Η διαδικασία (Βρες Path → Αντέστρεψε Edges → Ξαναψάξε → Ακύρωσε αν χρειαστεί) επαναλαμβάνεται μέχρι το BFS να μην βρίσκει πλέον κανένα μονοπάτι (επιστρέφει <code>nil</code>). Τότε, έχουμε βρει την <em>απόλυτα μέγιστη ροή</em> (Max Flow).</p>
 `);
 
-addQuiz({
-  q: "Ποιος είναι ο σκοπός του Edge Reversing (Αναστροφή Ακμών) κατά την εύρεση μονοπατιών;",
-  options: [
-    "Επιτρέπει στο επόμενο BFS να 'περπατήσει' ανάποδα σε μια λάθος επιλογή του προηγούμενου μονοπατιού, ακυρώνοντάς την (cancellation) και ξεμπλέκοντας τα μονοπάτια.",
-    "Μετατρέπει τον Undirected Graph σε Directed Graph για να εξοικονομήσουμε μνήμη RAM.",
-    "Αναγκάζει τα μυρμήγκια να γυρίσουν πίσω στο Start αν συναντήσουν μποτιλιάρισμα (Dead End) κατά τη διάρκεια της προσομοίωσης.",
-    "Απλά κρύβει τα χρησιμοποιημένα Nodes για να μην τα ξαναδεί το BFS, εξοικονομώντας χρόνο, χωρίς να προσφέρει κάτι στους συνδυασμούς."
-  ],
-  correct: 0,
-  explain: "Ακριβώς! Το Edge Reversing είναι ο μηχανισμός διόρθωσης λαθών (backtracking / cancellation) στους αλγόριθμους Max-Flow (όπως ο Suurballe's και Edmonds-Karp). Το (4) είναι η απλή Greedy προσέγγιση που περιγράψαμε πως αποτυγχάνει (αφήνει κολλημένο τον γράφο)."
-});
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@dijkstra-explained">Και ο Dijkstra; Τι κάνει;</h1>
+<p class="lede">Ο αλγόριθμος του <strong>Dijkstra</strong> βρίσκει το συντομότερο μονοπάτι σε <em>Γράφους με Βάρη (Weighted Graphs)</em>, όπου κάθε ακμή έχει ένα "κόστος" (π.χ. χιλιόμετρα, διόδια, χρόνος). Αντί για απλή Ουρά, χρησιμοποιεί μια <strong>Ουρά Προτεραιότητας (Priority Queue)</strong>.</p>
 
-addFillBlank({
-  code: `// Υλοποίηση του Cancellation (Residual Graph update)
-// Το path που βρέθηκε είναι slice από *Node
+<svg viewBox="0 0 820 280" style="max-width: 920px; width: 100%; height: auto; margin: 1.5rem auto; display: block;" color="var(--ink)">
+    <defs>
+        <marker id="dij-arr-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+        </marker>
+        <marker id="dij-arr-tone" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--tone-4)"/>
+        </marker>
+        <marker id="dij-arr-corr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--correct)"/>
+        </marker>
+    </defs>
 
-func cancelPath(path []*Node) {
-    for i := 0; i < len(path)-1; i++ {
-        from := path[i]
-        to := path[i+1]
-        
-        // 1. Σπάμε (αφαιρούμε) την αρχική κανονική σύνδεση
-        removeEdge(from, to)
-        
-        // 2. Προσθέτουμε την "αντίστροφη" ακμή στον γράφο
-        // για να επιτρέψουμε το 'ξεμπέρδεμα' στο επόμενο BFS
-        addEdge(__to__, __from__)
-    }
-}`,
-  blanks: [
-    { id: "to", answer: "to" },
-    { id: "from", answer: "from" }
-  ],
-  explain: "Για κάθε βήμα στο μονοπάτι (π.χ. από το 'A' στο 'B'), καταστρέφουμε την κατεύθυνση A->B, και εισάγουμε την B->A. Το επόμενο BFS μπορεί να 'κατέβει' την B->A, πυροδοτώντας το μαγικό cancellation."
-}, { lang: "go" });
+    <!-- Nodes -->
+    <circle cx="100" cy="120" r="22" fill="var(--panel)" stroke="var(--correct)" stroke-width="3"/>
+    <text x="100" y="125" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--correct)" text-anchor="middle">S</text>
 
-addMatching([
-  { term: "Vertex-Disjoint", def: "Μονοπάτια που δεν έχουν κανέναν απολύτως κοινό κόμβο. Το ζητούμενο του project." },
-  { term: "Node Splitting", def: "Το trick του διαχωρισμού In/Out για να επιβάλλουμε το Capacity 1 στα δωμάτια." },
-  { term: "Residual Graph", def: "Ο 'μεταλλαγμένος' γράφος που περιέχει τις αντεστραμμένες ακμές (Reverse Edges) μετά από κάθε BFS." },
-  { term: "Suurballe's Algorithm", def: "Ο αλγόριθμος που βρίσκει Node-Disjoint paths αναιρώντας προηγούμενες κακές διαδρομές (Cancellation)." }
-], { label: "Max-Flow Ορολογία", note: "Οι έννοιες πίσω από το Pathfinding. Ταίριαξε προσεκτικά." });
+    <!-- Node A -->
+    <circle cx="300" cy="60" r="20" fill="var(--panel)" stroke="var(--correct)" stroke-width="3"/>
+    <text x="300" y="65" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">A</text>
+    <text x="300" y="32" font-family="var(--font-mono)" font-size="11" fill="var(--correct)" text-anchor="middle" font-weight="bold">Cost: 2</text>
+
+    <!-- Node B -->
+    <circle cx="300" cy="180" r="20" fill="var(--panel)" stroke="var(--correct)" stroke-width="3"/>
+    <text x="300" y="185" font-family="var(--font-mono)" font-size="12" fill="var(--ink)" text-anchor="middle">B</text>
+    <text x="300" y="215" font-family="var(--font-mono)" font-size="11" fill="var(--correct)" text-anchor="middle" font-weight="bold">Cost: <tspan fill="var(--tone-4)" text-decoration="line-through">6</tspan> → 3!</text>
+
+    <!-- Node E -->
+    <circle cx="500" cy="120" r="22" fill="var(--panel)" stroke="var(--correct)" stroke-width="3"/>
+    <text x="500" y="125" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--ink)" text-anchor="middle">E</text>
+    <text x="500" y="85" font-family="var(--font-mono)" font-size="11" fill="var(--correct)" text-anchor="middle" font-weight="bold">Cost: <tspan fill="var(--tone-4)" text-decoration="line-through">9</tspan> → 5!</text>
+
+    <!-- Edges and Weights -->
+    <!-- S to A (Final Path) -->
+    <line x1="121" y1="113" x2="279" y2="67" stroke="var(--correct)" stroke-width="2.5" marker-end="url(#dij-arr-corr)"/>
+    <rect x="188" y="82" width="24" height="16" fill="var(--code-bg)" rx="4"/>
+    <text x="200" y="94" font-family="var(--font-mono)" font-size="11" fill="var(--correct)" text-anchor="middle" font-weight="bold">2</text>
+    
+    <!-- S to B (Initial slow path) -->
+    <line x1="121" y1="127" x2="279" y2="173" stroke="var(--tone-4)" stroke-width="2" stroke-dasharray="4,4" opacity="0.6"/>
+    <rect x="188" y="142" width="24" height="16" fill="var(--code-bg)" rx="4"/>
+    <text x="200" y="154" font-family="var(--font-mono)" font-size="11" fill="var(--tone-4)" text-anchor="middle">6</text>
+
+    <!-- A to B (The first shortcut) -->
+    <line x1="300" y1="80" x2="300" y2="160" stroke="var(--correct)" stroke-width="2.5" marker-end="url(#dij-arr-corr)"/>
+    <rect x="288" y="112" width="24" height="16" fill="var(--code-bg)" rx="4"/>
+    <text x="300" y="124" font-family="var(--font-mono)" font-size="11" fill="var(--correct)" text-anchor="middle" font-weight="bold">1</text>
+
+    <!-- A to E (Slow path to End) -->
+    <line x1="321" y1="67" x2="479" y2="113" stroke="var(--tone-4)" stroke-width="2" stroke-dasharray="4,4" opacity="0.6"/>
+    <rect x="388" y="82" width="24" height="16" fill="var(--code-bg)" rx="4"/>
+    <text x="400" y="94" font-family="var(--font-mono)" font-size="11" fill="var(--tone-4)" text-anchor="middle">7</text>
+
+    <!-- B to E (Final Path to End) -->
+    <line x1="321" y1="173" x2="479" y2="127" stroke="var(--correct)" stroke-width="2.5" marker-end="url(#dij-arr-corr)"/>
+    <rect x="388" y="142" width="24" height="16" fill="var(--code-bg)" rx="4"/>
+    <text x="400" y="154" font-family="var(--font-mono)" font-size="11" fill="var(--correct)" text-anchor="middle" font-weight="bold">2</text>
+
+    <!-- Explanation Box -->
+    <rect x="560" y="40" width="250" height="180" rx="6" fill="var(--code-bg)" opacity="0.8"/>
+    <text x="685" y="65" font-family="var(--font-sans)" font-size="11" fill="var(--tone-4)" font-weight="bold" text-anchor="middle">Πώς ανακαλύπτει το Shortest Path:</text>
+    
+    <text x="580" y="90" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">1. Από S βρίσκει A(2) &amp; B(6).</text>
+    <text x="580" y="110" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">2. Επεκτείνει το A (είναι φθηνότερο).</text>
+    <text x="580" y="130" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">3. Βρίσκει shortcut A→B: Νέο B(3)!</text>
+    <text x="580" y="150" font-family="var(--font-mono)" font-size="11" fill="var(--ink)">4. Επεκτείνει το B (αγνοεί το αρχικό 6).</text>
+    <text x="580" y="170" font-family="var(--font-mono)" font-size="11" fill="var(--accent)">5. Βρίσκει shortcut B→E: Νέο E(5)!</text>
+    <text x="580" y="195" font-family="var(--font-mono)" font-size="11" fill="var(--correct)" font-weight="bold">Τελικό Path: S → A → B → E (5)</text>
+</svg>
+
+<p>Ο αλγόριθμος:</p>
+<ol>
+    <li>Σε κάθε βήμα, αντί να παίρνει το <em>επόμενο</em> στη σειρά (όπως το BFS), βγάζει από την Ουρά τον κόμβο με το <strong>μικρότερο τρέχον κόστος (βάρος)</strong> από την αφετηρία.</li>
+    <li>Αν βρει μια φθηνότερη διαδρομή (shortcut) για έναν κόμβο που ήδη έχει επισκεφθεί επιφανειακά (όπως το S→A→B που κοστίζει 3, ενώ το S→B κοστίζει 5), ενημερώνει το κόστος του.</li>
+</ol>
+<div class="callout">
+  <span class="tag">Η ΣΧΕΣΗ ΜΕ ΤΟ BFS</span>
+  Όταν όλες οι ακμές έχουν <strong>βάρος 1</strong> (όπως συμβαίνει στα τούνελ του Lem-in, όπου κάθε άλμα μετράει για 1 turn), η Priority Queue του Dijkstra λειτουργεί ακριβώς όπως η απλή Queue του BFS. Δεν υπάρχουν "shortcuts" να ανακαλύψει. <strong>Άρα το BFS είναι απλά ένας Dijkstra για Unweighted Graphs!</strong>
+</div>
+`);
 
 
-// ============================================================================
-// ROUTING & DISTRIBUTION
-// ============================================================================
-addContent(`
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@node-split-intro">Το Πρόβλημα του Χώρου (Capacity)</h1>
+<p class="lede">Ο κλασικός αλγόριθμος εύρεσης μέγιστης ροής (Max Flow) λέγεται <strong>Edmonds-Karp</strong>. Όμως, αυτός σχεδιάστηκε αρχικά για δίκτυα ύδρευσης.</p>
+<p>Γι' αυτό το λόγο ελέγχει το <strong>Edge Capacity</strong> (Πόσο νερό χωράει ο σωλήνας / τούνελ). Στο Lem-in όμως δεν έχουμε κανένα περιορισμό στα τούνελ. Έχουμε <em>Node Capacity</em> (Κάθε δωμάτιο χωράει αυστηρά και μόνο 1 μυρμήγκι τη φορά).</p>
+<svg viewBox="0 0 800 160" style="max-width: 800px; width: 100%; height: auto; margin: 1.5rem 0;">
+    <rect width="800" height="160" fill="var(--code-bg)" rx="8" />
+    <!-- Edge Capacity -->
+    <text x="200" y="30" font-family="var(--font-sans)" font-size="14" fill="var(--tone-4)" text-anchor="middle">Δίκτυα (Edge Capacity)</text>
+    <circle cx="80" cy="100" r="20" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <circle cx="320" cy="100" r="20" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <line x1="100" y1="100" x2="300" y2="100" stroke="var(--accent)" stroke-width="24"/>
+    <text x="200" y="104" font-family="var(--font-sans)" font-size="12" font-weight="bold" fill="var(--code-bg)" text-anchor="middle">Χωράει 50 Μονάδες</text>
+
+    <line x1="400" y1="20" x2="400" y2="140" stroke="var(--tone-3)" stroke-width="2" stroke-dasharray="4,4"/>
+
+    <!-- Node Capacity -->
+    <text x="600" y="30" font-family="var(--font-sans)" font-size="14" fill="var(--tone-4)" text-anchor="middle">Lem-in (Node Capacity)</text>
+    <circle cx="480" cy="100" r="20" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <circle cx="720" cy="100" r="20" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <line x1="500" y1="100" x2="700" y2="100" stroke="var(--tone-4)" stroke-width="2"/>
+    <circle cx="600" cy="100" r="35" fill="var(--danger)" fill-opacity="0.15" stroke="var(--danger)" stroke-width="2"/>
+    <text x="600" y="104" font-family="var(--font-sans)" font-size="12" font-weight="bold" fill="var(--danger)" text-anchor="middle">Χωράει 1</text>
+</svg>
+<p>Επειδή ο αλγόριθμος "καταλαβαίνει" μόνο από όρια σε τούνελ (edges), πρέπει με κάποιο τρόπο να τον ξεγελάσουμε. Πρέπει να <em>μετατρέψουμε</em> τον περιορισμό του δωματίου, σε περιορισμό τούνελ!</p>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@node-split-trick">Η Μαθηματική Παραίσθηση</h1>
+<p class="lede">Η λύση λέγεται <strong>Node Splitting</strong>. Χωρίζουμε (προγραμματιστικά) κάθε πραγματικό δωμάτιο σε <em>δύο εικονικά δωμάτια</em>.</p>
+<p>Αν έχουμε το <code>RoomA</code>, φτιάχνουμε το <code>RoomA_in</code> και το <code>RoomA_out</code>. <br>Όλα τα <strong>εισερχόμενα</strong> εξωτερικά τούνελ του γράφου συνδέονται στο <code>_in</code>. <br>Όλα τα <strong>εξερχόμενα</strong> εξωτερικά τούνελ φεύγουν από το <code>_out</code>.</p>
+<p>Ανάμεσα στα δύο αυτά μισά, προσθέτουμε <strong>ένα μονοδρομικό τούνελ (Internal Edge)</strong>. Αυτό το εσωτερικό τούνελ λειτουργεί ως η "εικονική πόρτα" του δωματίου.</p>
+
+<svg viewBox="0 0 800 200" style="max-width: 800px; width: 100%; height: auto; margin: 1.5rem 0;">
+    <rect width="800" height="200" fill="var(--code-bg)" rx="8" />
+    
+    <!-- Real Room -->
+    <text x="200" y="30" font-family="var(--font-sans)" font-size="14" fill="var(--tone-4)" text-anchor="middle">Το Πραγματικό Δωμάτιο</text>
+    <!-- incoming -->
+    <line x1="80" y1="60" x2="160" y2="100" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    <line x1="80" y1="140" x2="160" y2="100" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    <!-- outgoing -->
+    <line x1="240" y1="100" x2="320" y2="60" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    <line x1="240" y1="100" x2="320" y2="140" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    
+    <circle cx="200" cy="100" r="40" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="3"/>
+    <text x="200" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="18" fill="var(--ink)" text-anchor="middle">Room A</text>
+    
+    <text x="400" y="105" font-family="var(--font-mono)" font-size="30" fill="var(--tone-4)" text-anchor="middle">→</text>
+    
+    <!-- Split Room -->
+    <text x="600" y="30" font-family="var(--font-sans)" font-size="14" fill="var(--tone-4)" text-anchor="middle">Το Split Δωμάτιο (Στη Μνήμη)</text>
+    <rect x="470" y="50" width="260" height="100" rx="20" fill="var(--tone-2)" stroke="var(--tone-3)" stroke-width="2" stroke-dasharray="6,6"/>
+    
+    <!-- incoming -->
+    <line x1="420" y1="60" x2="500" y2="100" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    <line x1="420" y1="140" x2="500" y2="100" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    <!-- outgoing -->
+    <line x1="700" y1="100" x2="780" y2="60" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    <line x1="700" y1="100" x2="780" y2="140" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrow-ink)"/>
+    
+    <circle cx="520" cy="100" r="25" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="520" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--accent)" text-anchor="middle">A_in</text>
+    
+    <circle cx="680" cy="100" r="25" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="680" y="105" font-family="var(--font-sans)" font-weight="bold" font-size="14" fill="var(--accent)" text-anchor="middle">A_out</text>
+    
+    <!-- internal edge -->
+    <line x1="545" y1="100" x2="650" y2="100" stroke="var(--correct)" stroke-width="4" marker-end="url(#arrow-green)"/>
+    <text x="600" y="90" font-family="var(--font-sans)" font-size="12" fill="var(--correct)" text-anchor="middle">Capacity 1 (Το "φίλτρο")</text>
+
+    <defs>
+        <marker id="arrow-ink" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--ink)" />
+        </marker>
+        <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--correct)" />
+        </marker>
+    </defs>
+</svg>
+<p>Αν ο αλγόριθμός μας περάσει από το δωμάτιο και μαρκάρει αυτή τη μοναδική, εσωτερική ακμή ως "χρησιμοποιημένη", είναι <em>αδύνατον</em> για οποιοδήποτε δεύτερο μυρμήγκι να διασχίσει το δωμάτιο. Δε υπάρχει άλλος δρόμος από το in στο out. Ξεγελάσαμε τον αλγόριθμο και του δώσαμε Edge Capacity 1!</p>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@node-split-code">Τι Σημαίνει Πρακτικά Στον Κώδικα;</h1>
+<p class="lede">Το Splitting δεν είναι απλά "θεωρία", μεταφράζεται 1-προς-1 σε Structs. Όταν κάνετε Parsing τα δωμάτια από το αρχείο, δεν δημιουργείτε 1 Node. Δημιουργείτε <strong>δύο</strong>, και τα συνδέετε κατευθείαν μεταξύ τους.</p>
+<pre><code class="lang-go">// Όταν διαβάζετε ένα δωμάτιο (π.χ. "RoomA")
+func (g *Graph) AddRoom(name string) {
+    // 1. Δημιουργία των Split Nodes
+    nodeIn := &Node{Name: name + "_in"}
+    nodeOut := &Node{Name: name + "_out"}
+    
+    // 2. Σύνδεση IN -> OUT (Μονοδρομική εσωτερική ακμή)
+    // Αναπαριστά τη φυσική διάσχιση του ίδιου του δωματίου
+    nodeIn.Edges = append(nodeIn.Edges, nodeOut)
+    
+    // 3. Αποθήκευση στον Γράφο
+    g.Nodes[nodeIn.Name] = nodeIn
+    g.Nodes[nodeOut.Name] = nodeOut
+}
+</code></pre>
+<p>Όταν αργότερα διαβάζετε τα εξωτερικά τούνελ, π.χ. <code>RoomA-RoomB</code>, τα συνδέετε "χιαστί" σύμφωνα με τον κανόνα: Το <code>Out</code> του ενός πάει στο <code>In</code> του άλλου.</p>
+<pre><code class="lang-go">// Όταν διαβάζετε τη σύνδεση RoomA-RoomB
+func (g *Graph) AddExternalEdge(nameA, nameB string) {
+    // A -> B (Το Out του A πάει στο In του B)
+    outA := g.Nodes[nameA + "_out"]
+    inB := g.Nodes[nameB + "_in"]
+    outA.Edges = append(outA.Edges, inB)
+    
+    // B -> A (Το Out του B πάει στο In του A)
+    outB := g.Nodes[nameB + "_out"]
+    inA := g.Nodes[nameA + "_in"]
+    outB.Edges = append(outB.Edges, inA)
+}
+</code></pre>
+<div class="callout"><span class="tag">ΕΞΑΙΡΕΣΗ</span>Το Start και το End Node δεν χρειάζονται Split! Αφού το Start μπορεί να φιλοξενήσει άπειρα μυρμήγκια (ξεκινούν όλα από εκεί) και το End δεν "γεμίζει" ποτέ, παραμένουν μονοί κόμβοι. Το Node Splitting εφαρμόζεται <strong>αυστηρά μόνο στα ενδιάμεσα δωμάτια</strong>.</div>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@residual">Residual Graph (Υπολειπόμενος Γράφος)</h1>
+<p class="lede">Πώς αναιρούμε τις λάθος (Greedy) επιλογές του BFS; Δεν μπορούμε να μαντέψουμε το σωστό εξαρχής. Αφήνουμε τον αλγόριθμο να κάνει λάθος, και του δίνουμε τον μηχανισμό να <em>αλλάξει γνώμη</em>.</p>
+<p>Όταν το πρώτο BFS βρίσκει ένα μονοπάτι (π.χ. Start -> A -> B -> End), αντί να διαγράψουμε τους κόμβους αυτούς, δημιουργούμε έναν <strong>Residual Graph</strong> (Υπολειπόμενο Γράφο).</p>
+<p>Σε αυτόν τον νέο γράφο, η διαδρομή που μόλις χρησιμοποιήσαμε παραμένει ζωντανή, αλλά <strong>μόνο προς την αντίθετη κατεύθυνση!</strong> Αντί να "κλειδώνουμε" τα δωμάτια, διαγράφουμε το τούνελ και το ξαναφτιάχνουμε ανάποδα.</p>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@reversal">Η Αναστροφή (Edge Reversal)</h1>
+<p>Κάθε φορά που ένα μονοπάτι επικυρώνεται (αποθηκεύεται ως λύση), <strong>διαγράφουμε</strong> τις αρχικές ακμές του από τον γράφο και προσθέτουμε <strong>Ανάποδες Ακμές (Reverse Edges)</strong>.</p>
+<svg viewBox="0 0 800 160" style="max-width: 800px; width: 100%; height: auto; margin: 1.5rem 0;">
+    <defs>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--danger)" />
+        </marker>
+    </defs>
+    <rect width="800" height="160" fill="var(--code-bg)" rx="8" />
+    
+    <!-- Original State -->
+    <text x="120" y="35" font-family="var(--font-sans)" font-size="14" fill="var(--tone-4)" text-anchor="middle">Αρχικός Γράφος</text>
+    <circle cx="60" cy="100" r="20" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="60" y="105" font-family="var(--font-sans)" font-weight="bold" fill="var(--ink)" text-anchor="middle">A</text>
+    <circle cx="180" cy="100" r="20" fill="var(--panel)" stroke="var(--tone-4)" stroke-width="2"/>
+    <text x="180" y="105" font-family="var(--font-sans)" font-weight="bold" fill="var(--ink)" text-anchor="middle">B</text>
+    <line x1="80" y1="100" x2="160" y2="100" stroke="var(--ink)" stroke-width="2"/>
+    
+    <!-- Transition -->
+    <text x="390" y="90" font-family="var(--font-sans)" font-size="16" fill="var(--accent)" text-anchor="middle">Το BFS επιλέγει το A→B</text>
+    <text x="390" y="125" font-family="var(--font-mono)" font-size="30" fill="var(--tone-4)" text-anchor="middle">→</text>
+    
+    <!-- Residual State -->
+    <text x="660" y="35" font-family="var(--font-sans)" font-size="14" fill="var(--tone-4)" text-anchor="middle">Residual Graph</text>
+    <circle cx="600" cy="100" r="20" fill="var(--panel)" stroke="var(--danger)" stroke-width="2"/>
+    <text x="600" y="105" font-family="var(--font-sans)" font-weight="bold" fill="var(--ink)" text-anchor="middle">A</text>
+    <circle cx="720" cy="100" r="20" fill="var(--panel)" stroke="var(--danger)" stroke-width="2"/>
+    <text x="720" y="105" font-family="var(--font-sans)" font-weight="bold" fill="var(--ink)" text-anchor="middle">B</text>
+    
+    <!-- Reversed Edge -->
+    <path d="M 700 100 L 620 100" stroke="var(--danger)" stroke-width="3" stroke-dasharray="4,4" marker-end="url(#arrow-red)"/>
+    <text x="660" y="85" font-family="var(--font-sans)" font-size="14" fill="var(--danger)" text-anchor="middle">Ακμή B→A (Reverse)</text>
+</svg>
+<p>Η Reverse Edge <code>B -> A</code> είναι πλέον διαθέσιμη στο <strong>επόμενο</strong> BFS. Λειτουργεί σαν "Undo Button". Αν το επόμενο BFS αναγκαστεί (ψάχνοντας διέξοδο) να την επιλέξει, σημαίνει ότι βρήκε τρόπο να <em>διορθώσει</em> το λάθος του προηγούμενου!</p>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@cancellation">Το "Ξεμπέρδεμα" (Cancellation)</h1>
+<p class="lede">Τι γίνεται όταν το δεύτερο BFS περπατήσει πάνω σε μια Reverse Edge;</p>
+<p>Αν το <strong>Path 1</strong> είχε χρησιμοποιήσει την κανονική ακμή <code>A -> B</code>, και αργότερα το <strong>Path 2</strong> περπατήσει πάνω στην αντίστροφη <code>B -> A</code>, συμβαίνει κάτι μαγικό (Cancellation). Οι δύο αντίρροπες κινήσεις αλληλοεξουδετερώνονται.</p>
+<div class="callout good">
+  <span class="tag">Ο ΜΗΧΑΝΙΣΜΟΣ ΞΕΜΠΕΡΔΕΜΑΤΟΣ</span>
+  Η κοινή σύνδεση A-B διαγράφεται τελείως. Το πρώτο μισό του Path 1 ενώνεται με το δεύτερο μισό του Path 2, και το πρώτο μισό του Path 2 ενώνεται με το δεύτερο μισό του Path 1.<br><br>
+  Ο γράφος μόλις αναδιατάχθηκε αυτόματα, αποδίδοντας <strong>δύο εντελώς νέα, τέλεια διαχωρισμένα (Vertex-Disjoint) μονοπάτια</strong> που δεν διασταυρώνονται πλέον πουθενά!
+</div>
+<p>Η διαδικασία (Βρες Path → Αντέστρεψε Edges → Ξαναψάξε → Ακύρωσε αν διασταυρωθείς) επαναλαμβάνεται σε Loop. Το Loop σταματάει <strong>μόνο όταν το BFS επιστρέψει nil</strong> (δηλαδή δεν υπάρχει πλέον καμία διαδρομή από το Start στο End). Τότε, έχουμε φτάσει στο απόλυτο όριο (Max Flow).</p>
+`);
+
+        addContent(`
+<div class="eyebrow">Ενότητα 3 / 5 — Pathfinding</div>
+<h1 id="@edmonds-vs-suurballe">Edmonds-Karp vs Suurballe</h1>
+<p class="lede">Εδώ προκύπτει μια κλασική απορία: <em>"Τελικά ποιον αλγόριθμο φτιάχνουμε; Τον Edmonds-Karp ή τον Suurballe;"</em> Η απάντηση είναι: <strong>Και τους δύο, γιατί στο Lem-in ταυτίζονται!</strong></p>
+
+<div class="callout">
+  <span class="tag">ΤΟ ΜΥΣΤΙΚΟ ΤΩΝ ΑΛΓΟΡΙΘΜΩΝ</span>
+  <p><strong>Edmonds-Karp:</strong> Είναι ο "μπαμπάς" της θεωρίας. Αυτός εισήγαγε το <em>Capacity</em> (Χωρητικότητα), το <em>Residual Graph</em> (Αντεστραμμένες Ακμές) και το <em>Cancellation</em> (Ξεμπέρδεμα) χρησιμοποιώντας <strong>BFS</strong>. Ανάλυοντάς τον, καταλαβαίνουμε *γιατί* χρειάζεται το Node-Splitting.</p>
+  
+  <p><strong>Suurballe's Algorithm:</strong> Είναι ένας αλγόριθμος σχεδιασμένος *συγκεκριμένα* για να βρίσκει τα συντομότερα Vertex-Disjoint Paths. Όμως, επειδή σχεδιάστηκε για χάρτες με αποστάσεις (Weighted Graphs, π.χ. διόδια), χρησιμοποιεί τον <strong>Dijkstra</strong> αντί για BFS.</p>
+  
+  <p><strong>Η Ταύτιση:</strong> Στο Lem-in, η απόσταση μεταξύ των δωματίων είναι πάντα ακριβώς 1 άλμα (Unweighted). Όταν τρέχεις Dijkstra σε γράφο όπου όλα τα βάρη είναι 1, ο Dijkstra <em>εκφυλίζεται σε ένα απλό BFS</em>.</p>
+</div>
+
+<p>Επομένως:</p>
+<ul>
+    <li>Ο <strong>Suurballe</strong> σε Unweighted Graph = BFS + Reverse Edges.</li>
+    <li>Ο <strong>Edmonds-Karp</strong> (με Capacity 1) = BFS + Reverse Edges.</li>
+</ul>
+<p>Είναι 100% η ίδια μηχανή (ίδιος κώδικας). Αναφέρουμε τον Edmonds-Karp για να κατανοήσουμε τη θεωρία (Capacity/Flow), και τον Suurballe γιατί αυτός είναι ο όρος που κάνει focus στον τελικό μας στόχο (Disjoint Paths).</p>
+`);
+
+
+        addMatching([
+            { term: "Vertex-Disjoint", def: "Μονοπάτια που δεν έχουν κανέναν απολύτως κοινό κόμβο. Το ζητούμενο του project." },
+            { term: "Node Splitting", def: "Το trick του διαχωρισμού In/Out για να επιβάλλουμε το Capacity 1 στα δωμάτια." },
+            { term: "Residual Graph", def: "Ο 'μεταλλαγμένος' γράφος που περιέχει τις αντεστραμμένες ακμές (Reverse Edges) μετά από κάθε BFS." },
+            { term: "Suurballe's Algorithm", def: "Ο αλγόριθμος που βρίσκει Node-Disjoint paths αναιρώντας προηγούμενες κακές διαδρομές (Cancellation)." }
+        ], { label: "Max-Flow Ορολογία", note: "Οι έννοιες πίσω από το Pathfinding. Ταίριαξε προσεκτικά." });
+
+
+        // ============================================================================
+        // ROUTING & DISTRIBUTION
+        // ============================================================================
+        addContent(`
 <div class="eyebrow">Ενότητα 4 / 5 — Routing</div>
 <h1 id="@routing">Τα Μαθηματικά του Routing</h1>
 <p class="lede">Ο αλγόριθμός σας (Suurballe) τρέχει σε λούπα (iterative approach). Στο πρώτο iteration βρίσκει 1 Path (Σετ 1). Στο δεύτερο iteration βρίσκει 2 Paths (Σετ 2). Στο τρίτο βρίσκει 3 Paths (Σετ 3), και ούτω καθεξής.</p>
@@ -535,57 +1015,11 @@ addContent(`
 <p>Επομένως, το πρόγραμμα δουλεύει έτσι: <br>1. Βρίσκεις Σετ X.<br>2. Κάνεις Εικονική Κατανομή (Distribution) όλων των μυρμηγκιών στα Paths του Σετ X.<br>3. Μετράς τους Γύρους (Turns).<br>4. Αν το Σετ X δίνει λιγότερους Γύρους από το Σετ X-1, το κρατάς! Αν δίνει περισσότερους, σημαίνει ότι τα νέα paths είναι πολύ μεγάλα. Πετάς το Σετ X, σταματάς το ψάξιμο, και προχωράς στο Print με το Σετ X-1.</p>
 `);
 
-addQuiz({
-  q: "Έχουμε N = 5 μυρμήγκια και εξετάζουμε ένα Σετ με δύο διαθέσιμα μονοπάτια: P1 (Μήκος 2) και P2 (Μήκος 4). Πόσα μυρμήγκια θα στείλουμε στο P1 και πόσα στο P2 για να τελειώσουμε πιο γρήγορα (ελάχιστοι γύροι);",
-  options: [
-    "4 μυρμήγκια στο P1 και 1 μυρμήγκι στο P2. (Τερματίζουν και τα δύο στον 5ο γύρο)",
-    "Όλα τα 5 μυρμήγκια στο P1. (Τερματίζει στον 6ο γύρο, το P2 αγνοείται τελείως)",
-    "2 μυρμήγκια στο P1 και 3 μυρμήγκια στο P2. (Ισοκατανομή)",
-    "3 μυρμήγκια στο P1 και 2 μυρμήγκια στο P2."
-  ],
-  correct: 0,
-  explain: "Σωστό! Αν βάλουμε 4 μυρμήγκια στο P1, το τελευταίο φτάνει στον γύρο: 2 (απόσταση) + 4 (μυρμήγκια) - 1 = 5. Αν βάλουμε το 5ο μυρμήγκι στο P2, φτάνει στον γύρο: 4 + 1 - 1 = 4. Άρα σε 5 γύρους τελειώσαμε. Αν πηγαίναμε όλα στο P1, θα κάναμε 6 γύρους!"
-});
 
-addFillBlank({
-  code: `// Simulated Distribution (Εικονική Κατανομή)
-// Επιστρέφει πόσα μυρμήγκια δόθηκαν σε κάθε μονοπάτι (allocation)
-
-func distributeAnts(ants int, paths []Path) []int {
-    allocation := make([]int, len(paths))
-    
-    for i := 0; i < ants; i++ {
-        bestPathIdx := 0
-        
-        // Αρχικό κόστος: Μήκος 0ου Path + Πόσα μυρμήγκια του έχουμε δώσει
-        minCost := paths[0].Length + allocation[__0__]
-        
-        for j := 1; j < len(paths); j++ {
-            cost := paths[j].Length + allocation[__j__]
-            
-            // Ψάχνουμε το μονοπάτι που προσφέρει τον ταχύτερο χρόνο άφιξης
-            if cost < minCost {
-                minCost = cost
-                bestPathIdx = j
-            }
-        }
-        // Δίνουμε 1 μυρμήγκι στο καλύτερο path και συνεχίζουμε
-        allocation[bestPathIdx]++
-    }
-    return allocation
-}`,
-  blanks: [
-    { id: "0", answer: "0" },
-    { id: "j", answer: "j" }
-  ],
-  explain: "Κάθε φορά κοιτάμε πόσα μυρμήγκια (<code>allocation[j]</code>) έχει ήδη πάρει το μονοπάτι <code>j</code>, τα προσθέτουμε στο μήκος του, και βρίσκουμε το Path με το μικρότερο άθροισμα (Cost)."
-}, { lang: "go" });
-
-
-// ============================================================================
-// SIMULATION
-// ============================================================================
-addContent(`
+        // ============================================================================
+        // SIMULATION
+        // ============================================================================
+        addContent(`
 <div class="eyebrow">Ενότητα 5 / 5 — Simulation</div>
 <h1 id="@simulation">Η Σειρά Κίνησης (End-to-Start)</h1>
 <p class="lede">Ο αλγόριθμος αποφάσισε. Ξέρετε ακριβώς πόσα και ποια μυρμήγκια (1 έως N) θα πάνε σε κάθε μονοπάτι. Τώρα πρέπει να τυπώσετε την κίνησή τους γύρο-γύρο.</p>
@@ -634,7 +1068,7 @@ addContent(`
 </svg>
 `);
 
-addContent(`
+        addContent(`
 <div class="eyebrow">Ενότητα 5 / 5 — Simulation</div>
 <h1 id="@strings-builder">Αποδοτική Εκτύπωση (strings.Builder)</h1>
 <p>Το format εξόδου απαιτεί ένα κενό διάστημα μεταξύ των κινήσεων: <code>L1-A L2-B</code>.</p>
@@ -659,38 +1093,12 @@ sb.Reset() // Για τον επόμενο γύρο
 </code></pre>
 `);
 
-addFillBlank({
-  code: `// Μετακίνηση Μυρμηγκιών (από το τέλος στην αρχή)
-// Έστω ότι το path είναι ένα slice από *Room
-
-// Η λούπα ξεκινάει από το End (το index len-1) και κατεβαίνει
-for i := len(path) - 1; i > __0__; i-- {
-    currentRoom := path[i]
-    prevRoom := path[i-1]
-    
-    // Αν το προηγούμενο δωμάτιο έχει μυρμήγκι, το μετακινούμε μπροστά
-    if prevRoom.AntID != 0 {
-        
-        currentRoom.AntID = prevRoom.__AntID__
-        // Το προηγούμενο δωμάτιο αδειάζει!
-        prevRoom.AntID = 0
-        
-        // Print την κίνηση στο strings.Builder (έστω sb)
-        sb.WriteString("L" + strconv.Itoa(currentRoom.AntID) + "-" + currentRoom.Name + " ")
-    }
-}`,
-  blanks: [
-    { id: "0", answer: "0" },
-    { id: "AntID", answer: "AntID" }
-  ],
-  explain: "Σταματάμε αυστηρά στο index <code>> 0</code> γιατί το index 0 είναι η αφετηρία (το <code>##start</code>), από όπου τα μυρμήγκια 'αντλούνται' ανεξάντλητα (δεν αδειάζει ποτέ με τον ίδιο τρόπο)."
-}, { lang: "go" });
 
 
-// ============================================================================
-// FINAL REVIEW & TAIL
-// ============================================================================
-addContent(`
+        // ============================================================================
+        // FINAL REVIEW & TAIL
+        // ============================================================================
+        addContent(`
 <div class="eyebrow">Τελική Επανάληψη — Οδηγός Lem-in</div>
 <h1>Ανασκόπηση του Pipeline</h1>
 <p class="lede">Όλα όσα συζητήσαμε ενώνονται στον εξής βασικό κορμό:</p>
@@ -703,54 +1111,19 @@ addContent(`
 </table>
 `);
 
-addQuiz([
-  {
-    q: "Γιατί χρησιμοποιούμε Node-Splitting (Room_IN, Room_OUT) στο Lem-in;",
-    options: [
-      "Επειδή οι κλασικοί αλγόριθμοι Max-Flow ελέγχουν το Capacity στις ακμές (Edges), ενώ στο Lem-in ο περιορισμός του 1 μυρμηγκιού αφορά τους κόμβους (Nodes). Το splitting μετατρέπει τον περιορισμό.",
-      "Επειδή τα δωμάτια στο Go Struct χρειάζονται πάντα δύο δείκτες (pointers) για να μην κρασάρει ο Garbage Collector.",
-      "Για να διπλασιάσουμε τον διαθέσιμο χώρο για τα μυρμήγκια σε 2 ανά δωμάτιο.",
-      "Γιατί τα Undirected Graphs δεν λειτουργούν γενικά χωρίς Node-Splitting."
-    ],
-    correct: 0,
-    explain: "Ακριβώς. Επειδή η θεωρία του δικτύου λέει 'χωράνε X μονάδες σε αυτόν τον σωλήνα', βάζουμε ένα σωλήνα ανάμεσα στο In και το Out του δωματίου με capacity=1."
-  },
-  {
-    q: "Τι συμβαίνει όταν το δεύτερο BFS περπατήσει πάνω σε μια 'Αντεστραμμένη Ακμή' (Reverse Edge) που δημιουργήθηκε από το πρώτο BFS;",
-    options: [
-      "Ακυρώνει (Cancels) εκείνο το κομμάτι του πρώτου μονοπατιού, ξεμπλέκοντας τα δύο μονοπάτια και δίνοντάς μας δύο νέες παράλληλες διαδρομές (Vertex-Disjoint).",
-      "Το πρόγραμμα κολλάει σε Infinite Loop (Κύκλο).",
-      "Το μυρμήγκι θα επιστρέψει πίσω στο Start node κατά την προσομοίωση.",
-      "Το BFS τερματίζει αμέσως και επιστρέφει nil θεωρώντας τον γράφο κλειστό."
-    ],
-    correct: 0,
-    explain: "Αυτό ακριβώς είναι το μυστικό του Suurballe's! Το Cancellation επιτρέπει στον αλγόριθμο να αλλάξει γνώμη για λάθος greedy επιλογές."
-  },
-  {
-    q: "Αν έχουμε ένα τεράστιο μονοπάτι μήκους 10,000 και 3 μυρμήγκια στο Start, γιατί ο αλγόριθμος Routing θα το απορρίψει αν υπάρχει και ένα μονοπάτι μήκους 5;",
-    options: [
-      "Διότι τα 3 μυρμήγκια μπορούν όλα να περάσουν από το μικρό μονοπάτι (μήκους 5) και να τερματίσουν στον 7ο γύρο, ενώ στο μεγάλο θα τερμάτιζαν στον 10,000ό γύρο.",
-      "Επειδή το Capacity του μεγάλου μονοπατιού δεν αντέχει 3 μυρμήγκια (θα κόλλαγαν).",
-      "Γιατί ο αλγόριθμος BFS αδυνατεί να διατρέξει 10,000 nodes και κάνει memory timeout.",
-      "Λάθος, ο αλγόριθμος θα τα ισοκατανείμει υποχρεωτικά, στέλνοντας 2 στο μεγάλο και 1 στο μικρό."
-    ],
-    correct: 0,
-    explain: "Σωστό. Το Routing ελέγχει αν αξίζει να περιμένει το μυρμήγκι στην ουρά (Length + Waiting). Η αναμονή στο μικρό είναι 2 turns, δηλαδή 5+2=7. Η αναμονή στο μεγάλο είναι 0, αλλά το μήκος 10,000. 7 < 10,000."
-  }
-], { label: "Τελικό Quiz", note: "Ολοκληρωμένη επανάληψη" });
 
-addMatching([
-  [
-    { term: "Adjacency List", def: "Η μνήμη-αποδοτική δομή δεδομένων. Το κάθε Node κρατάει ένα slice από pointers μόνο στα γειτονικά Nodes." },
-    { term: "Vertex-Disjoint", def: "Μονοπάτια που δεν έχουν κοινά δωμάτια, διασφαλίζοντας 100% ότι δεν θα γίνει σύγκρουση (collision)." }
-  ],
-  [
-    { term: "End-to-Start loop", def: "Η σωστή, ασφαλής φορά μετακίνησης των μυρμηγκιών μέσα σε ένα array/slice για αποφυγή overwriting." },
-    { term: "strings.Builder", def: "Η βιβλιοθήκη της Go που αποτρέπει το τεράστιο memory allocation κατά το mass-printing εκατομμυρίων string (Lx-y)." }
-  ]
-], { label: "Τελική Ταύτιση", note: "Ταίριαξε τις έννοιες που συζητήσαμε." });
+        addMatching([
+            [
+                { term: "Adjacency List", def: "Η μνήμη-αποδοτική δομή δεδομένων. Το κάθε Node κρατάει ένα slice από pointers μόνο στα γειτονικά Nodes." },
+                { term: "Vertex-Disjoint", def: "Μονοπάτια που δεν έχουν κοινά δωμάτια, διασφαλίζοντας 100% ότι δεν θα γίνει σύγκρουση (collision)." }
+            ],
+            [
+                { term: "End-to-Start loop", def: "Η σωστή, ασφαλής φορά μετακίνησης των μυρμηγκιών μέσα σε ένα array/slice για αποφυγή overwriting." },
+                { term: "strings.Builder", def: "Η βιβλιοθήκη της Go που αποτρέπει το τεράστιο memory allocation κατά το mass-printing εκατομμυρίων string (Lx-y)." }
+            ]
+        ], { label: "Τελική Ταύτιση", note: "Ταίριαξε τις έννοιες που συζητήσαμε." });
 
-addContent(`
+        addContent(`
 <div class="eyebrow">Έφτασες στο τέλος</div>
 <h1>Συγχαρητήρια</h1>
 <p>Το project Lem-in είναι ένα από τα πιο σημαντικά αλγοριθμικά projects του Zone01. Δεν διδάσκει απλά πώς να μετακινείς μυρμήγκια. Διδάσκει τη <strong>Θεωρία Δικτύων (Network Flow)</strong>.</p>
@@ -769,10 +1142,11 @@ addContent(`
 <p style="font-family: var(--font-mono); font-size: 14px; opacity: 0.55; margin-top: 40px;">AUTHOR: AVGERINOS PAVLOS</p>
 `);
 
-// ============================================================================
-// INITIALIZE
-// ============================================================================
-initSlideDeck({ version: "1.0.0", notifyUrl: "" });
+        // ============================================================================
+        // INITIALIZE
+        // ============================================================================
+        initSlideDeck({ version: "1.0.0", notifyUrl: "" });
     </script>
 </body>
+
 </html>
