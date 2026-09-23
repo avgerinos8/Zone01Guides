@@ -839,6 +839,92 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
                 }
                 yield* solve();
             }
+        },
+        'reverse': {
+            code: `func Solve(grid *[9][9]int, pos int, count *int) {
+	if pos == 81 {
+		*count++
+		return
+	}
+
+	r, c := pos/9, pos%9
+	if grid[r][c] != 0 {
+		Solve(grid, pos+1, count)
+		return
+	}
+
+	for val := 9; val >= 1; val-- {
+		if isValid(grid, r, c, val) {
+			grid[r][c] = val
+			Solve(grid, pos+1, count)
+			if *count >= <span class="editable-count" data-key="targetCount" contenteditable="true" spellcheck="false">50</span> {
+				return
+			}
+			grid[r][c] = 0
+		}
+	}
+}`,
+            generator: function* (boardStart) {
+                let count = 0;
+                let board = JSON.parse(JSON.stringify(boardStart));
+                const targetCount = getTargetSolutions();
+
+                function isValid(r, c, v) {
+                    for (let i = 0; i < 9; i++) {
+                        if (board[r][i] === v || board[i][c] === v) return false;
+                    }
+                    let br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            if (board[br + i][bc + j] === v) return false;
+                        }
+                    }
+                    return true;
+                }
+
+                function* solve(pos) {
+                    yield { line: 1, vars: { pos, count }, activeCell: null, grid: board };
+                    if (pos === 81) {
+                        count++;
+                        yield { line: 3, vars: { pos, count }, activeCell: null, grid: board, isSolution: true };
+                        yield { line: 4, vars: { pos, count }, activeCell: null, grid: board };
+                        return;
+                    }
+                    let r = Math.floor(pos / 9);
+                    let c = pos % 9;
+                    yield { line: 7, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
+                    
+                    yield { line: 8, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
+                    if (board[r][c] !== 0) {
+                        yield { line: 9, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
+                        yield* solve(pos + 1);
+                        yield { line: 10, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
+                        return;
+                    }
+
+                    yield { line: 13, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
+                    for (let val = 9; val >= 1; val--) {
+                        yield { line: 14, vars: { pos, r, c, val, count }, activeCell: [r, c], testingValue: val, grid: board };
+                        if (isValid(r, c, val)) {
+                            board[r][c] = val;
+                            yield { line: 15, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                            
+                            yield { line: 16, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                            yield* solve(pos + 1);
+                            
+                            yield { line: 17, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                            if (count >= targetCount) {
+                                yield { line: 18, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                                return;
+                            }
+                            
+                            board[r][c] = 0;
+                            yield { line: 20, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                        }
+                    }
+                }
+                yield* solve(0);
+            }
         }
     };
 
