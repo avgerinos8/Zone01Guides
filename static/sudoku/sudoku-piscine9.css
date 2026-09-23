@@ -8,20 +8,25 @@
     --text-main: #e0e0e0;
     --text-muted: #888899;
     --border-color: #2a2a35;
-    
+
     /* Neon Accents */
-    --accent-primary: #00cccc; /* Teal */
-    --accent-secondary: #ffaa00; /* Yellow-Orange */
-    --accent-warning: #ffea00; /* Bright Yellow */
-    --accent-success: #0f0; /* Green */
-    --accent-danger: #f00; /* Red */
-    
+    --accent-primary: #00cccc;
+    /* Teal */
+    --accent-secondary: #ffaa00;
+    /* Yellow-Orange */
+    --accent-warning: #ffea00;
+    /* Bright Yellow */
+    --accent-success: #0f0;
+    /* Green */
+    --accent-danger: #f00;
+    /* Red */
+
     /* Highlight States */
     --hl-active-border: var(--accent-warning);
     --hl-conflict-bg: rgba(255, 0, 0, 0.2);
     --hl-commit-bg: rgba(0, 255, 0, 0.1);
     --hl-code-bg: rgba(255, 255, 0, 0.1);
-    
+
     /* Layout Variables */
     --header-height: 70px;
     --footer-height: 70px;
@@ -32,12 +37,17 @@ body.zone01-theme {
     color: var(--text-main);
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Prevent page scrolling, we scroll within panes */
-    letter-spacing: -0.03em; /* High-end editorial look */
+    overflow: hidden;
+    /* Prevent page scrolling, we scroll within panes */
+    letter-spacing: -0.03em;
+    /* High-end editorial look */
 }
 
 /* Ensure inputs and buttons inherit the tracking */
-input, button, select, textarea {
+input,
+button,
+select,
+textarea {
     letter-spacing: -0.03em;
 }
 
@@ -123,7 +133,8 @@ input, button, select, textarea {
     border-bottom: 1px solid var(--border-color);
 }
 
-select, button.btn {
+select,
+button.btn {
     background: var(--bg-main);
     color: var(--text-main);
     border: 1px solid var(--border-color);
@@ -134,7 +145,8 @@ select, button.btn {
     transition: all 0.2s;
 }
 
-select:hover, button.btn:hover {
+select:hover,
+button.btn:hover {
     border-color: var(--accent-primary);
 }
 
@@ -142,6 +154,7 @@ button.btn.primary {
     border-color: var(--accent-secondary);
     color: var(--accent-secondary);
 }
+
 button.btn.primary:hover {
     background: rgba(255, 0, 255, 0.1);
     box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
@@ -174,7 +187,8 @@ button.btn.primary:hover {
     opacity: 0.5;
     text-align: center;
     margin-top: auto;
-    margin-bottom: -15px; /* Pull it closer to variables panel */
+    margin-bottom: -15px;
+    /* Pull it closer to variables panel */
     padding-top: 0;
     white-space: normal;
     line-height: 1.4;
@@ -227,7 +241,8 @@ button.btn.primary:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: clamp(100px, 30vw, 300px); /* Responsive width */
+    width: clamp(100px, 30vw, 300px);
+    /* Responsive width */
     flex-shrink: 1;
 }
 
@@ -266,11 +281,13 @@ button.btn.primary:hover {
 .sudoku-main {
     display: flex;
     flex: 1;
-    overflow: hidden; /* panes scroll internally if needed */
+    overflow: hidden;
+    /* panes scroll internally if needed */
     padding: 20px;
     gap: 20px;
     justify-content: center;
-    align-items: stretch; /* Stretch both panes vertically so they have the exact same height */
+    align-items: stretch;
+    /* Stretch both panes vertically so they have the exact same height */
     width: 100%;
 }
 
@@ -295,8 +312,11 @@ button.btn.primary:hover {
     transition: background 0.2s;
     flex-shrink: 0;
 }
-.pane-splitter:hover, .pane-splitter:active {
-    background: #3b3b4a; /* Slightly lighter than --border-color (#2a2a35) */
+
+.pane-splitter:hover,
+.pane-splitter:active {
+    background: #3b3b4a;
+    /* Slightly lighter than --border-color (#2a2a35) */
     box-shadow: none;
 }
 
@@ -319,7 +339,8 @@ button.btn.primary:hover {
     max-width: 100%;
     min-width: 160px;
     min-height: 160px;
-    width: auto; /* Width dictated by height + aspect-ratio, constrained by max-width */
+    width: auto;
+    /* Width dictated by height + aspect-ratio, constrained by max-width */
     grid-template-columns: repeat(9, minmax(0, 1fr));
     grid-template-rows: repeat(9, minmax(0, 1fr));
     gap: 0;
@@ -342,10 +363,12 @@ button.btn.primary:hover {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    border-radius: 10%; /* Makes the cyan intersection rhombuses responsive */
+    border-radius: 10%;
+    /* Makes the cyan intersection rhombuses responsive */
     /* Increase font sizes slightly */
     font-size: min(4.5vh, 4.5vw);
-    line-height: 1; /* Prevent line height from expanding the cell */
+    line-height: 1;
+    /* Prevent line height from expanding the cell */
     font-weight: bold;
     cursor: pointer;
     overflow: hidden;
@@ -357,24 +380,35 @@ button.btn.primary:hover {
 }
 
 /* Thicker borders for 3x3 subgrids */
-.vz-grid-cell:nth-child(3n) { border-right: 2px solid var(--accent-primary); }
-.vz-grid-cell:nth-child(n):nth-child(-n+9) { border-top: 2px solid var(--accent-primary); }
+.vz-grid-cell:nth-child(3n) {
+    border-right: 2px solid var(--accent-primary);
+}
+
+.vz-grid-cell:nth-child(n):nth-child(-n+9) {
+    border-top: 2px solid var(--accent-primary);
+}
+
 .vz-grid-cell:nth-child(n+19):nth-child(-n+27),
 .vz-grid-cell:nth-child(n+46):nth-child(-n+54),
 .vz-grid-cell:nth-child(n+73):nth-child(-n+81) {
     border-bottom: 2px solid var(--accent-primary);
 }
-.vz-grid-cell:nth-child(9n+1) { border-left: 2px solid var(--accent-primary); }
+
+.vz-grid-cell:nth-child(9n+1) {
+    border-left: 2px solid var(--accent-primary);
+}
 
 /* Readonly vs User Inputted */
 .vz-grid-cell.readonly {
     color: var(--text-muted);
 }
+
 .vz-grid-cell.user-input {
     color: #ffffff;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
     font-weight: bold;
 }
+
 .vz-grid-cell.testing-input {
     color: var(--accent-danger);
     text-shadow: 0 0 8px var(--accent-danger);
@@ -387,12 +421,14 @@ button.btn.primary:hover {
         transform: scale(1);
         filter: blur(0px);
     }
+
     100% {
         opacity: 0;
         transform: scale(1.5);
         filter: blur(4px);
     }
 }
+
 .vz-grid-cell.dissolve-out::before {
     content: attr(data-val);
     position: absolute;
@@ -400,7 +436,12 @@ button.btn.primary:hover {
     animation: dissolveOut 0.3s forwards;
     pointer-events: none;
 }
-.vz-grid-cell { position: relative; } /* needed for absolute pseudo-element */
+
+.vz-grid-cell {
+    position: relative;
+}
+
+/* needed for absolute pseudo-element */
 
 /* Active highlighting */
 .vz-highlight-a {
@@ -411,12 +452,15 @@ button.btn.primary:hover {
     z-index: 10;
     box-shadow: inset 0 0 10px rgba(255, 255, 0, 0.3), 0 0 15px rgba(255, 255, 0, 0.4);
 }
+
 .vz-highlight-b {
-    background-color: var(--hl-conflict-bg); 
+    background-color: var(--hl-conflict-bg);
 }
+
 .vz-highlight-c {
-    background-color: var(--hl-commit-bg); 
+    background-color: var(--hl-commit-bg);
 }
+
 .vz-highlight-commit {
     outline: 2px solid var(--accent-success) !important;
     outline-offset: -2px;
@@ -432,9 +476,11 @@ button.btn.primary:hover {
         box-shadow: 0 0 30px rgba(255, 255, 255, 1);
         filter: blur(2px);
     }
+
     50% {
         filter: blur(0px);
     }
+
     100% {
         background-color: transparent;
         box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.4), 0 0 20px rgba(0, 255, 0, 0.6);
@@ -446,20 +492,23 @@ button.btn.primary:hover {
     padding: 15px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
-    width: 100%; /* Match board width container */
+    width: 100%;
+    /* Match board width container */
     box-sizing: border-box;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     flex-shrink: 1;
     overflow: hidden;
     display: flex;
     flex-direction: column;
 }
+
 .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
+
 .panel-header h4 {
     margin-top: 0;
     margin-bottom: 0;
@@ -468,6 +517,7 @@ button.btn.primary:hover {
     font-size: clamp(10px, 4cqw, 15px);
     letter-spacing: 1px;
 }
+
 .depth-badge {
     background: var(--bg-main);
     color: var(--accent-secondary);
@@ -477,11 +527,13 @@ button.btn.primary:hover {
     font-size: clamp(9px, 3.5cqw, 14px);
     font-family: var(--font-mono, monospace);
 }
+
 #variables-container {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    min-height: 60px; /* Prevents container from shrinking when vars drop, which would scale up the board */
+    min-height: 60px;
+    /* Prevents container from shrinking when vars drop, which would scale up the board */
     align-content: flex-start;
     overflow-y: auto;
     flex: 1;
@@ -494,6 +546,7 @@ button.btn.primary:hover {
     display: inline-flex;
     overflow: hidden;
 }
+
 .gs-name {
     background: var(--border-color);
     color: var(--accent-primary);
@@ -501,6 +554,7 @@ button.btn.primary:hover {
     font-family: var(--font-mono, monospace);
     font-size: clamp(9px, 3.5cqw, 14px);
 }
+
 .gs-def {
     padding: clamp(2px, 1cqw, 4px) clamp(4px, 2cqw, 8px);
     color: var(--text-main);
@@ -522,7 +576,8 @@ button.btn.primary:hover {
     overflow-y: auto;
     padding: 15px 0;
     margin: 0;
-    container-type: size; /* Enables container queries for font sizing based on height */
+    container-type: size;
+    /* Enables container queries for font sizing based on height */
 }
 
 #code-display {
@@ -530,7 +585,7 @@ button.btn.primary:hover {
     line-height: 1.4;
     font-family: var(--font-mono, monospace);
     /* Size based on container height to fit long codes like agalanaki */
-    font-size: min(15px, 2.3cqh); 
+    font-size: min(15px, 2.3cqh);
     color: var(--text-main);
 }
 
@@ -539,6 +594,7 @@ button.btn.primary:hover {
     padding: 0 20px;
     border-left: 3px solid transparent;
 }
+
 .code-line.active {
     background-color: var(--hl-code-bg);
     border-left-color: var(--accent-warning);
@@ -569,7 +625,10 @@ button.btn.primary:hover {
 #landscape-warning {
     display: none;
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: #000;
     color: #fff;
     z-index: 10000;
@@ -607,7 +666,10 @@ button.btn:disabled {
 body.dim-overlay-active .sudoku-viz-container::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
     pointer-events: none;
@@ -624,31 +686,38 @@ body.dim-overlay-active .sudoku-viz-container::after {
 }
 
 @keyframes cellBlink {
-    0% { 
-        background-color: rgba(255, 255, 255, 0); 
-        color: #ffffff !important; 
-        transform: scale(1); 
+    0% {
+        background-color: rgba(255, 255, 255, 0);
+        color: #ffffff !important;
+        transform: scale(1);
         box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
     }
-    100% { 
-        background-color: rgba(255, 255, 255, 1); 
-        color: #000000 !important; 
-        transform: scale(1.1); 
+
+    100% {
+        background-color: rgba(255, 255, 255, 1);
+        color: #000000 !important;
+        transform: scale(1.1);
         box-shadow: 0 0 20px rgba(255, 255, 255, 1);
     }
 }
 
 /* --- GLITCH EFFECTS (VALIDATION) --- */
 .vz-grid-cell.glitch-error {
-    color: #ff0000 !important; /* Olympiacos red */
+    color: #ff0000 !important;
+    /* Olympiacos red */
     text-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000, 0 0 45px #ff0000;
     font-weight: bold;
     animation: errorPulse 1s infinite alternate;
 }
 
 @keyframes errorPulse {
-    0% { filter: brightness(1); }
-    100% { filter: brightness(1.3); }
+    0% {
+        filter: brightness(1);
+    }
+
+    100% {
+        filter: brightness(1.3);
+    }
 }
 
 body.global-glitch {
@@ -658,7 +727,10 @@ body.global-glitch {
 body.global-glitch::before {
     content: '';
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: radial-gradient(circle, transparent 60%, rgba(255, 0, 0, 0.4) 150%);
     pointer-events: none;
     z-index: 998;
@@ -666,8 +738,13 @@ body.global-glitch::before {
 }
 
 @keyframes vignettePulse {
-    0% { opacity: 0.7; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 /* --- AWAITING PLAY STATE (PAUSED/LOCKED) --- */
@@ -679,8 +756,10 @@ body.global-glitch::before {
 
 #btn-play-pause {
     transition: box-shadow 2s ease-in-out, background-color 0.2s, transform 0.1s;
-    width: 110px; /* Prevent resizing between Play and Finished */
+    width: 110px;
+    /* Prevent resizing between Play and Finished */
 }
+
 #btn-next {
     transition: box-shadow 2s ease-in-out, background-color 0.2s, transform 0.1s;
 }
@@ -695,8 +774,10 @@ body.awaiting-play .sudoku-footer .shortcuts-legend {
         box-shadow: 0 -10px 40px rgba(255, 255, 255, 0.1);
         color: rgba(255, 255, 255, 0.8);
     }
+
     to {
-        box-shadow: 0 -35px 100px rgba(255, 255, 255, 0.5); /* increased glow radius */
+        box-shadow: 0 -35px 100px rgba(255, 255, 255, 0.5);
+        /* increased glow radius */
         color: #ffffff;
     }
 }
@@ -711,15 +792,17 @@ body.awaiting-play #btn-next {
         /* using inset shadow for border so layout doesn't shift */
         box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 0 15px rgba(255, 255, 255, 0.3);
     }
+
     to {
-        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 35px rgba(255, 255, 255, 0.8); /* increased glow radius */
+        box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 35px rgba(255, 255, 255, 0.8);
+        /* increased glow radius */
     }
 }
 
 body.review-mode-active .sudoku-header,
 body.review-mode-active .sudoku-board-pane,
 body.review-mode-active .sudoku-footer,
-body.review-mode-active .controls-row > *:not(#btn-reset),
+body.review-mode-active .controls-row>*:not(#btn-reset),
 body.review-mode-active .pane-splitter {
     opacity: 0.25;
     pointer-events: none;
@@ -752,9 +835,11 @@ body.review-mode-active #btn-reset {
     transition: background-color 0.2s;
     border-radius: 2px;
 }
+
 .editable-count:hover {
     background-color: rgba(181, 206, 168, 0.2);
 }
+
 .editable-count:focus {
     background-color: rgba(181, 206, 168, 0.4);
     border-bottom-style: solid;
@@ -771,15 +856,4 @@ body.review-mode-active #btn-reset {
 .btn.btn-stop:hover {
     box-shadow: inset 0 0 0 2px #f0c040, 0 0 24px rgba(240, 192, 64, 0.8);
     color: #fff8dc;
-}
-
-/* Mobile Responsive Adjustments */
-@media (max-width: 950px) {
-    .variables-panel {
-        display: none !important;
-    }
-    
-    .sudoku-footer {
-        bottom: 25px; /* Lift up for mobile tap areas */
-    }
 }
