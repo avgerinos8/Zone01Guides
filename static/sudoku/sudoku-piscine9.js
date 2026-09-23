@@ -876,22 +876,61 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
     }
 
     function syntaxHighlightGoHTML(htmlLine) {
-        if (!window.Zone01Highlight) return htmlLine;
-        if (!htmlLine.includes('<')) return window.Zone01Highlight('go', decodeEntities(htmlLine));
+        if (htmlLine.includes('class="preview-link back-link"')) {
+            return htmlLine; // Do not apply syntax highlighting to the back link, it breaks the HTML
+        }
+
+        let commentPart = '';
+        let codePart = htmlLine;
         
+        const commentIdx = htmlLine.indexOf('//');
+        // Avoid coloring '//' inside HTML attributes like http://
+        if (commentIdx !== -1 && !htmlLine.includes('http://') && !htmlLine.includes('https://')) {
+            codePart = htmlLine.substring(0, commentIdx);
+            commentPart = htmlLine.substring(commentIdx);
+        }
+
         const temp = document.createElement('div');
-        temp.innerHTML = htmlLine;
+        temp.innerHTML = codePart;
+        
+        function highlightText(text) {
+            let highlighted = text;
+            // Strings
+            highlighted = highlighted.replace(/("[^"]*")/g, '<span style="color: #ce9178;">$1</span>');
+            // Keywords
+            highlighted = highlighted.replace(/\b(func|var|const|type|struct|package|import|if|else|return|for|range|break|continue)\b/g, '<span style="color: #c586c0;">$1</span>');
+            // Types and builtins
+            highlighted = highlighted.replace(/\b(int|string|bool|byte|rune|true|false|make|len|append|nil)\b/g, '<span style="color: #4ec9b0;">$1</span>');
+            // Function calls
+            highlighted = highlighted.replace(/\b([a-zA-Z_]\w*)(?=\s*\()/g, (match, p1) => {
+                const recursiveFuncs = ['solve', 'solveMRV', 'Solve', 'SolveSudoku', 'Solution', 'solveDLX'];
+                if (recursiveFuncs.includes(p1)) {
+                    return `<span style="color: #dc143c; font-weight: bold;">${p1}</span>`;
+                }
+                return `<span style="color: #dcdcaa;">${p1}</span>`;
+            });
+            // Numbers
+            highlighted = highlighted.replace(/\b(\d+)\b/g, '<span style="color: #b5cea8;">$1</span>');
+            return highlighted;
+        }
+
         let out = '';
         temp.childNodes.forEach(node => {
-            if (node.nodeType === 1) { // Element
+            if (node.nodeType === 1) { 
                 let attrs = Array.from(node.attributes).map(a => `${a.name}="${a.value}"`).join(' ');
                 let tagName = node.tagName.toLowerCase();
-                let highlightedInner = window.Zone01Highlight('go', node.textContent);
+                let highlightedInner = highlightText(node.textContent);
+                // If it's the link, we can enforce function color or keep it
                 out += `<${tagName} ${attrs}>${highlightedInner}</${tagName}>`;
-            } else { // Text node
-                out += window.Zone01Highlight('go', node.textContent || '');
+            } else { 
+                out += highlightText(node.textContent || '');
             }
         });
+        
+        if (commentPart) {
+            out += `<span style="color: #6a9955;">${commentPart}</span>`;
+        }
+        
         return out;
     }
 
@@ -899,9 +938,7 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
         const lines = codeString.split('\n');
         codeDisplay.innerHTML = lines.map((line, idx) => {
             let processedLine = line || ' ';
-            if (window.Zone01Highlight) {
-                processedLine = syntaxHighlightGoHTML(processedLine);
-            }
+            processedLine = syntaxHighlightGoHTML(processedLine);
             return `<span class="code-line" id="code-line-${idx + 1}">${processedLine}</span>`;
         }).join('');
     }
@@ -1228,6 +1265,7 @@ func removeFromSolution(r *Node) {
         }
 
         let i = 0;
+        let cumulativeVars = new Set();
         for (let step of gen) {
             // Calculate current depth by counting newly filled cells
             let currentFilled = 0;
@@ -1239,11 +1277,16 @@ func removeFromSolution(r *Node) {
             let calculatedDepth = currentFilled - initialFilled;
             if (step.testingValue !== undefined) calculatedDepth++; // testing implies +1 depth
 
+            if (step.vars) {
+                Object.keys(step.vars).forEach(k => cumulativeVars.add(k));
+            }
+
             // Deep copy grid to save history
             steps.push({
                 ...step,
                 depth: Math.max(0, calculatedDepth),
-                grid: JSON.parse(JSON.stringify(step.grid))
+                grid: JSON.parse(JSON.stringify(step.grid)),
+                seenVars: Array.from(cumulativeVars)
             });
             i++;
             if (i > 100000) break; // Safety limit
@@ -1270,7 +1313,7 @@ func removeFromSolution(r *Node) {
                 const oldVal = cell.textContent;
 
                 // Clear old highlights
-                cell.classList.remove('vz-highlight-a', 'vz-highlight-b');
+                cell.classList.remove('vz-highlight-a', 'vz-highlight-b', 'vz-highlight-commit');
 
                 // Set value
                 if (initialBoard[r][c] === 0) {
@@ -1300,13 +1343,29 @@ func removeFromSolution(r *Node) {
                     }
                 } else {
                     // It's a readonly cell, but just to be sure we clear testing-input and user-input
-                    cell.classList.remove('testing-input', 'dissolve-out', 'user-input', 'vz-highlight-a', 'vz-highlight-b', 'vz-highlight-c');
+                    cell.classList.remove('testing-input', 'dissolve-out', 'user-input', 'vz-highlight-a', 'vz-highlight-b', 'vz-highlight-c', 'vz-highlight-commit');
                     cell.classList.add('readonly');
                 }
 
                 // Highlight active cell
                 if (step.activeCell && step.activeCell[0] === r && step.activeCell[1] === c) {
-                    cell.classList.add('vz-highlight-a');
+                    let justPlaced = false;
+                    if (val !== 0 && initialBoard[r][c] === 0) {
+                        if (idx > 0) {
+                            const prevStep = steps[idx - 1];
+                            if (prevStep.grid[r][c] === 0) {
+                                justPlaced = true;
+                            }
+                        } else {
+                            justPlaced = true;
+                        }
+                    }
+
+                    if (justPlaced) {
+                        cell.classList.add('vz-highlight-commit');
+                    } else {
+                        cell.classList.add('vz-highlight-a');
+                    }
                 }
             }
         }
@@ -1331,16 +1390,27 @@ func removeFromSolution(r *Node) {
 
         // 3. Update Variables
         varsContainer.innerHTML = '';
-        for (const [key, value] of Object.entries(step.vars)) {
-            const pill = document.createElement('div');
-            pill.className = 'gs-pill';
-            pill.innerHTML = `<span class="gs-name">${key}</span><span class="gs-def">${value}</span>`;
-            varsContainer.appendChild(pill);
+        if (step.seenVars) {
+            for (const key of step.seenVars) {
+                const value = (step.vars && step.vars[key] !== undefined) ? step.vars[key] : '&nbsp;';
+                const pill = document.createElement('div');
+                pill.className = 'gs-pill';
+                pill.innerHTML = `<span class="gs-name">${key}</span><span class="gs-def" style="min-width: 15px; text-align: center;">${value}</span>`;
+                varsContainer.appendChild(pill);
+            }
         }
 
         // Update buttons
         btnBack.disabled = idx === 0;
         btnNext.disabled = idx === steps.length - 1;
+
+        if (idx === steps.length - 1) {
+            btnPlayPause.innerHTML = 'Finished -';
+            btnPlayPause.disabled = true;
+        } else {
+            btnPlayPause.innerHTML = isPlaying ? '&#10074;&#10074; Pause' : '&#9654; Play';
+            btnPlayPause.disabled = false;
+        }
     }
 
     // --- CONTROLS ---
@@ -1365,6 +1435,12 @@ func removeFromSolution(r *Node) {
                 isReviewMode = false;
                 document.body.classList.remove('review-mode-active');
                 renderCode(codeStack[codeStack.length - 1]);
+            }
+
+            // Reset code view to main algorithm if deep in links
+            if (codeStack.length > 1) {
+                codeStack = [codeStack[0]];
+                renderCode(codeStack[0]);
             }
 
             // Collapse header
@@ -1427,7 +1503,7 @@ func removeFromSolution(r *Node) {
                 if (typeof BOCAL_REVIEWS !== 'undefined' && BOCAL_REVIEWS[algoKey]) {
                     text = BOCAL_REVIEWS[algoKey];
                 } else {
-                    text = `// Bocal Review Error\n/*\nUnable to find review text for '${algoKey}'.\nMake sure reviews.js is loaded correctly!\n*/`;
+                    text = `// Bocal Review Error\n/*\nBocal review not available yet\n*/`;
                 }
                 document.body.classList.add('review-mode-active');
                 btnReset.textContent = 'Return to Code';
@@ -1487,7 +1563,14 @@ func removeFromSolution(r *Node) {
 
     function togglePlay() {
         isPlaying = !isPlaying;
-        btnPlayPause.innerHTML = isPlaying ? '&#10074;&#10074; Pause' : '&#9654; Play';
+        if (currentStepIdx < steps.length - 1) {
+            btnPlayPause.innerHTML = isPlaying ? '&#10074;&#10074; Pause' : '&#9654; Play';
+            btnPlayPause.disabled = false;
+        } else {
+            btnPlayPause.innerHTML = 'Finished -';
+            btnPlayPause.disabled = true;
+        }
+        
         if (isPlaying) {
             document.body.classList.remove('awaiting-play');
             playLoop();

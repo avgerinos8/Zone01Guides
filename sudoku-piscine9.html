@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="static/sudoku/sudoku-piscine9.css">
 </head>
 <body class="zone01-theme">
+    <div id="landscape-warning">
+        <div class="warning-icon">&#8635;</div>
+        <div>Please rotate your device to landscape (16:9) for the best experience.</div>
+    </div>
     <main class="sudoku-viz-container">
         <!-- TOP: Input section -->
         <header class="sudoku-header">
@@ -47,6 +51,9 @@
                         <!-- 81 cells will be generated here by JS -->
                     </div>
                 </div>
+                <div class="shortcuts-info">
+                    <small>W/,: BACK &nbsp;&nbsp;&nbsp; S/.: NEXT &nbsp;&nbsp;&nbsp; SPACE/Q: PLAY/PAUSE &nbsp;&nbsp;&nbsp; A/D: SPEED DOWN/UP &nbsp;&nbsp;&nbsp; E: FASTEST</small>
+                </div>
                 <div class="variables-panel glossary-group">
                     <div class="panel-header">
                         <h4>Variables State</h4>
@@ -55,9 +62,6 @@
                     <div id="variables-container">
                         <!-- Variables populated dynamically -->
                     </div>
-                </div>
-                <div class="shortcuts-info">
-                    <small>W/,: BACK &nbsp;&nbsp;&nbsp; S/.: NEXT &nbsp;&nbsp;&nbsp; SPACE/Q: PLAY/PAUSE &nbsp;&nbsp;&nbsp; A/D: SPEED DOWN/UP &nbsp;&nbsp;&nbsp; E: FASTEST</small>
                 </div>
             </div>
 
@@ -75,9 +79,9 @@
         <!-- BOTTOM: Playback controls -->
         <footer class="sudoku-footer">
             <div class="playback-controls">
-                <button id="btn-back" class="reset-quiz-btn" disabled>&#9198; Back</button>
+                <button id="btn-back" class="reset-quiz-btn" disabled>&#10074;&#9664; Back</button>
                 <button id="btn-play-pause" class="reset-quiz-btn" disabled>&#9654; Play</button>
-                <button id="btn-next" class="reset-quiz-btn" disabled>Next &#9199;</button>
+                <button id="btn-next" class="reset-quiz-btn" disabled>Next &#9654;&#10074;</button>
             </div>
 
             <div class="speed-control">

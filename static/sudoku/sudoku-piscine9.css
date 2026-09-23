@@ -160,7 +160,9 @@ button.btn.primary:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px;
+    gap: clamp(10px, 3vw, 30px);
+    padding: 0 10px;
+    flex-wrap: nowrap;
     z-index: 100;
     box-sizing: border-box;
 }
@@ -168,29 +170,34 @@ button.btn.primary:hover {
 .shortcuts-info {
     color: var(--text-muted);
     font-family: var(--font-mono, monospace);
-    font-size: 10px;
+    font-size: min(10px, 2.5cqw);
     opacity: 0.5;
     text-align: center;
-    margin-top: 5px;
+    margin-top: auto;
+    margin-bottom: -15px; /* Pull it closer to variables panel */
     padding-top: 0;
-    white-space: normal;
+    white-space: nowrap;
     line-height: 1.4;
+    width: 100%;
 }
 
 .playback-controls {
     display: flex;
-    gap: 15px;
+    gap: clamp(5px, 1.5vw, 15px);
+    flex-shrink: 1;
 }
 
 .playback-controls button {
     background: var(--bg-main);
     color: var(--accent-primary);
     border: 1px solid var(--accent-primary);
-    padding: 8px 16px;
+    padding: clamp(6px, 1vw, 8px) clamp(8px, 1.5vw, 16px);
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    font-size: clamp(10px, 1.5vw, 14px);
     text-transform: uppercase;
+    white-space: nowrap;
     transition: all 0.2s;
 }
 
@@ -209,15 +216,19 @@ button.btn.primary:hover {
 .speed-control {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: clamp(5px, 1.5vw, 15px);
     color: var(--accent-secondary);
+    flex-shrink: 1;
+    font-size: clamp(12px, 1.8vw, 16px);
+    white-space: nowrap;
 }
 
 .slider-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 300px; /* 10 times larger feeling than default small sliders */
+    width: clamp(100px, 30vw, 300px); /* Responsive width */
+    flex-shrink: 1;
 }
 
 .slider-wrapper input[type="range"] {
@@ -259,7 +270,7 @@ button.btn.primary:hover {
     padding: 20px;
     gap: 20px;
     justify-content: center;
-    align-items: center; /* Center both panes vertically */
+    align-items: stretch; /* Stretch both panes vertically so they have the exact same height */
     width: 100%;
 }
 
@@ -269,7 +280,7 @@ button.btn.primary:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 20px;
     height: 100%;
 }
@@ -284,8 +295,8 @@ button.btn.primary:hover {
     flex-shrink: 0;
 }
 .pane-splitter:hover, .pane-splitter:active {
-    background: var(--accent-primary);
-    box-shadow: 0 0 8px rgba(0, 204, 204, 0.5);
+    background: #3b3b4a; /* Slightly lighter than --border-color (#2a2a35) */
+    box-shadow: none;
 }
 
 #sudoku-board-wrapper {
@@ -334,7 +345,8 @@ button.btn.primary:hover {
     line-height: 1; /* Prevent line height from expanding the cell */
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.1s, transform 0.1s;
+    overflow: hidden;
+    transition: background-color 0.1s, border 0.1s, text-shadow 0.1s;
 }
 
 .vz-grid-cell:hover {
@@ -389,18 +401,41 @@ button.btn.primary:hover {
 
 /* Active highlighting */
 .vz-highlight-a {
-    border: 2px solid var(--hl-active-border) !important;
+    outline: 2px solid var(--hl-active-border) !important;
+    outline-offset: -2px;
     color: var(--accent-warning) !important;
     text-shadow: 0 0 10px var(--accent-warning);
     z-index: 10;
     box-shadow: inset 0 0 10px rgba(255, 255, 0, 0.3), 0 0 15px rgba(255, 255, 0, 0.4);
-    transform: scale(1.15);
 }
 .vz-highlight-b {
     background-color: var(--hl-conflict-bg); 
 }
 .vz-highlight-c {
     background-color: var(--hl-commit-bg); 
+}
+.vz-highlight-commit {
+    outline: 2px solid var(--accent-success) !important;
+    outline-offset: -2px;
+    color: #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px #ffffff;
+    z-index: 10;
+    animation: flashCommit 0.4s ease-out forwards;
+}
+
+@keyframes flashCommit {
+    0% {
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 1);
+        filter: blur(2px);
+    }
+    50% {
+        filter: blur(0px);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: inset 0 0 15px rgba(0, 255, 0, 0.4), 0 0 20px rgba(0, 255, 0, 0.6);
+    }
 }
 
 .variables-panel {
@@ -528,57 +563,47 @@ button.btn.primary:hover {
     text-decoration: none;
 }
 
-/* --- RESPONSIVE MOBILE LAYOUT --- */
-@media (max-width: 900px) {
-    .sudoku-main {
-        flex-direction: column;
-        overflow: hidden; /* Prevent body scroll, size down to fit */
-    }
-    
-    .pane-splitter {
-        width: 100%;
-        height: 8px;
-        cursor: row-resize;
-    }
-    
-    .sudoku-board-pane {
-        flex: 0 0 45%; /* Use percentages to fit in viewport */
-        width: 100%;
-        max-width: none;
-        margin: 0;
-    }
-    
-    .sudoku-code-pane {
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        flex: 1; /* take remaining height */
-    }
-    
-    #sudoku-board.vz-grid {
-        max-height: 100%;
-        max-width: 100%;
-    }
-    
-    /* Shrink UI elements */
-    :root {
-        --header-height: 120px;
-        --footer-height: 100px;
-    }
-    .sudoku-footer {
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px 0;
-    }
-    .slider-wrapper {
-        width: 200px;
+#landscape-warning {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #000;
+    color: #fff;
+    z-index: 10000;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    font-size: 24px;
+    font-family: var(--font-mono, monospace);
+}
+
+#landscape-warning .warning-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: var(--accent-secondary);
+}
+
+@media (max-aspect-ratio: 95/100) {
+    #landscape-warning {
+        display: flex;
     }
 }
 
+button.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    background: transparent;
+    box-shadow: none;
+}
+
 /* --- CUSTOM INPUT MODE --- */
-body.dim-overlay-active::after {
+body.dim-overlay-active .sudoku-viz-container::after {
     content: '';
-    position: fixed;
+    position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
@@ -649,7 +674,11 @@ body.global-glitch::before {
     transition: box-shadow 2s ease-out, color 2s ease-out;
 }
 
-#btn-play-pause, #btn-next {
+#btn-play-pause {
+    transition: box-shadow 2s ease-in-out, background-color 0.2s, transform 0.1s;
+    width: 110px; /* Prevent resizing between Play and Finished */
+}
+#btn-next {
     transition: box-shadow 2s ease-in-out, background-color 0.2s, transform 0.1s;
 }
 
