@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Backtracking Vizualization</title>
+    <!-- Include existing styling as a base, but main style is our own -->
+    <link rel="stylesheet" href="lessontemplate/style.css">
+    <link rel="stylesheet" href="lessontemplate/viz-style.css">
+    <link rel="stylesheet" href="static/sudoku/sudoku-piscine9.css">
+</head>
+<body class="zone01-theme">
+    <main class="sudoku-viz-container">
+        <!-- TOP: Input section -->
+        <header class="sudoku-header">
+            <div class="input-section">
+                <input type="text" id="sudoku-input-text" spellcheck="false" placeholder='".96.4...1" "1...6...4" ...' value='".96.4...1" "1...6...4" "5.481.39." "..795..43" ".3..8...." "4.5.23.18" ".1.63..59" ".59.7.83." "..359...7"'>
+            </div>
+        </header>
+
+        <!-- TOOLBAR: Teams and Buttons -->
+        <div class="sudoku-toolbar">
+            <div class="controls-row">
+                <select id="algorithm-select">
+                    <option value="agalanaki">agalanaki</option>
+                    <option value="magora">magora, mpapakonst, mntampan</option>
+                    <option value="nisankou">nisankou, cgiannoul, kxykis</option>
+                    <option value="gangelat">gangelat, spapachris, dkatsiko</option>
+                    <option value="pgouliam">pgouliam, evarthal, amoraitit</option>
+                    <option value="avrabac">avrabac, efourou, gpanouso</option>
+                    <option value="mrv">MRV Heuristic</option>
+                    <option value="dlx">Knuth DLX</option>
+                </select>
+                <button id="btn-start" class="btn primary" style="width: 110px;">Start / Lock</button>
+                <button id="btn-reset" class="btn secondary">Reset</button>
+                <button id="btn-empty" class="btn secondary">Empty</button>
+                <button id="btn-random" class="btn secondary" style="width: 100px;">Preset 00</button>
+                <button id="btn-review" class="btn secondary" style="width: 130px;">Bocal Review</button>
+            </div>
+        </div>
+
+        <!-- MIDDLE: Split view for Board and Code -->
+        <section class="sudoku-main">
+            <!-- LEFT: Board and Variables -->
+            <div class="sudoku-board-pane" id="pane-board">
+                <div id="sudoku-board-wrapper">
+                    <div id="sudoku-board" class="vz-grid" style="--vz-grid-cols:9;">
+                        <!-- 81 cells will be generated here by JS -->
+                    </div>
+                </div>
+                <div class="variables-panel glossary-group">
+                    <div class="panel-header">
+                        <h4>Variables State</h4>
+                        <div id="depth-indicator" class="depth-badge">Depth: 0</div>
+                    </div>
+                    <div id="variables-container">
+                        <!-- Variables populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPLITTER -->
+            <div class="pane-splitter" id="pane-splitter"></div>
+
+            <!-- RIGHT: Code -->
+            <pre class="sudoku-code-pane" id="pane-code">
+                <code id="code-display">
+                    <!-- Code injected dynamically with line spans -->
+                </code>
+            </pre>
+        </section>
+
+        <!-- BOTTOM: Playback controls -->
+        <footer class="sudoku-footer">
+            <div class="playback-controls">
+                <button id="btn-back" class="reset-quiz-btn" disabled>&#9198; Back</button>
+                <button id="btn-play-pause" class="reset-quiz-btn" disabled>&#9654; Play</button>
+                <button id="btn-next" class="reset-quiz-btn" disabled>Next &#9199;</button>
+            </div>
+            
+            <div class="shortcuts-info">
+                <small>W/,: BACK &nbsp;&nbsp;&nbsp; S/.: NEXT &nbsp;&nbsp;&nbsp; SPACE/Q: PLAY/PAUSE &nbsp;&nbsp;&nbsp; A/D: SPEED DOWN/UP &nbsp;&nbsp;&nbsp; E: FASTEST</small>
+            </div>
+
+            <div class="speed-control">
+                <label for="speed-slider">Speed:</label>
+                <div class="slider-wrapper">
+                    <input type="range" id="speed-slider" min="1" max="1000" value="500" list="speed-marks">
+                    <datalist id="speed-marks">
+                        <option value="1" label="x1"></option>
+                        <option value="250" label="x5"></option>
+                        <option value="500" label="x10"></option>
+                        <option value="750" label="x100"></option>
+                        <option value="1000" label="MAX"></option>
+                    </datalist>
+                    <div class="slider-labels">
+                        <span>x1</span>
+                        <span>x5</span>
+                        <span>x10</span>
+                        <span>x100</span>
+                        <span>MAX</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+    <script src="static/sudoku/reviews.js"></script>
+    <script src="static/sudoku/sudoku-piscine9.js"></script>
+</body>
+</html>
