@@ -54,7 +54,7 @@ var grid [9][9]byte
 var solution [9][9]byte
 
 func solve(pos int) {
-	if count >= 2 {
+	if count >= <span contenteditable="true" class="editable-count">2</span> {
 		return
 	}
 	if pos == 81 {
@@ -74,7 +74,7 @@ func solve(pos int) {
 			grid[r][c] = v
 			solve(pos + 1)
 			grid[r][c] = 0 // backtrack
-			if count >= 2 {
+			if count >= <span contenteditable="true" class="editable-count">2</span> {
 				return
 			}
 		}
@@ -83,6 +83,7 @@ func solve(pos int) {
             generator: function* (boardStart) {
                 let grid = JSON.parse(JSON.stringify(boardStart));
                 let count = 0;
+                let targetCount = getTargetSolutions();
 
                 function canPlace(r, c, v) {
                     for (let i = 0; i < 9; i++) {
@@ -98,7 +99,7 @@ func solve(pos int) {
                 function* solve(pos) {
                     yield { line: 5, vars: { pos, count }, activeCell: null, grid };
                     yield { line: 6, vars: { pos, count }, activeCell: null, grid };
-                    if (count >= 2) {
+                    if (count >= targetCount) {
                         yield { line: 7, vars: { pos, count }, activeCell: null, grid };
                         return;
                     }
@@ -137,7 +138,7 @@ func solve(pos int) {
                             grid[r][c] = 0;
                             yield { line: 25, vars: { pos, r, c, v, count }, activeCell: [r, c], grid };
                             yield { line: 26, vars: { pos, r, c, v, count }, activeCell: [r, c], grid };
-                            if (count >= 2) {
+                            if (count >= targetCount) {
                                 yield { line: 27, vars: { pos, r, c, v, count }, activeCell: [r, c], grid };
                                 return;
                             }
@@ -622,7 +623,7 @@ func solve() bool {
 			SolveSudoku(board, solutions, solvedBoard)
 			
 			board[r][c] = 0
-			if *solutions >= 2 {
+			if *solutions >= <span contenteditable="true" class="editable-count">2</span> {
 				return
 			}
 		}
@@ -646,6 +647,7 @@ func solve() bool {
 }`,
             generator: function* (boardStart) {
                 let board = JSON.parse(JSON.stringify(boardStart));
+                let targetCount = getTargetSolutions();
 
                 function isValid(r, c, v) {
                     for (let i = 0; i < 9; i++) {
@@ -709,7 +711,7 @@ func solve() bool {
                         board[r][c] = 0;
                         yield { line: 17, vars: { solutions, val }, activeCell: [r, c], grid: board };
 
-                        if (solutions >= 2) {
+                        if (solutions >= targetCount) {
                             yield { line: 18, vars: { solutions, val }, activeCell: [r, c], grid: board };
                             return;
                         }
@@ -747,7 +749,7 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
 			uncover(j.column)
 		}
 		
-		if *solutions >= 2 {
+		if *solutions >= <span contenteditable="true" class="editable-count">2</span> {
 			break
 		}
 	}
@@ -759,6 +761,7 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
                 // we'll use a very optimized backtracking with exact cover simulation.
                 // We'll yield board states much faster.
                 let board = JSON.parse(JSON.stringify(boardStart));
+                let targetCount = getTargetSolutions();
 
                 // We'll just yield the fast decisions.
                 function isValid(r, c, v) {
@@ -826,7 +829,7 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
                         board[r][c] = 0;
                         yield { line: 25, vars: { solutions, val }, activeCell: [r, c], grid: board };
 
-                        if (solutions >= 2) {
+                        if (solutions >= targetCount) {
                             yield { line: 27, vars: { solutions, val }, activeCell: [r, c], grid: board };
                             break;
                         }
@@ -944,6 +947,15 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
     }
 
     // --- DATA SYNCING ---
+
+    function getTargetSolutions() {
+        const el = document.querySelector('.editable-count');
+        if (!el) return 2;
+        let val = parseInt(el.innerText);
+        if (isNaN(val) || val < 1) return 1;
+        if (val > 50) return 50;
+        return val;
+    }
 
     function parseInputText(text) {
         let newBoard = Array(9).fill(0).map(() => Array(9).fill(0));
@@ -1241,6 +1253,23 @@ func removeFromSolution(r *Node) {
         }
     });
 
+    codeDisplay.addEventListener('focusout', (e) => {
+        if (e.target.classList && e.target.classList.contains('editable-count')) {
+            let val = parseInt(e.target.innerText);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > 50) val = 50;
+            e.target.innerText = val;
+        }
+    });
+
+    codeDisplay.addEventListener('keydown', (e) => {
+        if (e.target.classList && e.target.classList.contains('editable-count')) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.target.blur();
+            }
+        }
+    });
     algoSelect.addEventListener('change', () => {
         if (!isLocked) {
             loadAlgorithm();
@@ -1421,6 +1450,7 @@ func removeFromSolution(r *Node) {
             isLocked = true;
             inputText.disabled = true;
             algoSelect.disabled = true;
+            document.querySelectorAll('.editable-count').forEach(el => el.contentEditable = 'false');
             btnStart.textContent = 'Restart';
             btnStart.classList.remove('primary');
             btnStart.classList.add('secondary');
@@ -1468,6 +1498,7 @@ func removeFromSolution(r *Node) {
             isLocked = false;
             inputText.disabled = false;
             algoSelect.disabled = false;
+            document.querySelectorAll('.editable-count').forEach(el => el.contentEditable = 'true');
             btnStart.textContent = 'Start / Lock';
             btnStart.classList.remove('secondary');
             btnStart.classList.add('primary');

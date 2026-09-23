@@ -170,13 +170,13 @@ button.btn.primary:hover {
 .shortcuts-info {
     color: var(--text-muted);
     font-family: var(--font-mono, monospace);
-    font-size: min(10px, 2.5cqw);
+    font-size: clamp(6px, 2.5cqw, 11px);
     opacity: 0.5;
     text-align: center;
     margin-top: auto;
     margin-bottom: -15px; /* Pull it closer to variables panel */
     padding-top: 0;
-    white-space: nowrap;
+    white-space: normal;
     line-height: 1.4;
     width: 100%;
 }
@@ -283,6 +283,7 @@ button.btn.primary:hover {
     justify-content: flex-start;
     gap: 20px;
     height: 100%;
+    container-type: inline-size;
 }
 
 /* SPLITTER */
@@ -316,6 +317,8 @@ button.btn.primary:hover {
     height: 100%;
     max-height: 100%;
     max-width: 100%;
+    min-width: 160px;
+    min-height: 160px;
     width: auto; /* Width dictated by height + aspect-ratio, constrained by max-width */
     grid-template-columns: repeat(9, minmax(0, 1fr));
     grid-template-rows: repeat(9, minmax(0, 1fr));
@@ -462,7 +465,7 @@ button.btn.primary:hover {
     margin-bottom: 0;
     color: var(--accent-secondary);
     text-transform: uppercase;
-    font-size: 0.85em;
+    font-size: clamp(10px, 4cqw, 15px);
     letter-spacing: 1px;
 }
 .depth-badge {
@@ -471,7 +474,7 @@ button.btn.primary:hover {
     border: 1px solid var(--accent-secondary);
     padding: 2px 8px;
     border-radius: 12px;
-    font-size: 0.85em;
+    font-size: clamp(9px, 3.5cqw, 14px);
     font-family: var(--font-mono, monospace);
 }
 #variables-container {
@@ -494,15 +497,15 @@ button.btn.primary:hover {
 .gs-name {
     background: var(--border-color);
     color: var(--accent-primary);
-    padding: 4px 8px;
+    padding: clamp(2px, 1cqw, 4px) clamp(4px, 2cqw, 8px);
     font-family: var(--font-mono, monospace);
-    font-size: 0.85em;
+    font-size: clamp(9px, 3.5cqw, 14px);
 }
 .gs-def {
-    padding: 4px 8px;
+    padding: clamp(2px, 1cqw, 4px) clamp(4px, 2cqw, 8px);
     color: var(--text-main);
     font-family: var(--font-mono, monospace);
-    font-size: 0.85em;
+    font-size: clamp(9px, 3.5cqw, 14px);
 }
 
 /* RIGHT: Code Pane */
@@ -741,6 +744,22 @@ body.review-mode-active #btn-reset {
     line-height: 1.6;
 }
 
+.editable-count {
+    border-bottom: 1px dashed #b5cea8;
+    cursor: text;
+    padding: 0 2px;
+    outline: none;
+    transition: background-color 0.2s;
+    border-radius: 2px;
+}
+.editable-count:hover {
+    background-color: rgba(181, 206, 168, 0.2);
+}
+.editable-count:focus {
+    background-color: rgba(181, 206, 168, 0.4);
+    border-bottom-style: solid;
+}
+
 .btn.btn-stop {
     background-color: transparent;
     color: #f0c040;
@@ -752,4 +771,15 @@ body.review-mode-active #btn-reset {
 .btn.btn-stop:hover {
     box-shadow: inset 0 0 0 2px #f0c040, 0 0 24px rgba(240, 192, 64, 0.8);
     color: #fff8dc;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 950px) {
+    .variables-panel {
+        display: none !important;
+    }
+    
+    .sudoku-footer {
+        bottom: 25px; /* Lift up for mobile tap areas */
+    }
 }
