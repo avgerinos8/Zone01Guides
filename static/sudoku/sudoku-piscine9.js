@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // State machine
     let isLocked = false;
     let isPlaying = false;
+    let isReviewMode = false;
     let playInterval = null;
     let steps = [];
     let currentStepIdx = -1;
@@ -720,7 +721,8 @@ func solve() bool {
             }
         },
         'dlx': {
-            code: `func solveDLX(solutions *int, solvedBoard *[9][9]int) {
+            code: `// <span class="preview-link" data-target="dlxStruct">View Node Struct</span>
+func solveDLX(solutions *int, solvedBoard *[9][9]int) {
 	node := chooseColumn()
 	if node == nil {
 		*solutions++
@@ -729,10 +731,10 @@ func solve() bool {
 		}
 		return
 	}
-	cover(node)
+	<span class="preview-link" data-target="dlxCoverUncover">cover</span>(node)
 	
 	for r := node.down; r != node; r = r.down {
-		addToSolution(r)
+		<span class="preview-link" data-target="dlxAddRemove">addToSolution</span>(r)
 		
 		for j := r.right; j != r; j = j.right {
 			cover(j.column)
@@ -867,10 +869,40 @@ func solve() bool {
         }
     }
 
+    function decodeEntities(html) {
+        var txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
+
+    function syntaxHighlightGoHTML(htmlLine) {
+        if (!window.Zone01Highlight) return htmlLine;
+        if (!htmlLine.includes('<')) return window.Zone01Highlight('go', decodeEntities(htmlLine));
+        
+        const temp = document.createElement('div');
+        temp.innerHTML = htmlLine;
+        let out = '';
+        temp.childNodes.forEach(node => {
+            if (node.nodeType === 1) { // Element
+                let attrs = Array.from(node.attributes).map(a => `${a.name}="${a.value}"`).join(' ');
+                let tagName = node.tagName.toLowerCase();
+                let highlightedInner = window.Zone01Highlight('go', node.textContent);
+                out += `<${tagName} ${attrs}>${highlightedInner}</${tagName}>`;
+            } else { // Text node
+                out += window.Zone01Highlight('go', node.textContent || '');
+            }
+        });
+        return out;
+    }
+
     function renderCode(codeString) {
         const lines = codeString.split('\n');
         codeDisplay.innerHTML = lines.map((line, idx) => {
-            return `<span class="code-line" id="code-line-${idx + 1}">${line || ' '}</span>`;
+            let processedLine = line || ' ';
+            if (window.Zone01Highlight) {
+                processedLine = syntaxHighlightGoHTML(processedLine);
+            }
+            return `<span class="code-line" id="code-line-${idx + 1}">${processedLine}</span>`;
         }).join('');
     }
 
@@ -1091,6 +1123,54 @@ func Canditates(myBoard Board, i int, j int) []int {
 		}
 	}
 	return canditates
+}`,
+        'dlxStruct': `<span class="preview-link back-link" data-target="back">// &lt; back</span>
+type Node struct {
+	left, right, up, down *Node
+	column                *ColumnNode
+	rowID                 int
+}
+
+type ColumnNode struct {
+	Node
+	size int
+	name string
+}`,
+        'dlxCoverUncover': `<span class="preview-link back-link" data-target="back">// &lt; back</span>
+func cover(c *ColumnNode) {
+	c.right.left = c.left
+	c.left.right = c.right
+	for i := c.down; i != &c.Node; i = i.down {
+		for j := i.right; j != i; j = j.right {
+			j.down.up = j.up
+			j.up.down = j.down
+			j.column.size--
+		}
+	}
+}
+
+func uncover(c *ColumnNode) {
+	for i := c.up; i != &c.Node; i = i.up {
+		for j := i.left; j != i; j = j.left {
+			j.column.size++
+			j.down.up = j
+			j.up.down = j
+		}
+	}
+	c.right.left = &c.Node
+	c.left.right = &c.Node
+}`,
+        'dlxAddRemove': `<span class="preview-link back-link" data-target="back">// &lt; back</span>
+func addToSolution(r *Node) {
+	// Pushes the row action into the current solution stack
+	// In an exact cover matrix for Sudoku, this represents
+	// placing a specific digit in a specific cell.
+	solutionStack = append(solutionStack, r)
+}
+
+func removeFromSolution(r *Node) {
+	// Pops the last row action during backtracking
+	solutionStack = solutionStack[:len(solutionStack)-1]
 }`
     };
 
@@ -1259,9 +1339,20 @@ func Canditates(myBoard Board, i int, j int) []int {
             inputText.disabled = true;
             algoSelect.disabled = true;
             btnStart.textContent = 'Restart';
+            btnStart.classList.remove('primary');
+            btnStart.classList.add('secondary');
+            btnReset.textContent = 'Stop';
+            btnReset.classList.add('btn-stop');
             codeDisplay.classList.add('locked');
             btnEmpty.disabled = true;
             btnRandom.disabled = true;
+
+            // Exit review mode if active
+            if (isReviewMode) {
+                isReviewMode = false;
+                document.body.classList.remove('review-mode-active');
+                renderCode(codeStack[codeStack.length - 1]);
+            }
 
             // Collapse header
             headerEl.classList.add('collapsed');
@@ -1277,37 +1368,69 @@ func Canditates(myBoard Board, i int, j int) []int {
             // Restart same problem from step 0
             currentStepIdx = 0;
             renderStep(0);
-            if (isPlaying) togglePlay(); // pause
+            if (isPlaying) togglePlay();
             document.body.classList.add('awaiting-play');
         }
     });
 
     btnReset.addEventListener('click', () => {
-        isLocked = false;
-        inputText.disabled = false;
-        algoSelect.disabled = false;
-        btnStart.textContent = 'Start / Lock';
-        codeDisplay.classList.remove('locked');
+        if (isLocked) {
+            // Act as Stop — unlock everything
+            isLocked = false;
+            inputText.disabled = false;
+            algoSelect.disabled = false;
+            btnStart.textContent = 'Start / Lock';
+            btnStart.classList.remove('secondary');
+            btnStart.classList.add('primary');
+            btnReset.textContent = 'Bocal Review';
+            btnReset.classList.remove('btn-stop');
+            codeDisplay.classList.remove('locked');
 
-        // Un-collapse header
-        headerEl.classList.remove('collapsed');
-        mainContainerEl.classList.remove('header-collapsed');
+            // Un-collapse header
+            headerEl.classList.remove('collapsed');
+            mainContainerEl.classList.remove('header-collapsed');
 
-        if (isPlaying) togglePlay();
-        btnPlayPause.disabled = true;
-        btnBack.disabled = true;
-        btnNext.disabled = true;
+            if (isPlaying) togglePlay();
+            btnPlayPause.disabled = true;
+            btnBack.disabled = true;
+            btnNext.disabled = true;
 
-        steps = [];
-        currentStepIdx = -1;
+            steps = [];
+            currentStepIdx = -1;
 
-        document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
-        varsContainer.innerHTML = '';
-        updateBoardFromInput();
-        document.body.classList.remove('awaiting-play');
+            document.querySelectorAll('.code-line').forEach(el => el.classList.remove('active'));
+            varsContainer.innerHTML = '';
+            updateBoardFromInput();
+            document.body.classList.remove('awaiting-play');
 
-        btnEmpty.disabled = false;
-        btnRandom.disabled = false;
+            btnEmpty.disabled = false;
+            btnRandom.disabled = false;
+        } else {
+            // Act as Bocal Review
+            isReviewMode = !isReviewMode;
+            if (isReviewMode) {
+                const algoKey = algoSelect.value;
+                let text = '';
+                if (typeof BOCAL_REVIEWS !== 'undefined' && BOCAL_REVIEWS[algoKey]) {
+                    text = BOCAL_REVIEWS[algoKey];
+                } else {
+                    text = `// Bocal Review Error\n/*\nUnable to find review text for '${algoKey}'.\nMake sure reviews.js is loaded correctly!\n*/`;
+                }
+                document.body.classList.add('review-mode-active');
+                btnReset.textContent = 'Return to Code';
+                codeDisplay.innerHTML = `<div class="bocal-review-text">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
+            } else {
+                document.body.classList.remove('review-mode-active');
+                btnReset.textContent = 'Bocal Review';
+                renderCode(codeStack[codeStack.length - 1]);
+            }
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isReviewMode && !isLocked) {
+            btnReset.click();
+        }
     });
 
     btnEmpty.addEventListener('click', () => {
@@ -1331,29 +1454,6 @@ func Canditates(myBoard Board, i int, j int) []int {
         currentRandomIdx = 0;
     });
 
-    let isReviewMode = false;
-    const btnReview = document.getElementById('btn-review');
-    if (btnReview) {
-        btnReview.addEventListener('click', () => {
-            isReviewMode = !isReviewMode;
-            if (isReviewMode) {
-                const algoKey = algoSelect.value;
-                let text = '';
-                if (typeof BOCAL_REVIEWS !== 'undefined' && BOCAL_REVIEWS[algoKey]) {
-                    text = BOCAL_REVIEWS[algoKey];
-                } else {
-                    text = `// Bocal Review Error\n/*\nUnable to find review text for '${algoKey}'.\nMake sure reviews.js is loaded correctly!\n*/`;
-                }
-                document.body.classList.add('review-mode-active');
-                btnReview.textContent = 'Return to Code';
-                codeDisplay.innerHTML = `<div class="bocal-review-text">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`;
-            } else {
-                document.body.classList.remove('review-mode-active');
-                btnReview.textContent = 'Bocal Review';
-                renderCode(codeStack[codeStack.length - 1]);
-            }
-        });
-    }
 
     btnBack.addEventListener('click', () => {
         if (isPlaying) togglePlay();

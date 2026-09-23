@@ -325,6 +325,7 @@ button.btn.primary:hover {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    border-radius: 10%; /* Makes the cyan intersection rhombuses responsive */
     /* Increase font sizes slightly */
     font-size: min(4.5vh, 4.5vw);
     line-height: 1; /* Prevent line height from expanding the cell */
@@ -679,17 +680,20 @@ body.awaiting-play #btn-next {
 body.review-mode-active .sudoku-header,
 body.review-mode-active .sudoku-board-pane,
 body.review-mode-active .sudoku-footer,
-body.review-mode-active .controls-row > *:not(#btn-review),
+body.review-mode-active .controls-row > *:not(#btn-reset),
 body.review-mode-active .pane-splitter {
     opacity: 0.25;
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
 
-body.review-mode-active #btn-review {
+body.review-mode-active #btn-reset {
     animation: btnAwaitingPulse 1.5s infinite alternate ease-in-out;
-    background-color: var(--primary-color);
-    color: var(--bg-color);
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    font-weight: bold;
+    text-shadow: none;
 }
 
 .bocal-review-text {
@@ -699,4 +703,17 @@ body.review-mode-active #btn-review {
     font-size: 1.15rem;
     white-space: pre-wrap;
     line-height: 1.6;
+}
+
+.btn.btn-stop {
+    background-color: transparent;
+    color: #f0c040;
+    border: none;
+    box-shadow: inset 0 0 0 1.5px #f0c040, 0 0 12px rgba(240, 192, 64, 0.5);
+    transition: box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.btn.btn-stop:hover {
+    box-shadow: inset 0 0 0 2px #f0c040, 0 0 24px rgba(240, 192, 64, 0.8);
+    color: #fff8dc;
 }
