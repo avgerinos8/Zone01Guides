@@ -956,10 +956,12 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
                 const val = initialBoard[r][c];
                 const cell = cells[r * 9 + c];
                 cell.textContent = val !== 0 ? val : '';
+                
+                // Clear any leftover simulation classes
+                cell.className = 'vz-grid-cell';
+                
                 if (val !== 0) {
                     cell.classList.add('readonly');
-                } else {
-                    cell.classList.remove('readonly');
                 }
             }
         }
@@ -1297,8 +1299,9 @@ func removeFromSolution(r *Node) {
                         cell.classList.remove('user-input', 'testing-input');
                     }
                 } else {
-                    // It's a readonly cell, but just to be sure we clear testing-input
-                    cell.classList.remove('testing-input', 'dissolve-out');
+                    // It's a readonly cell, but just to be sure we clear testing-input and user-input
+                    cell.classList.remove('testing-input', 'dissolve-out', 'user-input', 'vz-highlight-a', 'vz-highlight-b', 'vz-highlight-c');
+                    cell.classList.add('readonly');
                 }
 
                 // Highlight active cell
@@ -1313,7 +1316,17 @@ func removeFromSolution(r *Node) {
         const activeLineEl = document.getElementById(`code-line-${step.line}`);
         if (activeLineEl) {
             activeLineEl.classList.add('active');
-            activeLineEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            
+            const pane = document.getElementById('pane-code');
+            if (pane) {
+                const paneHeight = pane.clientHeight;
+                const elementTop = activeLineEl.offsetTop;
+                const elementHeight = activeLineEl.offsetHeight;
+                pane.scrollTo({
+                    top: elementTop - (paneHeight / 2) + (elementHeight / 2),
+                    behavior: 'smooth'
+                });
+            }
         }
 
         // 3. Update Variables

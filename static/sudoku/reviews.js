@@ -1,5 +1,5 @@
-/*
 const BOCAL_REVIEWS = {
+/*
     'agalanaki': `// Bocal Review for Sudoku Solution: agalanaki
 /*
 This implementation demonstrates a very clean and effective backtracking approach.
@@ -35,6 +35,7 @@ On the positive side, utilizing 'rune' directly for board manipulation and parsi
 FAILS: The recursion returns as soon as it discovers a single valid solution. It lacks the logic to continue searching to verify if the solution is unique.
 On the positive side, the double-loop approach used for scanning constraints is classic and very easy to follow. The logical flow is solid, despite missing the core uniqueness constraint of the project.
 *\/`,
+*/
     'mrv': `// Bocal Review for Sudoku Solution: MRV Heuristic
 /*
 This implementation is an educational showcase of the Minimum Remaining Values (MRV) heuristic!
@@ -55,4 +56,3 @@ For more information, check out the paper:
 http://www.ocf.berkeley.edu/~jchu/publicportal/sudoku/0011047.pdf
 *\/`
 };
-*/
