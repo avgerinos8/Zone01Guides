@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="el">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
     <link rel="stylesheet" href="lessontemplate/viz-style.css">
     <link rel="stylesheet" href="static/sudoku/sudoku-piscine9.css">
 </head>
+
 <body class="zone01-theme">
     <div id="landscape-warning">
         <div class="warning-icon">&#8635;</div>
@@ -18,7 +20,8 @@
         <!-- TOP: Input section -->
         <header class="sudoku-header">
             <div class="input-section">
-                <input type="text" id="sudoku-input-text" spellcheck="false" placeholder='".96.4...1" "1...6...4" ...' value='".96.4...1" "1...6...4" "5.481.39." "..795..43" ".3..8...." "4.5.23.18" ".1.63..59" ".59.7.83." "..359...7"'>
+                <input type="text" id="sudoku-input-text" spellcheck="false" placeholder='".96.4...1" "1...6...4" ...'
+                    value='".96.4...1" "1...6...4" "5.481.39." "..795..43" ".3..8...." "4.5.23.18" ".1.63..59" ".59.7.83." "..359...7"'>
             </div>
         </header>
 
@@ -52,12 +55,16 @@
                     </div>
                 </div>
                 <div class="shortcuts-info">
-                    <small>W/,: BACK &nbsp;&nbsp;&nbsp; S/.: NEXT &nbsp;&nbsp;&nbsp; SPACE/Q: PLAY/PAUSE &nbsp;&nbsp;&nbsp; A/D: SPEED DOWN/UP &nbsp;&nbsp;&nbsp; E: FASTEST</small>
+                    <small>W/.: NEXT &nbsp;&nbsp;&nbsp; S/,: BACK &nbsp;&nbsp;&nbsp; SPACE/Q: PLAY/PAUSE
+                        &nbsp;&nbsp;&nbsp; A/D: SPEED DOWN/UP &nbsp;&nbsp;&nbsp; E: FASTEST</small>
                 </div>
                 <div class="variables-panel glossary-group">
                     <div class="panel-header">
                         <h4>Variables State</h4>
-                        <div id="depth-indicator" class="depth-badge">Depth: 0</div>
+                        <div style="display: flex; gap: 10px;">
+                            <div id="solutions-indicator" class="depth-badge">Solutions: 0</div>
+                            <div id="depth-indicator" class="depth-badge">Depth: 0</div>
+                        </div>
                     </div>
                     <div id="variables-container">
                         <!-- Variables populated dynamically -->
@@ -109,4 +116,5 @@
     <script src="static/sudoku/reviews.js"></script>
     <script src="static/sudoku/sudoku-piscine9.js"></script>
 </body>
+
 </html>

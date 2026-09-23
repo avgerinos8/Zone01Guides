@@ -186,9 +186,8 @@ button.btn.primary:hover {
     font-size: clamp(6px, 2.5cqw, 11px);
     opacity: 0.5;
     text-align: center;
-    margin-top: auto;
-    margin-bottom: -15px;
-    /* Pull it closer to variables panel */
+    margin-top: 15px;
+    margin-bottom: 10px;
     padding-top: 0;
     white-space: normal;
     line-height: 1.4;
@@ -298,7 +297,7 @@ button.btn.primary:hover {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 20px;
+    gap: 0px;
     height: 100%;
     container-type: inline-size;
 }
@@ -489,7 +488,7 @@ button.btn.primary:hover {
 
 .variables-panel {
     background: var(--bg-card);
-    padding: 15px;
+    padding: clamp(5px, 2cqw, 15px);
     border-radius: 8px;
     border: 1px solid var(--border-color);
     width: 100%;
@@ -500,6 +499,8 @@ button.btn.primary:hover {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    margin-top: auto;
+    margin-bottom: 0;
 }
 
 .panel-header {
@@ -517,6 +518,14 @@ button.btn.primary:hover {
     font-size: clamp(10px, 4cqw, 15px);
     letter-spacing: 1px;
 }
+@container (max-width: 400px) {
+    .panel-header h4 {
+        display: none;
+    }
+    .panel-header {
+        justify-content: center;
+    }
+}
 
 .depth-badge {
     background: var(--bg-main);
@@ -528,11 +537,16 @@ button.btn.primary:hover {
     font-family: var(--font-mono, monospace);
 }
 
+#solutions-indicator {
+    color: #dc143c;
+    border-color: #dc143c;
+}
+
 #variables-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    min-height: 60px;
+    gap: clamp(4px, 1.5cqw, 10px);
+    min-height: 20px;
     /* Prevents container from shrinking when vars drop, which would scale up the board */
     align-content: flex-start;
     overflow-y: auto;

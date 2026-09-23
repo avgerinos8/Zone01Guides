@@ -687,37 +687,37 @@ func solve() bool {
 
                 function* solve() {
                     let [r, c, cands] = findBest();
-                    yield { line: 2, vars: { solutions }, activeCell: r !== -1 ? [r, c] : null, grid: board };
+                    yield { line: 2, vars: { solutions, r, c }, activeCell: r !== -1 ? [r, c] : null, grid: board };
 
                     if (r === -1) {
                         solutions++;
-                        yield { line: 4, vars: { solutions }, activeCell: null, grid: board };
+                        yield { line: 4, vars: { solutions, r, c }, activeCell: null, grid: board };
                         if (solutions === 1) {
-                            yield { line: 5, vars: { solutions }, activeCell: null, grid: board, isSolution: true };
+                            yield { line: 5, vars: { solutions, r, c }, activeCell: null, grid: board, isSolution: true };
                         }
                         return;
                     }
 
                     for (let val of cands) {
-                        yield { line: 11, vars: { solutions, val }, activeCell: [r, c], testingValue: val, grid: board };
+                        yield { line: 11, vars: { solutions, r, c, val }, activeCell: [r, c], testingValue: val, grid: board };
 
-                        yield { line: 12, vars: { solutions, val }, activeCell: [r, c], testingValue: val, grid: board };
+                        yield { line: 12, vars: { solutions, r, c, val }, activeCell: [r, c], testingValue: val, grid: board };
                         board[r][c] = val;
-                        yield { line: 13, vars: { solutions, val }, activeCell: [r, c], grid: board };
+                        yield { line: 13, vars: { solutions, r, c, val }, activeCell: [r, c], grid: board };
 
-                        yield { line: 15, vars: { solutions, val }, activeCell: [r, c], grid: board };
+                        yield { line: 15, vars: { solutions, r, c, val }, activeCell: [r, c], grid: board };
                         yield* solve();
 
                         board[r][c] = 0;
-                        yield { line: 17, vars: { solutions, val }, activeCell: [r, c], grid: board };
+                        yield { line: 17, vars: { solutions, r, c, val }, activeCell: [r, c], grid: board };
 
                         if (solutions >= targetCount) {
-                            yield { line: 18, vars: { solutions, val }, activeCell: [r, c], grid: board };
+                            yield { line: 18, vars: { solutions, r, c, val }, activeCell: [r, c], grid: board };
                             return;
                         }
                     }
 
-                    yield { line: 22, vars: { solutions }, activeCell: [r, c], grid: board };
+                    yield { line: 22, vars: { solutions, r, c }, activeCell: [r, c], grid: board };
                 }
                 yield* solve();
             }
@@ -1253,12 +1253,23 @@ func removeFromSolution(r *Node) {
         }
     });
 
+    codeDisplay.addEventListener('input', (e) => {
+        if (e.target.classList && e.target.classList.contains('editable-count')) {
+            const val = e.target.innerText;
+            document.querySelectorAll('.editable-count').forEach(el => {
+                if (el !== e.target) el.innerText = val;
+            });
+        }
+    });
+
     codeDisplay.addEventListener('focusout', (e) => {
         if (e.target.classList && e.target.classList.contains('editable-count')) {
             let val = parseInt(e.target.innerText);
             if (isNaN(val) || val < 1) val = 1;
             if (val > 50) val = 50;
-            e.target.innerText = val;
+            document.querySelectorAll('.editable-count').forEach(el => {
+                el.innerText = val;
+            });
         }
     });
 
@@ -1295,7 +1306,11 @@ func removeFromSolution(r *Node) {
 
         let i = 0;
         let cumulativeVars = new Set();
+        let solutionsCount = 0;
         for (let step of gen) {
+            if (step.isSolution) {
+                solutionsCount++;
+            }
             // Calculate current depth by counting newly filled cells
             let currentFilled = 0;
             for (let r = 0; r < 9; r++) {
@@ -1314,6 +1329,7 @@ func removeFromSolution(r *Node) {
             steps.push({
                 ...step,
                 depth: Math.max(0, calculatedDepth),
+                solutionsFound: solutionsCount,
                 grid: JSON.parse(JSON.stringify(step.grid)),
                 seenVars: Array.from(cumulativeVars)
             });
@@ -1328,10 +1344,14 @@ func removeFromSolution(r *Node) {
 
         const step = steps[idx];
 
-        // Update Depth
+        // Update Depth & Solutions
         const depthIndicator = document.getElementById('depth-indicator');
         if (depthIndicator) {
             depthIndicator.textContent = `Depth: ${step.depth || 0}`;
+        }
+        const solutionsIndicator = document.getElementById('solutions-indicator');
+        if (solutionsIndicator) {
+            solutionsIndicator.textContent = `Solutions: ${step.solutionsFound || 0}`;
         }
 
         // 1. Update Board
