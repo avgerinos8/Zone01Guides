@@ -46,15 +46,15 @@
             background-color: #0d0e12;
             color: #e2e8f0;
             max-width: 850px;
-            margin: calc(24px + 36 * var(--fluid-range) / 704) auto;
+            margin: calc(12px + 12 * var(--fluid-range) / 704) auto;
             padding: 0 calc(12px + 12 * var(--fluid-range) / 704);
             line-height: 1.5;
         }
 
         .terminal-header {
             border-bottom: 1px solid #222530;
-            padding-bottom: 16px;
-            margin-bottom: 32px;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
         }
 
         .status-line {
@@ -126,7 +126,7 @@
             color: #718096;
             font-size: calc(12px + 2 * var(--fluid-range) / 704);
             font-weight: 500;
-            margin-top: 20px;
+            margin-top: 12px;
             margin-bottom: 8px;
             letter-spacing: 0.5px;
         }
@@ -228,6 +228,32 @@
             color: #00ffff;
             border-color: #00ffff;
             background: rgba(0, 255, 255, 0.05);
+        }
+
+        .columns-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .module-group {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .columns-container {
+                grid-template-columns: 1fr;
+            }
+            .column {
+                gap: 32px;
+            }
         }
 
         /* Password Modal */
@@ -463,7 +489,7 @@
         .reverse-msg {
             margin: 30px 0 20px;
             margin-top: 8px;
-            margin-bottom: 36px;
+            margin-bottom: 16px;
             display: flex;
             justify-content: center;
             overflow: auto;
@@ -743,35 +769,58 @@
 ╰─╴╰─╯╰─╯╵ ╵ ╵ ╵ ╵ ╵╰─╯   ╵  ╰─╯╵ ╵╶┴╯╵ ╵╵ ╵╰─╴╵ ╵ ╵ ╵╰─╯   ╵╰╴╰─╴╰─╯╵ ╵╰─╯╵ ╵   ╵ ╵╰─╴╶┴╯╵╵  ╵╰─╴╵ ╵</a></pre>
         </div>
 
-        <p><span class="prompt">guest@zone01:~$</span> ls -la --guides<span class="cursor" id="secretTrigger"></span>
+        <p style="margin-bottom: 24px; text-align: center;"><span class="prompt">student@zone01:~$</span> ls -la --guides<span class="cursor" id="secretTrigger"></span>
         </p>
-        <p class="section-title main-section">PISCINE WEEK SUMMARY WORKSHOPS:</p>
-        <li class="main-section"><a href="./piscine-go-week1.html"><span style="color: #ffffff;">&gt;
-                    ./Piscine_Week1</span><span class="tag">[GO]</span></a></li>
-        <li class="main-section"><a href="./piscine-go-week2.html"><span style="color: #ffffff;">&gt;
-                    ./Piscine_Week2</span><span class="tag">[GO]</span></a></li>
-        <li class="main-section"><a href="./piscine-go-week3.html"><span style="color: #ffffff;">&gt;
-                    ./Piscine_Week3</span><span class="tag">[GO]</span></a></li>
-        <p class="section-title main-section">MAIN MODULES:</p>
-        <ul class="module-list main-section">
-            <li><a href="./01-go-01.html"><span>&gt; ./01_go_part_1</span><span class="tag">[GO]</span></a></li>
-            <li><a href="./02-go-02.html"><span>&gt; ./02_go_part_2</span><span class="tag">[GO]</span></a></li>
-            <li><a href="./03-go-03.html"><span>&gt; ./03_go_part_3</span><span class="tag">[GO]</span></a></li>
-            <li><a href="08-Docker.html"><span style="color: #96a2b4;">&gt; ./08_dockerize</span><span
-                        class="tag">[DOCKER]</span></a></li>
-            <li><a href="10-goroutines-channels.html"><span>&gt; ./10_goroutines_channels</span><span class="tag">[GO] +
-                        [CONCURRENCY]</span></a></li>
-            <li><a href="./14-js.html"><span>&gt; JS Intro</span><span class="tag">[piscine]</span></a></li>
-        </ul>
+        <div class="columns-container main-section">
+            <!-- First Column -->
+            <div class="column">
+                <div class="module-group">
+                    <p class="section-title" style="margin-top: 0;">PISCINE WEEK SUMMARY WORKSHOPS:</p>
+                    <ul class="module-list">
+                        <li><a href="./piscine-go-week1.html"><span style="color: #ffffff;">&gt; ./Piscine_Week1</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./piscine-go-week2.html"><span style="color: #ffffff;">&gt; ./Piscine_Week2</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./piscine-go-week3.html"><span style="color: #ffffff;">&gt; ./Piscine_Week3</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="#"><span style="color: #ffffff;">&gt; ./Piscine_Week4</span><span class="tag">[GO]</span></a></li>
+                    </ul>
+                </div>
 
-        <p class="section-title main-section">OPTIONAL EXTRA MODULES:</p>
-        <ul class="module-list main-section">
-            <li><a href="./00-bash.html"><span style="color: #718096;">&gt; ./00_Shell_Bash</span><span
-                        class="tag">[BASH]</span></a></li>
-            <li><a href="./bash-cheat-sheet.html"><span style="color: #718096;">&gt;
-                        ./Shell_Bash_Cheat_Sheets</span><span class="tag">[BASH]</span></a></li>
+                <div class="module-group">
+                    <p class="section-title">POST-PISCINE REFRESHER:</p>
+                    <ul class="module-list">
+                        <li><a href="./01-go-01.html"><span>&gt; ./01_go_part_1</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./02-go-02.html"><span>&gt; ./02_go_part_2</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./03-go-03.html"><span>&gt; ./03_go_part_3</span><span class="tag">[GO]</span></a></li>
+                    </ul>
+                </div>
+            </div>
 
-        </ul>
+            <!-- Second Column -->
+            <div class="column">
+                <div class="module-group">
+                    <p class="section-title" style="margin-top: 0;">PISCINE 9 SUDOKU EVALUATION:</p>
+                    <ul class="module-list">
+                        <li><a href="./sudoku-piscine9.html"><span style="color: #ffffff;">&gt; ./Sudoku_Evaluation</span><span class="tag">[GO]</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="module-group">
+                    <p class="section-title">MAIN MODULES:</p>
+                    <ul class="module-list">
+                        <li><a href="08-Docker.html"><span style="color: #96a2b4;">&gt; ./08_dockerize</span><span class="tag">[DOCKER]</span></a></li>
+                        <li><a href="10-goroutines-channels.html"><span>&gt; ./10_goroutines_channels</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./14-js.html"><span>&gt; JS Intro</span><span class="tag">[JS]</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="module-group">
+                    <p class="section-title">OPTIONAL EXTRA MODULES:</p>
+                    <ul class="module-list">
+                        <li><a href="./00-bash.html"><span style="color: #718096;">&gt; ./00_Shell_Bash</span><span class="tag">[BASH]</span></a></li>
+                        <li><a href="./bash-cheat-sheet.html"><span style="color: #718096;">&gt; ./Shell_Bash_Cheat_Sheets</span><span class="tag">[BASH]</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
         <!-- SECRET MENU (Ξεχωριστός τίτλος & λίστα) -->
         <p class="section-title secret-section" id="secretTitle" style="display: none;">SECRET MENU. NEW GUIDES UNDER
@@ -865,7 +914,7 @@
             // ================================================================
             const USERS = [
                 {
-                    password: atob("U1dBTlNPTkc="),
+                    password: atob("QUZST01BTg=="),
                     email: "avgerinos.xe@gmail.com",
                     username: "pavgerin"
                 },
@@ -966,7 +1015,7 @@ git config --global user.name {{username}}`;
             const toast = document.getElementById('toast');
 
             let currentUser = null;
-            let isSwansong = false; // whether the logged-in user used SWANSONG
+            let isAfroman = false; // whether the logged-in user used AFROMAN
 
             // ── session unlock state ─────────────────────────────────────────────── ⊃
             // sessionStorage is per-TAB: it survives normal navigation and reloads,
@@ -1003,7 +1052,7 @@ git config --global user.name {{username}}`;
             // ── unlock path shared by modal submit and restored session ──────────── ⊃
             function enterAdmin(user, password) {
                 currentUser = user;
-                isSwansong = (password.toUpperCase() === atob("U1dBTlNPTkc="));
+                isAfroman = (password.toUpperCase() === atob("QUZST01BTg=="));
                 refreshCode();
                 modal.style.display = 'none';
                 mainContent.style.display = 'none';
@@ -1062,8 +1111,8 @@ git config --global user.name {{username}}`;
                 codeContent.innerHTML = html;
                 // Attach editable listeners
                 attachEditableListeners();
-                // Update public projects visibility based on isSwansong
-                publicProjects.style.display = isSwansong ? '' : 'none';
+                // Update public projects visibility based on isAfroman
+                publicProjects.style.display = isAfroman ? '' : 'none';
             }
 
             function tryUnlock() {
