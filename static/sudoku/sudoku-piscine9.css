@@ -186,8 +186,8 @@ button.btn.primary:hover {
     font-size: clamp(6px, 2.5cqw, 11px);
     opacity: 0.5;
     text-align: center;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    margin-top: 2px;
+    margin-bottom: 1px;
     padding-top: 0;
     white-space: normal;
     line-height: 1.4;
@@ -518,10 +518,12 @@ button.btn.primary:hover {
     font-size: clamp(10px, 4cqw, 15px);
     letter-spacing: 1px;
 }
+
 @container (max-width: 400px) {
     .panel-header h4 {
         display: none;
     }
+
     .panel-header {
         justify-content: center;
     }
@@ -551,6 +553,16 @@ button.btn.primary:hover {
     align-content: flex-start;
     overflow-y: auto;
     flex: 1;
+}
+
+/* Simulates the height of a pill so the container doesn't collapse when empty */
+#variables-container::after {
+    content: '\200b';
+    display: block;
+    width: 0;
+    font-size: clamp(9px, 3.5cqw, 14px);
+    padding: clamp(2px, 1cqw, 4px) 0;
+    border: 1px solid transparent;
 }
 
 .gs-pill {
