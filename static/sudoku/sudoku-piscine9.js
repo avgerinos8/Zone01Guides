@@ -106,10 +106,10 @@ func solve(pos int) {
                     yield { line: 9, vars: { pos, count }, activeCell: null, grid };
                     if (pos === 81) {
                         count++;
-                        yield { line: 10, vars: { pos, count }, activeCell: null, grid };
+                        yield { line: 10, vars: { pos, count }, activeCell: null, grid, isSolution: true };
                         yield { line: 11, vars: { pos, count }, activeCell: null, grid };
                         if (count === 1) {
-                            yield { line: 12, vars: { pos, count }, activeCell: null, grid, isSolution: true };
+                            yield { line: 12, vars: { pos, count }, activeCell: null, grid };
                         }
                         yield { line: 14, vars: { pos, count }, activeCell: null, grid };
                         return;
@@ -446,10 +446,10 @@ func solve() bool {
                         }
                     }
                     solutions++;
-                    yield { line: 20, vars: { solutions }, activeCell: null, grid: board };
+                    yield { line: 20, vars: { solutions }, activeCell: null, grid: board, isSolution: true };
                     yield { line: 21, vars: { solutions }, activeCell: null, grid: board };
                     if (solutions === 1) {
-                        yield { line: 22, vars: { solutions }, activeCell: null, grid: board, isSolution: true };
+                        yield { line: 22, vars: { solutions }, activeCell: null, grid: board };
                     }
                 }
                 yield* solve();
@@ -691,9 +691,9 @@ func solve() bool {
 
                     if (r === -1) {
                         solutions++;
-                        yield { line: 4, vars: { solutions, r, c }, activeCell: null, grid: board };
+                        yield { line: 4, vars: { solutions, r, c }, activeCell: null, grid: board, isSolution: true };
                         if (solutions === 1) {
-                            yield { line: 5, vars: { solutions, r, c }, activeCell: null, grid: board, isSolution: true };
+                            yield { line: 5, vars: { solutions, r, c }, activeCell: null, grid: board };
                         }
                         return;
                     }
@@ -806,9 +806,9 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
 
                     if (r === -1) {
                         solutions++;
-                        yield { line: 7, vars: { solutions }, activeCell: null, grid: board };
+                        yield { line: 7, vars: { solutions }, activeCell: null, grid: board, isSolution: true };
                         if (solutions === 1) {
-                            yield { line: 8, vars: { solutions }, activeCell: null, grid: board, isSolution: true };
+                            yield { line: 8, vars: { solutions }, activeCell: null, grid: board };
                         }
                         return;
                     }
@@ -1347,11 +1347,11 @@ func removeFromSolution(r *Node) {
         // Update Depth & Solutions
         const depthIndicator = document.getElementById('depth-indicator');
         if (depthIndicator) {
-            depthIndicator.textContent = `Depth: ${step.depth || 0}`;
+            depthIndicator.textContent = `Depth: ${String(step.depth || 0).padStart(2, '0')}`;
         }
         const solutionsIndicator = document.getElementById('solutions-indicator');
         if (solutionsIndicator) {
-            solutionsIndicator.textContent = `Solutions: ${step.solutionsFound || 0}`;
+            solutionsIndicator.textContent = `Solutions: ${String(step.solutionsFound || 0).padStart(2, '0')}`;
         }
 
         // 1. Update Board
@@ -1796,5 +1796,34 @@ func removeFromSolution(r *Node) {
         inputText.value = '".96.4...1" "1...6...4" "5.481.39." "..795..43" ".3..8...." "4.5.23.18" ".1.63..59" ".59.7.83." "..359...7"';
     }
     updateBoardFromInput();
-    loadAlgorithm();
+
+    function applyHash() {
+        const hash = window.location.hash.substring(1).toLowerCase();
+        if (hash) {
+            let algoKey = hash;
+            // Aliases
+            if (algoKey === 'dlc' || algoKey === 'knuth') algoKey = 'dlx';
+            if (algoKey === 'heuristics') algoKey = 'mrv';
+
+            // Check if the key exists in the select options (by value or text)
+            for (let i = 0; i < algoSelect.options.length; i++) {
+                if (algoSelect.options[i].value === algoKey || algoSelect.options[i].text.toLowerCase().includes(algoKey)) {
+                    if (algoSelect.value !== algoSelect.options[i].value) {
+                        algoSelect.value = algoSelect.options[i].value;
+                        loadAlgorithm();
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    // Check URL hash for algorithm selection on load
+    applyHash();
+    if (!window.location.hash) {
+        loadAlgorithm();
+    }
+
+    // Support changing the hash while on the page
+    window.addEventListener('hashchange', applyHash);
 });
