@@ -883,3 +883,11 @@ body.review-mode-active #btn-reset {
     box-shadow: inset 0 0 0 2px #f0c040, 0 0 24px rgba(240, 192, 64, 0.8);
     color: #fff8dc;
 }
+
+/* Hide panels on short screens */
+@media (max-height: 500px) {
+    .variables-panel,
+    .shortcuts-info {
+        display: none !important;
+    }
+}
