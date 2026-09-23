@@ -43,6 +43,15 @@ const BOCAL_REVIEWS = {
     On the positive side, the grid validation mechanics and the double-loop approach used for scanning row, column, and 3x3 block constraints are classic, textbook implementations. The code is very easy to follow, well-indented, and the logical flow of the recursion is fundamentally sound. With just a slight modification to count solutions instead of returning booleans, this would have been a perfect submission.
     *\/`,
     */
+    'reverse': `/*
+The Reverse solver uses the same backtracking approach as the standard solver, but tries candidate values in reverse order, from 9 down to 1.
+
+It is not intended to be a faster solving method. Its purpose is to provide a second search direction that can be compared with the standard 1 → 9 solver.
+
+When both solvers find the same first solution, this provides a practical way to check whether the puzzle has a unique solution. If they find different solutions, the puzzle has multiple solutions.
+
+This makes the Reverse solver useful as a uniqueness-checking technique rather than as a performance optimization.
+*\/`,
     'mrv': `/*
 This implementation is an educational showcase of the Minimum Remaining Values (MRV) heuristic!
 
