@@ -1211,6 +1211,47 @@ for _, char := range text {
 }</code></pre>
 `);
 
+        addContent(`
+<div class="eyebrow">Pattern 4</div>
+<h1>Guard Clauses: Το Χάος vs Η Τάξη</h1>
+
+<pre><code class="lang-go">func PrintValid(numbers []int) {     // Chaos: nested ifs, hard to follow
+    for _, n := range numbers {
+        if n != 0 {
+            if n > 0 {
+                if n < 100 {
+                    fmt.Println(n)
+                } else {
+                    fmt.Println("rejected: too big")
+                }
+            } else {
+                fmt.Println("rejected: negative")
+            }
+        } else {
+            fmt.Println("rejected: zero")
+        }
+    }
+}</code></pre>
+
+<pre><code class="lang-go">func PrintValid(numbers []int) {     // Organized: early exits, flat and easy to read
+    for _, n := range numbers {
+        if n == 0 {
+            fmt.Println("rejected: zero")
+            continue
+        }
+        if n < 0 {
+            fmt.Println("rejected: negative")
+            continue
+        }
+        if n >= 100 {
+            fmt.Println("rejected: too big")
+            continue
+        }
+        fmt.Println(n)
+    }
+}</code></pre>
+`);
+
         // 5. Loop Control
         addContent(`
 <div class="eyebrow" id="@5-loop-control">Pattern 5</div>
@@ -2017,6 +2058,37 @@ for _, char := range "(hello (world))" {
 }
 
 // Αν το stack δεν είναι άδειο στο τέλος, έχουν μείνει ανοιχτές παρενθέσεις (πιάτα στη στοίβα)!
+return len(stack) == 0</code></pre>
+`);
+
+        addContent(`
+<div class="eyebrow">Pattern 17</div>
+<h1>Παράδειγμα: Πολλαπλές Παρενθέσεις</h1>
+<p class="lede">Τι γίνεται αν έχουμε 3 είδη παρενθέσεων: <code>()</code>, <code>[]</code>, <code>{}</code>; Εδώ το stack μας λύνει τα χέρια! Κάθε φορά που ανοίγουμε μια παρένθεση, τη βάζουμε στο stack. Όταν βρίσκουμε μια παρένθεση κλεισίματος, ελέγχουμε αν ταιριάζει με αυτήν που βρίσκεται στην <em>κορυφή</em> του stack.</p>
+
+<pre><code class="lang-go">stack := []rune{}
+pairs := map[rune]rune{
+    ')': '(',
+    ']': '[',
+    '}': '{',
+}
+
+for _, char := range "{[()]}" {
+    // Αν ο χαρακτήρας είναι κλείσιμο (υπάρχει στα κλειδιά του map)
+    if openParen, isClose := pairs[char]; isClose {
+        // Λάθος: Αν η στοίβα είναι άδεια ή το τελευταίο άνοιγμα δεν ταιριάζει
+        if len(stack) == 0 || stack[len(stack)-1] != openParen {
+            return false
+        }
+        // POP: Ταιριάζουν! Αφαιρούμε το άνοιγμα από τη στοίβα
+        stack = stack[:len(stack)-1]
+    } else {
+        // PUSH: Αν είναι άνοιγμα (ή άλλο σύμβολο), το βάζουμε στη στοίβα
+        stack = append(stack, char)
+    }
+}
+
+// Στο τέλος, αν έχουν κλείσει όλα σωστά, η στοίβα θα είναι άδεια
 return len(stack) == 0</code></pre>
 `);
 
