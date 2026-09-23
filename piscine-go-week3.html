@@ -2112,6 +2112,30 @@ for _, coin := range coins {
 }</code></pre>
 `);
 
+        addContent(`
+<div class="eyebrow">Pattern 18</div>
+<h1>Παράδειγμα: Roman Numbers</h1>
+<p class="lede">Η ίδια άπληστη (greedy) λογική εφαρμόζεται τέλεια στη μετατροπή αριθμών σε λατινικούς (Roman numerals). Ξεκινάμε πάντα από τα μεγαλύτερα σύμβολα (M, CM, κλπ) και αφαιρούμε την αξία τους όσο χωράνε.</p>
+
+<pre><code class="lang-go">// ToRoman converts a number from 1 to 3999 into Roman numerals.
+func ToRoman(n int) string {
+    // The two slices stay aligned: values[i] is written as symbols[i].
+    // Sorted from largest to smallest - greedy depends on that.
+    values := []int{1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1}
+    symbols := []string{"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"}
+
+    result := ""
+
+    for i, value := range values {
+        for n >= value {
+            result += symbols[i] // take this "coin"
+            n -= value           // and subtract what it is worth
+        }
+    }
+    return result
+}</code></pre>
+`);
+
         addQuiz([
             {
                 q: "Αν το array είναι το [2, 5, 1], τι θα περιέχει μετά το τέλος αυτού του αλγορίθμου Two-Pass;",
