@@ -2075,7 +2075,7 @@ pairs := map[rune]rune{
 
 for _, char := range "{[()]}" {
     // Αν ο χαρακτήρας είναι κλείσιμο (υπάρχει στα κλειδιά του map)
-    if openParen, isClose := pairs[char]; isClose {
+    if openParen, ok := pairs[char]; ok {
         // Λάθος: Αν η στοίβα είναι άδεια ή το τελευταίο άνοιγμα δεν ταιριάζει
         if len(stack) == 0 || stack[len(stack)-1] != openParen {
             return false

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3: 18 Programming Patterns - Full Speech</title>
+    <style>
+        @font-face {
+            font-family: 'AldoTheApache';
+            src: url('static/ALDOTHEAPACHE.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        
+        :root {
+            --bg-grad-start: #020617;
+            --bg-grad-end: #0f172a;
+            --text-main: #cbd5e1;
+            --text-heading: #f8fafc;
+            --accent-primary: #38bdf8;
+            --accent-secondary: #818cf8;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --prompt-grad-start: #2563eb;
+            --prompt-grad-end: #4f46e5;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--bg-grad-start) 0%, var(--bg-grad-end) 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 3rem 2rem;
+            line-height: 1.8;
+            font-size: 1.15rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1, h2, .slide-title {
+            font-family: 'AldoTheApache', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--text-heading);
+            margin-top: 0;
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 4rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .slide {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }
+
+        .slide:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .slide-title {
+            color: var(--accent-primary);
+            font-size: 2.5rem;
+            border-bottom: 2px solid rgba(56, 189, 248, 0.2);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slide-title::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            box-shadow: 0 0 10px var(--accent-primary);
+        }
+
+        .speech-text {
+            color: var(--text-main);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .speech-text p {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .speech-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .mobile-ref {
+            display: inline-block;
+            background: rgba(129, 140, 248, 0.1);
+            border-left: 3px solid var(--accent-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: 1rem;
+            font-style: italic;
+            color: #e2e8f0;
+        }
+
+        .vscode-prompt {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--prompt-grad-start), var(--prompt-grad-end));
+            color: white;
+            padding: 1.2rem;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-top: 2.5rem;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .vscode-prompt code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+
+        strong {
+            color: var(--text-heading);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Programming Patterns</h1>
+        <div class="subtitle">Masterclass | Πλήρες Κείμενο Παρουσίασης (~60 Λεπτά)</div>
+
+        <!-- Εισαγωγή -->
+        <div class="slide">
+            <h2 class="slide-title">ΕΙΣΑΓΩΓΗ</h2>
+            <div class="speech-text">
+                <p>"Καλησπέρα σε όλους! Καλώς ήρθατε στο σημερινό μάθημα, ίσως το πιο σημαντικό της εβδομάδας, ίσως και ολόκληρου του Piscine. Σήμερα δεν θα μιλήσουμε απλά για το πώς γράφουμε κώδικα, ούτε για συντακτικούς κανόνες της Go. Σήμερα θα μιλήσουμε για <strong>Patterns</strong>. Γιατί;"</p>
+                <p>"Επειδή ο προγραμματισμός δεν είναι η απομνημόνευση εντολών. Είναι η ικανότητα να βλέπεις ένα νέο, άγνωστο πρόβλημα και να λες: 'Α, αυτό μου θυμίζει εκείνο το μοτίβο που έχω ξαναδεί'. Τα 18 patterns που θα αναλύσουμε σήμερα είναι τα δομικά στοιχεία σχεδόν κάθε αλγορίθμου που θα γράψετε ποτέ. Αν τα κατανοήσετε, η επίλυση ασκήσεων δεν θα μοιάζει πια με χαοτικό γράψιμο κώδικα, αλλά με συναρμολόγηση από Lego. Πάμε να ξεκινήσουμε με το πρώτο και ίσως το πιο θεμελιώδες."</p>
+            </div>
+        </div>
+
+        <!-- Pattern 1 -->
+        <div class="slide">
+            <h2 class="slide-title">1. The Accumulator (Result Variable)</h2>
+            <div class="speech-text">
+                <p>"Το πρώτο pattern είναι ο Συσσωρευτής ή αλλιώς Accumulator. Σκεφτείτε το σαν έναν κουμπαρά. Ξεκινάει άδειος ή με μια αρχική τιμή, και σε κάθε βήμα μιας λούπας, προσθέτουμε κάτι μέσα του. Για παράδειγμα, αν θέλουμε να βρούμε το παραγοντικό ενός αριθμού, π.χ. του 5, αρχικοποιούμε το αποτέλεσμα στο 1, και στο loop πολλαπλασιάζουμε."</p>
+                <p>"Το ίδιο ακριβώς pattern χρησιμοποιούμε και όταν θέλουμε να ενώσουμε πολλά strings μαζί με κόμμα, ή ακόμα και όταν θέλουμε να αντιστρέψουμε μια λέξη βάζοντας τον νέο χαρακτήρα μπροστά."</p>
+                <div class="mobile-ref">"Όπως είδαμε στα mobile examples, ακριβώς έτσι φτιάχνουμε και την <code>len()</code> από το μηδέν, διατρέχοντας τους χαρακτήρες και αυξάνοντας απλά έναν μετρητή."</div>
+            </div>
+            <div class="vscode-prompt">🖥️ VS Code: Δείξε γρήγορα την αντιστροφή string: <code>reversed = string(char) + reversed</code></div>
+        </div>
+
+        <!-- Pattern 2 -->
+        <div class="slide">
+            <h2 class="slide-title">2. Min/Max Tracking</h2>
+            <div class="speech-text">
+                <p>"Προχωράμε στο Min/Max Tracking. Πώς βρίσκεις τον πιο γρήγορο δρομέα ή το πιο ακριβό καλάθι αγορών σε μια λίστα; Υποθέτεις ότι ο πρώτος που βλέπεις είναι και ο καλύτερος. Του δίνεις τον τίτλο του 'πρωταθλητή'. Μετά, αρχίζεις να κοιτάς τους υπόλοιπους έναν-έναν."</p>
+                <p>"Το μυστικό εδώ είναι η σωστή αρχικοποίηση. Ποτέ μην αρχικοποιείτε το 'min' στο 0 αν ψάχνετε το μικρότερο νούμερο, γιατί αν όλοι οι αριθμοί είναι το 100, το 0 θα παραμείνει το ελάχιστο, παρόλο που δεν υπάρχει στη λίστα!"</p>
+                <div class="mobile-ref">"Αυτό ακριβώς θα χρειαστείτε για να βρείτε το 'Καλύτερο Σκορ σε Video Game' από τις ασκήσεις, συγκρίνοντας συνεχώς το νέο σκορ με το HighScore."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 3 -->
+        <div class="slide">
+            <h2 class="slide-title">3. Boolean State Flag</h2>
+            <div class="speech-text">
+                <p>"Το τρίτο pattern είναι ο 'Διακόπτης' ή Boolean State Flag. Φανταστείτε τον σαν ένα λαμπάκι που ανάβει και σβήνει για να θυμόμαστε κάτι. Η μνήμη μας μέσα στο loop. Ας πούμε ότι έχουμε ένα κείμενο γεμάτο διπλά και τριπλά κενά. Φτιάχνουμε έναν διακόπτη <code>inSpace = false</code> και τον ανάβουμε μόλις δούμε κενό, αγνοώντας τα επόμενα."</p>
+                <p>"Άλλο παράδειγμα: Θέλουμε να κάνουμε extract το κείμενο από ένα HTML αρχείο. Ο διακόπτης μας λέει 'είμαι μέσα σε tag' ανάλογα με το αν είδαμε <code>&lt;</code> ή <code>&gt;</code>."</p>
+                <div class="mobile-ref">"Είναι το ίδιο μοτίβο που χρησιμοποιούμε για να ελέγξουμε την 'Ταλάντωση (Ζιγκ-Ζαγκ)' σε μια σειρά αριθμών, εναλλάσσοντας την κατάσταση του διακόπτη."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 4 -->
+        <div class="slide">
+            <h2 class="slide-title">4. Early Exit (Guard Clauses)</h2>
+            <div class="speech-text">
+                <p>"Περνάμε στο Pattern 4, το Early Exit. Αυτό το pattern δεν αφορά μόνο το τι κάνει ο κώδικας, αλλά το πόσο καθαρός και όμορφος είναι. Οι αρχάριοι προγραμματιστές τείνουν να βάζουν if μέσα σε if. Το Early Exit λέει: Έλεγξε τα λάθη πρώτα και πέτα τα έξω!"</p>
+                <p>"Αν ελέγχεις ένα χρώμα HEX, μην πεις 'αν το μήκος είναι 7, τότε...'. Πες: 'Αν το μήκος ΔΕΝ είναι 7, return false αμέσως'. Έτσι διώχνεις τα άκυρα δεδομένα και ο κώδικας μένει flat."</p>
+                <div class="mobile-ref">"Στα παραδείγματά μας, δείτε την 'Αναγνώριση Δίσεκτου Έτους', όπου αντί για πολύπλοκα nested ifs, χρησιμοποιούμε 3 απλά guard clauses διαδοχικά."</div>
+            </div>
+            <div class="vscode-prompt">🖥️ VS Code: Δείξε ένα παράδειγμα με βαθιά nested ifs και μετά κάντο refactor σε Guard Clauses.</div>
+        </div>
+
+        <!-- Pattern 5 -->
+        <div class="slide">
+            <h2 class="slide-title">5. Loop Control (Break / Continue)</h2>
+            <div class="speech-text">
+                <p>"Pattern 5. Ο έλεγχος της ροής ενός loop. Η λούπα δεν είναι υποχρεωμένη να τρέξει μέχρι το τέλος. Το <strong>Continue</strong> σημαίνει 'αγνόησε την τρέχουσα επανάληψη', ιδανικό για να αγνοήσετε τα <code>.tmp</code> αρχεία διαβάζοντας έναν φάκελο."</p>
+                <p>"Το <strong>Break</strong> σημαίνει 'σταμάτα τα πάντα και βγες έξω'. Το βλέπουμε όταν ψάχνουμε ένα error σε JSON: μόλις βρούμε το πρώτο λάθος, δεν υπάρχει λόγος να συνεχίσουμε, κάνουμε break."</p>
+                <div class="mobile-ref">"Ένα κλασικό παράδειγμα είναι η 'Ανάγνωση μέχρι το EOF', όπου απλά γράφουμε ένα άπειρο for loop και κάνουμε break μόλις ο χρήστης γράψει 'EXIT'."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 6 -->
+        <div class="slide">
+            <h2 class="slide-title">6. Universal Check</h2>
+            <div class="speech-text">
+                <p>"To Universal Check μας βοηθάει να απαντήσουμε αν ΟΛΑ τα στοιχεία πληρούν μια συνθήκη. Θέλετε να ελέγξετε αν το string '12345' είναι μόνο αριθμοί; Εφαρμόζετε τη λογική της διάψευσης (falsification). Αν βρείτε έστω και ΕΝΑΝ μη-αριθμό, return false αμέσως."</p>
+                <p>"Αν τελειώσει το loop και δεν επιστρέψατε false, τότε σίγουρα είναι όλα νούμερα. Το ίδιο ισχύει για να ελέγξουμε αν ένα array είναι ταξινομημένο."</p>
+                <div class="mobile-ref">"Αυτό το μοτίβο κάνουμε (αλλά ανάποδα) στον 'Έλεγχο Ισχυρού Password'. Ψάχνουμε αν υπάρχει έστω και ΕΝΑ κεφαλαίο, μικρό ή αριθμός."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 7 -->
+        <div class="slide">
+            <h2 class="slide-title">7. Previous Value (Deduplication)</h2>
+            <div class="speech-text">
+                <p>"Το Pattern 7, η μνήμη του 'προηγούμενου'. Πολλές φορές, πρέπει να ξέρουμε τι συνέβη στο αμέσως προηγούμενο βήμα. Αν έχουμε ένα ταξινομημένο array με διπλότυπα [1, 1, 2, 3, 3], πώς τα τυπώνουμε μια φορά; Κρατάμε σε μια μεταβλητή την 'προηγούμενη' τιμή."</p>
+                <p>"Αν ο τρέχων αριθμός είναι ίδιος με τον προηγούμενο, τον αγνοούμε! Το ίδιο κάνουμε αν ψάχνουμε μια 'κορυφή' σε ένα γράφημα, ελέγχοντας το `i-1` και το `i+1`."</p>
+                <div class="mobile-ref">"Σκεφτείτε την άσκηση 'Συμπίεση Διαστημάτων', όπου αντί να τυπώσουμε 10 φορές 'SUCCESS', μετράμε τις συνεχόμενες ίδιες τιμές συγκρίνοντας με το prev."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 8 -->
+        <div class="slide">
+            <h2 class="slide-title">8. Two Pointers</h2>
+            <div class="speech-text">
+                <p>"Πάμε στα Two Pointers. Αντί να διατρέχουμε ένα array μόνο από αριστερά, χρησιμοποιούμε δύο 'δείκτες'. Το κλασικό παράδειγμα: Παλίνδρομο. Βάζουμε έναν δείκτη στην αρχή και έναν στο τέλος, ελέγχουμε αν ταιριάζουν τα γράμματα και τους φέρνουμε προς τη μέση."</p>
+                <p>"Εδώ ανήκει και η τεχνική της χελώνας και του λαγού (Tortoise and Hare) για την εύρεση κύκλων, με τον ένα δείκτη να πηγαίνει πιο γρήγορα."</p>
+                <div class="mobile-ref">"Όπως ακριβώς στο παράδειγμα 'Διαχωρισμός Θετικών-Αρνητικών', όπου ο αριστερός δείκτης ψάχνει θετικό, ο δεξιός αρνητικό, και κάνουμε in-place swap."</div>
+            </div>
+            <div class="vscode-prompt">🖥️ VS Code: Υλοποίησε το Palindrome checker. Εστίασε στο condition <code>start &lt; end</code>.</div>
+        </div>
+
+        <!-- Pattern 9 -->
+        <div class="slide">
+            <h2 class="slide-title">9. Sliding Window</h2>
+            <div class="speech-text">
+                <p>"Το Sliding Window (Συρόμενο Παράθυρο) είναι το επόμενο level. Φανταστείτε ένα subarray που γλιστράει πάνω στο κεντρικό array. Μπορεί να έχει σταθερό μέγεθος (Fixed) όπως όταν ψάχνουμε τον εβδομαδιαίο μέσο όρο χωρίς να ξαναπροσθέτουμε 7 νούμερα συνεχώς."</p>
+                <p>"Μπορεί να είναι και μεταβλητό (Variable), μεγαλώνοντας το δεξί άκρο μέχρι να πιάσουμε το στόχο μας, και μικραίνοντας το αριστερό για βελτιστοποίηση."</p>
+                <div class="mobile-ref">"Χαρακτηριστικό είναι το 'Longest Substring of 1s', όπου το δεξί άκρο μεγαλώνει το παράθυρο καταπίνοντας μηδενικά, και το αριστερό το μικραίνει όταν εξαντληθεί το όριο K."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 10 -->
+        <div class="slide">
+            <h2 class="slide-title">10. Map Fast Lookup</h2>
+            <div class="speech-text">
+                <p>"Αφήνουμε τα arrays και πιάνουμε τα Maps. Το Pattern 10, Map Fast Lookup, είναι η απάντηση όταν η αναζήτηση με for loop είναι αργή. Αν έχετε 1 εκατομμύριο banned IPs, ένα for loop για κάθε χρήστη θα ρίξει τον server."</p>
+                <p>"Το Map λύνει το πρόβλημα. Ρωτάμε <code>if bannedIPs[ip]</code> και μας απαντάει ακαριαία (O(1)). Το ίδιο κάνουμε αν θέλουμε να βρούμε κοινά στοιχεία (Intersection) μεταξύ δύο τεράστιων arrays."</p>
+                <div class="mobile-ref">"Όπως ακριβώς στο 'Λεξικό Μετάφρασης', όπου η κάθε λέξη είναι ένα κλειδί στο Map και φέρνει ακαριαία την ελληνική λέξη χωρίς nested loops."</div>
+            </div>
+            <div class="vscode-prompt">🖥️ VS Code: Δείξε το syntax <code>if val, ok := map[key]; ok</code>.</div>
+        </div>
+
+        <!-- Pattern 11 -->
+        <div class="slide">
+            <h2 class="slide-title">11. Target Lookup (Complement Map)</h2>
+            <div class="speech-text">
+                <p>"Το Target Lookup πάει τη λογική του Map ένα βήμα παραπέρα. Αντί να ψάχνουμε αν έχουμε δει έναν συγκεκριμένο αριθμό, ψάχνουμε το συμπλήρωμά του. Στο πρόβλημα Two Sum, αν θέλεις άθροισμα 50 και έχεις 20, ρωτάς το map: 'Έχω δει το 30;'."</p>
+                <p>"Αν ναι, βρήκατε το ζευγάρι! Αν όχι, αποθηκεύετε το 20 στο Map. Αυτή η λογική είναι ίσως το πιο ισχυρό pattern στις συνεντεύξεις των μεγάλων εταιρειών."</p>
+                <div class="mobile-ref">"Θυμηθείτε την άσκηση 'Βρες την Έκπτωση', όπου ρωτάμε το Map αν υπάρχει το συμπλήρωμα `50 - price[i]`, βρίσκοντας τα προϊόντα με ένα μόνο πέρασμα."</div>
+            </div>
+            <div class="vscode-prompt">🖥️ VS Code: Γράψε ζωντανά τη λύση του Two Sum. <code>complement := target - current</code>.</div>
+        </div>
+
+        <!-- Pattern 12 -->
+        <div class="slide">
+            <h2 class="slide-title">12. Frequency Counting</h2>
+            <div class="speech-text">
+                <p>"Πώς μετράμε πόσες φορές εμφανίζεται κάτι; Pattern 12: Καταμέτρηση Συχνοτήτων. Хρησιμοποιούμε ένα Map όπου το κλειδί είναι το στοιχείο που ψάχνουμε και η τιμή είναι ο μετρητής του. Αν έχουμε μια λίστα με ψήφους, γράφουμε <code>votes[name]++</code>."</p>
+                <p>"Με αυτό το pattern μπορούμε να φτιάξουμε ιστογράμματα βαθμολογιών ή να κάνουμε Group Anagrams (βάζοντας τα ταξινομημένα γράμματα της λέξης ως κλειδί)."</p>
+                <div class="mobile-ref">"Στο 'Duplicate IP Detection', μετράμε τις εμφανίσεις κάθε IP σε ένα τεράστιο αρχείο καταγραφής, και μετά τυπώνουμε όσες έχουν value πάνω από 100."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 13 -->
+        <div class="slide">
+            <h2 class="slide-title">13. Two-Pass Algorithm</h2>
+            <div class="speech-text">
+                <p>"Κάποιες φορές, μια φορά δεν είναι αρκετή. Το Two-Pass Algorithm σημαίνει ότι χρειαζόμαστε δύο διαδοχικά for loops. Ένα για προετοιμασία και ένα για εκτέλεση. Στην κανονικοποίηση δεδομένων στην AI, στο πρώτο πέρασμα βρίσκουμε το Min/Max."</p>
+                <p>"Δεν μπορούμε να αλλάξουμε τα νούμερα αν δεν ξέρουμε τα όρια! Μόλις τα βρούμε, κάνουμε ένα δεύτερο πέρασμα και εφαρμόζουμε τον μαθηματικό τύπο."</p>
+                <div class="mobile-ref">"Το βλέπουμε ξεκάθαρα στο 'Move Zeroes to End'. Στο 1ο πέρασμα βάζουμε τους κανονικούς αριθμούς στην αρχή, και στο 2ο γεμίζουμε το υπόλοιπο array με 0."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 14 -->
+        <div class="slide">
+            <h2 class="slide-title">14. Custom Iteration</h2>
+            <div class="speech-text">
+                <p>"Έχουμε μάθει ότι τα for loops κάνουν πάντα `i++`. Αυτό είναι ψέμα. Στο Custom Iteration, εμείς αποφασίζουμε πώς θα προχωρήσει το βήμα. Αν λαμβάνετε δεδομένα Run-Length Encoding ('3A2B'), το loop σας πρέπει να κάνει `i += 2`, διαβάζοντας ανά δύο."</p>
+                <p>"Ή αν θέλετε να πηδήξετε μια λέξη που λογοκρίνετε, κάνετε `i += 5` χωρίς να διαβάσετε τα ενδιάμεσα γράμματα."</p>
+                <div class="mobile-ref">"Στο 'Jumping Game', δεν κάνουμε `i++`, αλλά προσθέτουμε στον δείκτη την ίδια την τιμή του κελιού για να δούμε μέχρι πού μπορούμε να φτάσουμε!"</div>
+            </div>
+        </div>
+
+        <!-- Pattern 15 -->
+        <div class="slide">
+            <h2 class="slide-title">15. Digit Extraction</h2>
+            <div class="speech-text">
+                <p>"Πάμε σε λίγα μαθηματικά. Πώς χειριζόμαστε τα ψηφία του 1234, χωρίς να τον μετατρέψουμε σε string; Με το Modulo 10 και τη Διαίρεση με το 10. Το `% 10` παίρνει το τελευταίο ψηφίο (4), και το `/ 10` το πετάει αφήνοντας το 123."</p>
+                <p>"Έτσι μπορούμε να μετατρέψουμε ένα δυαδικό σε δεκαδικό πολλαπλασιάζοντας με δυνάμεις του 2, ή να αντιστρέψουμε έναν αριθμό σπρώχνοντας τα ψηφία."</p>
+                <div class="mobile-ref">"Στα παραδείγματα, ο 'Harshad Number' λύνεται ακριβώς έτσι: εξάγουμε ένα-ένα τα ψηφία, τα αθροίζουμε και ελέγχουμε αν το άθροισμα διαιρεί τέλεια τον αρχικό αριθμό."</div>
+            </div>
+            <div class="vscode-prompt">🖥️ VS Code: Γράψε τον μαθηματικό τρόπο του παλίνδρομου. <code>reversed = reversed * 10 + (num % 10)</code>.</div>
+        </div>
+
+        <!-- Pattern 16 -->
+        <div class="slide">
+            <h2 class="slide-title">16. Modulo Cycles</h2>
+            <div class="speech-text">
+                <p>"Μιλώντας για Modulo, το Pattern 16 είναι τα Modulo Cycles. Το % (υπόλοιπο) είναι το απόλυτο εργαλείο για να δημιουργούμε 'κύκλους'. Ένας Load Balancer με 5 servers θα στείλει το request 17 στο `17 % 5 = 2`. Χωρίς κανένα IF statement!"</p>
+                <p>"Το ίδιο συμβαίνει στα χρονόμετρα, ή στην αλλαγή κατεύθυνσης σε παιχνίδια: από Δύση (3), αν στρίψεις δεξιά πας στο Βορρά (0) με `(dir + 1) % 4`."</p>
+                <div class="mobile-ref">"Όπως είδαμε στην 'Εύρεση Μήνα', αν προσθέσουμε 15 μήνες στον Οκτώβριο, με χρήση modulo βρίσκουμε αμέσως τον σωστό μήνα προσομοιώνοντας τον κύκλο των 12 μηνών."</div>
+            </div>
+        </div>
+
+        <!-- Pattern 17 -->
+        <div class="slide">
+            <h2 class="slide-title">17. Stack (LIFO)</h2>
+            <div class="speech-text">
+                <p>"Πλησιάζοντας στο τέλος, Pattern 17: Η Στοίβα (Stack). LIFO - Last In, First Out. Οι πράξεις είναι Push και Pop. Πού το χρησιμοποιούμε; Παντού όπου υπάρχει 'Ιστορικό'. Το κουμπί 'Back' του Browser είναι μια Στοίβα."</p>
+                <p>"Ακόμα και ο HTML Linter χρησιμοποιεί στοίβα για να δει αν τα κλεισίματα (Pop) ταιριάζουν με το τελευταίο άνοιγμα (Push)."</p>
+                <div class="mobile-ref">"Χαρακτηριστικό είναι ο 'Επόμενος Μεγαλύτερος Αριθμός'. Το Stack κρατάει στοιχεία που 'περιμένουν', και μόλις έρθει ένας μεγαλύτερος, κάνει Pop όλους τους μικρότερους!"</div>
+            </div>
+            <div class="vscode-prompt">🖥️ VS Code: Εξήγησε το Slice σαν Stack: <code>append(stack, val)</code> &amp; <code>stack[:len(stack)-1]</code>.</div>
+        </div>
+
+        <!-- Pattern 18 -->
+        <div class="slide">
+            <h2 class="slide-title">18. Greedy Algorithms</h2>
+            <div class="speech-text">
+                <p>"Και κλείνουμε με τους Άπληστους Αλγορίθμους (Greedy). Ένας άπληστος αλγόριθμος παίρνει την πιο 'κερδοφόρα' απόφαση ΤΩΡΑ, ελπίζοντας ότι αυτό θα οδηγήσει στο καλύτερο συνολικό αποτέλεσμα."</p>
+                <p>"Συνήθως ξεκινάμε με Ταξινόμηση. Αν βυθίζεται ένα πλοίο, ταξινομούμε τον κόσμο ανά βάρος. 'Άπληστα', προσπαθούμε να βάλουμε τον πιο βαρύ άνθρωπο με τον πιο ελαφρύ. Θέλει προσοχή, δεν δουλεύει σε όλα τα προβλήματα (π.χ. Knapsack)."</p>
+                <div class="mobile-ref">"Όπως στο 'Μοίρασμα Cookies στα Παιδιά'. Ταξινομούμε παιδιά και μπισκότα, και δίνουμε πάντα στο πιο 'απαιτητικό' παιδί το μικρότερο μπισκότο που του κάνει."</div>
+            </div>
+        </div>
+
+        <!-- Κλείσιμο -->
+        <div class="slide" style="border: 2px solid var(--accent-primary); background: rgba(30, 41, 59, 0.8);">
+            <h2 class="slide-title" style="justify-content: center; text-align: center; border: none; margin-bottom: 0;">ΕΠΙΛΟΓΟΣ</h2>
+            <div class="speech-text" style="text-align: center; margin-top: 1.5rem;">
+                <p>"Αυτά ήταν τα 18 βασικά Patterns. Δεν χρειάζεται να τα αποστηθίσετε. Το ζητούμενο είναι όταν διαβάζετε την εκφώνηση μιας άσκησης να λέτε: 'Α, εδώ ψάχνω συχνότητες, άρα Frequency Counting!'."</p>
+                <p style="font-weight: 500; color: var(--accent-primary);">"Η πραγματική εξάσκηση ξεκινάει τώρα. Καλή συνέχεια και καλές γραμμές κώδικα σε όλους!"</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
