@@ -280,6 +280,7 @@ button.btn.primary:hover {
 .sudoku-main {
     display: flex;
     flex: 1;
+    position: relative;
     overflow: hidden;
     /* panes scroll internally if needed */
     padding: 20px;
@@ -606,12 +607,48 @@ button.btn.primary:hover {
     /* Enables container queries for font sizing based on height */
 }
 
+/* ZOOM CONTROLS */
+.code-zoom-controls {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    display: flex;
+    gap: 5px;
+    background: var(--bg-card);
+    padding: 5px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.code-zoom-controls button {
+    background: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.code-zoom-controls button:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
 #code-display {
     display: block;
     line-height: 1.4;
     font-family: var(--font-mono, monospace);
     /* Size based on container height to fit long codes like ag******* */
-    font-size: min(15px, 2.3cqh);
+    --code-zoom: 1;
+    font-size: calc(min(15px, 2.3cqh) * var(--code-zoom));
     color: var(--text-main);
     counter-reset: line;
 }
