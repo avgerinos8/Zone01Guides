@@ -547,17 +547,6 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
       }
     ]);
 
-    addFillBlank([
-      {
-        code: "curr := l.Head\nfor curr.__1__ != nil {\n    curr = curr.__2__\n}",
-        blanks: [
-          { id: "1", answer: "Next" },
-          { id: "2", answer: "Next" }
-        ],
-        explain: "Ελέγχουμε αν υπάρχει επόμενος κόμβος. Όσο υπάρχει (Next != nil), προχωράμε αντικαθιστώντας τον εαυτό μας με τον επόμενο."
-      }
-    ]);
-
     addMatching([
       [
         { term: "curr.Next == nil", def: "Είμαστε στον τελευταίο κόμβο" },
