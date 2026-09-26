@@ -856,6 +856,12 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
 <p class="lede">Για να κρατήσουμε τον κανόνα, όταν προσθέτουμε έναν κόμβο ξεκινάμε από τη ρίζα. Κάνουμε μια ερώτηση: Είναι μικρότερο ή μεγαλύτερο;</p>
 
 <div id="viz-bst"></div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@btree-insert-code">Ενότητα 2 / 2 &mdash; Binary Search Trees</div>
+<h1>Ο Κώδικας Προσθήκης</h1>
+<p class="lede">Ας δούμε πώς μεταφράζεται η προηγούμενη διαδικασία σε κώδικα Go.</p>
 
 <pre><code class="lang-go">func BTreeInsertData(root *TreeNode, data string) *TreeNode {
 	if root == nil {

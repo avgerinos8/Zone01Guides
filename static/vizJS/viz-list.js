@@ -10,7 +10,7 @@ function createListViz(root) {
   root.innerHTML = `
     <style>
       .viz-ll-container {
-        padding: 2rem; background: #09090b; border-radius: 16px; 
+        padding: 1.5rem; background: #09090b; border-radius: 16px; 
         border: 1px solid #27272a; display: flex; flex-direction: column; gap: 2rem;
         box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
       }
@@ -65,13 +65,19 @@ function createListViz(root) {
         background: var(--correct, #34d399); color: #000; padding: 4px 10px; border-radius: 20px;
         font-size: 0.8rem; font-weight: bold; font-family: monospace;
       }
+      
+      .vz-btn { background: #18181b; border: 2px solid #3f3f46; color: #fff; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 1.1rem; }
+      .vz-btn:hover:not(:disabled) { background: #27272a; border-color: #52525b; }
+      .vz-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-glow-accent { border-color: var(--accent) !important; box-shadow: 0 0 15px var(--accent) !important; animation: pulse-accent 1.5s infinite; }
+      @keyframes pulse-accent { 0% { box-shadow: 0 0 10px rgba(96, 165, 250, 0.2); } 50% { box-shadow: 0 0 20px rgba(96, 165, 250, 0.6); } 100% { box-shadow: 0 0 10px rgba(96, 165, 250, 0.2); } }
     </style>
     <div class="viz-ll-container">
       <div id="list-nodes" class="viz-ll-nodes"></div>
       <div class="vz-controls" style="display: flex; justify-content: space-between; align-items: center;">
-        <button id="list-prev" class="reset-quiz-btn" disabled>Προηγούμενο</button>
+        <button id="list-prev" class="vz-btn" disabled>Προηγούμενο</button>
         <div id="list-note" style="color: #e4e4e7; font-family: system-ui, sans-serif; font-size: 1.1rem; font-weight: 500; flex: 1; text-align: center; margin: 0 1rem;"></div>
-        <button id="list-next" class="reset-quiz-btn">Επόμενο</button>
+        <button id="list-next" class="vz-btn">Επόμενο</button>
       </div>
     </div>
   `;
@@ -120,6 +126,12 @@ function createListViz(root) {
     
     prevBtn.disabled = cur === 0;
     nextBtn.disabled = cur === steps.length - 1;
+    
+    if (cur < steps.length - 1) {
+      nextBtn.classList.add('btn-glow-accent');
+    } else {
+      nextBtn.classList.remove('btn-glow-accent');
+    }
   }
 
   prevBtn.onclick = () => { if (cur > 0) { cur--; render(); } };
