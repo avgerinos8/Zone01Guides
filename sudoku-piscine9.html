@@ -29,6 +29,7 @@
         <div class="sudoku-toolbar">
             <div class="controls-row">
                 <select id="algorithm-select">
+                    <option value="naive">Naive (1 to 9)</option>
                     <option value="ag">ag*******</option>
                     <option value="mampmn">ma****, mp********, mn******</option>
                     <option value="nicgkx">ni******, cg*******, kx****</option>
@@ -82,6 +83,13 @@
                     <!-- Code injected dynamically with line spans -->
                 </code>
             </pre>
+
+            <!-- ZOOM CONTROLS -->
+            <div class="code-zoom-controls">
+                <button id="btn-zoom-in" title="Zoom In">+</button>
+                <button id="btn-zoom-out" title="Zoom Out">-</button>
+                <button id="btn-zoom-reset" title="Reset Zoom">&#8635;</button>
+            </div>
         </section>
 
         <!-- BOTTOM: Playback controls -->

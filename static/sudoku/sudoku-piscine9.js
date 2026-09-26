@@ -19,6 +19,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRandom = document.getElementById('btn-random');
     const speedSlider = document.getElementById('speed-slider');
 
+    // Zoom Controls
+    const btnZoomIn = document.getElementById('btn-zoom-in');
+    const btnZoomOut = document.getElementById('btn-zoom-out');
+    const btnZoomReset = document.getElementById('btn-zoom-reset');
+
+    let currentCodeZoom = 1;
+
+    if (btnZoomIn && btnZoomOut && btnZoomReset) {
+        btnZoomIn.addEventListener('click', () => {
+            currentCodeZoom += 0.1;
+            codeDisplay.style.setProperty('--code-zoom', currentCodeZoom);
+        });
+        
+        btnZoomOut.addEventListener('click', () => {
+            currentCodeZoom = Math.max(0.4, currentCodeZoom - 0.1);
+            codeDisplay.style.setProperty('--code-zoom', currentCodeZoom);
+        });
+        
+        btnZoomReset.addEventListener('click', () => {
+            currentCodeZoom = 1;
+            codeDisplay.style.setProperty('--code-zoom', currentCodeZoom);
+        });
+    }
+
     let cells = [];
     let initialBoard = Array(9).fill(0).map(() => Array(9).fill(0));
 
@@ -48,6 +72,101 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ALGORITHMS DATA & GENERATORS ---
 
     const ALGORITHMS = {
+        'naive': {
+            code: `func Solve(grid *[9][9]int, row, col int, count *int) {
+	if row == 9 { // Found a solution
+		*count++
+		return
+	}
+
+	nextRow, nextCol := row, col+1 // Calculate next position
+	if nextCol == 9 {              // Move to next row if at end of column
+		nextRow, nextCol = row+1, 0
+	}
+
+	if grid[row][col] != 0 { // Skip filled cells
+		Solve(grid, nextRow, nextCol, count)
+		return
+	}
+
+	for val := 1; val <= 9; val++ { // Try 1 to 9 (Naive)
+		if isValid(grid, row, col, val) {
+			grid[row][col] = val
+			Solve(grid, nextRow, nextCol, count)
+			if *count >= <span class="editable-count" data-key="targetCount" contenteditable="true" spellcheck="false">2</span> {
+				return
+			}
+			grid[row][col] = 0 // Backtrack
+		}
+	}
+}`,
+            generator: function* (boardStart) {
+                let count = 0;
+                let board = JSON.parse(JSON.stringify(boardStart));
+                const targetCount = getTargetSolutions();
+
+                function isValid(r, c, v) {
+                    for (let i = 0; i < 9; i++) {
+                        if (board[r][i] === v || board[i][c] === v) return false;
+                    }
+                    let br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            if (board[br + i][bc + j] === v) return false;
+                        }
+                    }
+                    return true;
+                }
+
+                function* solve(row, col) {
+                    yield { line: 1, vars: { row, col, count }, activeCell: row < 9 ? [row, col] : null, grid: board };
+                    if (row === 9) {
+                        count++;
+                        yield { line: 3, vars: { row, col, count }, activeCell: null, grid: board, isSolution: true };
+                        yield { line: 4, vars: { row, col, count }, activeCell: null, grid: board };
+                        return;
+                    }
+
+                    let nextRow = row, nextCol = col + 1;
+                    yield { line: 7, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                    if (nextCol === 9) {
+                        nextRow = row + 1;
+                        nextCol = 0;
+                        yield { line: 9, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                    }
+
+                    yield { line: 12, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                    if (board[row][col] !== 0) {
+                        yield { line: 13, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                        yield* solve(nextRow, nextCol);
+                        yield { line: 14, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                        return;
+                    }
+
+                    yield { line: 17, vars: { row, col, count }, activeCell: [row, col], grid: board };
+                    for (let val = 1; val <= 9; val++) {
+                        yield { line: 18, vars: { row, col, val, count }, activeCell: [row, col], testingValue: val, grid: board };
+                        if (isValid(row, col, val)) {
+                            board[row][col] = val;
+                            yield { line: 19, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
+                            
+                            yield { line: 20, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
+                            yield* solve(nextRow, nextCol);
+                            
+                            yield { line: 21, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
+                            if (count >= targetCount) {
+                                yield { line: 22, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
+                                return;
+                            }
+                            
+                            board[row][col] = 0;
+                            yield { line: 24, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
+                        }
+                    }
+                }
+                yield* solve(0, 0);
+            }
+        },
         'ag': {
             code: `var count int
 var grid [9][9]byte
@@ -841,26 +960,30 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
             }
         },
         'reverse': {
-            code: `func Solve(grid *[9][9]int, pos int, count *int) {
-	if pos == 81 {
+            code: `func Solve(grid *[9][9]int, row, col int, count *int) {
+	if row == 9 { // Found a solution
 		*count++
 		return
 	}
 
-	r, c := pos/9, pos%9
-	if grid[r][c] != 0 {
-		Solve(grid, pos+1, count)
+	nextRow, nextCol := row, col+1 // Calculate next position
+	if nextCol == 9 {              // Move to next row if at end of column
+		nextRow, nextCol = row+1, 0
+	}
+
+	if grid[row][col] != 0 { // Skip filled cells
+		Solve(grid, nextRow, nextCol, count)
 		return
 	}
 
-	for val := 9; val >= 1; val-- {
-		if isValid(grid, r, c, val) {
-			grid[r][c] = val
-			Solve(grid, pos+1, count)
-			if *count >= <span class="editable-count" data-key="targetCount" contenteditable="true" spellcheck="false">50</span> {
+	for val := 9; val >= 1; val-- { // Try 9 down to 1 (Reverse)
+		if isValid(grid, row, col, val) {
+			grid[row][col] = val
+			Solve(grid, nextRow, nextCol, count)
+			if *count >= <span class="editable-count" data-key="targetCount" contenteditable="true" spellcheck="false">2</span> {
 				return
 			}
-			grid[r][c] = 0
+			grid[row][col] = 0 // Backtrack
 		}
 	}
 }`,
@@ -882,48 +1005,53 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
                     return true;
                 }
 
-                function* solve(pos) {
-                    yield { line: 1, vars: { pos, count }, activeCell: null, grid: board };
-                    if (pos === 81) {
+                function* solve(row, col) {
+                    yield { line: 1, vars: { row, col, count }, activeCell: row < 9 ? [row, col] : null, grid: board };
+                    if (row === 9) {
                         count++;
-                        yield { line: 3, vars: { pos, count }, activeCell: null, grid: board, isSolution: true };
-                        yield { line: 4, vars: { pos, count }, activeCell: null, grid: board };
-                        return;
-                    }
-                    let r = Math.floor(pos / 9);
-                    let c = pos % 9;
-                    yield { line: 7, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
-                    
-                    yield { line: 8, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
-                    if (board[r][c] !== 0) {
-                        yield { line: 9, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
-                        yield* solve(pos + 1);
-                        yield { line: 10, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
+                        yield { line: 3, vars: { row, col, count }, activeCell: null, grid: board, isSolution: true };
+                        yield { line: 4, vars: { row, col, count }, activeCell: null, grid: board };
                         return;
                     }
 
-                    yield { line: 13, vars: { pos, r, c, count }, activeCell: [r, c], grid: board };
+                    let nextRow = row, nextCol = col + 1;
+                    yield { line: 7, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                    if (nextCol === 9) {
+                        nextRow = row + 1;
+                        nextCol = 0;
+                        yield { line: 9, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                    }
+
+                    yield { line: 12, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                    if (board[row][col] !== 0) {
+                        yield { line: 13, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                        yield* solve(nextRow, nextCol);
+                        yield { line: 14, vars: { row, col, nextRow, nextCol, count }, activeCell: [row, col], grid: board };
+                        return;
+                    }
+
+                    yield { line: 17, vars: { row, col, count }, activeCell: [row, col], grid: board };
                     for (let val = 9; val >= 1; val--) {
-                        yield { line: 14, vars: { pos, r, c, val, count }, activeCell: [r, c], testingValue: val, grid: board };
-                        if (isValid(r, c, val)) {
-                            board[r][c] = val;
-                            yield { line: 15, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                        yield { line: 18, vars: { row, col, val, count }, activeCell: [row, col], testingValue: val, grid: board };
+                        if (isValid(row, col, val)) {
+                            board[row][col] = val;
+                            yield { line: 19, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
                             
-                            yield { line: 16, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
-                            yield* solve(pos + 1);
+                            yield { line: 20, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
+                            yield* solve(nextRow, nextCol);
                             
-                            yield { line: 17, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                            yield { line: 21, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
                             if (count >= targetCount) {
-                                yield { line: 18, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                                yield { line: 22, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
                                 return;
                             }
                             
-                            board[r][c] = 0;
-                            yield { line: 20, vars: { pos, r, c, val, count }, activeCell: [r, c], grid: board };
+                            board[row][col] = 0;
+                            yield { line: 24, vars: { row, col, val, count }, activeCell: [row, col], grid: board };
                         }
                     }
                 }
-                yield* solve(0);
+                yield* solve(0, 0);
             }
         }
     };
@@ -1404,8 +1532,8 @@ func removeFromSolution(r *Node) {
                     if (step.grid[r][c] !== 0) currentFilled++;
                 }
             }
-            let calculatedDepth = currentFilled - initialFilled;
-            if (step.testingValue !== undefined) calculatedDepth++; // testing implies +1 depth
+            let calculatedDepth = (currentFilled - initialFilled) + 1;
+            // testingValue no longer bumps depth artificially, depth increases when a cell is actually filled
 
             if (step.vars) {
                 Object.keys(step.vars).forEach(k => cumulativeVars.add(k));
@@ -1420,7 +1548,7 @@ func removeFromSolution(r *Node) {
                 seenVars: Array.from(cumulativeVars)
             });
             i++;
-            if (i > 100000) break; // Safety limit
+            if (i > 3000000) break; // Increased safety limit for huge backtracks
         }
         console.log(`Generated ${steps.length} steps.`);
     }

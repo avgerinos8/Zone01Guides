@@ -1,4 +1,11 @@
 const BOCAL_REVIEWS = {
+    'naive': `/*
+The Naive solver implements a classic, straightforward backtracking approach.
+
+Instead of computing the position via divisions and modulos from 0-80, it tracks its progress cleanly using discrete row and column coordinates. It advances column by column, row by row, skipping pre-filled cells and trying candidate values from 1 to 9.
+
+Like the standard 1 → 9 approach, this algorithm is guaranteed to find a solution if one exists, but without any optimizations to its pathfinding.
+*/`,
     'ag': `// Bocal Review for Sudoku Solution: ag*******
 /*
 This implementation demonstrates a highly structured and effective backtracking approach. 
