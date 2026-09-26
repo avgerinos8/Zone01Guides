@@ -1,4 +1,4 @@
-// avrabac, efourou, gpanouso
+// av*****, ef*****, gp******
 package main
 
 func solve() bool {

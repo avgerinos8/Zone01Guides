@@ -1,4 +1,4 @@
-// gangelat, spapachris, dkatsiko
+// ga******, sp********, dk******
 
 package sudoku
 

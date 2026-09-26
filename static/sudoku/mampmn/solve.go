@@ -1,4 +1,4 @@
-// magora, mpapakonst, mntampan
+// ma****, mp********, mn******
 
 package sudoku
 
