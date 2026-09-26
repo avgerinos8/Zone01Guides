@@ -1,0 +1,1642 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>01-edu JS Piscine — subjects</title>
+<style>
+:root{
+  --bg:#0f1115; --fg:#e6e6e6; --dim:#8b929e; --acc:#7aa2f7; --acc-soft:#7aa2f71a;
+  --card:#141821; --line:#232936; --code:#1b202a; --nav-w:290px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);
+  font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased}
+
+/* ── sidebar ─────────────────────────────────────────────────────────────── */
+nav{position:fixed;top:0;left:0;width:var(--nav-w);height:100dvh;
+  display:flex;flex-direction:column;background:var(--card);
+  border-right:1px solid var(--line);z-index:40}
+.brand{padding:1.1rem 1.1rem .7rem;border-bottom:1px solid var(--line)}
+.brand b{display:block;font-size:.95rem;letter-spacing:.04em}
+.brand span{font-size:.72rem;color:var(--dim)}
+.search{margin:.7rem 1.1rem 0;padding:.5rem .7rem;width:calc(100% - 2.2rem);
+  background:#0e121a;border:1px solid var(--line);border-radius:8px;
+  color:var(--fg);font:inherit;font-size:.85rem;outline:none}
+.search:focus{border-color:var(--acc)}
+.toc{flex:1;overflow-y:auto;padding:.6rem 1.1rem 2rem;scrollbar-width:thin;
+  scrollbar-color:#2d3444 transparent}
+.toc::-webkit-scrollbar{width:8px}
+.toc::-webkit-scrollbar-thumb{background:#2d3444;border-radius:99px}
+.toc::-webkit-scrollbar-thumb:hover{background:#3b4356}
+.toc h3{margin:1.1rem 0 .35rem;font-size:.68rem;letter-spacing:.16em;
+  color:var(--dim);text-transform:uppercase}
+.toc a{display:block;padding:.26rem .55rem;margin:1px 0;border-radius:6px;
+  color:#c8cdd6;text-decoration:none;font-size:.875rem;
+  border-left:2px solid transparent;transition:background .12s,color .12s}
+.toc a:hover{background:#1d2330;color:#fff}
+.toc a.active{background:var(--acc-soft);color:var(--acc);
+  border-left-color:var(--acc);font-weight:600}
+.toc a.missing{color:#6f4a4a}
+.toc a[hidden]{display:none}
+
+/* ── content ─────────────────────────────────────────────────────────────── */
+main{margin-left:var(--nav-w);padding:2.6rem 3rem 6rem;max-width:900px}
+.crumb{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+article h2{margin:.2rem 0 1.4rem;font-size:1.9rem;color:var(--acc);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--code);padding:1rem;border-radius:10px;overflow-x:auto;
+  border:1px solid var(--line);font-size:.88rem}
+code{background:var(--code);padding:.15em .4em;border-radius:5px;font-size:.9em}
+pre code{background:none;padding:0;border:0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:.45rem .75rem;text-align:left}
+th{background:#1a1f2a}
+blockquote{margin:1rem 0;padding:.4rem 1rem;border-left:3px solid var(--acc);
+  color:#c3c9d3;background:#141922}
+img{max-width:100%}
+a{color:var(--acc)}
+hr{border:0;border-top:1px solid var(--line)}
+.missing{color:#e07a7a}
+
+/* prev / next */
+.pager{display:flex;justify-content:space-between;gap:1rem;margin-top:3rem;
+  padding-top:1.4rem;border-top:1px solid var(--line)}
+.pager button{background:#1a1f2a;border:1px solid var(--line);color:var(--fg);
+  padding:.55rem 1rem;border-radius:8px;font:inherit;font-size:.88rem;cursor:pointer}
+.pager button:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.pager button:disabled{opacity:.35;cursor:default}
+
+/* ── mobile ──────────────────────────────────────────────────────────────── */
+.bar{display:none;position:sticky;top:0;z-index:30;align-items:center;gap:.8rem;
+  padding:.7rem 1rem;background:#141821e6;backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line)}
+.burger{background:none;border:1px solid var(--line);border-radius:8px;
+  color:var(--fg);padding:.35rem .6rem;font-size:1.1rem;line-height:1;cursor:pointer}
+.scrim{display:none;position:fixed;inset:0;background:#000a;z-index:35}
+@media(max-width:820px){
+  .bar{display:flex}
+  nav{transform:translateX(-100%);transition:transform .22s ease;width:80vw;max-width:320px}
+  body.menu-open nav{transform:translateX(0)}
+  body.menu-open .scrim{display:block}
+  main{margin-left:0;padding:1.4rem 1.1rem 5rem}
+  article h2{font-size:1.45rem;word-break:break-word}
+}
+</style></head>
+<body>
+
+<nav id="nav">
+  <div class="brand"><b>01-edu · JS Piscine</b><span>27 exercises</span></div>
+  <input id="q" class="search" type="search" placeholder="filter…" autocomplete="off">
+  <div class="toc" id="toc"><h3>QUEST11</h3>
+<a class='ex' href='#quest11-listpushback'>listpushback</a>
+<a class='ex' href='#quest11-listpushfront'>listpushfront</a>
+<a class='ex' href='#quest11-listsize'>listsize</a>
+<a class='ex' href='#quest11-listlast'>listlast</a>
+<a class='ex' href='#quest11-listclear'>listclear</a>
+<a class='ex' href='#quest11-listat'>listat</a>
+<a class='ex' href='#quest11-listreverse'>listreverse</a>
+<a class='ex' href='#quest11-listforeach'>listforeach</a>
+<a class='ex' href='#quest11-listforeachif'>listforeachif</a>
+<a class='ex' href='#quest11-listfind'>listfind</a>
+<a class='ex' href='#quest11-listremoveif'>listremoveif</a>
+<a class='ex' href='#quest11-listmerge'>listmerge</a>
+<a class='ex' href='#quest11-listsort'>listsort</a>
+<a class='ex' href='#quest11-sortlistinsert'>sortlistinsert</a>
+<a class='ex' href='#quest11-sortedlistmerge'>sortedlistmerge</a>
+<h3>QUEST12</h3>
+<a class='ex' href='#quest12-btreeinsertdata'>btreeinsertdata</a>
+<a class='ex' href='#quest12-btreeapplyinorder'>btreeapplyinorder</a>
+<a class='ex' href='#quest12-btreeapplypostorder'>btreeapplypostorder</a>
+<a class='ex' href='#quest12-btreeapplypreorder'>btreeapplypreorder</a>
+<a class='ex' href='#quest12-btreesearchitem'>btreesearchitem</a>
+<a class='ex' href='#quest12-btreelevelcount'>btreelevelcount</a>
+<a class='ex' href='#quest12-btreeisbinary'>btreeisbinary</a>
+<a class='ex' href='#quest12-btreeapplybylevel'>btreeapplybylevel</a>
+<a class='ex' href='#quest12-btreemax'>btreemax</a>
+<a class='ex' href='#quest12-btreemin'>btreemin</a>
+<a class='ex' href='#quest12-btreetransplant'>btreetransplant</a>
+<a class='ex' href='#quest12-btreetransplant'>btreetransplant</a>
+</div>
+</nav>
+<div class="scrim" id="scrim"></div>
+
+<div class="bar">
+  <button class="burger" id="burger" aria-label="menu">☰</button>
+  <strong id="barTitle" style="font-size:.95rem"></strong>
+</div>
+
+<main id="main">
+<article id='quest11-listpushback' hidden><div class='crumb'>QUEST11</div><h2>listpushback</h2>
+<h2>listpushback</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListPushBack</code> that inserts a new element <code>NodeL</code> at the end of the list <code>l</code> while using the structure <code>List</code>.</p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListPushBack(l *List, data interface{}) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+
+	link := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, &quot;Hello&quot;)
+	piscine.ListPushBack(link, &quot;man&quot;)
+	piscine.ListPushBack(link, &quot;how are you&quot;)
+
+	for link.Head != nil {
+		fmt.Println(link.Head.Data)
+		link.Head = link.Head.Next
+	}
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+Hello
+man
+how are you
+$
+</code></pre>
+</article>
+<article id='quest11-listpushfront' hidden><div class='crumb'>QUEST11</div><h2>listpushfront</h2>
+<h2>listpushfront</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListPushFront</code> that inserts a new element <code>NodeL</code> at the beginning of the list <code>l</code> while using the structure <code>List</code></p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListPushFront(l *List, data interface{}) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func main() {
+
+	link := &amp;piscine.List{}
+
+	piscine.ListPushFront(link, &quot;Hello&quot;)
+	piscine.ListPushFront(link, &quot;man&quot;)
+	piscine.ListPushFront(link, &quot;how are you&quot;)
+
+	it := link.Head
+	for it != nil {
+		fmt.Print(it.Data, &quot; &quot;)
+		it = it.Next
+	}
+	fmt.Println()
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+how are you man Hello
+$
+</code></pre>
+</article>
+<article id='quest11-listsize' hidden><div class='crumb'>QUEST11</div><h2>listsize</h2>
+<h2>listsize</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListSize</code> that returns the number of elements in a linked list <code>l</code>.</p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListSize(l *List) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	link := &amp;piscine.List{}
+
+	piscine.ListPushFront(link, &quot;Hello&quot;)
+	piscine.ListPushFront(link, &quot;2&quot;)
+	piscine.ListPushFront(link, &quot;you&quot;)
+	piscine.ListPushFront(link, &quot;man&quot;)
+
+	fmt.Println(piscine.ListSize(link))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+4
+$
+</code></pre>
+</article>
+<article id='quest11-listlast' hidden><div class='crumb'>QUEST11</div><h2>listlast</h2>
+<h2>listlast</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListLast</code> that returns the <code>Data</code> interface of the last element of a linked list <code>l</code>.</p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListLast(l *List) interface{} {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func main() {
+	link := &amp;piscine.List{}
+	link2 := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, &quot;three&quot;)
+	piscine.ListPushBack(link, 3)
+	piscine.ListPushBack(link, &quot;1&quot;)
+
+	fmt.Println(piscine.ListLast(link))
+	fmt.Println(piscine.ListLast(link2))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1
+&lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest11-listclear' hidden><div class='crumb'>QUEST11</div><h2>listclear</h2>
+<h2>listclear</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListClear</code> that deletes all <code>nodes</code> from a linked list <code>l</code>.</p>
+<ul>
+<li>Tip: assign the list's pointer to <code>nil</code>.</li>
+</ul>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">func ListClear(l *List) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+type List = piscine.List
+type Node = piscine.NodeL
+
+func PrintList(l *List) {
+	link := l.Head
+	for link != nil {
+		fmt.Print(link.Data, &quot; -&gt; &quot;)
+		link = link.Next
+	}
+	fmt.Println(nil)
+}
+
+func main() {
+	link := &amp;List{}
+
+	piscine.ListPushBack(link, &quot;I&quot;)
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, &quot;something&quot;)
+	piscine.ListPushBack(link, 2)
+
+	fmt.Println(&quot;------list------&quot;)
+	PrintList(link)
+	piscine.ListClear(link)
+	fmt.Println(&quot;------updated list------&quot;)
+	PrintList(link)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+------list------
+I -&gt; 1 -&gt; something -&gt; 2 -&gt; &lt;nil&gt;
+------updated list------
+&lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest11-listat' hidden><div class='crumb'>QUEST11</div><h2>listat</h2>
+<h2>listat</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListAt</code> that takes a pointer to the head of the list <code>l</code> and an <code>int pos</code> as parameters. This function should return the pointer to the <code>NodeL</code> in the position <code>pos</code> of the linked list <code>l</code>.</p>
+<ul>
+<li>In case of error the function should return <code>nil</code>.</li>
+</ul>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+
+func ListAt(l *NodeL, pos int) *NodeL{
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	link := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, &quot;hello&quot;)
+	piscine.ListPushBack(link, &quot;how are&quot;)
+	piscine.ListPushBack(link, &quot;you&quot;)
+	piscine.ListPushBack(link, 1)
+
+	fmt.Println(piscine.ListAt(link.Head, 3).Data)
+	fmt.Println(piscine.ListAt(link.Head, 1).Data)
+	fmt.Println(piscine.ListAt(link.Head, 7))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1
+how are
+&lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest11-listreverse' hidden><div class='crumb'>QUEST11</div><h2>listreverse</h2>
+<h2>listreverse</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListReverse</code> that reverses the order of the elements of a given linked list <code>l</code>.</p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListReverse(l *List) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	link := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, 2)
+	piscine.ListPushBack(link, 3)
+	piscine.ListPushBack(link, 4)
+
+	piscine.ListReverse(link)
+
+	it := link.Head
+
+	for it != nil {
+		fmt.Println(it.Data)
+		it = it.Next
+	}
+
+	fmt.Println(&quot;Tail&quot;, link.Tail)
+	fmt.Println(&quot;Head&quot;, link.Head)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+4
+3
+2
+1
+Tail &amp;{1 &lt;nil&gt;}
+Head &amp;{4 0xc42000a140}
+$
+</code></pre>
+</article>
+<article id='quest11-listforeach' hidden><div class='crumb'>QUEST11</div><h2>listforeach</h2>
+<h2>listforeach</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListForEach</code> that applies a function given as argument to the data within each node of the list <code>l</code>.</p>
+<ul>
+<li>
+<p>The function given as argument must have a pointer as argument: <code>l *List</code></p>
+</li>
+<li>
+<p>Copy the functions <code>Add2_node</code> and <code>Subtract3_node</code> in the same file as the function <code>ListForEach</code> is defined.</p>
+</li>
+</ul>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListForEach(l *List, f func(*NodeL)) {
+}
+
+func Add2_node(node *NodeL) {
+	switch node.Data.(type) {
+	case int:
+		node.Data = node.Data.(int) + 2
+	case string:
+		node.Data = node.Data.(string) + &quot;2&quot;
+	}
+}
+
+func Subtract3_node(node *NodeL) {
+	switch node.Data.(type) {
+	case int:
+		node.Data = node.Data.(int) - 3
+	case string:
+		node.Data = node.Data.(string) + &quot;-3&quot;
+	}
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	link := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, &quot;1&quot;)
+	piscine.ListPushBack(link, &quot;2&quot;)
+	piscine.ListPushBack(link, &quot;3&quot;)
+	piscine.ListPushBack(link, &quot;5&quot;)
+
+	piscine.ListForEach(link, piscine.Add2_node)
+
+	it := link.Head
+	for it != nil {
+		fmt.Println(it.Data)
+		it = it.Next
+	}
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+12
+22
+32
+52
+$
+</code></pre>
+</article>
+<article id='quest11-listforeachif' hidden><div class='crumb'>QUEST11</div><h2>listforeachif</h2>
+<h2>listforeachif</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListForEachIf</code> that applies a function given as argument to the data within some of the nodes of the list <code>l</code>.</p>
+<ul>
+<li>
+<p>This function receives two functions:</p>
+<ul>
+<li>
+<p><code>f</code> is a function that is applied to the node.</p>
+</li>
+<li>
+<p><code>cond</code> is a function that returns a <code>boolean</code> and it will be used to determine if the function <code>f</code> should be applied to the node.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>The function given as argument must have a pointer <code>*NodeL</code> as argument.</p>
+</li>
+</ul>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func IsPositiveNode(node *NodeL) bool {
+	switch node.Data.(type) {
+	case int, float32, float64, byte:
+		return node.Data.(int) &gt; 0
+	default:
+		return false
+	}
+}
+
+func IsAlNode(node *NodeL) bool {
+	switch node.Data.(type) {
+	case int, float32, float64, byte:
+		return false
+	default:
+		return true
+	}
+}
+
+
+func ListForEachIf(l *List, f func(*NodeL), cond func(*NodeL) bool) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func PrintElem(node *piscine.NodeL) {
+	fmt.Println(node.Data)
+}
+
+func StringToInt(node *piscine.NodeL) {
+	node.Data = 2
+}
+
+func PrintList(l *piscine.List) {
+	it := l.Head
+	for it != nil {
+		fmt.Print(it.Data, &quot;-&gt;&quot;)
+		it = it.Next
+	}
+	fmt.Print(&quot;nil&quot;, &quot;\n&quot;)
+}
+
+func main() {
+	link := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, &quot;hello&quot;)
+	piscine.ListPushBack(link, 3)
+	piscine.ListPushBack(link, &quot;there&quot;)
+	piscine.ListPushBack(link, 23)
+	piscine.ListPushBack(link, &quot;!&quot;)
+	piscine.ListPushBack(link, 54)
+
+	PrintList(link)
+
+	fmt.Println(&quot;--------function applied--------&quot;)
+	piscine.ListForEachIf(link, PrintElem, piscine.IsPositiveNode)
+
+	piscine.ListForEachIf(link, StringToInt, piscine.IsAlNode)
+
+	fmt.Println(&quot;--------function applied--------&quot;)
+	PrintList(link)
+
+	fmt.Println()
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1-&gt;hello-&gt;3-&gt;there-&gt;23-&gt;!-&gt;54-&gt;nil
+--------function applied--------
+1
+3
+23
+54
+--------function applied--------
+1-&gt;2-&gt;3-&gt;2-&gt;23-&gt;2-&gt;54-&gt;nil
+
+$
+</code></pre>
+</article>
+<article id='quest11-listfind' hidden><div class='crumb'>QUEST11</div><h2>listfind</h2>
+<h2>listfind</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListFind</code> that returns the address of the data interface of the first node in the list <code>l</code> that is determined to be equal to <code>ref</code> by the function <code>CompStr</code>.</p>
+<ul>
+<li>For this exercise the function <code>CompStr</code> must be used.</li>
+</ul>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func CompStr(a, b interface{}) bool {
+	return a == b
+}
+
+func ListFind(l *List, ref interface{}, comp func(a, b interface{}) bool) *interface{} {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	link := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, &quot;hello&quot;)
+	piscine.ListPushBack(link, &quot;hello1&quot;)
+	piscine.ListPushBack(link, &quot;hello2&quot;)
+	piscine.ListPushBack(link, &quot;hello3&quot;)
+
+	found := piscine.ListFind(link, interface{}(&quot;hello2&quot;), piscine.CompStr)
+
+	fmt.Println(found)
+	fmt.Println(*found)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+0xc42000a0a0
+hello2
+$
+</code></pre>
+<h3>Note</h3>
+<ul>
+<li>The address may be different in each execution of the program.</li>
+</ul>
+</article>
+<article id='quest11-listremoveif' hidden><div class='crumb'>QUEST11</div><h2>listremoveif</h2>
+<h2>listremoveif</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListRemoveIf</code> that removes all elements that are equal to the <code>data_ref</code> in the argument of the function.</p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListRemoveIf(l *List, data_ref interface{}) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func PrintList(l *piscine.List) {
+	it := l.Head
+	for it != nil {
+		fmt.Print(it.Data, &quot; -&gt; &quot;)
+		it = it.Next
+	}
+
+	fmt.Print(nil, &quot;\n&quot;)
+}
+
+func main() {
+	link := &amp;piscine.List{}
+	link2 := &amp;piscine.List{}
+
+	fmt.Println(&quot;----normal state----&quot;)
+	piscine.ListPushBack(link2, 1)
+	PrintList(link2)
+	piscine.ListRemoveIf(link2, 1)
+	fmt.Println(&quot;------answer-----&quot;)
+	PrintList(link2)
+	fmt.Println()
+
+	fmt.Println(&quot;----normal state----&quot;)
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, &quot;Hello&quot;)
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, &quot;There&quot;)
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, &quot;How&quot;)
+	piscine.ListPushBack(link, 1)
+	piscine.ListPushBack(link, &quot;are&quot;)
+	piscine.ListPushBack(link, &quot;you&quot;)
+	piscine.ListPushBack(link, 1)
+	PrintList(link)
+
+	piscine.ListRemoveIf(link, 1)
+	fmt.Println(&quot;------answer-----&quot;)
+	PrintList(link)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+----normal state----
+1 -&gt; &lt;nil&gt;
+------answer-----
+&lt;nil&gt;
+
+----normal state----
+1 -&gt; Hello -&gt; 1 -&gt; There -&gt; 1 -&gt; 1 -&gt; How -&gt; 1 -&gt; are -&gt; you -&gt; 1 -&gt; &lt;nil&gt;
+------answer-----
+Hello -&gt; There -&gt; How -&gt; are -&gt; you -&gt; &lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest11-listmerge' hidden><div class='crumb'>QUEST11</div><h2>listmerge</h2>
+<h2>listmerge</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListMerge</code> that places elements of a list <code>l2</code> at the end of another list <code>l1</code>.</p>
+<ul>
+<li>New elements should not be created!</li>
+</ul>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}
+
+type List struct {
+	Head *NodeL
+	Tail *NodeL
+}
+
+func ListMerge(l1 *List, l2 *List) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func PrintList(l *piscine.List) {
+	it := l.Head
+	for it != nil {
+		fmt.Print(it.Data, &quot; -&gt; &quot;)
+		it = it.Next
+	}
+	fmt.Print(nil, &quot;\n&quot;)
+}
+
+func main() {
+	link := &amp;piscine.List{}
+	link2 := &amp;piscine.List{}
+
+	piscine.ListPushBack(link, &quot;a&quot;)
+	piscine.ListPushBack(link, &quot;b&quot;)
+	piscine.ListPushBack(link, &quot;c&quot;)
+	piscine.ListPushBack(link, &quot;d&quot;)
+	fmt.Println(&quot;-----first List------&quot;)
+	PrintList(link)
+
+	piscine.ListPushBack(link2, &quot;e&quot;)
+	piscine.ListPushBack(link2, &quot;f&quot;)
+	piscine.ListPushBack(link2, &quot;g&quot;)
+	piscine.ListPushBack(link2, &quot;h&quot;)
+	fmt.Println(&quot;-----second List------&quot;)
+	PrintList(link2)
+
+	fmt.Println(&quot;-----Merged List-----&quot;)
+	piscine.ListMerge(link, link2)
+	PrintList(link)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+-----first List------
+a -&gt; b -&gt; c -&gt; d -&gt; &lt;nil&gt;
+-----second List------
+e -&gt; f -&gt; g -&gt; h -&gt; &lt;nil&gt;
+-----Merged List-----
+a -&gt; b -&gt; c -&gt; d -&gt; e -&gt; f -&gt; g -&gt; h -&gt; &lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest11-listsort' hidden><div class='crumb'>QUEST11</div><h2>listsort</h2>
+<h2>listsort</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>ListSort</code> that sorts the nodes of a linked list by ascending order.</p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">type NodeI struct {
+	Data int
+	Next *NodeI
+}
+
+func ListSort(l *NodeI) *NodeI {
+
+}
+</code></pre>
+<blockquote>
+<p>You will use <strong>this</strong> <code>NodeI</code> structure in subsequent exercises.</p>
+</blockquote>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func PrintList(l *piscine.NodeI) {
+	it := l
+	for it != nil {
+		fmt.Print(it.Data, &quot; -&gt; &quot;)
+		it = it.Next
+	}
+	fmt.Print(nil, &quot;\n&quot;)
+}
+
+func listPushBack(l *piscine.NodeI, data int) *piscine.NodeI {
+	n := &amp;piscine.NodeI{Data: data}
+
+	if l == nil {
+		return n
+	}
+	iterator := l
+	for iterator.Next != nil {
+		iterator = iterator.Next
+	}
+	iterator.Next = n
+	return l
+}
+
+func main() {
+	var link *piscine.NodeI
+
+	link = listPushBack(link, 5)
+	link = listPushBack(link, 4)
+	link = listPushBack(link, 3)
+	link = listPushBack(link, 2)
+	link = listPushBack(link, 1)
+
+	PrintList(piscine.ListSort(link))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1 -&gt; 2 -&gt; 3 -&gt; 4 -&gt; 5 -&gt; &lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest11-sortlistinsert' hidden><div class='crumb'>QUEST11</div><h2>sortlistinsert</h2>
+<h2>sortlistinsert</h2>
+<h3>Instructions</h3>
+<p>Create a function named <code>SortListInsert</code>, which accepts a pointer to the head of a <em>sorted</em> linked list and an integer.</p>
+<p>The function should insert a new element into the list, with its <code>Data</code> set to the value of the integer. The element should be inserted so that the linked list remains sorted in ascending order by <code>Data</code>. The function should return the head of the list.</p>
+<p>Your function will only be tested with sorted linked lists.</p>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">func SortListInsert(l *NodeI, data_ref int) *NodeI{
+
+}
+</code></pre>
+<blockquote>
+<p>You have already defined the <code>NodeI</code> structure in the <code>listsort</code> exercise.</p>
+</blockquote>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func PrintList(l *piscine.NodeI) {
+	it := l
+	for it != nil {
+		fmt.Print(it.Data, &quot; -&gt; &quot;)
+		it = it.Next
+	}
+	fmt.Print(nil, &quot;\n&quot;)
+}
+
+func listPushBack(l *piscine.NodeI, data int) *piscine.NodeI {
+	n := &amp;piscine.NodeI{Data: data}
+
+	if l == nil {
+		return n
+	}
+	iterator := l
+	for iterator.Next != nil {
+		iterator = iterator.Next
+	}
+	iterator.Next = n
+	return l
+}
+
+func main() {
+
+	var link *piscine.NodeI
+
+	link = listPushBack(link, 1)
+	link = listPushBack(link, 4)
+	link = listPushBack(link, 9)
+
+	PrintList(link)
+
+	link = piscine.SortListInsert(link, -2)
+	link = piscine.SortListInsert(link, 2)
+	PrintList(link)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1 -&gt; 4 -&gt; 9 -&gt; &lt;nil&gt;
+-2 -&gt; 1 -&gt; 2 -&gt; 4 -&gt; 9 -&gt; &lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest11-sortedlistmerge' hidden><div class='crumb'>QUEST11</div><h2>sortedlistmerge</h2>
+<h2>sortedlistmerge</h2>
+<h3>Instructions</h3>
+<p>Write a function <code>SortedListMerge</code> that merges two lists <code>n1</code> and <code>n2</code> in ascending order.</p>
+<ul>
+<li>During the tests <code>n1</code> and <code>n2</code> will already be initially sorted.</li>
+</ul>
+<h3>Expected function and structure</h3>
+<pre><code class="language-go">func SortedListMerge(n1 *NodeI, n2 *NodeI) *NodeI {
+
+}
+</code></pre>
+<blockquote>
+<p>You have already defined the <code>NodeI</code> structure in the <code>listsort</code> exercise.</p>
+</blockquote>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func PrintList(l *piscine.NodeI) {
+	it := l
+	for it != nil {
+		fmt.Print(it.Data, &quot; -&gt; &quot;)
+		it = it.Next
+	}
+	fmt.Print(nil, &quot;\n&quot;)
+}
+
+func listPushBack(l *piscine.NodeI, data int) *piscine.NodeI {
+	n := &amp;piscine.NodeI{Data: data}
+
+	if l == nil {
+		return n
+	}
+	iterator := l
+	for iterator.Next != nil {
+		iterator = iterator.Next
+	}
+	iterator.Next = n
+	return l
+}
+
+func main() {
+	var link *piscine.NodeI
+	var link2 *piscine.NodeI
+
+	link = listPushBack(link, 3)
+	link = listPushBack(link, 5)
+	link = listPushBack(link, 7)
+
+	link2 = listPushBack(link2, -2)
+	link2 = listPushBack(link2, 9)
+
+	PrintList(piscine.SortedListMerge(link2, link))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+-2 -&gt; 3 -&gt; 5 -&gt; 7 -&gt; 9 -&gt; &lt;nil&gt;
+$
+</code></pre>
+</article>
+<article id='quest12-btreeinsertdata' hidden><div class='crumb'>QUEST12</div><h2>btreeinsertdata</h2>
+<h2>btreeinsertdata</h2>
+<h3>Instructions</h3>
+<p>Write a function that inserts new data in a <code>binary search tree</code> following the special properties of a <code>binary search trees</code>.</p>
+<p>The nodes must be defined as follows :</p>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Binary_search_tree">binary search trees</a></li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">type TreeNode struct {
+	Left, Right, Parent *TreeNode
+	Data                 string
+}
+
+func BTreeInsertData(root *TreeNode, data string) *TreeNode {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	fmt.Println(root.Left.Data)
+	fmt.Println(root.Data)
+	fmt.Println(root.Right.Left.Data)
+	fmt.Println(root.Right.Data)
+
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1
+4
+5
+7
+$
+</code></pre>
+</article>
+<article id='quest12-btreeapplyinorder' hidden><div class='crumb'>QUEST12</div><h2>btreeapplyinorder</h2>
+<h2>btreeapplyinorder</h2>
+<h3>Instructions</h3>
+<p>Write a function that applies a given function <code>f</code>, <strong>in order</strong>, to each element in the tree.</p>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Tree_traversal">Tree Traversal</a></li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeApplyInorder(root *TreeNode, f func(...interface{}) (int, error)) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	piscine.BTreeApplyInorder(root, fmt.Println)
+
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1
+4
+5
+7
+$
+</code></pre>
+</article>
+<article id='quest12-btreeapplypostorder' hidden><div class='crumb'>QUEST12</div><h2>btreeapplypostorder</h2>
+<h2>btreeapplypostorder</h2>
+<h3>Instructions</h3>
+<p>Write a function that applies a given function <code>f</code>, to each element in the tree using a postorder walk.</p>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Tree_traversal">Tree Traversal</a></li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeApplyPostorder(root *TreeNode, f func(...interface{}) (int, error)) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	piscine.BTreeApplyPostorder(root, fmt.Println)
+
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1
+5
+7
+4
+$
+</code></pre>
+</article>
+<article id='quest12-btreeapplypreorder' hidden><div class='crumb'>QUEST12</div><h2>btreeapplypreorder</h2>
+<h2>btreeapplypreorder</h2>
+<h3>Instructions</h3>
+<p>Write a function that applies a given function <code>f</code> to each element in the tree using a preorder walk.</p>
+<h3>Notions</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Tree_traversal">Tree Traversal</a></li>
+</ul>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeApplyPreorder(root *TreeNode, f func(...interface{}) (int, error)) {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	piscine.BTreeApplyPreorder(root, fmt.Println)
+
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+4
+1
+7
+5
+$
+</code></pre>
+</article>
+<article id='quest12-btreesearchitem' hidden><div class='crumb'>QUEST12</div><h2>btreesearchitem</h2>
+<h2>btreesearchitem</h2>
+<h3>Instructions</h3>
+<p>Write a function that returns the <code>TreeNode</code> with a <code>data</code> field equal to <code>elem</code> if it exists in the tree, otherwise return <code>nil</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeSearchItem(root *TreeNode, elem string) *TreeNode {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	selected := piscine.BTreeSearchItem(root, &quot;7&quot;)
+	fmt.Print(&quot;Item selected -&gt; &quot;)
+	if selected != nil {
+		fmt.Println(selected.Data)
+	} else {
+		fmt.Println(&quot;nil&quot;)
+	}
+
+	fmt.Print(&quot;Parent of selected item -&gt; &quot;)
+	if selected.Parent != nil {
+		fmt.Println(selected.Parent.Data)
+	} else {
+		fmt.Println(&quot;nil&quot;)
+	}
+
+	fmt.Print(&quot;Left child of selected item -&gt; &quot;)
+	if selected.Left != nil {
+		fmt.Println(selected.Left.Data)
+	} else {
+		fmt.Println(&quot;nil&quot;)
+	}
+
+	fmt.Print(&quot;Right child of selected item -&gt; &quot;)
+	if selected.Right != nil {
+		fmt.Println(selected.Right.Data)
+	} else {
+		fmt.Println(&quot;nil&quot;)
+	}
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+Item selected -&gt; 7
+Parent of selected item -&gt; 4
+Left child of selected item -&gt; 5
+Right child of selected item -&gt; nil
+$
+</code></pre>
+</article>
+<article id='quest12-btreelevelcount' hidden><div class='crumb'>QUEST12</div><h2>btreelevelcount</h2>
+<h2>btreelevelcount</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>BTreeLevelCount</code>, that returns the number of levels of the binary tree (height of the tree)</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeLevelCount(root *TreeNode) int {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	fmt.Println(piscine.BTreeLevelCount(root))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+3
+$
+</code></pre>
+</article>
+<article id='quest12-btreeisbinary' hidden><div class='crumb'>QUEST12</div><h2>btreeisbinary</h2>
+<h2>btreeisbinary</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>BTreeIsBinary</code>, that returns <code>true</code> only if the tree given by <code>root</code> follows the binary search tree <a href="https://en.wikipedia.org/wiki/Binary_search_tree#Definition">properties</a>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeIsBinary(root *TreeNode) bool {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	fmt.Println(piscine.BTreeIsBinary(root))
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+true
+$
+</code></pre>
+</article>
+<article id='quest12-btreeapplybylevel' hidden><div class='crumb'>QUEST12</div><h2>btreeapplybylevel</h2>
+<h2>btreeapplybylevel</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>BTreeApplyByLevel</code>, that applies the function given by <code>f</code>, to each node of the tree given by <code>root</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeApplyByLevel(root *TreeNode, f func(...interface{}) (int, error))  {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	piscine.BTreeApplyByLevel(root, fmt.Println)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+4
+1
+7
+5
+$
+</code></pre>
+</article>
+<article id='quest12-btreemax' hidden><div class='crumb'>QUEST12</div><h2>btreemax</h2>
+<h2>btreemax</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>BTreeMax</code>, that returns the node with the maximum value in the tree given by <code>root</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeMax(root *TreeNode) *TreeNode {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	max := piscine.BTreeMax(root)
+	fmt.Println(max.Data)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+7
+$
+</code></pre>
+</article>
+<article id='quest12-btreemin' hidden><div class='crumb'>QUEST12</div><h2>btreemin</h2>
+<h2>btreemin</h2>
+<h3>Instructions</h3>
+<p>Write a function, <code>BTreeMin</code>, that returns the node with the minimum value in the tree given by root</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeMin(root *TreeNode) *TreeNode {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	min := piscine.BTreeMin(root)
+	fmt.Println(min.Data)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+1
+$
+</code></pre>
+</article>
+<article id='quest12-btreetransplant' hidden><div class='crumb'>QUEST12</div><h2>btreetransplant</h2>
+<h2>btreetransplant</h2>
+<h3>Instructions</h3>
+<p>In order to move subtrees around within the binary search tree, write a function, <code>BTreeTransplant</code>, which replaces the subtree started by <code>node</code> with the node <code>rplc</code> in the tree given by <code>root</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeTransplant(root, node, rplc *TreeNode) *TreeNode {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	node := piscine.BTreeSearchItem(root, &quot;1&quot;)
+	rplc := &amp;piscine.TreeNode{Data: &quot;3&quot;}
+	root = piscine.BTreeTransplant(root, node, rplc)
+	piscine.BTreeApplyInorder(root, fmt.Println)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+3
+4
+5
+7
+$
+</code></pre>
+</article>
+<article id='quest12-btreetransplant' hidden><div class='crumb'>QUEST12</div><h2>btreetransplant</h2>
+<h2>btreetransplant</h2>
+<h3>Instructions</h3>
+<p>In order to move subtrees around within the binary search tree, write a function, <code>BTreeTransplant</code>, which replaces the subtree started by <code>node</code> with the node <code>rplc</code> in the tree given by <code>root</code>.</p>
+<h3>Expected function</h3>
+<pre><code class="language-go">func BTreeTransplant(root, node, rplc *TreeNode) *TreeNode {
+
+}
+</code></pre>
+<h3>Usage</h3>
+<p>Here is a possible program to test your function :</p>
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;piscine&quot;
+)
+
+func main() {
+	root := &amp;piscine.TreeNode{Data: &quot;4&quot;}
+	piscine.BTreeInsertData(root, &quot;1&quot;)
+	piscine.BTreeInsertData(root, &quot;7&quot;)
+	piscine.BTreeInsertData(root, &quot;5&quot;)
+	node := piscine.BTreeSearchItem(root, &quot;1&quot;)
+	rplc := &amp;piscine.TreeNode{Data: &quot;3&quot;}
+	root = piscine.BTreeTransplant(root, node, rplc)
+	piscine.BTreeApplyInorder(root, fmt.Println)
+}
+</code></pre>
+<p>And its output :</p>
+<pre><code class="language-console">$ go run .
+3
+4
+5
+7
+$
+</code></pre>
+</article>
+
+  <div class="pager">
+    <button id="prev">← previous</button>
+    <button id="next">next →</button>
+  </div>
+</main>
+
+<script>
+// ── single-exercise router ───────────────────────────────────────────────── ⊃
+const arts  = [...document.querySelectorAll('article')];
+const links = [...document.querySelectorAll('.toc a.ex')];
+const ids   = arts.map(a => a.id);
+
+function show(id){
+  const i = ids.indexOf(id) >= 0 ? ids.indexOf(id) : 0;
+  arts.forEach((a, n) => a.hidden = n !== i);
+  links.forEach(l => l.classList.toggle('active', l.hash === '#' + ids[i]));
+  document.getElementById('barTitle').textContent = arts[i].querySelector('h2').textContent;
+  document.getElementById('prev').disabled = i === 0;
+  document.getElementById('next').disabled = i === ids.length - 1;
+  document.body.classList.remove('menu-open');
+  window.scrollTo(0, 0);
+  const on = links[i];
+  if (on) on.scrollIntoView({block:'nearest'});
+}
+addEventListener('hashchange', () => show(location.hash.slice(1)));
+show(location.hash.slice(1));
+
+const go = step => {
+  const i = ids.indexOf(arts.find(a => !a.hidden).id);
+  const j = i + step;
+  if (j >= 0 && j < ids.length) location.hash = ids[j];
+};
+prev.onclick = () => go(-1);
+next.onclick = () => go(1);
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowLeft')  go(-1);
+  if (e.key === 'ArrowRight') go(1);
+});
+
+// ── menu + filter ────────────────────────────────────────────────────────── ⊃
+burger.onclick = () => document.body.classList.toggle('menu-open');
+scrim.onclick  = () => document.body.classList.remove('menu-open');
+
+q.oninput = () => {
+  const t = q.value.trim().toLowerCase();
+  links.forEach(l => l.hidden = t && !l.textContent.toLowerCase().includes(t));
+  document.querySelectorAll('.toc h3').forEach(h => {
+    let any = false;
+    for (let n = h.nextElementSibling; n && n.tagName === 'A'; n = n.nextElementSibling)
+      if (!n.hidden) any = true;
+    h.hidden = !any;
+  });
+};
+</script>
+</body></html>
