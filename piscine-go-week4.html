@@ -197,81 +197,83 @@
   <text x="595" y="220" font-size="16" text-anchor="middle" fill="#ffffff" font-family="monospace">nil</text>
 </svg>
 
-<p>Γιατί να την προτιμήσουμε; Σε ένα array, για να βάλεις ένα στοιχείο στη μέση, πρέπει να μετακινήσεις όλα τα επόμενα προς τα δεξιά (με μεγάλο κόστος). Σε μια Linked List, το μόνο που κάνεις είναι να αλλάξεις πού δείχνουν τα βελάκια, χωρίς επιπλέον δουλειά.</p>
-
 <svg viewBox="0 0 760 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:32px auto 0 auto;">
   <defs>
-    <filter id="shadow-chain" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="3" dy="8" stdDeviation="5" flood-color="#000" flood-opacity="0.65"/>
+    <!-- Sharp Flat Shadow for vector/flat design style -->
+    <filter id="flat-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="4" dy="6" stdDeviation="0" flood-color="#000" flood-opacity="0.75"/>
     </filter>
 
-    <!-- Base full flat link -->
-    <g id="link-flat">
+    <!-- Vertical Link Base (Κάθετος κρίκος) -->
+    <g id="link-v">
+      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#181818" stroke-width="20" />
+      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#444444" stroke-width="14" />
+      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#777777" stroke-width="8" />
+      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#aaaaaa" stroke-width="2" />
+    </g>
+
+    <!-- Horizontal Link Base (Οριζόντιος κρίκος - ίδιο ακριβώς μέγεθος) -->
+    <g id="link-h">
       <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#181818" stroke-width="20" />
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#333333" stroke-width="16" />
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#555555" stroke-width="12" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#444444" stroke-width="14" />
       <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#777777" stroke-width="8" />
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#999999" stroke-width="4" />
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#dddddd" stroke-width="1" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#aaaaaa" stroke-width="2" />
     </g>
 
-    <!-- Left rim cover (for interlacing) -->
-    <g id="link-flat-cover-left">
-      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
-      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#333333" stroke-width="16" stroke-linecap="butt" />
-      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#555555" stroke-width="12" stroke-linecap="butt" />
-      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
-      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#999999" stroke-width="4" stroke-linecap="butt" />
-      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#dddddd" stroke-width="1" stroke-linecap="butt" />
+    <!-- Vertical Link - Bottom Right Quarter (for weaving OVER horizontal link) -->
+    <g id="link-v-br">
+      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
+      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#444444" stroke-width="14" stroke-linecap="butt" />
+      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
+      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-linecap="butt" />
     </g>
 
-    <!-- Right rim cover (for interlacing) -->
-    <g id="link-flat-cover-right">
-      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
-      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#333333" stroke-width="16" stroke-linecap="butt" />
-      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#555555" stroke-width="12" stroke-linecap="butt" />
-      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
-      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#999999" stroke-width="4" stroke-linecap="butt" />
-      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#dddddd" stroke-width="1" stroke-linecap="butt" />
-    </g>
-
-    <!-- Perpendicular (Edge) link -->
-    <g id="link-edge">
-      <rect x="-45" y="-12" width="90" height="24" rx="12" fill="#181818" />
-      <rect x="-43" y="-10" width="86" height="20" rx="10" fill="#333333" />
-      <rect x="-41" y="-8" width="82" height="16" rx="8" fill="#555555" />
-      <rect x="-39" y="-6" width="78" height="12" rx="6" fill="#777777" />
-      <rect x="-37" y="-4" width="74" height="8" rx="4" fill="#999999" />
-      <rect x="-35" y="-2" width="70" height="4" rx="2" fill="#dddddd" />
+    <!-- Vertical Link - Top Left Quarter (for weaving OVER horizontal link) -->
+    <g id="link-v-tl">
+      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
+      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#444444" stroke-width="14" stroke-linecap="butt" />
+      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
+      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-linecap="butt" />
     </g>
   </defs>
 
-  <!-- 1. Flat Links (all receive drop shadows to cast on background) -->
-  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(80, 80) rotate(-5)" />
-  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(220, 80) rotate(8)" />
-  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(360, 80) rotate(-3)" />
-  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(500, 80) rotate(6)" />
-  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(640, 80) rotate(-8)" />
+  <!-- 1. Vertical Links (Base Layer) -->
+  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(80, 80)" />
+  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(220, 80)" />
+  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(360, 80)" />
+  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(500, 80)" />
+  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(640, 80)" />
 
-  <!-- 2. Edge Links (receive drop shadows that cast over the flat links beneath them) -->
-  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(150, 80) rotate(4)" />
-  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(290, 80) rotate(-6)" />
-  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(430, 80) rotate(5)" />
-  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(570, 80) rotate(-4)" />
+  <!-- 2. Horizontal Links (Middle Layer - initially covers vertical links entirely) -->
+  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(150, 80)" />
+  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(290, 80)" />
+  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(430, 80)" />
+  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(570, 80)" />
 
-  <!-- 3. Cover Rims (drawn with no shadow to perfectly mask the edge links and create the interlacing illusion) -->
-  <use href="#link-flat-cover-right" transform="translate(80, 80) rotate(-5)" />
-  <use href="#link-flat-cover-left" transform="translate(220, 80) rotate(8)" />
-  
-  <use href="#link-flat-cover-right" transform="translate(220, 80) rotate(8)" />
-  <use href="#link-flat-cover-left" transform="translate(360, 80) rotate(-3)" />
-  
-  <use href="#link-flat-cover-right" transform="translate(360, 80) rotate(-3)" />
-  <use href="#link-flat-cover-left" transform="translate(500, 80) rotate(6)" />
-  
-  <use href="#link-flat-cover-right" transform="translate(500, 80) rotate(6)" />
-  <use href="#link-flat-cover-left" transform="translate(640, 80) rotate(-8)" />
+  <!-- 3. Weaving Layer (Top Layer - redrawing specific quarters of vertical links OVER horizontal links to create true 3D interlock) -->
+  <use href="#link-v-br" transform="translate(80, 80)" />
+  <use href="#link-v-tl" transform="translate(220, 80)" />
+  <use href="#link-v-br" transform="translate(220, 80)" />
+  <use href="#link-v-tl" transform="translate(360, 80)" />
+  <use href="#link-v-br" transform="translate(360, 80)" />
+  <use href="#link-v-tl" transform="translate(500, 80)" />
+  <use href="#link-v-br" transform="translate(500, 80)" />
+  <use href="#link-v-tl" transform="translate(640, 80)" />
 </svg>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@ll-vs-array">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>Linked List vs Array</h1>
+<p class="lede">Σε αντίθεση με τα Arrays (ή τα Slices), σε μια Linked List <strong>δεν ξέρεις το μέγεθός της</strong> εκ των προτέρων (δεν υπάρχει κάτι σαν <code>len(sl)</code>), ούτε μπορείς να πας κατευθείαν σε ένα συγκεκριμένο στοιχείο (π.χ. στο <code>sl[3]</code>).</p>
+
+<p>Για να διαβάσεις το 3ο στοιχείο, πρέπει να <em>περπατήσεις</em> μέχρι εκεί μέσω των pointers: από το 1 &rarr; 2 &rarr; 3, και μετά να το διαβάσεις. Αυτό ίσως σου ακούγεται τρελό και εντελώς άχρηστο λοιπόν.</p>
+
+<div class="callout">
+  <span class="tag">Γιατί να την προτιμήσουμε;</span>
+  <p>Αν θέλεις να προσθέσεις ένα νέο στοιχείο στη θέση 2 ενός <strong>πίνακα (Array/Slice)</strong>, πρέπει να «σπρώξεις» χειροκίνητα όλα τα επόμενα στοιχεία μία θέση δεξιά για να ανοίξεις χώρο. Κι αν ο πίνακας έχει γεμίσει, η Go πρέπει να πάει στη μνήμη, να δεσμεύσει έναν <em>ολοκαίνουριο</em> τεράστιο πίνακα, και να τα αντιγράψει όλα από την αρχή (τεράστιο κόστος!).</p>
+  <p style="margin-bottom:0;">Στη <strong>Linked List</strong>, απλά βάζεις το έξτρα στοιχείο οπουδήποτε υπάρχει χώρος στη μνήμη, και πειράζεις αποκλειστικά τους <em>δεσμούς (pointers)</em> που ενώνουν την αλυσίδα. Δεν χρειάζεται να κουνήσεις <strong>κανένα απολύτως</strong> από τα υπόλοιπα εκατομμύρια στοιχεία που ακολουθούν!</p>
+</div>
 `);
 
     addContent(`
@@ -330,7 +332,9 @@
   <!-- FRAME 2 -->
   <g transform="translate(20, 160)">
     <text x="0" y="-15" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="var(--tone-text)">2. Αποσύνδεση κρίκου</text>
-    <use href="#link-side" x="520" y="0" />
+    
+    <!-- Link between B and C -->
+    <use href="#link-side" x="440" y="0" />
     
     <use href="#link-node" x="100" y="0" />
     <text x="160" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">A</text>
@@ -338,11 +342,14 @@
     <path d="M 210 22 Q 240 22 240 45" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="5" marker-end="url(#arrow-nil)"/>
     <text x="240" y="62" font-family="monospace" font-size="13" fill="#ffffff" text-anchor="middle">nil</text>
 
-    <use href="#link-node" x="420" y="0" />
-    <text x="480" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">B</text>>
+    <!-- Large arrowhead indicating movement to the right -->
+    <path d="M 300 6 L 325 22 L 300 38" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+    <use href="#link-node" x="340" y="0" />
+    <text x="400" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">B</text>
     
-    <use href="#link-node" x="580" y="0" />
-    <text x="640" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">C</text>
+    <use href="#link-node" x="500" y="0" />
+    <text x="560" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">C</text>
   </g>
 
   <!-- FRAME 3 -->
@@ -388,10 +395,58 @@
   </g>
 </svg>
 `);
+
     addContent(`
 <div class="eyebrow" id="@ti-einai-node">Ενότητα 1 / 2 &mdash; Linked Lists</div>
 <h1>Τι είναι το *Node</h1>
-<p class="lede">Ο βασικός δομικός λίθος της λίστας είναι ο κόμβος (node). Κάθε κόμβος κρατάει ένα κομμάτι πληροφορίας και έναν pointer προς τον επόμενο κόμβο.</p>
+<p class="lede">Ο βασικός δομικός λίθος της λίστας είναι ο κόμβος (Node) — δηλαδή ο <strong>κρίκος</strong> της αλυσίδας μας. Κάθε κόμβος κρατάει ένα κομμάτι πληροφορίας και έναν pointer προς τον επόμενο Node.</p>
+
+<svg viewBox="0 0 600 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;height:auto;display:block;margin:32px auto;" role="img" aria-labelledby="node-title node-desc">
+  <title id="node-title">Εσωτερική Δομή ενός Node</title>
+  <desc id="node-desc">Ένα κουτί που απεικονίζει τον κόμβο, χωρισμένο στα δύο: το Data που περιέχει την τιμή και το Next που δείχνει στο nil.</desc>
+  <defs>
+    <filter id="node-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+    <marker id="node-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888888"/>
+    </marker>
+  </defs>
+
+  <!-- Background Chain Link Motif (just to tie into the metaphor) -->
+  <g opacity="0.05" transform="translate(300, 120) scale(1.5)">
+    <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#ffffff" stroke-width="20" />
+  </g>
+
+  <!-- Node Box -->
+  <g transform="translate(140, 70)">
+    <rect width="200" height="100" rx="16" fill="#18181b" stroke="#3f3f46" stroke-width="4" filter="url(#node-shadow)"/>
+    
+    <path d="M 16 0 L 100 0 L 100 100 L 16 100 A 16 16 0 0 1 0 84 L 0 16 A 16 16 0 0 1 16 0 Z" fill="var(--accent, #3b82f6)" fill-opacity="0.15"/>
+    <line x1="100" y1="0" x2="100" y2="100" stroke="#3f3f46" stroke-width="4"/>
+
+    <text x="50" y="55" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="var(--accent, #60a5fa)" text-anchor="middle">Data</text>
+    
+    <text x="150" y="35" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#a1a1aa" text-anchor="middle">Next</text>
+    <circle cx="150" cy="65" r="8" fill="#888888" />
+  </g>
+
+  <!-- Pointer line connecting Node to nil -->
+  <path d="M 290 135 L 405 135" fill="none" stroke="#888888" stroke-width="6" stroke-linecap="round" marker-end="url(#node-arrow)"/>
+  
+  <!-- "nil" representation -->
+  <g transform="translate(420, 105)">
+    <rect width="80" height="60" rx="12" fill="none" stroke="#52525b" stroke-width="3" stroke-dasharray="8"/>
+    <text x="40" y="37" font-family="monospace" font-size="22" font-weight="bold" fill="#a1a1aa" text-anchor="middle">nil</text>
+  </g>
+
+  <!-- Explanatory Labels and bracket lines -->
+  <path d="M 340 65 L 340 40 L 140 40 L 140 65" fill="none" stroke="var(--accent, #60a5fa)" stroke-width="2" opacity="0.6"/>
+  <text x="240" y="25" font-family="monospace" font-size="16" fill="var(--accent, #60a5fa)" text-anchor="middle" font-weight="bold">struct</text>
+
+  <path d="M 290 175 L 290 200 L 460 200 L 460 170" fill="none" stroke="#a1a1aa" stroke-width="2" opacity="0.6"/>
+  <text x="375" y="222" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#a1a1aa" text-anchor="middle">Δείχνει στον επόμενο</text>
+</svg>
 
 <pre><code class="lang-go">type NodeL struct {
 	Data interface{}
@@ -399,6 +454,83 @@
 }</code></pre>
 
 <p>Όταν γράφουμε <code>*NodeL</code>, εννοούμε τη διεύθυνση μνήμης όπου βρίσκεται ο κόμβος. Επίσης, αν δεν υπάρχει επόμενος κόμβος, το <code>Next</code> παίρνει την τιμή <code>nil</code>.</p>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@pointers-reminder">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>Μικρή Παρένθεση: Pointers (&amp; και *)</h1>
+<p>Φαντάσου τη μνήμη του υπολογιστή σαν μια τεράστια γειτονιά με σπίτια. Κάθε σπίτι έχει μια <strong>τιμή</strong> (το περιεχόμενό του) και μια <strong>διεύθυνση</strong> (π.χ. Οδός 0x104).</p>
+
+<ul class="clean-list">
+  <li><strong>Το <code>&amp;</code> (Διεύθυνση):</strong> Σημαίνει <em>"Πού μένει;"</em>. Αν έχεις μια μεταβλητή <code>x</code>, το <code>&amp;x</code> σου δίνει την ακριβή διεύθυνση που βρίσκεται στη μνήμη.</li>
+  <li><strong>Το <code>*</code> (Dereference):</strong> Σημαίνει <em>"Πήγαινε σε αυτή τη διεύθυνση"</em>. Αν έχεις έναν pointer <code>p</code> (ένα "χαρτάκι" με διεύθυνση), το <code>*p</code> σε πάει στο σπίτι και σου δείχνει το περιεχόμενο.</li>
+</ul>
+
+<svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:16px auto;" role="img">
+  <title>Pointers: Memory Addresses and Values</title>
+  <defs>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <marker id="pointer-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--correct, #34d399)"/>
+    </marker>
+    <marker id="address-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent, #60a5fa)"/>
+    </marker>
+  </defs>
+
+  <!-- Variable x -->
+  <g transform="translate(80, 25)">
+    <rect width="180" height="120" rx="16" fill="#18181b" stroke="#3f3f46" stroke-width="3" filter="url(#card-shadow)"/>
+    <text x="90" y="30" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#a1a1aa" text-anchor="middle">Μεταβλητή <tspan fill="#ffffff">x</tspan> <tspan font-family="monospace" font-size="14">(int)</tspan></text>
+    <rect x="20" y="45" width="140" height="55" rx="8" fill="#27272a" stroke="#52525b" stroke-width="2"/>
+    <text x="90" y="83" font-family="monospace" font-size="32" font-weight="bold" fill="#ffffff" text-anchor="middle">12</text>
+
+    <!-- Address Tag -->
+    <rect x="40" y="-14" width="100" height="28" rx="6" fill="#1e293b" stroke="var(--accent, #60a5fa)" stroke-width="2"/>
+    <text x="90" y="5" font-family="monospace" font-size="16" fill="var(--accent, #60a5fa)" text-anchor="middle" font-weight="bold">0x104</text>
+  </g>
+
+  <!-- Pointer p -->
+  <g transform="translate(500, 25)">
+    <rect width="180" height="120" rx="16" fill="#18181b" stroke="#3f3f46" stroke-width="3" filter="url(#card-shadow)"/>
+    <text x="90" y="30" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="bold" fill="#a1a1aa" text-anchor="middle">Pointer <tspan fill="#ffffff">p</tspan> <tspan font-family="monospace" font-size="14">(*int)</tspan></text>
+    <rect x="20" y="45" width="140" height="55" rx="8" fill="#1e293b" stroke="var(--correct, #34d399)" stroke-width="2"/>
+    <text x="90" y="80" font-family="monospace" font-size="22" font-weight="bold" fill="var(--correct, #34d399)" text-anchor="middle">0x104</text>
+
+    <!-- Address Tag -->
+    <rect x="40" y="-14" width="100" height="28" rx="6" fill="#1e293b" stroke="#52525b" stroke-width="2"/>
+    <text x="90" y="5" font-family="monospace" font-size="16" fill="#a1a1aa" text-anchor="middle" font-weight="bold">0x108</text>
+  </g>
+
+  <!-- &x Arrow -->
+  <path d="M 222 25 C 350 25 420 97 513 97" fill="none" stroke="var(--accent, #60a5fa)" stroke-width="3" stroke-dasharray="6" marker-end="url(#address-arrow)"/>
+  <rect x="300" y="46" width="160" height="30" rx="15" fill="#18181b" stroke="var(--accent, #60a5fa)" stroke-width="2"/>
+  <text x="380" y="66" font-family="monospace" font-size="14" font-weight="bold" fill="var(--accent, #60a5fa)" text-anchor="middle">p = &amp;x</text>
+
+  <!-- *p Arrow -->
+  <path d="M 590 127 C 590 205 170 205 170 133" fill="none" stroke="var(--correct, #34d399)" stroke-width="4" marker-end="url(#pointer-arrow)"/>
+  <rect x="300" y="165" width="160" height="30" rx="15" fill="#18181b" stroke="var(--correct, #34d399)" stroke-width="2"/>
+  <text x="380" y="185" font-family="monospace" font-size="14" font-weight="bold" fill="var(--correct, #34d399)" text-anchor="middle">*p == 12</text>
+</svg>
+
+<pre><code class="lang-go">x := 12
+var p *int  // Οι μεταβλητή p είναι τύπου pointer σε int (γράφεται *int)
+p = &amp;x      // Το p τώρα κρατάει τη διεύθυνση του x (δηλαδή το 0x104)
+
+fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&gt; Τυπώνει 12
+*p = 99         // Αλλάζει την τιμή του x (εκεί που δείχνει) σε 99
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Σημαντική Διάκριση: <code>*p</code> vs <code>*Node</code></span>
+  Το αστεράκι (<code>*</code>) έχει δύο εντελώς διαφορετικές χρήσεις:
+  <ul>
+    <li>Όταν μπαίνει <strong>μπροστά από ΤΥΠΟ</strong> (π.χ. <code>*Node</code> ή <code>*int</code>), σημαίνει <em>"Τύπος Pointer που δείχνει σε τέτοιο πράγμα"</em>. Δεν κάνουμε dereference τη λέξη Node, γιατί το Node δεν είναι μεταβλητή, είναι τύπος!</li>
+    <li>Όταν μπαίνει <strong>μπροστά από ΜΕΤΑΒΛΗΤΗ</strong> (π.χ. <code>*p</code>), σημαίνει <em>"Dereference: πήγαινε στη διεύθυνση που κρατάει το p και φέρε την τιμή"</em>.</li>
+  </ul>
+</div>
 `);
 
     addContent(`
@@ -534,63 +666,188 @@
 <h1>Τι είναι το Binary Search Tree</h1>
 <p class="lede">Η Linked List είναι μια ευθεία γραμμή. Το Binary Tree (Δυαδικό Δέντρο) είναι σαν μια διακλάδωση: κάθε κόμβος αντί για ένα <code>Next</code>, έχει <code>Left</code> και <code>Right</code>.</p>
 
-<svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto;color:var(--ink)">
+<pre><code class="lang-go">type TreeNode struct {
+	Data  string
+	Left  *TreeNode
+	Right *TreeNode
+}</code></pre>
+
+<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:600px;height:auto;display:block;margin:32px auto;" role="img" aria-labelledby="treenode-title">
+  <title id="treenode-title">Εσωτερική Δομή ενός TreeNode</title>
+  <defs>
+    <filter id="treenode-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+    <marker id="treenode-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888888"/>
+    </marker>
+    <!-- Template for ghost box -->
+    <g id="ghost-box">
+      <rect width="240" height="120" rx="16" fill="none" stroke="#52525b" stroke-width="4" stroke-dasharray="8, 6"/>
+      <line x1="0" y1="60" x2="240" y2="60" stroke="#52525b" stroke-width="4" stroke-dasharray="8, 6"/>
+      <line x1="120" y1="60" x2="120" y2="120" stroke="#52525b" stroke-width="4" stroke-dasharray="8, 6"/>
+    </g>
+  </defs>
+
+  <!-- Ghost Boxes (Children) -->
+  <use href="#ghost-box" transform="translate(40, 180) scale(0.8)"/>
+  <use href="#ghost-box" transform="translate(368, 180) scale(0.8)"/>
+
+  <!-- Left Arrow -->
+  <path d="M 240 130 Q 188 155 140 173" fill="none" stroke="#666" stroke-width="4" stroke-linecap="round" marker-end="url(#treenode-arrow)"/>
+  
+  <!-- Right Arrow -->
+  <path d="M 360 130 Q 412 155 460 173" fill="none" stroke="#666" stroke-width="4" stroke-linecap="round" marker-end="url(#treenode-arrow)"/>
+
+  <!-- Main Box for TreeNode -->
+  <g transform="translate(180, 20)">
+    <rect width="240" height="120" rx="16" fill="#18181b" stroke="#3f3f46" stroke-width="4" filter="url(#treenode-shadow)"/>
+    
+    <!-- Top Half: Data -->
+    <path d="M 16 0 L 224 0 A 16 16 0 0 1 240 16 L 240 60 L 0 60 L 0 16 A 16 16 0 0 1 16 0 Z" fill="var(--accent, #3b82f6)" fill-opacity="0.15"/>
+    <line x1="0" y1="60" x2="240" y2="60" stroke="#3f3f46" stroke-width="4"/>
+    <text x="120" y="38" font-family="system-ui, sans-serif" font-size="20" font-weight="bold" fill="var(--accent, #60a5fa)" text-anchor="middle">Data</text>
+
+    <!-- Bottom Half Split -->
+    <line x1="120" y1="60" x2="120" y2="120" stroke="#3f3f46" stroke-width="4"/>
+
+    <!-- Left Pointer -->
+    <text x="60" y="90" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#a1a1aa" text-anchor="middle">Left</text>
+    <circle cx="60" cy="110" r="6" fill="#888888" />
+
+    <!-- Right Pointer -->
+    <text x="180" y="90" font-family="system-ui, sans-serif" font-size="16" font-weight="bold" fill="#a1a1aa" text-anchor="middle">Right</text>
+    <circle cx="180" cy="110" r="6" fill="#888888" />
+  </g>
+
+  <!-- Struct bracket -->
+  <path d="M 430 130 L 440 130 L 440 30 L 430 30" fill="none" stroke="var(--accent, #60a5fa)" stroke-width="2" opacity="0.6"/>
+  <text x="475" y="85" font-family="monospace" font-size="16" fill="var(--accent, #60a5fa)" font-weight="bold">struct</text>
+</svg>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@bst-kanonas">Ενότητα 2 / 2 &mdash; Binary Search Trees</div>
+<h1>Ο Κανόνας του Search Tree</h1>
+<p class="lede">Γιατί το λέμε <strong>Search</strong> Tree; Γιατί ακολουθεί έναν αυστηρό κανόνα: <strong>ό,τι είναι μικρότερο μπαίνει αριστερά, ό,τι είναι μεγαλύτερο μπαίνει δεξιά.</strong></p>
+
+<svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto;color:var(--ink)">
   <style>
     .blacked-shadow { filter: drop-shadow(2px 2px 0px #000) drop-shadow(-1px -1px 0px #000) drop-shadow(1px -1px 0px #000) drop-shadow(-1px 1px 0px #000); }
   </style>
   <defs>
     <pattern id="hatch-tree" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--accent)" stroke-width="1.5" stroke-opacity="0.2" />
+      <rect width="8" height="8" fill="var(--accent, #60a5fa)" fill-opacity="0.4" />
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#000000" stroke-width="2" stroke-opacity="0.6" />
     </pattern>
+    <g id="bst-node">
+      <circle r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+    </g>
   </defs>
 
   <!-- Tree lines -->
-  <line x1="380" y1="60" x2="260" y2="140" stroke="var(--dim)" stroke-width="2"/>
-  <line x1="380" y1="60" x2="500" y2="140" stroke="var(--dim)" stroke-width="2"/>
+  <line x1="380" y1="60" x2="200" y2="140" stroke="#71717a" stroke-width="2"/>
+  <line x1="380" y1="60" x2="560" y2="140" stroke="#71717a" stroke-width="2"/>
   
-  <line x1="260" y1="140" x2="180" y2="220" stroke="var(--dim)" stroke-width="2"/>
-  <line x1="260" y1="140" x2="340" y2="220" stroke="var(--dim)" stroke-width="2"/>
-  
-  <line x1="500" y1="140" x2="420" y2="220" stroke="var(--dim)" stroke-width="2"/>
-  <line x1="500" y1="140" x2="580" y2="220" stroke="var(--dim)" stroke-width="2"/>
+  <line x1="200" y1="140" x2="110" y2="220" stroke="#71717a" stroke-width="2"/>
+  <line x1="200" y1="140" x2="290" y2="220" stroke="#71717a" stroke-width="2"/>
+  <line x1="560" y1="140" x2="470" y2="220" stroke="#71717a" stroke-width="2"/>
+  <line x1="560" y1="140" x2="650" y2="220" stroke="#71717a" stroke-width="2"/>
 
-  <!-- Root -->
-  <circle cx="380" cy="60" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
-  <rect x="355" y="45" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
-  <text x="380" y="67" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">20</text>
-  
-  <!-- L -->
-  <circle cx="260" cy="140" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
-  <rect x="235" y="125" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
-  <text x="260" y="147" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">10</text>
+  <line x1="110" y1="220" x2="65" y2="300" stroke="#71717a" stroke-width="2"/>
+  <line x1="110" y1="220" x2="155" y2="300" stroke="#71717a" stroke-width="2"/>
+  <line x1="470" y1="220" x2="425" y2="300" stroke="#71717a" stroke-width="2"/>
+  <line x1="650" y1="220" x2="605" y2="300" stroke="#71717a" stroke-width="2"/>
+  <line x1="650" y1="220" x2="695" y2="300" stroke="#71717a" stroke-width="2"/>
 
-  <!-- R -->
-  <circle cx="500" cy="140" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
-  <rect x="475" y="125" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
-  <text x="500" y="147" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">30</text>
+  <!-- Projections to the axis -->
+  <g stroke="var(--accent)" stroke-width="2" stroke-dasharray="6, 4" opacity="0.6">
+    <line x1="65" y1="328" x2="65" y2="390"/>
+    <line x1="110" y1="248" x2="110" y2="390"/>
+    <line x1="155" y1="328" x2="155" y2="390"/>
+    <line x1="200" y1="168" x2="200" y2="390"/>
+    <line x1="290" y1="248" x2="290" y2="390"/>
+    <line x1="380" y1="88" x2="380" y2="390"/>
+    <line x1="425" y1="328" x2="425" y2="390"/>
+    <line x1="470" y1="248" x2="470" y2="390"/>
+    <line x1="560" y1="168" x2="560" y2="390"/>
+    <line x1="605" y1="328" x2="605" y2="390"/>
+    <line x1="650" y1="248" x2="650" y2="390"/>
+    <line x1="695" y1="328" x2="695" y2="390"/>
+  </g>
   
-  <!-- LL -->
-  <circle cx="180" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
-  <rect x="155" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
-  <text x="180" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">5</text>
+  <!-- Horizontal Axis -->
+  <line x1="30" y1="390" x2="730" y2="390" stroke="var(--ink)" stroke-width="2"/>
+  <polygon points="730,385 740,390 730,395" fill="var(--ink)"/>
 
-  <!-- LR -->
-  <circle cx="340" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
-  <rect x="315" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
-  <text x="340" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">15</text>
-  
-  <!-- RL -->
-  <circle cx="420" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
-  <rect x="395" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
-  <text x="420" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">25</text>
+  <!-- Projected Values -->
+  <g fill="var(--tone-text)" font-family="monospace" font-weight="bold" font-size="16" text-anchor="middle">
+    <text x="65" y="420">6</text>
+    <text x="110" y="420">12</text>
+    <text x="155" y="420">18</text>
+    <text x="200" y="420">25</text>
+    <text x="290" y="420">37</text>
+    <text x="380" y="420">50</text>
+    <text x="425" y="420">56</text>
+    <text x="470" y="420">62</text>
+    <text x="560" y="420">75</text>
+    <text x="605" y="420">81</text>
+    <text x="650" y="420">87</text>
+    <text x="695" y="420">95</text>
+  </g>
 
-  <!-- RR -->
-  <circle cx="580" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
-  <rect x="555" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
-  <text x="580" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">35</text>
+  <!-- Nodes -->
+  <g transform="translate(380, 60)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">50</text>
+  </g>
+  <g transform="translate(200, 140)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">25</text>
+  </g>
+  <g transform="translate(560, 140)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">75</text>
+  </g>
+  <g transform="translate(110, 220)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">12</text>
+  </g>
+  <g transform="translate(290, 220)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">37</text>
+  </g>
+  <g transform="translate(470, 220)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">62</text>
+  </g>
+  <g transform="translate(650, 220)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">87</text>
+  </g>
+  <g transform="translate(65, 300)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">6</text>
+  </g>
+  <g transform="translate(155, 300)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">18</text>
+  </g>
+  <g transform="translate(425, 300)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">56</text>
+  </g>
+  <g transform="translate(605, 300)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">81</text>
+  </g>
+  <g transform="translate(695, 300)">
+    <use href="#bst-node"/>
+    <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">95</text>
+  </g>
 </svg>
 
-<p>Γιατί το λέμε <strong>Search</strong> Tree; Γιατί ακολουθεί έναν αυστηρό κανόνα που κάνει την αναζήτηση αστραπιαία: Ό,τι είναι <strong>μικρότερο</strong> μπαίνει αριστερά, ό,τι είναι <strong>μεγαλύτερο</strong> μπαίνει δεξιά.</p>
+<p>Έτσι, κάθε BST διατηρείται <strong>πάντα ταξινομημένο</strong>. Αφού τα στοιχεία του βρίσκονται εξαρχής στη σωστή σειρά, η αναζήτηση γίνεται <strong>εξαιρετικά γρήγορη</strong> (σε κάθε βήμα της έρευνας αποκλείουμε σχεδόν το μισό δέντρο &mdash; αυτή η τεχνική ονομάζεται <em>Divide and Conquer</em> ή <em>«διαίρει και βασίλευε»</em>).</p>
 `);
 
     addContent(`
@@ -632,27 +889,91 @@
     <h3>Preorder</h3>
     <p>Data &rarr; Left &rarr; Right</p>
     <p>Κοιτάμε πρώτα τη ρίζα, μετά κατεβαίνουμε αριστερά, μετά δεξιά.</p>
+    <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
+      <defs>
+        <filter id="node-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
+        </filter>
+        <filter id="badge-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+        </filter>
+        
+        <g id="tree-base">
+          <line x1="140" y1="40" x2="60" y2="80" stroke="var(--tone-3)" stroke-width="2"/>
+          <line x1="140" y1="40" x2="220" y2="80" stroke="var(--tone-3)" stroke-width="2"/>
+          <line x1="60" y1="80" x2="20" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
+          <line x1="60" y1="80" x2="100" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
+          <line x1="220" y1="80" x2="180" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
+          <line x1="220" y1="80" x2="260" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
+          
+          <circle cx="140" cy="40" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
+          <circle cx="60" cy="80" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
+          <circle cx="220" cy="80" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
+          <circle cx="20" cy="120" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
+          <circle cx="100" cy="120" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
+          <circle cx="180" cy="120" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
+          <circle cx="260" cy="120" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
+
+          <text x="140" y="45" font-family="monospace" font-size="14" font-weight="bold" fill="var(--tone-text)" text-anchor="middle">50</text>
+          <text x="60" y="85" font-family="monospace" font-size="14" font-weight="bold" fill="var(--tone-text)" text-anchor="middle">25</text>
+          <text x="220" y="85" font-family="monospace" font-size="14" font-weight="bold" fill="var(--tone-text)" text-anchor="middle">75</text>
+          <text x="20" y="125" font-family="monospace" font-size="14" font-weight="bold" fill="var(--tone-text)" text-anchor="middle">12</text>
+          <text x="100" y="125" font-family="monospace" font-size="14" font-weight="bold" fill="var(--tone-text)" text-anchor="middle">37</text>
+          <text x="180" y="125" font-family="monospace" font-size="14" font-weight="bold" fill="var(--tone-text)" text-anchor="middle">62</text>
+          <text x="260" y="125" font-family="monospace" font-size="14" font-weight="bold" fill="var(--tone-text)" text-anchor="middle">87</text>
+        </g>
+
+        <!-- Badges -->
+        <g id="b1"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">1</text></g>
+        <g id="b2"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">2</text></g>
+        <g id="b3"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">3</text></g>
+        <g id="b4"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">4</text></g>
+        <g id="b5"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">5</text></g>
+        <g id="b6"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">6</text></g>
+        <g id="b7"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">7</text></g>
+      </defs>
+
+      <use href="#tree-base" />
+      <use href="#b1" x="154" y="26" />
+      <use href="#b2" x="74" y="66" />
+      <use href="#b3" x="34" y="106" />
+      <use href="#b4" x="114" y="106" />
+      <use href="#b5" x="234" y="66" />
+      <use href="#b6" x="194" y="106" />
+      <use href="#b7" x="274" y="106" />
+    </svg>
   </div>
   <div class="card">
     <h3>Inorder</h3>
     <p>Left &rarr; Data &rarr; Right</p>
     <p>Πρώτα όλα τα αριστερά, μετά η ρίζα. <strong>Μας δίνει τα στοιχεία σε απόλυτη αλφαβητική/αριθμητική σειρά.</strong></p>
+    <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
+      <use href="#tree-base" />
+      <use href="#b4" x="154" y="26" />
+      <use href="#b2" x="74" y="66" />
+      <use href="#b1" x="34" y="106" />
+      <use href="#b3" x="114" y="106" />
+      <use href="#b6" x="234" y="66" />
+      <use href="#b5" x="194" y="106" />
+      <use href="#b7" x="274" y="106" />
+    </svg>
   </div>
   <div class="card">
     <h3>Postorder</h3>
     <p>Left &rarr; Right &rarr; Data</p>
     <p>Πρώτα εξερευνούμε όλα τα παιδιά, και στο τέλος τον ίδιο τον κόμβο.</p>
+    <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
+      <use href="#tree-base" />
+      <use href="#b7" x="154" y="26" />
+      <use href="#b3" x="74" y="66" />
+      <use href="#b1" x="34" y="106" />
+      <use href="#b2" x="114" y="106" />
+      <use href="#b6" x="234" y="66" />
+      <use href="#b4" x="194" y="106" />
+      <use href="#b5" x="274" y="106" />
+    </svg>
   </div>
 </div>
-
-<pre><code class="lang-go">func BTreeApplyInorder(root *TreeNode, f func(...interface{}) (int, error)) {
-	if root == nil {
-		return
-	}
-	BTreeApplyInorder(root.Left, f)
-	f(root.Data)
-	BTreeApplyInorder(root.Right, f)
-}</code></pre>
 `);
 
     addQuiz([
@@ -789,7 +1110,7 @@
 </div>
 
 <div id="final-score"></div>
-<div style="font-family: monospace; font-size: 14px; opacity: 0.55; margin-top: 2rem;">Author: AVGERINOS PAVLOS</div>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.</p>
 `);
 
     initSlideDeck({ version: "3.0.0", notifyUrl: null });

@@ -1,89 +1,104 @@
 function createBstViz(root) {
   const steps = [
-    { val: 15, path: [], added: false, note: "Θέλουμε να προσθέσουμε το 15 (n). Ξεκινάμε από τη ρίζα (20)." },
-    { val: 15, path: [0], added: false, note: "Το 15 είναι μικρότερο από το 20. Πάμε αριστερά." },
-    { val: 15, path: [0, 1], added: false, note: "Το 15 είναι μεγαλύτερο από το 10. Πάμε δεξιά." },
-    { val: 15, path: [0, 1], added: true, note: "Ο δεξιός κόμβος (Next) είναι nil! Τοποθετούμε το 15 εδώ." }
+    { curr: 50, added: false, note: "Θέλουμε να προσθέσουμε το 88. Ξεκινάμε από τη ρίζα (50)." },
+    { curr: 75, added: false, note: "Το 88 είναι μεγαλύτερο από το 50. Πάμε δεξιά (75)." },
+    { curr: 87, added: false, note: "Το 88 είναι μεγαλύτερο από το 75. Πάμε δεξιά (87)." },
+    { curr: 95, added: false, note: "Το 88 είναι μεγαλύτερο από το 87. Πάμε δεξιά (95)." },
+    { curr: 95, added: true, note: "Το 88 είναι μικρότερο από το 95, και το αριστερό παιδί είναι κενό! Τοποθετούμε το 88 εκεί." }
   ];
   let cur = 0;
 
-  root.innerHTML = `
-    <div class="quiz-code-block" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; background: #1a1a1a;">
-      <div style="position: relative; height: 180px; width: 100%;">
-         <!-- Root: 20 -->
-         <div id="n-20" style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: #333; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-family: monospace; font-weight: bold; z-index: 2;">20</div>
-         <!-- L: 10 -->
-         <div id="n-10" style="position: absolute; top: 70px; left: 35%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: #333; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-family: monospace; font-weight: bold; z-index: 2;">10</div>
-         <!-- R: 30 -->
-         <div id="n-30" style="position: absolute; top: 70px; left: 65%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: #333; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-family: monospace; font-weight: bold; z-index: 2;">30</div>
-         <!-- LL: 5 -->
-         <div id="n-5" style="position: absolute; top: 130px; left: 25%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: #333; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-family: monospace; font-weight: bold; z-index: 2;">5</div>
-         <!-- New node: 15 (LR) -->
-         <div id="n-15" style="position: absolute; top: 130px; left: 45%; transform: translateX(-50%); width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--correct-rgb), 0.2); border: 2px solid var(--correct); color: var(--correct); display: none; align-items: center; justify-content: center; font-family: monospace; font-weight: bold; z-index: 2;">15</div>
-         
-         <!-- Lines -->
-         <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
-            <line x1="50%" y1="30" x2="35%" y2="70" stroke="#555" stroke-width="2" />
-            <line x1="50%" y1="30" x2="65%" y2="70" stroke="#555" stroke-width="2" />
-            <line x1="35%" y1="90" x2="25%" y2="130" stroke="#555" stroke-width="2" />
-            <line id="line-15" x1="35%" y1="90" x2="45%" y2="130" stroke="var(--correct)" stroke-width="2" stroke-dasharray="4" style="display: none;" />
-         </svg>
-      </div>
-      <div class="vz-controls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
-        <button id="bst-prev" class="reset-quiz-btn" disabled>Προηγούμενο</button>
-        <div id="bst-note" style="color: var(--tone-2); font-size: 0.9rem; flex: 1; text-align: center; margin: 0 1rem;"></div>
-        <button id="bst-next" class="reset-quiz-btn">Επόμενο</button>
-      </div>
-    </div>
-  `;
+  const lines = [
+    [380, 60, 200, 140], [380, 60, 560, 140],
+    [200, 140, 110, 220], [200, 140, 290, 220], [560, 140, 470, 220], [560, 140, 650, 220],
+    [110, 220, 65, 300], [110, 220, 155, 300], [470, 220, 425, 300], [650, 220, 605, 300], [650, 220, 695, 300]
+  ];
 
-  const prevBtn = root.querySelector('#bst-prev');
-  const nextBtn = root.querySelector('#bst-next');
-  const noteEl = root.querySelector('#bst-note');
-  
-  const nodes = {
-    root: root.querySelector('#n-20'),
-    l: root.querySelector('#n-10'),
-    r: root.querySelector('#n-30'),
-    ll: root.querySelector('#n-5'),
-    new: root.querySelector('#n-15'),
-    line: root.querySelector('#line-15')
-  };
+  const nodeData = [
+     { val: 50, x: 380, y: 60 },
+     { val: 25, x: 200, y: 140 }, { val: 75, x: 560, y: 140 },
+     { val: 12, x: 110, y: 220 }, { val: 37, x: 290, y: 220 }, { val: 62, x: 470, y: 220 }, { val: 87, x: 650, y: 220 },
+     { val: 6, x: 65, y: 300 }, { val: 18, x: 155, y: 300 }, { val: 56, x: 425, y: 300 }, { val: 81, x: 605, y: 300 }, { val: 95, x: 695, y: 300 }
+  ];
 
   function render() {
     const step = steps[cur];
     
-    // Reset highlights
-    Object.values(nodes).forEach(n => {
-      if (n.style && n.id !== 'n-15') {
-        n.style.borderColor = '#555';
-        n.style.boxShadow = 'none';
-      }
+    let svgHtml = `
+      <style>
+        .bst-viz-container { padding: 2rem; background: #09090b; border-radius: 16px; border: 1px solid #27272a; box-shadow: inset 0 0 40px rgba(0,0,0,0.5); }
+        .blacked-shadow { filter: drop-shadow(2px 2px 0px #000) drop-shadow(-1px -1px 0px #000) drop-shadow(1px -1px 0px #000) drop-shadow(-1px 1px 0px #000); }
+        .node-circle { transition: all 0.3s; }
+      </style>
+      <div class="bst-viz-container">
+        <svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:0 auto;color:var(--ink)">
+          <defs>
+            <pattern id="hatch-tree-viz" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+              <rect width="8" height="8" fill="var(--accent, #60a5fa)" fill-opacity="0.4" />
+              <line x1="0" y1="0" x2="0" y2="8" stroke="#000000" stroke-width="2" stroke-opacity="0.6" />
+            </pattern>
+            <pattern id="hatch-tree-viz-correct" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+              <rect width="8" height="8" fill="var(--correct, #34d399)" fill-opacity="0.4" />
+              <line x1="0" y1="0" x2="0" y2="8" stroke="#000000" stroke-width="2" stroke-opacity="0.6" />
+            </pattern>
+            <filter id="glow-correct" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+    `;
+
+    // Static lines
+    lines.forEach(l => {
+      svgHtml += `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="#71717a" stroke-width="2"/>`;
     });
 
-    // Determine current node
-    let curEl = nodes.root;
-    if (step.path.length === 1 && step.path[0] === 0) curEl = nodes.l;
-    
-    curEl.style.borderColor = 'var(--accent)';
-    curEl.style.boxShadow = '0 0 10px rgba(var(--accent-rgb), 0.5)';
-
+    // New Line (if added)
     if (step.added) {
-      nodes.new.style.display = 'flex';
-      nodes.line.style.display = 'block';
-    } else {
-      nodes.new.style.display = 'none';
-      nodes.line.style.display = 'none';
+      svgHtml += `<line x1="695" y1="300" x2="650" y2="370" stroke="var(--correct, #34d399)" stroke-width="3" stroke-dasharray="6"/>`;
     }
 
-    noteEl.textContent = step.note;
-    
-    prevBtn.disabled = cur === 0;
-    nextBtn.disabled = cur === steps.length - 1;
-  }
+    // Static nodes
+    nodeData.forEach(n => {
+      const isCurr = (step.curr === n.val);
+      const stroke = isCurr ? 'var(--correct, #34d399)' : 'var(--accent, #60a5fa)';
+      const fill = isCurr ? 'url(#hatch-tree-viz-correct)' : 'url(#hatch-tree-viz)';
+      const glow = isCurr ? 'filter="url(#glow-correct)"' : '';
+      const w = isCurr ? 5 : 3;
+      
+      svgHtml += `
+        <g transform="translate(${n.x}, ${n.y})">
+          <circle r="28" fill="${fill}" stroke="${stroke}" stroke-width="${w}" ${glow} class="node-circle" />
+          <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">${n.val}</text>
+        </g>
+      `;
+    });
 
-  prevBtn.onclick = () => { if (cur > 0) { cur--; render(); } };
-  nextBtn.onclick = () => { if (cur < steps.length - 1) { cur++; render(); } };
+    // New Node (if added)
+    if (step.added) {
+      svgHtml += `
+        <g transform="translate(650, 370)">
+          <circle r="28" fill="url(#hatch-tree-viz-correct)" stroke="var(--correct, #34d399)" stroke-width="4" filter="url(#glow-correct)" class="node-circle">
+            <animate attributeName="r" values="0;32;28" dur="0.5s" calcMode="spline" keySplines="0.175 0.885 0.32 1.275; 0.175 0.885 0.32 1.275" />
+          </circle>
+          <text y="7" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">88</text>
+        </g>
+      `;
+    }
+
+    svgHtml += `</svg>
+      <div class="vz-controls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+        <button id="bst-prev" class="reset-quiz-btn" ${cur === 0 ? 'disabled' : ''}>Προηγούμενο</button>
+        <div id="bst-note" style="color: #e4e4e7; font-family: system-ui, sans-serif; font-size: 1.1rem; font-weight: 500; flex: 1; text-align: center; margin: 0 1rem;">${step.note}</div>
+        <button id="bst-next" class="reset-quiz-btn" ${cur === steps.length - 1 ? 'disabled' : ''}>Επόμενο</button>
+      </div>
+    </div>`;
+
+    root.innerHTML = svgHtml;
+
+    root.querySelector('#bst-prev').onclick = () => { if (cur > 0) { cur--; render(); } };
+    root.querySelector('#bst-next').onclick = () => { if (cur < steps.length - 1) { cur++; render(); } };
+  }
 
   render();
 }
@@ -91,7 +106,6 @@ function createBstViz(root) {
 if (typeof VizWaitFor === 'function') {
   VizWaitFor('viz-bst', createBstViz);
 } else {
-  // Fallback
   document.addEventListener('DOMContentLoaded', () => {
     const root = document.getElementById('viz-bst');
     if (root) createBstViz(root);
