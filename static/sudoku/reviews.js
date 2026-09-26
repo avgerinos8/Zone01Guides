@@ -1,5 +1,5 @@
 const BOCAL_REVIEWS = {
-    'agalanaki': `// Bocal Review for Sudoku Solution: agalanaki
+    'ag': `// Bocal Review for Sudoku Solution: ag*******
 /*
 This implementation demonstrates a highly structured and effective backtracking approach. 
 
@@ -13,7 +13,7 @@ The memory management and grid traversal logic are also clean and idiomatic Go.
 
 Conclusion: Passes perfectly. Excellent work!
 *\/`,
-    'magora': `// Bocal Review for Sudoku Solution: magora, mpapakonst, mntampan
+    'mampmn': `// Bocal Review for Sudoku Solution: ma****, mp********, mn******
 /*
 This codebase stands out for its beautiful structure and adherence to solid algorithmic principles. 
 
@@ -27,7 +27,7 @@ The code is easy to read, modular, and performs flawlessly.
 
 Conclusion: Solid approach and clean execution. Passes!
 *\/`,
-    'nisankou': `// Bocal Review for Sudoku Solution: nisankou, cgiannoul, kxykis
+    'nicgkx': `// Bocal Review for Sudoku Solution: ni******, cg*******, kx****
 /*
 FAILS: The backtracking algorithm halts immediately upon finding the first valid solution path. 
 It completely fails to verify the uniqueness requirement, meaning it will incorrectly accept Sudoku grids that have multiple valid solutions.
@@ -42,7 +42,7 @@ This logic demonstrates advanced algorithmic thinking and a deeper understanding
 
 Using heuristics before the "raw" validation has tremendous implementation value, even if it results in a fail due to the absence of the uniqueness check.
 *\/`,
-    'gangelat': `// Bocal Review for Sudoku Solution: gangelat, spapachris, dkatsiko
+    'gaspdk': `// Bocal Review for Sudoku Solution: ga******, sp********, dk******
 /*
 FAILS: The recursive function returns true as soon as it discovers a single valid solution, halting any further exploration. 
 
@@ -57,7 +57,7 @@ The validation logic within the canPlace function is also concise.
 
 A solid attempt with nice data flow, but misses the core audit requirement.
 *\/`,
-    'pgouliam': `// Bocal Review for Sudoku Solution: pgouliam, evarthal, amoraitit
+    'pgevam': `// Bocal Review for Sudoku Solution: pg******, ev******, am*******
 /*
 FAILS: The implementation successfully finds a solution but terminates immediately upon doing so. 
 
@@ -69,7 +69,7 @@ The matrix initialization and the grid validation logic are highly readable, str
 
 It shows a good grasp of the language's syntax and type system, even if the algorithmic constraints were not fully met.
 *\/`,
-    'avrabac': `// Bocal Review for Sudoku Solution: avrabac, efourou, gpanouso
+    'avefgp': `// Bocal Review for Sudoku Solution: av*****, ef*****, gp******
 /*
 FAILS: The algorithm successfully completes a standard Sudoku solver but stops execution the moment the board is filled once. 
 

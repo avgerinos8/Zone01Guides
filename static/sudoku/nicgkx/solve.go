@@ -1,4 +1,4 @@
-// nisankou, cgiannoul, kxykis
+// ni******, cg*******, kx****
 
 package sudoku
 

@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- ALGORITHMS DATA & GENERATORS ---
 
     const ALGORITHMS = {
-        'agalanaki': {
+        'ag': {
             code: `var count int
 var grid [9][9]byte
 var solution [9][9]byte
@@ -70,7 +70,7 @@ func solve(pos int) {
 		return
 	}
 	for v := byte(1); v <= 9; v++ {
-		if <span class="preview-link" data-target="agalanaki_valid">canPlace</span>(r, c, v) {
+		if <span class="preview-link" data-target="ag_valid">canPlace</span>(r, c, v) {
 			grid[r][c] = v
 			solve(pos + 1)
 			grid[r][c] = 0 // backtrack
@@ -149,7 +149,7 @@ func solve(pos int) {
                 yield* solve(0);
             }
         },
-        'avrabac': {
+        'avefgp': {
             code: `var sudoku [9][9]int
 
 func solve() bool {
@@ -157,7 +157,7 @@ func solve() bool {
 		for col := 0; col < 9; col++ {
 			if sudoku[row][col] == 0 {
 				for num := 1; num <= 9; num++ {
-					if <span class="preview-link" data-target="avrabac_valid">isValidMove</span>(row, col, num) {
+					if <span class="preview-link" data-target="avefgp_valid">isValidMove</span>(row, col, num) {
 						sudoku[row][col] = num
 						if solve() {
 							return true
@@ -307,13 +307,13 @@ func solve() bool {
                 yield* solveMRV();
             }
         },
-        'gangelat': {
+        'gaspdk': {
             code: `func Solve(pinakas [9][9]int) ([9][9]int, bool) {
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
 			if pinakas[i][j] == 0 {
 				for n := 1; n <= 9; n++ {
-					if <span class="preview-link" data-target="gangelat_valid">canPlace</span>(pinakas, i, j, n) {
+					if <span class="preview-link" data-target="gaspdk_valid">canPlace</span>(pinakas, i, j, n) {
 						pinakas[i][j] = n
 						if lysh, ok := Solve(pinakas); ok {
 							return lysh, true
@@ -376,13 +376,13 @@ func solve() bool {
                 yield* solve();
             }
         },
-        'magora': {
+        'mampmn': {
             code: `func SolveSudoku(board *[9][9]int, solutions *int, solvedBoard *[9][9]int) {
 	for row := 0; row < 9; row++ {
 		for col := 0; col < 9; col++ {
 			if board[row][col] == 0 {
 				for num := 1; num <= 9; num++ {
-					if <span class="preview-link" data-target="magora_valid">IsCorrect</span>(board, row, col, num) {
+					if <span class="preview-link" data-target="mampmn_valid">IsCorrect</span>(board, row, col, num) {
 						board[row][col] = num
 						SolveSudoku(board, solutions, solvedBoard)
 						board[row][col] = 0
@@ -455,12 +455,12 @@ func solve() bool {
                 yield* solve();
             }
         },
-        'nisankou': {
+        'nicgkx': {
             code: `func Solution(myBoard *Board) bool {
 	for i := 0; i < 9; i++ {
 		for j := 0; j < 9; j++ {
 			if myBoard[i][j] == 0 {
-				candidates := <span class="preview-link" data-target="nisankouCandidates">Canditates</span>(*myBoard, i, j)
+				candidates := <span class="preview-link" data-target="nicgkxCandidates">Canditates</span>(*myBoard, i, j)
 				if len(candidates) == 0 {
 					return false
 				}
@@ -536,13 +536,13 @@ func solve() bool {
                 yield* solve();
             }
         },
-        'pgouliam': {
+        'pgevam': {
             code: `func SolveSudoku(board [][]rune) bool {
 	for row := 0; row < 9; row++ {
 		for col := 0; col < 9; col++ {
 			if board[row][col] == '.' {
 				for guess := '1'; guess <= '9'; guess++ {
-					if <span class="preview-link" data-target="pgouliam_valid">isValid</span>(board, row, col, guess) {
+					if <span class="preview-link" data-target="pgevam_valid">isValid</span>(board, row, col, guess) {
 						board[row][col] = guess
 						if SolveSudoku(board) {
 							return true
@@ -1200,11 +1200,11 @@ func solveDLX(solutions *int, solvedBoard *[9][9]int) {
     // --- VISUALIZATION ENGINE ---
 
     const PREVIEW_CODES = {
-        'agalanaki_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc canPlace(r, c int, v byte) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif grid[r][i] == v || grid[i][c] == v {\n\t\t\treturn false\n\t\t}\n\t}\n\tbr, bc := (r/3)*3, (c/3)*3\n\tfor i := br; i < br+3; i++ {\n\t\tfor j := bc; j < bc+3; j++ {\n\t\t\tif grid[i][j] == v {\n\t\t\t\treturn false\n\t\t\t}\n\t\t}\n\t}\n\treturn true\n}`,
-        'magora_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc IsCorrect(board *[9][9]int, row, col, num int) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif board[row][i] == num { return false }\n\t}\n\tfor j := 0; j < 9; j++ {\n\t\tif board[j][col] == num { return false }\n\t}\n\tboxrow := (row / 3) * 3\n\tboxcolumn := (col / 3) * 3\n\tfor i := 0; i < 3; i++ {\n\t\tfor j := 0; j < 3; j++ {\n\t\t\tif board[boxrow+i][boxcolumn+j] == num { return false }\n\t\t}\n\t}\n\treturn true\n}`,
-        'gangelat_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc canPlace(pinakas [9][9]int, i int, j int, n int) bool {\n\tif pinakas[i][j] == 0 {\n\t\tfor k := 0; k <= 8; k++ {\n\t\t\tif pinakas[i][k] == n || pinakas[k][j] == n {\n\t\t\t\treturn false\n\t\t\t}\n\t\t}\n\t\tstartX := (i / 3) * 3\n\t\tstartY := (j / 3) * 3\n\t\tfor r := startX; r < startX+3; r++ {\n\t\t\tfor t := startY; t < startY+3; t++ {\n\t\t\t\tif pinakas[r][t] == n { return false }\n\t\t\t}\n\t\t}\n\t}\n\treturn true\n}`,
-        'pgouliam_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc isValid(board [][]rune, row int, col int, guess rune) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif board[row][i] == guess { return false }\n\t}\n\tfor i := 0; i < 9; i++ {\n\t\tif board[i][col] == guess { return false }\n\t}\n\tstartRow := (row / 3) * 3\n\tstartCol := (col / 3) * 3\n\tfor i := 0; i < 3; i++ {\n\t\tfor j := 0; j < 3; j++ {\n\t\t\tif board[startRow+i][startCol+j] == guess { return false }\n\t\t}\n\t}\n\treturn true\n}`,
-        'avrabac_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc isValidMove(row, col, num int) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif sudoku[row][i] == num { return false }\n\t}\n\tfor i := 0; i < 9; i++ {\n\t\tif sudoku[i][col] == num { return false }\n\t}\n\tstartRow := (row / 3) * 3\n\tstartCol := (col / 3) * 3\n\tfor i := startRow; i < startRow+3; i++ {\n\t\tfor j := startCol; j < startCol+3; j++ {\n\t\t\tif sudoku[i][j] == num { return false }\n\t\t}\n\t}\n\treturn true\n}`,
+        'ag_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc canPlace(r, c int, v byte) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif grid[r][i] == v || grid[i][c] == v {\n\t\t\treturn false\n\t\t}\n\t}\n\tbr, bc := (r/3)*3, (c/3)*3\n\tfor i := br; i < br+3; i++ {\n\t\tfor j := bc; j < bc+3; j++ {\n\t\t\tif grid[i][j] == v {\n\t\t\t\treturn false\n\t\t\t}\n\t\t}\n\t}\n\treturn true\n}`,
+        'mampmn_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc IsCorrect(board *[9][9]int, row, col, num int) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif board[row][i] == num { return false }\n\t}\n\tfor j := 0; j < 9; j++ {\n\t\tif board[j][col] == num { return false }\n\t}\n\tboxrow := (row / 3) * 3\n\tboxcolumn := (col / 3) * 3\n\tfor i := 0; i < 3; i++ {\n\t\tfor j := 0; j < 3; j++ {\n\t\t\tif board[boxrow+i][boxcolumn+j] == num { return false }\n\t\t}\n\t}\n\treturn true\n}`,
+        'gaspdk_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc canPlace(pinakas [9][9]int, i int, j int, n int) bool {\n\tif pinakas[i][j] == 0 {\n\t\tfor k := 0; k <= 8; k++ {\n\t\t\tif pinakas[i][k] == n || pinakas[k][j] == n {\n\t\t\t\treturn false\n\t\t\t}\n\t\t}\n\t\tstartX := (i / 3) * 3\n\t\tstartY := (j / 3) * 3\n\t\tfor r := startX; r < startX+3; r++ {\n\t\t\tfor t := startY; t < startY+3; t++ {\n\t\t\t\tif pinakas[r][t] == n { return false }\n\t\t\t}\n\t\t}\n\t}\n\treturn true\n}`,
+        'pgevam_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc isValid(board [][]rune, row int, col int, guess rune) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif board[row][i] == guess { return false }\n\t}\n\tfor i := 0; i < 9; i++ {\n\t\tif board[i][col] == guess { return false }\n\t}\n\tstartRow := (row / 3) * 3\n\tstartCol := (col / 3) * 3\n\tfor i := 0; i < 3; i++ {\n\t\tfor j := 0; j < 3; j++ {\n\t\t\tif board[startRow+i][startCol+j] == guess { return false }\n\t\t}\n\t}\n\treturn true\n}`,
+        'avefgp_valid': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\nfunc isValidMove(row, col, num int) bool {\n\tfor i := 0; i < 9; i++ {\n\t\tif sudoku[row][i] == num { return false }\n\t}\n\tfor i := 0; i < 9; i++ {\n\t\tif sudoku[i][col] == num { return false }\n\t}\n\tstartRow := (row / 3) * 3\n\tstartCol := (col / 3) * 3\n\tfor i := startRow; i < startRow+3; i++ {\n\t\tfor j := startCol; j < startCol+3; j++ {\n\t\t\tif sudoku[i][j] == num { return false }\n\t\t}\n\t}\n\treturn true\n}`,
         'mrvFindMRVCell': `<span class="preview-link back-link" data-target="back">// &lt; back</span>\n` + ALGORITHMS['mrv'].mrvCode,
         'mrvCountCandidates': `<span class="preview-link back-link" data-target="back">// &lt; back</span>
 func countCandidates(board *[9][9]int, r int, c int) int {
@@ -1216,7 +1216,7 @@ func countCandidates(board *[9][9]int, r int, c int) int {
 	}
 	return cands
 }`,
-        'nisankouCandidates': `<span class="preview-link back-link" data-target="back">// &lt; back</span>
+        'nicgkxCandidates': `<span class="preview-link back-link" data-target="back">// &lt; back</span>
 func Canditates(myBoard Board, i int, j int) []int {
 	row := make([]int, 0)
 	column := make([]int, 0)
