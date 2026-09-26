@@ -265,14 +265,14 @@
     addContent(`
 <div class="eyebrow" id="@ll-vs-array">Ενότητα 1 / 2 &mdash; Linked Lists</div>
 <h1>Linked List vs Array</h1>
-<p class="lede">Σε αντίθεση με τα Arrays (ή τα Slices), σε μια Linked List <strong>δεν ξέρεις το μέγεθός της</strong> εκ των προτέρων (δεν υπάρχει κάτι σαν <code>len(sl)</code>), ούτε μπορείς να πας κατευθείαν σε ένα συγκεκριμένο στοιχείο (π.χ. στο <code>sl[3]</code>).</p>
+<p class="lede">Σε αντίθεση με τα Arrays (ή τα Slices), σε μια Linked List <strong>δεν γνωρίζουμε το συνολικό της μέγεθος</strong> εκ των προτέρων (δεν μπορούμε να χρησιμοποιήσουμε π.χ. τη συνάρτηση <code>len(sl)</code>), ούτε έχουμε τη δυνατότητα να αποκτήσουμε άμεση πρόσβαση σε κάποιο συγκεκριμένο στοιχείο μέσω index (όπως π.χ. με το <code>sl[3]</code>).</p>
 
-<p>Για να διαβάσεις το 3ο στοιχείο, πρέπει να <em>περπατήσεις</em> μέχρι εκεί μέσω των pointers: από το 1 &rarr; 2 &rarr; 3, και μετά να το διαβάσεις. Αυτό ίσως σου ακούγεται τρελό και εντελώς άχρηστο λοιπόν.</p>
+<p>Για να διαβάσουμε το 3ο στοιχείο, είμαστε αναγκασμένοι να <em>διασχίσουμε</em> τη λίστα βήμα-βήμα, ακολουθώντας τους pointers: από τον 1ο κόμβο &rarr; στον 2ο &rarr; στον 3ο. Με μια πρώτη ματιά, αυτός ο περιορισμός μπορεί να φαίνεται τεράστιο μειονέκτημα.</p>
 
 <div class="callout">
-  <span class="tag">Γιατί να την προτιμήσουμε;</span>
-  <p>Αν θέλεις να προσθέσεις ένα νέο στοιχείο στη θέση 2 ενός <strong>πίνακα (Array/Slice)</strong>, πρέπει να «σπρώξεις» χειροκίνητα όλα τα επόμενα στοιχεία μία θέση δεξιά για να ανοίξεις χώρο. Κι αν ο πίνακας έχει γεμίσει, η Go πρέπει να πάει στη μνήμη, να δεσμεύσει έναν <em>ολοκαίνουριο</em> τεράστιο πίνακα, και να τα αντιγράψει όλα από την αρχή (τεράστιο κόστος!).</p>
-  <p style="margin-bottom:0;">Στη <strong>Linked List</strong>, απλά βάζεις το έξτρα στοιχείο οπουδήποτε υπάρχει χώρος στη μνήμη, και πειράζεις αποκλειστικά τους <em>δεσμούς (pointers)</em> που ενώνουν την αλυσίδα. Δεν χρειάζεται να κουνήσεις <strong>κανένα απολύτως</strong> από τα υπόλοιπα εκατομμύρια στοιχεία που ακολουθούν!</p>
+  <span class="tag">Τότε γιατί να προτιμήσουμε τις Linked Lists;</span>
+  <p>Αν χρειαστεί να εισαγάγουμε ένα νέο στοιχείο στη θέση 2 ενός <strong>Array (ή Slice)</strong>, πρέπει υποχρεωτικά να μετατοπίσουμε όλα τα επόμενα στοιχεία μία θέση προς τα δεξιά για να δημιουργήσουμε χώρο. Αν μάλιστα η χωρητικότητα του πίνακα έχει εξαντληθεί, η Go αναγκάζεται να δεσμεύσει έναν <em>ολοκαίνουριο</em>, μεγαλύτερο πίνακα στη μνήμη και να αντιγράψει όλα τα δεδομένα από την αρχή — μια διαδικασία με τεράστιο υπολογιστικό κόστος.</p>
+  <p style="margin-bottom:0;">Αντίθετα, στη <strong>Linked List</strong>, τα πράγματα είναι εξαιρετικά αποδοτικά: αποθηκεύουμε το νέο στοιχείο σε οποιαδήποτε ελεύθερη θέση στη μνήμη και απλώς "κόβουμε" και "ράβουμε" τους <em>δεσμούς (pointers)</em> που ενώνουν την αλυσίδα μας. Δεν απαιτείται η μετακίνηση <strong>κανενός</strong> από τα υπόλοιπα στοιχεία, έστω κι αν ακολουθούν εκατομμύρια άλλοι κόμβοι!</p>
 </div>
 `);
 
@@ -458,7 +458,7 @@
 
     addContent(`
 <div class="eyebrow" id="@pointers-reminder">Ενότητα 1 / 2 &mdash; Linked Lists</div>
-<h1>Μικρή Παρένθεση: Pointers (&amp; και *)</h1>
+<h1>Σύντομη Επανάληψη: Pointers (&amp; και *)</h1>
 <p>Φαντάσου τη μνήμη του υπολογιστή σαν μια τεράστια γειτονιά με σπίτια. Κάθε σπίτι έχει μια <strong>τιμή</strong> (το περιεχόμενό του) και μια <strong>διεύθυνση</strong> (π.χ. Οδός 0x104).</p>
 
 <ul class="clean-list">
@@ -535,7 +535,7 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
 
     addContent(`
 <div class="eyebrow" id="@diaschisi">Ενότητα 1 / 2 &mdash; Linked Lists</div>
-<h1>Διάσχιση και ListPushBack</h1>
+<h1>Traversal (Διάσχιση) και ListPushBack</h1>
 <p class="lede">Για να προσθέσουμε ένα στοιχείο στο τέλος, πρέπει πρώτα να βρούμε... πού είναι το τέλος. Ξεκινάμε από το Head και προχωράμε μέχρι να βρούμε τον κόμβο που το <code>Next</code> του είναι <code>nil</code>.</p>
 
 <div id="viz-listpushback"></div>
@@ -643,7 +643,7 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
 
     addContent(`
 <div class="eyebrow" id="@glossary-1">Μίνι Γλωσσάρι &mdash; Ενότητα 1 / 2</div>
-<h1>Μίνι Γλωσσάρι</h1>
+<h1>Σύνοψη</h1>
 
 <div class="glossary-columns">
   <div class="gc-item">
@@ -888,14 +888,15 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
     addContent(`
 <div class="eyebrow" id="@btree-traversals">Ενότητα 2 / 2 &mdash; Binary Search Trees</div>
 <h1>Η στρατηγική για Inorder, Preorder, Postorder</h1>
-<p class="lede">Υπάρχουν 3 τρόποι να περάσουμε από όλους τους κόμβους. Η διαφορά τους είναι στο <strong>πότε</strong> κοιτάμε τα δεδομένα του κόμβου.</p>
+<p class="lede">Υπάρχουν 3 τρόποι να περάσουμε από όλους τους κόμβους. Η διαφορά τους είναι στο <strong>πότε</strong> κοιτάμε τα δεδομένα του κόμβου. Παρατήρησε παρακάτω τον κώδικα: είναι <strong>ολόιδιος</strong>, αλλάζει μόνο η σειρά των 3 εντολών!</p>
 
 <div class="grid3">
-  <div class="card">
+  <div class="card" style="display:flex;flex-direction:column;height:100%">
     <h3>Preorder</h3>
     <p>Data &rarr; Left &rarr; Right</p>
-    <p>Κοιτάμε πρώτα τη ρίζα, μετά κατεβαίνουμε αριστερά, μετά δεξιά.</p>
-    <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
+    <p>Εξετάζουμε πρώτα τη ρίζα (Data) και αμέσως μετά προχωράμε διαδοχικά σε όλα τα αριστερά και δεξιά.</p>
+    <div style="margin-top:auto">
+      <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
       <defs>
         <filter id="node-shadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
@@ -905,12 +906,12 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
         </filter>
         
         <g id="tree-base">
-          <line x1="140" y1="40" x2="60" y2="80" stroke="var(--tone-3)" stroke-width="2"/>
-          <line x1="140" y1="40" x2="220" y2="80" stroke="var(--tone-3)" stroke-width="2"/>
-          <line x1="60" y1="80" x2="20" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
-          <line x1="60" y1="80" x2="100" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
-          <line x1="220" y1="80" x2="180" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
-          <line x1="220" y1="80" x2="260" y2="120" stroke="var(--tone-3)" stroke-width="2"/>
+          <line x1="140" y1="40" x2="60" y2="80" stroke="var(--tone-4)" stroke-width="6" stroke-linecap="round"/>
+          <line x1="140" y1="40" x2="220" y2="80" stroke="var(--tone-4)" stroke-width="6" stroke-linecap="round"/>
+          <line x1="60" y1="80" x2="20" y2="120" stroke="var(--tone-4)" stroke-width="6" stroke-linecap="round"/>
+          <line x1="60" y1="80" x2="100" y2="120" stroke="var(--tone-4)" stroke-width="6" stroke-linecap="round"/>
+          <line x1="220" y1="80" x2="180" y2="120" stroke="var(--tone-4)" stroke-width="6" stroke-linecap="round"/>
+          <line x1="220" y1="80" x2="260" y2="120" stroke="var(--tone-4)" stroke-width="6" stroke-linecap="round"/>
           
           <circle cx="140" cy="40" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
           <circle cx="60" cy="80" r="16" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="3" filter="url(#node-shadow)"/>
@@ -937,9 +938,21 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
         <g id="b5"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">5</text></g>
         <g id="b6"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">6</text></g>
         <g id="b7"><circle cx="0" cy="0" r="12" fill="var(--correct)" filter="url(#badge-shadow)"/><text x="0" y="4.5" font-family="system-ui" font-size="14" font-weight="bold" fill="#09090b" text-anchor="middle">7</text></g>
+        
+        <marker id="dash-arrow" markerUnits="userSpaceOnUse" viewBox="0 0 10 10" refX="22" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" opacity="0.65"/>
+        </marker>
       </defs>
 
       <use href="#tree-base" />
+      
+      <path d="M 154 26 Q 90 50 74 66" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 74 66 Q 40 90 34 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 34 106 Q 74 136 114 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 114 106 Q 174 116 234 66" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 234 66 Q 200 90 194 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 194 106 Q 234 136 274 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      
       <use href="#b1" x="154" y="26" />
       <use href="#b2" x="74" y="66" />
       <use href="#b3" x="34" y="106" />
@@ -948,13 +961,31 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
       <use href="#b6" x="194" y="106" />
       <use href="#b7" x="274" y="106" />
     </svg>
+    <pre style="margin-top:24px"><code class="lang-go">func Preorder(node *TreeNode) {
+	if node == nil {
+		return
+	}
+	fmt.Print(node.Data, " ") // 1. Data
+	Preorder(node.Left)       // 2. Left
+	Preorder(node.Right)      // 3. Right
+}</code></pre>
+    </div>
   </div>
-  <div class="card">
+  <div class="card" style="display:flex;flex-direction:column;height:100%">
     <h3>Inorder</h3>
     <p>Left &rarr; Data &rarr; Right</p>
-    <p>Πρώτα όλα τα αριστερά, μετά η ρίζα. <strong>Μας δίνει τα στοιχεία σε απόλυτη αλφαβητική/αριθμητική σειρά.</strong></p>
-    <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
+    <p>Πρώτα όλα τα αριστερά, μετά η ρίζα. Μας δίνει τα στοιχεία σε απόλυτη αλφαβητική / αριθμητική σειρά.</p>
+    <div style="margin-top:auto">
+      <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
       <use href="#tree-base" />
+      
+      <path d="M 34 106 Q 40 70 74 66" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 74 66 Q 100 70 114 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 114 106 Q 120 50 154 26" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 154 26 Q 180 50 194 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 194 106 Q 200 70 234 66" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 234 66 Q 260 70 274 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      
       <use href="#b4" x="154" y="26" />
       <use href="#b2" x="74" y="66" />
       <use href="#b1" x="34" y="106" />
@@ -963,13 +994,31 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
       <use href="#b5" x="194" y="106" />
       <use href="#b7" x="274" y="106" />
     </svg>
+    <pre style="margin-top:24px"><code class="lang-go">func Inorder(node *TreeNode) {
+	if node == nil {
+		return
+	}
+	Inorder(node.Left)        // 1. Left
+	fmt.Print(node.Data, " ") // 2. Data
+	Inorder(node.Right)       // 3. Right
+}</code></pre>
+    </div>
   </div>
-  <div class="card">
+  <div class="card" style="display:flex;flex-direction:column;height:100%">
     <h3>Postorder</h3>
     <p>Left &rarr; Right &rarr; Data</p>
-    <p>Πρώτα εξερευνούμε όλα τα παιδιά, και στο τέλος τον ίδιο τον κόμβο.</p>
-    <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
+    <p>Πρώτα εξερευνούμε εξαντλητικά όλα τα παιδιά του δέντρου, και στο τέλος διαβάζουμε τον ίδιο κόμβο.</p>
+    <div style="margin-top:auto">
+      <svg viewBox="0 0 290 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin-top:16px;">
       <use href="#tree-base" />
+      
+      <path d="M 34 106 Q 74 136 114 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 114 106 Q 110 80 74 66" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 74 66 Q 134 116 194 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 194 106 Q 234 136 274 106" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 274 106 Q 270 80 234 66" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      <path d="M 234 66 Q 210 30 154 26" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="0.1 7" stroke-linecap="round" opacity="0.6" marker-end="url(#dash-arrow)"/>
+      
       <use href="#b7" x="154" y="26" />
       <use href="#b3" x="74" y="66" />
       <use href="#b1" x="34" y="106" />
@@ -978,6 +1027,15 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
       <use href="#b4" x="194" y="106" />
       <use href="#b5" x="274" y="106" />
     </svg>
+    <pre style="margin-top:24px"><code class="lang-go">func Postorder(node *TreeNode) {
+	if node == nil {
+		return
+	}
+	Postorder(node.Left)      // 1. Left
+	Postorder(node.Right)     // 2. Right
+	fmt.Print(node.Data, " ") // 3. Data
+}</code></pre>
+    </div>
   </div>
 </div>
 `);
@@ -1031,35 +1089,18 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
     ]);
 
     addContent(`
-<div class="eyebrow" id="@glossary-2">Μίνι Γλωσσάρι &mdash; Ενότητα 2 / 2</div>
-<h1>Μίνι Γλωσσάρι</h1>
-
-<div class="gs-wrap">
-  <div class="gs-pill"><span class="gs-name">Binary Search Tree</span><span class="gs-def">Δέντρο όπου τα αριστερά παιδιά είναι πάντα μικρότερα και τα δεξιά μεγαλύτερα.</span></div>
-  <div class="gs-pill"><span class="gs-name">Recursion</span><span class="gs-def">Όταν μια συνάρτηση καλεί τον εαυτό της για να λύσει ένα μικρότερο κομμάτι του ίδιου προβλήματος.</span></div>
-  <div class="gs-pill"><span class="gs-name">Base Case</span><span class="gs-def">Η συνθήκη (π.χ. root == nil) που σταματάει την αναδρομή.</span></div>
-</div>
-`);
-
-    addContent(`
 <div class="eyebrow" id="@teliki-epanalipsi">Τελική Επανάληψη &mdash; Piscine Week 4</div>
 <h1>Τι είδαμε σε αυτό το Guide</h1>
-<p class="lede">Δύο από τις πιο σημαντικές δυναμικές δομές δεδομένων που θα συναντήσεις στον προγραμματισμό.</p>
+<p class="lede">Μια πλήρης αλλαγή στον τρόπο που αντιλαμβανόμαστε και διαχειριζόμαστε τη μνήμη.</p>
 
-<table style="width:100%;border-collapse:collapse;margin-top:6px">
-  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.25)">
-    <th style="text-align:left;padding:9px 8px">Δομή</th>
-    <th style="text-align:left;padding:9px 8px">Πότε τη χρησιμοποιούμε</th>
-  </tr>
-  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.12)">
-    <td style="padding:9px 8px"><strong>Linked List</strong></td>
-    <td style="padding:9px 8px">Όταν θέλουμε να προσθέτουμε/αφαιρούμε στοιχεία χωρίς να μετακινούμε τεράστια blocks μνήμης.</td>
-  </tr>
-  <tr>
-    <td style="padding:9px 8px"><strong>Binary Search Tree</strong></td>
-    <td style="padding:9px 8px">Όταν έχουμε πολλά δεδομένα και θέλουμε να βρίσκουμε κάτι εξαιρετικά γρήγορα (με διαρκή διχοτόμηση).</td>
-  </tr>
-</table>
+<p>Μέχρι τώρα, τα δεδομένα μας ήταν αποθηκευμένα σε συνεχόμενα "κουτάκια" στη μνήμη (όπως στα arrays και slices). Σε αυτή την εβδομάδα, περάσαμε σε κάτι εντελώς διαφορετικό: μάθαμε να χρησιμοποιούμε <strong>pointers</strong> για να δημιουργούμε δυναμικά «νησιά» δεδομένων που συνδέονται μεταξύ τους με δείκτες, ανεξάρτητα από το πού ακριβώς βρίσκονται στη μνήμη RAM.</p>
+
+<p>Αυτή η προσέγγιση μας προσφέρει ασύγκριτη ταχύτητα στην προσθήκη και διαγραφή στοιχείων (όπως στις Linked Lists) και ταχύτατη αναζήτηση μέσω συνεχούς διχοτόμησης (στα Binary Search Trees). Παράλληλα, μας μαθαίνει να χειριζόμαστε με προσοχή τη μνήμη, καθώς ένα μικρό λάθος αρκεί για να προκαλέσει <code>nil pointer dereference</code> και να κρασάρει το πρόγραμμα.</p>
+
+<div class="callout">
+  <span class="tag">ΜΗΝ ΞΕΧΝΑΣ</span>
+  Στις λίστες, να προσέχεις πάντα τι γίνεται όταν η λίστα είναι άδεια (Head == nil). Στα δέντρα, εμπιστεύσου το recursion &mdash; το base case θα σε σώσει από τα άπειρα loops. Καλή επιτυχία στο Final Test!
+</div>
 `);
 
     addQuiz([
@@ -1100,13 +1141,11 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
 
     addContent(`
 <div class="eyebrow" id="@telos">Έφτασες στο τέλος</div>
-<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
-<p>Οι Linked Lists και τα Trees είναι τα εργαλεία με τα οποία χτίζονται οι βάσεις δεδομένων, τα file systems και πολλές άλλες τεχνολογίες που χρησιμοποιείς καθημερινά.</p>
+<h1>Συγχαρητήρια για την προσπάθεια!</h1>
+<p>Οι <strong>Linked Lists</strong> και τα <strong>Binary Search Trees</strong> είναι χωρίς αμφιβολία αρκετά πολύπλοκα concepts που απαιτούν πολύ καλή κατανόηση των pointers (δεικτών). Ωστόσο, αξίζει τον κόπο: είναι τα ίδια εργαλεία με τα οποία χτίζονται οι βάσεις δεδομένων, τα file systems και αμέτρητες τεχνολογίες που χρησιμοποιείς καθημερινά.</p>
 
-<div class="callout">
-  <span class="tag">ΜΗΝ ΞΕΧΝΑΣ</span>
-  Στις λίστες, να προσέχεις πάντα τι γίνεται όταν η λίστα είναι άδεια (Head == nil). Στα δέντρα, εμπιστεύσου το recursion &mdash; το base case θα σε σώσει από τα άπειρα loops.
-</div>
+<p>Σε αυτό το σημείο, η <strong>Go Piscine</strong> ουσιαστικά φτάνει στο τέλος της όσον αφορά την καινούρια ύλη, ολοκληρώνοντας έναν πραγματικά <em>έντονο</em> μήνα γεμάτο με πολύ ενδιαφέροντα concepts. Η τελευταία εβδομάδα περιλαμβάνει επίτηδες <strong>μόνο 2 ημέρες με Quests</strong>. Ο λόγος; Για να υπάρξει επαρκής χρόνος για <strong>συνολική επανάληψη</strong>, ώστε να προλάβουν να αφομοιωθούν όλα όσα μάθατε ενόψει του μεγάλου <strong>Final Test</strong> την τελευταία Παρασκευή. Εκμεταλλεύσου αυτές τις μέρες για να καλύψεις κενά, να κάνεις πρακτική σε παλιά exams, και να προετοιμαστείς για το μεγάλο φινάλε!</p>
+
 
 <p class="lede">Για περαιτέρω εμβάθυνση:</p>
 <div class="sources-list">
