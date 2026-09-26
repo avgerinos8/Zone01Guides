@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+  <script>
+    window.__initialHash = location.hash;
+    if (location.hash) {
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  </script>
+  <script>
+    (function () {
+      var shown = false;
+      window.addEventListener("error", function () {
+        if (shown) return
+        if (window.__pageInitialized) return;
+        shown = true;
+        showContentChangedFallback();
+      });
+
+      function showContentChangedFallback() {
+        var overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:999999;background:#1a1a1a;" +
+          "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+          "gap:20px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#e0e0e0;" +
+          "text-align:center;padding:24px;";
+
+        var msg = document.createElement("div");
+        msg.textContent = "Internal Error";
+        msg.style.cssText = "font-size:22px;font-weight:600;letter-spacing:.02em;";
+        overlay.appendChild(msg);
+
+        var btn = document.createElement("button");
+        btn.textContent = "Reset Progress";
+        btn.style.cssText = "font-family:inherit;font-size:15px;padding:10px 22px;" +
+          "border-radius:7px;border:1px solid #888;background:transparent;" +
+          "color:#ccc;cursor:pointer;";
+        btn.addEventListener("click", function () {
+          var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_";
+          localStorage.removeItem(prefix + "current_slide");
+          localStorage.removeItem(prefix + "answers");
+          localStorage.removeItem(prefix + "scores");
+          localStorage.removeItem(prefix + "notified_100");
+          localStorage.removeItem(prefix + "version");
+          window.location.reload();
+        });
+        overlay.appendChild(btn);
+        document.body.appendChild(overlay);
+      }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piscine Go — Week 4 Review</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="static/style.css?v=20260809">
+  <link rel="stylesheet" href="static/theme-valley.css?v=20260926">
+  <link rel="stylesheet" href="static/present.css?v=20260909">
+  <link rel="stylesheet" href="static/viz-style.css?v=20260818">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-toc">
+        <span class="desktop-text">☰</span>
+        <span class="mobile-text">☰</span>
+      </button>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">&larr;Back</span>
+        <span class="mobile-text">&larr;</span>
+      </button>
+    </div>
+    <div id="dots">
+      <div class="dots-arrow dots-arrow-left" id="dots-arrow-left"><span class="dots-arrow-triangle"></span></div>
+      <div id="dots-track"></div>
+      <div class="dots-arrow dots-arrow-right" id="dots-arrow-right"><span class="dots-arrow-triangle"></span></div>
+    </div>
+    <div class="nav-group-right">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next&rarr;</span>
+        <span class="mobile-text">&rarr;</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="toc-backdrop"></div>
+  <div id="toc-sidebar">
+    <div id="toc-header">
+      <span id="toc-title">Contents</span>
+      <div class="toc-header-actions">
+        <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress" aria-label="Reset Progress">Reset
+          Progress</button>
+        <button id="toc-close" class="toc-icon-btn" aria-label="Κλείσιμο">✕</button>
+      </div>
+    </div>
+
+    <div id="toc-search-wrap">
+      <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+    </div>
+
+    <div id="toc-list"></div>
+
+    <div id="toc-footer">
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
+        <span class="desktop-text">Return Home</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-toc-close-footer">
+        <span class="desktop-text">Close</span>
+        <span class="mobile-text">Close</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260809"></script>
+  <script src="static/highlighter.js?v=20260809"></script>
+  <script src="static/notify-progress.js?v=20260809"></script>
+  <script src="static/vizJS/viz-common.js?v=20260818"></script>
+  <script src="static/vizJS/viz-list.js?v=20260926"></script>
+  <script src="static/vizJS/viz-bst.js?v=20260926"></script>
+  <script>
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge"><img src="./icons/week4.png" alt="Course icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
+  <div class="kicker-line">Zone01 Athens &middot; Piscine 9 &middot; Author: AVGERINOS PAVLOS</div>
+  <h1>Piscine Go<br>Week 4 Review</h1>
+  <p class="lede">Linked Lists, Binary Search Trees</p>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@ti-einai-linked-list">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>Τι είναι η Linked List</h1>
+<p class="lede">Μέχρι τώρα χρησιμοποιούσαμε arrays και slices, όπου όλα τα δεδομένα βρίσκονται στη σειρά. Η Linked List (Συνδεδεμένη Λίστα) λειτουργεί εντελώς διαφορετικά: κάθε στοιχείο βρίσκεται κάπου αλλού στη μνήμη και απλώς ξέρει πού βρίσκεται το επόμενο.</p>
+
+<svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto;color:var(--ink)">
+  <style>
+    .blacked-shadow { filter: drop-shadow(2px 2px 0px #000) drop-shadow(-1px -1px 0px #000) drop-shadow(1px -1px 0px #000) drop-shadow(-1px 1px 0px #000); }
+  </style>
+  <defs>
+    <pattern id="hatch-blue" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--accent)" stroke-width="1.5" stroke-opacity="0.2" />
+    </pattern>
+    <pattern id="hatch-green" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--correct)" stroke-width="1.5" stroke-opacity="0.2" />
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--correct)" />
+    </marker>
+  </defs>
+
+  <!-- Array -->
+  <rect x="30" y="35" width="500" height="36" fill="var(--accent)" opacity="0.4" rx="18" />
+  <text x="200" y="58" font-size="16" text-anchor="middle" font-family="monospace" font-weight="bold" fill="var(--tone-text)" class="blacked-shadow">ARRAY / SLICE</text>
+  
+  <rect x="30" y="80" width="240" height="50" fill="url(#hatch-blue)" stroke="var(--accent)" stroke-width="2" rx="4"/>
+  <line x1="90" y1="80" x2="90" y2="130" stroke="var(--accent)" stroke-width="2"/>
+  <line x1="150" y1="80" x2="150" y2="130" stroke="var(--accent)" stroke-width="2"/>
+  <line x1="210" y1="80" x2="210" y2="130" stroke="var(--accent)" stroke-width="2"/>
+  
+  <text x="60" y="112" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">5</text>
+  <text x="120" y="112" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">8</text>
+  <text x="180" y="112" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">2</text>
+  <text x="240" y="112" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">9</text>
+
+  <!-- Linked List -->
+  <rect x="30" y="145" width="500" height="36" fill="var(--correct)" opacity="0.4" rx="18" />
+  <text x="200" y="168" font-size="16" text-anchor="middle" font-family="monospace" font-weight="bold" fill="var(--tone-text)" class="blacked-shadow">LINKED LIST</text>
+  
+  <rect x="30" y="190" width="50" height="50" fill="url(#hatch-green)" stroke="var(--correct)" stroke-width="2" rx="8"/>
+  <text x="55" y="222" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">5</text>
+  <text x="127" y="208" font-size="10" text-anchor="middle" fill="var(--correct)">pointer to next -&gt;</text>
+  <line x1="80" y1="215" x2="175" y2="215" stroke="var(--correct)" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <rect x="180" y="190" width="50" height="50" fill="url(#hatch-green)" stroke="var(--correct)" stroke-width="2" rx="8"/>
+  <text x="205" y="222" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">8</text>
+  <text x="277" y="208" font-size="10" text-anchor="middle" fill="var(--correct)">pointer to next -&gt;</text>
+  <line x1="230" y1="215" x2="325" y2="215" stroke="var(--correct)" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="330" y="190" width="50" height="50" fill="url(#hatch-green)" stroke="var(--correct)" stroke-width="2" rx="8"/>
+  <text x="355" y="222" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">2</text>
+  <text x="427" y="208" font-size="10" text-anchor="middle" fill="var(--correct)">pointer to next -&gt;</text>
+  <line x1="380" y1="215" x2="475" y2="215" stroke="var(--correct)" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="480" y="190" width="50" height="50" fill="url(#hatch-green)" stroke="var(--correct)" stroke-width="2" rx="8"/>
+  <text x="505" y="222" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">9</text>
+  <line x1="530" y1="215" x2="570" y2="215" stroke="var(--correct)" stroke-width="2" stroke-dasharray="4"/>
+  <text x="595" y="220" font-size="16" text-anchor="middle" fill="#ffffff" font-family="monospace">nil</text>
+</svg>
+
+<p>Γιατί να την προτιμήσουμε; Σε ένα array, για να βάλεις ένα στοιχείο στη μέση, πρέπει να μετακινήσεις όλα τα επόμενα προς τα δεξιά (με μεγάλο κόστος). Σε μια Linked List, το μόνο που κάνεις είναι να αλλάξεις πού δείχνουν τα βελάκια, χωρίς επιπλέον δουλειά.</p>
+
+<svg viewBox="0 0 760 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:32px auto 0 auto;">
+  <defs>
+    <filter id="shadow-chain" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="3" dy="8" stdDeviation="5" flood-color="#000" flood-opacity="0.65"/>
+    </filter>
+
+    <!-- Base full flat link -->
+    <g id="link-flat">
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#181818" stroke-width="20" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#333333" stroke-width="16" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#555555" stroke-width="12" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#777777" stroke-width="8" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#999999" stroke-width="4" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#dddddd" stroke-width="1" />
+    </g>
+
+    <!-- Left rim cover (for interlacing) -->
+    <g id="link-flat-cover-left">
+      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
+      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#333333" stroke-width="16" stroke-linecap="butt" />
+      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#555555" stroke-width="12" stroke-linecap="butt" />
+      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
+      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#999999" stroke-width="4" stroke-linecap="butt" />
+      <path d="M 0 -30 L -30 -30 A 30 30 0 0 0 -30 30 L 0 30" fill="none" stroke="#dddddd" stroke-width="1" stroke-linecap="butt" />
+    </g>
+
+    <!-- Right rim cover (for interlacing) -->
+    <g id="link-flat-cover-right">
+      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
+      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#333333" stroke-width="16" stroke-linecap="butt" />
+      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#555555" stroke-width="12" stroke-linecap="butt" />
+      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
+      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#999999" stroke-width="4" stroke-linecap="butt" />
+      <path d="M 0 -30 L 30 -30 A 30 30 0 0 1 30 30 L 0 30" fill="none" stroke="#dddddd" stroke-width="1" stroke-linecap="butt" />
+    </g>
+
+    <!-- Perpendicular (Edge) link -->
+    <g id="link-edge">
+      <rect x="-45" y="-12" width="90" height="24" rx="12" fill="#181818" />
+      <rect x="-43" y="-10" width="86" height="20" rx="10" fill="#333333" />
+      <rect x="-41" y="-8" width="82" height="16" rx="8" fill="#555555" />
+      <rect x="-39" y="-6" width="78" height="12" rx="6" fill="#777777" />
+      <rect x="-37" y="-4" width="74" height="8" rx="4" fill="#999999" />
+      <rect x="-35" y="-2" width="70" height="4" rx="2" fill="#dddddd" />
+    </g>
+  </defs>
+
+  <!-- 1. Flat Links (all receive drop shadows to cast on background) -->
+  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(80, 80) rotate(-5)" />
+  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(220, 80) rotate(8)" />
+  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(360, 80) rotate(-3)" />
+  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(500, 80) rotate(6)" />
+  <use href="#link-flat" filter="url(#shadow-chain)" transform="translate(640, 80) rotate(-8)" />
+
+  <!-- 2. Edge Links (receive drop shadows that cast over the flat links beneath them) -->
+  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(150, 80) rotate(4)" />
+  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(290, 80) rotate(-6)" />
+  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(430, 80) rotate(5)" />
+  <use href="#link-edge" filter="url(#shadow-chain)" transform="translate(570, 80) rotate(-4)" />
+
+  <!-- 3. Cover Rims (drawn with no shadow to perfectly mask the edge links and create the interlacing illusion) -->
+  <use href="#link-flat-cover-right" transform="translate(80, 80) rotate(-5)" />
+  <use href="#link-flat-cover-left" transform="translate(220, 80) rotate(8)" />
+  
+  <use href="#link-flat-cover-right" transform="translate(220, 80) rotate(8)" />
+  <use href="#link-flat-cover-left" transform="translate(360, 80) rotate(-3)" />
+  
+  <use href="#link-flat-cover-right" transform="translate(360, 80) rotate(-3)" />
+  <use href="#link-flat-cover-left" transform="translate(500, 80) rotate(6)" />
+  
+  <use href="#link-flat-cover-right" transform="translate(500, 80) rotate(6)" />
+  <use href="#link-flat-cover-left" transform="translate(640, 80) rotate(-8)" />
+</svg>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@chain-metaphor">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>Η αλυσίδα στην πράξη</h1>
+<p class="lede">Η παρομοίωση με μια φυσική αλυσίδα μας βοηθάει να καταλάβουμε οπτικά τι συμβαίνει στο εσωτερικό της λίστας όταν προσθέτουμε ή αφαιρούμε κόμβους:</p>
+
+<svg viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:32px auto 16px auto;color:var(--ink)">
+  <defs>
+    <filter id="chain-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="5" stdDeviation="4" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--dim)"/>
+    </marker>
+    <marker id="arrow-nil" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffffff"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)"/>
+    </marker>
+
+    <!-- Side Links -->
+    <g id="link-side">
+      <rect x="0" y="14" width="80" height="16" rx="8" fill="var(--tone-4)" filter="url(#chain-shadow)"/>
+    </g>
+    <g id="link-side-accent">
+      <rect x="0" y="14" width="80" height="16" rx="8" fill="var(--accent)" filter="url(#chain-shadow)"/>
+    </g>
+    
+    <!-- Nodes (Main Links) -->
+    <g id="link-node">
+      <rect x="0" y="0" width="120" height="44" rx="22" fill="var(--bg, #1a1a1a)" stroke="var(--tone-3)" stroke-width="8" filter="url(#chain-shadow)"/>
+    </g>
+    <g id="link-node-accent">
+      <rect x="0" y="0" width="120" height="44" rx="22" fill="var(--bg, #1a1a1a)" stroke="var(--accent)" stroke-width="8" filter="url(#chain-shadow)"/>
+    </g>
+  </defs>
+
+  <!-- FRAME 1 -->
+  <g transform="translate(20, 50)">
+    <text x="0" y="-15" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="var(--tone-text)">1. Αρχική μορφή</text>
+    <use href="#link-side" x="200" y="0" />
+    <use href="#link-side" x="360" y="0" />
+    
+    <use href="#link-node" x="100" y="0" />
+    <text x="160" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">A</text>
+    
+    <use href="#link-node" x="260" y="0" />
+    <text x="320" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">B</text>
+    
+    <use href="#link-node" x="420" y="0" />
+    <text x="480" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">C</text>
+  </g>
+
+  <!-- FRAME 2 -->
+  <g transform="translate(20, 160)">
+    <text x="0" y="-15" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="var(--tone-text)">2. Αποσύνδεση κρίκου</text>
+    <use href="#link-side" x="520" y="0" />
+    
+    <use href="#link-node" x="100" y="0" />
+    <text x="160" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">A</text>
+    
+    <path d="M 210 22 Q 240 22 240 45" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="5" marker-end="url(#arrow-nil)"/>
+    <text x="240" y="62" font-family="monospace" font-size="13" fill="#ffffff" text-anchor="middle">nil</text>
+
+    <use href="#link-node" x="420" y="0" />
+    <text x="480" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">B</text>>
+    
+    <use href="#link-node" x="580" y="0" />
+    <text x="640" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">C</text>
+  </g>
+
+  <!-- FRAME 3 -->
+  <g transform="translate(20, 290)">
+    <text x="0" y="-15" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="var(--tone-text)">3. Νέος κρίκος ενδιάμεσα</text>
+    <use href="#link-side" x="520" y="0" />
+    
+    <use href="#link-node" x="100" y="0" />
+    <text x="160" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">A</text>
+    
+    <!-- Dropping in Node -->
+    <use href="#link-node-accent" x="260" y="-20" />
+    <text x="320" y="7" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--accent)">X</text>
+    
+    <!-- Motion lines -->
+    <path d="M 320 28 L 320 40" stroke="var(--accent)" stroke-width="3" stroke-dasharray="4" marker-end="url(#arrow-accent)" />
+
+    <use href="#link-node" x="420" y="0" />
+    <text x="480" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">B</text>
+    
+    <use href="#link-node" x="580" y="0" />
+    <text x="640" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">C</text>
+  </g>
+
+  <!-- FRAME 4 -->
+  <g transform="translate(20, 420)">
+    <text x="0" y="-15" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="var(--tone-text)">4. Επανασύνδεση αλυσίδας</text>
+    <use href="#link-side-accent" x="200" y="0" />
+    <use href="#link-side-accent" x="360" y="0" />
+    <use href="#link-side" x="520" y="0" />
+    
+    <use href="#link-node" x="100" y="0" />
+    <text x="160" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">A</text>
+    
+    <use href="#link-node-accent" x="260" y="0" />
+    <text x="320" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--accent)">X</text>
+    
+    <use href="#link-node" x="420" y="0" />
+    <text x="480" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">B</text>
+    
+    <use href="#link-node" x="580" y="0" />
+    <text x="640" y="27" font-family="monospace" font-size="18" font-weight="bold" text-anchor="middle" fill="var(--tone-text)">C</text>
+  </g>
+</svg>
+`);
+    addContent(`
+<div class="eyebrow" id="@ti-einai-node">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>Τι είναι το *Node</h1>
+<p class="lede">Ο βασικός δομικός λίθος της λίστας είναι ο κόμβος (node). Κάθε κόμβος κρατάει ένα κομμάτι πληροφορίας και έναν pointer προς τον επόμενο κόμβο.</p>
+
+<pre><code class="lang-go">type NodeL struct {
+	Data interface{}
+	Next *NodeL
+}</code></pre>
+
+<p>Όταν γράφουμε <code>*NodeL</code>, εννοούμε τη διεύθυνση μνήμης όπου βρίσκεται ο κόμβος. Επίσης, αν δεν υπάρχει επόμενος κόμβος, το <code>Next</code> παίρνει την τιμή <code>nil</code>.</p>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@diaschisi">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>Διάσχιση και ListPushBack</h1>
+<p class="lede">Για να προσθέσουμε ένα στοιχείο στο τέλος, πρέπει πρώτα να βρούμε... πού είναι το τέλος. Ξεκινάμε από το Head και προχωράμε μέχρι να βρούμε τον κόμβο που το <code>Next</code> του είναι <code>nil</code>.</p>
+
+<div id="viz-listpushback"></div>
+
+<pre><code class="lang-go">func ListPushBack(l *List, data interface{}) {
+	n := &amp;NodeL{Data: data} // Φτιάχνουμε τον νέο κόμβο
+	
+	if l.Head == nil { // Αν η λίστα είναι άδεια
+		l.Head = n
+		return
+	}
+	
+	curr := l.Head
+	for curr.Next != nil { // Προχωράμε μέχρι το τέλος
+		curr = curr.Next
+	}
+	
+	curr.Next = n // Τον συνδέουμε
+}</code></pre>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@listreverse-stratigiki">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>Η στρατηγική για την ListReverse</h1>
+<p class="lede">Το να γυρίσεις μια λίστα ανάποδα μοιάζει δύσκολο, αλλά λύνεται διατηρώντας τρεις δείκτες: τον προηγούμενο (prev), τον τρέχοντα (curr), και τον επόμενο (next).</p>
+
+<p>Σε κάθε βήμα:
+<ol>
+<li>Σημειώνουμε ποιος είναι ο <code>next</code> (γιατί αλλιώς θα τον χάσουμε)</li>
+<li>Αλλάζουμε το <code>Next</code> του <code>curr</code> να δείχνει στον <code>prev</code></li>
+<li>Προχωράμε τον <code>prev</code> και τον <code>curr</code> ένα βήμα μπροστά</li>
+</ol>
+</p>
+
+<pre><code class="lang-go">func ListReverse(l *List) {
+	var prev *NodeL
+	curr := l.Head
+	
+	l.Tail = l.Head // το παλιό Head γίνεται το νέο Tail
+	
+	for curr != nil {
+		next := curr.Next
+		curr.Next = prev
+		prev = curr
+		curr = next
+	}
+	
+	l.Head = prev // το παλιό Tail γίνεται το νέο Head
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Αν ξεχάσεις να σώσεις το <code>curr.Next</code> σε μια βοηθητική μεταβλητή πριν το αλλάξεις, θα χάσεις την επαφή με το υπόλοιπο της λίστας (αφού μόλις γύρισες το βελάκι ανάποδα!) και το πρόγραμμά σου θα προκαλέσει panic ή άπειρη αναδρομή.
+</div>
+`);
+
+    addQuiz([
+      {
+        q: "Τι ακριβώς κρατάει το πεδίο Next ενός NodeL;",
+        options: [
+          "Τη διεύθυνση μνήμης όπου βρίσκεται ο επόμενος κόμβος",
+          "Την τιμή (Data) του επόμενου κόμβου",
+          "Έναν ακέραιο που δείχνει τη θέση του κόμβου στη λίστα",
+          "Μια λίστα με όλους τους επόμενους κόμβους της ακολουθίας, επειδή ο κώδικας μεταφέρει ολόκληρα τα δεδομένα"
+        ],
+        correct: 0,
+        explain: "Το *NodeL είναι pointer. Η δουλειά του είναι να δείχνει προς τα πού βρίσκεται ο επόμενος στη μνήμη, όχι να κρατάει τα δεδομένα του. Έτσι λειτουργούν οι δείκτες."
+      },
+      {
+        q: "Ποια είναι η συνθήκη για να καταλάβουμε ότι έχουμε φτάσει στον τελευταίο κόμβο μιας λίστας;",
+        options: [
+          "Ο τρέχων κόμβος (curr.Next) έχει τιμή nil",
+          "Ο τρέχων κόμβος (curr) έχει τιμή nil",
+          "Το μήκος της λίστας έγινε μηδέν",
+          "Η τιμή του Data είναι κενή"
+        ],
+        correct: 0,
+        explain: "Αν το curr είναι nil, έχουμε ήδη βγει έξω από τη λίστα! Αν το curr.Next είναι nil, βρισκόμαστε πάνω στον τελευταίο κόμβο και μπορούμε να του κολλήσουμε κάτι καινούργιο."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code: "curr := l.Head\nfor curr.__1__ != nil {\n    curr = curr.__2__\n}",
+        blanks: [
+          { id: "1", answer: "Next" },
+          { id: "2", answer: "Next" }
+        ],
+        explain: "Ελέγχουμε αν υπάρχει επόμενος κόμβος. Όσο υπάρχει (Next != nil), προχωράμε αντικαθιστώντας τον εαυτό μας με τον επόμενο."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "curr.Next == nil", def: "Είμαστε στον τελευταίο κόμβο" },
+        { term: "l.Head == nil", def: "Η λίστα είναι εντελώς άδεια" },
+        { term: "curr = curr.Next", def: "Προχωράμε ένα βήμα μπροστά" }
+      ],
+      [
+        { term: "ListPushBack", def: "Προσθέτει στο τέλος" },
+        { term: "ListPushFront", def: "Προσθέτει στην αρχή" },
+        { term: "ListReverse", def: "Αντιστρέφει τα βελάκια" }
+      ]
+    ]);
+
+    addContent(`
+<div class="eyebrow" id="@glossary-1">Μίνι Γλωσσάρι &mdash; Ενότητα 1 / 2</div>
+<h1>Μίνι Γλωσσάρι</h1>
+
+<div class="glossary-columns">
+  <div class="gc-item">
+    <h3>Linked List</h3>
+    <p>Μια δομή δεδομένων όπου τα στοιχεία δεν είναι συνεχόμενα, αλλά το ένα δείχνει στο άλλο.</p>
+  </div>
+  <div class="gc-item">
+    <h3>Node</h3>
+    <p>Ο κόμβος. Το "κουτί" που κρατάει τα δεδομένα και τον pointer προς τον επόμενο κόμβο.</p>
+  </div>
+  <div class="gc-item">
+    <h3>Traversal</h3>
+    <p>Η διαδικασία να ξεκινήσεις από την αρχή και να επισκεφθείς έναν-έναν τους κόμβους μέχρι το τέλος.</p>
+  </div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@ti-einai-bst">Ενότητα 2 / 2 &mdash; Binary Search Trees</div>
+<h1>Τι είναι το Binary Search Tree</h1>
+<p class="lede">Η Linked List είναι μια ευθεία γραμμή. Το Binary Tree (Δυαδικό Δέντρο) είναι σαν μια διακλάδωση: κάθε κόμβος αντί για ένα <code>Next</code>, έχει <code>Left</code> και <code>Right</code>.</p>
+
+<svg viewBox="0 0 760 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto;color:var(--ink)">
+  <style>
+    .blacked-shadow { filter: drop-shadow(2px 2px 0px #000) drop-shadow(-1px -1px 0px #000) drop-shadow(1px -1px 0px #000) drop-shadow(-1px 1px 0px #000); }
+  </style>
+  <defs>
+    <pattern id="hatch-tree" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="var(--accent)" stroke-width="1.5" stroke-opacity="0.2" />
+    </pattern>
+  </defs>
+
+  <!-- Tree lines -->
+  <line x1="380" y1="60" x2="260" y2="140" stroke="var(--dim)" stroke-width="2"/>
+  <line x1="380" y1="60" x2="500" y2="140" stroke="var(--dim)" stroke-width="2"/>
+  
+  <line x1="260" y1="140" x2="180" y2="220" stroke="var(--dim)" stroke-width="2"/>
+  <line x1="260" y1="140" x2="340" y2="220" stroke="var(--dim)" stroke-width="2"/>
+  
+  <line x1="500" y1="140" x2="420" y2="220" stroke="var(--dim)" stroke-width="2"/>
+  <line x1="500" y1="140" x2="580" y2="220" stroke="var(--dim)" stroke-width="2"/>
+
+  <!-- Root -->
+  <circle cx="380" cy="60" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+  <rect x="355" y="45" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
+  <text x="380" y="67" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">20</text>
+  
+  <!-- L -->
+  <circle cx="260" cy="140" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+  <rect x="235" y="125" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
+  <text x="260" y="147" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">10</text>
+
+  <!-- R -->
+  <circle cx="500" cy="140" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+  <rect x="475" y="125" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
+  <text x="500" y="147" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">30</text>
+  
+  <!-- LL -->
+  <circle cx="180" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+  <rect x="155" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
+  <text x="180" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">5</text>
+
+  <!-- LR -->
+  <circle cx="340" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+  <rect x="315" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
+  <text x="340" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">15</text>
+  
+  <!-- RL -->
+  <circle cx="420" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+  <rect x="395" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
+  <text x="420" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">25</text>
+
+  <!-- RR -->
+  <circle cx="580" cy="220" r="28" fill="url(#hatch-tree)" stroke="var(--accent)" stroke-width="3"/>
+  <rect x="555" y="205" width="50" height="30" fill="var(--accent)" opacity="0.5" rx="8" />
+  <text x="580" y="227" font-size="20" text-anchor="middle" style="fill:var(--tone-text); font-family:monospace; font-weight:bold" class="blacked-shadow">35</text>
+</svg>
+
+<p>Γιατί το λέμε <strong>Search</strong> Tree; Γιατί ακολουθεί έναν αυστηρό κανόνα που κάνει την αναζήτηση αστραπιαία: Ό,τι είναι <strong>μικρότερο</strong> μπαίνει αριστερά, ό,τι είναι <strong>μεγαλύτερο</strong> μπαίνει δεξιά.</p>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@btree-insert">Ενότητα 2 / 2 &mdash; Binary Search Trees</div>
+<h1>Πώς προσθέτουμε έναν κόμβο</h1>
+<p class="lede">Για να κρατήσουμε τον κανόνα, όταν προσθέτουμε έναν κόμβο ξεκινάμε από τη ρίζα. Κάνουμε μια ερώτηση: Είναι μικρότερο ή μεγαλύτερο;</p>
+
+<div id="viz-bst"></div>
+
+<pre><code class="lang-go">func BTreeInsertData(root *TreeNode, data string) *TreeNode {
+	if root == nil {
+		return &amp;TreeNode{Data: data}
+	}
+	
+	if data &lt; root.Data {
+		root.Left = BTreeInsertData(root.Left, data)
+	} else {
+		root.Right = BTreeInsertData(root.Right, data)
+	}
+	
+	return root
+}</code></pre>
+
+<p>Εδώ βλέπουμε τη δύναμη της αναδρομής (recursion). Το δέντρο λύνει το πρόβλημα με τον ίδιο ακριβώς τρόπο, ανεξάρτητα από το σε ποιο "ύψος" βρισκόμαστε.</p>
+
+<div class="callout">
+  <span class="tag">Πότε το αναγνωρίζεις</span>
+  Αν δεις άσκηση που ζητάει "προσθήκη", "διαγραφή", "επεξεργασία" σε δέντρο, 99% θα χρειαστείς recursion. Το tree traversal γίνεται πάρα πολύ δύσκολο με απλές λούπες.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@btree-traversals">Ενότητα 2 / 2 &mdash; Binary Search Trees</div>
+<h1>Η στρατηγική για Inorder, Preorder, Postorder</h1>
+<p class="lede">Υπάρχουν 3 τρόποι να περάσουμε από όλους τους κόμβους. Η διαφορά τους είναι στο <strong>πότε</strong> κοιτάμε τα δεδομένα του κόμβου.</p>
+
+<div class="grid3">
+  <div class="card">
+    <h3>Preorder</h3>
+    <p>Data &rarr; Left &rarr; Right</p>
+    <p>Κοιτάμε πρώτα τη ρίζα, μετά κατεβαίνουμε αριστερά, μετά δεξιά.</p>
+  </div>
+  <div class="card">
+    <h3>Inorder</h3>
+    <p>Left &rarr; Data &rarr; Right</p>
+    <p>Πρώτα όλα τα αριστερά, μετά η ρίζα. <strong>Μας δίνει τα στοιχεία σε απόλυτη αλφαβητική/αριθμητική σειρά.</strong></p>
+  </div>
+  <div class="card">
+    <h3>Postorder</h3>
+    <p>Left &rarr; Right &rarr; Data</p>
+    <p>Πρώτα εξερευνούμε όλα τα παιδιά, και στο τέλος τον ίδιο τον κόμβο.</p>
+  </div>
+</div>
+
+<pre><code class="lang-go">func BTreeApplyInorder(root *TreeNode, f func(...interface{}) (int, error)) {
+	if root == nil {
+		return
+	}
+	BTreeApplyInorder(root.Left, f)
+	f(root.Data)
+	BTreeApplyInorder(root.Right, f)
+}</code></pre>
+`);
+
+    addQuiz([
+      {
+        q: "Γιατί λέγεται Binary Search Tree;",
+        options: [
+          "Επειδή ακολουθεί τον κανόνα: μικρότερα αριστερά, μεγαλύτερα δεξιά",
+          "Επειδή κάθε κόμβος έχει υποχρεωτικά ακριβώς δύο παιδιά (ένα αριστερό, ένα δεξί)",
+          "Επειδή τα δεδομένα αποθηκεύονται στο δυαδικό σύστημα (0 και 1), οπότε είναι κατάλληλο για byte operations"
+        ],
+        correct: 0,
+        explain: "Αυτό το καθιστά Search Tree, επιτρέποντας την γρήγορη αναζήτηση. Ένας κόμβος μπορεί να έχει μόνο 1 ή και 0 παιδιά, δεν είναι απαραίτητο να έχει 2 για να είναι BST."
+      },
+      {
+        q: "Αν θέλεις να τυπώσεις τα περιεχόμενα ενός BST με αύξουσα σειρά, ποια μέθοδο θα διαλέξεις;",
+        options: [
+          "Inorder Traversal",
+          "Preorder Traversal",
+          "Postorder Traversal",
+          "Δεν έχει σημασία, και οι τρεις βγάζουν το ίδιο αποτέλεσμα, αν χρησιμοποιήσεις λούπα αντί για recursion"
+        ],
+        correct: 0,
+        explain: "Η Inorder (Left, Data, Right) πάει όσο πιο αριστερά μπορεί (στο μικρότερο στοιχείο) και τα τυπώνει καθώς ανεβαίνει προς τα μεγαλύτερα δεξιά στοιχεία."
+      }
+    ]);
+
+    addFillBlank([
+      {
+        code: "func BTreeSearchItem(root *TreeNode, elem string) *TreeNode {\n    if root == nil {\n        return nil\n    }\n    if elem == root.Data {\n        return root\n    }\n    if elem < root.Data {\n        return BTreeSearchItem(root.__1__, elem)\n    }\n    return BTreeSearchItem(root.__2__, elem)\n}",
+        blanks: [
+          { id: "1", answer: "Left" },
+          { id: "2", answer: "Right" }
+        ],
+        explain: "Αν ψάχνουμε ένα στοιχείο που είναι μικρότερο, η αναδρομή πρέπει να συνεχιστεί στο αριστερό υποδέντρο (Left). Αλλιώς, συνεχίζεται στο δεξί (Right)."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "Left -> Data -> Right", def: "Inorder" },
+        { term: "Data -> Left -> Right", def: "Preorder" },
+        { term: "Left -> Right -> Data", def: "Postorder" }
+      ],
+      [
+        { term: "root == nil", def: "Base case: τελείωσε η αναδρομή" },
+        { term: "data < root.Data", def: "Πάμε αριστερά" },
+        { term: "data > root.Data", def: "Πάμε δεξιά" }
+      ]
+    ]);
+
+    addContent(`
+<div class="eyebrow" id="@glossary-2">Μίνι Γλωσσάρι &mdash; Ενότητα 2 / 2</div>
+<h1>Μίνι Γλωσσάρι</h1>
+
+<div class="gs-wrap">
+  <div class="gs-pill"><span class="gs-name">Binary Search Tree</span><span class="gs-def">Δέντρο όπου τα αριστερά παιδιά είναι πάντα μικρότερα και τα δεξιά μεγαλύτερα.</span></div>
+  <div class="gs-pill"><span class="gs-name">Recursion</span><span class="gs-def">Όταν μια συνάρτηση καλεί τον εαυτό της για να λύσει ένα μικρότερο κομμάτι του ίδιου προβλήματος.</span></div>
+  <div class="gs-pill"><span class="gs-name">Base Case</span><span class="gs-def">Η συνθήκη (π.χ. root == nil) που σταματάει την αναδρομή.</span></div>
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@teliki-epanalipsi">Τελική Επανάληψη &mdash; Piscine Week 4</div>
+<h1>Τι είδαμε σε αυτό το Guide</h1>
+<p class="lede">Δύο από τις πιο σημαντικές δυναμικές δομές δεδομένων που θα συναντήσεις στον προγραμματισμό.</p>
+
+<table style="width:100%;border-collapse:collapse;margin-top:6px">
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.25)">
+    <th style="text-align:left;padding:9px 8px">Δομή</th>
+    <th style="text-align:left;padding:9px 8px">Πότε τη χρησιμοποιούμε</th>
+  </tr>
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),.12)">
+    <td style="padding:9px 8px"><strong>Linked List</strong></td>
+    <td style="padding:9px 8px">Όταν θέλουμε να προσθέτουμε/αφαιρούμε στοιχεία χωρίς να μετακινούμε τεράστια blocks μνήμης.</td>
+  </tr>
+  <tr>
+    <td style="padding:9px 8px"><strong>Binary Search Tree</strong></td>
+    <td style="padding:9px 8px">Όταν έχουμε πολλά δεδομένα και θέλουμε να βρίσκουμε κάτι εξαιρετικά γρήγορα (με διαρκή διχοτόμηση).</td>
+  </tr>
+</table>
+`);
+
+    addQuiz([
+      {
+        q: "Αν το δέντρο μας είναι ισορροπημένο (έχει ίσες ποσότητες κόμβων αριστερά-δεξιά), σε πόσα βήματα περίπου θα βρούμε ένα στοιχείο ανάμεσα σε 100 κόμβους;",
+        options: [
+          "Σε περίπου 6-7 βήματα, γιατί κάθε φορά απορρίπτουμε το μισό δέντρο",
+          "Σε 100 βήματα, γιατί πρέπει να περάσουμε από όλους",
+          "Σε 50 βήματα, γιατί ψάχνουμε μόνο στη μια μεριά, αγνοώντας την άλλη μεριά εντελώς"
+        ],
+        correct: 0,
+        explain: "Κάθε φορά που ρωτάμε αν το στοιχείο είναι μεγαλύτερο ή μικρότερο, πετάμε το μισό δέντρο, κάνοντας την αναζήτηση απίστευτα γρήγορη!"
+      },
+      {
+        q: "Τι θα συμβεί αν προσπαθήσουμε να κάνουμε curr = curr.Next σε μια Linked List όταν το curr είναι ήδη nil;",
+        options: [
+          "Το πρόγραμμα θα καταρρεύσει (panic: invalid memory address or nil pointer dereference)",
+          "Το curr θα παραμείνει nil χωρίς πρόβλημα",
+          "Η Go θα δημιουργήσει αυτόματα έναν νέο κόμβο για εμάς"
+        ],
+        correct: 0,
+        explain: "Δεν μπορείς να ζητήσεις το πεδίο (Next) ενός πράγματος που δεν υπάρχει. Γι' αυτό πάντα ελέγχουμε curr != nil."
+      }
+    ]);
+
+    addMatching([
+      [
+        { term: "ListPushBack", def: "Χρειάζεται loop μέχρι το τέλος" },
+        { term: "ListPushFront", def: "Γίνεται αστραπιαία, το βάζουμε στην αρχή" },
+        { term: "BTreeSearchItem", def: "Πηγαίνει δεξιά ή αριστερά ανάλογα το στοιχείο" }
+      ],
+      [
+        { term: "Ουρά (Queue)", def: "Προσθέτουμε στο τέλος, βγάζουμε από την αρχή" },
+        { term: "Στοίβα (Stack)", def: "Προσθέτουμε και βγάζουμε από την αρχή" },
+        { term: "Array", def: "Όλα τα στοιχεία δίπλα-δίπλα στη μνήμη" }
+      ]
+    ]);
+
+    addContent(`
+<div class="eyebrow" id="@telos">Έφτασες στο τέλος</div>
+<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+<p>Οι Linked Lists και τα Trees είναι τα εργαλεία με τα οποία χτίζονται οι βάσεις δεδομένων, τα file systems και πολλές άλλες τεχνολογίες που χρησιμοποιείς καθημερινά.</p>
+
+<div class="callout">
+  <span class="tag">ΜΗΝ ΞΕΧΝΑΣ</span>
+  Στις λίστες, να προσέχεις πάντα τι γίνεται όταν η λίστα είναι άδεια (Head == nil). Στα δέντρα, εμπιστεύσου το recursion &mdash; το base case θα σε σώσει από τα άπειρα loops.
+</div>
+
+<p class="lede">Για περαιτέρω εμβάθυνση:</p>
+<div class="sources-list">
+  <a target="_blank" rel="noopener" href="https://go.dev/tour/moretypes/1">Pointers in Go</a>
+  <a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/data-structures/linked-list/">Linked List Data Structure</a>
+  <a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/binary-search-tree-data-structure/">Binary Search Tree</a>
+</div>
+
+<div id="final-score"></div>
+<div style="font-family: monospace; font-size: 14px; opacity: 0.55; margin-top: 2rem;">Author: AVGERINOS PAVLOS</div>
+`);
+
+    initSlideDeck({ version: "3.0.0", notifyUrl: null });
+  </script>
+</body>
+
+</html>

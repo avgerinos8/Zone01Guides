@@ -1,0 +1,43 @@
+/* ══════════════════════════════════════════════════════════════════════════ 
+Color scheme ONLY. Load this AFTER style.css in index.html (a second <link>) 
+to apply this palette. To make a new color scheme, copy this file, rename it 
+(theme-<name>.css), and change only the values below — nothing else in the 
+site needs to know about it. 
+══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+   /* Deep blue valley with glowing blue roots and golden sunrise */
+   --tone-1: #09111cff;
+   --tone-2: #121e30ff;
+   --tone-3: #1a3b6bff;
+   --tone-4: #2185d0ff;
+   --tone-5: #e0ac2eff;
+
+   --tone-1-rgb: 9, 17, 28;
+   --tone-2-rgb: 18, 30, 48;
+   --tone-3-rgb: 26, 59, 107;
+   --tone-4-rgb: 33, 133, 208;
+   --tone-5-rgb: 224, 172, 46;
+
+   --tone-text: #f0f6fcff;
+   --tone-text-rgb: 240, 246, 252;
+
+   --code-bg: #060b12ff;
+   --code-bg-rgb: 6, 11, 18;
+
+   --h1-color: #ffffffff;
+   --h1-shadow: #004d99ff;
+   --h1-outline: #2185d0ff;
+}
+
+h1 {
+   color: var(--h1-color);
+
+   text-shadow:
+      -0.035em -0.035em 0 var(--code-bg),
+      0.035em 0.035em 0 var(--code-bg),
+      0px 0.04em 0 var(--h1-shadow),
+      0px 0.06em 0 var(--h1-shadow),
+      0px 0.08em 0 var(--h1-shadow),
+      0px 0.10em 0 var(--h1-shadow);
+}
