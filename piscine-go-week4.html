@@ -139,8 +139,112 @@
 
     addContent(`
 <div class="eyebrow" id="@ti-einai-linked-list">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<svg viewBox="0 0 8000 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;margin:12px 0;">
+  <defs>
+    <filter id="flat-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="4" dy="6" stdDeviation="1" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+    <!-- Face-on horizontal link -->
+    <g id="link-f">
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#181818" stroke-width="20" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#444444" stroke-width="14" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#777777" stroke-width="8" />
+      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#aaaaaa" stroke-width="2" />
+    </g>
+    <!-- Edge-on horizontal link -->
+    <g id="link-e">
+      <rect x="-70" y="-10" width="140" height="20" rx="10" fill="#181818" />
+      <rect x="-67" y="-7" width="134" height="14" rx="7" fill="#444444" />
+      <rect x="-64" y="-4" width="128" height="8" rx="4" fill="#777777" />
+      <rect x="-61" y="-1" width="122" height="2" rx="1" fill="#aaaaaa" />
+    </g>
+  </defs>
+  <!-- 1. Face-on Links (Background) -->
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(80.0, 80.0) rotate(-5.0)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(280.0, 80.0) rotate(-1.2)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(480.0, 80.0) rotate(-0.7)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(680.0, 80.0) rotate(2.8)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(880.0, 80.0) rotate(-2.2)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(1080.0, 80.0) rotate(-5.5)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(1280.0, 80.0) rotate(4.3)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(1480.0, 80.0) rotate(3.5)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(1680.0, 80.0) rotate(1.0)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(1880.0, 80.0) rotate(-1.2)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(2080.0, 80.0) rotate(-0.6)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(2280.0, 80.0) rotate(-4.8)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(2480.0, 80.0) rotate(-2.9)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(2680.0, 80.0) rotate(-5.8)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(2880.0, 80.0) rotate(-0.5)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(3080.0, 80.0) rotate(4.0)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(3280.0, 80.0) rotate(-5.7)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(3480.0, 80.0) rotate(-5.2)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(3680.0, 80.0) rotate(-5.0)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(3880.0, 80.0) rotate(-1.5)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(4080.0, 80.0) rotate(5.6)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(4280.0, 80.0) rotate(-5.2)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(4480.0, 80.0) rotate(4.7)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(4680.0, 80.0) rotate(2.3)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(4880.0, 80.0) rotate(-0.8)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(5080.0, 80.0) rotate(-4.7)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(5280.0, 80.0) rotate(-0.7)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(5480.0, 80.0) rotate(1.3)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(5680.0, 80.0) rotate(-3.2)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(5880.0, 80.0) rotate(-0.0)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(6080.0, 80.0) rotate(-3.4)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(6280.0, 80.0) rotate(-0.3)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(6480.0, 80.0) rotate(2.3)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(6680.0, 80.0) rotate(4.3)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(6880.0, 80.0) rotate(-2.7)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(7080.0, 80.0) rotate(-5.6)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(7280.0, 80.0) rotate(1.9)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(7480.0, 80.0) rotate(-5.4)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(7680.0, 80.0) rotate(4.5)" />
+  <use href="#link-f" filter="url(#flat-shadow)" transform="translate(7880.0, 80.0) rotate(-2.7)" />
+  <!-- 2. Edge-on Links (Foreground) -->
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(180.0, 80.0) rotate(-4.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(380.0, 80.0) rotate(0.6)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(580.0, 80.0) rotate(-4.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(780.0, 80.0) rotate(5.7)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(980.0, 80.0) rotate(1.7)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(1180.0, 80.0) rotate(-4.6)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(1380.0, 80.0) rotate(-5.7)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(1580.0, 80.0) rotate(-4.1)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(1780.0, 80.0) rotate(5.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(1980.0, 80.0) rotate(-5.3)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(2180.0, 80.0) rotate(2.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(2380.0, 80.0) rotate(-3.3)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(2580.0, 80.0) rotate(5.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(2780.0, 80.0) rotate(-0.5)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(2980.0, 80.0) rotate(-0.9)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(3180.0, 80.0) rotate(-1.2)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(3380.0, 80.0) rotate(-3.5)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(3580.0, 80.0) rotate(1.6)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(3780.0, 80.0) rotate(1.1)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(3980.0, 80.0) rotate(5.8)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(4180.0, 80.0) rotate(-3.6)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(4380.0, 80.0) rotate(4.9)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(4580.0, 80.0) rotate(5.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(4780.0, 80.0) rotate(-2.8)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(4980.0, 80.0) rotate(2.9)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(5180.0, 80.0) rotate(0.1)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(5380.0, 80.0) rotate(-3.8)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(5580.0, 80.0) rotate(-4.4)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(5780.0, 80.0) rotate(3.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(5980.0, 80.0) rotate(5.2)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(6180.0, 80.0) rotate(-1.8)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(6380.0, 80.0) rotate(4.6)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(6580.0, 80.0) rotate(-5.8)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(6780.0, 80.0) rotate(-5.2)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(6980.0, 80.0) rotate(5.0)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(7180.0, 80.0) rotate(-0.9)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(7380.0, 80.0) rotate(-1.3)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(7580.0, 80.0) rotate(-4.9)" />
+  <use href="#link-e" filter="url(#flat-shadow)" transform="translate(7780.0, 80.0) rotate(-1.3)" />
+</svg>
+
 <h1>Τι είναι η Linked List</h1>
 <p class="lede">Μέχρι τώρα χρησιμοποιούσαμε arrays και slices, όπου όλα τα δεδομένα βρίσκονται στη σειρά. Η Linked List (Συνδεδεμένη Λίστα) λειτουργεί εντελώς διαφορετικά: κάθε στοιχείο βρίσκεται κάπου αλλού στη μνήμη και απλώς ξέρει πού βρίσκεται το επόμενο.</p>
+
 
 <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:18px auto;color:var(--ink)">
   <style>
@@ -197,69 +301,8 @@
   <text x="595" y="220" font-size="16" text-anchor="middle" fill="#ffffff" font-family="monospace">nil</text>
 </svg>
 
-<svg viewBox="0 0 760 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:760px;height:auto;display:block;margin:32px auto 0 auto;">
-  <defs>
-    <!-- Sharp Flat Shadow for vector/flat design style -->
-    <filter id="flat-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="4" dy="6" stdDeviation="0" flood-color="#000" flood-opacity="0.75"/>
-    </filter>
+<p>Στην go <strong>η Linked List δεν είναι κάποιος ενσωματωμένος τύπος μεταβλητής</strong> (όπως τα slices ή τα maps). Πρόκειται για μια "χειροκίνητη" δομή δεδομένων που δημιουργούμε και διαχειριζόμαστε εμείς οι ίδιοι, συνδέοντας <code>structs</code> μεταξύ τους μέσω pointers.</p>
 
-    <!-- Vertical Link Base (Κάθετος κρίκος) -->
-    <g id="link-v">
-      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#181818" stroke-width="20" />
-      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#444444" stroke-width="14" />
-      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#777777" stroke-width="8" />
-      <rect x="-30" y="-60" width="60" height="120" rx="30" fill="none" stroke="#aaaaaa" stroke-width="2" />
-    </g>
-
-    <!-- Horizontal Link Base (Οριζόντιος κρίκος - ίδιο ακριβώς μέγεθος) -->
-    <g id="link-h">
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#181818" stroke-width="20" />
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#444444" stroke-width="14" />
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#777777" stroke-width="8" />
-      <rect x="-60" y="-30" width="120" height="60" rx="30" fill="none" stroke="#aaaaaa" stroke-width="2" />
-    </g>
-
-    <!-- Vertical Link - Bottom Right Quarter (for weaving OVER horizontal link) -->
-    <g id="link-v-br">
-      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
-      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#444444" stroke-width="14" stroke-linecap="butt" />
-      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
-      <path d="M 30 0 L 30 30 A 30 30 0 0 1 0 60" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-linecap="butt" />
-    </g>
-
-    <!-- Vertical Link - Top Left Quarter (for weaving OVER horizontal link) -->
-    <g id="link-v-tl">
-      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#181818" stroke-width="20" stroke-linecap="butt" />
-      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#444444" stroke-width="14" stroke-linecap="butt" />
-      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#777777" stroke-width="8" stroke-linecap="butt" />
-      <path d="M 0 -60 A 30 30 0 0 0 -30 -30 L -30 0" fill="none" stroke="#aaaaaa" stroke-width="2" stroke-linecap="butt" />
-    </g>
-  </defs>
-
-  <!-- 1. Vertical Links (Base Layer) -->
-  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(80, 80)" />
-  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(220, 80)" />
-  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(360, 80)" />
-  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(500, 80)" />
-  <use href="#link-v" filter="url(#flat-shadow)" transform="translate(640, 80)" />
-
-  <!-- 2. Horizontal Links (Middle Layer - initially covers vertical links entirely) -->
-  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(150, 80)" />
-  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(290, 80)" />
-  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(430, 80)" />
-  <use href="#link-h" filter="url(#flat-shadow)" transform="translate(570, 80)" />
-
-  <!-- 3. Weaving Layer (Top Layer - redrawing specific quarters of vertical links OVER horizontal links to create true 3D interlock) -->
-  <use href="#link-v-br" transform="translate(80, 80)" />
-  <use href="#link-v-tl" transform="translate(220, 80)" />
-  <use href="#link-v-br" transform="translate(220, 80)" />
-  <use href="#link-v-tl" transform="translate(360, 80)" />
-  <use href="#link-v-br" transform="translate(360, 80)" />
-  <use href="#link-v-tl" transform="translate(500, 80)" />
-  <use href="#link-v-br" transform="translate(500, 80)" />
-  <use href="#link-v-tl" transform="translate(640, 80)" />
-</svg>
 `);
 
     addContent(`
@@ -535,7 +578,7 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
 
     addContent(`
 <div class="eyebrow" id="@diaschisi">Ενότητα 1 / 2 &mdash; Linked Lists</div>
-<h1>Traversal (Διάσχιση) και ListPushBack</h1>
+<h1>Traversal και ListPushBack</h1>
 <p class="lede">Για να προσθέσουμε ένα στοιχείο στο τέλος, πρέπει πρώτα να βρούμε... πού είναι το τέλος. Ξεκινάμε από το Head και προχωράμε μέχρι να βρούμε τον κόμβο που το <code>Next</code> του είναι <code>nil</code>.</p>
 
 <div id="viz-listpushback"></div>
@@ -558,38 +601,25 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
 `);
 
     addContent(`
-<div class="eyebrow" id="@listreverse-stratigiki">Ενότητα 1 / 2 &mdash; Linked Lists</div>
-<h1>Η στρατηγική για την ListReverse</h1>
-<p class="lede">Το να γυρίσεις μια λίστα ανάποδα μοιάζει δύσκολο, αλλά λύνεται διατηρώντας τρεις δείκτες: τον προηγούμενο (prev), τον τρέχοντα (curr), και τον επόμενο (next).</p>
+<div class="eyebrow" id="@print-reverse">Ενότητα 1 / 2 &mdash; Linked Lists</div>
+<h1>PrintReverse</h1>
+<p class="lede">Μπορούμε πολύ εύκολα να διασχίσουμε μια λίστα από την αρχή προς το τέλος. Πώς όμως μπορούμε να τυπώσουμε τα στοιχεία της <strong>ανάποδα</strong>;</p>
 
-<p>Σε κάθε βήμα:
-<ol>
-<li>Σημειώνουμε ποιος είναι ο <code>next</code> (γιατί αλλιώς θα τον χάσουμε)</li>
-<li>Αλλάζουμε το <code>Next</code> του <code>curr</code> να δείχνει στον <code>prev</code></li>
-<li>Προχωράμε τον <code>prev</code> και τον <code>curr</code> ένα βήμα μπροστά</li>
-</ol>
-</p>
+<p>Όπως είχαμε δει την δεύτερη εβδομάδα <a href="piscine-go-week2.html#@russian-dolls" target="_blank">οι αναδρομικές συναρτήσεις (recursive functions)</a>, έχουν πάντα μια <em>φάση καθόδου</em> (καθώς καλούν τον εαυτό τους) και μια <em>φάση ανόδου</em> (καθώς "ξετυλίγονται" και επιστρέφουν).</p>
 
-<pre><code class="lang-go">func ListReverse(l *List) {
-	var prev *NodeL
-	curr := l.Head
-	
-	l.Tail = l.Head // το παλιό Head γίνεται το νέο Tail
-	
-	for curr != nil {
-		next := curr.Next
-		curr.Next = prev
-		prev = curr
-		curr = next
+<p>Θα εκμεταλλευτούμε αυτήν τη δυνατότητα/ιδιότητα τους για να τυπώσουμε ανάποδα τα στοιχεία ενός linked list.</p>
+
+<pre><code class="lang-go">func PrintReverse(n *NodeL) {
+	if n == nil { // Base case: φτάσαμε στο τέλος
+		return
 	}
 	
-	l.Head = prev // το παλιό Tail γίνεται το νέο Head
+	// Φάση καθόδου: καλούμε τη συνάρτηση για τον επόμενο κόμβο
+	PrintReverse(n.Next)
+	
+	// Φάση ανόδου: η εκτύπωση γίνεται καθώς επιστρέφουμε!
+	fmt.Print(n.Data, " ")
 }</code></pre>
-
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Αν ξεχάσεις να σώσεις το <code>curr.Next</code> σε μια βοηθητική μεταβλητή πριν το αλλάξεις, θα χάσεις την επαφή με το υπόλοιπο της λίστας (αφού μόλις γύρισες το βελάκι ανάποδα!) και το πρόγραμμά σου θα προκαλέσει panic ή άπειρη αναδρομή.
-</div>
 `);
 
     addQuiz([
@@ -645,20 +675,32 @@ fmt.Println(*p) // *p σημαίνει "Τι έχει μέσα στο 0x104;" -&
 <div class="eyebrow" id="@glossary-1">Μίνι Γλωσσάρι &mdash; Ενότητα 1 / 2</div>
 <h1>Σύνοψη</h1>
 
-<div class="glossary-columns">
-  <div class="gc-item">
-    <h3>Linked List</h3>
-    <p>Μια δομή δεδομένων όπου τα στοιχεία δεν είναι συνεχόμενα, αλλά το ένα δείχνει στο άλλο.</p>
-  </div>
-  <div class="gc-item">
-    <h3>Node</h3>
-    <p>Ο κόμβος. Το "κουτί" που κρατάει τα δεδομένα και τον pointer προς τον επόμενο κόμβο.</p>
-  </div>
-  <div class="gc-item">
-    <h3>Traversal</h3>
-    <p>Η διαδικασία να ξεκινήσεις από την αρχή και να επισκεφθείς έναν-έναν τους κόμβους μέχρι το τέλος.</p>
-  </div>
-</div>
+<table class="glossary-table">
+  <tr>
+    <td class="gt-term">Linked List</td>
+    <td class="gt-def">Μια δομή δεδομένων όπου τα στοιχεία δεν είναι συνεχόμενα, αλλά το ένα δείχνει στο άλλο.</td>
+  </tr>
+  <tr>
+    <td class="gt-term">Node</td>
+    <td class="gt-def">Ο κόμβος. Το "κουτί" που κρατάει τα δεδομένα και τον pointer προς τον επόμενο κόμβο.</td>
+  </tr>
+  <tr>
+    <td class="gt-term">Traversal</td>
+    <td class="gt-def">Η διαδικασία να ξεκινήσεις από την αρχή και να επισκεφθείς έναν-έναν τους κόμβους μέχρι το τέλος.</td>
+  </tr>
+  <tr>
+    <td class="gt-term">&amp; (Διεύθυνση)</td>
+    <td class="gt-def">Επιστρέφει την ακριβή διεύθυνση μνήμης μιας μεταβλητής ("Πού μένει;").</td>
+  </tr>
+  <tr>
+    <td class="gt-term">* (Dereference)</td>
+    <td class="gt-def">Χρησιμοποιείται μπροστά από μεταβλητή τύπου pointer (σε κάτι) για να αποκτήσουμε πρόσβαση στην τιμή της διεύθυνσης που δείχνει.</td>
+  </tr>
+  <tr>
+    <td class="gt-term">*Node (Pointer to Node)</td>
+    <td class="gt-def">Χρησιμοποιείται μπροστά από τύπο (π.χ. *Node) για να δηλώσει ότι η μεταβλητή είναι δείκτης σε δεδομένα αυτού του τύπου.</td>
+  </tr>
+</table>
 `);
 
     addContent(`
