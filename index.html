@@ -55,6 +55,9 @@
             border-bottom: 1px solid #222530;
             padding-bottom: 8px;
             margin-bottom: 16px;
+            background-color: #0d0e12;
+            position: relative;
+            z-index: 10;
         }
 
         .status-line {
@@ -115,6 +118,7 @@
             white-space: pre;
             font-family: 'Fira Code', monospace;
             text-align: left;
+            background-color: #0d0e12;
         }
 
         .prompt {
@@ -639,101 +643,74 @@
             }
         }
 
-        /* ================================================================
-           CRT EFFECT (toggled by clicking the HOST link)
-           Kept deliberately subtle/infrequent — brief flicker every few
-           seconds rather than a continuous strobe, so it stays comfortable
-           to look at instead of being an eyesore (or an actual seizure risk).
-           ================================================================ */
-        body.crt-on {
-            animation: crtFlicker 7s steps(1) infinite;
-        }
-
-        @keyframes crtFlicker {
-
-            0%,
-            96%,
-            100% {
-                filter: none;
-            }
-
-            97% {
-                filter: brightness(1.15) contrast(1.05) hue-rotate(-4deg);
-            }
-
-            98% {
-                filter: brightness(0.88);
-            }
-
-            99% {
-                filter: brightness(1.1) saturate(1.35);
-            }
-        }
-
-        /* full-page scanline film, same technique as the reverse-msg box */
-        body.crt-on::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 500;
-            background: repeating-linear-gradient(0deg,
-                    transparent,
-                    transparent 3px,
-                    rgba(0, 255, 255, 0.025) 3px,
-                    rgba(0, 255, 255, 0.025) 4px);
-            mix-blend-mode: screen;
-        }
-
-        /* occasional RGB-split glitch on the ascii-art */
-        body.crt-on .ascii-art {
-            animation: chromaGlitch 5s steps(1) infinite;
-        }
-
-        @keyframes chromaGlitch {
-
-            0%,
-            92%,
-            100% {
-                text-shadow: none;
-                transform: translate(0, 0);
-            }
-
-            93% {
-                text-shadow: -2px 0 rgba(255, 0, 110, 0.65), 2px 0 rgba(0, 255, 255, 0.65);
-                transform: translate(-1px, 0);
-            }
-
-            94% {
-                text-shadow: 2px 0 rgba(255, 0, 110, 0.65), -2px 0 rgba(0, 255, 255, 0.65);
-                transform: translate(1px, 0);
-            }
-
-            95% {
-                text-shadow: none;
-                transform: translate(0, 0);
-            }
-        }
-
-        /* the blinking cursor glows harder, alternating cyan/magenta */
-        body.crt-on .cursor {
-            animation: blink 1s step-end infinite, crtCursorGlow 2.4s ease-in-out infinite;
-        }
-
-        @keyframes crtCursorGlow {
-
-            0%,
-            100% {
-                box-shadow: 0 0 6px #00ffff;
-            }
-
-            50% {
-                box-shadow: 0 0 10px #ff2fd0, 0 0 20px #00ffff;
-            }
-        }
-
-        .crt-toggle {
+        .clouds-toggle {
             cursor: pointer;
+        }
+
+        /* FX BACKGROUND */
+        #fx-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+            /* Gradient to fade out softly at the top so it doesn't affect the ASCII art */
+            -webkit-mask-image: linear-gradient(to bottom, transparent 350px, black 550px, black 100%);
+            mask-image: linear-gradient(to bottom, transparent 350px, black 550px, black 100%);
+        }
+
+        body.clouds-on #fx-background {
+            display: block;
+        }
+
+        /* 
+           LITE VERSION PERFORMANCE UPGRADES:
+           1. Movement is handled purely by CSS animations on a wrapper element, freeing up the CPU thread completely.
+           2. Text-shadows are entirely removed for the clouds.
+        */
+        .cloud-wrapper {
+            position: absolute;
+            left: -40vw;
+            /* Start offscreen left */
+            will-change: transform;
+            animation: floatCloud linear infinite;
+        }
+
+        @keyframes floatCloud {
+            0% {
+                transform: translate3d(0vw, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(160vw, 0, 0);
+            }
+        }
+
+        .ascii-cloud {
+            white-space: pre;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1vh;
+            /* Exclusively dependent on height, and 1/4 smaller */
+            line-height: 1.1;
+            color: rgba(168, 85, 247, 0.45);
+            /* Removed heavy text-shadow completely */
+            will-change: color, opacity, filter;
+            transition: color 4s ease-in-out, opacity 4s ease-in-out, filter 4s ease;
+        }
+
+        /* Ambient Color Breathing - Pure hue shift, no brightness pop */
+        .lightning-flash .ascii-cloud {
+            color: rgba(120, 220, 255, 0.45) !important;
+            transition: color 6s ease-in-out;
+        }
+
+        .lightning-flash-secondary .ascii-cloud {
+            color: rgba(180, 100, 247, 0.45) !important;
+            transition: color 6s ease-in-out;
         }
     </style>
 </head>
@@ -747,7 +724,7 @@
                 ACCESS_LEVEL: <span class="cyan-text" id="learnerTrigger">LEARNER_</span> // AUTHOR: <a
                     href="https://github.com/avgerinos8" target="_blank" class="cyan-text">avgerinos</a> //
                 HOST: <a href="https://guides01.devs.surf/" target="_blank"
-                    class="cyan-text crt-toggle">guides01.devs.surf</a>
+                    class="cyan-text clouds-toggle">guides01.devs.surf</a>
             </div>
         </header>
 
@@ -878,7 +855,7 @@
                 ACCESS_LEVEL: <span class="cyan-text" id="adminTrigger">ADMIN_</span> // AUTHOR: <span
                     class="cyan-text">avgerinos</span> //
                 HOST: <a href="https://guides01.devs.surf/" target="_blank"
-                    class="cyan-text crt-toggle">guides01.devs.surf</a>
+                    class="cyan-text clouds-toggle">guides01.devs.surf</a>
             </div>
         </header>
 
@@ -1116,7 +1093,7 @@ git config --global user.name {{username}}`;
                     toast.classList.remove('show');
                 }, 2000);
             }
-            window.showToast = showToast; // shared with the crt-toggle script below
+            window.showToast = showToast; // shared with the toggle script below
 
             // Function to refresh the code block with current user data
             function refreshCode() {
@@ -1508,23 +1485,20 @@ git config --global user.name {{username}}`;
     </script>
 
     <script>
-        // ── CRT effect toggle ────────────────────────────────────────────── ⊃
-        // Clicking "guides01.devs.surf" used to just navigate to the page you're
-        // already on. Now it flips a class on <body> that switches on the
-        // scanline/glitch effects defined in <style>, and reuses the existing
-        // toast (exposed as window.showToast in the first script block) to
-        // confirm the state change.
+        // ── CLOUDS toggle ────────────────────────────────────────────── ⊃
+        // Clicking "guides01.devs.surf" used to toggle CRT.
+        // Now it toggles the visibility of the ASCII clouds.
         (function () {
-            const toggles = document.querySelectorAll('.crt-toggle');
+            const toggles = document.querySelectorAll('.clouds-toggle');
             if (!toggles.length) return;
 
             let on = false;
 
             function setState(next) {
                 on = next;
-                document.body.classList.toggle('crt-on', on);
+                document.body.classList.toggle('clouds-on', on);
                 if (window.showToast) {
-                    window.showToast(on ? 'CRT EFFECT: ON' : 'CRT EFFECT: OFF');
+                    window.showToast(on ? 'CLOUDS: ON' : 'CLOUDS: OFF');
                 }
             }
 
@@ -1534,6 +1508,189 @@ git config --global user.name {{username}}`;
                     setState(!on);
                 });
             });
+        })();
+    </script>
+
+    <script>
+        // ── FX ASCII CLOUDS & LIGHTNING ─────────────────────────── ⊃
+        (function () {
+            // --- CONFIGURATION VARIABLES FOR CLOUDS ---
+            const CLOUD_CONFIG = {
+                numClouds: 50,              // Total number of clouds (density)
+                baseDuration: 10,            // Base animation speed in seconds (lower is faster)
+                durationVariance: 120,       // Additional slowness based on depth
+                baseScale: 1,                // Base cloud size
+                scaleVariance: 3.5,          // Size variation based on depth
+                baseOpacity: 0.2,           // Minimum opacity
+                opacityVariance: 0.12,       // Additional opacity based on depth
+                opacityDivisor: 8,           // Opacity division for volumetric stacking
+                blurIntensity: 40,            // Blur multiplier for depth of field
+                blurFocusDepth: 0.1,         // Depth where clouds are sharp (0 to 1)
+                yDistribution: 110,          // Vertical spread scale
+                yOffset: -5,                 // Vertical base offset
+                colorHoldMin: 5000,          // Minimum time to hold flash color (ms)
+                colorHoldRandom: 7000,       // Random added time to hold flash color (ms)
+                colorWaitMin: 5000,          // Minimum wait before next flash (ms)
+                colorWaitRandom: 10000,      // Random added wait before next flash (ms)
+                initialDelayMax: 20000       // Max initial delay for breathing phases (ms)
+            };
+
+            const bg = document.createElement('div');
+            bg.id = 'fx-background';
+            document.body.insertBefore(bg, document.body.firstChild);
+
+            const cloudTemplates = [
+
+
+                `          ░░░░▒▒▒▒▒▓▒░░                 
+        ░░░▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒░░░         
+       ░░▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░     
+      ░░▒▒▓▓▓▓▓▓████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░ 
+    ░▒▒▓▓▓▓▓███████████▓▓▓▓▓▓▓██████▓▒▒ 
+ ░▓██████████████████████▓▓▓▓██████████▒
+░███████████████████████████████████████`,
+
+
+                `                        ░░░░░░▒▒▒▒░░░░░              
+                     ░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒░░░            
+                ░░░░░░░░▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▒░░░          
+            ░░░░░▒▒▒░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒░░░        
+         ░░░░░▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓██████▓▓▓▓▓▒▒▒▒▒░░░     
+   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓███████████▓▓▓▓▓▒▒▒▒▒░░░   
+ ░░▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████████████████▓▓▓▓▓▓▓▓▓▒░░░ 
+░▓▓▓▓████████████████████████████████████████████▓▓░░
+`,
+
+
+
+
+                `                                                                 
+                                                                 
+                 ░░░░░░░░░░░              ░░░░░░░░               
+               ░░░▒▒▒▒▒▒▒▒░░░          ░░░░░░▒▒░░░░░             
+             ░░░▒▒▓▓▓▓▓▓▓▓▒▒▒░░      ░░░░▒▒▒▒▒▒▒▒▒░░░░           
+           ░░░▒▒▓▓█████▓▓▓▓▓▓▒▒░░░░░░░▒▒▒▓▓▓▓▓▓▓▓▓▒░░░░          
+        ░░░░▒▓████████████▓▓▓▓▓▒▒▒▒░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒░░░        
+        ░▒▒▓████████████████▓▓▓▓▓▓▓▓▓▓▓██████████▓▓▓▓▓▒▒░░░      
+     ░▒▒▒▓███████████████████████████████████████████▓▓▓▒▒░░░    
+  ░▒▒▒▓████████████████████████████████████████████████▓▓▓▒▒░░░  
+░▒▒▒▓█████████████████████████████████████████████████████▓▓▓▒▒░░
+`,
+
+
+
+
+                `                ░▒▒▒▒▓▓▒▒▒░                                           
+              ░▒▒▓▓▓▓▓▓▓▓▓▓▒░                                         
+            ░▒▒▓▓▓▓▓████▓▓▓▓▓▒░     ░░▒▒▒▒▒▒▒░░                       
+          ░▒▒▓▓▓▓████████▓▓▓▓▓▓▒░ ░▒▒▓▓▓▓▓▓▓▓▒▒▒░░                    
+       ░░▒▒▒▓▓▓▓█████████████▓▓▓▓▓▓▓▓▓▓▓██▓▓▓▓▓▓▓▒▒▒░░░               
+    ░░▒▓▓▓▓▓▓▓██████████████████████████████▓▓▓▓▓▓▓▓▓▓▒▒▒▒░░          
+░░░▒▒▓███████████████████████████████████████████████████▓▓▓▓▒▒▒▒▒░░░░
+`,
+
+
+
+
+
+                `                                                 ░░░░░░░░░░░░░░                  
+                                            ░░░░░░░▒▒▒▒▒▒▒▒▒▒░░░░░░              
+               ░░░░░░░░░░░                ░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▒▒▒░░░░░░            
+            ░░░░▒▒▒▒▒▒▒▒░░░░░         ░░░░░▒▒▒▒▓▓▓▓▓█████▓▓▓▓▒▒▒▒░░░░░░          
+        ░░░░░▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒░░░░░░░░░░░▒▒▒▒▓▓▓▓▓████████████▓▓▒▒▒▒▒▒░░░░░░       
+     ░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████████████████▓▓▓▓▓▓▒▒▒▒░░░░░░░   
+  ░░░▒▒▒▓▓▓███████████████████████████████████████████████████████████▓▓▒▒▒▒░░░░░
+░░▒▒▓▓▓███████████████████████████████████████████████████████████████████▓▓▓▒▒▒░`,
+
+
+
+                `                      ░░░░░                        
+                 ░░░░░░▒▒▒░░░                      
+             ░░░░░░▒▒▓▓▓▓▓▒▒░░░    ░░░░░░░░        
+         ░░░░░▒▒▒▒▓▓▓███▓▓▓▓▓▒░░░░░░▒▒▒▒▒▒░░       
+     ░░░░░▒▓▓▓▓▓▓▓▓▓███████▓▓▓▒▒░▒▓▓▓▓▓▓▓▓▒▒░      
+    ░░▒▓▓▓▓▓████████████████▓▓▓▓▓▓▓▓▓▓███▓▓▓▒▒░    
+  ░░▒▓▓▓▓██████████████████████████████████▓▓▓▒▒░░ 
+░▒▓▓▓▓▓▓███████████████████████████████████████▓▒▒░`,
+
+            ];
+
+            const allWrappers = [];
+            const numClouds = CLOUD_CONFIG.numClouds; // 4x dense, CPU-free volumetric mist
+
+            const PHI = 1.61803398875;
+            const GOLDEN_ANGLE = 2.3999632297; // Radians
+
+            for (let i = 0; i < numClouds; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cloud-wrapper';
+
+                const cloud = document.createElement('div');
+                cloud.className = 'ascii-cloud';
+
+                // Distribute templates evenly rather than randomly
+                const template = cloudTemplates[i % cloudTemplates.length];
+                cloud.textContent = template;
+
+                // Organic Mathematical Distribution (Phyllotaxis / Golden Ratio)
+                // Radius expands non-linearly using PHI for natural stacking
+                const r = Math.pow(i / numClouds, PHI);
+                const theta = i * GOLDEN_ANGLE;
+
+                // Map polar coordinates to natural settling distribution
+                const naturalY = (Math.cos(theta) * r + 1) / 2; // 0 to 1
+
+                // Bias Y position heavily towards the bottom mimicking natural fog
+                const yPos = (1 - Math.pow(naturalY, PHI)) * CLOUD_CONFIG.yDistribution + CLOUD_CONFIG.yOffset;
+
+                // Depth (Z-axis) creates the organic 3D layering
+                const depth = r;
+
+                const scale = CLOUD_CONFIG.baseScale + Math.pow(depth, PHI) * CLOUD_CONFIG.scaleVariance;
+
+                // Speed depends harmonically on depth (further is slower)
+                const animDuration = CLOUD_CONFIG.baseDuration + Math.pow((1 - depth), PHI) * CLOUD_CONFIG.durationVariance;
+                const animDelay = -((i * PHI * 17) % animDuration);
+
+                wrapper.style.top = yPos + '%';
+                wrapper.style.animationDuration = animDuration + 's';
+                wrapper.style.animationDelay = animDelay + 's';
+
+                // Scale is on the inner content, keeping the wrapper purely for translation
+                cloud.style.transform = `scale(${scale})`;
+
+                // 1/8th of the previous opacity for volumetric stacking
+                cloud.style.opacity = (CLOUD_CONFIG.baseOpacity + (1 - depth) * CLOUD_CONFIG.opacityVariance) / CLOUD_CONFIG.opacityDivisor;
+
+                // ORGANIC DEPTH OF FIELD (Blur) 
+                // Hardware accelerated blur makes it look like real volumetric smoke.
+                // Focus point is at 40% depth. Clouds further or closer get blurred.
+                const focusDist = Math.abs(depth - CLOUD_CONFIG.blurFocusDepth);
+                cloud.style.filter = `blur(${focusDist * CLOUD_CONFIG.blurIntensity}px)`;
+
+                // Store depth for lightning logic
+                wrapper.dataset.depth = depth;
+
+                // Independent, out-of-phase slow color breathing cycle
+                const startBreathing = () => {
+                    const isCyan = Math.random() > 0.4;
+                    const flashClass = isCyan ? 'lightning-flash' : 'lightning-flash-secondary';
+                    wrapper.classList.add(flashClass);
+
+                    // Hold the color for 5 to 12 seconds
+                    setTimeout(() => {
+                        wrapper.classList.remove(flashClass);
+                        // Wait randomly before breathing again (5 to 15 seconds)
+                        setTimeout(startBreathing, CLOUD_CONFIG.colorWaitMin + Math.random() * CLOUD_CONFIG.colorWaitRandom);
+                    }, CLOUD_CONFIG.colorHoldMin + Math.random() * CLOUD_CONFIG.colorHoldRandom);
+                };
+                // Random phase start between 0s and 20s so they never sync up
+                setTimeout(startBreathing, Math.random() * CLOUD_CONFIG.initialDelayMax);
+
+                wrapper.appendChild(cloud);
+                bg.appendChild(wrapper);
+                allWrappers.push(wrapper);
+            }
         })();
     </script>
 
