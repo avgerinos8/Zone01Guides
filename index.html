@@ -1559,7 +1559,7 @@ git config --global user.name {{username}}`;
                         
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Count</label><span id="val-nc" style="color:#fff">69</span></div><input type="range" id="cfg-nc" min="0" max="140" value="69" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Opacity</label><span id="val-bo" style="color:#fff">0.32</span></div><input type="range" id="cfg-bo" min="0" max="1" step="0.05" value="0.32" style="width:100%; height:10px; cursor:pointer;"></div>
-                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Blur</label><span id="val-blur" style="color:#fff">40</span></div><input type="range" id="cfg-blur" min="0" max="100" value="40" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Blur</label><span id="val-blur" style="color:#fff">40</span></div><input type="range" id="cfg-blur" min="0" max="200" value="40" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Y Offset</label><span id="val-yo" style="color:#fff">-5</span></div><input type="range" id="cfg-yo" min="-50" max="50" value="-5" style="width:100%; height:10px; cursor:pointer;"></div>
                         
                         <div style="margin-top:12px; display:flex; align-items:center; gap:6px;">
@@ -1578,11 +1578,30 @@ git config --global user.name {{username}}`;
                         </div>
                     </div>
                 </div>
-                <div style="display:flex; justify-content:flex-end;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="fx-fps-counter" style="color:#a5b4fc; font-size:11px; opacity:0.7;">FPS: --</span>
                     <button id="close-fx-btn" style="background:transparent; color:#a5b4fc; border:1px solid transparent; padding:6px 12px; cursor:pointer; font-family:'Fira Code', monospace; font-size:12px;">Close</button>
                 </div>
             `;
             document.body.appendChild(panel);
+
+            // Lightweight FPS counter
+            let lastTime = performance.now();
+            let frameCount = 0;
+            const fpsEl = document.getElementById('fx-fps-counter');
+            function updateFPS() {
+                const now = performance.now();
+                frameCount++;
+                if (now - lastTime >= 1000) {
+                    if (panel.style.display === 'block') {
+                        fpsEl.innerText = 'FPS: ' + frameCount;
+                    }
+                    frameCount = 0;
+                    lastTime = now;
+                }
+                requestAnimationFrame(updateFPS);
+            }
+            updateFPS();
 
             let updateTimeout;
             function triggerUpdate() {
@@ -1733,10 +1752,10 @@ git config --global user.name {{username}}`;
             durationVariance: 120,       // Additional slowness based on depth
             baseScale: 1,                // Base cloud size
             scaleVariance: 3.5,          // Size variation based on depth
-            baseOpacity: 0.32,           // Minimum opacity
+            baseOpacity: 0.65,           // Minimum opacity
             opacityVariance: 0.12,       // Additional opacity based on depth
             opacityDivisor: 8,           // Opacity division for volumetric stacking
-            blurIntensity: 40,           // Blur multiplier for depth of field
+            blurIntensity: 64,           // Blur multiplier for depth of field
             blurFocusDepth: -1,          // -1 for uniform blur
             yDistribution: 110,          // Vertical spread scale
             yOffset: -5,                 // Vertical base offset
