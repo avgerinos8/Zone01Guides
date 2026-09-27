@@ -16,12 +16,21 @@
             padding: 0;
         }
 
-        /* ── ──────────────────────────────────────────── ⊃
-           The city lights background is procedurally generated using an HTML canvas to 
-           create a sharp, ultra-high resolution map of avenues, streets, and clusters.
-           The clouds effect is achieved by repeating volumetric ASCII layers 
-           on top of each other, utilizing hardware-accelerated CSS blur 
-           and CSS 3D perspective transforms to create this dreamy, immersive scenery. */
+        /* ── fluid scaling driver ─────────────────────────────────────────────── ⊃
+           BUGFIX (previous version): clamp(0, calc((100vw - 320px) / 480), 1)
+           compared a LENGTH (the calc()) against two bare NUMBERS (0 and 1).
+           clamp() requires all three arguments to be the same type — a
+           length-vs-number mismatch makes the ENTIRE custom property invalid,
+           and an invalid var() reference makes every property that uses it
+           fall back to its inherited/initial value. That's why nothing was
+           scaling and the ascii-art/moto rendered at an inherited ~16px
+           instead of the intended small size.
+           Fix: keep --fluid-range as a LENGTH throughout (0px at 320px
+           viewport width, up to 704px at 1024px viewport width — all three
+           clamp args are lengths, so this is valid). Every consumer below
+           divides it by 704 (a plain number), which is legal calc: length
+           × number and length ÷ number are both fine; only length × length
+           or comparing mismatched types is not. */
         :root {
             --fluid-range: clamp(0px, calc(100vw - 320px), 704px);
         }
@@ -46,9 +55,6 @@
             border-bottom: 1px solid #222530;
             padding-bottom: 8px;
             margin-bottom: 16px;
-            background-color: #0d0e12;
-            position: relative;
-            z-index: 10;
         }
 
         .status-line {
@@ -109,7 +115,6 @@
             white-space: pre;
             font-family: 'Fira Code', monospace;
             text-align: left;
-            background-color: #0d0e12;
         }
 
         .prompt {
@@ -634,97 +639,101 @@
             }
         }
 
-        .clouds-toggle {
-            cursor: pointer;
+        /* ================================================================
+           CRT EFFECT (toggled by clicking the HOST link)
+           Kept deliberately subtle/infrequent — brief flicker every few
+           seconds rather than a continuous strobe, so it stays comfortable
+           to look at instead of being an eyesore (or an actual seizure risk).
+           ================================================================ */
+        body.crt-on {
+            animation: crtFlicker 7s steps(1) infinite;
         }
 
-        /* FX BACKGROUND */
-        #fx-background {
-            display: none;
+        @keyframes crtFlicker {
+
+            0%,
+            96%,
+            100% {
+                filter: none;
+            }
+
+            97% {
+                filter: brightness(1.15) contrast(1.05) hue-rotate(-4deg);
+            }
+
+            98% {
+                filter: brightness(0.88);
+            }
+
+            99% {
+                filter: brightness(1.1) saturate(1.35);
+            }
+        }
+
+        /* full-page scanline film, same technique as the reverse-msg box */
+        body.crt-on::before {
+            content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            inset: 0;
             pointer-events: none;
-            overflow: hidden;
-            /* Gradient to fade out softly at the top so it doesn't affect the ASCII art */
-            -webkit-mask-image: linear-gradient(to bottom, transparent 350px, black 550px, black 100%);
-            mask-image: linear-gradient(to bottom, transparent 350px, black 550px, black 100%);
+            z-index: 500;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(0, 255, 255, 0.025) 3px,
+                    rgba(0, 255, 255, 0.025) 4px);
+            mix-blend-mode: screen;
         }
 
-        body.clouds-on #fx-background {
-            display: block;
+        /* occasional RGB-split glitch on the ascii-art */
+        body.crt-on .ascii-art {
+            animation: chromaGlitch 5s steps(1) infinite;
         }
 
-        /* 
-           LITE VERSION PERFORMANCE UPGRADES:
-           1. Movement is handled purely by CSS animations on a wrapper element, freeing up the CPU thread completely.
-           2. Text-shadows are entirely removed for the clouds.
-        */
-        .cloud-wrapper {
-            position: absolute;
-            left: -40vw;
-            /* Start offscreen left */
-            will-change: transform;
-            animation: floatCloud linear infinite;
-        }
+        @keyframes chromaGlitch {
 
-        @keyframes floatCloud {
-            0% {
-                transform: translate3d(0vw, 0, 0);
-            }
-
+            0%,
+            92%,
             100% {
-                transform: translate3d(160vw, 0, 0);
-            }
-        }
-
-        .ascii-cloud {
-            white-space: pre;
-            font-family: 'Fira Code', monospace;
-            font-size: 1.1vh;
-            /* Exclusively dependent on height, and 1/4 smaller */
-            line-height: 1.1;
-            color: rgba(168, 85, 247, 0.45);
-            /* Removed heavy text-shadow completely */
-            will-change: color, opacity, filter;
-            transition: color 4s ease-in-out, opacity 4s ease-in-out, filter 4s ease;
-        }
-
-        /* Ambient Color Breathing - Pure hue shift, no brightness pop */
-        .lightning-flash .ascii-cloud {
-            color: rgba(120, 220, 255, 0.45) !important;
-            transition: color 6s ease-in-out;
-        }
-
-        .lightning-flash-secondary .ascii-cloud {
-            color: rgba(180, 100, 247, 0.45) !important;
-            transition: color 6s ease-in-out;
-        }
-
-        /* Abrupt Local Lightning Flash for background clouds */
-        @keyframes hiddenLightning {
-            0% {
-                color: rgba(255, 255, 255, 0.9) !important;
-                text-shadow: 0 0 25px rgba(220, 255, 255, 1);
-            }
-
-            20% {
-                color: rgba(200, 240, 255, 0.7) !important;
-                text-shadow: 0 0 15px rgba(200, 255, 255, 0.6);
-            }
-
-            100% {
-                color: rgba(168, 85, 247, 0.45);
                 text-shadow: none;
+                transform: translate(0, 0);
+            }
+
+            93% {
+                text-shadow: -2px 0 rgba(255, 0, 110, 0.65), 2px 0 rgba(0, 255, 255, 0.65);
+                transform: translate(-1px, 0);
+            }
+
+            94% {
+                text-shadow: 2px 0 rgba(255, 0, 110, 0.65), -2px 0 rgba(0, 255, 255, 0.65);
+                transform: translate(1px, 0);
+            }
+
+            95% {
+                text-shadow: none;
+                transform: translate(0, 0);
             }
         }
 
-        .hidden-lightning-flash .ascii-cloud {
-            animation: hiddenLightning 1.5s ease-out !important;
-            transition: none !important;
+        /* the blinking cursor glows harder, alternating cyan/magenta */
+        body.crt-on .cursor {
+            animation: blink 1s step-end infinite, crtCursorGlow 2.4s ease-in-out infinite;
+        }
+
+        @keyframes crtCursorGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 6px #00ffff;
+            }
+
+            50% {
+                box-shadow: 0 0 10px #ff2fd0, 0 0 20px #00ffff;
+            }
+        }
+
+        .crt-toggle {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -738,7 +747,7 @@
                 ACCESS_LEVEL: <span class="cyan-text" id="learnerTrigger">LEARNER_</span> // AUTHOR: <a
                     href="https://github.com/avgerinos8" target="_blank" class="cyan-text">avgerinos</a> //
                 HOST: <a href="https://guides01.devs.surf/" target="_blank"
-                    class="cyan-text clouds-toggle">guides01.devs.surf</a>
+                    class="cyan-text crt-toggle">guides01.devs.surf</a>
             </div>
         </header>
 
@@ -869,7 +878,7 @@
                 ACCESS_LEVEL: <span class="cyan-text" id="adminTrigger">ADMIN_</span> // AUTHOR: <span
                     class="cyan-text">avgerinos</span> //
                 HOST: <a href="https://guides01.devs.surf/" target="_blank"
-                    class="cyan-text clouds-toggle">guides01.devs.surf</a>
+                    class="cyan-text crt-toggle">guides01.devs.surf</a>
             </div>
         </header>
 
@@ -1107,7 +1116,7 @@ git config --global user.name {{username}}`;
                     toast.classList.remove('show');
                 }, 2000);
             }
-            window.showToast = showToast; // shared with the toggle script below
+            window.showToast = showToast; // shared with the crt-toggle script below
 
             // Function to refresh the code block with current user data
             function refreshCode() {
@@ -1499,429 +1508,35 @@ git config --global user.name {{username}}`;
     </script>
 
     <script>
-        // ── SETTINGS UI (clouds-toggle) ────────────────────────────── ⊃
-        // Clicking "guides01.devs.surf" opens the settings panel.
+        // ── CRT effect toggle ────────────────────────────────────────────── ⊃
+        // Clicking "guides01.devs.surf" used to just navigate to the page you're
+        // already on. Now it flips a class on <body> that switches on the
+        // scanline/glitch effects defined in <style>, and reuses the existing
+        // toast (exposed as window.showToast in the first script block) to
+        // confirm the state change.
         (function () {
-            const toggles = document.querySelectorAll('.clouds-toggle');
+            const toggles = document.querySelectorAll('.crt-toggle');
             if (!toggles.length) return;
 
-            const panel = document.createElement('div');
-            panel.id = 'fx-settings-panel';
-            panel.style.cssText = 'display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(13, 14, 18, 0.95); border:1px solid #3d4b6c; padding:20px; z-index:9999; border-radius:8px; font-family:"Space Mono", monospace; color:#a5b4fc; box-shadow:0 0 20px rgba(0,0,0,0.8); width: 380px; max-width:90vw;';
-            panel.innerHTML = `
-                <h3 style="margin-top:0; color:#fff;">Settings (by avgerinos8)</h3>
-                <div style="max-height: 60vh; overflow-y: auto; padding-right: 10px; margin-bottom: 15px;">
-                    <div style="margin-bottom:10px">
-                        <label>Avenues: <span id="val-avenues" style="color:#fff">25</span></label>
-                        <input type="range" id="cfg-avenues" min="0" max="150" value="25" style="width:100%">
-                    </div>
-                    <div style="margin-bottom:10px">
-                        <label>City Tilt: <span id="val-tilt" style="color:#fff">65</span></label>
-                        <input type="range" id="cfg-tilt" min="40" max="85" value="65" style="width:100%">
-                    </div>
-                    <div style="margin-bottom:10px">
-                        <label>Dark Clouds Height: <span id="val-dch" style="color:#fff">0.3</span></label>
-                        <input type="range" id="cfg-dch" min="0" max="1" step="0.05" value="0.3" style="width:100%">
-                    </div>
-                    <div style="margin-bottom:10px">
-                        <label>Num Clouds: <span id="val-nc" style="color:#fff">69</span></label>
-                        <input type="range" id="cfg-nc" min="10" max="150" value="69" style="width:100%">
-                    </div>
-                    <div style="margin-bottom:10px">
-                        <label>Base Opacity: <span id="val-bo" style="color:#fff">0.32</span></label>
-                        <input type="range" id="cfg-bo" min="0" max="1" step="0.05" value="0.32" style="width:100%">
-                    </div>
-                    <div style="margin-bottom:10px">
-                        <label>Cloud Blur: <span id="val-blur" style="color:#fff">40</span></label>
-                        <input type="range" id="cfg-blur" min="0" max="100" value="40" style="width:100%">
-                    </div>
-                    <div style="margin-bottom:10px">
-                        <label>Cloud Altitude (Y): <span id="val-yo" style="color:#fff">-5</span></label>
-                        <input type="range" id="cfg-yo" min="-50" max="50" value="-5" style="width:100%">
-                    </div>
-                    <div style="margin-bottom:10px">
-                        <label><input type="checkbox" id="cfg-light" checked> Enable Lightning</label>
-                    </div>
-                </div>
-                <div style="display:flex; justify-content:flex-end;">
-                    <button id="close-fx-btn" style="background:transparent; color:#a5b4fc; border:none; padding:8px 12px; cursor:pointer; margin-right:10px;">Close</button>
-                    <button id="apply-fx-btn" style="background:#222a42; color:#fff; border:1px solid #3d4b6c; padding:8px 12px; cursor:pointer; border-radius:4px;">Apply & Re-render</button>
-                </div>
-            `;
-            document.body.appendChild(panel);
+            let on = false;
 
-            const bindSlider = (id) => document.getElementById('cfg-' + id).oninput = (e) => document.getElementById('val-' + id).innerText = e.target.value;
-            ['avenues', 'tilt', 'dch', 'nc', 'bo', 'blur', 'yo'].forEach(bindSlider);
-
-            document.getElementById('close-fx-btn').onclick = () => panel.style.display = 'none';
-            document.getElementById('apply-fx-btn').onclick = () => {
-                window.CITY_LIGHTS_CONFIG.avenues = parseInt(document.getElementById('cfg-avenues').value);
-                window.CITY_LIGHTS_CONFIG.tilt = parseInt(document.getElementById('cfg-tilt').value);
-                window.CLOUD_CONFIG.darkCloudsHeightLimit = parseFloat(document.getElementById('cfg-dch').value);
-
-                window.CLOUD_CONFIG.numClouds = parseInt(document.getElementById('cfg-nc').value);
-                window.CLOUD_CONFIG.baseOpacity = parseFloat(document.getElementById('cfg-bo').value);
-                window.CLOUD_CONFIG.blurIntensity = parseInt(document.getElementById('cfg-blur').value);
-                window.CLOUD_CONFIG.yOffset = parseInt(document.getElementById('cfg-yo').value);
-                window.CLOUD_CONFIG.enableLightning = document.getElementById('cfg-light').checked;
-
-                if (window.renderFXBackground) window.renderFXBackground();
-            };
+            function setState(next) {
+                on = next;
+                document.body.classList.toggle('crt-on', on);
+                if (window.showToast) {
+                    window.showToast(on ? 'CRT EFFECT: ON' : 'CRT EFFECT: OFF');
+                }
+            }
 
             toggles.forEach(function (link) {
                 link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-                    if (panel.style.display === 'block' && window.CITY_LIGHTS_CONFIG) {
-                        // Sync UI with current globals
-                        document.getElementById('cfg-avenues').value = window.CITY_LIGHTS_CONFIG.avenues;
-                        document.getElementById('val-avenues').innerText = window.CITY_LIGHTS_CONFIG.avenues;
-                        document.getElementById('cfg-tilt').value = window.CITY_LIGHTS_CONFIG.tilt;
-                        document.getElementById('val-tilt').innerText = window.CITY_LIGHTS_CONFIG.tilt;
-                        document.getElementById('cfg-dch').value = window.CLOUD_CONFIG.darkCloudsHeightLimit;
-                        document.getElementById('val-dch').innerText = window.CLOUD_CONFIG.darkCloudsHeightLimit;
-
-                        document.getElementById('cfg-nc').value = window.CLOUD_CONFIG.numClouds;
-                        document.getElementById('val-nc').innerText = window.CLOUD_CONFIG.numClouds;
-                        document.getElementById('cfg-bo').value = window.CLOUD_CONFIG.baseOpacity;
-                        document.getElementById('val-bo').innerText = window.CLOUD_CONFIG.baseOpacity;
-                        document.getElementById('cfg-blur').value = window.CLOUD_CONFIG.blurIntensity;
-                        document.getElementById('val-blur').innerText = window.CLOUD_CONFIG.blurIntensity;
-                        document.getElementById('cfg-yo').value = window.CLOUD_CONFIG.yOffset;
-                        document.getElementById('val-yo').innerText = window.CLOUD_CONFIG.yOffset;
-                        document.getElementById('cfg-light').checked = window.CLOUD_CONFIG.enableLightning;
-                    }
+                    e.preventDefault(); // stop the self-navigation
+                    setState(!on);
                 });
             });
         })();
     </script>
 
-    <script>
-        // ── FX ASCII CLOUDS, CITY LIGHTS & LIGHTNING ───────────────────────── ⊃
-        // --- CONFIGURATION VARIABLES FOR CITY LIGHTS ---
-        window.CITY_LIGHTS_CONFIG = {
-            enabled: true,               // Set to false to easily detach/disable city lights
-            perspective: 700,            // 3D perspective depth (px)
-            tilt: 56,                    // Viewing angle (lower = looking from higher up)
-            verticalScale: 1.5,          // Vertical stretch (scaleY)
-            opacity: 0.85,               // Base visibility of the city
-            avenues: 25,                 // Number of major roads
-            windingStreets: 400,         // Number of anarchic winding roads
-            clusters: 120                // Number of dense neighborhoods
-        };
-
-        // --- CONFIGURATION VARIABLES FOR CLOUDS ---
-        window.CLOUD_CONFIG = {
-            numClouds: 69,               // Total number of normal volumetric clouds
-            baseDuration: 10,            // Base animation speed in seconds (lower is faster)
-            durationVariance: 120,       // Additional slowness based on depth
-            baseScale: 1,                // Base cloud size
-            scaleVariance: 3.5,          // Size variation based on depth
-            baseOpacity: 0.32,           // Minimum opacity
-            opacityVariance: 0.12,       // Additional opacity based on depth
-            opacityDivisor: 8,           // Opacity division for volumetric stacking
-            blurIntensity: 40,           // Blur multiplier for depth of field
-            blurFocusDepth: -1,          // -1 for uniform blur
-            yDistribution: 110,          // Vertical spread scale
-            yOffset: -5,                 // Vertical base offset
-            colorHoldMin: 8000,          // Minimum time to hold flash color (ms)
-            colorHoldRandom: 4000,       // Random added time to hold flash color (ms)
-            colorWaitMin: 2000,          // Minimum wait before next flash (ms)
-            colorWaitRandom: 4000,       // Random added wait before next flash (ms)
-            initialDelayMax: 5000,       // Max initial delay for breathing phases (ms)
-            enableLightning: true,       // True for abrupt hidden lightning flashes
-            lightningDepthLimit: 0.35,   // Only clouds further back than this depth will flash
-            darkCloudsCount: 15,        // Number of dense black clouds at the far back
-            darkCloudsOpacity: 0.95,     // How solid the dark clouds are
-            darkCloudsDepthLimit: 0.15,  // Dark clouds are forced to be between 0 and this depth
-            darkCloudsHeightLimit: 0.7   // 0 to 1 limit (0.3 = only appear at the bottom 30% of the screen)
-        };
-
-        window.renderFXBackground = function () {
-            document.body.classList.add('clouds-on');
-
-            const CITY_LIGHTS_CONFIG = window.CITY_LIGHTS_CONFIG;
-            const CLOUD_CONFIG = window.CLOUD_CONFIG;
-
-            const existingBg = document.getElementById('fx-background');
-            if (existingBg) existingBg.remove();
-
-            const bg = document.createElement('div');
-            bg.id = 'fx-background';
-            document.body.insertBefore(bg, document.body.firstChild);
-
-            // ── CITY LIGHTS GENERATION ──
-            if (CITY_LIGHTS_CONFIG.enabled) {
-                const canvas = document.createElement('canvas');
-                canvas.id = 'city-lights-canvas';
-                canvas.width = 2500;
-                canvas.height = 2500;
-
-                Object.assign(canvas.style, {
-                    position: 'absolute',
-                    bottom: '0',
-                    left: '-50%',
-                    width: '200%',
-                    height: '100%',
-                    transformOrigin: 'bottom center',
-                    transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
-                    opacity: CITY_LIGHTS_CONFIG.opacity,
-                    zIndex: '-10',
-                    pointerEvents: 'none',
-                    maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
-                    webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)'
-                });
-
-                // Crisp rendering to prevent 3D interpolation blur
-                canvas.style.imageRendering = 'pixelated';
-
-                bg.appendChild(canvas);
-
-                const ctx = canvas.getContext('2d');
-                const W = canvas.width;
-                const H = canvas.height;
-
-                function drawLight(x, y, size, color) {
-                    ctx.fillStyle = color;
-                    // Drawing a simple rectangle is incredibly fast and looks crisp and realistic at 1-2px
-                    ctx.fillRect(x, y, size, size);
-                }
-
-                function getCityColor() {
-                    const r = Math.random();
-                    if (r < 0.47) return 'rgba(230, 230, 230, 0.85)'; // White/Grey
-                    if (r < 0.94) return 'rgba(255, 215, 80, 0.85)';  // Yellow
-                    return 'rgba(150, 230, 255, 0.9)';                // Rare Cyan
-                }
-
-                // 1. Draw Major Avenues
-                for (let i = 0; i < CITY_LIGHTS_CONFIG.avenues; i++) {
-                    const isVertical = Math.random() > 0.5;
-                    const start = Math.random() * (isVertical ? W : H);
-                    const curveFreq = 1 + Math.random() * 2;
-                    const curveAmp = 100 + Math.random() * 400;
-
-                    for (let s = 0; s < 400; s++) {
-                        const t = s / 400;
-                        let x, y;
-                        if (isVertical) {
-                            x = start + Math.sin(t * Math.PI * curveFreq) * curveAmp;
-                            y = t * H;
-                        } else {
-                            x = t * W;
-                            y = start + Math.sin(t * Math.PI * curveFreq) * curveAmp;
-                        }
-
-                        // Avenues have dual lanes (warm white and red)
-                        if (Math.random() > 0.05) drawLight(x - 5, y, 1.5, 'rgba(255, 220, 100, 0.95)');
-                        if (Math.random() > 0.05) drawLight(x + 5, y, 1.5, 'rgba(255, 60, 60, 0.9)');
-                    }
-                }
-
-                // 2. Draw Winding Streets
-                for (let i = 0; i < CITY_LIGHTS_CONFIG.windingStreets; i++) {
-                    let x = Math.random() * W;
-                    let y = Math.random() * H;
-                    let angle = Math.random() * Math.PI * 2;
-                    const length = 50 + Math.random() * 200;
-                    const color = getCityColor();
-                    const isMainStreet = Math.random() > 0.8;
-
-                    for (let s = 0; s < length; s++) {
-                        angle += (Math.random() - 0.5) * 0.5;
-                        const step = 10 + Math.random() * 10;
-                        x += Math.cos(angle) * step;
-                        y += Math.sin(angle) * step;
-
-                        if (x < 0 || x > W || y < 0 || y > H) break;
-
-                        if (Math.random() > 0.2) {
-                            const size = isMainStreet ? 1.2 : 0.8;
-                            drawLight(x, y, size, color);
-                        }
-                    }
-                }
-
-                // 3. Draw Neighborhood Clusters
-                for (let i = 0; i < CITY_LIGHTS_CONFIG.clusters; i++) {
-                    const cx = Math.random() * W;
-                    const cy = Math.random() * H;
-                    const radius = 50 + Math.random() * 250;
-                    const density = 30 + Math.random() * 100;
-
-                    for (let j = 0; j < density; j++) {
-                        const angle = Math.random() * Math.PI * 2;
-                        const dist = Math.sqrt(Math.random()) * radius;
-                        const x = cx + Math.cos(angle) * dist;
-                        const y = cy + Math.sin(angle) * dist;
-                        const color = getCityColor();
-
-                        if (Math.random() > 0.1) {
-                            drawLight(x, y, 0.6 + Math.random() * 0.6, color);
-                        }
-                    }
-                }
-            }
-
-            // ── CLOUDS GENERATION ──
-            const cloudTemplates = [
-                `          ░░░░▒▒▒▒▒▓▒░░                 
-        ░░░▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒░░░         
-       ░░▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░     
-      ░░▒▒▓▓▓▓▓▓████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░ 
-    ░▒▒▓▓▓▓▓███████████▓▓▓▓▓▓▓██████▓▒▒ 
- ░▓██████████████████████▓▓▓▓██████████▒
-░███████████████████████████████████████`,
-                `                        ░░░░░░▒▒▒▒░░░░░              
-                     ░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒░░░            
-                ░░░░░░░░▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▒░░░          
-            ░░░░░▒▒▒░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒░░░        
-         ░░░░░▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓██████▓▓▓▓▓▒▒▒▒▒░░░     
-   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓███████████▓▓▓▓▓▒▒▒▒▒░░░   
- ░░▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████████████████▓▓▓▓▓▓▓▓▓▒░░░ 
-░▓▓▓▓████████████████████████████████████████████▓▓░░`,
-                `                                                                 
-                                                                 
-                 ░░░░░░░░░░░              ░░░░░░░░               
-               ░░░▒▒▒▒▒▒▒▒░░░          ░░░░░░▒▒░░░░░             
-             ░░░▒▒▓▓▓▓▓▓▓▓▒▒▒░░      ░░░░▒▒▒▒▒▒▒▒▒░░░░           
-           ░░░▒▒▓▓█████▓▓▓▓▓▓▒▒░░░░░░░▒▒▒▓▓▓▓▓▓▓▓▓▒░░░░          
-        ░░░░▒▓████████████▓▓▓▓▓▒▒▒▒░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒░░░        
-        ░▒▒▓████████████████▓▓▓▓▓▓▓▓▓▓▓██████████▓▓▓▓▓▒▒░░░      
-     ░▒▒▒▓███████████████████████████████████████████▓▓▓▒▒░░░    
-  ░▒▒▒▓████████████████████████████████████████████████▓▓▓▒▒░░░  
-░▒▒▒▓█████████████████████████████████████████████████████▓▓▓▒▒░░`,
-                `                ░▒▒▒▒▓▓▒▒▒░                                           
-              ░▒▒▓▓▓▓▓▓▓▓▓▓▒░                                         
-            ░▒▒▓▓▓▓▓████▓▓▓▓▓▒░     ░░▒▒▒▒▒▒▒░░                       
-          ░▒▒▓▓▓▓████████▓▓▓▓▓▓▒░ ░▒▒▓▓▓▓▓▓▓▓▒▒▒░░                    
-       ░░▒▒▒▓▓▓▓█████████████▓▓▓▓▓▓▓▓▓▓▓██▓▓▓▓▓▓▓▒▒▒░░░               
-    ░░▒▓▓▓▓▓▓▓██████████████████████████████▓▓▓▓▓▓▓▓▓▓▒▒▒▒░░          
-░░░▒▒▓███████████████████████████████████████████████████▓▓▓▓▒▒▒▒▒░░░░`,
-                `                                                 ░░░░░░░░░░░░░░                  
-                                            ░░░░░░░▒▒▒▒▒▒▒▒▒▒░░░░░░              
-               ░░░░░░░░░░░                ░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▒▒▒░░░░░░            
-            ░░░░▒▒▒▒▒▒▒▒░░░░░         ░░░░░▒▒▒▒▓▓▓▓▓█████▓▓▓▓▒▒▒▒░░░░░░          
-        ░░░░░▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒░░░░░░░░░░░▒▒▒▒▓▓▓▓▓████████████▓▓▒▒▒▒▒▒░░░░░░       
-     ░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████████████████▓▓▓▓▓▓▒▒▒▒░░░░░░░   
-  ░░░▒▒▒▓▓▓███████████████████████████████████████████████████████████▓▓▒▒▒▒░░░░░
-░░▒▒▓▓▓███████████████████████████████████████████████████████████████████▓▓▓▒▒▒░`,
-                `                      ░░░░░                        
-                 ░░░░░░▒▒▒░░░                      
-             ░░░░░░▒▒▓▓▓▓▓▒▒░░░    ░░░░░░░░        
-         ░░░░░▒▒▒▒▓▓▓███▓▓▓▓▓▒░░░░░░▒▒▒▒▒▒░░       
-     ░░░░░▒▓▓▓▓▓▓▓▓▓███████▓▓▓▒▒░▒▓▓▓▓▓▓▓▓▒▒░      
-    ░░▒▓▓▓▓▓████████████████▓▓▓▓▓▓▓▓▓▓███▓▓▓▒▒░    
-  ░░▒▓▓▓▓██████████████████████████████████▓▓▓▒▒░░ 
-░▒▓▓▓▓▓▓███████████████████████████████████████▓▒▒░`
-            ];
-
-            const allWrappers = [];
-            const totalClouds = CLOUD_CONFIG.numClouds + CLOUD_CONFIG.darkCloudsCount;
-            const PHI = 1.61803398875;
-            const GOLDEN_ANGLE = 2.3999632297; // Radians
-
-            for (let i = 0; i < totalClouds; i++) {
-                const isDarkCloud = i >= CLOUD_CONFIG.numClouds;
-
-                const wrapper = document.createElement('div');
-                wrapper.className = 'cloud-wrapper';
-
-                const cloud = document.createElement('div');
-                cloud.className = 'ascii-cloud';
-
-                const template = cloudTemplates[i % cloudTemplates.length];
-                cloud.textContent = template;
-
-                let r = Math.pow((i % CLOUD_CONFIG.numClouds) / CLOUD_CONFIG.numClouds, PHI);
-                let depth = r;
-
-                if (isDarkCloud) {
-                    // Force dark clouds to be at the far back
-                    depth = Math.random() * CLOUD_CONFIG.darkCloudsDepthLimit;
-                    r = depth;
-                }
-
-                const theta = i * GOLDEN_ANGLE;
-                const naturalY = (Math.cos(theta) * r + 1) / 2;
-                let yPos = (1 - Math.pow(naturalY, PHI)) * CLOUD_CONFIG.yDistribution + CLOUD_CONFIG.yOffset;
-
-                if (isDarkCloud) {
-                    // Force dark clouds to stay near the bottom to mask the horizon
-                    const maxFull = CLOUD_CONFIG.yDistribution + CLOUD_CONFIG.yOffset;
-                    const minFull = CLOUD_CONFIG.yOffset;
-                    // For heightLimit = 0.3, they only go up 30% from the bottom
-                    const minDark = maxFull - (CLOUD_CONFIG.yDistribution * CLOUD_CONFIG.darkCloudsHeightLimit);
-                    // Remap yPos from [minFull, maxFull] to [minDark, maxFull]
-                    const factor = (yPos - minFull) / CLOUD_CONFIG.yDistribution;
-                    yPos = minDark + factor * (maxFull - minDark);
-                }
-
-                const scale = CLOUD_CONFIG.baseScale + Math.pow(depth, PHI) * CLOUD_CONFIG.scaleVariance;
-                const animDuration = CLOUD_CONFIG.baseDuration + Math.pow((1 - depth), PHI) * CLOUD_CONFIG.durationVariance;
-                const animDelay = -((i * PHI * 17) % animDuration);
-
-                wrapper.style.top = yPos + '%';
-                wrapper.style.animationDuration = animDuration + 's';
-                wrapper.style.animationDelay = animDelay + 's';
-
-                cloud.style.transform = `scale(${scale})`;
-
-                if (isDarkCloud) {
-                    cloud.style.opacity = CLOUD_CONFIG.darkCloudsOpacity;
-                    cloud.style.color = '#0d0e12';
-                    cloud.style.textShadow = 'none';
-                    cloud.style.transition = 'none'; // Prevent any CSS transitions
-                } else {
-                    cloud.style.opacity = (CLOUD_CONFIG.baseOpacity + (1 - depth) * CLOUD_CONFIG.opacityVariance) / CLOUD_CONFIG.opacityDivisor;
-                }
-
-                let blurPx = 0;
-                if (CLOUD_CONFIG.blurFocusDepth === -1) {
-                    blurPx = CLOUD_CONFIG.blurIntensity * 0.15;
-                } else {
-                    const focusDist = Math.abs(depth - CLOUD_CONFIG.blurFocusDepth);
-                    blurPx = focusDist * CLOUD_CONFIG.blurIntensity;
-                }
-                cloud.style.filter = `blur(${blurPx}px)`;
-
-                wrapper.dataset.depth = depth;
-
-                if (!isDarkCloud) {
-                    // Independent, out-of-phase slow color breathing cycle
-                    const startBreathing = () => {
-                        const isCyan = Math.random() > 0.4;
-                        const flashClass = isCyan ? 'lightning-flash' : 'lightning-flash-secondary';
-                        wrapper.classList.add(flashClass);
-
-                        setTimeout(() => {
-                            wrapper.classList.remove(flashClass);
-                            setTimeout(startBreathing, CLOUD_CONFIG.colorWaitMin + Math.random() * CLOUD_CONFIG.colorWaitRandom);
-                        }, CLOUD_CONFIG.colorHoldMin + Math.random() * CLOUD_CONFIG.colorHoldRandom);
-                    };
-                    setTimeout(startBreathing, Math.random() * CLOUD_CONFIG.initialDelayMax);
-
-                    // Abrupt Lightning Flash Logic (Only for deep background clouds)
-                    if (CLOUD_CONFIG.enableLightning && depth < CLOUD_CONFIG.lightningDepthLimit) {
-                        const startLightning = () => {
-                            wrapper.classList.add('hidden-lightning-flash');
-                            setTimeout(() => {
-                                wrapper.classList.remove('hidden-lightning-flash');
-                                setTimeout(startLightning, 10000 + Math.random() * 15000);
-                            }, 1500);
-                        };
-                        setTimeout(startLightning, Math.random() * 25000);
-                    }
-                }
-
-                wrapper.appendChild(cloud);
-                bg.appendChild(wrapper);
-                allWrappers.push(wrapper);
-            }
-        };
-        // Initial render on load
-        window.renderFXBackground();
-    </script>
 </body>
 
 </html>
