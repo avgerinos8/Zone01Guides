@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guides 01 · guides01.devs.surf</title>
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── fluid scaling driver ─────────────────────────────────────────────── ⊃
+           BUGFIX (previous version): clamp(0, calc((100vw - 320px) / 480), 1)
+           compared a LENGTH (the calc()) against two bare NUMBERS (0 and 1).
+           clamp() requires all three arguments to be the same type — a
+           length-vs-number mismatch makes the ENTIRE custom property invalid,
+           and an invalid var() reference makes every property that uses it
+           fall back to its inherited/initial value. That's why nothing was
+           scaling and the ascii-art/moto rendered at an inherited ~16px
+           instead of the intended small size.
+           Fix: keep --fluid-range as a LENGTH throughout (0px at 320px
+           viewport width, up to 704px at 1024px viewport width — all three
+           clamp args are lengths, so this is valid). Every consumer below
+           divides it by 704 (a plain number), which is legal calc: length
+           × number and length ÷ number are both fine; only length × length
+           or comparing mismatched types is not. */
+        :root {
+            --fluid-range: clamp(0px, calc(100vw - 320px), 704px);
+        }
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: #0d0e12;
+            color: #e2e8f0;
+            max-width: 850px;
+            margin: calc(12px + 12 * var(--fluid-range) / 704) auto;
+            padding: 0 calc(12px + 12 * var(--fluid-range) / 704);
+            line-height: 1.5;
+        }
+
+        .terminal-header {
+            border-bottom: 1px solid #222530;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+
+        .status-line {
+            font-size: calc(10px + 4 * var(--fluid-range) / 704);
+            color: #718096;
+            text-align: center;
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .cyan-text {
+            color: #00ffff;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        a.cyan-text {
+            text-decoration: none;
+            color: #00ffff;
+            background: transparent;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            display: inline;
+            transition: none;
+            transform: none;
+            box-shadow: none;
+        }
+
+        a.cyan-text:hover {
+            text-decoration: underline;
+        }
+
+        .ascii-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            overflow: auto;
+            margin-bottom: 8px;
+            /* scrollbar hidden on purpose — content is sized to always fit via
+               --fluid-range, this is just a safety net, never meant to be seen */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .ascii-container::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .ascii-art {
+            margin: 0 auto;
+            font-size: calc(3px + 5 * var(--fluid-range) / 704);
+            color: #6366f1;
+            line-height: 1.15;
+            white-space: pre;
+            font-family: 'Fira Code', monospace;
+            text-align: left;
+        }
+
+        .prompt {
+            color: #a855f7;
+            font-weight: 600;
+        }
+
+        .section-title {
+            color: #718096;
+            font-size: calc(12px + 2 * var(--fluid-range) / 704);
+            font-weight: 500;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        li {
+            margin-bottom: 14px;
+        }
+
+        li a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: calc(11px + 5 * var(--fluid-range) / 704) calc(12px + 8 * var(--fluid-range) / 704);
+            background: #141722;
+            border: 1px solid #222530;
+            border-radius: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* min-width: 0 is the flexbox fix that actually lets this span shrink
+           below its content size, so text-overflow: ellipsis below can kick in
+           at ANY width instead of only past a fixed breakpoint. */
+        li a span:first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: calc(12px + 4 * var(--fluid-range) / 704);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        li a:hover {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.1);
+            transform: translateX(6px);
+        }
+
+        .tag {
+            color: #6366f1;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            transition: all 0.25s ease;
+        }
+
+        li a:hover .tag {
+            color: #00ffff;
+            background: rgba(0, 255, 255, 0.05);
+            border-color: #00ffff;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        .cursor {
+            display: inline-block;
+            background-color: #6366f1;
+            width: 8px;
+            height: 15px;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 6px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .cursor:hover {
+            background: #00ffff;
+            box-shadow: 0 0 12px #00ffff;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .module-list {
+            transition: opacity 0.2s ease;
+        }
+
+        .old-lesson .tag {
+            color: #f472b6;
+            border-color: rgba(244, 114, 182, 0.3);
+            background: rgba(244, 114, 182, 0.08);
+        }
+
+        .old-lesson li a:hover .tag {
+            color: #00ffff;
+            border-color: #00ffff;
+            background: rgba(0, 255, 255, 0.05);
+        }
+
+        .columns-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .module-group {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .columns-container {
+                grid-template-columns: 1fr;
+            }
+
+            .column {
+                gap: 32px;
+            }
+        }
+
+        /* Password Modal */
+        #passwordModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+        }
+
+        #passwordModal .modal-card {
+            background: #141722;
+            padding: 40px 30px;
+            border-radius: 12px;
+            border: 1px solid #a855f7;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.2);
+        }
+
+        #passwordModal .modal-card p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        #passwordModal .modal-card input[type="password"] {
+            width: 100%;
+            padding: 2px 16px;
+            background: #0d0e12;
+            border: 1px solid #222530;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        #passwordModal .modal-card input[type="password"]:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .modal-buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1 1 auto;
+        }
+
+        .submit-btn {
+            background: #a855f7;
+            color: #fff;
+        }
+
+        .submit-btn:hover {
+            background: #00ffff;
+            color: #0d0e12;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        }
+
+        .cancel-btn {
+            background: transparent;
+            color: #f472b6;
+            border: 1px solid #f472b6 !important;
+            /* fixed width, not min-width: with box-sizing:border-box the 48px
+               of left+right padding was eating into the ch budget, so
+               min-width alone could still let the button grow past it when
+               the longer string ("I don't know the password" = 25 chars) was
+               showing. Explicit width + the padding added back on top, plus
+               flex:0 0 auto so the shared flex-grow rule below can't stretch
+               it based on content either — now it truly cannot resize. */
+            flex: 0 0 auto;
+            width: calc(28ch + 48px);
+            white-space: nowrap;
+        }
+
+        .cancel-btn:hover {
+            background: #f472b6;
+            color: #0d0e12;
+        }
+
+        .error-msg {
+            color: #f472b6;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            min-height: 1.4em;
+            margin-top: 6px;
+            margin-bottom: 14px;
+        }
+
+        /* Secret Content */
+        #secretContent {
+            display: none;
+        }
+
+        #secretContent .ascii-art {
+            color: #a855f7;
+        }
+
+        /* Code block */
+        .code-block {
+            background: #0d0e12;
+            border: 1px solid #222530;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow: auto;
+            position: relative;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .code-block::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .code-block .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: #0d0e12;
+            border: 1px solid #6366f1;
+            color: #6366f1;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+            z-index: 2;
+        }
+
+        .code-block .copy-btn:hover {
+            background: #6366f1;
+            color: #0d0e12;
+        }
+
+        .code-block .copy-btn.copied {
+            border-color: #00ffff;
+            color: #00ffff;
+        }
+
+        .code-block pre {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre-wrap;
+        }
+
+        /* Editable spans */
+        .editable {
+            display: inline-block;
+            min-width: 2em;
+            padding: 0 2px;
+            border-radius: 2px;
+            transition: all 0.15s;
+            cursor: text;
+            color: #00ffff;
+        }
+
+        .editable.editing {
+            border: 1px solid #00ffff;
+            background: rgba(0, 255, 255, 0.08);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+            animation: blink-border 1s step-end infinite;
+        }
+
+        @keyframes blink-border {
+
+            0%,
+            100% {
+                border-color: #00ffff;
+            }
+
+            50% {
+                border-color: transparent;
+            }
+        }
+
+        .editable:not(.editing) {
+            border: 1px solid transparent;
+        }
+
+        .public-projects {
+            margin-top: 30px;
+            border-top: 1px solid #222530;
+            padding-top: 20px;
+        }
+
+        .public-projects h3 {
+            color: #718096;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        /* Reverse-engineer message box */
+        .reverse-msg {
+            margin: 30px 0 20px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+            overflow: auto;
+            padding: 0 4px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .reverse-msg-add-top {
+            margin-top: 32px;
+        }
+
+        .reverse-msg::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        .reverse-msg pre {
+            background: #0a0b12;
+            border: 2px solid #a855f7;
+            border-radius: 8px;
+            margin: 0 auto;
+            padding: 2px calc(10px + 12 * var(--fluid-range) / 704);
+            font-family: 'Fira Code', monospace;
+            font-weight: 700;
+            /* the real fix for "weight doesn't look bolder": these box-drawing
+               glyphs (╭─╴╷ etc.) most likely have no bold variant in Fira
+               Code, so the browser silently substitutes a system fallback
+               font for them — font-weight has nothing to grab onto there.
+               text-stroke draws directly on top of whatever glyph actually
+               got rendered, so it thickens the strokes regardless of which
+               font drew them. currentColor keeps it in sync with the JS
+               breathing/hover color automatically. */
+            -webkit-text-stroke: 0.55px currentColor;
+            font-size: calc(6px + 4 * var(--fluid-range) / 704);
+            color: #a855f7;
+            line-height: 1.6;
+            white-space: pre;
+            box-shadow: 0 0 24px rgba(168, 85, 247, 0.18), inset 0 0 12px rgba(168, 85, 247, 0.07);
+            text-shadow: 0 0 10px rgba(168, 85, 247, 0.22);
+            max-width: 100%;
+            overflow: auto;
+            position: relative;
+            cursor: default;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .reverse-msg pre::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        /* Color, border-color, box-shadow and text-shadow above are now the
+           FIRST-PAINT fallback only — motto.js overwrites all four every
+           animation frame (breathing + hover crossfade), see the script block
+           near the bottom of <body>. Kept here so the box still looks right
+           for the instant before JS attaches (or if JS fails to load). */
+
+        /* the ASCII text itself is wrapped in <a id="mottoLink"> so only the
+           text — not the whole padded box — is the clickable/pointer area */
+        .reverse-msg pre a {
+            color: inherit;
+            text-shadow: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Scanline overlay */
+        .reverse-msg pre::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 255, 0.04) 2px,
+                    rgba(0, 255, 255, 0.04) 4px);
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid #6366f1;
+            color: #6366f1;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            transition: 0.2s;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background: #6366f1;
+            color: #0d0e12;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #141722;
+            border: 1px solid #00ffff;
+            color: #00ffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* ================================================================
+           RESPONSIVE SCALING
+           Everything that can be a continuous value (font sizes, padding,
+           margins) now reads from --fluid, set once at the top of this
+           stylesheet, instead of jumping at 700px/420px/350px. That removes
+           the "dead zones" between breakpoints where nothing had shrunk yet
+           but content already didn't fit.
+
+           display:none for .tag can't be fluid — a thing is either shown or
+           hidden — so it keeps one deliberate breakpoint. Same story for the
+           landscape block below: that's a HEIGHT/orientation constraint, a
+           different axis than --fluid (which tracks width), so it stays as
+           its own small, width-independent override.
+           ================================================================ */
+
+        @media (max-width: 640px) {
+            .tag {
+                display: none;
+            }
+        }
+
+        /* ================================================================
+           CRT EFFECT (toggled by clicking the HOST link)
+           Kept deliberately subtle/infrequent — brief flicker every few
+           seconds rather than a continuous strobe, so it stays comfortable
+           to look at instead of being an eyesore (or an actual seizure risk).
+           ================================================================ */
+        body.crt-on {
+            animation: crtFlicker 7s steps(1) infinite;
+        }
+
+        @keyframes crtFlicker {
+
+            0%,
+            96%,
+            100% {
+                filter: none;
+            }
+
+            97% {
+                filter: brightness(1.15) contrast(1.05) hue-rotate(-4deg);
+            }
+
+            98% {
+                filter: brightness(0.88);
+            }
+
+            99% {
+                filter: brightness(1.1) saturate(1.35);
+            }
+        }
+
+        /* full-page scanline film, same technique as the reverse-msg box */
+        body.crt-on::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 500;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(0, 255, 255, 0.025) 3px,
+                    rgba(0, 255, 255, 0.025) 4px);
+            mix-blend-mode: screen;
+        }
+
+        /* occasional RGB-split glitch on the ascii-art */
+        body.crt-on .ascii-art {
+            animation: chromaGlitch 5s steps(1) infinite;
+        }
+
+        @keyframes chromaGlitch {
+
+            0%,
+            92%,
+            100% {
+                text-shadow: none;
+                transform: translate(0, 0);
+            }
+
+            93% {
+                text-shadow: -2px 0 rgba(255, 0, 110, 0.65), 2px 0 rgba(0, 255, 255, 0.65);
+                transform: translate(-1px, 0);
+            }
+
+            94% {
+                text-shadow: 2px 0 rgba(255, 0, 110, 0.65), -2px 0 rgba(0, 255, 255, 0.65);
+                transform: translate(1px, 0);
+            }
+
+            95% {
+                text-shadow: none;
+                transform: translate(0, 0);
+            }
+        }
+
+        /* the blinking cursor glows harder, alternating cyan/magenta */
+        body.crt-on .cursor {
+            animation: blink 1s step-end infinite, crtCursorGlow 2.4s ease-in-out infinite;
+        }
+
+        @keyframes crtCursorGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 6px #00ffff;
+            }
+
+            50% {
+                box-shadow: 0 0 10px #ff2fd0, 0 0 20px #00ffff;
+            }
+        }
+
+        .crt-toggle {
+            cursor: pointer;
+        }
+
+        /* FX BACKGROUND */
+        #fx-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+            /* Gradient to fade out softly at the top */
+            -webkit-mask-image: linear-gradient(to bottom, transparent 15%, black 45%, black 100%);
+            mask-image: linear-gradient(to bottom, transparent 15%, black 45%, black 100%);
+        }
+
+        /* 
+           LITE VERSION PERFORMANCE UPGRADES:
+           1. Movement is handled purely by CSS animations on a wrapper element, freeing up the CPU thread completely.
+           2. Text-shadows are entirely removed for the clouds.
+        */
+        .cloud-wrapper {
+            position: absolute;
+            left: -40vw;
+            /* Start offscreen left */
+            will-change: transform;
+            animation: floatCloud linear infinite;
+        }
+
+        @keyframes floatCloud {
+            0% {
+                transform: translate3d(0vw, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(160vw, 0, 0);
+            }
+        }
+
+        .ascii-cloud {
+            white-space: pre;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1vh;
+            /* Exclusively dependent on height, and 1/4 smaller */
+            line-height: 1.1;
+            color: rgba(168, 85, 247, 0.45);
+            /* Removed heavy text-shadow completely */
+            will-change: color, opacity, filter;
+            transition: color 4s ease-in-out, opacity 4s ease-in-out, filter 4s ease;
+        }
+
+        /* Ambient Color Breathing - Pure hue shift, no brightness pop */
+        .lightning-flash .ascii-cloud {
+            color: rgba(120, 220, 255, 0.45) !important;
+            transition: color 6s ease-in-out;
+        }
+
+        .lightning-flash-secondary .ascii-cloud {
+            color: rgba(180, 100, 247, 0.45) !important;
+            transition: color 6s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div id="mainContent">
+        <header class="terminal-header">
+            <div class="status-line">
+                ACCESS_LEVEL: <span class="cyan-text" id="learnerTrigger">LEARNER_</span> // AUTHOR: <a
+                    href="https://github.com/avgerinos8" target="_blank" class="cyan-text">avgerinos</a> //
+                HOST: <a href="https://guides01.devs.surf/" target="_blank"
+                    class="cyan-text crt-toggle">guides01.devs.surf</a>
+            </div>
+        </header>
+
+        <div class="ascii-container">
+            <pre
+                class="ascii-art">   8888888888P                                           .d8888b.    d888               .d8888b.             d88       888P                     
+         d88P                                           d88P  Y88b  d8888              d88P  Y88b            888       888                      
+        d88P                                            888    888    888              888    888                      888                      
+       d88P      .d88b.   88888b.    .d88b.             888    888    888              888         888  888 "888   .d88888   .d88b.   .d8888b   
+      d88P      d88""88b  888 "88b  d8P  Y8b            888    888    888              888  88888  888  888  888  d88" 888  d8P  Y8b  88K       
+     d88P       888  888  888  888  88888888            888    888    888              888    888  888  888  888  888  888  88888888  "Y8888b.  
+    d88P        Y88..88P  888  888  Y8b.                Y88b  d88P    888              Y88b  d88P  Y88b 888  888  Y88b 888  Y8b.           X88  
+   d8888888888   "Y88P"   888  888   "Y8888              "Y8888P"   8888888             "Y8888P88   "Y88888  888   "Y88888   "Y8888    88888P'  </pre>
+        </div>
+
+        <!-- ===== REVERSE-ENGINEER MESSAGE ===== -->
+        <div class="reverse-msg">
+            <pre id="reverseMsgPre"><a id="mottoLink" href="" target="_blank" rel="noopener">╭─╴╭─╮╭─╴╷╶┬╴╭─╮╶┬╴╷╭─╮   ╭─╴╷ ╷╭╮╷╶┬╮╭─╮╭┬╮╭─╴╭╮╷╶┬╴╷╭─╮   ╭─╮╭─╴╭─╴╭╮╷╷ ╷╭┬╮   ╭─╮╭─╴╶┬╮╷╭─╴╷╭─╴╭─╮
+│  │ ││╶╮│ │ ├─┤ │ │╰─╮   ├╴ │ ││╰┤ ││├─┤│││├╴ │╰┤ │ │╰─╮   ├┬╯├╴ │╶╮│╰┤│ ││││   ├─┤├╴  │││├╴ ││  ├─┤
+╰─╴╰─╯╰─╯╵ ╵ ╵ ╵ ╵ ╵╰─╯   ╵  ╰─╯╵ ╵╶┴╯╵ ╵╵ ╵╰─╴╵ ╵ ╵ ╵╰─╯   ╵╰╴╰─╴╰─╯╵ ╵╰─╯╵ ╵   ╵ ╵╰─╴╶┴╯╵╵  ╵╰─╴╵ ╵</a></pre>
+        </div>
+
+        <p style="margin-bottom: 24px; text-align: center;"><span class="prompt">student@zone01:~$</span> ls -la
+            --guides<span class="cursor" id="secretTrigger"></span>
+        </p>
+        <div class="columns-container main-section">
+            <!-- First Column -->
+            <div class="column">
+                <div class="module-group">
+                    <p class="section-title" style="margin-top: 0;">PISCINE WEEK SUMMARY WORKSHOPS:</p>
+                    <ul class="module-list">
+                        <li><a href="./piscine-go-week1.html"><span style="color: #ffffff;">&gt;
+                                    ./Piscine_Week1</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./piscine-go-week2.html"><span style="color: #ffffff;">&gt;
+                                    ./Piscine_Week2</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./piscine-go-week3.html"><span style="color: #ffffff;">&gt;
+                                    ./Piscine_Week3</span><span class="tag">[GO]</span></a></li>
+                        <li><a href="./piscine-go-week4.html"><span style="color: #ffffff;">&gt;
+                                    ./Piscine_Week4</span><span class="tag">[GO]</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="module-group">
+                    <p class="section-title">POST-PISCINE REFRESHER:</p>
+                    <ul class="module-list">
+                        <li><a href="./01-go-01.html"><span>&gt; ./01_go_part_1</span><span class="tag">[GO]</span></a>
+                        </li>
+                        <li><a href="./02-go-02.html"><span>&gt; ./02_go_part_2</span><span class="tag">[GO]</span></a>
+                        </li>
+                        <li><a href="./03-go-03.html"><span>&gt; ./03_go_part_3</span><span class="tag">[GO]</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Second Column -->
+            <div class="column">
+                <div class="module-group">
+                    <p class="section-title" style="margin-top: 0;">PISCINE 9 SUDOKU EVALUATION:</p>
+                    <ul class="module-list">
+                        <li><a href="./sudoku-piscine9.html"><span style="color: #ffffff;">&gt;
+                                    ./Sudoku_Evaluation</span><span class="tag">[GO]</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="module-group">
+                    <p class="section-title">MAIN MODULES:</p>
+                    <ul class="module-list">
+                        <li><a href="08-Docker.html"><span style="color: #96a2b4;">&gt; ./08_dockerize</span><span
+                                    class="tag">[DOCKER]</span></a></li>
+                        <li><a href="10-goroutines-channels.html"><span>&gt; ./10_goroutines_channels</span><span
+                                    class="tag">[GO]</span></a></li>
+                        <li><a href="./14-js.html"><span>&gt; JS Intro</span><span class="tag">[JS]</span></a></li>
+                    </ul>
+                </div>
+
+                <div class="module-group">
+                    <p class="section-title">OPTIONAL EXTRA MODULES:</p>
+                    <ul class="module-list">
+                        <li><a href="./00-bash.html"><span style="color: #718096;">&gt; ./00_Shell_Bash</span><span
+                                    class="tag">[BASH]</span></a></li>
+                        <li><a href="./bash-cheat-sheet.html"><span style="color: #718096;">&gt;
+                                    ./Shell_Bash_Cheat_Sheets</span><span class="tag">[BASH]</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECRET MENU (Ξεχωριστός τίτλος & λίστα) -->
+        <p class="section-title secret-section" id="secretTitle" style="display: none;">SECRET MENU. NEW GUIDES UNDER
+            DEVELOPMENT</p>
+        <ul class="module-list old-lesson" id="oldModuleList" style="display: none;">
+            <li><a href="./week3-examples-mobile.html"><span>&gt; ./Week3_Examples_Mobile</span><span
+                        class="tag">[MOBILE]</span></a></li>
+            <li><a href="./07-Networks.html"><span>&gt; ./07_network_cybersecurity</span><span class="tag">[GO] +
+                        [NETWORK]</span></a></li>
+            <li><a href="./js-piscine.html"><span>&gt; piscine JS all exercises</span><span
+                        class="tag">[piscine]</span></a></li>
+            <li><a href="./piscine_Go:Exam-Checkpoint.html"><span>&gt; Go Exam/Checkpoint All Exercises</span><span
+                        class="tag">[piscine]</span></a></li>
+            <li><a href="./extra/API.html"><span>&gt; ./API</span><span class="tag">[GO]</span></a></li>
+            <li><a href="./11-lemin.html"><span>&gt; ./11_Lemin</span><span class="tag">[GO]</span></a></li>
+        </ul>
+    </div>
+
+
+    <!-- ===== PASSWORD MODAL ===== -->
+    <div id="passwordModal">
+        <div class="modal-card">
+            <p style="color: #a855f7; font-weight: 500; font-size: 1.1rem;">Easy tiger, you are clicking faster than we
+                can think</p>
+            <input type="password" id="passwordInput" placeholder="········" autocomplete="off">
+            <div class="error-msg" id="passwordError"></div>
+            <div class="modal-buttons">
+                <button class="submit-btn" id="submitPassword">Unlock</button>
+                <button class="cancel-btn" id="cancelPassword">I don't know the password</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast">Copied!</div>
+
+    <!-- ===== SECRET CONTENT (ADMIN) ===== -->
+    <div id="secretContent">
+        <header class="terminal-header">
+            <div class="status-line">
+                ACCESS_LEVEL: <span class="cyan-text" id="adminTrigger">ADMIN_</span> // AUTHOR: <span
+                    class="cyan-text">avgerinos</span> //
+                HOST: <a href="https://guides01.devs.surf/" target="_blank"
+                    class="cyan-text crt-toggle">guides01.devs.surf</a>
+            </div>
+        </header>
+
+        <div class="ascii-container">
+            <pre class="ascii-art">
+     YP           888P                d88                     "8888888b.                                 "888" 
+    Y88P          888                 888                      888   Y88b                                 888  
+   Y8PY8P         888                                          888    888                                 888  
+  Y8b  d8P    .d88888  88888b.d88b.  "888  88888b.             888   d88P   8888b.   88888b.    .d88b.    888  
+ Y8b    d8P  d88" 888  888 "888 "88b  888  888 "88b           d8888888P"       "88b  888 "88b  d8P  Y8b   888  
+ 888    888  888  888  888  888  888  888  888  888            888         .d888888  888  888  88888888   888  
+"8888888888" Y88b 888  888  888  888  888  888  888            888         888  888  888  888  Y8b.       888  
+ 888    888   "Y88888  888  888  888  888  888  888            888         "Y888888b 888  888   "Y8888   d888b </pre>
+        </div>
+
+        <!-- ===== ADMIN ASCII BLOCK ===== -->
+        <div class="reverse-msg reverse-msg-add-top">
+            <pre id="reverseMsgPreAdmin">
+                                                  |
+ _  _  _ _    _  _ _|   _ _  _  _  _ _  _ . _ _ _||
+|_)(_|_)_)\)/(_)| (_|  (_(_)||||_)| (_)||||_)(-(_|.
+|                              |                   </pre>
+        </div>
+
+        <!-- ===== CODE BLOCK ===== -->
+        <p>open <code style="font-size: 1.4em;">konsole</code> and paste the following:</p>
+        <div class="code-block">
+
+            <button class="copy-btn" id="copyBtn">Copy</button>
+            <pre><code id="codeContent"></code></pre>
+        </div>
+
+        <!-- ===== PUBLIC PROJECTS (hidden by default) ===== -->
+        <div class="public-projects" id="publicProjects" style="display: none;">
+            <h3>PUBLIC PROJECTS</h3>
+            <ul>
+                <li><a href="https://ascii-art-web-wkaa.onrender.com/" target="_blank"><span>ASCII Art
+                            Web</span><span class="tag">[RENDER]</span></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            // ================================================================
+            // 1. USER DATABASE
+            // ================================================================
+            const USERS = [
+                {
+                    password: atob("QUZST01BTg=="),
+                    email: "avgerinos.xe@gmail.com",
+                    username: "pavgerin"
+                },
+                // Example custom user:
+                // {
+                //     password: "custom123",
+                //     email: "custom@example.com",
+                //     username: "customuser",
+                //     script: `# Custom script
+                // echo "Hello {{username}}"
+                // git config --global user.email {{email}}
+                // git config --global user.name {{username}}`
+                // }
+            ];
+
+            // ================================================================
+            // 2. DEFAULT SCRIPT (with placeholders)
+            // ================================================================
+            const DEFAULT_SCRIPT = `code ~/Desktop
+
+xdg-settings set default-web-browser firefox.desktop
+firefox https://gemini.google.com/signin https://platform.zone01.gr/ &
+
+gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'gr')]"
+gsettings set org.gnome.desktop.input-sources xkb-options "['grp:alt_shift_toggle']"
+
+git config --global credential.helper store
+git config --global user.email {{email}}
+git config --global user.name {{username}}`;
+
+            // ================================================================
+            // 3. PASSWORD CHECK (case‑insensitive only)
+            // ================================================================
+            function checkPassword(input, correct) {
+                return input && input.toUpperCase() === correct.toUpperCase();
+            }
+
+            function findUser(input) {
+                if (!input) return null;
+                const norm = input.toUpperCase();
+                for (let user of USERS) {
+                    if (user.password.toUpperCase() === norm) {
+                        return user;
+                    }
+                }
+                return null;
+            }
+
+            // ================================================================
+            // 4. RENDER CODE BLOCK (with editable spans)
+            // ================================================================
+            function renderCode(user) {
+                const script = user.script || DEFAULT_SCRIPT;
+                // Replace placeholders with actual values
+                let html = script.replace(/\{\{email\}\}/g, user.email)
+                    .replace(/\{\{username\}\}/g, user.username);
+                // Wrap email and username in editable spans
+                // We need to target the specific lines where they appear.
+                // Since we have placeholders replaced, we can wrap the actual values.
+                // But we have to be careful to only wrap the ones in git config lines.
+                // Simpler: we'll use a regex to find the lines and replace with spans.
+                // We'll split lines, process each.
+                const lines = html.split('\n');
+                const processed = lines.map(line => {
+                    if (line.includes('git config --global user.email')) {
+                        // Find the email part
+                        const parts = line.split(' ');
+                        // The email is the last part (after the command)
+                        // But we can just replace the occurrence of the email with a span
+                        const emailSpan = `<span class="editable" contenteditable="false">${user.email}</span>`;
+                        return line.replace(user.email, emailSpan);
+                    }
+                    if (line.includes('git config --global user.name')) {
+                        const nameSpan = `<span class="editable" contenteditable="false">${user.username}</span>`;
+                        return line.replace(user.username, nameSpan);
+                    }
+                    return line;
+                });
+                return processed.join('\n');
+            }
+
+            // ================================================================
+            // 5. DOM REFS
+            // ================================================================
+            const learnerTrigger = document.getElementById('learnerTrigger');
+            const adminTrigger = document.getElementById('adminTrigger');
+            const modal = document.getElementById('passwordModal');
+            const passwordInput = document.getElementById('passwordInput');
+            const submitBtn = document.getElementById('submitPassword');
+            const cancelBtn = document.getElementById('cancelPassword');
+            const errorMsg = document.getElementById('passwordError');
+            const mainContent = document.getElementById('mainContent');
+            const secretContent = document.getElementById('secretContent');
+            const backBtn = document.getElementById('backToMain');
+            const codeContent = document.getElementById('codeContent');
+            const copyBtn = document.getElementById('copyBtn');
+            const publicProjects = document.getElementById('publicProjects');
+            const toast = document.getElementById('toast');
+
+            let currentUser = null;
+            let isAfroman = false; // whether the logged-in user used AFROMAN
+
+            // ── session unlock state ─────────────────────────────────────────────── ⊃
+            // sessionStorage is per-TAB: it survives normal navigation and reloads,
+            // and is wiped automatically the moment the tab (or the browser) closes.
+            // We store only the password that was used and re-resolve it through
+            // findUser() on restore — so if USERS ever changes, a stale entry simply
+            // fails to match and we fall back to the modal.
+            const SESSION_KEY = 'guides01.unlock';
+
+            // ── OPTIONAL: forget the unlock on any page refresh ──────────────────── ⊃
+            // Uncomment to make F5 / Ctrl+F5 lock the page again. Navigating to a
+            // guide and coming back does NOT count as a reload, so that still works.
+            // const navEntry = performance.getEntriesByType('navigation')[0];
+            // if (navEntry && navEntry.type === 'reload') clearSession();
+
+            function saveSession(user) {
+                try {
+                    sessionStorage.setItem(SESSION_KEY, user.password);
+                } catch (e) { /* storage blocked (private mode / file://) — ignore */ }
+            }
+
+            function readSession() {
+                try {
+                    return findUser(sessionStorage.getItem(SESSION_KEY));
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function clearSession() {
+                try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { }
+            }
+
+            // ── unlock path shared by modal submit and restored session ──────────── ⊃
+            function enterAdmin(user, password) {
+                currentUser = user;
+                isAfroman = (password.toUpperCase() === atob("QUZST01BTg=="));
+                refreshCode();
+                modal.style.display = 'none';
+                mainContent.style.display = 'none';
+                secretContent.style.display = 'block';
+            }
+            // ================================================================
+            // 6. MODAL LOGIC
+            // ================================================================
+            function closeModal() {
+                modal.style.display = 'none';
+                errorMsg.textContent = '';
+            }
+
+            learnerTrigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                // already unlocked in this tab → straight to ADMIN_, no prompt
+                const remembered = readSession();
+                if (remembered) {
+                    enterAdmin(remembered, remembered.password);
+                    return;
+                }
+
+                modal.style.display = 'flex';
+                passwordInput.value = '';
+                errorMsg.textContent = '';
+                passwordInput.focus();
+            });
+            cancelBtn.addEventListener('click', closeModal);
+
+            // ---- HOVER: change "I don't know the password" text ----
+            const originalCancelText = "I don't know the password";
+            const hoverCancelText = "Try to hack it yourself?"; // same length (24 chars)
+
+            cancelBtn.addEventListener('mouseenter', function () {
+                this.textContent = hoverCancelText;
+            });
+            cancelBtn.addEventListener('mouseleave', function () {
+                this.textContent = originalCancelText;
+            });
+
+            function showToast(msg) {
+                toast.textContent = msg || 'Copied!';
+                toast.classList.add('show');
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+            window.showToast = showToast; // shared with the crt-toggle script below
+
+            // Function to refresh the code block with current user data
+            function refreshCode() {
+                if (!currentUser) return;
+                const html = renderCode(currentUser);
+                codeContent.innerHTML = html;
+                // Attach editable listeners
+                attachEditableListeners();
+                // Update public projects visibility based on isAfroman
+                publicProjects.style.display = isAfroman ? '' : 'none';
+            }
+
+            function tryUnlock() {
+                const pwd = passwordInput.value;
+                const user = findUser(pwd);
+                if (user) {
+                    saveSession(user);
+                    enterAdmin(user, pwd);
+                } else {
+                    errorMsg.textContent = 'Wrong password. Try again.';
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            }
+
+            submitBtn.addEventListener('click', tryUnlock);
+            passwordInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    tryUnlock();
+                }
+            });
+
+            // ================================================================
+            // 7. ADMIN_ → BACK TO LEARNER_
+            // ================================================================
+            adminTrigger.addEventListener('click', function () {
+                secretContent.style.display = 'none';
+                mainContent.style.display = 'block';
+                closeModal();
+            });
+
+            // guarded: no element with id="backToMain" exists in the markup
+            // (adminTrigger below is the actual/only back-to-learner control).
+            // Calling addEventListener on null used to throw here and silently
+            // kill every statement after it in this IIFE — that's what was
+            // breaking the hidden-lessons cursor toggle and ?show=hidden.
+            if (backBtn) {
+                backBtn.addEventListener('click', function () {
+                    secretContent.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    closeModal();
+                });
+            }
+
+            // ================================================================
+            // 8. TOGGLE HIDDEN LESSONS (cursor)
+            // ================================================================
+            const trigger = document.getElementById('secretTrigger');
+            const mainSections = document.querySelectorAll('.main-section'); // Επιλέγει ΟΛΑ τα main sections & lists
+            const secretTitle = document.getElementById('secretTitle');
+            const oldList = document.getElementById('oldModuleList');
+            let isOld = false;
+
+            function toggleLessons() {
+                if (isOld) {
+                    // Εμφάνιση όλων των mainSections (τίτλοι & λίστες)
+                    mainSections.forEach(el => el.style.display = '');
+                    // Απόκρυψη Secret Menu
+                    secretTitle.style.display = 'none';
+                    oldList.style.display = 'none';
+                    isOld = false;
+                } else {
+                    // Απόκρυψη όλων των mainSections
+                    mainSections.forEach(el => el.style.display = 'none');
+                    // Εμφάνιση Secret Menu
+                    secretTitle.style.display = '';
+                    oldList.style.display = '';
+                    isOld = true;
+                }
+            }
+
+            window.addEventListener('DOMContentLoaded', function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('show') === 'hidden' && !isOld) {
+                    toggleLessons();
+                }
+            });
+
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleLessons();
+                const newUrl = isOld ? '?show=hidden' : window.location.pathname;
+                window.history.pushState({}, '', newUrl);
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && isOld) {
+                    toggleLessons();
+                    window.history.pushState({}, '', window.location.pathname);
+                }
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
+
+            // ================================================================
+            // 9. COPY BUTTON
+            // ================================================================
+            copyBtn.addEventListener('click', function () {
+                const text = codeContent.innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                    showToast('Copied!');
+                }).catch(() => {
+                    const range = document.createRange();
+                    range.selectNode(codeContent);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    document.execCommand('copy');
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                    }, 2000);
+                    showToast('Copied!');
+                });
+            });
+
+            // ================================================================
+            // 10. EDITABLE SPANS – update user & re‑render on change
+            // ================================================================
+            function attachEditableListeners() {
+                const editables = document.querySelectorAll('.editable');
+                editables.forEach(span => {
+                    // Click to edit
+                    span.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        if (this.contentEditable === 'true') return;
+                        this.contentEditable = 'true';
+                        this.classList.add('editing');
+                        this.focus();
+                        const range = document.createRange();
+                        range.selectNodeContents(this);
+                        const sel = window.getSelection();
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    });
+
+                    // On Enter, save changes and re-render
+                    span.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            this.contentEditable = 'false';
+                            this.classList.remove('editing');
+                            this.blur();
+                            // Update user data
+                            const newValue = this.textContent.trim();
+                            if (this.id === 'editableEmail' || this.classList.contains('email')) {
+                                // We can identify by content: if it's the email field
+                                // We'll use a more reliable method: check if the text is the email
+                                // But we can store a data attribute or class.
+                                // We'll assume the email span is the one containing '@'
+                                if (newValue.includes('@')) {
+                                    currentUser.email = newValue;
+                                } else {
+                                    currentUser.username = newValue;
+                                }
+                            } else {
+                                // Fallback: check if value contains '@'
+                                if (newValue.includes('@')) {
+                                    currentUser.email = newValue;
+                                } else {
+                                    currentUser.username = newValue;
+                                }
+                            }
+                            // Re-render the whole code block with new data
+                            refreshCode();
+                        }
+                        if (e.key === 'Escape') {
+                            this.contentEditable = 'false';
+                            this.classList.remove('editing');
+                            this.blur();
+                            // Revert? We'll just discard changes by re-rendering
+                            refreshCode();
+                        }
+                    });
+
+                    // On blur, save and re-render
+                    span.addEventListener('blur', function () {
+                        if (this.contentEditable === 'true') {
+                            this.contentEditable = 'false';
+                            this.classList.remove('editing');
+                            // Update user data
+                            const newValue = this.textContent.trim();
+                            if (newValue.includes('@')) {
+                                currentUser.email = newValue;
+                            } else {
+                                currentUser.username = newValue;
+                            }
+                            refreshCode();
+                        }
+                    });
+                });
+            }
+
+            // Initial empty
+            codeContent.innerHTML = '';
+            attachEditableListeners();
+
+        })();
+    </script>
+
+    <script>
+        // ── reverse-msg glow: breathing loop + soft hover crossfade ──────────── ⊃
+        // Runs on EVERY `.reverse-msg pre` on the page (currently 2: the moto
+        // now on the main/learner view, and the new admin-only ascii block) —
+        // each gets its own independent phase/timer via initGlow() so hovering
+        // one never affects the other, but all instances share the same
+        // constants and the same rAF-driven clock `now`, so their default
+        // breathing stays naturally in sync with each other.
+        //
+        // Why not CSS @keyframes + :hover (like before)? Two separate keyframe
+        // animations can't hand off smoothly — switching triggers an instant
+        // restart from each animation's own 0% state, which is what caused the
+        // "snap" instead of a transition. Driving color/shadow from JS every
+        // frame means we always know the exact color on screen right now, so a
+        // hover event can crossfade FROM that exact color TO the other loop's
+        // live (moving) position, and a mouse-leave crossfades back the same way.
+        (function () {
+            const pres = document.querySelectorAll('.reverse-msg pre');
+            if (!pres.length) return;
+
+            // ── motto link target (fill in once you've decided where this points) ─── ⊃
+            // only the original moto has a #mottoLink anchor inside it — the
+            // admin ascii block is plain text, no link wiring needed for it.
+            const MOTTO_LINK = ""; // e.g. "https://github.com/avgerinos8"
+            const mottoLink = document.getElementById('mottoLink');
+            if (mottoLink) {
+                mottoLink.href = MOTTO_LINK || '#';
+                if (!MOTTO_LINK) {
+                    // no destination set yet: don't navigate anywhere on click
+                    mottoLink.addEventListener('click', function (e) { e.preventDefault(); });
+                }
+            }
+
+            const BREATHE_PERIOD_MS = 6000; // matches the original 6s breathing cycle
+            const CROSSFADE_MS = 1300;      // soft hover transition (~1.3s)
+
+            const COLORS = {
+                purple: [168, 85, 247],
+                cyan: [86, 157, 177],   // #569db1
+                white: [226, 232, 240],
+            };
+
+            // ── glow intensity presets ───────────────────────────────────────── ⊃
+            // low  = value at the "colored" end of the breathing cycle
+            // high = value at the brightest end of the breathing cycle
+            // hover values run a bit hotter than default, and textBlur/textAlpha
+            // are pushed up more than boxBlur/boxAlpha so the text reads as
+            // glowing a little more than the border, as requested.
+            const GLOW = {
+                default: {
+                    low: { boxBlur: 24, boxAlpha: 0.18, boxInset: 12, boxInsetAlpha: 0.07, textBlur: 11, textAlpha: 0.24 },
+                    high: { boxBlur: 44, boxAlpha: 0.14, boxInset: 24, boxInsetAlpha: 0.05, textBlur: 22, textAlpha: 0.22 },
+                },
+                hover: {
+                    low: { boxBlur: 34, boxAlpha: 0.24, boxInset: 22, boxInsetAlpha: 0.08, textBlur: 16, textAlpha: 0.28 },
+                    high: { boxBlur: 56, boxAlpha: 0.16, boxInset: 30, boxInsetAlpha: 0.055, textBlur: 30, textAlpha: 0.24 },
+                },
+            };
+
+            function lerp(a, b, t) { return a + (b - a) * t; }
+            function lerpColor(c1, c2, t) {
+                return [lerp(c1[0], c2[0], t), lerp(c1[1], c2[1], t), lerp(c1[2], c2[2], t)];
+            }
+            function rgbStr(c, a) {
+                return `rgba(${Math.round(c[0])}, ${Math.round(c[1])}, ${Math.round(c[2])}, ${a})`;
+            }
+            function lerpGlow(g1, g2, t) {
+                return {
+                    boxBlur: lerp(g1.boxBlur, g2.boxBlur, t),
+                    boxAlpha: lerp(g1.boxAlpha, g2.boxAlpha, t),
+                    boxInset: lerp(g1.boxInset, g2.boxInset, t),
+                    boxInsetAlpha: lerp(g1.boxInsetAlpha, g2.boxInsetAlpha, t),
+                    textBlur: lerp(g1.textBlur, g2.textBlur, t),
+                    textAlpha: lerp(g1.textAlpha, g2.textAlpha, t),
+                };
+            }
+            // ease-in-out, used only for the crossfade progress (0→1)
+            function easeInOutQuad(p) {
+                return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+            }
+
+            // 0 → 1 → 0 every BREATHE_PERIOD_MS, smooth (sine), same timing feel
+            // as the original 0%/50%/100% ease-in-out keyframes.
+            function breatheB(t) {
+                return (1 - Math.cos((2 * Math.PI * t) / BREATHE_PERIOD_MS)) / 2;
+            }
+
+            // full visual state (color + shadow numbers) for a loop at time t.
+            // baseColorKey/peakColorKey are the two ends of the breathing
+            // color cycle — pass the same key for both to keep the color
+            // fixed while glow intensity still breathes (used for hover/white).
+            function loopState(baseColorKey, peakColorKey, glowPreset, t) {
+                const b = breatheB(t);
+                return {
+                    color: lerpColor(COLORS[baseColorKey], COLORS[peakColorKey], b),
+                    glow: lerpGlow(glowPreset.low, glowPreset.high, b),
+                };
+            }
+
+            function blendStates(s1, s2, t) {
+                return {
+                    color: lerpColor(s1.color, s2.color, t),
+                    glow: lerpGlow(s1.glow, s2.glow, t),
+                };
+            }
+
+            // sets up one independent breathing/hover state machine for a
+            // single .reverse-msg pre element
+            function initGlow(pre) {
+                function applyState(state) {
+                    const { color, glow } = state;
+                    pre.style.color = rgbStr(color, 1);
+                    pre.style.borderColor = rgbStr(color, 1);
+                    pre.style.boxShadow =
+                        `0 0 ${glow.boxBlur}px ${rgbStr(color, glow.boxAlpha)}, ` +
+                        `inset 0 0 ${glow.boxInset}px ${rgbStr(color, glow.boxInsetAlpha)}`;
+                    pre.style.textShadow = `0 0 ${glow.textBlur}px ${rgbStr(color, glow.textAlpha)}`;
+                }
+
+                // phase: 'default' | 'toHover' | 'hover' | 'toDefault'
+                let phase = 'default';
+                let transitionStart = 0;
+                let transitionFrom = null;
+                let currentState = loopState('purple', 'cyan', GLOW.default, 0);
+
+                function tick(now) {
+                    let state;
+
+                    if (phase === 'default') {
+                        state = loopState('purple', 'cyan', GLOW.default, now);
+                    } else if (phase === 'hover') {
+                        state = loopState('white', 'white', GLOW.hover, now);
+                    } else {
+                        // toHover / toDefault: chase the LIVE (still-breathing)
+                        // target loop from the color captured when the crossfade
+                        // started — this is what makes mouse-leave land wherever
+                        // the default loop "would be" instead of snapping.
+                        const isToHover = phase === 'toHover';
+                        const targetBase = isToHover ? 'white' : 'purple';
+                        const targetPeak = isToHover ? 'white' : 'cyan';
+                        const targetGlow = isToHover ? GLOW.hover : GLOW.default;
+                        const target = loopState(targetBase, targetPeak, targetGlow, now);
+                        const progress = Math.min(1, (now - transitionStart) / CROSSFADE_MS);
+                        const eased = easeInOutQuad(progress);
+                        state = blendStates(transitionFrom, target, eased);
+                        if (progress >= 1) {
+                            phase = (phase === 'toHover') ? 'hover' : 'default';
+                        }
+                    }
+
+                    currentState = state;
+                    applyState(state);
+                    requestAnimationFrame(tick);
+                }
+
+                pre.addEventListener('mouseenter', function () {
+                    transitionFrom = currentState;
+                    transitionStart = performance.now();
+                    phase = 'toHover';
+                });
+                pre.addEventListener('mouseleave', function () {
+                    transitionFrom = currentState;
+                    transitionStart = performance.now();
+                    phase = 'toDefault';
+                });
+
+                requestAnimationFrame(tick);
+            }
+
+            pres.forEach(initGlow);
+        })();
+    </script>
+
+    <script>
+        // ── CRT effect toggle ────────────────────────────────────────────── ⊃
+        // Clicking "guides01.devs.surf" used to just navigate to the page you're
+        // already on. Now it flips a class on <body> that switches on the
+        // scanline/glitch effects defined in <style>, and reuses the existing
+        // toast (exposed as window.showToast in the first script block) to
+        // confirm the state change.
+        (function () {
+            const toggles = document.querySelectorAll('.crt-toggle');
+            if (!toggles.length) return;
+
+            let on = false;
+
+            function setState(next) {
+                on = next;
+                document.body.classList.toggle('crt-on', on);
+                if (window.showToast) {
+                    window.showToast(on ? 'CRT EFFECT: ON' : 'CRT EFFECT: OFF');
+                }
+            }
+
+            toggles.forEach(function (link) {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault(); // stop the self-navigation
+                    setState(!on);
+                });
+            });
+        })();
+    </script>
+
+    <script>
+        // ── FX ASCII CLOUDS & LIGHTNING ─────────────────────────── ⊃
+        (function () {
+            // --- CONFIGURATION VARIABLES FOR CLOUDS ---
+            const CLOUD_CONFIG = {
+                numClouds: 50,              // Total number of clouds (density)
+                baseDuration: 10,            // Base animation speed in seconds (lower is faster)
+                durationVariance: 120,       // Additional slowness based on depth
+                baseScale: 1,                // Base cloud size
+                scaleVariance: 3.5,          // Size variation based on depth
+                baseOpacity: 0.2,           // Minimum opacity
+                opacityVariance: 0.12,       // Additional opacity based on depth
+                opacityDivisor: 8,           // Opacity division for volumetric stacking
+                blurIntensity: 12,            // Blur multiplier for depth of field
+                blurFocusDepth: 0.4,         // Depth where clouds are sharp (0 to 1)
+                yDistribution: 110,          // Vertical spread scale
+                yOffset: -5,                 // Vertical base offset
+                colorHoldMin: 5000,          // Minimum time to hold flash color (ms)
+                colorHoldRandom: 7000,       // Random added time to hold flash color (ms)
+                colorWaitMin: 5000,          // Minimum wait before next flash (ms)
+                colorWaitRandom: 10000,      // Random added wait before next flash (ms)
+                initialDelayMax: 20000       // Max initial delay for breathing phases (ms)
+            };
+
+            const bg = document.createElement('div');
+            bg.id = 'fx-background';
+            document.body.insertBefore(bg, document.body.firstChild);
+
+            const cloudTemplates = [
+
+
+                `          ░░░░▒▒▒▒▒▓▒░░                 
+        ░░░▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒░░░         
+       ░░▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░     
+      ░░▒▒▓▓▓▓▓▓████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒░░ 
+    ░▒▒▓▓▓▓▓███████████▓▓▓▓▓▓▓██████▓▒▒ 
+ ░▓██████████████████████▓▓▓▓██████████▒
+░███████████████████████████████████████`,
+
+
+                `                        ░░░░░░▒▒▒▒░░░░░              
+                     ░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒░░░            
+                ░░░░░░░░▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▒░░░          
+            ░░░░░▒▒▒░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒░░░        
+         ░░░░░▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓██████▓▓▓▓▓▒▒▒▒▒░░░     
+   ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓███████████▓▓▓▓▓▒▒▒▒▒░░░   
+ ░░▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████████████████▓▓▓▓▓▓▓▓▓▒░░░ 
+░▓▓▓▓████████████████████████████████████████████▓▓░░
+`,
+
+
+
+
+                `                                                                 
+                                                                 
+                 ░░░░░░░░░░░              ░░░░░░░░               
+               ░░░▒▒▒▒▒▒▒▒░░░          ░░░░░░▒▒░░░░░             
+             ░░░▒▒▓▓▓▓▓▓▓▓▒▒▒░░      ░░░░▒▒▒▒▒▒▒▒▒░░░░           
+           ░░░▒▒▓▓█████▓▓▓▓▓▓▒▒░░░░░░░▒▒▒▓▓▓▓▓▓▓▓▓▒░░░░          
+        ░░░░▒▓████████████▓▓▓▓▓▒▒▒▒░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒░░░        
+        ░▒▒▓████████████████▓▓▓▓▓▓▓▓▓▓▓██████████▓▓▓▓▓▒▒░░░      
+     ░▒▒▒▓███████████████████████████████████████████▓▓▓▒▒░░░    
+  ░▒▒▒▓████████████████████████████████████████████████▓▓▓▒▒░░░  
+░▒▒▒▓█████████████████████████████████████████████████████▓▓▓▒▒░░
+`,
+
+
+
+
+                `                ░▒▒▒▒▓▓▒▒▒░                                           
+              ░▒▒▓▓▓▓▓▓▓▓▓▓▒░                                         
+            ░▒▒▓▓▓▓▓████▓▓▓▓▓▒░     ░░▒▒▒▒▒▒▒░░                       
+          ░▒▒▓▓▓▓████████▓▓▓▓▓▓▒░ ░▒▒▓▓▓▓▓▓▓▓▒▒▒░░                    
+       ░░▒▒▒▓▓▓▓█████████████▓▓▓▓▓▓▓▓▓▓▓██▓▓▓▓▓▓▓▒▒▒░░░               
+    ░░▒▓▓▓▓▓▓▓██████████████████████████████▓▓▓▓▓▓▓▓▓▓▒▒▒▒░░          
+░░░▒▒▓███████████████████████████████████████████████████▓▓▓▓▒▒▒▒▒░░░░
+`,
+
+
+
+
+
+                `                                                 ░░░░░░░░░░░░░░                  
+                                            ░░░░░░░▒▒▒▒▒▒▒▒▒▒░░░░░░              
+               ░░░░░░░░░░░                ░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▒▒▒░░░░░░            
+            ░░░░▒▒▒▒▒▒▒▒░░░░░         ░░░░░▒▒▒▒▓▓▓▓▓█████▓▓▓▓▒▒▒▒░░░░░░          
+        ░░░░░▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒░░░░░░░░░░░▒▒▒▒▓▓▓▓▓████████████▓▓▒▒▒▒▒▒░░░░░░       
+     ░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓███████████████████▓▓▓▓▓▓▒▒▒▒░░░░░░░   
+  ░░░▒▒▒▓▓▓███████████████████████████████████████████████████████████▓▓▒▒▒▒░░░░░
+░░▒▒▓▓▓███████████████████████████████████████████████████████████████████▓▓▓▒▒▒░`,
+
+
+
+                `                      ░░░░░                        
+                 ░░░░░░▒▒▒░░░                      
+             ░░░░░░▒▒▓▓▓▓▓▒▒░░░    ░░░░░░░░        
+         ░░░░░▒▒▒▒▓▓▓███▓▓▓▓▓▒░░░░░░▒▒▒▒▒▒░░       
+     ░░░░░▒▓▓▓▓▓▓▓▓▓███████▓▓▓▒▒░▒▓▓▓▓▓▓▓▓▒▒░      
+    ░░▒▓▓▓▓▓████████████████▓▓▓▓▓▓▓▓▓▓███▓▓▓▒▒░    
+  ░░▒▓▓▓▓██████████████████████████████████▓▓▓▒▒░░ 
+░▒▓▓▓▓▓▓███████████████████████████████████████▓▒▒░`,
+
+            ];
+
+            const allWrappers = [];
+            const numClouds = CLOUD_CONFIG.numClouds; // 4x dense, CPU-free volumetric mist
+
+            const PHI = 1.61803398875;
+            const GOLDEN_ANGLE = 2.3999632297; // Radians
+
+            for (let i = 0; i < numClouds; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'cloud-wrapper';
+
+                const cloud = document.createElement('div');
+                cloud.className = 'ascii-cloud';
+
+                // Distribute templates evenly rather than randomly
+                const template = cloudTemplates[i % cloudTemplates.length];
+                cloud.textContent = template;
+
+                // Organic Mathematical Distribution (Phyllotaxis / Golden Ratio)
+                // Radius expands non-linearly using PHI for natural stacking
+                const r = Math.pow(i / numClouds, PHI);
+                const theta = i * GOLDEN_ANGLE;
+
+                // Map polar coordinates to natural settling distribution
+                const naturalY = (Math.cos(theta) * r + 1) / 2; // 0 to 1
+
+                // Bias Y position heavily towards the bottom mimicking natural fog
+                const yPos = (1 - Math.pow(naturalY, PHI)) * CLOUD_CONFIG.yDistribution + CLOUD_CONFIG.yOffset;
+
+                // Depth (Z-axis) creates the organic 3D layering
+                const depth = r;
+
+                const scale = CLOUD_CONFIG.baseScale + Math.pow(depth, PHI) * CLOUD_CONFIG.scaleVariance;
+
+                // Speed depends harmonically on depth (further is slower)
+                const animDuration = CLOUD_CONFIG.baseDuration + Math.pow((1 - depth), PHI) * CLOUD_CONFIG.durationVariance;
+                const animDelay = -((i * PHI * 17) % animDuration);
+
+                wrapper.style.top = yPos + '%';
+                wrapper.style.animationDuration = animDuration + 's';
+                wrapper.style.animationDelay = animDelay + 's';
+
+                // Scale is on the inner content, keeping the wrapper purely for translation
+                cloud.style.transform = `scale(${scale})`;
+
+                // 1/8th of the previous opacity for volumetric stacking
+                cloud.style.opacity = (CLOUD_CONFIG.baseOpacity + (1 - depth) * CLOUD_CONFIG.opacityVariance) / CLOUD_CONFIG.opacityDivisor;
+
+                // ORGANIC DEPTH OF FIELD (Blur) 
+                // Hardware accelerated blur makes it look like real volumetric smoke.
+                // Focus point is at 40% depth. Clouds further or closer get blurred.
+                const focusDist = Math.abs(depth - CLOUD_CONFIG.blurFocusDepth);
+                cloud.style.filter = `blur(${focusDist * CLOUD_CONFIG.blurIntensity}px)`;
+
+                // Store depth for lightning logic
+                wrapper.dataset.depth = depth;
+
+                // Independent, out-of-phase slow color breathing cycle
+                const startBreathing = () => {
+                    const isCyan = Math.random() > 0.4;
+                    const flashClass = isCyan ? 'lightning-flash' : 'lightning-flash-secondary';
+                    wrapper.classList.add(flashClass);
+
+                    // Hold the color for 5 to 12 seconds
+                    setTimeout(() => {
+                        wrapper.classList.remove(flashClass);
+                        // Wait randomly before breathing again (5 to 15 seconds)
+                        setTimeout(startBreathing, CLOUD_CONFIG.colorWaitMin + Math.random() * CLOUD_CONFIG.colorWaitRandom);
+                    }, CLOUD_CONFIG.colorHoldMin + Math.random() * CLOUD_CONFIG.colorHoldRandom);
+                };
+                // Random phase start between 0s and 20s so they never sync up
+                setTimeout(startBreathing, Math.random() * CLOUD_CONFIG.initialDelayMax);
+
+                wrapper.appendChild(cloud);
+                bg.appendChild(wrapper);
+                allWrappers.push(wrapper);
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
