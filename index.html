@@ -658,74 +658,7 @@
             display: block;
         }
 
-        /* 
-           LITE VERSION PERFORMANCE UPGRADES:
-           1. Movement is handled purely by CSS animations on a wrapper element, freeing up the CPU thread completely.
-           2. Text-shadows are entirely removed for the clouds.
-        */
-        .cloud-wrapper {
-            position: absolute;
-            left: -40vw;
-            /* Start offscreen left */
-            will-change: transform;
-            animation: floatCloud linear infinite;
-        }
-
-        @keyframes floatCloud {
-            0% {
-                transform: translate3d(0vw, 0, 0);
-            }
-
-            100% {
-                transform: translate3d(160vw, 0, 0);
-            }
-        }
-
-        .ascii-cloud {
-            white-space: pre;
-            font-family: 'Fira Code', monospace;
-            font-size: 1.1vh;
-            /* Exclusively dependent on height, and 1/4 smaller */
-            line-height: 1.1;
-            color: rgba(168, 85, 247, 0.45);
-            /* Removed heavy text-shadow completely */
-            will-change: color, opacity, filter;
-            transition: color 4s ease-in-out, opacity 4s ease-in-out, filter 4s ease;
-        }
-
-        /* Ambient Color Breathing - Pure hue shift, no brightness pop */
-        .lightning-flash .ascii-cloud {
-            color: rgba(120, 220, 255, 0.45) !important;
-            transition: color 6s ease-in-out;
-        }
-
-        .lightning-flash-secondary .ascii-cloud {
-            color: rgba(180, 100, 247, 0.45) !important;
-            transition: color 6s ease-in-out;
-        }
-
-        /* Abrupt Local Lightning Flash for background clouds */
-        @keyframes hiddenLightning {
-            0% {
-                color: rgba(255, 255, 255, 0.9) !important;
-                text-shadow: 0 0 25px rgba(220, 255, 255, 1);
-            }
-
-            20% {
-                color: rgba(200, 240, 255, 0.7) !important;
-                text-shadow: 0 0 15px rgba(200, 255, 255, 0.6);
-            }
-
-            100% {
-                color: rgba(168, 85, 247, 0.45);
-                text-shadow: none;
-            }
-        }
-
-        .hidden-lightning-flash .ascii-cloud {
-            animation: hiddenLightning 1.5s ease-out !important;
-            transition: none !important;
-        }
+        /* Cloud CSS removed - replaced with Canvas Sprite Caching */
     </style>
 </head>
 
@@ -1966,7 +1899,7 @@ git config --global user.name {{username}}`;
                 }
             }
 
-            // ── CLOUDS GENERATION ──
+            // ── CLOUDS GENERATION (CANVAS SPRITE CACHING) ──
             if (CLOUD_CONFIG.enabled) {
                 const cloudTemplates = [
                     `          ░░░░▒▒▒▒▒▓▒░░                 
@@ -2020,28 +1953,91 @@ git config --global user.name {{username}}`;
 ░▒▓▓▓▓▓▓███████████████████████████████████████▓▒▒░`
                 ];
 
-                const allWrappers = [];
+                const canvasId = 'cloud-lights-canvas-' + Date.now();
+                const cloudCanvas = document.createElement('canvas');
+                cloudCanvas.id = canvasId;
+                Object.assign(cloudCanvas.style, {
+                    position: 'absolute',
+                    top: '0', left: '0', width: '100%', height: '100%',
+                    pointerEvents: 'none', zIndex: '-5'
+                });
+                bg.appendChild(cloudCanvas);
+
+                const cctx = cloudCanvas.getContext('2d', { alpha: true });
+                
+                let ww = window.innerWidth;
+                let wh = window.innerHeight;
+                cloudCanvas.width = ww;
+                cloudCanvas.height = wh;
+
                 const totalClouds = CLOUD_CONFIG.numClouds + CLOUD_CONFIG.darkCloudsCount;
                 const PHI = 1.61803398875;
-                const GOLDEN_ANGLE = 2.3999632297; // Radians
+                const GOLDEN_ANGLE = 2.3999632297;
+
+                const clouds = [];
+                const fontSize = 16;
+                const lineHeight = fontSize * 1.1;
+
+                // Sprite pre-rendering factory
+                const createCloudSprite = (template, depth, isDarkCloud, state) => {
+                    const osc = document.createElement('canvas');
+                    const octx = osc.getContext('2d', { alpha: true });
+                    
+                    const lines = template.split(`
+`);
+                    octx.font = `${fontSize}px 'Fira Code', monospace`;
+                    let maxW = 0;
+                    lines.forEach(l => maxW = Math.max(maxW, octx.measureText(l).width));
+                    
+                    let blurPx = 0;
+                    if (CLOUD_CONFIG.blurFocusDepth === -1) {
+                        blurPx = CLOUD_CONFIG.blurIntensity * 0.15;
+                    } else {
+                        blurPx = Math.abs(depth - CLOUD_CONFIG.blurFocusDepth) * CLOUD_CONFIG.blurIntensity;
+                    }
+
+                    const pad = blurPx * 2 + 15;
+                    osc.width = maxW + pad * 2;
+                    osc.height = lines.length * lineHeight + pad * 2;
+
+                    octx.font = `${fontSize}px 'Fira Code', monospace`;
+                    octx.textBaseline = 'top';
+                    
+                    if (isDarkCloud) {
+                        octx.fillStyle = `rgba(13, 14, 18, ${CLOUD_CONFIG.darkCloudsOpacity})`;
+                        octx.filter = `blur(${blurPx}px)`;
+                    } else {
+                        let elementOpacity = (CLOUD_CONFIG.baseOpacity + (1 - depth) * CLOUD_CONFIG.opacityVariance) / CLOUD_CONFIG.opacityDivisor;
+                        
+                        if (state === 'flash') {
+                            octx.fillStyle = `rgba(180, 220, 255, ${0.7 * elementOpacity})`;
+                            octx.shadowColor = `rgba(180, 220, 255, ${0.4 * elementOpacity})`;
+                            octx.shadowBlur = 15;
+                            octx.filter = `blur(${blurPx}px)`;
+                        } else if (state === 'cyan') {
+                            octx.fillStyle = `rgba(120, 220, 255, ${0.45 * elementOpacity})`;
+                            octx.filter = `blur(${blurPx}px)`;
+                        } else if (state === 'secondary') {
+                            octx.fillStyle = `rgba(180, 100, 247, ${0.45 * elementOpacity})`;
+                            octx.filter = `blur(${blurPx}px)`;
+                        } else {
+                            octx.fillStyle = `rgba(168, 85, 247, ${0.45 * elementOpacity})`;
+                            octx.filter = `blur(${blurPx}px)`;
+                        }
+                    }
+
+                    lines.forEach((l, idx) => octx.fillText(l, pad, pad + idx * lineHeight));
+                    return { canvas: osc, pad: pad };
+                };
 
                 for (let i = 0; i < totalClouds; i++) {
                     const isDarkCloud = i >= CLOUD_CONFIG.numClouds;
-
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'cloud-wrapper';
-
-                    const cloud = document.createElement('div');
-                    cloud.className = 'ascii-cloud';
-
                     const template = cloudTemplates[i % cloudTemplates.length];
-                    cloud.textContent = template;
 
                     let r = Math.pow((i % CLOUD_CONFIG.numClouds) / CLOUD_CONFIG.numClouds, PHI);
                     let depth = r;
 
                     if (isDarkCloud) {
-                        // Force dark clouds to be at the far back
                         depth = Math.random() * CLOUD_CONFIG.darkCloudsDepthLimit;
                         r = depth;
                     }
@@ -2051,12 +2047,9 @@ git config --global user.name {{username}}`;
                     let yPos = (1 - Math.pow(naturalY, PHI)) * CLOUD_CONFIG.yDistribution + CLOUD_CONFIG.yOffset;
 
                     if (isDarkCloud) {
-                        // Force dark clouds to stay near the bottom to mask the horizon
                         const maxFull = CLOUD_CONFIG.yDistribution + CLOUD_CONFIG.yOffset;
                         const minFull = CLOUD_CONFIG.yOffset;
-                        // For heightLimit = 0.3, they only go up 30% from the bottom
                         const minDark = maxFull - (CLOUD_CONFIG.yDistribution * CLOUD_CONFIG.darkCloudsHeightLimit);
-                        // Remap yPos from [minFull, maxFull] to [minDark, maxFull]
                         const factor = (yPos - minFull) / CLOUD_CONFIG.yDistribution;
                         yPos = minDark + factor * (maxFull - minDark);
                     }
@@ -2065,63 +2058,79 @@ git config --global user.name {{username}}`;
                     const animDuration = CLOUD_CONFIG.baseDuration + Math.pow((1 - depth), PHI) * CLOUD_CONFIG.durationVariance;
                     const animDelay = -((i * PHI * 17) % animDuration);
 
-                    wrapper.style.top = yPos + '%';
-                    wrapper.style.animationDuration = animDuration + 's';
-                    wrapper.style.animationDelay = animDelay + 's';
-
-                    cloud.style.transform = `scale(${scale})`;
-
-                    if (isDarkCloud) {
-                        cloud.style.opacity = CLOUD_CONFIG.darkCloudsOpacity;
-                        cloud.style.color = '#0d0e12';
-                        cloud.style.textShadow = 'none';
-                        cloud.style.transition = 'none'; // Prevent any CSS transitions
-                    } else {
-                        cloud.style.opacity = (CLOUD_CONFIG.baseOpacity + (1 - depth) * CLOUD_CONFIG.opacityVariance) / CLOUD_CONFIG.opacityDivisor;
-                    }
-
-                    let blurPx = 0;
-                    if (CLOUD_CONFIG.blurFocusDepth === -1) {
-                        blurPx = CLOUD_CONFIG.blurIntensity * 0.15;
-                    } else {
-                        const focusDist = Math.abs(depth - CLOUD_CONFIG.blurFocusDepth);
-                        blurPx = focusDist * CLOUD_CONFIG.blurIntensity;
-                    }
-                    cloud.style.filter = `blur(${blurPx}px)`;
-
-                    wrapper.dataset.depth = depth;
+                    const cloud = {
+                        template, depth, isDarkCloud,
+                        yPos, scale, animDuration, animDelay,
+                        state: 'normal',
+                        sprite: createCloudSprite(template, depth, isDarkCloud, 'normal')
+                    };
+                    clouds.push(cloud);
 
                     if (!isDarkCloud) {
-                        // Independent, out-of-phase slow color breathing cycle
                         const startBreathing = () => {
-                            const isCyan = Math.random() > 0.4;
-                            const flashClass = isCyan ? 'lightning-flash' : 'lightning-flash-secondary';
-                            wrapper.classList.add(flashClass);
-
+                            if (!document.getElementById(canvasId)) return;
+                            cloud.state = Math.random() > 0.4 ? 'cyan' : 'secondary';
+                            cloud.sprite = createCloudSprite(template, depth, isDarkCloud, cloud.state);
+                            
                             setTimeout(() => {
-                                wrapper.classList.remove(flashClass);
+                                if (!document.getElementById(canvasId)) return;
+                                cloud.state = 'normal';
+                                cloud.sprite = createCloudSprite(template, depth, isDarkCloud, 'normal');
                                 setTimeout(startBreathing, CLOUD_CONFIG.colorWaitMin + Math.random() * CLOUD_CONFIG.colorWaitRandom);
                             }, CLOUD_CONFIG.colorHoldMin + Math.random() * CLOUD_CONFIG.colorHoldRandom);
                         };
                         setTimeout(startBreathing, Math.random() * CLOUD_CONFIG.initialDelayMax);
 
-                        // Abrupt Lightning Flash Logic (Only for deep background clouds)
                         if (CLOUD_CONFIG.enableLightning && depth < CLOUD_CONFIG.lightningDepthLimit) {
                             const startLightning = () => {
-                                wrapper.classList.add('hidden-lightning-flash');
+                                if (!document.getElementById(canvasId)) return;
+                                const oldState = cloud.state;
+                                cloud.state = 'flash';
+                                cloud.sprite = createCloudSprite(template, depth, isDarkCloud, 'flash');
+                                
                                 setTimeout(() => {
-                                    wrapper.classList.remove('hidden-lightning-flash');
+                                    if (!document.getElementById(canvasId)) return;
+                                    cloud.state = oldState;
+                                    cloud.sprite = createCloudSprite(template, depth, isDarkCloud, oldState);
                                     setTimeout(startLightning, 10000 + Math.random() * 15000);
                                 }, 1500);
                             };
                             setTimeout(startLightning, Math.random() * 25000);
                         }
                     }
-
-                    wrapper.appendChild(cloud);
-                    bg.appendChild(wrapper);
-                    allWrappers.push(wrapper);
                 }
+
+                const renderClouds = (time) => {
+                    if (!document.getElementById(canvasId)) return;
+                    requestAnimationFrame(renderClouds);
+                    
+                    if (ww !== window.innerWidth || wh !== window.innerHeight) {
+                        ww = window.innerWidth;
+                        wh = window.innerHeight;
+                        cloudCanvas.width = ww;
+                        cloudCanvas.height = wh;
+                    }
+                    
+                    cctx.clearRect(0, 0, ww, wh);
+
+                    const vhScale = (wh * 0.011) / fontSize;
+                    const sec = time / 1000;
+
+                    clouds.forEach(c => {
+                        const progress = ((sec - c.animDelay) % c.animDuration) / c.animDuration;
+                        const x = ww * (-0.4 + progress * 1.6);
+                        const y = (c.yPos / 100) * wh;
+
+                        const finalScale = vhScale * c.scale;
+                        
+                        cctx.save();
+                        cctx.translate(x, y);
+                        cctx.scale(finalScale, finalScale);
+                        cctx.drawImage(c.sprite.canvas, -c.sprite.pad, -c.sprite.pad);
+                        cctx.restore();
+                    });
+                };
+                requestAnimationFrame(renderClouds);
             }
 
             // ── AIRPLANE GENERATION ──
