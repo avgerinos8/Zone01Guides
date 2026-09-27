@@ -1983,9 +1983,8 @@ git config --global user.name {{username}}`;
                     const osc = document.createElement('canvas');
                     const octx = osc.getContext('2d', { alpha: true });
                     
-                    const lines = template.split(`
-`);
-                    octx.font = `${fontSize}px 'Fira Code', monospace`;
+                    const lines = template.split('\n');
+                    octx.font = `${fontSize}px Consolas, 'Courier New', monospace`;
                     let maxW = 0;
                     lines.forEach(l => maxW = Math.max(maxW, octx.measureText(l).width));
                     
@@ -2000,7 +1999,7 @@ git config --global user.name {{username}}`;
                     osc.width = maxW + pad * 2;
                     osc.height = lines.length * lineHeight + pad * 2;
 
-                    octx.font = `${fontSize}px 'Fira Code', monospace`;
+                    octx.font = `${fontSize}px Consolas, 'Courier New', monospace`;
                     octx.textBaseline = 'top';
                     
                     if (isDarkCloud) {
@@ -2187,8 +2186,10 @@ git config --global user.name {{username}}`;
                 }
             }, 10000);
         };
-        // Initial render on load
-        window.renderFXBackground();
+        // Wait for Fira Code to load before rendering so canvas text metrics are perfectly aligned
+        document.fonts.ready.then(() => {
+            window.renderFXBackground();
+        });
     </script>
 </body>
 
