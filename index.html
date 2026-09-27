@@ -1744,8 +1744,8 @@ git config --global user.name {{username}}`;
             initialDelayMax: 5000,       // Max initial delay for breathing phases (ms)
             enableLightning: true,       // True for abrupt hidden lightning flashes
             lightningDepthLimit: 0.35,   // Only clouds further back than this depth will flash
-            darkCloudsCount: 15,        // Number of dense black clouds at the far back
-            darkCloudsOpacity: 0.95,     // How solid the dark clouds are
+            darkCloudsCount: 25,        // Number of dense black clouds at the far back
+            darkCloudsOpacity: 0.75,     // How solid the dark clouds are
             darkCloudsDepthLimit: 0.15,  // Dark clouds are forced to be between 0 and this depth
             darkCloudsHeightLimit: 0.7   // 0 to 1 limit (0.3 = only appear at the bottom 30% of the screen)
         };
@@ -1772,15 +1772,15 @@ git config --global user.name {{username}}`;
             if (CITY_LIGHTS_CONFIG.enabled) {
                 const canvas = document.createElement('canvas');
                 canvas.id = 'city-lights-canvas';
-                canvas.width = 2500;
-                canvas.height = 2500;
+                canvas.width = 3000;
+                canvas.height = 3000;
 
                 Object.assign(canvas.style, {
                     position: 'absolute',
                     bottom: '0',
-                    left: '-50%',
-                    width: '200%',
-                    height: '100%',
+                    left: '-100%',
+                    width: '300%',
+                    height: '150%',
                     transformOrigin: 'bottom center',
                     transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
                     opacity: CITY_LIGHTS_CONFIG.opacity,
@@ -2101,6 +2101,60 @@ git config --global user.name {{username}}`;
                     allWrappers.push(wrapper);
                 }
             }
+
+            // ── AIRPLANE GENERATION ──
+            const styleId = 'fx-airplane-styles';
+            if (!document.getElementById(styleId)) {
+                const style = document.createElement('style');
+                style.id = styleId;
+                style.innerHTML = `
+                    @keyframes airplaneFlyR {
+                        0% { transform: translateX(-10vw) translateY(0); }
+                        100% { transform: translateX(110vw) translateY(10vh); }
+                    }
+                    @keyframes airplaneFlyL {
+                        0% { transform: translateX(110vw) translateY(0); }
+                        100% { transform: translateX(-10vw) translateY(10vh); }
+                    }
+                    @keyframes airplaneStrobe {
+                        0%, 80% { opacity: 0; }
+                        85% { opacity: 1; }
+                        90% { opacity: 0; }
+                        95% { opacity: 1; }
+                        100% { opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            if (window.CITY_AIRPLANE_INTERVAL) clearInterval(window.CITY_AIRPLANE_INTERVAL);
+            window.CITY_AIRPLANE_INTERVAL = setInterval(() => {
+                if (!CITY_LIGHTS_CONFIG.enabled || !document.getElementById('fx-background')) return;
+                const activePlanes = bg.querySelectorAll('.fx-airplane-instance').length;
+                if (activePlanes < 2 && Math.random() > 0.85) { // ~15% chance every 10 seconds
+                    const airplane = document.createElement('div');
+                    airplane.className = 'fx-airplane-instance';
+                    const flyRight = Math.random() > 0.5;
+                    const animDuration = 60 + Math.random() * 60; // 60s to 120s
+                    const topStart = 5 + Math.random() * 25; // 5% to 30% from top
+
+                    airplane.style.cssText = `
+                        position: absolute;
+                        top: ${topStart}%;
+                        left: 0;
+                        z-index: -5;
+                        animation: ${flyRight ? 'airplaneFlyR' : 'airplaneFlyL'} ${animDuration}s linear forwards;
+                    `;
+
+                    airplane.innerHTML = `
+                        <div style="position:absolute; width:1.5px; height:1.5px; background:red; box-shadow:0 0 3px red; margin-left:-6px;"></div>
+                        <div style="position:absolute; width:2px; height:2px; background:#fff; box-shadow:0 0 5px #fff; animation: airplaneStrobe 2s infinite;"></div>
+                    `;
+
+                    airplane.addEventListener('animationend', () => airplane.remove());
+                    bg.appendChild(airplane);
+                }
+            }, 10000);
         };
         // Initial render on load
         window.renderFXBackground();
