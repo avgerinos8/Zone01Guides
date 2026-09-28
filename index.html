@@ -1491,6 +1491,10 @@ git config --global user.name {{username}}`;
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Tilt</label><span id="val-tilt" style="color:#fff">56</span></div><input type="range" id="cfg-tilt" min="10" max="85" value="56" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Vert Scale</label><span id="val-vscale" style="color:#fff">1.5</span></div><input type="range" id="cfg-vscale" min="0.5" max="3" step="0.1" value="1.5" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Opacity</label><span id="val-copac" style="color:#fff">0.85</span></div><input type="range" id="cfg-copac" min="0" max="1" step="0.05" value="0.85" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-top:12px; display:flex; align-items:center; gap:6px;">
+                            <input type="checkbox" id="cfg-traffic" style="margin:0;">
+                            <label style="cursor:pointer; color:#fff;" for="cfg-traffic">Moving Traffic</label>
+                        </div>
                     </div>
                     
                     <!-- Column 2: Clouds & Presets -->
@@ -1514,12 +1518,8 @@ git config --global user.name {{username}}`;
                                 <label style="cursor:pointer; color:#fff;" for="cfg-blackclouds">Black Clouds</label>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
-                                <input type="checkbox" id="cfg-mask" style="margin:0;">
-                                <label style="cursor:pointer; color:#fff;" for="cfg-mask">Sky Mask (Hide Planes)</label>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <input type="checkbox" id="cfg-twinkle" checked style="margin:0;">
-                                <label style="cursor:pointer; color:#fff;" for="cfg-twinkle">City Twinkling</label>
+                                <input type="checkbox" id="cfg-mask" checked style="margin:0;">
+                                <label style="cursor:pointer; color:#fff;" for="cfg-mask">Sky Mask</label>
                             </div>
                         </div>
 
@@ -1574,7 +1574,7 @@ git config --global user.name {{username}}`;
             });
             ['avenues', 'curve', 'curvevar', 'wind', 'clus', 'persp', 'tilt', 'vscale', 'copac', 'nc', 'bo', 'blur', 'yo'].forEach(bindSlider);
 
-            ['cfg-city-en', 'cfg-cloud-en', 'cfg-light', 'cfg-blackclouds', 'cfg-mask', 'cfg-twinkle'].forEach(id => {
+            ['cfg-city-en', 'cfg-cloud-en', 'cfg-light', 'cfg-blackclouds', 'cfg-mask', 'cfg-traffic'].forEach(id => {
                 document.getElementById(id).addEventListener('change', triggerUpdate);
             });
             document.getElementById('cfg-seed').addEventListener('input', (e) => {
@@ -1640,7 +1640,7 @@ git config --global user.name {{username}}`;
                 window.CLOUD_CONFIG.enableLightning = document.getElementById('cfg-light').checked;
                 window.CLOUD_CONFIG.enableBlackClouds = document.getElementById('cfg-blackclouds').checked;
                 window.CITY_LIGHTS_CONFIG.useMask = document.getElementById('cfg-mask').checked;
-                window.CITY_LIGHTS_CONFIG.twinkling = document.getElementById('cfg-twinkle').checked;
+                window.CITY_LIGHTS_CONFIG.traffic = document.getElementById('cfg-traffic').checked;
 
                 if (window.renderFXBackground) window.renderFXBackground();
             }
@@ -1685,7 +1685,7 @@ git config --global user.name {{username}}`;
                         document.getElementById('cfg-light').checked = window.CLOUD_CONFIG.enableLightning !== false;
                         document.getElementById('cfg-blackclouds').checked = window.CLOUD_CONFIG.enableBlackClouds !== false;
                         document.getElementById('cfg-mask').checked = window.CITY_LIGHTS_CONFIG.useMask === true;
-                        document.getElementById('cfg-twinkle').checked = window.CITY_LIGHTS_CONFIG.twinkling !== false;
+                        document.getElementById('cfg-traffic').checked = window.CITY_LIGHTS_CONFIG.traffic === true;
                     }
                 });
             });
@@ -1699,7 +1699,15 @@ git config --global user.name {{username}}`;
             seed: Math.floor(Math.random() * 1000000000), // Random on load
             colorPreset: 0,              // 0: default, 1: purple, 2: white, 3: cyan/purple/blue, 4: orange/yellow/beige
             enabled: true,               // Set to false to easily detach/disable city lights
-            twinkling: true,             // Enable layered twinkling effect
+            // traffic: window.innerWidth > 1024 && (navigator.hardwareConcurrency || 4) >= 4, // Auto-detect capability
+            traffic: false,              // OFF by default as requested
+            trafficCount: 400,           // Number of moving cars
+            trafficBaseSpeed: 0.00002,   // Base speed for moving cars
+            trafficSpeedVariance: 0.00001, // Speed variance for cars
+            trafficSizeMin: 1.2,         // Minimum car dot size
+            trafficSizeMax: 1.8,         // Maximum car dot size
+            trafficBloomSize: 2.0,       // Bloom radius multiplier (1.0 = no bloom)
+            trafficSquarness: 7.5,       // Car aspect ratio (1.0 = perfect square after CSS stretch)
             perspective: 700,            // 3D perspective depth (px)
             tilt: 56,                    // Viewing angle (lower = looking from higher up)
             verticalScale: 1.5,          // Vertical stretch (scaleY)
@@ -1709,7 +1717,7 @@ git config --global user.name {{username}}`;
             curvinessVariance: 0.45,      // Avenue curve randomness
             windingStreets: 400,         // Number of anarchic winding roads
             clusters: 120,               // Number of dense neighborhoods
-            useMask: false               // True to hide the top part of the background, false to show everything
+            useMask: true                // True to hide the top part of the background, false to show everything
         };
 
         // --- CONFIGURATION VARIABLES FOR CLOUDS ---
@@ -1754,6 +1762,14 @@ git config --global user.name {{username}}`;
             const existingBg = document.getElementById('fx-background');
             if (existingBg) existingBg.remove();
 
+            const existingAirplaneLayer = document.getElementById('fx-airplane-layer');
+            if (existingAirplaneLayer) existingAirplaneLayer.remove();
+
+            const airplaneLayer = document.createElement('div');
+            airplaneLayer.id = 'fx-airplane-layer';
+            airplaneLayer.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; overflow: hidden; z-index: -5;';
+            document.body.insertBefore(airplaneLayer, document.body.firstChild);
+
             const bg = document.createElement('div');
             bg.id = 'fx-background';
             if (!CITY_LIGHTS_CONFIG.useMask) {
@@ -1764,60 +1780,37 @@ git config --global user.name {{username}}`;
 
             // ── CITY LIGHTS GENERATION ──
             if (CITY_LIGHTS_CONFIG.enabled) {
-                const W = 3000;
-                const H = 3000;
-                const numCanvases = CITY_LIGHTS_CONFIG.twinkling !== false ? 3 : 1;
-                const ctxs = [];
+                const canvas = document.createElement('canvas');
+                canvas.id = 'city-lights-canvas';
+                canvas.width = 3000;
+                canvas.height = 3000;
 
-                if (numCanvases > 1 && !document.getElementById('city-twinkle-style')) {
-                    const style = document.createElement('style');
-                    style.id = 'city-twinkle-style';
-                    style.innerHTML = `@keyframes cityTwinkle { 0% { opacity: 0; } 100% { opacity: 1; } }`;
-                    document.head.appendChild(style);
-                }
+                const isMob = window.innerWidth <= 768;
+                Object.assign(canvas.style, {
+                    position: 'absolute',
+                    bottom: '0',
+                    left: isMob ? 'calc(50% - 3250px)' : '-100%',
+                    width: isMob ? '6500px' : '300%',
+                    height: isMob ? '3200px' : '150%',
+                    transformOrigin: 'bottom center',
+                    transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
+                    opacity: CITY_LIGHTS_CONFIG.opacity,
+                    zIndex: '-10',
+                    pointerEvents: 'none',
+                    maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
+                    webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)'
+                });
 
-                for (let i = 0; i < numCanvases; i++) {
-                    const canvas = document.createElement('canvas');
-                    canvas.className = 'city-lights-layer';
-                    canvas.width = W;
-                    canvas.height = H;
+                // Crisp rendering to prevent 3D interpolation blur
+                canvas.style.imageRendering = 'pixelated';
 
-                    const isMob = window.innerWidth <= 768;
-                    Object.assign(canvas.style, {
-                        position: 'absolute',
-                        bottom: '0',
-                        left: isMob ? 'calc(50% - 3250px)' : '-100%',
-                        width: isMob ? '6500px' : '300%',
-                        height: isMob ? '3200px' : '150%',
-                        transformOrigin: 'bottom center',
-                        transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
-                        opacity: CITY_LIGHTS_CONFIG.opacity,
-                        zIndex: '-10',
-                        pointerEvents: 'none',
-                        maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
-                        webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
-                        imageRendering: 'pixelated'
-                    });
+                bg.appendChild(canvas);
 
-                    if (numCanvases > 1 && i > 0) {
-                        canvas.style.animation = `cityTwinkle ${i * 1.5 + 1.5}s infinite alternate ease-in-out`;
-                        canvas.style.animationDelay = `-${i * 1.2}s`;
-                    }
-
-                    bg.appendChild(canvas);
-                    ctxs.push(canvas.getContext('2d'));
-                }
-
-                function getCtx() {
-                    if (ctxs.length === 1) return ctxs[0];
-                    const r = window.CITY_RNG();
-                    if (r < 0.3) return ctxs[0]; // 30% static base
-                    if (r < 0.65) return ctxs[1]; // 35% twinkling layer 1
-                    return ctxs[2];              // 35% twinkling layer 2
-                }
+                const ctx = canvas.getContext('2d');
+                const W = canvas.width;
+                const H = canvas.height;
 
                 function drawLight(x, y, size, color) {
-                    const ctx = getCtx();
                     ctx.fillStyle = color;
                     const preset = CITY_LIGHTS_CONFIG.colorPreset || 0;
                     if (preset === 3 && window.CITY_RNG() > 0.85) {
@@ -1868,6 +1861,7 @@ git config --global user.name {{username}}`;
                 if (preset === 4) { laneColor1 = 'rgba(255, 215, 80, 0.9)'; laneColor2 = 'rgba(255, 150, 50, 0.9)'; }
 
                 // 1. Draw Major Avenues
+                const avenuesData = [];
                 for (let i = 0; i < CITY_LIGHTS_CONFIG.avenues; i++) {
                     const isVertical = window.CITY_RNG() > 0.5;
                     const start = window.CITY_RNG() * (isVertical ? W : H);
@@ -1892,6 +1886,14 @@ git config --global user.name {{username}}`;
                     let avenueType = 1; // 1 = double (30%)
                     if (rType < 0.3) avenueType = 0; // single (30%)
                     else if (rType > 0.6) avenueType = 2; // triple (40%)
+
+                    avenuesData.push({
+                        isVertical,
+                        start,
+                        curveFreq,
+                        curveAmp,
+                        avenueType
+                    });
 
                     for (let s = 0; s < 400; s++) {
                         const t = s / 400;
@@ -1960,6 +1962,138 @@ git config --global user.name {{username}}`;
                         }
                     }
                 }
+
+                // 4. Moving Traffic Overlay
+                if (CITY_LIGHTS_CONFIG.traffic && avenuesData.length > 0) {
+                    const trafficCanvas = document.createElement('canvas');
+                    trafficCanvas.id = 'city-traffic-canvas';
+                    trafficCanvas.width = W;
+                    trafficCanvas.height = H;
+                    Object.assign(trafficCanvas.style, {
+                        position: 'absolute',
+                        bottom: '0',
+                        left: isMob ? 'calc(50% - 3250px)' : '-100%',
+                        width: isMob ? '6500px' : '300%',
+                        height: isMob ? '3200px' : '150%',
+                        transformOrigin: 'bottom center',
+                        transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
+                        opacity: CITY_LIGHTS_CONFIG.opacity,
+                        zIndex: '-9',
+                        pointerEvents: 'none',
+                        maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
+                        webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
+                        imageRendering: 'pixelated'
+                    });
+                    bg.appendChild(trafficCanvas);
+                    const tCtx = trafficCanvas.getContext('2d');
+
+                    const cars = [];
+                    const numCars = CITY_LIGHTS_CONFIG.trafficCount || 400;
+                    const speedBase = CITY_LIGHTS_CONFIG.trafficBaseSpeed !== undefined ? CITY_LIGHTS_CONFIG.trafficBaseSpeed : 0.00003;
+                    const speedVar = CITY_LIGHTS_CONFIG.trafficSpeedVariance !== undefined ? CITY_LIGHTS_CONFIG.trafficSpeedVariance : 0.00001;
+                    const sizeMin = CITY_LIGHTS_CONFIG.trafficSizeMin !== undefined ? CITY_LIGHTS_CONFIG.trafficSizeMin : 2.0;
+                    const sizeMax = CITY_LIGHTS_CONFIG.trafficSizeMax !== undefined ? CITY_LIGHTS_CONFIG.trafficSizeMax : 4.0;
+                    const sizeDiff = sizeMax - sizeMin;
+                    const bloomMult = CITY_LIGHTS_CONFIG.trafficBloomSize !== undefined ? CITY_LIGHTS_CONFIG.trafficBloomSize : 2.5;
+                    const bloomOffset = (bloomMult - 1.0) / 2.0;
+                    const squarness = CITY_LIGHTS_CONFIG.trafficSquarness !== undefined ? CITY_LIGHTS_CONFIG.trafficSquarness : 1.0;
+
+                    for (let c = 0; c < numCars; c++) {
+                        const avIdx = Math.floor(Math.random() * avenuesData.length);
+                        const av = avenuesData[avIdx];
+
+                        let laneOffset = 0;
+                        let isRed = Math.random() > 0.5;
+
+                        if (av.avenueType === 0) {
+                            laneOffset = 0;
+                        } else if (av.avenueType === 1) {
+                            laneOffset = isRed ? 5 : -5;
+                            if (Math.random() > 0.5) { laneOffset = -laneOffset; isRed = !isRed; }
+                        } else {
+                            const r = Math.random();
+                            if (r < 0.33) { laneOffset = 0; }
+                            else if (r < 0.66) { laneOffset = -6; }
+                            else { laneOffset = 6; }
+                            isRed = laneOffset > 0;
+                        }
+
+                        cars.push({
+                            avIdx: avIdx,
+                            t: Math.random(),
+                            speed: (isRed ? -1 : 1) * (speedBase + Math.random() * speedVar),
+                            laneOffset: laneOffset,
+                            isRed: isRed,
+                            size: sizeMin + Math.random() * sizeDiff
+                        });
+                    }
+
+                    function renderTraffic() {
+                        if (!document.getElementById('city-traffic-canvas')) return;
+                        tCtx.clearRect(0, 0, W, H);
+
+                        // 1. Physics & Coordinates Pass
+                        for (let c = 0; c < cars.length; c++) {
+                            const car = cars[c];
+                            const av = avenuesData[car.avIdx];
+
+                            let currentSpeed = car.speed;
+                            if (av.isVertical) {
+                                currentSpeed *= (0.2 + 0.8 * car.t);
+                            } else {
+                                currentSpeed *= 0.15;
+                                currentSpeed *= (0.2 + 0.8 * (av.start / H));
+                            }
+
+                            car.t += currentSpeed;
+                            if (car.t > 1) car.t = 0;
+                            if (car.t < 0) car.t = 1;
+
+                            if (av.isVertical) {
+                                car.x = av.start + Math.sin(car.t * Math.PI * av.curveFreq) * av.curveAmp + car.laneOffset;
+                                car.y = car.t * H;
+                            } else {
+                                car.x = car.t * W + car.laneOffset;
+                                car.y = av.start + Math.sin(car.t * Math.PI * av.curveFreq) * av.curveAmp;
+                            }
+
+                            // Adjust height so it appears square after the CSS scaleY stretch
+                            car.h = (car.size * squarness) / CITY_LIGHTS_CONFIG.verticalScale;
+                        }
+
+                        // 2. Render Passes (Grouped by color to minimize context state changes for max performance)
+
+                        // White Bloom
+                        tCtx.fillStyle = 'rgba(255, 230, 200, 0.15)';
+                        for (let c = 0; c < cars.length; c++) {
+                            const car = cars[c];
+                            if (!car.isRed) tCtx.fillRect(car.x - car.size * bloomOffset, car.y - car.h * bloomOffset, car.size * bloomMult, car.h * bloomMult);
+                        }
+
+                        // Red Bloom
+                        tCtx.fillStyle = 'rgba(255, 60, 60, 0.15)';
+                        for (let c = 0; c < cars.length; c++) {
+                            const car = cars[c];
+                            if (car.isRed) tCtx.fillRect(car.x - car.size * bloomOffset, car.y - car.h * bloomOffset, car.size * bloomMult, car.h * bloomMult);
+                        }
+
+                        // White Core
+                        tCtx.fillStyle = 'rgba(255, 240, 220, 0.95)';
+                        for (let c = 0; c < cars.length; c++) {
+                            const car = cars[c];
+                            if (!car.isRed) tCtx.fillRect(car.x, car.y, car.size, car.h);
+                        }
+
+                        // Red Core
+                        tCtx.fillStyle = 'rgba(255, 80, 80, 0.95)';
+                        for (let c = 0; c < cars.length; c++) {
+                            const car = cars[c];
+                            if (car.isRed) tCtx.fillRect(car.x, car.y, car.size, car.h);
+                        }
+                        requestAnimationFrame(renderTraffic);
+                    }
+                    requestAnimationFrame(renderTraffic);
+                }
             }
 
             // ── CLOUDS GENERATION (CANVAS SPRITE CACHING) ──
@@ -2027,7 +2161,7 @@ git config --global user.name {{username}}`;
                 bg.appendChild(cloudCanvas);
 
                 const cctx = cloudCanvas.getContext('2d', { alpha: true });
-                
+
                 let ww = window.innerWidth;
                 let wh = window.innerHeight;
                 cloudCanvas.width = ww;
@@ -2045,12 +2179,12 @@ git config --global user.name {{username}}`;
                 const createCloudSprite = (template, depth, isDarkCloud, state) => {
                     const osc = document.createElement('canvas');
                     const octx = osc.getContext('2d', { alpha: true });
-                    
+
                     const lines = template.split('\n');
                     octx.font = `${fontSize}px Consolas, 'Courier New', monospace`;
                     let maxW = 0;
                     lines.forEach(l => maxW = Math.max(maxW, octx.measureText(l).width));
-                    
+
                     let blurPx = 0;
                     if (CLOUD_CONFIG.blurFocusDepth === -1) {
                         blurPx = CLOUD_CONFIG.blurIntensity * 0.15;
@@ -2064,13 +2198,13 @@ git config --global user.name {{username}}`;
 
                     octx.font = `${fontSize}px Consolas, 'Courier New', monospace`;
                     octx.textBaseline = 'top';
-                    
+
                     if (isDarkCloud) {
                         octx.fillStyle = `rgba(13, 14, 18, ${CLOUD_CONFIG.darkCloudsOpacity})`;
                         octx.filter = `blur(${blurPx}px)`;
                     } else {
                         let elementOpacity = (CLOUD_CONFIG.baseOpacity + (1 - depth) * CLOUD_CONFIG.opacityVariance) / CLOUD_CONFIG.opacityDivisor;
-                        
+
                         if (state === 'flash') {
                             octx.fillStyle = `rgba(180, 220, 255, ${0.7 * elementOpacity})`;
                             octx.shadowColor = `rgba(180, 220, 255, ${0.4 * elementOpacity})`;
@@ -2095,7 +2229,7 @@ git config --global user.name {{username}}`;
                 for (let i = 0; i < totalClouds; i++) {
                     const isDarkCloud = i >= CLOUD_CONFIG.numClouds;
                     if (isDarkCloud && CLOUD_CONFIG.enableBlackClouds === false) continue;
-                    
+
                     const template = cloudTemplates[i % cloudTemplates.length];
 
                     let r = Math.pow((i % CLOUD_CONFIG.numClouds) / CLOUD_CONFIG.numClouds, PHI);
@@ -2135,7 +2269,7 @@ git config --global user.name {{username}}`;
                             if (!document.getElementById(canvasId)) return;
                             cloud.state = Math.random() > 0.4 ? 'cyan' : 'secondary';
                             cloud.sprite = createCloudSprite(template, depth, isDarkCloud, cloud.state);
-                            
+
                             setTimeout(() => {
                                 if (!document.getElementById(canvasId)) return;
                                 cloud.state = 'normal';
@@ -2151,7 +2285,7 @@ git config --global user.name {{username}}`;
                                 const oldState = cloud.state;
                                 cloud.state = 'flash';
                                 cloud.sprite = createCloudSprite(template, depth, isDarkCloud, 'flash');
-                                
+
                                 setTimeout(() => {
                                     if (!document.getElementById(canvasId)) return;
                                     cloud.state = oldState;
@@ -2167,14 +2301,14 @@ git config --global user.name {{username}}`;
                 const renderClouds = (time) => {
                     if (!document.getElementById(canvasId)) return;
                     requestAnimationFrame(renderClouds);
-                    
+
                     if (ww !== window.innerWidth || wh !== window.innerHeight) {
                         ww = window.innerWidth;
                         wh = window.innerHeight;
                         cloudCanvas.width = ww;
                         cloudCanvas.height = wh;
                     }
-                    
+
                     cctx.clearRect(0, 0, ww, wh);
 
                     const vhScale = (wh * 0.011) / fontSize;
@@ -2186,7 +2320,7 @@ git config --global user.name {{username}}`;
                         const y = (c.yPos / 100) * wh;
 
                         const finalScale = vhScale * c.scale;
-                        
+
                         cctx.save();
                         cctx.translate(x, y);
                         cctx.scale(finalScale, finalScale);
@@ -2222,7 +2356,7 @@ git config --global user.name {{username}}`;
                 document.head.appendChild(style);
             }
 
-            window.spawnAirplane = function() {
+            window.spawnAirplane = function () {
                 const bg = document.getElementById('fx-background');
                 if (!CITY_LIGHTS_CONFIG.enabled || !bg) return;
                 const airplane = document.createElement('div');
@@ -2245,7 +2379,8 @@ git config --global user.name {{username}}`;
                 `;
 
                 airplane.addEventListener('animationend', () => airplane.remove());
-                bg.appendChild(airplane);
+                const airplaneLayer = document.getElementById('fx-airplane-layer');
+                if (airplaneLayer) airplaneLayer.appendChild(airplane);
             };
 
             if (window.CITY_AIRPLANE_INTERVAL) clearInterval(window.CITY_AIRPLANE_INTERVAL);
