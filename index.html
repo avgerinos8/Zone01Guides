@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guides 01 · guides01.devs.surf</title>
-    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="icon" type="image/png" href="./images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
@@ -251,13 +251,11 @@
                 gap: 32px;
             }
 
-            /* Glassmorphism effect for lesson panels on mobile */
+            /* Solid premium dark background for lesson panels on mobile (Replaced blur to fix glitching) */
             li a {
-                background: rgba(20, 23, 34, 0.6);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                border: 1px solid rgba(255, 255, 255, 0.08);
-                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+                background: rgba(20, 23, 34, 0.95);
+                border: 1px solid rgba(168, 85, 247, 0.15);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
             }
         }
 
@@ -1749,6 +1747,15 @@ git config --global user.name {{username}}`;
         };
 
         window.renderFXBackground = function () {
+            // Stop FX generation completely on mobile to save battery and prevent rendering glitches
+            // (Using robust mobile detection to ensure it catches all phones/tablets)
+            if (window.innerWidth <= 900 || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+                document.body.classList.remove('clouds-on');
+                if (document.getElementById('fx-background')) document.getElementById('fx-background').remove();
+                if (document.getElementById('fx-airplane-layer')) document.getElementById('fx-airplane-layer').remove();
+                return;
+            }
+
             document.body.classList.add('clouds-on');
 
             const CITY_LIGHTS_CONFIG = window.CITY_LIGHTS_CONFIG;
