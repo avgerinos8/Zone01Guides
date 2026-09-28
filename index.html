@@ -250,6 +250,15 @@
             .column {
                 gap: 32px;
             }
+
+            /* Glassmorphism effect for lesson panels on mobile */
+            li a {
+                background: rgba(20, 23, 34, 0.6);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            }
         }
 
         /* Password Modal */
@@ -628,7 +637,7 @@
            its own small, width-independent override.
            ================================================================ */
 
-        @media (max-width: 640px) {
+        @media (min-width: 769px) and (max-width: 860px) {
             .tag {
                 display: none;
             }
@@ -1490,17 +1499,32 @@ git config --global user.name {{username}}`;
                             <input type="checkbox" id="cfg-cloud-en" checked style="margin:0;"> CLOUDS
                         </h4>
                         
-                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Count</label><span id="val-nc" style="color:#fff">69</span></div><input type="range" id="cfg-nc" min="0" max="140" value="69" style="width:100%; height:10px; cursor:pointer;"></div>
-                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Opacity</label><span id="val-bo" style="color:#fff">0.32</span></div><input type="range" id="cfg-bo" min="0" max="1" step="0.05" value="0.32" style="width:100%; height:10px; cursor:pointer;"></div>
-                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Blur</label><span id="val-blur" style="color:#fff">40</span></div><input type="range" id="cfg-blur" min="0" max="200" value="40" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Count</label><span id="val-nc" style="color:#fff">69</span></div><input type="range" id="cfg-nc" min="0" max="520" value="69" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Opacity</label><span id="val-bo" style="color:#fff">0.32</span></div><input type="range" id="cfg-bo" min="0" max="4" step="0.05" value="0.32" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Blur</label><span id="val-blur" style="color:#fff">40</span></div><input type="range" id="cfg-blur" min="0" max="300" value="40" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Y Offset</label><span id="val-yo" style="color:#fff">-5</span></div><input type="range" id="cfg-yo" min="-50" max="50" value="-5" style="width:100%; height:10px; cursor:pointer;"></div>
                         
-                        <div style="margin-top:12px; display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="cfg-light" checked style="margin:0;">
-                            <label style="cursor:pointer; color:#fff;" for="cfg-light">Enable Lightning</label>
+                        <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <input type="checkbox" id="cfg-light" checked style="margin:0;">
+                                <label style="cursor:pointer; color:#fff;" for="cfg-light">Enable Lightning</label>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <input type="checkbox" id="cfg-blackclouds" checked style="margin:0;">
+                                <label style="cursor:pointer; color:#fff;" for="cfg-blackclouds">Black Clouds</label>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <input type="checkbox" id="cfg-mask" style="margin:0;">
+                                <label style="cursor:pointer; color:#fff;" for="cfg-mask">Sky Mask (Hide Planes)</label>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <input type="checkbox" id="cfg-twinkle" checked style="margin:0;">
+                                <label style="cursor:pointer; color:#fff;" for="cfg-twinkle">City Twinkling</label>
+                            </div>
                         </div>
 
                         <div style="margin-top:auto; padding-top: 15px;">
+                            <button id="btn-spawn-plane" style="width:100%; margin-bottom:12px; background:#141722; color:#a5b4fc; border:1px solid #3d4b6c; padding:6px; cursor:pointer; border-radius:4px; font-family:'Fira Code', monospace; font-size:11px; transition:0.2s;">Spawn Plane</button>
                             <h4 style="margin: 0 0 8px 0; color: #fff; border-bottom: 1px solid #3d4b6c; padding-bottom: 4px;">CITY PRESETS</h4>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                                 <button id="btn-preset-1" class="preset-btn" style="background:#141722; color:#a5b4fc; border:1px solid #3d4b6c; padding:6px; cursor:pointer; border-radius:4px; font-family:'Fira Code', monospace; font-size:10px; transition:0.2s;">Preset 1</button>
@@ -1550,7 +1574,7 @@ git config --global user.name {{username}}`;
             });
             ['avenues', 'curve', 'curvevar', 'wind', 'clus', 'persp', 'tilt', 'vscale', 'copac', 'nc', 'bo', 'blur', 'yo'].forEach(bindSlider);
 
-            ['cfg-city-en', 'cfg-cloud-en', 'cfg-light'].forEach(id => {
+            ['cfg-city-en', 'cfg-cloud-en', 'cfg-light', 'cfg-blackclouds', 'cfg-mask', 'cfg-twinkle'].forEach(id => {
                 document.getElementById(id).addEventListener('change', triggerUpdate);
             });
             document.getElementById('cfg-seed').addEventListener('input', (e) => {
@@ -1591,6 +1615,9 @@ git config --global user.name {{username}}`;
                 document.getElementById('cfg-seed').value = Math.floor(Math.random() * 1000000000);
                 triggerUpdate();
             };
+            document.getElementById('btn-spawn-plane').onclick = () => {
+                if (window.spawnAirplane) window.spawnAirplane();
+            };
 
             function syncStateAndRender() {
                 window.CITY_LIGHTS_CONFIG.seed = parseInt(document.getElementById('cfg-seed').value) || 1337;
@@ -1611,6 +1638,9 @@ git config --global user.name {{username}}`;
                 window.CLOUD_CONFIG.blurIntensity = parseInt(document.getElementById('cfg-blur').value);
                 window.CLOUD_CONFIG.yOffset = parseInt(document.getElementById('cfg-yo').value);
                 window.CLOUD_CONFIG.enableLightning = document.getElementById('cfg-light').checked;
+                window.CLOUD_CONFIG.enableBlackClouds = document.getElementById('cfg-blackclouds').checked;
+                window.CITY_LIGHTS_CONFIG.useMask = document.getElementById('cfg-mask').checked;
+                window.CITY_LIGHTS_CONFIG.twinkling = document.getElementById('cfg-twinkle').checked;
 
                 if (window.renderFXBackground) window.renderFXBackground();
             }
@@ -1652,7 +1682,10 @@ git config --global user.name {{username}}`;
                         document.getElementById('val-blur').innerText = window.CLOUD_CONFIG.blurIntensity;
                         document.getElementById('cfg-yo').value = window.CLOUD_CONFIG.yOffset;
                         document.getElementById('val-yo').innerText = window.CLOUD_CONFIG.yOffset;
-                        document.getElementById('cfg-light').checked = window.CLOUD_CONFIG.enableLightning;
+                        document.getElementById('cfg-light').checked = window.CLOUD_CONFIG.enableLightning !== false;
+                        document.getElementById('cfg-blackclouds').checked = window.CLOUD_CONFIG.enableBlackClouds !== false;
+                        document.getElementById('cfg-mask').checked = window.CITY_LIGHTS_CONFIG.useMask === true;
+                        document.getElementById('cfg-twinkle').checked = window.CITY_LIGHTS_CONFIG.twinkling !== false;
                     }
                 });
             });
@@ -1666,6 +1699,7 @@ git config --global user.name {{username}}`;
             seed: Math.floor(Math.random() * 1000000000), // Random on load
             colorPreset: 0,              // 0: default, 1: purple, 2: white, 3: cyan/purple/blue, 4: orange/yellow/beige
             enabled: true,               // Set to false to easily detach/disable city lights
+            twinkling: true,             // Enable layered twinkling effect
             perspective: 700,            // 3D perspective depth (px)
             tilt: 56,                    // Viewing angle (lower = looking from higher up)
             verticalScale: 1.5,          // Vertical stretch (scaleY)
@@ -1674,7 +1708,8 @@ git config --global user.name {{username}}`;
             curviness: 0.5,              // Avenue curve amount (0 = straight)
             curvinessVariance: 0.45,      // Avenue curve randomness
             windingStreets: 400,         // Number of anarchic winding roads
-            clusters: 120                // Number of dense neighborhoods
+            clusters: 120,               // Number of dense neighborhoods
+            useMask: false               // True to hide the top part of the background, false to show everything
         };
 
         // --- CONFIGURATION VARIABLES FOR CLOUDS ---
@@ -1721,40 +1756,68 @@ git config --global user.name {{username}}`;
 
             const bg = document.createElement('div');
             bg.id = 'fx-background';
+            if (!CITY_LIGHTS_CONFIG.useMask) {
+                bg.style.maskImage = 'none';
+                bg.style.webkitMaskImage = 'none';
+            }
             document.body.insertBefore(bg, document.body.firstChild);
 
             // ── CITY LIGHTS GENERATION ──
             if (CITY_LIGHTS_CONFIG.enabled) {
-                const canvas = document.createElement('canvas');
-                canvas.id = 'city-lights-canvas';
-                canvas.width = 3000;
-                canvas.height = 3000;
+                const W = 3000;
+                const H = 3000;
+                const numCanvases = CITY_LIGHTS_CONFIG.twinkling !== false ? 3 : 1;
+                const ctxs = [];
 
-                Object.assign(canvas.style, {
-                    position: 'absolute',
-                    bottom: '0',
-                    left: '-100%',
-                    width: '300%',
-                    height: '150%',
-                    transformOrigin: 'bottom center',
-                    transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
-                    opacity: CITY_LIGHTS_CONFIG.opacity,
-                    zIndex: '-10',
-                    pointerEvents: 'none',
-                    maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
-                    webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)'
-                });
+                if (numCanvases > 1 && !document.getElementById('city-twinkle-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'city-twinkle-style';
+                    style.innerHTML = `@keyframes cityTwinkle { 0% { opacity: 0; } 100% { opacity: 1; } }`;
+                    document.head.appendChild(style);
+                }
 
-                // Crisp rendering to prevent 3D interpolation blur
-                canvas.style.imageRendering = 'pixelated';
+                for (let i = 0; i < numCanvases; i++) {
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'city-lights-layer';
+                    canvas.width = W;
+                    canvas.height = H;
 
-                bg.appendChild(canvas);
+                    const isMob = window.innerWidth <= 768;
+                    Object.assign(canvas.style, {
+                        position: 'absolute',
+                        bottom: '0',
+                        left: isMob ? 'calc(50% - 3250px)' : '-100%',
+                        width: isMob ? '6500px' : '300%',
+                        height: isMob ? '3200px' : '150%',
+                        transformOrigin: 'bottom center',
+                        transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
+                        opacity: CITY_LIGHTS_CONFIG.opacity,
+                        zIndex: '-10',
+                        pointerEvents: 'none',
+                        maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
+                        webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
+                        imageRendering: 'pixelated'
+                    });
 
-                const ctx = canvas.getContext('2d');
-                const W = canvas.width;
-                const H = canvas.height;
+                    if (numCanvases > 1 && i > 0) {
+                        canvas.style.animation = `cityTwinkle ${i * 1.5 + 1.5}s infinite alternate ease-in-out`;
+                        canvas.style.animationDelay = `-${i * 1.2}s`;
+                    }
+
+                    bg.appendChild(canvas);
+                    ctxs.push(canvas.getContext('2d'));
+                }
+
+                function getCtx() {
+                    if (ctxs.length === 1) return ctxs[0];
+                    const r = window.CITY_RNG();
+                    if (r < 0.3) return ctxs[0]; // 30% static base
+                    if (r < 0.65) return ctxs[1]; // 35% twinkling layer 1
+                    return ctxs[2];              // 35% twinkling layer 2
+                }
 
                 function drawLight(x, y, size, color) {
+                    const ctx = getCtx();
                     ctx.fillStyle = color;
                     const preset = CITY_LIGHTS_CONFIG.colorPreset || 0;
                     if (preset === 3 && window.CITY_RNG() > 0.85) {
@@ -2031,6 +2094,8 @@ git config --global user.name {{username}}`;
 
                 for (let i = 0; i < totalClouds; i++) {
                     const isDarkCloud = i >= CLOUD_CONFIG.numClouds;
+                    if (isDarkCloud && CLOUD_CONFIG.enableBlackClouds === false) continue;
+                    
                     const template = cloudTemplates[i % cloudTemplates.length];
 
                     let r = Math.pow((i % CLOUD_CONFIG.numClouds) / CLOUD_CONFIG.numClouds, PHI);
@@ -2157,32 +2222,36 @@ git config --global user.name {{username}}`;
                 document.head.appendChild(style);
             }
 
+            window.spawnAirplane = function() {
+                const bg = document.getElementById('fx-background');
+                if (!CITY_LIGHTS_CONFIG.enabled || !bg) return;
+                const airplane = document.createElement('div');
+                airplane.className = 'fx-airplane-instance';
+                const flyRight = Math.random() > 0.5;
+                const animDuration = 15 + Math.random() * 105; // 15s to 120s
+                const topStart = Math.random() * 60; // 0% to 60% from top
+
+                airplane.style.cssText = `
+                    position: absolute;
+                    top: ${topStart}%;
+                    left: 0;
+                    z-index: -5;
+                    animation: ${flyRight ? 'airplaneFlyR' : 'airplaneFlyL'} ${animDuration}s linear forwards;
+                `;
+
+                airplane.innerHTML = `
+                    <div style="position:absolute; width:1.5px; height:1.5px; background:red; box-shadow:0 0 3px red; margin-left:-6px;"></div>
+                    <div style="position:absolute; width:2px; height:2px; background:#fff; box-shadow:0 0 5px #fff; animation: airplaneStrobe 2s infinite;"></div>
+                `;
+
+                airplane.addEventListener('animationend', () => airplane.remove());
+                bg.appendChild(airplane);
+            };
+
             if (window.CITY_AIRPLANE_INTERVAL) clearInterval(window.CITY_AIRPLANE_INTERVAL);
             window.CITY_AIRPLANE_INTERVAL = setInterval(() => {
-                if (!CITY_LIGHTS_CONFIG.enabled || !document.getElementById('fx-background')) return;
-                const activePlanes = bg.querySelectorAll('.fx-airplane-instance').length;
-                if (activePlanes < 2 && Math.random() > 0.85) { // ~15% chance every 10 seconds
-                    const airplane = document.createElement('div');
-                    airplane.className = 'fx-airplane-instance';
-                    const flyRight = Math.random() > 0.5;
-                    const animDuration = 60 + Math.random() * 60; // 60s to 120s
-                    const topStart = 5 + Math.random() * 25; // 5% to 30% from top
-
-                    airplane.style.cssText = `
-                        position: absolute;
-                        top: ${topStart}%;
-                        left: 0;
-                        z-index: -5;
-                        animation: ${flyRight ? 'airplaneFlyR' : 'airplaneFlyL'} ${animDuration}s linear forwards;
-                    `;
-
-                    airplane.innerHTML = `
-                        <div style="position:absolute; width:1.5px; height:1.5px; background:red; box-shadow:0 0 3px red; margin-left:-6px;"></div>
-                        <div style="position:absolute; width:2px; height:2px; background:#fff; box-shadow:0 0 5px #fff; animation: airplaneStrobe 2s infinite;"></div>
-                    `;
-
-                    airplane.addEventListener('animationend', () => airplane.remove());
-                    bg.appendChild(airplane);
+                if (Math.random() > 0.5) { // ~50% chance every 10 seconds
+                    window.spawnAirplane();
                 }
             }, 10000);
         };
