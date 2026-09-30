@@ -40,6 +40,13 @@
             margin: calc(12px + 12 * var(--fluid-range) / 704) auto;
             padding: 0 calc(12px + 12 * var(--fluid-range) / 704);
             line-height: 1.5;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .allow-select {
+            user-select: text;
+            -webkit-user-select: text;
         }
 
         .terminal-header {
@@ -392,6 +399,8 @@
             position: relative;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            user-select: text;
+            -webkit-user-select: text;
         }
 
         .code-block::-webkit-scrollbar {
@@ -673,7 +682,8 @@
 
     <!-- ===== MAIN CONTENT ===== -->
     <div id="mainContent">
-        <header class="terminal-header">
+        <div class="allow-select">
+            <header class="terminal-header">
             <div class="status-line">
                 ACCESS_LEVEL: <span class="cyan-text" id="learnerTrigger">LEARNER_</span> // AUTHOR: <a
                     href="https://github.com/avgerinos8" target="_blank" class="cyan-text">avgerinos</a> //
@@ -704,6 +714,7 @@
         <p style="margin-bottom: 24px; text-align: center;"><span class="prompt">student@zone01:~$</span> ls -la
             --guides<span class="cursor" id="secretTrigger"></span>
         </p>
+        </div>
         <div class="columns-container main-section">
             <!-- First Column -->
             <div class="column">
@@ -807,7 +818,8 @@
 
     <!-- ===== SECRET CONTENT (ADMIN) ===== -->
     <div id="secretContent">
-        <header class="terminal-header">
+        <div class="allow-select">
+            <header class="terminal-header">
             <div class="status-line">
                 ACCESS_LEVEL: <span class="cyan-text" id="adminTrigger">ADMIN_</span> // AUTHOR: <span
                     class="cyan-text">avgerinos</span> //
@@ -839,20 +851,14 @@
 
         <!-- ===== CODE BLOCK ===== -->
         <p>open <code style="font-size: 1.4em;">konsole</code> and paste the following:</p>
+        </div>
         <div class="code-block">
 
             <button class="copy-btn" id="copyBtn">Copy</button>
             <pre><code id="codeContent"></code></pre>
         </div>
 
-        <!-- ===== PUBLIC PROJECTS (hidden by default) ===== -->
-        <div class="public-projects" id="publicProjects" style="display: none;">
-            <h3>PUBLIC PROJECTS</h3>
-            <ul>
-                <li><a href="https://ascii-art-web-wkaa.onrender.com/" target="_blank"><span>ASCII Art
-                            Web</span><span class="tag">[RENDER]</span></a></li>
-            </ul>
-        </div>
+
     </div>
 
     <script>
@@ -866,16 +872,21 @@
                     email: "avgerinos.xe@gmail.com",
                     username: "pavgerin"
                 },
-                // Example custom user:
-                // {
-                //     password: "custom123",
-                //     email: "custom@example.com",
-                //     username: "customuser",
-                //     script: `# Custom script
-                // echo "Hello {{username}}"
-                // git config --global user.email {{email}}
-                // git config --global user.name {{username}}`
-                // }
+                {
+                    password: "maria",
+                    email: "maria.d.pap@hotmail.com",
+                    username: "mpapakonst"
+                },
+                {
+                    password: "cnewman",
+                    email: "charlienewman1994@hotmail.com",
+                    username: "cnewman"
+                },
+                {
+                    password: "nantoniou",
+                    email: "nantoniou96@gmail.com",
+                    username: "nantoniou"
+                }
             ];
 
             // ================================================================
@@ -959,11 +970,9 @@ git config --global user.name {{username}}`;
             const backBtn = document.getElementById('backToMain');
             const codeContent = document.getElementById('codeContent');
             const copyBtn = document.getElementById('copyBtn');
-            const publicProjects = document.getElementById('publicProjects');
             const toast = document.getElementById('toast');
 
             let currentUser = null;
-            let isAfroman = false; // whether the logged-in user used AFROMAN
 
             // ── session unlock state ─────────────────────────────────────────────── ⊃
             // sessionStorage is per-TAB: it survives normal navigation and reloads,
@@ -1000,7 +1009,6 @@ git config --global user.name {{username}}`;
             // ── unlock path shared by modal submit and restored session ──────────── ⊃
             function enterAdmin(user, password) {
                 currentUser = user;
-                isAfroman = (password.toUpperCase() === atob("QUZST01BTg=="));
                 refreshCode();
                 modal.style.display = 'none';
                 mainContent.style.display = 'none';
@@ -1059,8 +1067,6 @@ git config --global user.name {{username}}`;
                 codeContent.innerHTML = html;
                 // Attach editable listeners
                 attachEditableListeners();
-                // Update public projects visibility based on isAfroman
-                publicProjects.style.display = isAfroman ? '' : 'none';
             }
 
             function tryUnlock() {
@@ -2528,16 +2534,16 @@ git config --global user.name {{username}}`;
                 if (document.hidden) return;
                 const bg = document.getElementById('fx-background');
                 if (!CITY_LIGHTS_CONFIG.enabled || !bg) return;
-                
+
                 const airplane = document.createElement('div');
                 airplane.className = 'fx-airplane-instance';
-                
+
                 // Fly strictly Right (0) or Left (PI)
                 const angle = Math.random() > 0.5 ? 0 : Math.PI;
-                
+
                 // Random size: from 0.5 to 1.0 (so they aren't too small)
                 const scale = 0.5 + Math.random() * 0.5;
-                
+
                 airplane.style.cssText = `
                     position: absolute;
                     top: ${startY}px;
@@ -2545,24 +2551,24 @@ git config --global user.name {{username}}`;
                     z-index: -5;
                     transform: rotate(${angle}rad) scale(${scale});
                 `;
-                
+
                 airplane.innerHTML = `
                     <div style="position:absolute; width:1.5px; height:1.5px; background:red; box-shadow:0 0 3px red;"></div>
                     <div style="position:absolute; width:2px; height:2px; background:#fff; box-shadow:0 0 5px #fff; animation: airplaneStrobe 2s infinite; margin-left:-6px;"></div>
                 `;
-                
+
                 const airplaneLayer = document.getElementById('fx-airplane-layer');
                 if (airplaneLayer) {
                     airplaneLayer.appendChild(airplane);
-                    
+
                     const distance = Math.max(window.innerWidth, window.innerHeight) * 1.5;
-                    
+
                     // Speed proportional to size (parallax). 
                     // Base duration for scale 1.0 is 12s to 30s. 
                     // So scale 0.5 will take 24s to 60s (slower).
                     const baseDuration = 12000 + Math.random() * 18000;
                     const animDuration = baseDuration / scale;
-                    
+
                     const anim = airplane.animate([
                         { transform: `rotate(${angle}rad) scale(${scale}) translateX(0)` },
                         { transform: `rotate(${angle}rad) scale(${scale}) translateX(${distance}px)` }
@@ -2571,25 +2577,25 @@ git config --global user.name {{username}}`;
                         easing: 'linear',
                         fill: 'forwards'
                     });
-                    
+
                     anim.onfinish = () => airplane.remove();
                 }
             };
 
-            window.spawnStarAt = function(x, y) {
+            window.spawnStarAt = function (x, y) {
                 const canvas = document.getElementById('city-lights-canvas');
                 if (!canvas) return;
                 const ctx = canvas.getContext('2d');
                 ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 215, 80, 0.95)' : 'rgba(255, 255, 255, 0.9)';
-                
+
                 const boundaryY = window.innerHeight * 0.7;
                 let yFactor = (y - boundaryY) / (window.innerHeight - boundaryY);
                 yFactor = Math.max(0, Math.min(1, yFactor));
-                
+
                 let baseSize = 1.0 + (yFactor * 3.5);
                 let s = baseSize + (Math.random() * 1.5 - 0.75);
                 s = Math.max(0.5, s);
-                
+
                 const third = s / 3;
                 const screenX = x - s / 2;
                 const screenY = y - s / 2;
@@ -2597,11 +2603,11 @@ git config --global user.name {{username}}`;
                 ctx.fillRect(screenX, screenY + third, s, third);
             };
 
-            window.spawnAvenue = function(start, end) {
+            window.spawnAvenue = function (start, end) {
                 const boundaryY = window.innerHeight * 0.7;
                 let cappedEnd = { x: end.x, y: end.y };
-                const safeBorder = boundaryY + window.innerHeight * 0.03; 
-                
+                const safeBorder = boundaryY + window.innerHeight * 0.03;
+
                 if (cappedEnd.y < safeBorder) {
                     const t = (safeBorder - start.y) / (end.y - start.y);
                     if (t > 0 && t < 1) {
@@ -2611,20 +2617,40 @@ git config --global user.name {{username}}`;
                         return;
                     }
                 }
-                
+
                 const dist = Math.hypot(cappedEnd.x - start.x, cappedEnd.y - start.y);
                 if (dist < 5) return;
-                
+
                 const midX = (start.x + cappedEnd.x) / 2;
                 const midY = (start.y + cappedEnd.y) / 2;
                 const angle = Math.atan2(cappedEnd.y - start.y, cappedEnd.x - start.x);
-                const curveStrength = dist * (0.1 + Math.random() * 0.25) * (Math.random() > 0.5 ? 1 : -1);
-                const cpX = midX + Math.cos(angle + Math.PI/2) * curveStrength;
-                const cpY = midY + Math.sin(angle + Math.PI/2) * curveStrength;
                 
-                const steps = Math.floor(dist / 12); 
+                let curveStrength;
+                if (Math.random() < 0.8) {
+                    // 80% chance for a very minimal, almost straight curve
+                    curveStrength = dist * (0.01 + Math.random() * 0.03) * (Math.random() > 0.5 ? 1 : -1);
+                } else {
+                    // 20% chance for a noticeable curve, but less than the previous default
+                    curveStrength = dist * (0.06 + Math.random() * 0.12) * (Math.random() > 0.5 ? 1 : -1);
+                }
+                
+                const cpX = midX + Math.cos(angle + Math.PI / 2) * curveStrength;
+                const cpY = midY + Math.sin(angle + Math.PI / 2) * curveStrength;
+
+                const steps = Math.floor(dist / 12);
+                const goingDown = start.y < cappedEnd.y;
                 for (let i = 0; i <= steps; i++) {
-                    const t = i / steps;
+                    let t = i / steps;
+                    
+                    // Pseudo-perspective: points should be denser near the horizon (smaller y)
+                    if (goingDown) {
+                        t = t * 0.3 + t * t * 0.7;
+                    } else {
+                        let invT = 1 - t;
+                        invT = invT * 0.3 + invT * invT * 0.7;
+                        t = 1 - invT;
+                    }
+
                     const x = Math.pow(1 - t, 2) * start.x + 2 * (1 - t) * t * cpX + Math.pow(t, 2) * cappedEnd.x;
                     const y = Math.pow(1 - t, 2) * start.y + 2 * (1 - t) * t * cpY + Math.pow(t, 2) * cappedEnd.y;
                     if (Math.random() > 0.15) {
@@ -2653,7 +2679,7 @@ git config --global user.name {{username}}`;
         });
 
         let interactionStart = null;
-        
+
         const checkEmptySpace = (e) => {
             const allowedTags = ['BODY', 'HTML'];
             const allowedIds = ['mainContent'];
@@ -2669,20 +2695,20 @@ git config --global user.name {{username}}`;
             return isEmpty;
         };
 
-        document.addEventListener('pointerdown', function(e) {
+        document.addEventListener('pointerdown', function (e) {
             if (!checkEmptySpace(e)) return;
             interactionStart = { x: e.clientX, y: e.clientY };
         });
 
-        document.addEventListener('pointerup', function(e) {
+        document.addEventListener('pointerup', function (e) {
             if (!interactionStart) return;
             const start = interactionStart;
             interactionStart = null;
-            
+
             const end = { x: e.clientX, y: e.clientY };
             const dist = Math.hypot(end.x - start.x, end.y - start.y);
             const boundaryY = window.innerHeight * 0.7;
-            
+
             if (start.y > boundaryY) {
                 if (dist < 10) {
                     if (window.spawnStarAt) window.spawnStarAt(end.x, end.y);
