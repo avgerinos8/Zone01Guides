@@ -162,9 +162,9 @@
 
         li a:hover {
             color: #00ffff;
-            background: rgba(0, 255, 255, 0.1);
-            border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.1);
+            background: #1a1e2c;
+            border-color: #2d3345;
+            box-shadow: none;
             transform: translateX(6px);
         }
 
@@ -1602,37 +1602,37 @@ git config --global user.name {{username}}`;
                     } else {
                         window.CITY_LIGHTS_CONFIG.colorPreset = i;
                     }
-                    
+
                     const setVal = (id, val) => {
                         const el = document.getElementById('cfg-' + id);
                         if (el) el.value = val;
                         const valEl = document.getElementById('val-' + id);
                         if (valEl) valEl.innerText = val;
                     };
-                    
+
                     if (i === 1 && window.CITY_LIGHTS_CONFIG.colorPreset === 1) {
                         // Apply specific slider values for Preset 1
-                        setVal('avenues', 12);
-                        setVal('curve', 0.5);
+                        setVal('avenues', 32);
+                        setVal('curve', 0.15);
                         setVal('curvevar', 0.45);
-                        setVal('wind', 400);
-                        setVal('clus', 120);
-                        setVal('persp', 700);
-                        setVal('tilt', 56);
+                        setVal('wind', 320);
+                        setVal('clus', 70);
+                        setVal('persp', 400);
+                        setVal('tilt', 65);
                         setVal('vscale', 1.5);
-                        setVal('copac', 0.85);
-                        setVal('nc', 32);
-                        setVal('bo', 0.95);
-                        setVal('blur', 78);
-                        setVal('yo', -5);
-                        
+                        setVal('copac', 0.65);
+                        setVal('nc', 41);
+                        setVal('bo', 2.55);
+                        setVal('blur', 74);
+                        setVal('yo', -4);
+
                         document.getElementById('cfg-light').checked = true;
                         document.getElementById('cfg-blackclouds').checked = true;
                         document.getElementById('cfg-mask').checked = true;
-                        
+
 
                         // Apply hidden parameters for Preset 1
-                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.baseDuration = 24;
                         window.CLOUD_CONFIG.durationVariance = 120;
                         window.CLOUD_CONFIG.baseScale = 1;
                         window.CLOUD_CONFIG.scaleVariance = 3.5;
@@ -1650,30 +1650,30 @@ git config --global user.name {{username}}`;
                         window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
                         window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
                         window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
-                        
+
                     } else if (i === 2 && window.CITY_LIGHTS_CONFIG.colorPreset === 2) {
                         // Apply specific slider values for Preset 2
-                        setVal('avenues', 12);
-                        setVal('curve', 0.5);
+                        setVal('avenues', 32);
+                        setVal('curve', 0.15);
                         setVal('curvevar', 0.45);
-                        setVal('wind', 400);
-                        setVal('clus', 120);
-                        setVal('persp', 700);
-                        setVal('tilt', 56);
+                        setVal('wind', 320);
+                        setVal('clus', 70);
+                        setVal('persp', 400);
+                        setVal('tilt', 65);
                         setVal('vscale', 1.5);
-                        setVal('copac', 0.85);
+                        setVal('copac', 0.65);
                         setVal('nc', 69);
                         setVal('bo', 0.65);
                         setVal('blur', 64);
-                        setVal('yo', -5);
-                        
+                        setVal('yo', -4);
+
                         document.getElementById('cfg-light').checked = true;
                         document.getElementById('cfg-blackclouds').checked = true;
                         document.getElementById('cfg-mask').checked = true;
-                        
+
 
                         // Apply hidden parameters for Preset 2
-                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.baseDuration = 24;
                         window.CLOUD_CONFIG.durationVariance = 120;
                         window.CLOUD_CONFIG.baseScale = 1;
                         window.CLOUD_CONFIG.scaleVariance = 3.5;
@@ -1691,30 +1691,30 @@ git config --global user.name {{username}}`;
                         window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
                         window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
                         window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
-                        
+
                     } else if (i === 3 && window.CITY_LIGHTS_CONFIG.colorPreset === 3) {
                         // Apply specific slider values for Preset 3
-                        setVal('avenues', 12);
-                        setVal('curve', 0.5);
+                        setVal('avenues', 32);
+                        setVal('curve', 0.15);
                         setVal('curvevar', 0.45);
-                        setVal('wind', 400);
-                        setVal('clus', 120);
-                        setVal('persp', 700);
-                        setVal('tilt', 56);
+                        setVal('wind', 320);
+                        setVal('clus', 70);
+                        setVal('persp', 400);
+                        setVal('tilt', 65);
                         setVal('vscale', 1.5);
-                        setVal('copac', 0.85);
-                        setVal('nc', 18);
-                        setVal('bo', 1.45);
-                        setVal('blur', 64);
+                        setVal('copac', 0.65);
+                        setVal('nc', 38);
+                        setVal('bo', 1.7);
+                        setVal('blur', 111);
                         setVal('yo', -5);
-                        
+
                         document.getElementById('cfg-light').checked = true;
                         document.getElementById('cfg-blackclouds').checked = true;
                         document.getElementById('cfg-mask').checked = true;
-                        
+
 
                         // Apply hidden parameters for Preset 3
-                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.baseDuration = 24;
                         window.CLOUD_CONFIG.durationVariance = 120;
                         window.CLOUD_CONFIG.baseScale = 1;
                         window.CLOUD_CONFIG.scaleVariance = 3.5;
@@ -1728,34 +1728,34 @@ git config --global user.name {{username}}`;
                         window.CLOUD_CONFIG.colorWaitRandom = 4000;
                         window.CLOUD_CONFIG.initialDelayMax = 5000;
                         window.CLOUD_CONFIG.lightningDepthLimit = 0.35;
-                        window.CLOUD_CONFIG.darkCloudsCount = 25;
+                        window.CLOUD_CONFIG.darkCloudsCount = 12;
                         window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
                         window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
                         window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
-                        
+
                     } else if (i === 4 && window.CITY_LIGHTS_CONFIG.colorPreset === 4) {
                         // Apply specific slider values for Preset 4
-                        setVal('avenues', 12);
-                        setVal('curve', 0.5);
+                        setVal('avenues', 32);
+                        setVal('curve', 0.15);
                         setVal('curvevar', 0.45);
-                        setVal('wind', 400);
-                        setVal('clus', 120);
-                        setVal('persp', 700);
-                        setVal('tilt', 56);
+                        setVal('wind', 320);
+                        setVal('clus', 70);
+                        setVal('persp', 400);
+                        setVal('tilt', 65);
                         setVal('vscale', 1.5);
-                        setVal('copac', 0.85);
+                        setVal('copac', 0.65);
                         setVal('nc', 88);
                         setVal('bo', 2.55);
                         setVal('blur', 74);
-                        setVal('yo', -5);
-                        
+                        setVal('yo', -4);
+
                         document.getElementById('cfg-light').checked = true;
                         document.getElementById('cfg-blackclouds').checked = true;
                         document.getElementById('cfg-mask').checked = true;
-                        
+
 
                         // Apply hidden parameters for Preset 4
-                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.baseDuration = 24;
                         window.CLOUD_CONFIG.durationVariance = 120;
                         window.CLOUD_CONFIG.baseScale = 1;
                         window.CLOUD_CONFIG.scaleVariance = 3.5;
@@ -1773,7 +1773,7 @@ git config --global user.name {{username}}`;
                         window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
                         window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
                         window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
-                        
+
                     }
 
                     updatePresetUI();
@@ -1870,33 +1870,33 @@ git config --global user.name {{username}}`;
             seed: Math.floor(Math.random() * 1000000000), // Random on load
             colorPreset: 0,              // 0: default, 1: purple, 2: white, 3: cyan/purple/blue, 4: orange/yellow/beige
             enabled: true,               // Set to false to easily detach/disable city lights
-            perspective: 700,            // 3D perspective depth (px)
-            tilt: 56,                    // Viewing angle (lower = looking from higher up)
+            perspective: 400,            // 3D perspective depth (px)
+            tilt: 65,                    // Viewing angle (lower = looking from higher up)
             verticalScale: 1.5,          // Vertical stretch (scaleY)
-            opacity: 0.85,               // Base visibility of the city
-            avenues: 12,                 // Number of major roads
-            curviness: 0.5,              // Avenue curve amount (0 = straight)
+            opacity: 0.65,               // Base visibility of the city
+            avenues: 32,                 // Number of major roads
+            curviness: 0.15,              // Avenue curve amount (0 = straight)
             curvinessVariance: 0.45,      // Avenue curve randomness
-            windingStreets: 400,         // Number of anarchic winding roads
-            clusters: 120,               // Number of dense neighborhoods
+            windingStreets: 320,         // Number of anarchic winding roads
+            clusters: 70,               // Number of dense neighborhoods
             useMask: true                // True to hide the top part of the background, false to show everything
         };
 
         // --- CONFIGURATION VARIABLES FOR CLOUDS ---
         window.CLOUD_CONFIG = {
             enabled: true,               // Set to false to disable clouds completely
-            numClouds: 18,               // Total number of normal volumetric clouds
-            baseDuration: 10,            // Base animation speed in seconds (lower is faster)
+            numClouds: 41,               // Total number of normal volumetric clouds
+            baseDuration: 24,            // Base animation speed in seconds (lower is faster)
             durationVariance: 120,       // Additional slowness based on depth
             baseScale: 1,                // Base cloud size
             scaleVariance: 3.5,          // Size variation based on depth
-            baseOpacity: 1.45,           // Minimum opacity
+            baseOpacity: 2.55,           // Minimum opacity
             opacityVariance: 0.12,       // Additional opacity based on depth
             opacityDivisor: 8,           // Opacity division for volumetric stacking
-            blurIntensity: 64,           // Blur multiplier for depth of field
+            blurIntensity: 74,           // Blur multiplier for depth of field
             blurFocusDepth: -1,          // -1 for uniform blur
             yDistribution: 110,          // Vertical spread scale
-            yOffset: -5,                 // Vertical base offset
+            yOffset: -4,                 // Vertical base offset
             colorHoldMin: 8000,          // Minimum time to hold flash color (ms)
             colorHoldRandom: 4000,       // Random added time to hold flash color (ms)
             colorWaitMin: 2000,          // Minimum wait before next flash (ms)
@@ -1953,11 +1953,11 @@ git config --global user.name {{username}}`;
             if (CITY_LIGHTS_CONFIG.enabled) {
                 const canvas = document.createElement('canvas');
                 canvas.id = 'city-lights-canvas';
-                
+
                 // Use screen resolution for canvas to avoid CSS transform lag (Software Projection)
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                
+
                 const isMob = window.innerWidth <= 768;
                 Object.assign(canvas.style, {
                     position: 'absolute',
@@ -1976,34 +1976,44 @@ git config --global user.name {{username}}`;
                 bg.appendChild(canvas);
 
                 const ctx = canvas.getContext('2d');
-                
-                // Virtual city dimensions (Bigger to fill real 3D space!)
-                const W = 8000;
-                const H = 4000;
+
+                // Virtual city dimensions (Restored to original 3000x1500)
+                const W = 3000;
+                const H = 1500;
                 const cW = canvas.width;
                 const cH = canvas.height;
-                
+
                 const tiltRad = CITY_LIGHTS_CONFIG.tilt * Math.PI / 180;
                 const cosT = Math.cos(tiltRad);
                 const sinT = Math.sin(tiltRad);
                 const P = CITY_LIGHTS_CONFIG.perspective;
                 const vScale = CITY_LIGHTS_CONFIG.verticalScale;
 
+                // Restore the CSS-like stretch mapping to get the aesthetic back
+                const screenWidthMapped = isMob ? 6500 : cW * 3.0;
+                const screenLeftMapped = isMob ? (cW / 2 - 3250) : -cW;
+                const screenHeightMapped = isMob ? 3200 : cH * 1.5;
+
                 function drawLight(x, y, size, color) {
-                    let dx = x - W/2;
+                    let dx = x - W / 2;
                     let dy = H - y;
 
                     let z_rot = dy * sinT;
-                    let y_rot = dy * cosT; // Positive going UP
+                    let y_rot = -dy * cosT;
 
                     let scale = P / (P + z_rot);
-                    if (scale <= 0) return; 
+                    if (scale <= 0) return;
 
-                    // Direct 3D to 2D projection (No stretch mapping!)
-                    let screenX = (cW / 2) + dx * scale;
-                    let screenY = cH - (y_rot * scale * vScale);
+                    let projX = W / 2 + dx * scale;
+                    let projY = H + y_rot * scale;
 
-                    let s = Math.max(0.5, size * scale); 
+                    // Map virtual canvas to screen (Restores the old stretched look)
+                    let screenX = (projX / W) * screenWidthMapped + screenLeftMapped;
+                    let distFromBottom = ((H - projY) / H) * screenHeightMapped;
+                    distFromBottom *= vScale;
+                    let screenY = cH - distFromBottom;
+
+                    let s = Math.max(0.5, size * scale * (screenWidthMapped / W));
 
                     if (screenX < -10 || screenX > cW + 10 || screenY < -10 || screenY > cH + 10) return;
 
@@ -2021,10 +2031,10 @@ git config --global user.name {{username}}`;
                 let laneColor1 = 'rgba(255, 220, 100, 0.95)';
                 let laneColor2 = 'rgba(255, 60, 60, 0.9)';
 
-                // Multiply density to account for the larger virtual world
-                const numAvenues = Math.floor(CITY_LIGHTS_CONFIG.avenues * 2.5);
-                
-                // 1. Draw Major Avenues
+                // Density set to 1/4 as requested
+                const numAvenues = Math.floor(CITY_LIGHTS_CONFIG.avenues * 0.25);
+
+                // 1. Draw Major Avenues (Kept the scattered logic)
                 for (let i = 0; i < numAvenues; i++) {
                     const isVertical = window.CITY_RNG() > 0.5;
                     const start = window.CITY_RNG() * (isVertical ? W : H);
@@ -2041,13 +2051,13 @@ git config --global user.name {{username}}`;
                     const curveAmp = (100 + window.CITY_RNG() * 400) * factor;
 
                     const rType = window.CITY_RNG();
-                    let avenueType = 1; 
-                    if (rType < 0.3) avenueType = 0; 
-                    else if (rType > 0.6) avenueType = 2; 
+                    let avenueType = 1;
+                    if (rType < 0.3) avenueType = 0;
+                    else if (rType > 0.6) avenueType = 2;
 
                     let currentDist = 0;
                     let maxDist = isVertical ? H : W;
-                    
+
                     while (currentDist < maxDist) {
                         let t = currentDist / maxDist;
                         let x, y;
@@ -2059,29 +2069,25 @@ git config --global user.name {{username}}`;
                             y = start + Math.sin(t * Math.PI * curveFreq) * curveAmp;
                         }
 
-                        // Scatter the lights
-                        if (window.CITY_RNG() > 0.25) { // 75% chance to draw (creates gaps)
-                            if (avenueType === 0) { 
-                                drawLight(x, y, 3.5, laneColor1);
-                            } else if (avenueType === 1) { 
-                                drawLight(x - 8, y, 2.5, laneColor1);
-                                drawLight(x + 8, y, 2.5, laneColor2);
-                            } else { 
-                                drawLight(x, y, 2.5, laneColor1); 
-                                drawLight(x - 10, y, 2.0, laneColor2); 
-                                drawLight(x + 10, y, 2.0, laneColor2); 
+                        if (window.CITY_RNG() > 0.25) {
+                            if (avenueType === 0) {
+                                drawLight(x, y, 2.0, laneColor1);
+                            } else if (avenueType === 1) {
+                                drawLight(x - 5, y, 1.5, laneColor1);
+                                drawLight(x + 5, y, 1.5, laneColor2);
+                            } else {
+                                drawLight(x, y, 1.5, laneColor1);
+                                drawLight(x - 6, y, 1.2, laneColor2);
+                                drawLight(x + 6, y, 1.2, laneColor2);
                             }
                         }
 
-                        // Random step size for scattered look (average 20 units)
-                        currentDist += 10 + window.CITY_RNG() * 20;
-                        
-                        // Occasional large breaks in traffic
-                        if (window.CITY_RNG() > 0.95) currentDist += 40 + window.CITY_RNG() * 80;
+                        currentDist += 5 + window.CITY_RNG() * 15;
+                        if (window.CITY_RNG() > 0.95) currentDist += 20 + window.CITY_RNG() * 50;
                     }
                 }
 
-                const numWinding = Math.floor(CITY_LIGHTS_CONFIG.windingStreets * 3.5);
+                const numWinding = Math.floor(CITY_LIGHTS_CONFIG.windingStreets * 0.25);
                 // 2. Draw Winding Streets
                 for (let i = 0; i < numWinding; i++) {
                     let x = window.CITY_RNG() * W;
@@ -2093,17 +2099,17 @@ git config --global user.name {{username}}`;
 
                     for (let s = 0; s < length; s++) {
                         angle += (window.CITY_RNG() - 0.5) * 0.5;
-                        const step = 15 + window.CITY_RNG() * 15;
+                        const step = 10 + window.CITY_RNG() * 10;
                         x += Math.cos(angle) * step;
                         y += Math.sin(angle) * step;
 
                         if (window.CITY_RNG() > 0.1) {
-                            drawLight(x, y, isMainStreet ? 2.5 : 1.5, color);
+                            drawLight(x, y, isMainStreet ? 2.0 : 1.0, color);
                         }
                     }
                 }
 
-                const numClusters = Math.floor(CITY_LIGHTS_CONFIG.clusters * 4.5);
+                const numClusters = Math.floor(CITY_LIGHTS_CONFIG.clusters * 0.25);
                 // 3. Draw Neighborhood Clusters
                 for (let i = 0; i < numClusters; i++) {
                     const cx = window.CITY_RNG() * W;
@@ -2289,21 +2295,32 @@ git config --global user.name {{username}}`;
                     const cloud = {
                         template, depth, isDarkCloud,
                         yPos, scale, animDuration, animDelay,
-                        state: 'normal',
-                        sprite: createCloudSprite(template, depth, isDarkCloud, 'normal')
+                        sprites: {
+                            normal: createCloudSprite(template, depth, isDarkCloud, 'normal'),
+                            cyan: isDarkCloud ? null : createCloudSprite(template, depth, isDarkCloud, 'cyan'),
+                            secondary: isDarkCloud ? null : createCloudSprite(template, depth, isDarkCloud, 'secondary'),
+                            flash: isDarkCloud ? null : createCloudSprite(template, depth, isDarkCloud, 'flash')
+                        },
+                        targetCyanAlpha: 0,
+                        cyanAlpha: 0,
+                        targetPurpleAlpha: 0,
+                        purpleAlpha: 0,
+                        flashAlpha: 0
                     };
                     clouds.push(cloud);
 
                     if (!isDarkCloud) {
                         const startBreathing = () => {
                             if (!document.getElementById(canvasId)) return;
-                            cloud.state = Math.random() > 0.4 ? 'cyan' : 'secondary';
-                            cloud.sprite = createCloudSprite(template, depth, isDarkCloud, cloud.state);
+
+                            const isCyan = Math.random() > 0.4;
+                            if (isCyan) cloud.targetCyanAlpha = 1;
+                            else cloud.targetPurpleAlpha = 1;
 
                             setTimeout(() => {
                                 if (!document.getElementById(canvasId)) return;
-                                cloud.state = 'normal';
-                                cloud.sprite = createCloudSprite(template, depth, isDarkCloud, 'normal');
+                                cloud.targetCyanAlpha = 0;
+                                cloud.targetPurpleAlpha = 0;
                                 setTimeout(startBreathing, CLOUD_CONFIG.colorWaitMin + Math.random() * CLOUD_CONFIG.colorWaitRandom);
                             }, CLOUD_CONFIG.colorHoldMin + Math.random() * CLOUD_CONFIG.colorHoldRandom);
                         };
@@ -2312,16 +2329,8 @@ git config --global user.name {{username}}`;
                         if (CLOUD_CONFIG.enableLightning && depth < CLOUD_CONFIG.lightningDepthLimit) {
                             const startLightning = () => {
                                 if (!document.getElementById(canvasId)) return;
-                                const oldState = cloud.state;
-                                cloud.state = 'flash';
-                                cloud.sprite = createCloudSprite(template, depth, isDarkCloud, 'flash');
-
-                                setTimeout(() => {
-                                    if (!document.getElementById(canvasId)) return;
-                                    cloud.state = oldState;
-                                    cloud.sprite = createCloudSprite(template, depth, isDarkCloud, oldState);
-                                    setTimeout(startLightning, 10000 + Math.random() * 15000);
-                                }, 1500);
+                                cloud.flashAlpha = 1.0; // Instant flash
+                                setTimeout(startLightning, 10000 + Math.random() * 15000);
                             };
                             setTimeout(startLightning, Math.random() * 25000);
                         }
@@ -2354,7 +2363,33 @@ git config --global user.name {{username}}`;
                         cctx.save();
                         cctx.translate(x, y);
                         cctx.scale(finalScale, finalScale);
-                        cctx.drawImage(c.sprite.canvas, -c.sprite.pad, -c.sprite.pad);
+
+                        // Draw normal base
+                        cctx.globalAlpha = 1.0;
+                        cctx.drawImage(c.sprites.normal.canvas, -c.sprites.normal.pad, -c.sprites.normal.pad);
+
+                        if (!c.isDarkCloud) {
+                            // Smooth easing for cyan/purple (breathing)
+                            c.cyanAlpha += (c.targetCyanAlpha - c.cyanAlpha) * 0.03;
+                            c.purpleAlpha += (c.targetPurpleAlpha - c.purpleAlpha) * 0.03;
+
+                            // Exponential decay for lightning flash
+                            c.flashAlpha *= 0.92;
+
+                            if (c.cyanAlpha > 0.01) {
+                                cctx.globalAlpha = c.cyanAlpha;
+                                cctx.drawImage(c.sprites.cyan.canvas, -c.sprites.cyan.pad, -c.sprites.cyan.pad);
+                            }
+                            if (c.purpleAlpha > 0.01) {
+                                cctx.globalAlpha = c.purpleAlpha;
+                                cctx.drawImage(c.sprites.secondary.canvas, -c.sprites.secondary.pad, -c.sprites.secondary.pad);
+                            }
+                            if (c.flashAlpha > 0.01) {
+                                cctx.globalAlpha = c.flashAlpha;
+                                cctx.drawImage(c.sprites.flash.canvas, -c.sprites.flash.pad, -c.sprites.flash.pad);
+                            }
+                        }
+
                         cctx.restore();
                     });
                 };
@@ -2368,11 +2403,13 @@ git config --global user.name {{username}}`;
                 style.id = styleId;
                 style.innerHTML = `
                     @keyframes airplaneFlyR {
-                        0% { transform: translateX(-10vw) translateY(0); }
-                        100% { transform: translateX(110vw) translateY(10vh); }
+                        0% { transform: translateX(-2vw) translateY(0); }
+                        100% { transform: translateX(102vw) translateY(10vh); }
                     }
                     @keyframes airplaneFlyL {
-                        0% { transform: translateX(110vw) translateY(0); }
+                        0% { transform: translateX(102vw) translateY(0); }
+                        100% { transform: translateX(-2vw) translateY(10vh); }
+                    }
                         100% { transform: translateX(-10vw) translateY(10vh); }
                     }
                     @keyframes airplaneStrobe {
@@ -2392,7 +2429,7 @@ git config --global user.name {{username}}`;
                 const airplane = document.createElement('div');
                 airplane.className = 'fx-airplane-instance';
                 const flyRight = Math.random() > 0.5;
-                const animDuration = 15 + Math.random() * 105; // 15s to 120s
+                const animDuration = 15 + Math.random() * 45; // 15s to 120s
                 const topStart = Math.random() * 60; // 0% to 60% from top
 
                 airplane.style.cssText = `
@@ -2423,7 +2460,7 @@ git config --global user.name {{username}}`;
         document.fonts.ready.then(() => {
             window.renderFXBackground();
         });
-        
+
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
