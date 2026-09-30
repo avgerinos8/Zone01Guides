@@ -162,9 +162,9 @@
 
         li a:hover {
             color: #00ffff;
-            background: rgba(0, 255, 255, 0.1);
-            border-color: #00ffff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4), inset 0 0 10px rgba(0, 255, 255, 0.1);
+            background: #1a1e2c;
+            border-color: #2d3345;
+            box-shadow: none;
             transform: translateX(6px);
         }
 
@@ -1490,8 +1490,7 @@ git config --global user.name {{username}}`;
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Vert Scale</label><span id="val-vscale" style="color:#fff">1.5</span></div><input type="range" id="cfg-vscale" min="0.5" max="3" step="0.1" value="1.5" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Opacity</label><span id="val-copac" style="color:#fff">0.85</span></div><input type="range" id="cfg-copac" min="0" max="1" step="0.05" value="0.85" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-top:12px; display:flex; align-items:center; gap:6px;">
-                            <input type="checkbox" id="cfg-traffic" style="margin:0;">
-                            <label style="cursor:pointer; color:#fff;" for="cfg-traffic">Moving Traffic</label>
+                            <!-- Removed moving traffic UI -->
                         </div>
                     </div>
                     
@@ -1501,9 +1500,9 @@ git config --global user.name {{username}}`;
                             <input type="checkbox" id="cfg-cloud-en" checked style="margin:0;"> CLOUDS
                         </h4>
                         
-                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Count</label><span id="val-nc" style="color:#fff">69</span></div><input type="range" id="cfg-nc" min="0" max="520" value="69" style="width:100%; height:10px; cursor:pointer;"></div>
-                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Opacity</label><span id="val-bo" style="color:#fff">0.32</span></div><input type="range" id="cfg-bo" min="0" max="4" step="0.05" value="0.32" style="width:100%; height:10px; cursor:pointer;"></div>
-                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Blur</label><span id="val-blur" style="color:#fff">40</span></div><input type="range" id="cfg-blur" min="0" max="300" value="40" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Count</label><span id="val-nc" style="color:#fff">18</span></div><input type="range" id="cfg-nc" min="0" max="520" value="18" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Opacity</label><span id="val-bo" style="color:#fff">1.45</span></div><input type="range" id="cfg-bo" min="0" max="4" step="0.05" value="1.45" style="width:100%; height:10px; cursor:pointer;"></div>
+                        <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Blur</label><span id="val-blur" style="color:#fff">64</span></div><input type="range" id="cfg-blur" min="0" max="300" value="64" style="width:100%; height:10px; cursor:pointer;"></div>
                         <div style="margin-bottom:6px"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><label>Y Offset</label><span id="val-yo" style="color:#fff">-5</span></div><input type="range" id="cfg-yo" min="-50" max="50" value="-5" style="width:100%; height:10px; cursor:pointer;"></div>
                         
                         <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
@@ -1572,7 +1571,7 @@ git config --global user.name {{username}}`;
             });
             ['avenues', 'curve', 'curvevar', 'wind', 'clus', 'persp', 'tilt', 'vscale', 'copac', 'nc', 'bo', 'blur', 'yo'].forEach(bindSlider);
 
-            ['cfg-city-en', 'cfg-cloud-en', 'cfg-light', 'cfg-blackclouds', 'cfg-mask', 'cfg-traffic'].forEach(id => {
+            ['cfg-city-en', 'cfg-cloud-en', 'cfg-light', 'cfg-blackclouds', 'cfg-mask'].forEach(id => {
                 document.getElementById(id).addEventListener('change', triggerUpdate);
             });
             document.getElementById('cfg-seed').addEventListener('input', (e) => {
@@ -1603,6 +1602,180 @@ git config --global user.name {{username}}`;
                     } else {
                         window.CITY_LIGHTS_CONFIG.colorPreset = i;
                     }
+
+                    const setVal = (id, val) => {
+                        const el = document.getElementById('cfg-' + id);
+                        if (el) el.value = val;
+                        const valEl = document.getElementById('val-' + id);
+                        if (valEl) valEl.innerText = val;
+                    };
+
+                    if (i === 1 && window.CITY_LIGHTS_CONFIG.colorPreset === 1) {
+                        // Apply specific slider values for Preset 1
+                        setVal('avenues', 12);
+                        setVal('curve', 0.5);
+                        setVal('curvevar', 0.45);
+                        setVal('wind', 400);
+                        setVal('clus', 120);
+                        setVal('persp', 700);
+                        setVal('tilt', 56);
+                        setVal('vscale', 1.5);
+                        setVal('copac', 0.85);
+                        setVal('nc', 32);
+                        setVal('bo', 0.95);
+                        setVal('blur', 78);
+                        setVal('yo', -5);
+
+                        document.getElementById('cfg-light').checked = true;
+                        document.getElementById('cfg-blackclouds').checked = true;
+                        document.getElementById('cfg-mask').checked = true;
+
+
+                        // Apply hidden parameters for Preset 1
+                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.durationVariance = 120;
+                        window.CLOUD_CONFIG.baseScale = 1;
+                        window.CLOUD_CONFIG.scaleVariance = 3.5;
+                        window.CLOUD_CONFIG.opacityVariance = 0.12;
+                        window.CLOUD_CONFIG.opacityDivisor = 8;
+                        window.CLOUD_CONFIG.blurFocusDepth = -1;
+                        window.CLOUD_CONFIG.yDistribution = 110;
+                        window.CLOUD_CONFIG.colorHoldMin = 8000;
+                        window.CLOUD_CONFIG.colorHoldRandom = 4000;
+                        window.CLOUD_CONFIG.colorWaitMin = 2000;
+                        window.CLOUD_CONFIG.colorWaitRandom = 4000;
+                        window.CLOUD_CONFIG.initialDelayMax = 5000;
+                        window.CLOUD_CONFIG.lightningDepthLimit = 0.35;
+                        window.CLOUD_CONFIG.darkCloudsCount = 25;
+                        window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
+                        window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
+                        window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
+
+                    } else if (i === 2 && window.CITY_LIGHTS_CONFIG.colorPreset === 2) {
+                        // Apply specific slider values for Preset 2
+                        setVal('avenues', 12);
+                        setVal('curve', 0.5);
+                        setVal('curvevar', 0.45);
+                        setVal('wind', 400);
+                        setVal('clus', 120);
+                        setVal('persp', 700);
+                        setVal('tilt', 56);
+                        setVal('vscale', 1.5);
+                        setVal('copac', 0.85);
+                        setVal('nc', 69);
+                        setVal('bo', 0.65);
+                        setVal('blur', 64);
+                        setVal('yo', -5);
+
+                        document.getElementById('cfg-light').checked = true;
+                        document.getElementById('cfg-blackclouds').checked = true;
+                        document.getElementById('cfg-mask').checked = true;
+
+
+                        // Apply hidden parameters for Preset 2
+                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.durationVariance = 120;
+                        window.CLOUD_CONFIG.baseScale = 1;
+                        window.CLOUD_CONFIG.scaleVariance = 3.5;
+                        window.CLOUD_CONFIG.opacityVariance = 0.12;
+                        window.CLOUD_CONFIG.opacityDivisor = 8;
+                        window.CLOUD_CONFIG.blurFocusDepth = -1;
+                        window.CLOUD_CONFIG.yDistribution = 110;
+                        window.CLOUD_CONFIG.colorHoldMin = 8000;
+                        window.CLOUD_CONFIG.colorHoldRandom = 4000;
+                        window.CLOUD_CONFIG.colorWaitMin = 2000;
+                        window.CLOUD_CONFIG.colorWaitRandom = 4000;
+                        window.CLOUD_CONFIG.initialDelayMax = 5000;
+                        window.CLOUD_CONFIG.lightningDepthLimit = 0.35;
+                        window.CLOUD_CONFIG.darkCloudsCount = 25;
+                        window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
+                        window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
+                        window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
+
+                    } else if (i === 3 && window.CITY_LIGHTS_CONFIG.colorPreset === 3) {
+                        // Apply specific slider values for Preset 3
+                        setVal('avenues', 12);
+                        setVal('curve', 0.5);
+                        setVal('curvevar', 0.45);
+                        setVal('wind', 400);
+                        setVal('clus', 120);
+                        setVal('persp', 700);
+                        setVal('tilt', 56);
+                        setVal('vscale', 1.5);
+                        setVal('copac', 0.85);
+                        setVal('nc', 18);
+                        setVal('bo', 1.45);
+                        setVal('blur', 64);
+                        setVal('yo', -5);
+
+                        document.getElementById('cfg-light').checked = true;
+                        document.getElementById('cfg-blackclouds').checked = true;
+                        document.getElementById('cfg-mask').checked = true;
+
+
+                        // Apply hidden parameters for Preset 3
+                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.durationVariance = 120;
+                        window.CLOUD_CONFIG.baseScale = 1;
+                        window.CLOUD_CONFIG.scaleVariance = 3.5;
+                        window.CLOUD_CONFIG.opacityVariance = 0.12;
+                        window.CLOUD_CONFIG.opacityDivisor = 8;
+                        window.CLOUD_CONFIG.blurFocusDepth = -1;
+                        window.CLOUD_CONFIG.yDistribution = 110;
+                        window.CLOUD_CONFIG.colorHoldMin = 8000;
+                        window.CLOUD_CONFIG.colorHoldRandom = 4000;
+                        window.CLOUD_CONFIG.colorWaitMin = 2000;
+                        window.CLOUD_CONFIG.colorWaitRandom = 4000;
+                        window.CLOUD_CONFIG.initialDelayMax = 5000;
+                        window.CLOUD_CONFIG.lightningDepthLimit = 0.35;
+                        window.CLOUD_CONFIG.darkCloudsCount = 25;
+                        window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
+                        window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
+                        window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
+
+                    } else if (i === 4 && window.CITY_LIGHTS_CONFIG.colorPreset === 4) {
+                        // Apply specific slider values for Preset 4
+                        setVal('avenues', 12);
+                        setVal('curve', 0.5);
+                        setVal('curvevar', 0.45);
+                        setVal('wind', 400);
+                        setVal('clus', 120);
+                        setVal('persp', 700);
+                        setVal('tilt', 56);
+                        setVal('vscale', 1.5);
+                        setVal('copac', 0.85);
+                        setVal('nc', 88);
+                        setVal('bo', 2.55);
+                        setVal('blur', 74);
+                        setVal('yo', -5);
+
+                        document.getElementById('cfg-light').checked = true;
+                        document.getElementById('cfg-blackclouds').checked = true;
+                        document.getElementById('cfg-mask').checked = true;
+
+
+                        // Apply hidden parameters for Preset 4
+                        window.CLOUD_CONFIG.baseDuration = 10;
+                        window.CLOUD_CONFIG.durationVariance = 120;
+                        window.CLOUD_CONFIG.baseScale = 1;
+                        window.CLOUD_CONFIG.scaleVariance = 3.5;
+                        window.CLOUD_CONFIG.opacityVariance = 0.12;
+                        window.CLOUD_CONFIG.opacityDivisor = 8;
+                        window.CLOUD_CONFIG.blurFocusDepth = -1;
+                        window.CLOUD_CONFIG.yDistribution = 110;
+                        window.CLOUD_CONFIG.colorHoldMin = 8000;
+                        window.CLOUD_CONFIG.colorHoldRandom = 4000;
+                        window.CLOUD_CONFIG.colorWaitMin = 2000;
+                        window.CLOUD_CONFIG.colorWaitRandom = 4000;
+                        window.CLOUD_CONFIG.initialDelayMax = 5000;
+                        window.CLOUD_CONFIG.lightningDepthLimit = 0.35;
+                        window.CLOUD_CONFIG.darkCloudsCount = 25;
+                        window.CLOUD_CONFIG.darkCloudsOpacity = 0.75;
+                        window.CLOUD_CONFIG.darkCloudsDepthLimit = 0.15;
+                        window.CLOUD_CONFIG.darkCloudsHeightLimit = 0.7;
+
+                    }
+
                     updatePresetUI();
                     triggerUpdate();
                 };
@@ -1638,7 +1811,7 @@ git config --global user.name {{username}}`;
                 window.CLOUD_CONFIG.enableLightning = document.getElementById('cfg-light').checked;
                 window.CLOUD_CONFIG.enableBlackClouds = document.getElementById('cfg-blackclouds').checked;
                 window.CITY_LIGHTS_CONFIG.useMask = document.getElementById('cfg-mask').checked;
-                window.CITY_LIGHTS_CONFIG.traffic = document.getElementById('cfg-traffic').checked;
+                // Traffic sync removed
 
                 if (window.renderFXBackground) window.renderFXBackground();
             }
@@ -1683,7 +1856,7 @@ git config --global user.name {{username}}`;
                         document.getElementById('cfg-light').checked = window.CLOUD_CONFIG.enableLightning !== false;
                         document.getElementById('cfg-blackclouds').checked = window.CLOUD_CONFIG.enableBlackClouds !== false;
                         document.getElementById('cfg-mask').checked = window.CITY_LIGHTS_CONFIG.useMask === true;
-                        document.getElementById('cfg-traffic').checked = window.CITY_LIGHTS_CONFIG.traffic === true;
+                        // Traffic UI sync removed
                     }
                 });
             });
@@ -1697,36 +1870,27 @@ git config --global user.name {{username}}`;
             seed: Math.floor(Math.random() * 1000000000), // Random on load
             colorPreset: 0,              // 0: default, 1: purple, 2: white, 3: cyan/purple/blue, 4: orange/yellow/beige
             enabled: true,               // Set to false to easily detach/disable city lights
-            // traffic: window.innerWidth > 1024 && (navigator.hardwareConcurrency || 4) >= 4, // Auto-detect capability
-            traffic: false,              // OFF by default as requested
-            trafficCount: 400,           // Number of moving cars
-            trafficBaseSpeed: 0.00002,   // Base speed for moving cars
-            trafficSpeedVariance: 0.00001, // Speed variance for cars
-            trafficSizeMin: 1.2,         // Minimum car dot size
-            trafficSizeMax: 1.8,         // Maximum car dot size
-            trafficBloomSize: 2.0,       // Bloom radius multiplier (1.0 = no bloom)
-            trafficSquarness: 7.5,       // Car aspect ratio (1.0 = perfect square after CSS stretch)
-            perspective: 700,            // 3D perspective depth (px)
-            tilt: 56,                    // Viewing angle (lower = looking from higher up)
+            perspective: 400,            // 3D perspective depth (px)
+            tilt: 65,                    // Viewing angle (lower = looking from higher up)
             verticalScale: 1.5,          // Vertical stretch (scaleY)
-            opacity: 0.85,               // Base visibility of the city
-            avenues: 12,                 // Number of major roads
-            curviness: 0.5,              // Avenue curve amount (0 = straight)
+            opacity: 0.65,               // Base visibility of the city
+            avenues: 32,                 // Number of major roads
+            curviness: 0.15,              // Avenue curve amount (0 = straight)
             curvinessVariance: 0.45,      // Avenue curve randomness
-            windingStreets: 400,         // Number of anarchic winding roads
-            clusters: 120,               // Number of dense neighborhoods
+            windingStreets: 320,         // Number of anarchic winding roads
+            clusters: 70,               // Number of dense neighborhoods
             useMask: true                // True to hide the top part of the background, false to show everything
         };
 
         // --- CONFIGURATION VARIABLES FOR CLOUDS ---
         window.CLOUD_CONFIG = {
             enabled: true,               // Set to false to disable clouds completely
-            numClouds: 69,               // Total number of normal volumetric clouds
+            numClouds: 18,               // Total number of normal volumetric clouds
             baseDuration: 10,            // Base animation speed in seconds (lower is faster)
             durationVariance: 120,       // Additional slowness based on depth
             baseScale: 1,                // Base cloud size
             scaleVariance: 3.5,          // Size variation based on depth
-            baseOpacity: 0.65,           // Minimum opacity
+            baseOpacity: 1.45,           // Minimum opacity
             opacityVariance: 0.12,       // Additional opacity based on depth
             opacityDivisor: 8,           // Opacity division for volumetric stacking
             blurIntensity: 64,           // Blur multiplier for depth of field
@@ -1789,87 +1953,89 @@ git config --global user.name {{username}}`;
             if (CITY_LIGHTS_CONFIG.enabled) {
                 const canvas = document.createElement('canvas');
                 canvas.id = 'city-lights-canvas';
-                canvas.width = 3000;
-                canvas.height = 3000;
+
+                // Use screen resolution for canvas to avoid CSS transform lag (Software Projection)
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
 
                 const isMob = window.innerWidth <= 768;
                 Object.assign(canvas.style, {
                     position: 'absolute',
-                    bottom: '0',
-                    left: isMob ? 'calc(50% - 3250px)' : '-100%',
-                    width: isMob ? '6500px' : '300%',
-                    height: isMob ? '3200px' : '150%',
-                    transformOrigin: 'bottom center',
-                    transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
-                    opacity: CITY_LIGHTS_CONFIG.opacity,
+                    top: '0',
+                    left: '0',
+                    width: '100vw',
+                    height: '100vh',
                     zIndex: '-10',
                     pointerEvents: 'none',
-                    maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
-                    webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)'
+                    opacity: CITY_LIGHTS_CONFIG.opacity,
+                    maskImage: CITY_LIGHTS_CONFIG.useMask ? 'linear-gradient(to top, transparent 0%, black 10%, black 80%, transparent 100%)' : 'none',
+                    webkitMaskImage: CITY_LIGHTS_CONFIG.useMask ? 'linear-gradient(to top, transparent 0%, black 10%, black 80%, transparent 100%)' : 'none',
+                    imageRendering: 'pixelated'
                 });
-
-                // Crisp rendering to prevent 3D interpolation blur
-                canvas.style.imageRendering = 'pixelated';
 
                 bg.appendChild(canvas);
 
                 const ctx = canvas.getContext('2d');
-                const W = canvas.width;
-                const H = canvas.height;
+
+                // Virtual city dimensions (Restored to original 3000x1500)
+                const W = 3000;
+                const H = 1500;
+                const cW = canvas.width;
+                const cH = canvas.height;
+
+                const tiltRad = CITY_LIGHTS_CONFIG.tilt * Math.PI / 180;
+                const cosT = Math.cos(tiltRad);
+                const sinT = Math.sin(tiltRad);
+                const P = CITY_LIGHTS_CONFIG.perspective;
+                const vScale = CITY_LIGHTS_CONFIG.verticalScale;
+
+                // Restore the CSS-like stretch mapping to get the aesthetic back
+                const screenWidthMapped = isMob ? 6500 : cW * 3.0;
+                const screenLeftMapped = isMob ? (cW / 2 - 3250) : -cW;
+                const screenHeightMapped = isMob ? 3200 : cH * 1.5;
 
                 function drawLight(x, y, size, color) {
+                    let dx = x - W / 2;
+                    let dy = H - y;
+
+                    let z_rot = dy * sinT;
+                    let y_rot = -dy * cosT;
+
+                    let scale = P / (P + z_rot);
+                    if (scale <= 0) return;
+
+                    let projX = W / 2 + dx * scale;
+                    let projY = H + y_rot * scale;
+
+                    // Map virtual canvas to screen (Restores the old stretched look)
+                    let screenX = (projX / W) * screenWidthMapped + screenLeftMapped;
+                    let distFromBottom = ((H - projY) / H) * screenHeightMapped;
+                    distFromBottom *= vScale;
+                    let screenY = cH - distFromBottom;
+
+                    let s = Math.max(0.5, size * scale * (screenWidthMapped / W));
+
+                    if (screenX < -10 || screenX > cW + 10 || screenY < -10 || screenY > cH + 10) return;
+
                     ctx.fillStyle = color;
-                    const preset = CITY_LIGHTS_CONFIG.colorPreset || 0;
-                    if (preset === 3 && window.CITY_RNG() > 0.85) {
-                        // Bloom FX (larger size + faint aura)
-                        ctx.globalAlpha = 0.2;
-                        ctx.fillRect(x - size * 2, y - size * 2, size * 5, size * 5);
-                        ctx.globalAlpha = 1.0;
-                        ctx.fillRect(x - size * 0.5, y - size * 0.5, size * 2, size * 2);
-                    } else {
-                        // Drawing a simple rectangle is incredibly fast and looks crisp and realistic at 1-2px
-                        ctx.fillRect(x, y, size, size);
-                    }
+                    ctx.fillRect(screenX, screenY, s, s);
                 }
 
                 function getCityColor() {
                     const r = window.CITY_RNG();
-                    const preset = CITY_LIGHTS_CONFIG.colorPreset || 0;
-
-                    if (preset === 1) { // Purple & White
-                        return r < 0.5 ? 'rgba(165, 180, 252, 0.9)' : 'rgba(240, 240, 255, 0.85)';
-                    }
-                    if (preset === 2) { // White only
-                        return r < 0.5 ? 'rgba(230, 230, 230, 0.85)' : 'rgba(255, 255, 255, 0.9)';
-                    }
-                    if (preset === 3) { // Cyan, Purple, Dark Blue
-                        if (r < 0.33) return 'rgba(100, 230, 255, 0.85)';
-                        if (r < 0.66) return 'rgba(165, 180, 252, 0.9)';
-                        return 'rgba(50, 100, 255, 0.85)';
-                    }
-                    if (preset === 4) { // Orange, Yellow, Beige
-                        if (r < 0.33) return 'rgba(255, 150, 50, 0.85)';
-                        if (r < 0.66) return 'rgba(255, 215, 80, 0.85)';
-                        return 'rgba(245, 245, 220, 0.85)';
-                    }
-
-                    // Preset 0 (Default)
-                    if (r < 0.47) return 'rgba(230, 230, 230, 0.85)'; // White/Grey
-                    if (r < 0.94) return 'rgba(255, 215, 80, 0.85)';  // Yellow
-                    return 'rgba(150, 230, 255, 0.9)';                // Rare Cyan
+                    if (r < 0.47) return 'rgba(230, 230, 230, 0.85)';
+                    if (r < 0.94) return 'rgba(255, 215, 80, 0.85)';
+                    return 'rgba(150, 230, 255, 0.9)';
                 }
 
                 let laneColor1 = 'rgba(255, 220, 100, 0.95)';
                 let laneColor2 = 'rgba(255, 60, 60, 0.9)';
-                const preset = CITY_LIGHTS_CONFIG.colorPreset || 0;
-                if (preset === 1) { laneColor1 = 'rgba(240, 240, 255, 0.9)'; laneColor2 = 'rgba(165, 180, 252, 0.9)'; }
-                if (preset === 2) { laneColor1 = 'rgba(240, 240, 255, 0.9)'; laneColor2 = 'rgba(255, 255, 255, 0.9)'; }
-                if (preset === 3) { laneColor1 = 'rgba(100, 230, 255, 0.9)'; laneColor2 = 'rgba(165, 180, 252, 0.9)'; }
-                if (preset === 4) { laneColor1 = 'rgba(255, 215, 80, 0.9)'; laneColor2 = 'rgba(255, 150, 50, 0.9)'; }
 
-                // 1. Draw Major Avenues
-                const avenuesData = [];
-                for (let i = 0; i < CITY_LIGHTS_CONFIG.avenues; i++) {
+                // Density set to 1/4 as requested
+                const numAvenues = Math.floor(CITY_LIGHTS_CONFIG.avenues * 0.25);
+
+                // 1. Draw Major Avenues (Kept the scattered logic)
+                for (let i = 0; i < numAvenues; i++) {
                     const isVertical = window.CITY_RNG() > 0.5;
                     const start = window.CITY_RNG() * (isVertical ? W : H);
 
@@ -1877,33 +2043,23 @@ git config --global user.name {{username}}`;
                     let v = CITY_LIGHTS_CONFIG.curvinessVariance;
                     let c_individual = c + (window.CITY_RNG() * 2 - 1) * v;
 
-                    // The curviness variance logic
-                    if (v > 0.4 && c > 0.25) {
-                        c_individual = Math.max(0.25, c_individual);
-                    } else {
-                        c_individual = Math.max(0, c_individual);
-                    }
+                    if (v > 0.4 && c > 0.25) c_individual = Math.max(0.25, c_individual);
+                    else c_individual = Math.max(0, c_individual);
 
-                    // Map curviness 0.5 to the original (1 to 3 freq, 100 to 500 amp)
                     const factor = c_individual / 0.5;
                     const curveFreq = (1 + window.CITY_RNG() * 2) * factor;
                     const curveAmp = (100 + window.CITY_RNG() * 400) * factor;
 
                     const rType = window.CITY_RNG();
-                    let avenueType = 1; // 1 = double (30%)
-                    if (rType < 0.3) avenueType = 0; // single (30%)
-                    else if (rType > 0.6) avenueType = 2; // triple (40%)
+                    let avenueType = 1;
+                    if (rType < 0.3) avenueType = 0;
+                    else if (rType > 0.6) avenueType = 2;
 
-                    avenuesData.push({
-                        isVertical,
-                        start,
-                        curveFreq,
-                        curveAmp,
-                        avenueType
-                    });
+                    let currentDist = 0;
+                    let maxDist = isVertical ? H : W;
 
-                    for (let s = 0; s < 400; s++) {
-                        const t = s / 400;
+                    while (currentDist < maxDist) {
+                        let t = currentDist / maxDist;
                         let x, y;
                         if (isVertical) {
                             x = start + Math.sin(t * Math.PI * curveFreq) * curveAmp;
@@ -1913,21 +2069,27 @@ git config --global user.name {{username}}`;
                             y = start + Math.sin(t * Math.PI * curveFreq) * curveAmp;
                         }
 
-                        if (avenueType === 0) { // Single lane (brighter)
-                            if (window.CITY_RNG() > 0.05) drawLight(x, y, 2.0, laneColor1);
-                        } else if (avenueType === 1) { // Double lane
-                            if (window.CITY_RNG() > 0.05) drawLight(x - 5, y, 1.5, laneColor1);
-                            if (window.CITY_RNG() > 0.05) drawLight(x + 5, y, 1.5, laneColor2);
-                        } else { // Triple lane
-                            if (window.CITY_RNG() > 0.05) drawLight(x, y, 1.5, laneColor1); // Center
-                            if (window.CITY_RNG() > 0.05) drawLight(x - 6, y, 1.2, laneColor2); // Outer 1
-                            if (window.CITY_RNG() > 0.05) drawLight(x + 6, y, 1.2, laneColor2); // Outer 2
+                        if (window.CITY_RNG() > 0.25) {
+                            if (avenueType === 0) {
+                                drawLight(x, y, 2.0, laneColor1);
+                            } else if (avenueType === 1) {
+                                drawLight(x - 5, y, 1.5, laneColor1);
+                                drawLight(x + 5, y, 1.5, laneColor2);
+                            } else {
+                                drawLight(x, y, 1.5, laneColor1);
+                                drawLight(x - 6, y, 1.2, laneColor2);
+                                drawLight(x + 6, y, 1.2, laneColor2);
+                            }
                         }
+
+                        currentDist += 5 + window.CITY_RNG() * 15;
+                        if (window.CITY_RNG() > 0.95) currentDist += 20 + window.CITY_RNG() * 50;
                     }
                 }
 
+                const numWinding = Math.floor(CITY_LIGHTS_CONFIG.windingStreets * 0.25);
                 // 2. Draw Winding Streets
-                for (let i = 0; i < CITY_LIGHTS_CONFIG.windingStreets; i++) {
+                for (let i = 0; i < numWinding; i++) {
                     let x = window.CITY_RNG() * W;
                     let y = window.CITY_RNG() * H;
                     let angle = window.CITY_RNG() * Math.PI * 2;
@@ -1941,165 +2103,32 @@ git config --global user.name {{username}}`;
                         x += Math.cos(angle) * step;
                         y += Math.sin(angle) * step;
 
-                        if (x < 0 || x > W || y < 0 || y > H) break;
-
-                        if (window.CITY_RNG() > 0.2) {
-                            const size = isMainStreet ? 1.2 : 0.8;
-                            drawLight(x, y, size, color);
+                        if (window.CITY_RNG() > 0.1) {
+                            drawLight(x, y, isMainStreet ? 2.0 : 1.0, color);
                         }
                     }
                 }
 
+                const numClusters = Math.floor(CITY_LIGHTS_CONFIG.clusters * 0.25);
                 // 3. Draw Neighborhood Clusters
-                for (let i = 0; i < CITY_LIGHTS_CONFIG.clusters; i++) {
+                for (let i = 0; i < numClusters; i++) {
                     const cx = window.CITY_RNG() * W;
                     const cy = window.CITY_RNG() * H;
-                    const radius = 50 + window.CITY_RNG() * 250;
-                    const density = 30 + window.CITY_RNG() * 100;
+                    const radius = 20 + window.CITY_RNG() * 120;
+                    const density = 20 + window.CITY_RNG() * 60;
 
                     for (let j = 0; j < density; j++) {
                         const angle = window.CITY_RNG() * Math.PI * 2;
-                        const dist = Math.sqrt(window.CITY_RNG()) * radius;
-                        const x = cx + Math.cos(angle) * dist;
-                        const y = cy + Math.sin(angle) * dist;
+                        const r = window.CITY_RNG() * radius;
+                        const x = cx + Math.cos(angle) * r;
+                        const y = cy + Math.sin(angle) * r;
+
                         const color = getCityColor();
 
                         if (window.CITY_RNG() > 0.1) {
-                            drawLight(x, y, 0.6 + window.CITY_RNG() * 0.6, color);
+                            drawLight(x, y, 1.2 + window.CITY_RNG() * 1.5, color);
                         }
                     }
-                }
-
-                // 4. Moving Traffic Overlay
-                if (CITY_LIGHTS_CONFIG.traffic && avenuesData.length > 0) {
-                    const trafficCanvas = document.createElement('canvas');
-                    trafficCanvas.id = 'city-traffic-canvas';
-                    trafficCanvas.width = W;
-                    trafficCanvas.height = H;
-                    Object.assign(trafficCanvas.style, {
-                        position: 'absolute',
-                        bottom: '0',
-                        left: isMob ? 'calc(50% - 3250px)' : '-100%',
-                        width: isMob ? '6500px' : '300%',
-                        height: isMob ? '3200px' : '150%',
-                        transformOrigin: 'bottom center',
-                        transform: `perspective(${CITY_LIGHTS_CONFIG.perspective}px) rotateX(${CITY_LIGHTS_CONFIG.tilt}deg) scaleY(${CITY_LIGHTS_CONFIG.verticalScale})`,
-                        opacity: CITY_LIGHTS_CONFIG.opacity,
-                        zIndex: '-9',
-                        pointerEvents: 'none',
-                        maskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
-                        webkitMaskImage: 'linear-gradient(to top, transparent 0%, black 15%, black 65%, transparent 100%)',
-                        imageRendering: 'pixelated'
-                    });
-                    bg.appendChild(trafficCanvas);
-                    const tCtx = trafficCanvas.getContext('2d');
-
-                    const cars = [];
-                    const numCars = CITY_LIGHTS_CONFIG.trafficCount || 400;
-                    const speedBase = CITY_LIGHTS_CONFIG.trafficBaseSpeed !== undefined ? CITY_LIGHTS_CONFIG.trafficBaseSpeed : 0.00003;
-                    const speedVar = CITY_LIGHTS_CONFIG.trafficSpeedVariance !== undefined ? CITY_LIGHTS_CONFIG.trafficSpeedVariance : 0.00001;
-                    const sizeMin = CITY_LIGHTS_CONFIG.trafficSizeMin !== undefined ? CITY_LIGHTS_CONFIG.trafficSizeMin : 2.0;
-                    const sizeMax = CITY_LIGHTS_CONFIG.trafficSizeMax !== undefined ? CITY_LIGHTS_CONFIG.trafficSizeMax : 4.0;
-                    const sizeDiff = sizeMax - sizeMin;
-                    const bloomMult = CITY_LIGHTS_CONFIG.trafficBloomSize !== undefined ? CITY_LIGHTS_CONFIG.trafficBloomSize : 2.5;
-                    const bloomOffset = (bloomMult - 1.0) / 2.0;
-                    const squarness = CITY_LIGHTS_CONFIG.trafficSquarness !== undefined ? CITY_LIGHTS_CONFIG.trafficSquarness : 1.0;
-
-                    for (let c = 0; c < numCars; c++) {
-                        const avIdx = Math.floor(Math.random() * avenuesData.length);
-                        const av = avenuesData[avIdx];
-
-                        let laneOffset = 0;
-                        let isRed = Math.random() > 0.5;
-
-                        if (av.avenueType === 0) {
-                            laneOffset = 0;
-                        } else if (av.avenueType === 1) {
-                            laneOffset = isRed ? 5 : -5;
-                            if (Math.random() > 0.5) { laneOffset = -laneOffset; isRed = !isRed; }
-                        } else {
-                            const r = Math.random();
-                            if (r < 0.33) { laneOffset = 0; }
-                            else if (r < 0.66) { laneOffset = -6; }
-                            else { laneOffset = 6; }
-                            isRed = laneOffset > 0;
-                        }
-
-                        cars.push({
-                            avIdx: avIdx,
-                            t: Math.random(),
-                            speed: (isRed ? -1 : 1) * (speedBase + Math.random() * speedVar),
-                            laneOffset: laneOffset,
-                            isRed: isRed,
-                            size: sizeMin + Math.random() * sizeDiff
-                        });
-                    }
-
-                    function renderTraffic() {
-                        if (!document.getElementById('city-traffic-canvas')) return;
-                        tCtx.clearRect(0, 0, W, H);
-
-                        // 1. Physics & Coordinates Pass
-                        for (let c = 0; c < cars.length; c++) {
-                            const car = cars[c];
-                            const av = avenuesData[car.avIdx];
-
-                            let currentSpeed = car.speed;
-                            if (av.isVertical) {
-                                currentSpeed *= (0.2 + 0.8 * car.t);
-                            } else {
-                                currentSpeed *= 0.15;
-                                currentSpeed *= (0.2 + 0.8 * (av.start / H));
-                            }
-
-                            car.t += currentSpeed;
-                            if (car.t > 1) car.t = 0;
-                            if (car.t < 0) car.t = 1;
-
-                            if (av.isVertical) {
-                                car.x = av.start + Math.sin(car.t * Math.PI * av.curveFreq) * av.curveAmp + car.laneOffset;
-                                car.y = car.t * H;
-                            } else {
-                                car.x = car.t * W + car.laneOffset;
-                                car.y = av.start + Math.sin(car.t * Math.PI * av.curveFreq) * av.curveAmp;
-                            }
-
-                            // Adjust height so it appears square after the CSS scaleY stretch
-                            car.h = (car.size * squarness) / CITY_LIGHTS_CONFIG.verticalScale;
-                        }
-
-                        // 2. Render Passes (Grouped by color to minimize context state changes for max performance)
-
-                        // White Bloom
-                        tCtx.fillStyle = 'rgba(255, 230, 200, 0.15)';
-                        for (let c = 0; c < cars.length; c++) {
-                            const car = cars[c];
-                            if (!car.isRed) tCtx.fillRect(car.x - car.size * bloomOffset, car.y - car.h * bloomOffset, car.size * bloomMult, car.h * bloomMult);
-                        }
-
-                        // Red Bloom
-                        tCtx.fillStyle = 'rgba(255, 60, 60, 0.15)';
-                        for (let c = 0; c < cars.length; c++) {
-                            const car = cars[c];
-                            if (car.isRed) tCtx.fillRect(car.x - car.size * bloomOffset, car.y - car.h * bloomOffset, car.size * bloomMult, car.h * bloomMult);
-                        }
-
-                        // White Core
-                        tCtx.fillStyle = 'rgba(255, 240, 220, 0.95)';
-                        for (let c = 0; c < cars.length; c++) {
-                            const car = cars[c];
-                            if (!car.isRed) tCtx.fillRect(car.x, car.y, car.size, car.h);
-                        }
-
-                        // Red Core
-                        tCtx.fillStyle = 'rgba(255, 80, 80, 0.95)';
-                        for (let c = 0; c < cars.length; c++) {
-                            const car = cars[c];
-                            if (car.isRed) tCtx.fillRect(car.x, car.y, car.size, car.h);
-                        }
-                        requestAnimationFrame(renderTraffic);
-                    }
-                    requestAnimationFrame(renderTraffic);
                 }
             }
 
@@ -2397,9 +2426,16 @@ git config --global user.name {{username}}`;
                 }
             }, 10000);
         };
-        // Wait for Fira Code to load before rendering so canvas text metrics are perfectly aligned
         document.fonts.ready.then(() => {
             window.renderFXBackground();
+        });
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                if (window.renderFXBackground) window.renderFXBackground();
+            }, 250);
         });
     </script>
 </body>
