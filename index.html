@@ -1974,7 +1974,8 @@ git config --global user.name {{username}}`;
                     height: '100vh',
                     zIndex: '-10',
                     pointerEvents: 'none',
-                    opacity: CITY_LIGHTS_CONFIG.opacity,
+                    opacity: CLOUD_CONFIG.enabled ? 0 : CITY_LIGHTS_CONFIG.opacity,
+                    transition: 'opacity 0.3s ease-in',
                     maskImage: CITY_LIGHTS_CONFIG.useMask ? 'linear-gradient(to top, transparent 0%, black 10%, black 80%, transparent 100%)' : 'none',
                     webkitMaskImage: CITY_LIGHTS_CONFIG.useMask ? 'linear-gradient(to top, transparent 0%, black 10%, black 80%, transparent 100%)' : 'none',
                     imageRendering: 'auto'
@@ -2387,6 +2388,10 @@ git config --global user.name {{username}}`;
 
                     // Check if we finished inside the loop
                     if (currentCloudIndex >= totalClouds) {
+                        const cityCanvas = document.getElementById('city-lights-canvas');
+                        if (cityCanvas) {
+                            cityCanvas.style.opacity = window.CITY_LIGHTS_CONFIG.opacity;
+                        }
                         if (document.getElementById(canvasId)) requestAnimationFrame(renderClouds);
                     } else {
                         // Yield to browser to prevent UI lockup, then continue generating
@@ -2476,10 +2481,8 @@ git config --global user.name {{username}}`;
                         100% { transform: translateX(102vw) translateY(10vh); }
                     }
                     @keyframes airplaneFlyL {
-                        0% { transform: translateX(102vw) translateY(0); }
-                        100% { transform: translateX(-2vw) translateY(10vh); }
-                    }
-                        100% { transform: translateX(-10vw) translateY(10vh); }
+                        0% { transform: translateX(102vw) translateY(0) scaleX(-1); }
+                        100% { transform: translateX(-2vw) translateY(10vh) scaleX(-1); }
                     }
                     @keyframes airplaneStrobe {
                         0%, 80% { opacity: 0; }
@@ -2512,13 +2515,122 @@ git config --global user.name {{username}}`;
                 `;
 
                 airplane.innerHTML = `
-                    <div style="position:absolute; width:1.5px; height:1.5px; background:red; box-shadow:0 0 3px red; margin-left:-6px;"></div>
-                    <div style="position:absolute; width:2px; height:2px; background:#fff; box-shadow:0 0 5px #fff; animation: airplaneStrobe 2s infinite;"></div>
+                    <div style="position:absolute; width:1.5px; height:1.5px; background:red; box-shadow:0 0 3px red;"></div>
+                    <div style="position:absolute; width:2px; height:2px; background:#fff; box-shadow:0 0 5px #fff; animation: airplaneStrobe 2s infinite; margin-left:-6px;"></div>
                 `;
 
                 airplane.addEventListener('animationend', () => airplane.remove());
                 const airplaneLayer = document.getElementById('fx-airplane-layer');
                 if (airplaneLayer) airplaneLayer.appendChild(airplane);
+            };
+
+            window.spawnAirplaneAt = function (startX, startY) {
+                if (document.hidden) return;
+                const bg = document.getElementById('fx-background');
+                if (!CITY_LIGHTS_CONFIG.enabled || !bg) return;
+                
+                const airplane = document.createElement('div');
+                airplane.className = 'fx-airplane-instance';
+                
+                // Fly strictly Right (0) or Left (PI)
+                const angle = Math.random() > 0.5 ? 0 : Math.PI;
+                
+                // Random size: from 0.5 to 1.0 (so they aren't too small)
+                const scale = 0.5 + Math.random() * 0.5;
+                
+                airplane.style.cssText = `
+                    position: absolute;
+                    top: ${startY}px;
+                    left: ${startX}px;
+                    z-index: -5;
+                    transform: rotate(${angle}rad) scale(${scale});
+                `;
+                
+                airplane.innerHTML = `
+                    <div style="position:absolute; width:1.5px; height:1.5px; background:red; box-shadow:0 0 3px red;"></div>
+                    <div style="position:absolute; width:2px; height:2px; background:#fff; box-shadow:0 0 5px #fff; animation: airplaneStrobe 2s infinite; margin-left:-6px;"></div>
+                `;
+                
+                const airplaneLayer = document.getElementById('fx-airplane-layer');
+                if (airplaneLayer) {
+                    airplaneLayer.appendChild(airplane);
+                    
+                    const distance = Math.max(window.innerWidth, window.innerHeight) * 1.5;
+                    
+                    // Speed proportional to size (parallax). 
+                    // Base duration for scale 1.0 is 12s to 30s. 
+                    // So scale 0.5 will take 24s to 60s (slower).
+                    const baseDuration = 12000 + Math.random() * 18000;
+                    const animDuration = baseDuration / scale;
+                    
+                    const anim = airplane.animate([
+                        { transform: `rotate(${angle}rad) scale(${scale}) translateX(0)` },
+                        { transform: `rotate(${angle}rad) scale(${scale}) translateX(${distance}px)` }
+                    ], {
+                        duration: animDuration,
+                        easing: 'linear',
+                        fill: 'forwards'
+                    });
+                    
+                    anim.onfinish = () => airplane.remove();
+                }
+            };
+
+            window.spawnStarAt = function(x, y) {
+                const canvas = document.getElementById('city-lights-canvas');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = Math.random() > 0.5 ? 'rgba(255, 215, 80, 0.95)' : 'rgba(255, 255, 255, 0.9)';
+                
+                const boundaryY = window.innerHeight * 0.7;
+                let yFactor = (y - boundaryY) / (window.innerHeight - boundaryY);
+                yFactor = Math.max(0, Math.min(1, yFactor));
+                
+                let baseSize = 1.0 + (yFactor * 3.5);
+                let s = baseSize + (Math.random() * 1.5 - 0.75);
+                s = Math.max(0.5, s);
+                
+                const third = s / 3;
+                const screenX = x - s / 2;
+                const screenY = y - s / 2;
+                ctx.fillRect(screenX + third, screenY, third, s);
+                ctx.fillRect(screenX, screenY + third, s, third);
+            };
+
+            window.spawnAvenue = function(start, end) {
+                const boundaryY = window.innerHeight * 0.7;
+                let cappedEnd = { x: end.x, y: end.y };
+                const safeBorder = boundaryY + window.innerHeight * 0.03; 
+                
+                if (cappedEnd.y < safeBorder) {
+                    const t = (safeBorder - start.y) / (end.y - start.y);
+                    if (t > 0 && t < 1) {
+                        cappedEnd.x = start.x + t * (end.x - start.x);
+                        cappedEnd.y = safeBorder;
+                    } else {
+                        return;
+                    }
+                }
+                
+                const dist = Math.hypot(cappedEnd.x - start.x, cappedEnd.y - start.y);
+                if (dist < 5) return;
+                
+                const midX = (start.x + cappedEnd.x) / 2;
+                const midY = (start.y + cappedEnd.y) / 2;
+                const angle = Math.atan2(cappedEnd.y - start.y, cappedEnd.x - start.x);
+                const curveStrength = dist * (0.1 + Math.random() * 0.25) * (Math.random() > 0.5 ? 1 : -1);
+                const cpX = midX + Math.cos(angle + Math.PI/2) * curveStrength;
+                const cpY = midY + Math.sin(angle + Math.PI/2) * curveStrength;
+                
+                const steps = Math.floor(dist / 12); 
+                for (let i = 0; i <= steps; i++) {
+                    const t = i / steps;
+                    const x = Math.pow(1 - t, 2) * start.x + 2 * (1 - t) * t * cpX + Math.pow(t, 2) * cappedEnd.x;
+                    const y = Math.pow(1 - t, 2) * start.y + 2 * (1 - t) * t * cpY + Math.pow(t, 2) * cappedEnd.y;
+                    if (Math.random() > 0.15) {
+                        window.spawnStarAt(x, y);
+                    }
+                }
             };
 
             if (window.CITY_AIRPLANE_INTERVAL) clearInterval(window.CITY_AIRPLANE_INTERVAL);
@@ -2538,6 +2650,50 @@ git config --global user.name {{username}}`;
             resizeTimeout = setTimeout(() => {
                 if (window.renderFXBackground) window.renderFXBackground();
             }, 250);
+        });
+
+        let interactionStart = null;
+        
+        const checkEmptySpace = (e) => {
+            const allowedTags = ['BODY', 'HTML'];
+            const allowedIds = ['mainContent'];
+            const allowedClasses = ['columns-container', 'column', 'module-group', 'ascii-container', 'terminal-header', 'main-section', 'reverse-msg'];
+            let isEmpty = false;
+            if (allowedTags.includes(e.target.tagName)) isEmpty = true;
+            if (e.target.id && allowedIds.includes(e.target.id)) isEmpty = true;
+            if (e.target.classList) {
+                for (const c of allowedClasses) {
+                    if (e.target.classList.contains(c)) isEmpty = true;
+                }
+            }
+            return isEmpty;
+        };
+
+        document.addEventListener('pointerdown', function(e) {
+            if (!checkEmptySpace(e)) return;
+            interactionStart = { x: e.clientX, y: e.clientY };
+        });
+
+        document.addEventListener('pointerup', function(e) {
+            if (!interactionStart) return;
+            const start = interactionStart;
+            interactionStart = null;
+            
+            const end = { x: e.clientX, y: e.clientY };
+            const dist = Math.hypot(end.x - start.x, end.y - start.y);
+            const boundaryY = window.innerHeight * 0.7;
+            
+            if (start.y > boundaryY) {
+                if (dist < 10) {
+                    if (window.spawnStarAt) window.spawnStarAt(end.x, end.y);
+                } else {
+                    if (window.spawnAvenue) window.spawnAvenue(start, end);
+                }
+            } else {
+                if (dist < 10 && end.y <= boundaryY) {
+                    if (window.spawnAirplaneAt) window.spawnAirplaneAt(end.x, end.y);
+                }
+            }
         });
     </script>
 </body>
