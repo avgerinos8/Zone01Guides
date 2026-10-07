@@ -1903,7 +1903,7 @@ git config --global user.name {{username}}`;
             durationVariance: 120,       // Additional slowness based on depth
             baseScale: 1,                // Base cloud size
             scaleVariance: 3.5,          // Size variation based on depth
-            baseOpacity: 0.75,           // Minimum opacity
+            baseOpacity: 0.95,           // Minimum opacity
             opacityVariance: 0.12,       // Additional opacity based on depth
             opacityDivisor: 8,           // Opacity division for volumetric stacking
             blurIntensity: 69,           // Blur multiplier for depth of field
@@ -2468,7 +2468,7 @@ git config --global user.name {{username}}`;
 
                         cctx.save();
                         cctx.translate(x, y);
-                        
+
                         if (c.isFlipped) {
                             const w = c.sprites.normal.canvas.width;
                             const cx = (w / 2) - c.sprites.normal.pad;

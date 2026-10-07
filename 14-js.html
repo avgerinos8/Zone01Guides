@@ -126,18 +126,23 @@
     </div>
 
     <div id="toc-list">
-      <!-- Ενότητα 1's original slides have no slugs yet — add them above this line when ready. -->
-      <div class="toc-section">ΕΝΟΤΗΤΑ 1 — VALUES &amp; TYPES</div>
+      <div class="toc-section">ΒΑΣΙΚΑ (Βάσει ασκήσεων)</div>
+      <a href="#@runtime-diffs" class="toc-link toc-h1">Διαφορές JS σε browser, Node.js κλπ.</a>
+      <a href="#@const-let" class="toc-link toc-h1">const vs let &amp; Τύποι</a>
+      <a href="#@object-literal" class="toc-link toc-h1">Δημιουργία Objects</a>
+      <a href="#@copying-objects" class="toc-link toc-h1">Copy by reference</a>
+      <a href="#@shallow-copy" class="toc-link toc-h1">Shallow copy</a>
+      <a href="#@deep-copy" class="toc-link toc-h1">Deep copy (structuredClone)</a>
+      <a href="#@functions" class="toc-link toc-h1">Functions</a>
+      <a href="#@typeof" class="toc-link toc-h1">typeof</a>
+      <a href="#@coercion" class="toc-link toc-h1">truthy / falsy</a>
+      <a href="#@default-params" class="toc-link toc-h1">Default Parameters</a>
+
+      <div class="toc-section">ΕΝΟΤΗΤΑ 1 — VALUES &amp; TYPES (Συνέχεια)</div>
       <a href="#@shorthand-ops" class="toc-link toc-h1">Τιμές, τελεστές, μεταβλητές</a>
       <a href="#@ternary" class="toc-link toc-h1">Ο ternary operator</a>
 
       <div class="toc-section">ΕΝΟΤΗΤΑ 2 — REFERENCES &amp; COPYING</div>
-      <a href="#@reference-bug" class="toc-link toc-h1">Το λάθος που κάνουν όλοι μία φορά</a>
-      <a href="#@shallow-copy" class="toc-link toc-h1">Shallow copy</a>
-      <a href="#@shallow-limit" class="toc-link toc-h2">Πού σταματάει το shallow copy</a>
-      <a href="#@deep-copy" class="toc-link toc-h1">Deep copy</a>
-      <a href="#@json-roundtrip" class="toc-link toc-h2">Το JSON round trip</a>
-      <a href="#@copy-decision" class="toc-link toc-h2">Πίνακας απόφασης</a>
       <a href="#@immutability" class="toc-link toc-h1">Object.freeze &amp; immutability</a>
       <a href="#@mutate-methods" class="toc-link toc-h2">Mutating array methods</a>
 
@@ -260,7 +265,7 @@
 
     addContent(`
 <div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Πού εκτελείται η JavaScript</h1>
+<h1 id="@runtime-diffs">Πού εκτελείται η JavaScript</h1>
 <p class="lede">Στη Go γράφεις κώδικα, τον δίνεις στον compiler, και ο compiler σου επισημαίνει τα λάθη πριν εκτελεστεί οτιδήποτε. Στη JavaScript αυτό το βήμα δεν υπάρχει. Από αυτή τη διαφορά προκύπτουν οι περισσότερες από όσες θα δούμε στη συνέχεια.</p>
 
 <h2>Δεν παράγεται εκτελέσιμο αρχείο</h2>
@@ -419,7 +424,7 @@ console.log(price * shipping)      // 15     — here it became a number
 
     addContent(`
 <div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Δηλώσεις: const, let και το var που δεν χρησιμοποιούμε</h1>
+<h1 id="@const-let">Δηλώσεις: const, let και το var που δεν χρησιμοποιούμε</h1>
 <p class="lede">Τρεις λέξεις-κλειδιά για την ίδια δουλειά. Δύο από αυτές είναι σύγχρονες, μία επιβιώνει από το 1995 και υπάρχει σε αυτόν τον οδηγό μόνο για να ξέρεις γιατί την αποφεύγεις.</p>
 
 <h2>Ο κανόνας σε μία γραμμή</h2>
@@ -491,10 +496,314 @@ let b = 1
   Δηλαδή, αν το βάλεις μέσα σε δέκα συνεχόμενα blocks — <code>if</code> μέσα σε <code>for</code> μέσα σε <code>while</code> — θα τα προσπεράσει όλα με τη μία και θα βγει έξω από όλα μαζί.
 </div>
 `);
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
+<h1 id="@object-literal">Δημιουργία Objects</h1>
+<p class="lede">Τα objects στη JavaScript είναι δυναμικά και μπορείς να προσθέσεις ή να αφαιρέσεις ιδιότητες (properties) οποιαδήποτε στιγμή.</p>
+<h2>Το Object Literal</h2>
+<p>Ο πιο συνηθισμένος τρόπος δημιουργίας είναι τα άγκιστρα (object literal):</p>
+<pre><code class="lang-js">const user = { 
+  name: "Alice", 
+  age: 25 
+}
+
+user.role = "admin" // Προσθήκη νέου property δυναμικά!
+delete user.age     // Διαγραφή υπάρχοντος
+</code></pre>
+<p>Αυτή η ελευθερία έρχεται με τεράστια ευθύνη, ειδικά όταν περνάμε τα objects από μεταβλητή σε μεταβλητή.</p>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@reference-bug">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
+<h1 id="@copying-objects">Αντιγραφή ενός object</h1>
+<p class="lede">Στη Go, ένα struct που το περνάς σε function αντιγράφεται. Αν ήθελες να το αλλάξεις, έπρεπε να στείλεις pointer — ήταν ορατή απόφαση που τη γράφεις με έναν αστερίσκο. Εδώ δεν υπάρχει αστερίσκος, και η προεπιλογή είναι η αντίθετη.</p>
+
+<h2>Η προφανής γραφή με απλή ανάθεση</h2>
+<p>Θέλουμε να κρατήσουμε ένα αντίγραφο των αρχικών ρυθμίσεων πριν αφήσουμε τον χρήστη να τις πειράξει, ώστε να μπορεί να πατήσει «επαναφορά». Η προφανής γραφή:</p>
+
+<pre><code class="lang-js">const settings = { theme: "dark", fontSize: 14 }
+const backup = settings              // "copy" the settings
+
+settings.theme = "light"             // the user changes something
+
+console.log(backup.theme)            // "light"
+</code></pre>
+
+<p>Το backup άλλαξε μόνο του. Καμία γραμμή δεν το τροποποιεί, και όμως άλλαξε.</p>
+
+<h2>Γιατί συμβαίνει</h2>
+
+
+
+<p>Μια μεταβλητή στη JavaScript δεν περιέχει object. Περιέχει μια <em>αναφορά</em> (δηλαδή έχουμε <strong>pass by reference</strong>) σε object που ζει κάπου αλλού. Όπως συνέβαινε στη Go με τα slices. Η γραμμή <code>const backup = settings</code> αντιγράφει την αναφορά, όχι το object. Μετά από αυτήν, δύο ονόματα δείχνουν στο ίδιο πράγμα.</p>
+<div class="grid2">
+  <div class="card"><h3>Primitives — αντιγραφή τιμής</h3>
+    <p>string, number, boolean, undefined, null, symbol, bigint. Η ανάθεση φτιάχνει ανεξάρτητο αντίγραφο. Δεν υπάρχει τρόπος να τα «μοιραστούν» δύο ονόματα.</p></div>
+  <div class="card"><h3>Objects — αντιγραφή αναφοράς (pass by reference)</h3>
+    <p>object, array, function, Date, Map, Set, RegExp. Η ανάθεση φτιάχνει δεύτερο όνομα για το ίδιο πράγμα.</p></div>
+</div>
+
+<pre><code class="lang-js">let a = 5
+let b = a
+b = 9
+console.log(a)            // 5    — untouched, they were never linked
+
+const x = { n: 5 }
+const y = x
+y.n = 9
+console.log(x.n)          // 9    — same object, two names
+</code></pre>
+
+<h2>Το ίδιο ισχύει για ορίσματα</h2>
+<p>Η JavaScript περνάει τα πάντα by value. Απλώς, για ένα object, η «τιμή» <em>είναι</em> η αναφορά. Το αποτέλεσμα φαίνεται σαν <a href="https://guides01.devs.surf/01-go-01.html#@pass-by" target="_blank" rel="noopener">pass-by-reference</a> μέχρι να προσπαθήσεις να αντικαταστήσεις ολόκληρο το object μέσα στη function:</p>
+
+<pre><code class="lang-js">
+function addTag(list) {
+  // .push() mutates the original array in memory directly.
+  // This change is visible to the variable outside the function too.
+  list.push("new")        
+}
+
+function replaceList(list) {
+  // This is reassignment (rebinding), not mutation.
+  // A brand NEW array is created in memory, and the local variable \`list\` now points to it.
+  // The link to the original array outside breaks, so the outer array is unaffected.
+  list = ["new"]          
+}
+
+// Initialize the array
+const tags = ["a"]
+
+// Call addTag, passing the tags array
+addTag(tags)
+console.log(tags)         // Logs: ["a", "new"] -> the array changed because .push() mutated it
+
+// Call replaceList, passing the already-modified tags array
+replaceList(tags)
+console.log(tags)         // Logs: ["a", "new"] -> the array is unchanged; replaceList only reassigned its local reference
+
+
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Το αναγνωρίζεις;</span>
+  Είναι ακριβώς η συμπεριφορά που είχε ένα slice στη Go: το περνούσες by value, αλλά ο υποκείμενος πίνακας ήταν κοινός, οπότε μια εγγραφή σε στοιχείο φαινόταν, ενώ ένα <code>append</code> που μεγάλωνε τη χωρητικότητα δεν φαινόταν. Ίδιος μηχανισμός, ευρύτερη εφαρμογή: εδώ ισχύει για κάθε object.
+</div>
+
+<h2>Και για τη σύγκριση</h2>
+<pre><code class="lang-js">{ a: 1 } === { a: 1 }     // false — two different objects
+[1, 2] === [1, 2]         // false
+
+const p = { a: 1 }
+const q = p
+p === q                   // true  — same reference
+</code></pre>
+
+<p>Η <code>===</code> για objects ρωτάει «είναι το ίδιο object;», όχι «έχουν το ίδιο περιεχόμενο;». Δεν υπάρχει built-in έλεγχος ισότητας περιεχομένου· τον γράφεις μόνος σου ή τον δανείζεσαι, και αυτό είναι σκόπιμη επιλογή της γλώσσας γιατί «ίδιο περιεχόμενο» σημαίνει διαφορετικά πράγματα ανά περίπτωση.</p>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@shallow-copy">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
+<h1 id="@shallow-copy">Shallow copy: το 90% των περιπτώσεων</h1>
+<p class="lede">Τρεις γραφές που κάνουν την ίδια δουλειά, και ένα όριο που πρέπει να ξέρεις πού ακριβώς βρίσκεται.</p>
+
+<h2>Ο τελεστής spread</h2>
+<pre><code class="lang-js">const settings = { theme: "dark", fontSize: 14 }
+
+const backup = { ...settings }      // a genuinely new object
+settings.theme = "light"
+console.log(backup.theme)           // "dark"   — the bug is fixed
+
+const items = [1, 2, 3]
+const copy = [...items]             // works the same for arrays
+</code></pre>
+
+<p>Το <code>...</code> παίρνει ένα-ένα όλα τα properties του αρχικού object και τα τοποθετεί μέσα σε ένα καινούργιο. Επειδή η αντιγραφή γίνεται ξεχωριστά για κάθε property, δημιουργείται μια εντελώς νέα αναφορά στη μνήμη. Η ίδια διαδικασία χρησιμοποιείται και για τη συγχώνευση objects, όπου αν υπάρχει το ίδιο property, υπερισχύει πάντα αυτό που βρίσκεται τέρμα δεξιά:</p>
+
+<pre><code class="lang-js">const defaults = { theme: "dark", fontSize: 14, lang: "el" }
+const userPrefs = { fontSize: 18 }
+
+const final = { ...defaults, ...userPrefs }
+// { theme: "dark", fontSize: 18, lang: "el" }
+</code></pre>
+
+<p>Αυτό το ένα pattern αντικαθιστά ολόκληρη τη λογική «πάρε τις προεπιλογές, γράψε από πάνω ό,τι όρισε ο χρήστης» που θα έγραφες με loop. Θα το δεις παντού σε πραγματικό κώδικα.</p>
+
+<h2>Οι άλλες δύο γραφές</h2>
+<pre><code class="lang-js">const b1 = Object.assign({}, settings)   // older, still common
+const a1 = items.slice()                 // arrays only
+const a2 = Array.from(items)             // arrays and anything iterable
+</code></pre>
+
+<p>Πρόσεξε το <code>{}</code> ως πρώτο όρισμα στο <code>Object.assign</code>. Το πρώτο όρισμα είναι ο <em>στόχος</em> και τροποποιείται. Αν γράψεις <code>Object.assign(settings, extra)</code>, δεν αντιγράφεις — αλλάζεις το <code>settings</code>. Είναι νόμιμη χρήση, αλλά είναι διαφορετική δουλειά από αυτήν που νομίζεις ότι κάνεις.</p>
+
+<h2 id="@shallow-limit">Πού σταματάει το shallow copy</h2>
+<p>Το shallow copy αντιγράφει τις <em>τιμές</em> των properties. Αν μια τιμή είναι object, αυτό που αντιγράφεται είναι η αναφορά της — και ξαναβρισκόμαστε στο αρχικό πρόβλημα, ένα επίπεδο πιο βαθιά:</p>
+
+<pre><code class="lang-js">const profile = {
+  name: "Iris",
+  address: { city: "Athens", zip: "10431" }
+}
+
+const copy = { ...profile }
+
+copy.name = "Nikos"              // top level: independent
+console.log(profile.name)        // "Iris"        — correct
+
+copy.address.city = "Patras"     // one level deeper: shared
+console.log(profile.address.city) // "Patras"     &lt;- the bug is back
+</code></pre>
+
+<p>Αυτό είναι το ύπουλο σημείο, γιατί ο κώδικας δουλεύει σωστά για όσο τα δεδομένα σου είναι επίπεδα. Το bug εμφανίζεται την ημέρα που κάποιος προσθέτει ένα nested object σε μια δομή που μέχρι τότε ήταν απλή, και τότε κανείς δεν συνδέει το σύμπτωμα με αυτή τη γραμμή.</p>
+
+<div class="callout">
+  <span class="tag">Πότε αρκεί το shallow copy</span>
+  Όταν το object έχει μόνο primitive τιμές, ή όταν ξέρεις ότι τα nested κομμάτια δεν πρόκειται να τροποποιηθούν. Και οι δύο συνθήκες είναι πραγματικές και συχνές — μην πηδάς αυτόματα στο deep copy, έχει κόστος.
+</div>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@deep-copy">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
+<h1 id="@deep-copy">Deep copy: δύο δρόμοι</h1>
+<p class="lede">Όταν χρειάζεσαι πραγματικά ανεξάρτητο αντίγραφο μιας φωλιασμένης δομής, έχεις μια έτοιμη λύση και μια πρόχειρη.</p>
+
+<h2>Πρώτα η έτοιμη</h2>
+<pre><code class="lang-js">const profile = { name: "Iris", address: { city: "Athens" }, visits: [1, 2] }
+
+const deep = structuredClone(profile)
+
+deep.address.city = "Patras"
+console.log(profile.address.city)   // "Athens"   — fully independent
+</code></pre>
+
+<p>Το <code>structuredClone</code> είναι built-in σε όλα τα σύγχρονα runtimes και είναι αυτό που θα χρησιμοποιείς. Χειρίζεται σωστά nested objects, arrays, <code>Date</code>, <code>Map</code>, <code>Set</code>, ακόμα και κυκλικές αναφορές — object που δείχνει στον εαυτό του. Δεν χειρίζεται functions ούτε class instances με τα methods τους· αν του δώσεις function, πετάει σφάλμα.</p>
+
+<h2 id="@json-roundtrip">Η πρόχειρη που θα δεις παντού</h2>
+<pre><code class="lang-js">const deep = JSON.parse(JSON.stringify(profile))
+</code></pre>
+
+<p>Δουλεύει, είναι μια γραμμή, και σιωπηλά καταστρέφει δεδομένα. Αυτό το round trip μέσω κειμένου χάνει ό,τι το JSON δεν μπορεί να αναπαραστήσει:</p>
+
+<table class="glossary-table">
+  <tr><td class="gt-term">Date</td><td class="gt-def">γίνεται string και δεν επιστρέφει ποτέ σε Date</td></tr>
+  <tr><td class="gt-term">undefined</td><td class="gt-def">το property εξαφανίζεται εντελώς από το αντίγραφο</td></tr>
+  <tr><td class="gt-term">function</td><td class="gt-def">εξαφανίζεται σιωπηλά</td></tr>
+  <tr><td class="gt-term">NaN / Infinity</td><td class="gt-def">γίνονται null</td></tr>
+  <tr><td class="gt-term">Map / Set</td><td class="gt-def">γίνονται άδεια objects</td></tr>
+  <tr><td class="gt-term">κυκλική αναφορά</td><td class="gt-def">πετάει TypeError</td></tr>
+</table>
+
+<p>Αν η δομή σου είναι καθαρά JSON — δηλαδή αν ήρθε από API — τότε το round trip είναι ασφαλές εξ ορισμού, γιατί ό,τι μπορεί να χαθεί δεν υπήρξε ποτέ. Παντού αλλού, δεν το γράφεις.</p>
+
+<h2 id="@copy-decision">Πίνακας απόφασης</h2>
+<table style="width:100%;border-collapse:collapse">
+  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.3)"><th style="text-align:left;padding:6px">Κατάσταση</th><th style="text-align:left;padding:6px">Τι χρησιμοποιείς</th></tr>
+  <tr><td style="padding:6px">Επίπεδο object, μόνο primitives</td><td style="padding:6px"><code>{ ...obj }</code></td></tr>
+  <tr><td style="padding:6px">Φωλιασμένη δομή, οποιοδήποτε περιεχόμενο</td><td style="padding:6px"><code>structuredClone(obj)</code></td></tr>
+  <tr><td style="padding:6px">Καθαρά δεδομένα JSON και θέλεις μηδέν εξαρτήσεις</td><td style="padding:6px">το round trip με <code>JSON</code></td></tr>
+</table>
+`);
+    addContent(`
+<div class="eyebrow" id="@function-syntax">Ενότητα 4 / 9 — Functions ως τιμές</div>
+<h1 id="@functions">Τρεις γραφές για το ίδιο πράγμα, και γιατί δεν είναι ίδιες</h1>
+<p class="lede">Στη Go μια function ήταν ήδη τιμή: μπορούσες να την περάσεις, να την επιστρέψεις, να την κρατήσεις σε μεταβλητή. Εδώ ισχύει το ίδιο, αλλά η γλώσσα έχει χτιστεί ολόκληρη γύρω από αυτό, οπότε το συναντάς παντού.</p>
+
+<h2>Οι τρεις γραφές</h2>
+<pre><code class="lang-js">// 1. Declaration — hoisted, usable before its own line
+function area(w, h) {
+  return w * h
+}
+
+// 2. Expression — a value assigned to a name, like any other
+const area2 = function (w, h) {
+  return w * h
+}
+
+// 3. Arrow — the modern default
+const area3 = (w, h) =&gt; w * h
+</code></pre>
+
+<p>Η τρίτη γραφή έχει δύο μορφές. Με σώμα σε άγκιστρα χρειάζεται ρητό <code>return</code>. Χωρίς άγκιστρα, η μοναδική έκφραση επιστρέφεται αυτόματα:</p>
+
+<pre><code class="lang-js">const double = (n) =&gt; n * 2                  // implicit return
+const doubleLong = (n) =&gt; { return n * 2 }   // explicit return
+const nothing = (n) =&gt; { n * 2 }             // returns undefined  &lt;- common slip
+
+// returning an object literal needs parentheses, or the braces read as a body
+const makePoint = (x, y) =&gt; ({ x, y })
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το <code>{ x, y }</code> είναι σύντμηση για <code>{ x: x, y: y }</code>. Είναι διαδεδομένο και θα το βλέπεις συνεχώς — αλλά μέσα σε arrow χωρίς παρενθέσεις, ο parser το διαβάζει ως σώμα function και η επιστροφή γίνεται <code>undefined</code> χωρίς κανένα σφάλμα.
+</div>
+
+<h2>Το hoisting διαφέρει</h2>
+<pre><code class="lang-js">console.log(area(2, 3))     // 6 — declarations are fully hoisted
+function area(w, h) { return w * h }
+
+console.log(area2(2, 3))    // ReferenceError — const is in the temporal dead zone
+const area2 = (w, h) =&gt; w * h
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Το αναγνωρίζεις;</span>
+  Στη Go, οι δηλώσεις σε επίπεδο package ήταν ανεξάρτητες σειράς: μπορούσες να καλέσεις μια function που ορίζεται 200 γραμμές πιο κάτω. Το <code>function</code> declaration συμπεριφέρεται ακριβώς έτσι. Οι άλλες δύο γραφές όχι — υπακούν στους κανόνες μεταβλητής της Ενότητας 1.
+</div>
+
+<h2 id="@this-binding">Η μία πραγματική διαφορά: this</h2>
+<p>Το <code>this</code> σε μια κανονική function καθορίζεται από το <em>πώς την καλείς</em>, όχι από το πού είναι γραμμένη. Σε arrow function δεν υπάρχει καθόλου δικό της <code>this</code>· κληρονομεί αυτό του σημείου όπου γράφτηκε.</p>
+
+<pre><code class="lang-js">const counter = {
+  count: 0,
+  incrementBad: () =&gt; {
+    this.count++            // "this" is NOT counter here — the arrow inherited it
+  },
+  increment() {
+    this.count++            // shorthand method: "this" is counter
+  }
+}
+</code></pre>
+
+<p>Δεν θα χρειαστείς το <code>this</code> συχνά αν γράφεις με τον τρόπο αυτού του οδηγού: μεμονωμένες functions που παίρνουν δεδομένα και επιστρέφουν δεδομένα. Θα το συναντήσεις σε παλιό κώδικα, σε classes και σε event handlers. Ο πρακτικός κανόνας: <strong>arrow παντού, εκτός από method μέσα σε object ή class</strong>.</p>
+
+<h2>Παράμετροι: κανείς δεν μετράει</h2>
+<pre><code class="lang-js">function greet(name, greeting) {
+  return greeting + ", " + name
+}
+
+greet("Iris")                    // "undefined, Iris"   — no error at all
+greet("Iris", "Hi", "extra")     // "Hi, Iris"          — extra arg ignored
+
+// defaults fill in only for undefined, not for null
+function greet2(name, greeting = "Hello") {
+  return greeting + ", " + name
+}
+greet2("Iris")                   // "Hello, Iris"
+greet2("Iris", null)             // "null, Iris"   &lt;- null is a real value
+</code></pre>
+
+<p>Καμία κλήση δεν είναι λάθος αριθμού ορισμάτων. Οι επιπλέον αγνοούνται, οι ελλείποντες γίνονται <code>undefined</code>. Αυτό σημαίνει ότι δεν υπάρχει overloading όπως θα το ήξερες: μία function, ένα σώμα, και εσύ ελέγχεις τι σου ήρθε.</p>
+
+<pre><code class="lang-js">function sum(...numbers) {              // rest: a real array of everything passed
+  let total = 0
+  for (const n of numbers) total += n
+  return total
+}
+
+sum()          // 0
+sum(1, 2, 3)   // 6
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Η προεπιλογή ενεργοποιείται μόνο για <code>undefined</code>. Ένα <code>null</code> που ήρθε από API περνάει ως κανονική τιμή και καταστρέφει τη λογική σου. Αν θέλεις να καλύψεις και τα δύο, ο έλεγχος γίνεται στο σώμα με <code>??</code>.
+</div>
+`);
 
     addContent(`
 <div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Τα επτά primitives και η ερώτηση «τι είναι αυτό;»</h1>
+<h1 id="@typeof">Τα επτά primitives και η ερώτηση «τι είναι αυτό;»</h1>
 
 <h2>Ό,τι δεν είναι object, είναι primitive</h2>
 <p>Η JavaScript έχει επτά primitive τύπους. Όλα τα υπόλοιπα — arrays, functions, dates, regular expressions — είναι objects.</p>
@@ -574,102 +883,33 @@ kindOf(42)          // "Number"
 
     addContent(`
 <div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Ένας τύπος αριθμού για όλα, και το κόστος του</h1>
-<p class="lede">Η Go σου δίνει int, int8, int64, uint, float32, float64. Η JavaScript σου δίνει ένα: 64-bit floating point, ό,τι κι αν γράψεις.</p>
-
-<h2>Το κλασικό πρώτο σοκ</h2>
-<pre><code class="lang-js">console.log(0.1 + 0.2)              // 0.30000000000000004
-console.log(0.1 + 0.2 === 0.3)      // false
-</code></pre>
-
-<p>Αυτό δεν είναι ιδιαιτερότητα της JavaScript. Είναι το πρότυπο IEEE 754 και ισχύει το ίδιο για <code>float64</code> στη Go. Η διαφορά είναι ότι στη Go επέλεγες πότε δουλεύεις με floats· εδώ δεν υπάρχει επιλογή, κάθε αριθμός είναι float. Το <code>0.1 + 0.2</code> δεν ειναι ποτέ ακριβώς <code>0.3</code> λόγω της ακρίβειας των δεκαδικών</p>
-
-<h2>Πώς συγκρίνεις σωστά</h2>
-<pre><code class="lang-js">const almostEqual = (a, b) =&gt; Math.abs(a - b) &lt; Number.EPSILON * 10
-
-almostEqual(0.1 + 0.2, 0.3)   // true
-</code></pre>
-
-<p>Πρόσεξε τη διάκριση: δεν υπάρχει ακέραιος <em>τύπος</em>, υπάρχουν όμως ακέραιες <em>τιμές</em>, και αυτές αναπαρίστανται ακριβώς μέχρι ένα όριο που θα δούμε παρακάτω.</p>
-
-<h2>Το όριο των ακεραίων</h2>
-<pre><code class="lang-js">Number.MAX_SAFE_INTEGER          // 9007199254740991  (2**53 - 1)
-
-9007199254740992 === 9007199254740993   // true  — they collapsed into one value
-
-// If you truly need larger integers:
-9007199254740992n + 1n           // 9007199254740993n
-</code></pre>
-
-<p>Πάνω από αυτό το όριο, δύο διαφορετικοί ακέραιοι μπορούν να αναπαρασταθούν από την ίδια τιμή. Αν διαβάζεις IDs από API που ξεπερνούν τα 2^53, ζήτα να σου έρθουν ως strings· αλλιώς θα χάσεις σιωπηλά ψηφία.</p>
-
-<h2>Οι τρεις ειδικές τιμές</h2>
-<pre><code class="lang-js">1 / 0                    // Infinity
--1 / 0                   // -Infinity
-0 / 0                    // NaN
-
-Number("abc")            // NaN  — failed conversion, not an error
-NaN === NaN              // false — the only value not equal to itself
-Number.isNaN(NaN)        // true  — this is how you test
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Το αναγνωρίζεις;</span>
-  Στη Go, διαίρεση ακεραίου με το μηδέν προκαλούσε panic και το πρόγραμμα τερμάτιζε. Εδώ δεν τερματίζει τίποτα: παίρνεις <code>Infinity</code> ή <code>NaN</code> και συνεχίζεις. Το <code>NaN</code> έχει τη δυσάρεστη ιδιότητα ότι μεταδίδεται — κάθε πράξη με <code>NaN</code> δίνει <code>NaN</code>, οπότε ένα λάθος στη γραμμή 4 εμφανίζεται ως άκυρο αποτέλεσμα στη γραμμή 40.
-</div>
-
-<h2>Μετατροπές από κείμενο</h2>
-<pre><code class="lang-js">Number("42")        // 42
-Number("42px")      // NaN     — strict: the whole string must be a number
-Number("")          // 0       — surprising, but that is the rule
-parseInt("42px")    // 42      — lenient: reads as far as it can
-parseFloat("3.9m")  // 3.9
-parseInt("08")      // 8
-+"42"               // 42      — unary plus, same as Number()
-</code></pre>
-
-<p>Δύο διαφορετικές συμπεριφορές για δύο διαφορετικές ανάγκες. Το <code>Number()</code> λέει «αυτό ολόκληρο πρέπει να είναι αριθμός, αλλιώς απόρριψέ το» και είναι αυτό που θέλεις για validation. Το <code>parseInt()</code> λέει «διάβασε ό,τι μπορείς από την αρχή» και είναι αυτό που θέλεις όταν βγάζεις το 14 από το <code>"14px"</code> ενός CSS.</p>
-
-<h2>Στρογγυλοποίηση</h2>
-<pre><code class="lang-js">Math.round(3.5)     //  4
-Math.round(-3.5)    // -3    &lt;- rounds toward positive infinity, not away from zero
-Math.floor(-3.2)    // -4
-Math.ceil(-3.2)     // -3
-Math.trunc(-3.9)    // -3    &lt;- simply drops the decimals
-
-(1234.5678).toFixed(2)   // "1234.57"   &lt;- returns a string, not a number
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>toFixed</code> επιστρέφει string. Αν το χρησιμοποιήσεις στη μέση ενός υπολογισμού, η επόμενη πρόσθεση θα γίνει concatenation και θα πάρεις <code>"1234.575"</code> αντί για άθροισμα. Στρογγυλοποίησε μόνο στο τελευταίο βήμα, εκεί που εμφανίζεις.
-</div>
-`);
-
-    addContent(`
-<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Coercion: ο κανόνας πίσω από τις εκπλήξεις</h1>
+<h1 id="@coercion">Coercion: ο κανόνας πίσω από τις εκπλήξεις</h1>
 <p class="lede">Όταν μια πράξη συναντά τύπους που δεν ταιριάζουν, η JavaScript δεν σταματά. Μετατρέπει. Ο σκοπός αυτής της υποενότητας δεν είναι να απομνημονεύσεις πίνακες, αλλά να μάθεις τους δύο-τρεις κανόνες που τα εξηγούν όλα.</p>
 
-<h2>Πρώτα η αφελής προσέγγιση</h2>
-<p>Θέλουμε μια function που ελέγχει αν μια ποσότητα που ήρθε από input field είναι έγκυρη — δηλαδή αν είναι αριθμός μεγαλύτερος του μηδενός. Η προφανής γραφή:</p>
+<h2>Ο σωστός έλεγχος (και οι παγίδες της γλώσσας)</h2>
+<p>Όταν ελέγχεις αν ένα string από ένα input field είναι έγκυρος αριθμός, χρειάζεσαι ρητή μετατροπή και αυστηρούς ελέγχους, για να αποφύγεις τις εκπλήξεις της JavaScript.</p>
 
 <pre><code class="lang-js">function isValidQuantity(input) {
-  if (input == 0) return false      // reject zero
-  if (!input) return false          // reject empty
-  return true
+  // 1. Μετατροπή σε αριθμό ρητά (explicit conversion)
+  const num = Number(input)
+  
+  // 2. Έλεγχος αν απέτυχε η μετατροπή
+  if (Number.isNaN(num)) return false
+  
+  // 3. Ο τελικός λογικός έλεγχος
+  return num &gt; 0
 }
 
-isValidQuantity("3")      // true   — correct
-isValidQuantity("")       // false  — correct
-isValidQuantity("0")      // false  — correct
-isValidQuantity([])       // false  — correct by accident
-isValidQuantity("abc")    // true   &lt;- WRONG. Not a number at all.
-isValidQuantity(" ")      // false  — a space became zero
-isValidQuantity("00")     // false  &lt;- WRONG. That is the number 0... written oddly
+isValidQuantity("3")      // true
+isValidQuantity("")       // false
+isValidQuantity("0")      // false
+isValidQuantity("abc")    // false
 </code></pre>
 
-<p>Δύο λάθη σε επτά κλήσεις, και τα δύο σιωπηλά. Το <code>"abc"</code> περνάει επειδή είναι truthy string και δεν είναι ίσο με μηδέν. Το <code>" "</code> κόβεται επειδή το κενό string μετατρέπεται σε <code>0</code>. Δεν υπάρχει τρόπος να τα προβλέψεις χωρίς να ξέρεις τον μηχανισμό, οπότε ας τον δούμε.</p>
+<div class="callout">
+  <span class="tag">Συχνό λάθος / Coercion traps</span>
+  Αν δοκίμαζες να το γράψεις "πρόχειρα" βασιζόμενος στο <code>==</code> ή στο truthiness (π.χ. <code>if (!input)</code>), θα έπεφτες σε παγίδες: το <code>input == 0</code> θεωρεί το κενό string ως μηδέν, ενώ το <code>if (!input)</code> θεωρεί το <code>"abc"</code> ως αληθές, αφού είναι μη-κενό string. Γι' αυτό δεν βασιζόμαστε ποτέ στο implicit coercion (έμμεση μετατροπή) όταν χρειαζόμαστε ακρίβεια.
+</div>
 
 <h2>Κανόνας 1: το == μετατρέπει, το === όχι</h2>
 <p>Ο operator <code>==</code> προσπαθεί να φέρει τις δύο πλευρές σε κοινό τύπο πριν συγκρίνει. Ο <code>===</code> επιστρέφει <code>false</code> αμέσως αν οι τύποι διαφέρουν.</p>
@@ -901,6 +1141,97 @@ applySetting(undefined, defaults.volume)  // __r2__`,
       note: "Το πρώτο set είναι ορισμοί, το δεύτερο είναι επιλογή εργαλείου με βάση την ανάγκη."
     });
 
+    addContent(`
+<div class="eyebrow">Ενότητα 4 / 9 — Functions</div>
+<h1 id="@default-params">Default Parameters: Προεπιλεγμένες τιμές</h1>
+<p class="lede">Όταν μια συνάρτηση δέχεται λιγότερα ορίσματα από όσα περιμένει, οι παράμετροι που λείπουν παίρνουν την τιμή <code>undefined</code>. Για να το αποφύγεις, μπορείς να δώσεις προεπιλεγμένες τιμές (default parameters).</p>
+<h2>Σύνταξη</h2>
+<pre><code class="lang-js">function greet(name = "Επισκέπτης") {
+  console.log("Γεια σου " + name)
+}
+
+greet("Μαρία") // Γεια σου Μαρία
+greet()        // Γεια σου Επισκέπτης
+</code></pre>
+<p>Τα defaults ενεργοποιούνται <strong>μόνο</strong> όταν η τιμή είναι αυστηρά <code>undefined</code>. Αν περάσεις <code>null</code>, το default <strong>δεν</strong> ενεργοποιείται.</p>
+<pre><code class="lang-js">greet(undefined) // Γεια σου Επισκέπτης
+greet(null)      // Γεια σου null
+</code></pre>
+`);
+
+    addContent(`
+<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
+<h1>Ένας τύπος αριθμού για όλα, και το κόστος του</h1>
+<p class="lede">Η Go σου δίνει int, int8, int64, uint, float32, float64. Η JavaScript σου δίνει ένα: 64-bit floating point, ό,τι κι αν γράψεις.</p>
+
+<h2>Το κλασικό πρώτο σοκ</h2>
+<pre><code class="lang-js">console.log(0.1 + 0.2)              // 0.30000000000000004
+console.log(0.1 + 0.2 === 0.3)      // false
+</code></pre>
+
+<p>Αυτό δεν είναι ιδιαιτερότητα της JavaScript. Είναι το πρότυπο IEEE 754 και ισχύει το ίδιο για <code>float64</code> στη Go. Η διαφορά είναι ότι στη Go επέλεγες πότε δουλεύεις με floats· εδώ δεν υπάρχει επιλογή, κάθε αριθμός είναι float. Το <code>0.1 + 0.2</code> δεν ειναι ποτέ ακριβώς <code>0.3</code> λόγω της ακρίβειας των δεκαδικών</p>
+
+<h2>Πώς συγκρίνεις σωστά</h2>
+<pre><code class="lang-js">const almostEqual = (a, b) =&gt; Math.abs(a - b) &lt; Number.EPSILON * 10
+
+almostEqual(0.1 + 0.2, 0.3)   // true
+</code></pre>
+
+<p>Πρόσεξε τη διάκριση: δεν υπάρχει ακέραιος <em>τύπος</em>, υπάρχουν όμως ακέραιες <em>τιμές</em>, και αυτές αναπαρίστανται ακριβώς μέχρι ένα όριο που θα δούμε παρακάτω.</p>
+
+<h2>Το όριο των ακεραίων</h2>
+<pre><code class="lang-js">Number.MAX_SAFE_INTEGER          // 9007199254740991  (2**53 - 1)
+
+9007199254740992 === 9007199254740993   // true  — they collapsed into one value
+
+// If you truly need larger integers:
+9007199254740992n + 1n           // 9007199254740993n
+</code></pre>
+
+<p>Πάνω από αυτό το όριο, δύο διαφορετικοί ακέραιοι μπορούν να αναπαρασταθούν από την ίδια τιμή. Αν διαβάζεις IDs από API που ξεπερνούν τα 2^53, ζήτα να σου έρθουν ως strings· αλλιώς θα χάσεις σιωπηλά ψηφία.</p>
+
+<h2>Οι τρεις ειδικές τιμές</h2>
+<pre><code class="lang-js">1 / 0                    // Infinity
+-1 / 0                   // -Infinity
+0 / 0                    // NaN
+
+Number("abc")            // NaN  — failed conversion, not an error
+NaN === NaN              // false — the only value not equal to itself
+Number.isNaN(NaN)        // true  — this is how you test
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Το αναγνωρίζεις;</span>
+  Στη Go, διαίρεση ακεραίου με το μηδέν προκαλούσε panic και το πρόγραμμα τερμάτιζε. Εδώ δεν τερματίζει τίποτα: παίρνεις <code>Infinity</code> ή <code>NaN</code> και συνεχίζεις. Το <code>NaN</code> έχει τη δυσάρεστη ιδιότητα ότι μεταδίδεται — κάθε πράξη με <code>NaN</code> δίνει <code>NaN</code>, οπότε ένα λάθος στη γραμμή 4 εμφανίζεται ως άκυρο αποτέλεσμα στη γραμμή 40.
+</div>
+
+<h2>Μετατροπές από κείμενο</h2>
+<pre><code class="lang-js">Number("42")        // 42
+Number("42px")      // NaN     — strict: the whole string must be a number
+Number("")          // 0       — surprising, but that is the rule
+parseInt("42px")    // 42      — lenient: reads as far as it can
+parseFloat("3.9m")  // 3.9
+parseInt("08")      // 8
++"42"               // 42      — unary plus, same as Number()
+</code></pre>
+
+<p>Δύο διαφορετικές συμπεριφορές για δύο διαφορετικές ανάγκες. Το <code>Number()</code> λέει «αυτό ολόκληρο πρέπει να είναι αριθμός, αλλιώς απόρριψέ το» και είναι αυτό που θέλεις για validation. Το <code>parseInt()</code> λέει «διάβασε ό,τι μπορείς από την αρχή» και είναι αυτό που θέλεις όταν βγάζεις το 14 από το <code>"14px"</code> ενός CSS.</p>
+
+<h2>Στρογγυλοποίηση</h2>
+<pre><code class="lang-js">Math.round(3.5)     //  4
+Math.round(-3.5)    // -3    &lt;- rounds toward positive infinity, not away from zero
+Math.floor(-3.2)    // -4
+Math.ceil(-3.2)     // -3
+Math.trunc(-3.9)    // -3    &lt;- simply drops the decimals
+
+(1234.5678).toFixed(2)   // "1234.57"   &lt;- returns a string, not a number
+</code></pre>
+
+<div class="callout">
+  <span class="tag">Προσοχή / Συχνό λάθος</span>
+  Το <code>toFixed</code> επιστρέφει string. Αν το χρησιμοποιήσεις στη μέση ενός υπολογισμού, η επόμενη πρόσθεση θα γίνει concatenation και θα πάρεις <code>"1234.575"</code> αντί για άθροισμα. Στρογγυλοποίησε μόνο στο τελευταίο βήμα, εκεί που εμφανίζεις.
+</div>
+`);
 
     addContent(`
 <div class="eyebrow" id="@shorthand-ops">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
@@ -1058,226 +1389,6 @@ console.log(clamp(4, 0, 10))    // 4
 `);
 
     // ── Section 2 ────────────────────────────────────────────────────────── ⊃
-    addContent(`
-<div class="eyebrow" id="@reference-bug">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
-<h1>Το λάθος που κάνουν όλοι μία φορά</h1>
-<p class="lede">Στη Go, ένα struct που το περνάς σε function αντιγράφεται. Αν ήθελες να το αλλάξεις, έπρεπε να στείλεις pointer — ήταν ορατή απόφαση που τη γράφεις με έναν αστερίσκο. Εδώ δεν υπάρχει αστερίσκος, και η προεπιλογή είναι η αντίθετη.</p>
-
-<h2>Πρώτα η αφελής προσέγγιση</h2>
-<p>Θέλουμε να κρατήσουμε ένα αντίγραφο των αρχικών ρυθμίσεων πριν αφήσουμε τον χρήστη να τις πειράξει, ώστε να μπορεί να πατήσει «επαναφορά». Η προφανής γραφή:</p>
-
-<pre><code class="lang-js">const settings = { theme: "dark", fontSize: 14 }
-const backup = settings              // "copy" the settings
-
-settings.theme = "light"             // the user changes something
-
-console.log(backup.theme)            // "light"
-</code></pre>
-
-<p>Το backup άλλαξε μόνο του. Καμία γραμμή δεν το τροποποιεί, και όμως άλλαξε.</p>
-
-<h2>Γιατί συμβαίνει</h2>
-
-
-
-<p>Μια μεταβλητή στη JavaScript δεν περιέχει object. Περιέχει μια <em>αναφορά</em> σε object που ζει κάπου αλλού. Όπως συνέβαινε στη Go με τα slices. Η γραμμή <code>const backup = settings</code> αντιγράφει την αναφορά, όχι το object. Μετά από αυτήν, δύο ονόματα δείχνουν στο ίδιο πράγμα.</p>
-<div class="grid2">
-  <div class="card"><h3>Primitives — αντιγραφή τιμής</h3>
-    <p>string, number, boolean, undefined, null, symbol, bigint. Η ανάθεση φτιάχνει ανεξάρτητο αντίγραφο. Δεν υπάρχει τρόπος να τα «μοιραστούν» δύο ονόματα.</p></div>
-  <div class="card"><h3>Objects — αντιγραφή αναφοράς</h3>
-    <p>object, array, function, Date, Map, Set, RegExp. Η ανάθεση φτιάχνει δεύτερο όνομα για το ίδιο πράγμα.</p></div>
-</div>
-
-<pre><code class="lang-js">let a = 5
-let b = a
-b = 9
-console.log(a)            // 5    — untouched, they were never linked
-
-const x = { n: 5 }
-const y = x
-y.n = 9
-console.log(x.n)          // 9    — same object, two names
-</code></pre>
-
-<h2>Το ίδιο ισχύει για ορίσματα</h2>
-<p>Η JavaScript περνάει τα πάντα by value. Απλώς, για ένα object, η «τιμή» <em>είναι</em> η αναφορά. Το αποτέλεσμα φαίνεται σαν <a href="https://guides01.devs.surf/01-go-01.html#@pass-by" target="_blank" rel="noopener">pass-by-reference</a> μέχρι να προσπαθήσεις να αντικαταστήσεις ολόκληρο το object μέσα στη function:</p>
-
-<pre><code class="lang-js">
-function addTag(list) {
-  // .push() mutates the original array in memory directly.
-  // This change is visible to the variable outside the function too.
-  list.push("new")        
-}
-
-function replaceList(list) {
-  // This is reassignment (rebinding), not mutation.
-  // A brand NEW array is created in memory, and the local variable \`list\` now points to it.
-  // The link to the original array outside breaks, so the outer array is unaffected.
-  list = ["new"]          
-}
-
-// Initialize the array
-const tags = ["a"]
-
-// Call addTag, passing the tags array
-addTag(tags)
-console.log(tags)         // Logs: ["a", "new"] -> the array changed because .push() mutated it
-
-// Call replaceList, passing the already-modified tags array
-replaceList(tags)
-console.log(tags)         // Logs: ["a", "new"] -> the array is unchanged; replaceList only reassigned its local reference
-
-
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Το αναγνωρίζεις;</span>
-  Είναι ακριβώς η συμπεριφορά που είχε ένα slice στη Go: το περνούσες by value, αλλά ο υποκείμενος πίνακας ήταν κοινός, οπότε μια εγγραφή σε στοιχείο φαινόταν, ενώ ένα <code>append</code> που μεγάλωνε τη χωρητικότητα δεν φαινόταν. Ίδιος μηχανισμός, ευρύτερη εφαρμογή: εδώ ισχύει για κάθε object.
-</div>
-
-<h2>Και για τη σύγκριση</h2>
-<pre><code class="lang-js">{ a: 1 } === { a: 1 }     // false — two different objects
-[1, 2] === [1, 2]         // false
-
-const p = { a: 1 }
-const q = p
-p === q                   // true  — same reference
-</code></pre>
-
-<p>Η <code>===</code> για objects ρωτάει «είναι το ίδιο object;», όχι «έχουν το ίδιο περιεχόμενο;». Δεν υπάρχει built-in έλεγχος ισότητας περιεχομένου· τον γράφεις μόνος σου ή τον δανείζεσαι, και αυτό είναι σκόπιμη επιλογή της γλώσσας γιατί «ίδιο περιεχόμενο» σημαίνει διαφορετικά πράγματα ανά περίπτωση.</p>
-`);
-
-    addContent(`
-<div class="eyebrow" id="@shallow-copy">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
-<h1>Shallow copy: το 90% των περιπτώσεων</h1>
-<p class="lede">Τρεις γραφές που κάνουν την ίδια δουλειά, και ένα όριο που πρέπει να ξέρεις πού ακριβώς βρίσκεται.</p>
-
-<h2>Ο τελεστής spread</h2>
-<pre><code class="lang-js">const settings = { theme: "dark", fontSize: 14 }
-
-const backup = { ...settings }      // a genuinely new object
-settings.theme = "light"
-console.log(backup.theme)           // "dark"   — the bug is fixed
-
-const items = [1, 2, 3]
-const copy = [...items]             // works the same for arrays
-</code></pre>
-
-<p>Το <code>...</code> παίρνει ένα-ένα όλα τα properties του αρχικού object και τα τοποθετεί μέσα σε ένα καινούργιο. Επειδή η αντιγραφή γίνεται ξεχωριστά για κάθε property, δημιουργείται μια εντελώς νέα αναφορά στη μνήμη. Η ίδια διαδικασία χρησιμοποιείται και για τη συγχώνευση objects, όπου αν υπάρχει το ίδιο property, υπερισχύει πάντα αυτό που βρίσκεται τέρμα δεξιά:</p>
-
-<pre><code class="lang-js">const defaults = { theme: "dark", fontSize: 14, lang: "el" }
-const userPrefs = { fontSize: 18 }
-
-const final = { ...defaults, ...userPrefs }
-// { theme: "dark", fontSize: 18, lang: "el" }
-</code></pre>
-
-<p>Αυτό το ένα pattern αντικαθιστά ολόκληρη τη λογική «πάρε τις προεπιλογές, γράψε από πάνω ό,τι όρισε ο χρήστης» που θα έγραφες με loop. Θα το δεις παντού σε πραγματικό κώδικα.</p>
-
-<h2>Οι άλλες δύο γραφές</h2>
-<pre><code class="lang-js">const b1 = Object.assign({}, settings)   // older, still common
-const a1 = items.slice()                 // arrays only
-const a2 = Array.from(items)             // arrays and anything iterable
-</code></pre>
-
-<p>Πρόσεξε το <code>{}</code> ως πρώτο όρισμα στο <code>Object.assign</code>. Το πρώτο όρισμα είναι ο <em>στόχος</em> και τροποποιείται. Αν γράψεις <code>Object.assign(settings, extra)</code>, δεν αντιγράφεις — αλλάζεις το <code>settings</code>. Είναι νόμιμη χρήση, αλλά είναι διαφορετική δουλειά από αυτήν που νομίζεις ότι κάνεις.</p>
-
-<h2 id="@shallow-limit">Πού σταματάει το shallow copy</h2>
-<p>Το shallow copy αντιγράφει τις <em>τιμές</em> των properties. Αν μια τιμή είναι object, αυτό που αντιγράφεται είναι η αναφορά της — και ξαναβρισκόμαστε στο αρχικό πρόβλημα, ένα επίπεδο πιο βαθιά:</p>
-
-<pre><code class="lang-js">const profile = {
-  name: "Iris",
-  address: { city: "Athens", zip: "10431" }
-}
-
-const copy = { ...profile }
-
-copy.name = "Nikos"              // top level: independent
-console.log(profile.name)        // "Iris"        — correct
-
-copy.address.city = "Patras"     // one level deeper: shared
-console.log(profile.address.city) // "Patras"     &lt;- the bug is back
-</code></pre>
-
-<p>Αυτό είναι το ύπουλο σημείο, γιατί ο κώδικας δουλεύει σωστά για όσο τα δεδομένα σου είναι επίπεδα. Το bug εμφανίζεται την ημέρα που κάποιος προσθέτει ένα nested object σε μια δομή που μέχρι τότε ήταν απλή, και τότε κανείς δεν συνδέει το σύμπτωμα με αυτή τη γραμμή.</p>
-
-<div class="callout">
-  <span class="tag">Πότε αρκεί το shallow copy</span>
-  Όταν το object έχει μόνο primitive τιμές, ή όταν ξέρεις ότι τα nested κομμάτια δεν πρόκειται να τροποποιηθούν. Και οι δύο συνθήκες είναι πραγματικές και συχνές — μην πηδάς αυτόματα στο deep copy, έχει κόστος.
-</div>
-`);
-
-    addContent(`
-<div class="eyebrow" id="@deep-copy">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
-<h1>Deep copy: τρεις δρόμοι</h1>
-<p class="lede">Όταν χρειάζεσαι πραγματικά ανεξάρτητο αντίγραφο μιας φωλιασμένης δομής, έχεις μια έτοιμη λύση, μια πρόχειρη, και μια δική σου.</p>
-
-<h2>Πρώτα η έτοιμη</h2>
-<pre><code class="lang-js">const profile = { name: "Iris", address: { city: "Athens" }, visits: [1, 2] }
-
-const deep = structuredClone(profile)
-
-deep.address.city = "Patras"
-console.log(profile.address.city)   // "Athens"   — fully independent
-</code></pre>
-
-<p>Το <code>structuredClone</code> είναι built-in σε όλα τα σύγχρονα runtimes και είναι αυτό που θα χρησιμοποιείς. Χειρίζεται σωστά nested objects, arrays, <code>Date</code>, <code>Map</code>, <code>Set</code>, ακόμα και κυκλικές αναφορές — object που δείχνει στον εαυτό του. Δεν χειρίζεται functions ούτε class instances με τα methods τους· αν του δώσεις function, πετάει σφάλμα.</p>
-
-<h2 id="@json-roundtrip">Η πρόχειρη που θα δεις παντού</h2>
-<pre><code class="lang-js">const deep = JSON.parse(JSON.stringify(profile))
-</code></pre>
-
-<p>Δουλεύει, είναι μια γραμμή, και σιωπηλά καταστρέφει δεδομένα. Αυτό το round trip μέσω κειμένου χάνει ό,τι το JSON δεν μπορεί να αναπαραστήσει:</p>
-
-<table class="glossary-table">
-  <tr><td class="gt-term">Date</td><td class="gt-def">γίνεται string και δεν επιστρέφει ποτέ σε Date</td></tr>
-  <tr><td class="gt-term">undefined</td><td class="gt-def">το property εξαφανίζεται εντελώς από το αντίγραφο</td></tr>
-  <tr><td class="gt-term">function</td><td class="gt-def">εξαφανίζεται σιωπηλά</td></tr>
-  <tr><td class="gt-term">NaN / Infinity</td><td class="gt-def">γίνονται null</td></tr>
-  <tr><td class="gt-term">Map / Set</td><td class="gt-def">γίνονται άδεια objects</td></tr>
-  <tr><td class="gt-term">κυκλική αναφορά</td><td class="gt-def">πετάει TypeError</td></tr>
-</table>
-
-<p>Αν η δομή σου είναι καθαρά JSON — δηλαδή αν ήρθε από API — τότε το round trip είναι ασφαλές εξ ορισμού, γιατί ό,τι μπορεί να χαθεί δεν υπήρξε ποτέ. Παντού αλλού, δεν το γράφεις.</p>
-
-<h2>Πώς δουλεύει η deep copy</h2>
-<p>Το deep copy είναι ένα από τα πιο καθαρά παραδείγματα recursion σε δομή. base case για ό,τι δεν χρειάζεται αντιγραφή, ξεχωριστός κλάδος για τα arrays, γενικός κλάδος για τα objects. Προφανώς θα την χρησιμοποιείς έτοιμη, αλλά αν έπρεπε να την γράψεις μόνος σου θα έμοιαζε κάπως έτσι:</p>
-
-<pre><code class="lang-js">function deepCopy(value) {
-  // base case: primitives (and null) are copied by value already
-  if (value === null || typeof value !== "object") return value
-
-  // arrays: build a new array, copy each element recursively
-  if (Array.isArray(value)) return value.map(deepCopy)
-
-  // plain objects: build a new object, copy each property recursively
-  const out = {}
-  for (const key of Object.keys(value)) {
-    out[key] = deepCopy(value[key])
-  }
-  return out
-}
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Το αναγνωρίζεις;</span>
-  Οι τρεις ερωτήσεις της recursion που χρησιμοποιούσες στη Go ισχύουν αυτούσιες: ποιο είναι το μικρότερο πρόβλημα που ξέρω να λύσω (ένα primitive), πώς μικραίνει (κατεβαίνω ένα επίπεδο μέσα στη δομή), πώς συνθέτω (χτίζω το ίδιο σχήμα με αντιγραμμένα κομμάτια). Το ότι εδώ η recursion ακολουθεί σχήμα αντί για αριθμό δεν αλλάζει τίποτα στη σκέψη.
-</div>
-
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>if (typeof value !== "object")</code> χωρίς τον έλεγχο για <code>null</code> είναι το πιο συχνό bug σε αυτόν τον κώδικα. Θυμήσου από την Ενότητα 1: το <code>typeof null</code> δίνει <code>"object"</code>. Χωρίς τη ρητή σύγκριση, το <code>null</code> πέφτει στον κλάδο των objects και το <code>Object.keys(null)</code> πετάει TypeError.
-</div>
-
-<h2 id="@copy-decision">Πίνακας απόφασης</h2>
-<table style="width:100%;border-collapse:collapse">
-  <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.3)"><th style="text-align:left;padding:6px">Κατάσταση</th><th style="text-align:left;padding:6px">Τι χρησιμοποιείς</th></tr>
-  <tr><td style="padding:6px">Επίπεδο object, μόνο primitives</td><td style="padding:6px"><code>{ ...obj }</code></td></tr>
-  <tr><td style="padding:6px">Φωλιασμένη δομή, οποιοδήποτε περιεχόμενο</td><td style="padding:6px"><code>structuredClone(obj)</code></td></tr>
-  <tr><td style="padding:6px">Καθαρά δεδομένα JSON και θέλεις μηδέν εξαρτήσεις</td><td style="padding:6px">το round trip με <code>JSON</code></td></tr>
-  <tr><td style="padding:6px">Θέλεις έλεγχο στο τι αντιγράφεται</td><td style="padding:6px">δική σου recursive</td></tr>
-</table>
-`);
     addContent(`
 <div class="eyebrow" id="@immutability">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
 <h1>Πραγματικό κλείδωμα και αμετάβλητος κώδικας</h1>
@@ -1548,37 +1659,9 @@ function deepCopy(value) {
 <h1>Το object δεν είναι map, και αυτό έχει συνέπειες</h1>
 <p class="lede">Στη Go είχες <code>map[string]int</code> και <code>map[Point]bool</code>: ο τύπος του κλειδιού ήταν δική σου επιλογή. Εδώ το object δέχεται μόνο strings και symbols ως κλειδιά, ό,τι κι αν του δώσεις.</p>
 
-<h2>Πρώτα η αφελής προσέγγιση</h2>
-<p>Θέλουμε να κρατήσουμε πόσες φορές εμφανίστηκε το καθένα από κάποια σημεία σε ένα πλέγμα. Το κλειδί είναι ένα ζευγάρι συντεταγμένων, οπότε το προφανές είναι να το βάλουμε κατευθείαν:</p>
+<h2>Χρήση Map για σύνθετα κλειδιά</h2>
+<p>Θέλουμε να κρατήσουμε πόσες φορές εμφανίστηκε το καθένα από κάποια σημεία σε ένα πλέγμα. Όταν το κλειδί είναι ένα ζευγάρι συντεταγμένων (δηλαδή ένα object), το σωστό εργαλείο είναι το <code>Map</code>:</p>
 
-<pre><code class="lang-js">const visits = {}
-const p1 = { x: 1, y: 2 }
-const p2 = { x: 5, y: 9 }
-
-visits[p1] = 1
-visits[p2] = 1
-
-console.log(visits)          // { "[object Object]": 1 }
-console.log(Object.keys(visits).length)   // 1
-</code></pre>
-
-<p>Δύο διαφορετικά σημεία, ένα κλειδί. Όταν βάζεις οτιδήποτε που δεν είναι string ως κλειδί σε object, η JavaScript το μετατρέπει σε string πρώτα — και κάθε plain object μετατρέπεται στο ίδιο ακριβώς κείμενο, <code>"[object Object]"</code>. Το δεύτερο σημείο δεν πρόσθεσε εγγραφή, αντικατέστησε την πρώτη.</p>
-
-<pre><code class="lang-js">const weird = {}
-weird[1] = "a"
-weird["1"] = "b"
-console.log(weird)           // { "1": "b" }  — the number key became a string
-
-weird[true] = "c"            // key is "true"
-weird[null] = "d"            // key is "null"
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Αυτό δεν προκαλεί σφάλμα ποτέ. Παίρνεις ένα object με λιγότερα κλειδιά από όσα νόμιζες, και η μόνη ένδειξη είναι ότι τα νούμερα δεν βγαίνουν. Είναι από τα bugs που αναζητούνται για ώρες.
-</div>
-
-<h2>Η λύση: Map</h2>
 <pre><code class="lang-js">const visits = new Map()
 const p1 = { x: 1, y: 2 }
 const p2 = { x: 5, y: 9 }
@@ -1589,6 +1672,11 @@ visits.set(p2, 1)
 console.log(visits.size)     // 2   — the objects stayed distinct
 console.log(visits.get(p1))  // 1
 </code></pre>
+
+<div class="callout">
+  <span class="tag">Συχνό λάθος / Coercion trap</span>
+  Αν δοκίμαζες να χρησιμοποιήσεις ένα απλό object (<code>const visits = {}</code>) για να σώσεις τα σημεία, δεν θα έπαιρνες σφάλμα, αλλά η JavaScript θα μετέτρεπε σιωπηλά τα objects <code>p1</code> και <code>p2</code> στο ίδιο ακριβώς string: <code>"[object Object]"</code>. Το δεύτερο σημείο απλώς θα αντικαθιστούσε το πρώτο, δημιουργώντας bugs που αναζητούνται για ώρες.
+</div>
 
 <p>Το <code>Map</code> δέχεται οτιδήποτε ως κλειδί και το κρατάει όπως είναι. Πρόσεξε όμως: η ταυτότητα είναι πάλι αναφορά. Ένα <em>καινούργιο</em> <code>{ x: 1, y: 2 }</code> δεν θα βρει την εγγραφή του <code>p1</code>, γιατί είναι άλλο object — ακριβώς όπως στην Ενότητα 2.</p>
 
@@ -1882,20 +1970,16 @@ sum(1, 2, 3)                              // 6
 <h1>Ασφαλής πρόσβαση σε βάθος και JSON</h1>
 <p class="lede">Τα δεδομένα που έρχονται από API δεν έχουν εγγυημένο σχήμα. Δύο εργαλεία κάνουν τη διαφορά ανάμεσα σε κώδικα που αντέχει και σε κώδικα που καταρρέει στο πρώτο λειψό πεδίο.</p>
 
-<h2>Πρώτα η αφελής προσέγγιση</h2>
-<pre><code class="lang-js">const city = response.data.user.address.city
-// TypeError: Cannot read properties of undefined (reading 'city')
-</code></pre>
+<h2 id="@optional-chain">Ασφαλής πρόσβαση σε βάθος με Optional chaining (?.)</h2>
+<p>Για να αποφύγουμε την κατάρρευση αν λείπει ένα πεδίο (π.χ. το <code>address</code>), χρησιμοποιούμε το <code>?.</code>, αντί να γράφουμε τεράστιες αλυσίδες ελέγχων.</p>
 
-<p>Ένα λειψό <code>address</code> τερματίζει τη ροή. Η παλιά απάντηση ήταν αλυσίδα ελέγχων, που καταλήγει σε μια γραμμή που κανείς δεν θέλει να διαβάσει:</p>
-
-<pre><code class="lang-js">const city = response &amp;&amp; response.data &amp;&amp; response.data.user &amp;&amp;
-             response.data.user.address &amp;&amp; response.data.user.address.city
-</code></pre>
-
-<h2 id="@optional-chain">Optional chaining</h2>
 <pre><code class="lang-js">const city = response?.data?.user?.address?.city ?? "unknown"
 </code></pre>
+
+<div class="callout">
+  <span class="tag">Συχνό λάθος / TypeError trap</span>
+  Αν γράψεις κατευθείαν <code>response.data.user.address.city</code> και λείπει το <code>address</code>, το πρόγραμμα θα σκάσει με <code>TypeError: Cannot read properties of undefined</code>. Το <code>?.</code> σταματάει την αλυσίδα και επιστρέφει <code>undefined</code> μόλις συναντήσει κάτι που λείπει, σώζοντας τη ροή.
+</div>
 
 <p>Το <code>?.</code> σταματάει την αλυσίδα και επιστρέφει <code>undefined</code> μόλις συναντήσει <code>null</code> ή <code>undefined</code>, χωρίς να πετάξει σφάλμα. Το <code>??</code> στο τέλος δίνει την προεπιλογή. Δουλεύει και για κλήσεις και για δείκτες:</p>
 
@@ -2227,126 +2311,18 @@ console.log(station.city)     // "Lakeside"
 
     // ── Section 4 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@function-syntax">Ενότητα 4 / 9 — Functions ως τιμές</div>
-<h1>Τρεις γραφές για το ίδιο πράγμα, και γιατί δεν είναι ίδιες</h1>
-<p class="lede">Στη Go μια function ήταν ήδη τιμή: μπορούσες να την περάσεις, να την επιστρέψεις, να την κρατήσεις σε μεταβλητή. Εδώ ισχύει το ίδιο, αλλά η γλώσσα έχει χτιστεί ολόκληρη γύρω από αυτό, οπότε το συναντάς παντού.</p>
-
-<h2>Οι τρεις γραφές</h2>
-<pre><code class="lang-js">// 1. Declaration — hoisted, usable before its own line
-function area(w, h) {
-  return w * h
-}
-
-// 2. Expression — a value assigned to a name, like any other
-const area2 = function (w, h) {
-  return w * h
-}
-
-// 3. Arrow — the modern default
-const area3 = (w, h) =&gt; w * h
-</code></pre>
-
-<p>Η τρίτη γραφή έχει δύο μορφές. Με σώμα σε άγκιστρα χρειάζεται ρητό <code>return</code>. Χωρίς άγκιστρα, η μοναδική έκφραση επιστρέφεται αυτόματα:</p>
-
-<pre><code class="lang-js">const double = (n) =&gt; n * 2                  // implicit return
-const doubleLong = (n) =&gt; { return n * 2 }   // explicit return
-const nothing = (n) =&gt; { n * 2 }             // returns undefined  &lt;- common slip
-
-// returning an object literal needs parentheses, or the braces read as a body
-const makePoint = (x, y) =&gt; ({ x, y })
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>{ x, y }</code> είναι σύντμηση για <code>{ x: x, y: y }</code>. Είναι διαδεδομένο και θα το βλέπεις συνεχώς — αλλά μέσα σε arrow χωρίς παρενθέσεις, ο parser το διαβάζει ως σώμα function και η επιστροφή γίνεται <code>undefined</code> χωρίς κανένα σφάλμα.
-</div>
-
-<h2>Το hoisting διαφέρει</h2>
-<pre><code class="lang-js">console.log(area(2, 3))     // 6 — declarations are fully hoisted
-function area(w, h) { return w * h }
-
-console.log(area2(2, 3))    // ReferenceError — const is in the temporal dead zone
-const area2 = (w, h) =&gt; w * h
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Το αναγνωρίζεις;</span>
-  Στη Go, οι δηλώσεις σε επίπεδο package ήταν ανεξάρτητες σειράς: μπορούσες να καλέσεις μια function που ορίζεται 200 γραμμές πιο κάτω. Το <code>function</code> declaration συμπεριφέρεται ακριβώς έτσι. Οι άλλες δύο γραφές όχι — υπακούν στους κανόνες μεταβλητής της Ενότητας 1.
-</div>
-
-<h2 id="@this-binding">Η μία πραγματική διαφορά: this</h2>
-<p>Το <code>this</code> σε μια κανονική function καθορίζεται από το <em>πώς την καλείς</em>, όχι από το πού είναι γραμμένη. Σε arrow function δεν υπάρχει καθόλου δικό της <code>this</code>· κληρονομεί αυτό του σημείου όπου γράφτηκε.</p>
-
-<pre><code class="lang-js">const counter = {
-  count: 0,
-  incrementBad: () =&gt; {
-    this.count++            // "this" is NOT counter here — the arrow inherited it
-  },
-  increment() {
-    this.count++            // shorthand method: "this" is counter
-  }
-}
-</code></pre>
-
-<p>Δεν θα χρειαστείς το <code>this</code> συχνά αν γράφεις με τον τρόπο αυτού του οδηγού: μεμονωμένες functions που παίρνουν δεδομένα και επιστρέφουν δεδομένα. Θα το συναντήσεις σε παλιό κώδικα, σε classes και σε event handlers. Ο πρακτικός κανόνας: <strong>arrow παντού, εκτός από method μέσα σε object ή class</strong>.</p>
-
-<h2>Παράμετροι: κανείς δεν μετράει</h2>
-<pre><code class="lang-js">function greet(name, greeting) {
-  return greeting + ", " + name
-}
-
-greet("Iris")                    // "undefined, Iris"   — no error at all
-greet("Iris", "Hi", "extra")     // "Hi, Iris"          — extra arg ignored
-
-// defaults fill in only for undefined, not for null
-function greet2(name, greeting = "Hello") {
-  return greeting + ", " + name
-}
-greet2("Iris")                   // "Hello, Iris"
-greet2("Iris", null)             // "null, Iris"   &lt;- null is a real value
-</code></pre>
-
-<p>Καμία κλήση δεν είναι λάθος αριθμού ορισμάτων. Οι επιπλέον αγνοούνται, οι ελλείποντες γίνονται <code>undefined</code>. Αυτό σημαίνει ότι δεν υπάρχει overloading όπως θα το ήξερες: μία function, ένα σώμα, και εσύ ελέγχεις τι σου ήρθε.</p>
-
-<pre><code class="lang-js">function sum(...numbers) {              // rest: a real array of everything passed
-  let total = 0
-  for (const n of numbers) total += n
-  return total
-}
-
-sum()          // 0
-sum(1, 2, 3)   // 6
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Η προεπιλογή ενεργοποιείται μόνο για <code>undefined</code>. Ένα <code>null</code> που ήρθε από API περνάει ως κανονική τιμή και καταστρέφει τη λογική σου. Αν θέλεις να καλύψεις και τα δύο, ο έλεγχος γίνεται στο σώμα με <code>??</code>.
-</div>
-`);
-
-    addContent(`
 <div class="eyebrow" id="@closures">Ενότητα 4 / 9 — Functions ως τιμές</div>
 <h1>Closures: η μνήμη που κουβαλάει μια function</h1>
 <p class="lede">Η μία έννοια αυτής της ενότητας που δεν έχει άμεσο αντίστοιχο στον τρόπο που έγραφες Go. Δεν είναι δύσκολη· είναι απλώς ασυνήθιστη μέχρι να τη δεις να λύνει κάτι.</p>
 
-<h2>Πρώτα η αφελής προσέγγιση</h2>
-<p>Θέλουμε έναν μετρητή που να μη μπορεί να πειραχτεί από έξω. Η προφανής γραφή τον βάζει σε μεταβλητή:</p>
+<h2>Ενθυλάκωση κατάστασης (State Encapsulation)</h2>
+<p>Θέλουμε έναν μετρητή που να μη μπορεί να πειραχτεί από έξω (ένας ιδιωτικός μετρητής). Χρησιμοποιούμε μια function (closure) για να το πετύχουμε:</p>
 
-<pre><code class="lang-js">let total = 0
+<div class="callout">
+  <span class="tag">Γιατί όχι μια global μεταβλητή;</span>
+  Αν γράφαμε <code>let count = 0</code> έξω από τη function, οποιοδήποτε άλλο κομμάτι του προγράμματος θα μπορούσε να αλλάξει το <code>count</code> (π.χ. <code>count = 1000</code>). Το closure κρατάει τη μεταβλητή κρυμμένη και ασφαλή από εξωτερικές παρεμβάσεις.
+</div>
 
-function addOne() {
-  total = total + 1
-  return total
-}
-
-addOne()          // 1
-total = 1000      // anyone can do this, from anywhere
-addOne()          // 1001
-</code></pre>
-
-<p>Ο μετρητής δεν είναι μετρητής, είναι μια δημόσια μεταβλητή με μια function δίπλα της. Οποιοδήποτε άλλο κομμάτι του προγράμματος μπορεί να τη γράψει, κατά λάθος ή σκόπιμα. Σε ένα αρχείο 30 γραμμών δεν φαίνεται· σε ένα πραγματικό project είναι πηγή bugs.</p>
-
-<h2>Η λύση</h2>
 <pre><code class="lang-js">function makeCounter() {
   let count = 0                 // local to this call, invisible outside
 
@@ -3393,7 +3369,7 @@ String.fromCharCode(97)     // "a"
 <h1>Regular expressions: ένα pattern αντί για μία μηχανή καταστάσεων</h1>
 <p class="lede">Έχεις γράψει χειροκίνητο parsing χαρακτήρα προς χαρακτήρα. Ένα regex είναι η ίδια μηχανή καταστάσεων, γραμμένη σε μία γραμμή από κάποιον άλλον.</p>
 
-<h2>Πρώτα η αφελής προσέγγιση</h2>
+<h2>Η χειροκίνητη προσέγγιση (χωρίς regex)</h2>
 <p>Θέλουμε να ελέγξουμε αν ένα string είναι ώρα της μορφής <code>ΩΩ:ΛΛ</code> σε 24ωρη μορφή. Με το χέρι:</p>
 
 <pre><code class="lang-js">function isTimeManual(s) {
@@ -4319,17 +4295,8 @@ button.addEventListener("click", onClick, { signal: controller.signal })
 controller.abort()                   // removes it
 </code></pre>
 
-<h2>Πρώτα η αφελής προσέγγιση</h2>
-<pre><code class="lang-js">// attach a listener to every row
-document.querySelectorAll(".row").forEach((row) =&gt; {
-  row.addEventListener("click", () =&gt; select(row))
-})
-</code></pre>
-
-<p>Δουλεύει για τις γραμμές που υπάρχουν <em>τώρα</em>. Μόλις προσθέσεις καινούργια γραμμή — και σε δυναμική σελίδα θα προσθέσεις — εκείνη δεν έχει listener και δεν αντιδρά. Η συνηθισμένη «λύση» είναι να ξαναπερνάς και να ξαναδένεις μετά από κάθε αλλαγή, που σημαίνει χίλιοι listeners για χίλιες γραμμές και ένα σημείο ακόμα να ξεχάσεις.</p>
-
-<h2 id="@bubbling">Bubbling</h2>
-<p>Όταν συμβαίνει ένα event σε ένα στοιχείο, δεν σταματά εκεί. Ανεβαίνει από γονέα σε γονέα μέχρι το <code>document</code>, ενεργοποιώντας κάθε listener στη διαδρομή. Αυτό λέγεται bubbling και είναι αυτό που κάνει δυνατή τη λύση:</p>
+<h2 id="@bubbling">Event Delegation και Bubbling</h2>
+<p>Όταν συμβαίνει ένα event σε ένα στοιχείο, δεν σταματά εκεί. Ανεβαίνει από γονέα σε γονέα μέχρι το <code>document</code>, ενεργοποιώντας κάθε listener στη διαδρομή. Αυτό λέγεται bubbling και μας επιτρέπει να βάλουμε <em>έναν</em> listener σε έναν γονέα, αντί για χίλιους στα παιδιά του:</p>
 
 <pre><code class="lang-js">// ONE listener, on the container, forever
 list.addEventListener("click", (event) =&gt; {
@@ -4342,6 +4309,11 @@ list.addEventListener("click", (event) =&gt; {
 </code></pre>
 
 <p>Αυτό λέγεται event delegation. Ο listener μπαίνει μία φορά στον γονέα και δουλεύει για κάθε γραμμή — τωρινή ή μελλοντική — χωρίς να ξέρει τίποτα για το πόσες είναι.</p>
+
+<div class="callout">
+  <span class="tag">Συχνό λάθος</span>
+  Μην προσπαθείς να βάλεις listener σε κάθε παιδί ξεχωριστά με <code>document.querySelectorAll(".row").forEach(...)</code>. Αυτό δουλεύει μόνο για τα στοιχεία που υπάρχουν <em>εκείνη τη στιγμή</em>. Όσα προστεθούν δυναμικά αργότερα δεν θα έχουν listener, και η σελίδα σου θα γεμίσει περιττούς listeners που καταναλώνουν μνήμη.
+</div>
 
 <div class="callout">
   <span class="tag">Πότε το αναγνωρίζεις</span>
