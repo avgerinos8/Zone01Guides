@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="el">
 
 <head>
@@ -126,27 +126,29 @@
     </div>
 
     <div id="toc-list">
-      <div class="toc-section">ΒΑΣΙΚΑ (Βάσει ασκήσεων)</div>
+      <div class="toc-section">ΕΙΣΑΓΩΓΗ & ΒΑΣΙΚΕΣ ΕΝΝΟΙΕΣ</div>
       <a href="#@runtime-diffs" class="toc-link toc-h1">Διαφορές JS σε browser, Node.js κλπ.</a>
       <a href="#@const-let" class="toc-link toc-h1">const vs let &amp; Τύποι</a>
-      <a href="#@object-literal" class="toc-link toc-h1">Δημιουργία Objects</a>
+      <a href="#@object-literal" class="toc-link toc-h1">Δημιουργία Objects και Object Literals</a>
       <a href="#@copying-objects" class="toc-link toc-h1">Copy by reference</a>
       <a href="#@shallow-copy" class="toc-link toc-h1">Shallow copy</a>
+      <a href="#@shallow-limit" class="toc-link toc-h2">Πού σταματάει το shallow copy</a>
       <a href="#@deep-copy" class="toc-link toc-h1">Deep copy (structuredClone)</a>
+      <a href="#@json-roundtrip" class="toc-link toc-h2">Το JSON round trip</a>
+      <a href="#@copy-decision" class="toc-link toc-h2">Πίνακας απόφασης</a>
       <a href="#@functions" class="toc-link toc-h1">Functions</a>
+      <a href="#@this-binding" class="toc-link toc-h2">Η μία πραγματική διαφορά: this</a>
       <a href="#@typeof" class="toc-link toc-h1">typeof</a>
       <a href="#@coercion" class="toc-link toc-h1">truthy / falsy</a>
+      
+      <div class="toc-section">ΤΕΛΕΣΤΕΣ & ΕΛΕΓΧΟΣ ΡΟΗΣ</div>
       <a href="#@default-params" class="toc-link toc-h1">Default Parameters</a>
-
-      <div class="toc-section">ΕΝΟΤΗΤΑ 1 — VALUES &amp; TYPES (Συνέχεια)</div>
       <a href="#@shorthand-ops" class="toc-link toc-h1">Τιμές, τελεστές, μεταβλητές</a>
       <a href="#@ternary" class="toc-link toc-h1">Ο ternary operator</a>
 
-      <div class="toc-section">ΕΝΟΤΗΤΑ 2 — REFERENCES &amp; COPYING</div>
+      <div class="toc-section">ΔΟΜΕΣ ΔΕΔΟΜΕΝΩΝ: OBJECT, ARRAY, MAP, SET</div>
       <a href="#@immutability" class="toc-link toc-h1">Object.freeze &amp; immutability</a>
       <a href="#@mutate-methods" class="toc-link toc-h2">Mutating array methods</a>
-
-      <div class="toc-section">ΕΝΟΤΗΤΑ 3 — DATA STRUCTURES</div>
       <a href="#@object-not-map" class="toc-link toc-h1">Το object δεν είναι map</a>
       <a href="#@key-exists" class="toc-link toc-h2">Υπάρχει αυτό το κλειδί;</a>
       <a href="#@map-and-set" class="toc-link toc-h1">Map και Set</a>
@@ -157,12 +159,8 @@
       <a href="#@param-destruct" class="toc-link toc-h2">Destructuring σε παραμέτρους</a>
       <a href="#@deep-access" class="toc-link toc-h1">Ασφαλής πρόσβαση σε βάθος &amp; JSON</a>
       <a href="#@optional-chain" class="toc-link toc-h2">Optional chaining</a>
-      <a href="#@literals-recap" class="toc-link toc-h1">Object literals</a>
-      <a href="#@access-recap" class="toc-link toc-h1">Πρόσβαση &amp; ανάθεση</a>
 
-      <div class="toc-section">ΕΝΟΤΗΤΑ 4 — FUNCTIONS</div>
-      <a href="#@function-syntax" class="toc-link toc-h1">Τρεις γραφές για functions</a>
-      <a href="#@this-binding" class="toc-link toc-h2">this στις arrow functions</a>
+      <div class="toc-section">ΠΡΟΧΩΡΗΜΕΝΕΣ FUNCTIONS</div>
       <a href="#@closures" class="toc-link toc-h1">Closures</a>
       <a href="#@var-loop-trap" class="toc-link toc-h2">Η παγίδα του var σε loop</a>
       <a href="#@higher-order" class="toc-link toc-h1">Functions που φτιάχνουν functions</a>
@@ -173,8 +171,8 @@
       <a href="#@nesting-recap" class="toc-link toc-h1">Εμφωλιασμένες κλήσεις</a>
       <a href="#@recursion-recap" class="toc-link toc-h1">Recursion σε JS</a>
 
-      <div class="toc-section">ΕΝΟΤΗΤΑ 5 — COLLECTIONS</div>
-      <a href="#@declarative" class="toc-link toc-h1">Από «πώς» σε «τι»</a>
+      <div class="toc-section">ΔΗΛΩΤΙΚΗ ΕΠΕΞΕΡΓΑΣΙΑ ΣΥΛΛΟΓΩΝ</div>
+      <a href="#@declarative" class="toc-link toc-h1">Δηλωτικός προγραμματισμός</a>
       <a href="#@chain-cost" class="toc-link toc-h2">Το κόστος της αλυσίδας</a>
       <a href="#@reduce" class="toc-link toc-h1">reduce</a>
       <a href="#@reduce-seed" class="toc-link toc-h2">Το seed δεν είναι προαιρετικό</a>
@@ -184,7 +182,7 @@
       <a href="#@sort-multi" class="toc-link toc-h2">Ταξινόμηση με δύο κριτήρια</a>
       <a href="#@loops-recap" class="toc-link toc-h1">While &amp; for...of</a>
 
-      <div class="toc-section">ΕΝΟΤΗΤΑ 6 — TEXT &amp; REGEX</div>
+      <div class="toc-section">ΚΕΙΜΕΝΟ &amp; REGULAR EXPRESSIONS</div>
       <a href="#@strings" class="toc-link toc-h1">Strings</a>
       <a href="#@slice-substring" class="toc-link toc-h2">slice vs substring</a>
       <a href="#@regex-intro" class="toc-link toc-h1">Regex: ένα pattern</a>
@@ -196,8 +194,8 @@
       <a href="#@regex-backtrack" class="toc-link toc-h2">Καταστροφική υποχώρηση</a>
       <a href="#@split-join-recap" class="toc-link toc-h1">Split &amp; join</a>
 
-      <div class="toc-section">ΕΝΟΤΗΤΑ 7 — DATES &amp; TIME</div>
-      <a href="#@date-as-number" class="toc-link toc-h1">Το Date ως αριθμός</a>
+      <div class="toc-section">ΗΜΕΡΟΜΗΝΙΕΣ &amp; ΧΡΟΝΟΣ</div>
+      <a href="#@date-as-number" class="toc-link toc-h1">Ημερομηνίες (Date)</a>
       <a href="#@date-creation" class="toc-link toc-h2">Δημιουργία: τρεις παγίδες</a>
       <a href="#@date-math" class="toc-link toc-h1">Αριθμητική ημερομηνιών</a>
       <a href="#@normalization" class="toc-link toc-h2">Η κανονικοποίηση</a>
@@ -205,8 +203,8 @@
       <a href="#@date-format" class="toc-link toc-h1">Εμφάνιση ημερομηνίας</a>
       <a href="#@intl-format" class="toc-link toc-h2">Intl.DateTimeFormat</a>
 
-      <div class="toc-section">ΕΝΟΤΗΤΑ 8 — DOM</div>
-      <a href="#@dom-tree" class="toc-link toc-h1">Η σελίδα ως δέντρο</a>
+      <div class="toc-section">ΤΟ DOM (DOCUMENT OBJECT MODEL)</div>
+      <a href="#@dom-tree" class="toc-link toc-h1">Το DOM</a>
       <a href="#@live-vs-static" class="toc-link toc-h2">Ζωντανές vs στατικές συλλογές</a>
       <a href="#@dom-content" class="toc-link toc-h1">Δημιουργία περιεχομένου</a>
       <a href="#@xss-risk" class="toc-link toc-h2">innerHTML &amp; XSS</a>
@@ -217,10 +215,10 @@
       <a href="#@layout-thrash" class="toc-link toc-h2">Layout thrashing</a>
       <a href="#@state-render" class="toc-link toc-h2">State → render</a>
 
-      <div class="toc-section">ΕΝΟΤΗΤΑ 9 — ASYNC</div>
-      <a href="#@single-thread" class="toc-link toc-h1">Ένα νήμα</a>
+      <div class="toc-section">ΑΣΥΓΧΡΟΝΗ JAVASCRIPT</div>
+      <a href="#@single-thread" class="toc-link toc-h1">Single Thread</a>
       <a href="#@two-queues" class="toc-link toc-h2">Microtasks vs macrotasks</a>
-      <a href="#@promises" class="toc-link toc-h1">Από callbacks σε Promises</a>
+      <a href="#@promises" class="toc-link toc-h1">Promises</a>
       <a href="#@unhandled-reject" class="toc-link toc-h2">Unhandled rejection</a>
       <a href="#@async-await" class="toc-link toc-h1">async / await</a>
       <a href="#@await-loop-trap" class="toc-link toc-h2">Η παγίδα του await σε loop</a>
@@ -231,11 +229,11 @@
       <a href="#@throttle" class="toc-link toc-h2">Throttle</a>
       <a href="#@why-promises" class="toc-link toc-h1">Γιατί το Promise</a>
 
-      <div class="toc-section">ΤΕΛΙΚΗ ΕΠΑΝΑΛΗΨΗ</div>
+      <div class="toc-section">ΑΝΑΚΕΦΑΛΑΙΩΣΗ</div>
       <a href="#@course-recap" class="toc-link toc-h1">Τελική επανάληψη</a>
       <a href="#@debug-questions" class="toc-link toc-h2">Τέσσερις ερωτήσεις debugging</a>
     </div>
-
+    
     <div id="toc-footer">
       <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
         <span class="desktop-text">Return Home</span>
@@ -264,7 +262,7 @@
 `);
 
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
+<div class="eyebrow">Τιμές, τύποι και το runtime</div>
 <h1 id="@runtime-diffs">Πού εκτελείται η JavaScript</h1>
 <p class="lede">Στη Go γράφεις κώδικα, τον δίνεις στον compiler, και ο compiler σου επισημαίνει τα λάθη πριν εκτελεστεί οτιδήποτε. Στη JavaScript αυτό το βήμα δεν υπάρχει. Από αυτή τη διαφορά προκύπτουν οι περισσότερες από όσες θα δούμε στη συνέχεια.</p>
 
@@ -423,8 +421,8 @@ console.log(price * shipping)      // 15     — here it became a number
 `);
 
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1 id="@const-let">Δηλώσεις: const, let και το var που δεν χρησιμοποιούμε</h1>
+<div class="eyebrow">Τιμές, τύποι και το runtime</div>
+<h1 id="@const-let">const, let και var</h1>
 <p class="lede">Τρεις λέξεις-κλειδιά για την ίδια δουλειά. Δύο από αυτές είναι σύγχρονες, μία επιβιώνει από το 1995 και υπάρχει σε αυτόν τον οδηγό μόνο για να ξέρεις γιατί την αποφεύγεις.</p>
 
 <h2>Ο κανόνας σε μία γραμμή</h2>
@@ -497,24 +495,108 @@ let b = 1
 </div>
 `);
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1 id="@object-literal">Δημιουργία Objects</h1>
-<p class="lede">Τα objects στη JavaScript είναι δυναμικά και μπορείς να προσθέσεις ή να αφαιρέσεις ιδιότητες (properties) οποιαδήποτε στιγμή.</p>
-<h2>Το Object Literal</h2>
-<p>Ο πιο συνηθισμένος τρόπος δημιουργίας είναι τα άγκιστρα (object literal):</p>
-<pre><code class="lang-js">const user = { 
-  name: "Alice", 
-  age: 25 
+<div class="eyebrow">Δομές δεδομένων: Object, Array, Map, Set</div>
+<h1 id="@object-literal">Δημιουργία Objects και Object Literals</h1>
+<p class="lede">Σύντομη επανάληψη στη σύνταξη, κάτι αντίστοιχο έχεις ήδη δει στα <a href="https://guides01.devs.surf/01-go-01.html#@literals" target="_blank" rel="noopener">literals</a> της Go, πριν προχωρήσουμε βαθύτερα σε φώλιασμα object/array.</p>
+
+<h2>Το βασικό σχήμα</h2>
+<pre><code class="lang-js">console.log({})   // an empty object
+
+console.log({ title: "The Great Gatsby" })
+// one key, one value
+
+console.log({
+  title: "The Great Gatsby",
+  author: "F. Scott Fitzgerald",
+  year: 1925,
+  pages: 180,
+})
+// each property on its own line — the trailing comma is allowed and idiomatic
+</code></pre>
+<p>Αν το κλειδί είναι έγκυρο identifier (όπως <code>title</code>), γράφεται χωρίς εισαγωγικά. Αν περιέχει κενό ή ειδικό χαρακτήρα, χρειάζεται εισαγωγικά και μετά αγκύλες για πρόσβαση — το ξέρεις ήδη από την προηγούμενη ενότητα.</p>
+
+<h2>Φώλιασμα και επαναχρησιμοποίηση</h2>
+<pre><code class="lang-js">const publisher = {
+  name: "Scribner",
+  country: "USA",
 }
 
-user.role = "admin" // Προσθήκη νέου property δυναμικά!
-delete user.age     // Διαγραφή υπάρχοντος
+const book = {
+  title: "The Great Gatsby",
+  publisher,   // shorthand: same as publisher: publisher
+}
+
+console.log(book)
+
+// arrays of objects, freely mixed
+const library = [
+  book,
+  { title: "1984", publisher: { name: "Secker & Warburg", country: "UK" } },
+]
+
+console.log(library[1].publisher.name)
 </code></pre>
-<p>Αυτή η ελευθερία έρχεται με τεράστια ευθύνη, ειδικά όταν περνάμε τα objects από μεταβλητή σε μεταβλητή.</p>
+<p>Το shorthand <code>publisher,</code> αντί για <code>publisher: publisher,</code> δουλεύει μόνο όταν το όνομα της μεταβλητής ταιριάζει ακριβώς με το κλειδί που θέλεις.</p>
+
+<h2>Χτίζοντας ένα object ιδιότητα-ιδιότητα</h2>
+<p>Σε αντίθεση με ένα Go struct, που έχει σταθερό σχήμα από τη στιγμή που ορίζεται ο τύπος του, ένα plain object στη JavaScript μπορεί να ξεκινήσει άδειο και να αποκτήσει ιδιότητες δυναμικά:</p>
+<pre><code class="lang-js">const station = {}
+
+console.log(station.name)   // undefined — nothing there yet
+
+station.name = "Central Station"
+station.city = "Springfield"
+
+console.log(station)   // { name: "Central Station", city: "Springfield" }
+
+// nested objects can be built the same way
+station.coords = {}
+station.coords.lat = 37.99
+station.coords.lon = 23.72
+
+console.log(station.coords)   // { lat: 37.99, lon: 23.72 }
+</code></pre>
+<p>Δεν χρειάζεται <code>const</code> ή <code>let</code> για να προσθέσεις ιδιότητα — δεν φτιάχνεις καινούργια μεταβλητή, απλώς γράφεις πάνω στο ήδη υπάρχον object.</p>
+
+<h2>Ο κανόνας: πρέπει να υπάρχει το ενδιάμεσο</h2>
+<pre><code class="lang-js">const empty = {}
+
+// empty.coords.lat = 10
+// TypeError: Cannot set properties of undefined (setting 'lat')
+
+empty.coords = {}       // first, make the intermediate object exist
+empty.coords.lat = 10   // now this works
+</code></pre>
+<p>Ο έλεγχος γίνεται πρώτα, η ανάθεση μετά. Αν το <code>coords</code> δεν υπάρχει ακόμα, δεν υπάρχει πάνω σε τι να γράψεις το <code>lat</code>.</p>
 `);
 
+    addQuiz([
+      {
+        q: "Γιατί το const book = { title, publisher } λειτουργεί χωρίς να γράψεις τα δύο άνω-κάτω τελεία;",
+        options: [
+          "Είναι shorthand: όταν το όνομα της μεταβλητής ταιριάζει με το κλειδί που θες, μπορείς να παραλείψεις το key:",
+          "Επειδή τα title και publisher είναι δεσμευμένες λέξεις της JavaScript",
+          "Επειδή το object literal δέχεται μόνο μεταβλητές, ποτέ σταθερές τιμές",
+          "Δεν λειτουργεί πραγματικά — χρειάζεται πάντα το πλήρες key: value"
+        ],
+        correct: 0,
+        explain: "Το shorthand δουλεύει μόνο όταν το identifier ταιριάζει ακριβώς με το κλειδί. Αν ήθελες διαφορετικό όνομα κλειδιού, θα χρειαζόσουν το πλήρες key: value."
+      },
+      {
+        q: "Γιατί το empty.coords.lat = 10 πετάει σφάλμα σε άδειο object, ενώ το empty.coords = {} δουλεύει;",
+        options: [
+          "Γιατί η ανάθεση χρειάζεται πρώτα να υπάρχει το ενδιάμεσο object πάνω στο οποίο θα γραφτεί το επόμενο κλειδί",
+          "Γιατί δεν επιτρέπεται φωλιασμένη ανάθεση σε καμία περίπτωση στη JavaScript",
+          "Γιατί το coords είναι δεσμευμένη λέξη και δεν μπορεί να χρησιμοποιηθεί ως κλειδί",
+          "Γιατί χρειάζεται ρητά Object.assign για κάθε φωλιασμένη ανάθεση"
+        ],
+        correct: 0,
+        explain: "empty.coords είναι undefined, και δεν μπορείς να γράψεις property πάνω σε undefined. Πρέπει πρώτα να υπάρχει ένα object εκεί ώστε το .lat να έχει πού να γραφτεί."
+      }
+    ]);
+
     addContent(`
-<div class="eyebrow" id="@reference-bug">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
+<div class="eyebrow" id="@reference-bug">Αναφορές, αντιγραφή και μεταβλητότητα</div>
 <h1 id="@copying-objects">Αντιγραφή ενός object</h1>
 <p class="lede">Στη Go, ένα struct που το περνάς σε function αντιγράφεται. Αν ήθελες να το αλλάξεις, έπρεπε να στείλεις pointer — ήταν ορατή απόφαση που τη γράφεις με έναν αστερίσκο. Εδώ δεν υπάρχει αστερίσκος, και η προεπιλογή είναι η αντίθετη.</p>
 
@@ -603,8 +685,8 @@ p === q                   // true  — same reference
 `);
 
     addContent(`
-<div class="eyebrow" id="@shallow-copy">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
-<h1 id="@shallow-copy">Shallow copy: το 90% των περιπτώσεων</h1>
+<div class="eyebrow" id="@shallow-copy">Αναφορές, αντιγραφή και μεταβλητότητα</div>
+<h1 id="@shallow-copy">Shallow copy</h1>
 <p class="lede">Τρεις γραφές που κάνουν την ίδια δουλειά, και ένα όριο που πρέπει να ξέρεις πού ακριβώς βρίσκεται.</p>
 
 <h2>Ο τελεστής spread</h2>
@@ -663,8 +745,8 @@ console.log(profile.address.city) // "Patras"     &lt;- the bug is back
 `);
 
     addContent(`
-<div class="eyebrow" id="@deep-copy">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
-<h1 id="@deep-copy">Deep copy: δύο δρόμοι</h1>
+<div class="eyebrow" id="@deep-copy">Αναφορές, αντιγραφή και μεταβλητότητα</div>
+<h1 id="@deep-copy">Deep copy</h1>
 <p class="lede">Όταν χρειάζεσαι πραγματικά ανεξάρτητο αντίγραφο μιας φωλιασμένης δομής, έχεις μια έτοιμη λύση και μια πρόχειρη.</p>
 
 <h2>Πρώτα η έτοιμη</h2>
@@ -704,8 +786,8 @@ console.log(profile.address.city)   // "Athens"   — fully independent
 </table>
 `);
     addContent(`
-<div class="eyebrow" id="@function-syntax">Ενότητα 4 / 9 — Functions ως τιμές</div>
-<h1 id="@functions">Τρεις γραφές για το ίδιο πράγμα, και γιατί δεν είναι ίδιες</h1>
+<div class="eyebrow" id="@function-syntax">Functions ως τιμές</div>
+<h1 id="@functions">Functions</h1>
 <p class="lede">Στη Go μια function ήταν ήδη τιμή: μπορούσες να την περάσεις, να την επιστρέψεις, να την κρατήσεις σε μεταβλητή. Εδώ ισχύει το ίδιο, αλλά η γλώσσα έχει χτιστεί ολόκληρη γύρω από αυτό, οπότε το συναντάς παντού.</p>
 
 <h2>Οι τρεις γραφές</h2>
@@ -802,8 +884,8 @@ sum(1, 2, 3)   // 6
 `);
 
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1 id="@typeof">Τα επτά primitives και η ερώτηση «τι είναι αυτό;»</h1>
+<div class="eyebrow">Τιμές, τύποι και το runtime</div>
+<h1 id="@typeof">Τύποι δεδομένων (Primitives)</h1>
 
 <h2>Ό,τι δεν είναι object, είναι primitive</h2>
 <p>Η JavaScript έχει επτά primitive τύπους. Όλα τα υπόλοιπα — arrays, functions, dates, regular expressions — είναι objects.</p>
@@ -882,8 +964,8 @@ kindOf(42)          // "Number"
 `);
 
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1 id="@coercion">Coercion: ο κανόνας πίσω από τις εκπλήξεις</h1>
+<div class="eyebrow">Τιμές, τύποι και το runtime</div>
+<h1 id="@coercion">Coercion (Μετατροπές τύπων)</h1>
 <p class="lede">Όταν μια πράξη συναντά τύπους που δεν ταιριάζουν, η JavaScript δεν σταματά. Μετατρέπει. Ο σκοπός αυτής της υποενότητας δεν είναι να απομνημονεύσεις πίνακες, αλλά να μάθεις τους δύο-τρεις κανόνες που τα εξηγούν όλα.</p>
 
 <h2>Ο σωστός έλεγχος (και οι παγίδες της γλώσσας)</h2>
@@ -1142,8 +1224,8 @@ applySetting(undefined, defaults.volume)  // __r2__`,
     });
 
     addContent(`
-<div class="eyebrow">Ενότητα 4 / 9 — Functions</div>
-<h1 id="@default-params">Default Parameters: Προεπιλεγμένες τιμές</h1>
+<div class="eyebrow">Functions</div>
+<h1 id="@default-params">Default Parameters</h1>
 <p class="lede">Όταν μια συνάρτηση δέχεται λιγότερα ορίσματα από όσα περιμένει, οι παράμετροι που λείπουν παίρνουν την τιμή <code>undefined</code>. Για να το αποφύγεις, μπορείς να δώσεις προεπιλεγμένες τιμές (default parameters).</p>
 <h2>Σύνταξη</h2>
 <pre><code class="lang-js">function greet(name = "Επισκέπτης") {
@@ -1160,8 +1242,8 @@ greet(null)      // Γεια σου null
 `);
 
     addContent(`
-<div class="eyebrow">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Ένας τύπος αριθμού για όλα, και το κόστος του</h1>
+<div class="eyebrow">Τιμές, τύποι και το runtime</div>
+<h1>Numbers</h1>
 <p class="lede">Η Go σου δίνει int, int8, int64, uint, float32, float64. Η JavaScript σου δίνει ένα: 64-bit floating point, ό,τι κι αν γράψεις.</p>
 
 <h2>Το κλασικό πρώτο σοκ</h2>
@@ -1234,8 +1316,8 @@ Math.trunc(-3.9)    // -3    &lt;- simply drops the decimals
 `);
 
     addContent(`
-<div class="eyebrow" id="@shorthand-ops">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Τιμές, τελεστές και σύντομη ανάθεση</h1>
+<div class="eyebrow" id="@shorthand-ops">Τιμές, τύποι και το runtime</div>
+<h1>Τιμές και τελεστές</h1>
 <p class="lede">Σύντομη επανάληψη: τους σύντομους τελεστές ανάθεσης και τους κανόνες ονομάτων τους έχεις ήδη δει στις <a href="https://guides01.devs.surf/01-go-01.html#@variables" target="_blank" rel="noopener">μεταβλητές</a>, τους <a href="https://guides01.devs.surf/01-go-01.html#@operators" target="_blank" rel="noopener">operators</a> και το <a href="https://guides01.devs.surf/01-go-01.html#@shortvardeclaration" target="_blank" rel="noopener">short variable declaration</a> της Go.</p>
 
 <h2>Οι σύντομοι τελεστές ανάθεσης</h2>
@@ -1277,8 +1359,8 @@ let _internal          // valid — underscore prefix, often means "private by c
 `);
 
     addContent(`
-<div class="eyebrow" id="@ternary">Ενότητα 1 / 9 — Τιμές, τύποι και το runtime</div>
-<h1>Ο ternary operator: if/else σε μία έκφραση</h1>
+<div class="eyebrow" id="@ternary">Τιμές, τύποι και το runtime</div>
+<h1>Ternary operator</h1>
 <p class="lede">Κάτι που η Go δεν έχει καθόλου: έναν τρόπο να διαλέξεις ανάμεσα σε δύο τιμές μέσα στην ίδια γραμμή, χωρίς if.</p>
 
 <h2>Η σύνταξη</h2>
@@ -1370,7 +1452,7 @@ console.log(clamp(4, 0, 10))    // 4
     ]);
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 1 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
   <div class="gc-line"><span class="gc-term">runtime</span><span class="gc-def">το περιβάλλον που εκτελεί τον κώδικα και του δανείζει εργαλεία</span></div>
@@ -1390,8 +1472,8 @@ console.log(clamp(4, 0, 10))    // 4
 
     // ── Section 2 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@immutability">Ενότητα 2 / 9 — Αναφορές, αντιγραφή και μεταβλητότητα</div>
-<h1>Πραγματικό κλείδωμα και αμετάβλητος κώδικας</h1>
+<div class="eyebrow" id="@immutability">Αναφορές, αντιγραφή και μεταβλητότητα</div>
+<h1>Object.freeze & Immutability</h1>
 <p class="lede">Το <code>const</code> προστατεύει τη μεταβλητή, όχι το περιεχόμενό της. Εδώ θα δούμε πώς κλειδώνουμε πραγματικά τα δεδομένα, αλλά και γιατί η καλύτερη άμυνα είναι συχνά να μην τα τροποποιούμε εξ αρχής.</p>
 
 <h2>Object.freeze</h2>
@@ -1638,7 +1720,7 @@ function deepCopy(value) {
     });
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 2 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <table class="glossary-table">
   <tr><td class="gt-term">reference</td><td class="gt-def">αυτό που κρατάει μια μεταβλητή όταν η τιμή είναι object</td></tr>
@@ -1655,8 +1737,8 @@ function deepCopy(value) {
 
     // ── Section 3 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@object-not-map">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
-<h1>Το object δεν είναι map, και αυτό έχει συνέπειες</h1>
+<div class="eyebrow" id="@object-not-map">Δομές δεδομένων: Object, Array, Map, Set</div>
+<h1>Το object δεν είναι map</h1>
 <p class="lede">Στη Go είχες <code>map[string]int</code> και <code>map[Point]bool</code>: ο τύπος του κλειδιού ήταν δική σου επιλογή. Εδώ το object δέχεται μόνο strings και symbols ως κλειδιά, ό,τι κι αν του δώσεις.</p>
 
 <h2>Χρήση Map για σύνθετα κλειδιά</h2>
@@ -1735,8 +1817,8 @@ Object.fromEntries([["a", 1], ["b", 2]])   // { a: 1, b: 2 }
 `);
 
     addContent(`
-<div class="eyebrow" id="@map-and-set">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
-<h1>Map και Set: πότε αξίζουν τη διαφορά</h1>
+<div class="eyebrow" id="@map-and-set">Δομές δεδομένων: Object, Array, Map, Set</div>
+<h1>Map και Set</h1>
 <p class="lede">Δύο δομές που κάνουν σχεδόν ό,τι κάνει το object, με λιγότερες εκπλήξεις και ένα μικρό κόστος σε ευκολία.</p>
 
 <h2>Map</h2>
@@ -1829,8 +1911,8 @@ function countLettersMap(text) {
 `);
 
     addContent(`
-<div class="eyebrow" id="@arrays-untyped">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
-<h1>Πίνακες: τι αλλάζει όταν φύγει ο τύπος</h1>
+<div class="eyebrow" id="@arrays-untyped">Δομές δεδομένων: Object, Array, Map, Set</div>
+<h1>Arrays</h1>
 <p class="lede">Δεν υπάρχει διάκριση array και slice, δεν υπάρχει χωρητικότητα, δεν υπάρχει τύπος στοιχείου. Υπάρχει ένα object με αριθμητικά κλειδιά και μια property που λέγεται length.</p>
 
 <h2>Το μέγεθος είναι γραφόμενο</h2>
@@ -1890,8 +1972,8 @@ nested.flat(Infinity)        // [1, 2, 3, 4]         — all the way down
 `);
 
     addContent(`
-<div class="eyebrow" id="@destructuring">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
-<h1>Destructuring: να βγάζεις μόνο ό,τι χρειάζεσαι</h1>
+<div class="eyebrow" id="@destructuring">Δομές δεδομένων: Object, Array, Map, Set</div>
+<h1>Destructuring</h1>
 <p class="lede">Δεν είναι συντομογραφία για χάρη της συντομίας. Είναι ο τρόπος με τον οποίο γράφεται σχεδόν κάθε σύγχρονη JavaScript, και αν δεν το διαβάζεις άνετα δεν διαβάζεις τον κώδικα των άλλων.</p>
 
 <h2>Από πίνακες: θέση</h2>
@@ -1966,8 +2048,8 @@ sum(1, 2, 3)                              // 6
 `);
 
     addContent(`
-<div class="eyebrow" id="@deep-access">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
-<h1>Ασφαλής πρόσβαση σε βάθος και JSON</h1>
+<div class="eyebrow" id="@deep-access">Δομές δεδομένων: Object, Array, Map, Set</div>
+<h1>Ασφαλής πρόσβαση & JSON</h1>
 <p class="lede">Τα δεδομένα που έρχονται από API δεν έχουν εγγυημένο σχήμα. Δύο εργαλεία κάνουν τη διαφορά ανάμεσα σε κώδικα που αντέχει και σε κώδικα που καταρρέει στο πρώτο λειψό πεδίο.</p>
 
 <h2 id="@optional-chain">Ασφαλής πρόσβαση σε βάθος με Optional chaining (?.)</h2>
@@ -2169,132 +2251,9 @@ getPath({ a: {} }, "a.b.c")        // undefined`,
     ], { allowHTML: true });
 
 
-    addContent(`
-<div class="eyebrow" id="@literals-recap">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
-<h1>Πώς χτίζεται ένα object literal</h1>
-<p class="lede">Σύντομη επανάληψη στη σύνταξη, κάτι αντίστοιχο έχεις ήδη δει στα <a href="https://guides01.devs.surf/01-go-01.html#@literals" target="_blank" rel="noopener">literals</a> της Go, πριν προχωρήσουμε βαθύτερα σε φώλιασμα object/array.</p>
-
-<h2>Το βασικό σχήμα</h2>
-<pre><code class="lang-js">console.log({})   // an empty object
-
-console.log({ title: "The Great Gatsby" })
-// one key, one value
-
-console.log({
-  title: "The Great Gatsby",
-  author: "F. Scott Fitzgerald",
-  year: 1925,
-  pages: 180,
-})
-// each property on its own line — the trailing comma is allowed and idiomatic
-</code></pre>
-<p>Αν το κλειδί είναι έγκυρο identifier (όπως <code>title</code>), γράφεται χωρίς εισαγωγικά. Αν περιέχει κενό ή ειδικό χαρακτήρα, χρειάζεται εισαγωγικά και μετά αγκύλες για πρόσβαση — το ξέρεις ήδη από την προηγούμενη ενότητα.</p>
-
-<h2>Φώλιασμα και επαναχρησιμοποίηση</h2>
-<pre><code class="lang-js">const publisher = {
-  name: "Scribner",
-  country: "USA",
-}
-
-const book = {
-  title: "The Great Gatsby",
-  publisher,   // shorthand: same as publisher: publisher
-}
-
-console.log(book)
-
-// arrays of objects, freely mixed
-const library = [
-  book,
-  { title: "1984", publisher: { name: "Secker & Warburg", country: "UK" } },
-]
-
-console.log(library[1].publisher.name)
-</code></pre>
-<p>Το shorthand <code>publisher,</code> αντί για <code>publisher: publisher,</code> δουλεύει μόνο όταν το όνομα της μεταβλητής ταιριάζει ακριβώς με το κλειδί που θέλεις — το έχεις ξαναδεί, εδώ απλώς το ξαναθυμόμαστε ρητά.</p>
-
-`);
 
     addContent(`
-<div class="eyebrow" id="@access-recap">Ενότητα 3 / 9 — Δομές δεδομένων: Object, Array, Map, Set</div>
-<h1>Πρόσβαση, ανάθεση, χτίσιμο βήμα-βήμα</h1>
-<p class="lede">Σύντομη επανάληψη στην πρόσβαση με dot/bracket, και κάτι που η Go δεν έχει καθόλου: το δυναμικό χτίσιμο ενός object ιδιότητα-ιδιότητα.</p>
-
-<h2>Χτίζοντας ένα object ιδιότητα-ιδιότητα</h2>
-<p>Σε αντίθεση με ένα Go struct, που έχει σταθερό σχήμα από τη στιγμή που ορίζεται ο τύπος του, ένα plain object στη JavaScript μπορεί να ξεκινήσει άδειο και να αποκτήσει ιδιότητες δυναμικά:</p>
-<pre><code class="lang-js">const station = {}
-
-console.log(station.name)   // undefined — nothing there yet
-
-station.name = "Central Station"
-station.city = "Springfield"
-
-console.log(station)   // { name: "Central Station", city: "Springfield" }
-
-// nested objects can be built the same way
-station.coords = {}
-station.coords.lat = 37.99
-station.coords.lon = 23.72
-
-console.log(station.coords)   // { lat: 37.99, lon: 23.72 }
-</code></pre>
-<p>Δεν χρειάζεται <code>const</code> ή <code>let</code> για να προσθέσεις ιδιότητα — δεν φτιάχνεις καινούργια μεταβλητή, απλώς γράφεις πάνω στο ήδη υπάρχον object.</p>
-
-<h2>Ο κανόνας: πρέπει να υπάρχει το ενδιάμεσο</h2>
-<pre><code class="lang-js">const empty = {}
-
-// empty.coords.lat = 10
-// TypeError: Cannot set properties of undefined (setting 'lat')
-
-empty.coords = {}       // first, make the intermediate object exist
-empty.coords.lat = 10   // now this works
-</code></pre>
-<p>Ο έλεγχος γίνεται πρώτα, η ανάθεση μετά. Αν το <code>coords</code> δεν υπάρχει ακόμα, δεν υπάρχει πάνω σε τι να γράψεις το <code>lat</code>.</p>
-
-<h2>Δυναμικά κλειδιά, στην ανάγνωση και στη γραφή</h2>
-<pre><code class="lang-js">const field = "city"
-
-console.log(station[field])   // reads station.city, using the value of field
-
-station[field] = "Lakeside"   // writes station.city too
-console.log(station.city)     // "Lakeside"
-</code></pre>
-<p>Ο ίδιος μηχανισμός δουλεύει και για τα δύο: το <code>[field]</code> δεν είναι ειδική σύνταξη ανάθεσης, είναι ο ίδιος δυναμικός accessor που ήδη ξέρεις — απλώς βρίσκεται στην αριστερή πλευρά του <code>=</code>.</p>
-
-<div class="callout">
-  <span class="tag">Το αναγνωρίζεις;</span>
-  Αυτό δεν έχει άμεσο αντίστοιχο στη Go: ένα struct δεν μπορεί να αποκτήσει καινούργιο πεδίο μετά τη δήλωσή του. Ένα plain object μπορεί, και αυτή η ευελιξία είναι ακριβώς αυτό που κάνει δυνατά patterns όπως το bucketing που έχεις ήδη γράψει.
-</div>
-
-`);
-
-    addQuiz([
-      {
-        q: "Γιατί το const book = { title, publisher } λειτουργεί χωρίς να γράψεις τα δύο άνω-κάτω τελεία;",
-        options: [
-          "Είναι shorthand: όταν το όνομα της μεταβλητής ταιριάζει με το κλειδί που θες, μπορείς να παραλείψεις το key:",
-          "Επειδή τα title και publisher είναι δεσμευμένες λέξεις της JavaScript",
-          "Επειδή το object literal δέχεται μόνο μεταβλητές, ποτέ σταθερές τιμές",
-          "Δεν λειτουργεί πραγματικά — χρειάζεται πάντα το πλήρες key: value"
-        ],
-        correct: 0,
-        explain: "Το shorthand δουλεύει μόνο όταν το identifier ταιριάζει ακριβώς με το κλειδί. Αν ήθελες διαφορετικό όνομα κλειδιού, θα χρειαζόσουν το πλήρες key: value."
-      },
-      {
-        q: "Γιατί το empty.coords.lat = 10 πετάει σφάλμα σε άδειο object, ενώ το empty.coords = {} δουλεύει;",
-        options: [
-          "Γιατί η ανάθεση χρειάζεται πρώτα να υπάρχει το ενδιάμεσο object πάνω στο οποίο θα γραφτεί το επόμενο κλειδί",
-          "Γιατί δεν επιτρέπεται φωλιασμένη ανάθεση σε καμία περίπτωση στη JavaScript",
-          "Γιατί το coords είναι δεσμευμένη λέξη και δεν μπορεί να χρησιμοποιηθεί ως κλειδί",
-          "Γιατί χρειάζεται ρητά Object.assign για κάθε φωλιασμένη ανάθεση"
-        ],
-        correct: 0,
-        explain: "empty.coords είναι undefined, και δεν μπορείς να γράψεις property πάνω σε undefined. Πρέπει πρώτα να υπάρχει ένα object εκεί ώστε το .lat να έχει πού να γραφτεί."
-      }
-    ]);
-
-    addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 3 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-strip">
   <div class="gs-pill"><span class="gs-name">property key</span><span class="gs-def">κλειδί object· πάντα string ή symbol</span></div>
@@ -2311,8 +2270,8 @@ console.log(station.city)     // "Lakeside"
 
     // ── Section 4 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@closures">Ενότητα 4 / 9 — Functions ως τιμές</div>
-<h1>Closures: η μνήμη που κουβαλάει μια function</h1>
+<div class="eyebrow" id="@closures">Functions ως τιμές</div>
+<h1>Closures</h1>
 <p class="lede">Η μία έννοια αυτής της ενότητας που δεν έχει άμεσο αντίστοιχο στον τρόπο που έγραφες Go. Δεν είναι δύσκολη· είναι απλώς ασυνήθιστη μέχρι να τη δεις να λύνει κάτι.</p>
 
 <h2>Ενθυλάκωση κατάστασης (State Encapsulation)</h2>
@@ -2384,8 +2343,8 @@ console.log(fns2[0](), fns2[1](), fns2[2]())  // 0 1 2
 `);
 
     addContent(`
-<div class="eyebrow" id="@higher-order">Ενότητα 4 / 9 — Functions ως τιμές</div>
-<h1>Functions που φτιάχνουν functions</h1>
+<div class="eyebrow" id="@higher-order">Functions ως τιμές</div>
+<h1>Higher-Order Functions</h1>
 <p class="lede">Currying, partial application, composition. Τρία ονόματα για την ίδια βασική κίνηση: κρατάω κάτι τώρα, δέχομαι τα υπόλοιπα αργότερα.</p>
 
 <h2>Το ζητούμενο</h2>
@@ -2489,8 +2448,8 @@ fastSquare(12)   // returned from cache
 `);
 
     addContent(`
-<div class="eyebrow" id="@error-handling">Ενότητα 4 / 9 — Functions ως τιμές</div>
-<h1>Σφάλματα: τι αντικαθιστά το (value, error)</h1>
+<div class="eyebrow" id="@error-handling">Functions ως τιμές</div>
+<h1>Σφάλματα (Error Handling)</h1>
 <p class="lede">Στη Go, το σφάλμα ήταν τιμή επιστροφής και η γλώσσα σε ανάγκαζε να το κοιτάξεις. Εδώ το σφάλμα είναι εκτροπή της ροής, και κανείς δεν σε αναγκάζει σε τίποτα.</p>
 
 <h2>throw και try / catch</h2>
@@ -2717,8 +2676,8 @@ shout("  hey  ")   // "HEY"`,
 
 
     addContent(`
-<div class="eyebrow" id="@nesting-recap">Ενότητα 4 / 9 — Functions ως τιμές</div>
-<h1>Εμφωλιασμένες κλήσεις functions</h1>
+<div class="eyebrow" id="@nesting-recap">Functions ως τιμές</div>
+<h1>Εμφωλιασμένες κλήσεις</h1>
 <p class="lede">Σύντομη επανάληψη στο πώς διαβάζεται μια αλυσίδα εμφωλιασμένων κλήσεων, πριν προχωρήσουμε σε closures και higher-order functions.</p>
 
 <h2>Απλές functions, μία παράμετρος</h2>
@@ -2763,8 +2722,8 @@ console.log(priceWithTaxQuadrupled(10))   // 49.6
 `);
 
     addContent(`
-<div class="eyebrow" id="@recursion-recap">Ενότητα 4 / 9 — Functions ως τιμές</div>
-<h1>Recursion, με τη σύνταξη της JavaScript</h1>
+<div class="eyebrow" id="@recursion-recap">Functions ως τιμές</div>
+<h1>Recursion</h1>
 <p class="lede">Σύντομη επανάληψη: την ίδια σκέψη <a href="https://guides01.devs.surf/02-go-02.html#@recursion" target="_blank" rel="noopener">recursion</a> που είδαμε αναλυτικά στη Go — ένα base case και ένας κλάδος που καλεί τον εαυτό του πιο κοντά στη λύση — εδώ μόνο η σύνταξη αλλάζει.</p>
 
 <h2>Το ίδιο σχήμα, σε arrow function</h2>
@@ -2821,7 +2780,7 @@ console.log(sumTo(100))  // 5050
     ]);
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 4 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
   <div class="gc-line"><span class="gc-term">function declaration</span><span class="gc-def">η γραφή με <code>function</code>· είναι hoisted πλήρως</span></div>
@@ -2840,8 +2799,8 @@ console.log(sumTo(100))  // 5050
 
     // ── Section 5 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@declarative">Ενότητα 5 / 9 — Δηλωτική επεξεργασία συλλογών</div>
-<h1>Από «πώς» σε «τι»</h1>
+<div class="eyebrow" id="@declarative">Δηλωτική επεξεργασία συλλογών</div>
+<h1>Δηλωτικός προγραμματισμός</h1>
 <p class="lede">Ξέρεις ήδη να γράψεις οποιαδήποτε επεξεργασία με loop. Αυτή η ενότητα δεν σου μαθαίνει κάτι που δεν μπορείς να κάνεις· σου μαθαίνει τη γραφή που χρησιμοποιεί όλος ο υπόλοιπος κόσμος της JavaScript, και το πότε <em>δεν</em> τη χρησιμοποιείς.</p>
 
 <h2>Τα loops, πρώτα</h2>
@@ -2920,8 +2879,8 @@ const total = orders
 `);
 
     addContent(`
-<div class="eyebrow" id="@reduce">Ενότητα 5 / 9 — Δηλωτική επεξεργασία συλλογών</div>
-<h1>reduce: η μηχανή κάτω από όλα τα υπόλοιπα</h1>
+<div class="eyebrow" id="@reduce">Δηλωτική επεξεργασία συλλογών</div>
+<h1>reduce</h1>
 <p class="lede">Το <code>map</code> και το <code>filter</code> είναι ειδικές περιπτώσεις. Το <code>reduce</code> είναι η γενική μορφή: παίρνει μια συλλογή και δίνει <em>οτιδήποτε</em>.</p>
 
 <h2>Η υπογραφή, γραμμή προς γραμμή</h2>
@@ -3010,8 +2969,8 @@ const doubled = Object.fromEntries(
 `);
 
     addContent(`
-<div class="eyebrow" id="@early-exit">Ενότητα 5 / 9 — Δηλωτική επεξεργασία συλλογών</div>
-<h1>Αναζήτηση, έλεγχοι και πρόωρη έξοδος</h1>
+<div class="eyebrow" id="@early-exit">Δηλωτική επεξεργασία συλλογών</div>
+<h1>Αναζήτηση & Έλεγχοι</h1>
 <p class="lede">Το <code>filter</code> διατρέχει πάντα ολόκληρο τον πίνακα. Όταν θέλεις ένα στοιχείο ή μία απάντηση ναι/όχι, υπάρχουν εργαλεία που σταματούν μόλις τη βρουν.</p>
 
 <pre><code class="lang-js">const users = [
@@ -3213,8 +3172,8 @@ people.sort((a, b) => {
 
 
     addContent(`
-<div class="eyebrow" id="@loops-recap">Ενότητα 5 / 9 — Δηλωτική επεξεργασία συλλογών</div>
-<h1>While και for...of, πριν το map/filter/reduce</h1>
+<div class="eyebrow" id="@loops-recap">Δηλωτική επεξεργασία συλλογών</div>
+<h1>While & for...of</h1>
 <p class="lede">Σύντομη επανάληψη στα loops με το χέρι, πριν αφήσουμε οριστικά πίσω μας τον μηχανισμό για το ζητούμενο.</p>
 
 <h2>while: μέτρημα με συνθήκη</h2>
@@ -3267,7 +3226,7 @@ console.log(total / count)   // 21.36 — the average, computed by hand
     ]);
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 5 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <table class="glossary-table">
   <tr><td class="gt-term">callback</td><td class="gt-def">function που δίνεις σε άλλη για να την καλέσει εκείνη</td></tr>
@@ -3283,8 +3242,8 @@ console.log(total / count)   // 21.36 — the average, computed by hand
 
     // ── Section 6 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@strings">Ενότητα 6 / 9 — Κείμενο και Regular Expressions</div>
-<h1>Strings: αμετάβλητα, με πολλά έτοιμα εργαλεία</h1>
+<div class="eyebrow" id="@strings">Κείμενο και Regular Expressions</div>
+<h1>Strings</h1>
 <p class="lede">Στη Go δούλευες με bytes και runes και έπρεπε να ξέρεις τη διαφορά. Εδώ έχεις ένα πλουσιότερο σετ από methods και μια πιο ήπια αλλά υπαρκτή εκδοχή του ίδιου προβλήματος.</p>
 
 <h2>Το κείμενο δεν αλλάζει</h2>
@@ -3365,8 +3324,8 @@ String.fromCharCode(97)     // "a"
 `);
 
     addContent(`
-<div class="eyebrow" id="@regex-intro">Ενότητα 6 / 9 — Κείμενο και Regular Expressions</div>
-<h1>Regular expressions: ένα pattern αντί για μία μηχανή καταστάσεων</h1>
+<div class="eyebrow" id="@regex-intro">Κείμενο και Regular Expressions</div>
+<h1>Regular Expressions</h1>
 <p class="lede">Έχεις γράψει χειροκίνητο parsing χαρακτήρα προς χαρακτήρα. Ένα regex είναι η ίδια μηχανή καταστάσεων, γραμμένη σε μία γραμμή από κάποιον άλλον.</p>
 
 <h2>Η χειροκίνητη προσέγγιση (χωρίς regex)</h2>
@@ -3438,8 +3397,8 @@ re.test("abc 123")              // true            — boolean, the cheapest che
 `);
 
     addContent(`
-<div class="eyebrow" id="@quantifiers">Ενότητα 6 / 9 — Κείμενο και Regular Expressions</div>
-<h1>Quantifiers, ομάδες και το «όσο λιγότερο γίνεται»</h1>
+<div class="eyebrow" id="@quantifiers">Κείμενο και Regular Expressions</div>
+<h1>Regex: Quantifiers & Ομάδες</h1>
 <p class="lede">Εδώ βρίσκεται η μία συμπεριφορά που κάνει τα regex να δίνουν λάθος αποτέλεσμα ενώ φαίνονται σωστά.</p>
 
 <h2>Quantifiers</h2>
@@ -3508,8 +3467,8 @@ d.groups.month     // "09"
 `);
 
     addContent(`
-<div class="eyebrow" id="@regex-flags">Ενότητα 6 / 9 — Κείμενο και Regular Expressions</div>
-<h1>Σημαίες, lookarounds και δύο παγίδες</h1>
+<div class="eyebrow" id="@regex-flags">Κείμενο και Regular Expressions</div>
+<h1>Regex: Σημαίες & Παγίδες</h1>
 <p class="lede">Τα τελευταία κομμάτια του συντακτικού, και οι δύο συμπεριφορές που θα σε μπερδέψουν στην πράξη.</p>
 
 <h2>Σημαίες</h2>
@@ -3705,8 +3664,8 @@ console.log(pretty)   // "03/09/2026"`,
 
 
     addContent(`
-<div class="eyebrow" id="@split-join-recap">Ενότητα 6 / 9 — Κείμενο και Regular Expressions</div>
-<h1>Split, join, και το χτίσιμο μιας αλυσίδας</h1>
+<div class="eyebrow" id="@split-join-recap">Κείμενο και Regular Expressions</div>
+<h1>Split & Join</h1>
 <p class="lede">Δύο μέθοδοι που έχεις ήδη χρησιμοποιήσει σκόρπιες, μαζεμένες εδώ ως ζευγάρι — και το πώς τις αλυσιδώνεις.</p>
 
 <h2>split: από string σε πίνακα</h2>
@@ -3753,7 +3712,7 @@ console.log(cleanTag)   // "java-script-arrays-methods"
     ]);
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 6 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
   <div class="gc-line"><span class="gc-term">template literal</span><span class="gc-def">κείμενο σε ανάστροφα εισαγωγικά, με παρεμβολή εκφράσεων</span></div>
@@ -3771,8 +3730,8 @@ console.log(cleanTag)   // "java-script-arrays-methods"
 
     // ── Section 7 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@date-as-number">Ενότητα 7 / 9 — Ημερομηνίες και χρόνος</div>
-<h1>Ένας αριθμός που παριστάνει την ημερομηνία</h1>
+<div class="eyebrow" id="@date-as-number">Ημερομηνίες και χρόνος</div>
+<h1>Ημερομηνίες (Date)</h1>
 <p class="lede">Το <code>Date</code> είναι το πιο παλιό και το πιο κακοσχεδιασμένο κομμάτι της γλώσσας. Δεν είναι δύσκολο· είναι γεμάτο εκπλήξεις που πρέπει να τις ξέρεις μία-μία.</p>
 
 <h2>Τι είναι στην πραγματικότητα</h2>
@@ -3836,8 +3795,8 @@ d.getTimezoneOffset()   // minutes to add to local to get UTC
 `);
 
     addContent(`
-<div class="eyebrow" id="@date-math">Ενότητα 7 / 9 — Ημερομηνίες και χρόνος</div>
-<h1>Αριθμητική ημερομηνιών και η κανονικοποίηση</h1>
+<div class="eyebrow" id="@date-math">Ημερομηνίες και χρόνος</div>
+<h1>Αριθμητική Ημερομηνιών</h1>
 <p class="lede">Ένα χαρακτηριστικό του <code>Date</code> που φαίνεται σαν bug και είναι στην πραγματικότητα το πιο χρήσιμο εργαλείο του.</p>
 
 <h2>Το Date είναι μεταβλητό</h2>
@@ -3905,8 +3864,8 @@ function daysBetween(a, b) {
 `);
 
     addContent(`
-<div class="eyebrow" id="@date-format">Ενότητα 7 / 9 — Ημερομηνίες και χρόνος</div>
-<h1>Εμφάνιση: μην τη γράψεις μόνος σου</h1>
+<div class="eyebrow" id="@date-format">Ημερομηνίες και χρόνος</div>
+<h1>Εμφάνιση Ημερομηνίας</h1>
 <p class="lede">Η μορφοποίηση ημερομηνίας είναι το κλασικό πρόβλημα όπου η δική σου λύση δουλεύει τέλεια μέχρι να τη δει χρήστης από άλλη χώρα.</p>
 
 <h2 id="@intl-format">Πρώτα η έτοιμη λύση</h2>
@@ -4093,7 +4052,7 @@ function daysBetween(a, b) {
     ], { allowHTML: true });
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 7 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-strip">
   <div class="gs-pill"><span class="gs-name">epoch</span><span class="gs-def">1 Ιανουαρίου 1970, UTC — το σημείο μηδέν</span></div>
@@ -4108,8 +4067,8 @@ function daysBetween(a, b) {
 
     // ── Section 8 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@dom-tree">Ενότητα 8 / 9 — Το DOM</div>
-<h1>Η σελίδα ως δομή δεδομένων</h1>
+<div class="eyebrow" id="@dom-tree">Το DOM</div>
+<h1>Το DOM</h1>
 <p class="lede">Μέχρι τώρα ο κώδικας δούλευε με τιμές. Εδώ δουλεύει με ένα ζωντανό δέντρο που ο browser εμφανίζει, και κάθε αλλαγή σε αυτό φαίνεται αμέσως στην οθόνη.</p>
 
 <h2>Τι είναι</h2>
@@ -4183,8 +4142,8 @@ el.matches(".active")          // does this element match a selector?
 `);
 
     addContent(`
-<div class="eyebrow" id="@dom-content">Ενότητα 8 / 9 — Το DOM</div>
-<h1>Δημιουργία και αλλαγή περιεχομένου</h1>
+<div class="eyebrow" id="@dom-content">Το DOM</div>
+<h1>Δημιουργία στοιχείων DOM</h1>
 <p class="lede">Δύο δρόμοι για να βάλεις περιεχόμενο στη σελίδα. Ο ένας είναι σύντομος και επικίνδυνος, ο άλλος είναι λίγο μεγαλύτερος και σωστός.</p>
 
 <h2 id="@xss-risk">Ο σύντομος δρόμος</h2>
@@ -4273,8 +4232,8 @@ input.value = "x"                  // changes the current state — this is what
 `);
 
     addContent(`
-<div class="eyebrow" id="@event-delegation">Ενότητα 8 / 9 — Το DOM</div>
-<h1>Events: bubbling και delegation</h1>
+<div class="eyebrow" id="@event-delegation">Το DOM</div>
+<h1>Events</h1>
 <p class="lede">Η μία τεχνική αυτής της ενότητας που αλλάζει τον τρόπο που γράφεις διαδραστικές σελίδες.</p>
 
 <h2>Τα βασικά</h2>
@@ -4352,8 +4311,8 @@ event.stopPropagation()          // stop bubbling — use rarely, it breaks dele
 `);
 
     addContent(`
-<div class="eyebrow" id="@dom-perf">Ενότητα 8 / 9 — Το DOM</div>
-<h1>Απόδοση και αρχιτεκτονική</h1>
+<div class="eyebrow" id="@dom-perf">Το DOM</div>
+<h1>Απόδοση (Performance)</h1>
 <p class="lede">Το DOM είναι αργό σε σχέση με τη JavaScript. Δύο κανόνες και ένα pattern κάνουν όλη τη διαφορά.</p>
 
 <h2>Κανόνας 1: μία εισαγωγή, όχι N</h2>
@@ -4558,7 +4517,7 @@ list.append(frag)                 // a single insertion`,
     ], { allowHTML: true });
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 8 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
   <div class="gc-line"><span class="gc-term">DOM</span><span class="gc-def">το δέντρο από objects που χτίζει ο browser από το HTML</span></div>
@@ -4576,8 +4535,8 @@ list.append(frag)                 // a single insertion`,
 
     // ── Section 9 ────────────────────────────────────────────────────────── ⊃
     addContent(`
-<div class="eyebrow" id="@single-thread">Ενότητα 9 / 9 — Ασύγχρονη JavaScript</div>
-<h1>Ένα νήμα, και τι σημαίνει αυτό</h1>
+<div class="eyebrow" id="@single-thread">Ασύγχρονη JavaScript</div>
+<h1>Single Thread</h1>
 <p class="lede">Στη Go ξεκινούσες goroutine με μία λέξη και ο χρονοδρομολογητής φρόντιζε τα υπόλοιπα. Εδώ δεν υπάρχει δεύτερο νήμα για τον κώδικά σου. Υπάρχει ένα, και ό,τι το απασχολεί σταματάει τα πάντα.</p>
 
 <h2>Το πρόβλημα, συγκεκριμένα</h2>
@@ -4639,8 +4598,8 @@ console.log("4")
 `);
 
     addContent(`
-<div class="eyebrow" id="@promises">Ενότητα 9 / 9 — Ασύγχρονη JavaScript</div>
-<h1>Από callbacks σε Promises</h1>
+<div class="eyebrow" id="@promises">Ασύγχρονη JavaScript</div>
+<h1>Promises</h1>
 <p class="lede">Ο παλιός τρόπος δούλευε. Το πρόβλημά του δεν ήταν η ορθότητα αλλά ότι η ροή του κώδικα έπαυε να διαβάζεται από πάνω προς τα κάτω.</p>
 
 <h2>Πρώτα ο παλιός τρόπος</h2>
@@ -4706,8 +4665,8 @@ function readFilePromise(path) {
 `);
 
     addContent(`
-<div class="eyebrow" id="@async-await">Ενότητα 9 / 9 — Ασύγχρονη JavaScript</div>
-<h1>async / await και η παγίδα του loop</h1>
+<div class="eyebrow" id="@async-await">Ασύγχρονη JavaScript</div>
+<h1>async / await</h1>
 <p class="lede">Η ίδια μηχανική με τα Promises, γραμμένη σαν να ήταν σύγχρονη. Και μία συμπεριφορά που κοστίζει δευτερόλεπτα χωρίς να το καταλάβεις.</p>
 
 <h2>Η γραφή</h2>
@@ -4788,8 +4747,8 @@ const data = await Promise.race([fetchItem(id), timeout(3000)])
 `);
 
     addContent(`
-<div class="eyebrow" id="@fetch-rate">Ενότητα 9 / 9 — Ασύγχρονη JavaScript</div>
-<h1>fetch, και ο έλεγχος του ρυθμού</h1>
+<div class="eyebrow" id="@fetch-rate">Ασύγχρονη JavaScript</div>
+<h1>fetch & Rate limiting</h1>
 <p class="lede">Το πραγματικό API που θα χρησιμοποιείς, με τη μία συμπεριφορά του που εκπλήσσει τους πάντες — και δύο τεχνικές που είναι απλώς closures με timer.</p>
 
 <h2 id="@fetch-no-reject">Το fetch δεν απορρίπτεται σε σφάλμα διακομιστή</h2>
@@ -5020,8 +4979,8 @@ function debounce(fn, wait) {
 
 
     addContent(`
-<div class="eyebrow" id="@why-promises">Ενότητα 9 / 9 — Ασύγχρονη JavaScript</div>
-<h1>Γιατί χρειάστηκε το Promise</h1>
+<div class="eyebrow" id="@why-promises">Ασύγχρονη JavaScript</div>
+<h1>Γιατί Promises</h1>
 <p class="lede">Αυτό δεν έχει άμεσο αντίστοιχο στη Go (εκεί η λύση είναι channels/goroutines, τελείως διαφορετική προσέγγιση) — μια τελευταία ματιά στο ακριβές πρόβλημα που λύνει το Promise, φτιάχνοντας ένα πρόχειρο, δικό σου.</p>
 
 <h2>Το πρόβλημα: ένα callback δεν επιστρέφει τίποτα</h2>
@@ -5086,7 +5045,7 @@ setTimeout(() => deferred.resolve(50), 100)
     ]);
 
     addContent(`
-<div class="eyebrow">Μίνι Γλωσσάρι — Ενότητα 9 / 9</div>
+<div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <table class="glossary-table">
   <tr><td class="gt-term">event loop</td><td class="gt-def">ο βρόχος που μεταφέρει εργασίες από τις ουρές στη στοίβα όταν αυτή αδειάσει</td></tr>
@@ -5105,7 +5064,7 @@ setTimeout(() => deferred.resolve(50), 100)
     // ── Deck tail ────────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow">Τελική Επανάληψη — JavaScript</div>
-<h1 id="@course-recap">Τι πρόσθεσε η καθεμία</h1>
+<h1 id="@course-recap">Τελική Ανακεφαλαίωση</h1>
 <p class="lede">Εννέα ενότητες, μία γραμμή η καθεμία. Αν κάποια από αυτές δεν σου λέει τίποτα, εκεί αξίζει να γυρίσεις.</p>
 
 <table style="width:100%;border-collapse:collapse">
