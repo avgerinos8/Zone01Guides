@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="el">
 
 <head>
@@ -126,57 +126,57 @@
     </div>
 
     <div id="toc-list">
-      <div class="toc-section">ΕΙΣΑΓΩΓΗ & ΒΑΣΙΚΕΣ ΕΝΝΟΙΕΣ</div>
+      <div class="toc-section">ΕΙΣΑΓΩΓΗ &amp; ΒΑΣΙΚΕΣ ΕΝΝΟΙΕΣ</div>
       <a href="#@runtime-diffs" class="toc-link toc-h1">Διαφορές JS σε browser, Node.js κλπ.</a>
       <a href="#@const-let" class="toc-link toc-h1">const vs let &amp; Τύποι</a>
       <a href="#@object-literal" class="toc-link toc-h1">Δημιουργία Objects και Object Literals</a>
-      <a href="#@copying-objects" class="toc-link toc-h1">Copy by reference</a>
-      <a href="#@shallow-copy" class="toc-link toc-h1">Shallow copy</a>
-      <a href="#@shallow-limit" class="toc-link toc-h2">Πού σταματάει το shallow copy</a>
-      <a href="#@deep-copy" class="toc-link toc-h1">Deep copy (structuredClone)</a>
-      <a href="#@json-roundtrip" class="toc-link toc-h2">Το JSON round trip</a>
-      <a href="#@copy-decision" class="toc-link toc-h2">Πίνακας απόφασης</a>
-      <a href="#@functions" class="toc-link toc-h1">Functions</a>
-      <a href="#@this-binding" class="toc-link toc-h2">Η μία πραγματική διαφορά: this</a>
-      <a href="#@typeof" class="toc-link toc-h1">typeof</a>
-      <a href="#@coercion" class="toc-link toc-h1">truthy / falsy</a>
-      
-      <div class="toc-section">ΤΕΛΕΣΤΕΣ & ΕΛΕΓΧΟΣ ΡΟΗΣ</div>
+      <a href="#@copying-objects" class="toc-link toc-h1">Αντιγραφή αναφοράς (Copy by reference)</a>
+      <a href="#@shallow-copy" class="toc-link toc-h1">Ρηχή αντιγραφή (Shallow Copy)</a>
+      <a href="#@shallow-limit" class="toc-link toc-h2">Περιορισμοί της ρηχής αντιγραφής</a>
+      <a href="#@deep-copy" class="toc-link toc-h1">Βαθιά αντιγραφή (Deep Copy)</a>
+      <a href="#@json-roundtrip" class="toc-link toc-h2">Αντιγραφή μέσω JSON</a>
+      <a href="#@copy-decision" class="toc-link toc-h2">Επιλογή μεθόδου αντιγραφής</a>
+      <a href="#@functions" class="toc-link toc-h1">Συναρτήσεις (Functions)</a>
+      <a href="#@this-binding" class="toc-link toc-h2">Το binding του this στις συναρτήσεις</a>
+      <a href="#@typeof" class="toc-link toc-h1">Έλεγχος τύπων με typeof</a>
+      <a href="#@coercion" class="toc-link toc-h1">Μετατροπές τύπων (Coercion) &amp; truthy/falsy</a>
+
+      <div class="toc-section">ΤΕΛΕΣΤΕΣ &amp; ΕΛΕΓΧΟΣ ΡΟΗΣ</div>
       <a href="#@default-params" class="toc-link toc-h1">Default Parameters</a>
-      <a href="#@shorthand-ops" class="toc-link toc-h1">Τιμές, τελεστές, μεταβλητές</a>
-      <a href="#@ternary" class="toc-link toc-h1">Ο ternary operator</a>
+      <a href="#@shorthand-ops" class="toc-link toc-h1">Σύνθετοι τελεστές &amp; ονοματοδοσία</a>
+      <a href="#@ternary" class="toc-link toc-h1">Ο τελεστής Ternary</a>
 
       <div class="toc-section">ΔΟΜΕΣ ΔΕΔΟΜΕΝΩΝ: OBJECT, ARRAY, MAP, SET</div>
-      <a href="#@immutability" class="toc-link toc-h1">Object.freeze &amp; immutability</a>
-      <a href="#@mutate-methods" class="toc-link toc-h2">Mutating array methods</a>
-      <a href="#@object-not-map" class="toc-link toc-h1">Το object δεν είναι map</a>
-      <a href="#@key-exists" class="toc-link toc-h2">Υπάρχει αυτό το κλειδί;</a>
+      <a href="#@immutability" class="toc-link toc-h1">Object.freeze &amp; Αμεταβλητότητα</a>
+      <a href="#@mutate-methods" class="toc-link toc-h2">Μέθοδοι πινάκων: Mutating vs Non-mutating</a>
+      <a href="#@object-not-map" class="toc-link toc-h1">Διαφορές Object και Map</a>
+      <a href="#@key-exists" class="toc-link toc-h2">Έλεγχος ύπαρξης κλειδιού</a>
       <a href="#@map-and-set" class="toc-link toc-h1">Map και Set</a>
-      <a href="#@map-vs-object" class="toc-link toc-h2">object ή Map;</a>
-      <a href="#@arrays-untyped" class="toc-link toc-h1">Πίνακες χωρίς τύπο</a>
-      <a href="#@array-init" class="toc-link toc-h2">Δημιουργία με ελεγχόμενο μέγεθος</a>
+      <a href="#@map-vs-object" class="toc-link toc-h2">Κριτήρια επιλογής: Object ή Map</a>
+      <a href="#@arrays-untyped" class="toc-link toc-h1">Πίνακες και δυναμικό μέγεθος</a>
+      <a href="#@array-init" class="toc-link toc-h2">Αρχικοποίηση πινάκων συγκεκριμένου μεγέθους</a>
       <a href="#@destructuring" class="toc-link toc-h1">Destructuring</a>
       <a href="#@param-destruct" class="toc-link toc-h2">Destructuring σε παραμέτρους</a>
       <a href="#@deep-access" class="toc-link toc-h1">Ασφαλής πρόσβαση σε βάθος &amp; JSON</a>
-      <a href="#@optional-chain" class="toc-link toc-h2">Optional chaining</a>
+      <a href="#@optional-chain" class="toc-link toc-h2">Ασφαλής πλοήγηση με Optional Chaining</a>
 
       <div class="toc-section">ΠΡΟΧΩΡΗΜΕΝΕΣ FUNCTIONS</div>
       <a href="#@closures" class="toc-link toc-h1">Closures</a>
-      <a href="#@var-loop-trap" class="toc-link toc-h2">Η παγίδα του var σε loop</a>
-      <a href="#@higher-order" class="toc-link toc-h1">Functions που φτιάχνουν functions</a>
+      <a href="#@var-loop-trap" class="toc-link toc-h2">Εμβέλεια του var σε βρόχους</a>
+      <a href="#@higher-order" class="toc-link toc-h1">Συναρτήσεις ανώτερης τάξης (Higher-Order)</a>
       <a href="#@currying" class="toc-link toc-h2">Currying</a>
       <a href="#@memoization" class="toc-link toc-h2">Memoization</a>
-      <a href="#@error-handling" class="toc-link toc-h1">Σφάλματα: throw ή return</a>
-      <a href="#@throw-vs-return" class="toc-link toc-h2">throw ή return;</a>
+      <a href="#@error-handling" class="toc-link toc-h1">Διαχείριση σφαλμάτων (Error Handling)</a>
+      <a href="#@throw-vs-return" class="toc-link toc-h2">Εξαιρέσεις (throw) έναντι Τιμών Επιστροφής</a>
       <a href="#@nesting-recap" class="toc-link toc-h1">Εμφωλιασμένες κλήσεις</a>
       <a href="#@recursion-recap" class="toc-link toc-h1">Recursion σε JS</a>
 
       <div class="toc-section">ΔΗΛΩΤΙΚΗ ΕΠΕΞΕΡΓΑΣΙΑ ΣΥΛΛΟΓΩΝ</div>
       <a href="#@declarative" class="toc-link toc-h1">Δηλωτικός προγραμματισμός</a>
-      <a href="#@chain-cost" class="toc-link toc-h2">Το κόστος της αλυσίδας</a>
+      <a href="#@chain-cost" class="toc-link toc-h2">Υπολογιστικό κόστος αλυσιδωτών μεθόδων</a>
       <a href="#@reduce" class="toc-link toc-h1">reduce</a>
-      <a href="#@reduce-seed" class="toc-link toc-h2">Το seed δεν είναι προαιρετικό</a>
-      <a href="#@reduce-misuse" class="toc-link toc-h2">Πότε το reduce είναι λάθος</a>
+      <a href="#@reduce-seed" class="toc-link toc-h2">Αρχική τιμή (Initial Value) στη reduce</a>
+      <a href="#@reduce-misuse" class="toc-link toc-h2">Πότε να αποφεύγεται η reduce</a>
       <a href="#@early-exit" class="toc-link toc-h1">Αναζήτηση &amp; πρόωρη έξοδος</a>
       <a href="#@sorting" class="toc-link toc-h2">Ταξινόμηση</a>
       <a href="#@sort-multi" class="toc-link toc-h2">Ταξινόμηση με δύο κριτήρια</a>
@@ -184,56 +184,56 @@
 
       <div class="toc-section">ΚΕΙΜΕΝΟ &amp; REGULAR EXPRESSIONS</div>
       <a href="#@strings" class="toc-link toc-h1">Strings</a>
-      <a href="#@slice-substring" class="toc-link toc-h2">slice vs substring</a>
-      <a href="#@regex-intro" class="toc-link toc-h1">Regex: ένα pattern</a>
-      <a href="#@regex-methods" class="toc-link toc-h2">Οι τέσσερις βασικές μέθοδοι</a>
+      <a href="#@slice-substring" class="toc-link toc-h2">Διαφορές slice και substring</a>
+      <a href="#@regex-intro" class="toc-link toc-h1">Regex: εισαγωγή στα μοτίβα</a>
+      <a href="#@regex-methods" class="toc-link toc-h2">Βασικές μέθοδοι Regex</a>
       <a href="#@quantifiers" class="toc-link toc-h1">Quantifiers &amp; ομάδες</a>
       <a href="#@greedy-lazy" class="toc-link toc-h2">Greedy vs lazy</a>
       <a href="#@regex-flags" class="toc-link toc-h1">Σημαίες &amp; lookarounds</a>
-      <a href="#@last-index-trap" class="toc-link toc-h2">Η παγίδα του lastIndex</a>
-      <a href="#@regex-backtrack" class="toc-link toc-h2">Καταστροφική υποχώρηση</a>
+      <a href="#@last-index-trap" class="toc-link toc-h2">Η ιδιότητα lastIndex σε regex</a>
+      <a href="#@regex-backtrack" class="toc-link toc-h2">Καταστροφική οπισθοδρόμηση (Backtracking)</a>
       <a href="#@split-join-recap" class="toc-link toc-h1">Split &amp; join</a>
 
       <div class="toc-section">ΗΜΕΡΟΜΗΝΙΕΣ &amp; ΧΡΟΝΟΣ</div>
       <a href="#@date-as-number" class="toc-link toc-h1">Ημερομηνίες (Date)</a>
-      <a href="#@date-creation" class="toc-link toc-h2">Δημιουργία: τρεις παγίδες</a>
+      <a href="#@date-creation" class="toc-link toc-h2">Αρχικοποίηση Date και ιδιαιτερότητες</a>
       <a href="#@date-math" class="toc-link toc-h1">Αριθμητική ημερομηνιών</a>
-      <a href="#@normalization" class="toc-link toc-h2">Η κανονικοποίηση</a>
+      <a href="#@normalization" class="toc-link toc-h2">Αυτόματη κανονικοποίηση ημερομηνιών</a>
       <a href="#@days-between" class="toc-link toc-h2">Διαφορά σε μέρες</a>
       <a href="#@date-format" class="toc-link toc-h1">Εμφάνιση ημερομηνίας</a>
-      <a href="#@intl-format" class="toc-link toc-h2">Intl.DateTimeFormat</a>
+      <a href="#@intl-format" class="toc-link toc-h2">Μορφοποίηση με Intl.DateTimeFormat</a>
 
       <div class="toc-section">ΤΟ DOM (DOCUMENT OBJECT MODEL)</div>
-      <a href="#@dom-tree" class="toc-link toc-h1">Το DOM</a>
-      <a href="#@live-vs-static" class="toc-link toc-h2">Ζωντανές vs στατικές συλλογές</a>
-      <a href="#@dom-content" class="toc-link toc-h1">Δημιουργία περιεχομένου</a>
-      <a href="#@xss-risk" class="toc-link toc-h2">innerHTML &amp; XSS</a>
-      <a href="#@attr-vs-prop" class="toc-link toc-h2">Attributes vs properties</a>
-      <a href="#@event-delegation" class="toc-link toc-h1">Events: bubbling &amp; delegation</a>
-      <a href="#@bubbling" class="toc-link toc-h2">Bubbling</a>
-      <a href="#@dom-perf" class="toc-link toc-h1">Απόδοση &amp; αρχιτεκτονική</a>
-      <a href="#@layout-thrash" class="toc-link toc-h2">Layout thrashing</a>
-      <a href="#@state-render" class="toc-link toc-h2">State → render</a>
+      <a href="#@dom-tree" class="toc-link toc-h1">Δομή και Φύση του DOM</a>
+      <a href="#@live-vs-static" class="toc-link toc-h2">Στατικές vs ζωντανές συλλογές</a>
+      <a href="#@dom-content" class="toc-link toc-h1">Δημιουργία και χειρισμός στοιχείων</a>
+      <a href="#@xss-risk" class="toc-link toc-h2">Ασφάλεια και πρόληψη XSS</a>
+      <a href="#@attr-vs-prop" class="toc-link toc-h2">Attributes έναντι properties</a>
+      <a href="#@event-delegation" class="toc-link toc-h1">Μοντέλο γεγονότων &amp; delegation</a>
+      <a href="#@bubbling" class="toc-link toc-h2">Διάδοση γεγονότων (Bubbling)</a>
+      <a href="#@dom-perf" class="toc-link toc-h1">Βελτιστοποίηση απόδοσης &amp; αρχιτεκτονική</a>
+      <a href="#@layout-thrash" class="toc-link toc-h2">Αποφυγή Layout Thrashing</a>
+      <a href="#@state-render" class="toc-link toc-h2">Αρχιτεκτονική State-Driven UI</a>
 
       <div class="toc-section">ΑΣΥΓΧΡΟΝΗ JAVASCRIPT</div>
-      <a href="#@single-thread" class="toc-link toc-h1">Single Thread</a>
-      <a href="#@two-queues" class="toc-link toc-h2">Microtasks vs macrotasks</a>
+      <a href="#@single-thread" class="toc-link toc-h1">Single Thread &amp; Event Loop</a>
+      <a href="#@two-queues" class="toc-link toc-h2">Ουρές: Microtasks vs Macrotasks</a>
       <a href="#@promises" class="toc-link toc-h1">Promises</a>
-      <a href="#@unhandled-reject" class="toc-link toc-h2">Unhandled rejection</a>
+      <a href="#@unhandled-reject" class="toc-link toc-h2">Μη διαχειριζόμενες απορρίψεις</a>
       <a href="#@async-await" class="toc-link toc-h1">async / await</a>
-      <a href="#@await-loop-trap" class="toc-link toc-h2">Η παγίδα του await σε loop</a>
-      <a href="#@promise-combos" class="toc-link toc-h2">Οι τέσσερις συνδυαστές</a>
+      <a href="#@await-loop-trap" class="toc-link toc-h2">Σειριακή vs παράλληλη εκτέλεση με await</a>
+      <a href="#@promise-combos" class="toc-link toc-h2">Συνδυαστές υποσχέσεων (Promise Combinators)</a>
       <a href="#@fetch-rate" class="toc-link toc-h1">fetch &amp; έλεγχος ρυθμού</a>
-      <a href="#@fetch-no-reject" class="toc-link toc-h2">fetch δεν απορρίπτεται σε 500</a>
-      <a href="#@debounce" class="toc-link toc-h2">Debounce</a>
-      <a href="#@throttle" class="toc-link toc-h2">Throttle</a>
-      <a href="#@why-promises" class="toc-link toc-h1">Γιατί το Promise</a>
+      <a href="#@fetch-no-reject" class="toc-link toc-h2">Διαχείριση HTTP status codes στο fetch</a>
+      <a href="#@debounce" class="toc-link toc-h2">Τεχνική Debounce</a>
+      <a href="#@throttle" class="toc-link toc-h2">Τεχνική Throttle</a>
+      <a href="#@why-promises" class="toc-link toc-h1">Ανάγκη και ρόλος των Promises</a>
 
       <div class="toc-section">ΑΝΑΚΕΦΑΛΑΙΩΣΗ</div>
       <a href="#@course-recap" class="toc-link toc-h1">Τελική επανάληψη</a>
-      <a href="#@debug-questions" class="toc-link toc-h2">Τέσσερις ερωτήσεις debugging</a>
+      <a href="#@debug-questions" class="toc-link toc-h2">Μεθοδολογία εντοπισμού σφαλμάτων</a>
     </div>
-    
+
     <div id="toc-footer">
       <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
         <span class="desktop-text">Return Home</span>
@@ -257,8 +257,8 @@
   <div class="title-badge"><img src="./icons/javascript.png" alt="JavaScript icon" onerror="this.parentElement.innerHTML='<span class=&quot;fallback&quot;>?</span>'"></div>
   <div class="kicker-line">Zone01 Athens · Cohort 2.3 · Author: AVGERINOS PAVLOS</div>
   <h1>JavaScript<br>Από τη Go σε μια δυναμική γλώσσα</h1>
-  <p class="lede">Ένας οδηγός για κάποιον που ήδη προγραμματίζει. Δεν ξαναμαθαίνουμε τι είναι μεταβλητή ή loop — μαθαίνουμε τι κάνει η JavaScript διαφορετικά, γιατί το κάνει έτσι, και πού ακριβώς σε προδίδει αν το αγνοήσεις.</p>
-  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+  <p class="lede">Ένας οδηγός για προγραμματιστές που μεταβαίνουν στη JavaScript. Δεν αναλωνόμαστε σε βασικές έννοιες όπως μεταβλητές ή βρόχοι — εξετάζουμε τι κάνει η JavaScript διαφορετικά, την αρχιτεκτονική της φιλοσοφία και ποια είναι τα κρίσιμα σημεία προσοχής.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου παρέχει τα απαραίτητα θεμέλια, και η συνέχεια στην εξερεύνηση είναι δική σου!</div>
 `);
 
     addContent(`
@@ -298,7 +298,7 @@ console.log(numbers.map((n) =&gt; n * 2))
 <p>Αυτός είναι και ο τρόπος με τον οποίο θα δοκιμάζεις τα περισσότερα παραδείγματα των πρώτων επτά ενοτήτων. Η γλώσσα είναι η ίδια που τρέχει και στον browser: ίδιοι τύποι, ίδια σύνταξη, ίδια συμπεριφορά στις μετατροπές. Αυτό που αλλάζει είναι τι σου δίνεται επιπλέον.</p>
 
 <div class="grid2">
-  <div class="card"><h3>Τι κερδίζεις στο Node</h3>
+  <div class="card"><h3>Δυνατότητες του Node.js</h3>
     <p>Ανάγνωση και εγγραφή αρχείων, δημιουργία HTTP servers, environment variables, ορίσματα γραμμής εντολών, πρόσβαση σε processes, και το <code>npm</code> για την εγκατάσταση εξωτερικών πακέτων.</p></div>
   <div class="card"><h3>Τι δεν υπάρχει</h3>
     <p>Δεν υπάρχει <code>document</code>, <code>window</code>, ούτε τίποτα σχετικό με σελίδα. Μια κλήση όπως <code>document.querySelector</code> προκαλεί σφάλμα, επειδή απλώς δεν υπάρχει σελίδα να αναζητηθεί κάτι μέσα της.</p></div>
@@ -425,7 +425,7 @@ console.log(price * shipping)      // 15     — here it became a number
 <h1 id="@const-let">const, let και var</h1>
 <p class="lede">Τρεις λέξεις-κλειδιά για την ίδια δουλειά. Δύο από αυτές είναι σύγχρονες, μία επιβιώνει από το 1995 και υπάρχει σε αυτόν τον οδηγό μόνο για να ξέρεις γιατί την αποφεύγεις.</p>
 
-<h2>Ο κανόνας σε μία γραμμή</h2>
+<h2>Κανόνες επιλογής: const, let ή var</h2>
 <p>Γράφε <code>const</code> παντού. Άλλαξέ το σε <code>let</code> μόνο όταν ο compiler-που-δεν-υπάρχει, δηλαδή το runtime, σου φωνάξει ότι προσπάθησες να κάνεις ανάθεση σε σταθερά. Το <code>var</code> δεν το χρησιμοποιείς ποτέ.</p>
 
 <pre><code class="lang-js">const total = 100          // never reassigned
@@ -600,7 +600,7 @@ empty.coords.lat = 10   // now this works
 <h1 id="@copying-objects">Αντιγραφή ενός object</h1>
 <p class="lede">Στη Go, ένα struct που το περνάς σε function αντιγράφεται. Αν ήθελες να το αλλάξεις, έπρεπε να στείλεις pointer — ήταν ορατή απόφαση που τη γράφεις με έναν αστερίσκο. Εδώ δεν υπάρχει αστερίσκος, και η προεπιλογή είναι η αντίθετη.</p>
 
-<h2>Η προφανής γραφή με απλή ανάθεση</h2>
+<h2>Ανάθεση αναφοράς (Pass by reference)</h2>
 <p>Θέλουμε να κρατήσουμε ένα αντίγραφο των αρχικών ρυθμίσεων πριν αφήσουμε τον χρήστη να τις πειράξει, ώστε να μπορεί να πατήσει «επαναφορά». Η προφανής γραφή:</p>
 
 <pre><code class="lang-js">const settings = { theme: "dark", fontSize: 14 }
@@ -672,7 +672,7 @@ console.log(tags)         // Logs: ["a", "new"] -> the array is unchanged; repla
   Είναι ακριβώς η συμπεριφορά που είχε ένα slice στη Go: το περνούσες by value, αλλά ο υποκείμενος πίνακας ήταν κοινός, οπότε μια εγγραφή σε στοιχείο φαινόταν, ενώ ένα <code>append</code> που μεγάλωνε τη χωρητικότητα δεν φαινόταν. Ίδιος μηχανισμός, ευρύτερη εφαρμογή: εδώ ισχύει για κάθε object.
 </div>
 
-<h2>Και για τη σύγκριση</h2>
+<h2>Σύγκριση αναφορών έναντι σύγκρισης τιμών</h2>
 <pre><code class="lang-js">{ a: 1 } === { a: 1 }     // false — two different objects
 [1, 2] === [1, 2]         // false
 
@@ -711,7 +711,7 @@ const final = { ...defaults, ...userPrefs }
 
 <p>Αυτό το ένα pattern αντικαθιστά ολόκληρη τη λογική «πάρε τις προεπιλογές, γράψε από πάνω ό,τι όρισε ο χρήστης» που θα έγραφες με loop. Θα το δεις παντού σε πραγματικό κώδικα.</p>
 
-<h2>Οι άλλες δύο γραφές</h2>
+<h2>Εναλλακτικοί τρόποι ρηχής αντιγραφής (Object.assign, slice)</h2>
 <pre><code class="lang-js">const b1 = Object.assign({}, settings)   // older, still common
 const a1 = items.slice()                 // arrays only
 const a2 = Array.from(items)             // arrays and anything iterable
@@ -719,7 +719,7 @@ const a2 = Array.from(items)             // arrays and anything iterable
 
 <p>Πρόσεξε το <code>{}</code> ως πρώτο όρισμα στο <code>Object.assign</code>. Το πρώτο όρισμα είναι ο <em>στόχος</em> και τροποποιείται. Αν γράψεις <code>Object.assign(settings, extra)</code>, δεν αντιγράφεις — αλλάζεις το <code>settings</code>. Είναι νόμιμη χρήση, αλλά είναι διαφορετική δουλειά από αυτήν που νομίζεις ότι κάνεις.</p>
 
-<h2 id="@shallow-limit">Πού σταματάει το shallow copy</h2>
+<h2 id="@shallow-limit">Περιορισμοί της ρηχής αντιγραφής (Shallow Copy)</h2>
 <p>Το shallow copy αντιγράφει τις <em>τιμές</em> των properties. Αν μια τιμή είναι object, αυτό που αντιγράφεται είναι η αναφορά της — και ξαναβρισκόμαστε στο αρχικό πρόβλημα, ένα επίπεδο πιο βαθιά:</p>
 
 <pre><code class="lang-js">const profile = {
@@ -747,9 +747,9 @@ console.log(profile.address.city) // "Patras"     &lt;- the bug is back
     addContent(`
 <div class="eyebrow" id="@deep-copy">Αναφορές, αντιγραφή και μεταβλητότητα</div>
 <h1 id="@deep-copy">Deep copy</h1>
-<p class="lede">Όταν χρειάζεσαι πραγματικά ανεξάρτητο αντίγραφο μιας φωλιασμένης δομής, έχεις μια έτοιμη λύση και μια πρόχειρη.</p>
+<p class="lede">Όταν απαιτείται ένα πλήρως ανεξάρτητο αντίγραφο μιας πολυεπίπεδης (nested) δομής δεδομένων, υπάρχουν δύο βασικές προσεγγίσεις: η ενσωματωμένη structuredClone() και η σειριοποίηση μέσω JSON.</p>
 
-<h2>Πρώτα η έτοιμη</h2>
+<h2>Ενσωματωμένη βαθιά αντιγραφή: structuredClone()</h2>
 <pre><code class="lang-js">const profile = { name: "Iris", address: { city: "Athens" }, visits: [1, 2] }
 
 const deep = structuredClone(profile)
@@ -758,9 +758,9 @@ deep.address.city = "Patras"
 console.log(profile.address.city)   // "Athens"   — fully independent
 </code></pre>
 
-<p>Το <code>structuredClone</code> είναι built-in σε όλα τα σύγχρονα runtimes και είναι αυτό που θα χρησιμοποιείς. Χειρίζεται σωστά nested objects, arrays, <code>Date</code>, <code>Map</code>, <code>Set</code>, ακόμα και κυκλικές αναφορές — object που δείχνει στον εαυτό του. Δεν χειρίζεται functions ούτε class instances με τα methods τους· αν του δώσεις function, πετάει σφάλμα.</p>
+<p>Το <code>structuredClone</code> είναι built-in σε όλα τα σύγχρονα runtimes και είναι αυτό που θα χρησιμοποιείς. Χειρίζεται σωστά nested objects, arrays, <code>Date</code>, <code>Map</code>, <code>Set</code>, ακόμα και κυκλικές αναφορές — object που δείχνει στον εαυτό του. Δεν χειρίζεται functions ούτε class instances με τα methods τους· αν συναντήσει function, εγείρει εξαίρεση DataCloneError.</p>
 
-<h2 id="@json-roundtrip">Η πρόχειρη που θα δεις παντού</h2>
+<h2 id="@json-roundtrip">Αντιγραφή μέσω JSON (Serialization)</h2>
 <pre><code class="lang-js">const deep = JSON.parse(JSON.stringify(profile))
 </code></pre>
 
@@ -772,12 +772,12 @@ console.log(profile.address.city)   // "Athens"   — fully independent
   <tr><td class="gt-term">function</td><td class="gt-def">εξαφανίζεται σιωπηλά</td></tr>
   <tr><td class="gt-term">NaN / Infinity</td><td class="gt-def">γίνονται null</td></tr>
   <tr><td class="gt-term">Map / Set</td><td class="gt-def">γίνονται άδεια objects</td></tr>
-  <tr><td class="gt-term">κυκλική αναφορά</td><td class="gt-def">πετάει TypeError</td></tr>
+  <tr><td class="gt-term">κυκλική αναφορά</td><td class="gt-def">εγείρει TypeError</td></tr>
 </table>
 
 <p>Αν η δομή σου είναι καθαρά JSON — δηλαδή αν ήρθε από API — τότε το round trip είναι ασφαλές εξ ορισμού, γιατί ό,τι μπορεί να χαθεί δεν υπήρξε ποτέ. Παντού αλλού, δεν το γράφεις.</p>
 
-<h2 id="@copy-decision">Πίνακας απόφασης</h2>
+<h2 id="@copy-decision">Επιλογή μεθόδου αντιγραφής</h2>
 <table style="width:100%;border-collapse:collapse">
   <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.3)"><th style="text-align:left;padding:6px">Κατάσταση</th><th style="text-align:left;padding:6px">Τι χρησιμοποιείς</th></tr>
   <tr><td style="padding:6px">Επίπεδο object, μόνο primitives</td><td style="padding:6px"><code>{ ...obj }</code></td></tr>
@@ -833,7 +833,7 @@ const area2 = (w, h) =&gt; w * h
   Στη Go, οι δηλώσεις σε επίπεδο package ήταν ανεξάρτητες σειράς: μπορούσες να καλέσεις μια function που ορίζεται 200 γραμμές πιο κάτω. Το <code>function</code> declaration συμπεριφέρεται ακριβώς έτσι. Οι άλλες δύο γραφές όχι — υπακούν στους κανόνες μεταβλητής της Ενότητας 1.
 </div>
 
-<h2 id="@this-binding">Η μία πραγματική διαφορά: this</h2>
+<h2 id="@this-binding">Το binding του this στις συναρτήσεις</h2>
 <p>Το <code>this</code> σε μια κανονική function καθορίζεται από το <em>πώς την καλείς</em>, όχι από το πού είναι γραμμένη. Σε arrow function δεν υπάρχει καθόλου δικό της <code>this</code>· κληρονομεί αυτό του σημείου όπου γράφτηκε.</p>
 
 <pre><code class="lang-js">const counter = {
@@ -849,7 +849,7 @@ const area2 = (w, h) =&gt; w * h
 
 <p>Δεν θα χρειαστείς το <code>this</code> συχνά αν γράφεις με τον τρόπο αυτού του οδηγού: μεμονωμένες functions που παίρνουν δεδομένα και επιστρέφουν δεδομένα. Θα το συναντήσεις σε παλιό κώδικα, σε classes και σε event handlers. Ο πρακτικός κανόνας: <strong>arrow παντού, εκτός από method μέσα σε object ή class</strong>.</p>
 
-<h2>Παράμετροι: κανείς δεν μετράει</h2>
+<h2>Διαχείριση παραμέτρων και προεπιλεγμένες τιμές</h2>
 <pre><code class="lang-js">function greet(name, greeting) {
   return greeting + ", " + name
 }
@@ -887,7 +887,7 @@ sum(1, 2, 3)   // 6
 <div class="eyebrow">Τιμές, τύποι και το runtime</div>
 <h1 id="@typeof">Τύποι δεδομένων (Primitives)</h1>
 
-<h2>Ό,τι δεν είναι object, είναι primitive</h2>
+<h2>Πρωταρχικοί τύποι (Primitives)</h2>
 <p>Η JavaScript έχει επτά primitive τύπους. Όλα τα υπόλοιπα — arrays, functions, dates, regular expressions — είναι objects.</p>
 
 <table class="glossary-table">
@@ -936,7 +936,7 @@ typeof NaN            // "number"   &lt;- "not a number" is a number
 
 <p>Οι τρεις τελευταίες γραμμές δεν είναι ασκήσεις τρολαρίσματος. Το <code>typeof null</code> είναι bug της πρώτης υλοποίησης του 1995 που έμεινε επειδή η διόρθωσή του θα έσπαγε το μισό web. Τα άλλα δύο είναι συνέπειες του πώς ορίστηκε η γλώσσα: array είναι object με αριθμητικά κλειδιά, και <code>NaN</code> είναι μια ειδική τιμή <em>μέσα</em> στους αριθμούς.</p>
 
-<h2>Πώς ρωτάς σωστά</h2>
+<h2>Αξιόπιστος έλεγχος τύπων δεδομένων</h2>
 <p>Επειδή το <code>typeof</code> δεν αρκεί, χρειάζεσαι διαφορετικό εργαλείο ανά περίπτωση. Δεν υπάρχει ένας operator που τα κάνει όλα, υπάρχει ένα μικρό set:</p>
 
 <pre><code class="lang-js">Array.isArray([1, 2])            // true   — the only correct array test
@@ -946,7 +946,7 @@ value === null                   // the only correct null test
 value === undefined              // or:  typeof value === "undefined"
 </code></pre>
 
-<p>Αν θέλεις μία απάντηση για κάθε τιμή, υπάρχει ένα τέχνασμα που εκμεταλλεύεται ένα εσωτερικό tag που κουβαλάει κάθε object:</p>
+<p>Αν θέλεις μία απάντηση για κάθε τιμή, υπάρχει ένα τέχνασμα που εκμεταλλεύεται ένα εσωτερικό tag που συνοδεύει κάθε αντικείμενο:</p>
 
 <pre><code class="lang-js">// Returns a precise tag for any value: "Array", "Date", "Map", "Null", ...
 const kindOf = (v) =&gt; Object.prototype.toString.call(v).slice(8, -1)
@@ -1246,14 +1246,14 @@ greet(null)      // Γεια σου null
 <h1>Numbers</h1>
 <p class="lede">Η Go σου δίνει int, int8, int64, uint, float32, float64. Η JavaScript σου δίνει ένα: 64-bit floating point, ό,τι κι αν γράψεις.</p>
 
-<h2>Το κλασικό πρώτο σοκ</h2>
+<h2>Ακρίβεια κινητής υποδιαστολής (Floating-point)</h2>
 <pre><code class="lang-js">console.log(0.1 + 0.2)              // 0.30000000000000004
 console.log(0.1 + 0.2 === 0.3)      // false
 </code></pre>
 
 <p>Αυτό δεν είναι ιδιαιτερότητα της JavaScript. Είναι το πρότυπο IEEE 754 και ισχύει το ίδιο για <code>float64</code> στη Go. Η διαφορά είναι ότι στη Go επέλεγες πότε δουλεύεις με floats· εδώ δεν υπάρχει επιλογή, κάθε αριθμός είναι float. Το <code>0.1 + 0.2</code> δεν ειναι ποτέ ακριβώς <code>0.3</code> λόγω της ακρίβειας των δεκαδικών</p>
 
-<h2>Πώς συγκρίνεις σωστά</h2>
+<h2>Ασφαλής σύγκριση δεκαδικών</h2>
 <pre><code class="lang-js">const almostEqual = (a, b) =&gt; Math.abs(a - b) &lt; Number.EPSILON * 10
 
 almostEqual(0.1 + 0.2, 0.3)   // true
@@ -1272,7 +1272,7 @@ almostEqual(0.1 + 0.2, 0.3)   // true
 
 <p>Πάνω από αυτό το όριο, δύο διαφορετικοί ακέραιοι μπορούν να αναπαρασταθούν από την ίδια τιμή. Αν διαβάζεις IDs από API που ξεπερνούν τα 2^53, ζήτα να σου έρθουν ως strings· αλλιώς θα χάσεις σιωπηλά ψηφία.</p>
 
-<h2>Οι τρεις ειδικές τιμές</h2>
+<h2>Ειδικές αριθμητικές τιμές (NaN, Infinity)</h2>
 <pre><code class="lang-js">1 / 0                    // Infinity
 -1 / 0                   // -Infinity
 0 / 0                    // NaN
@@ -1320,7 +1320,7 @@ Math.trunc(-3.9)    // -3    &lt;- simply drops the decimals
 <h1>Τιμές και τελεστές</h1>
 <p class="lede">Σύντομη επανάληψη: τους σύντομους τελεστές ανάθεσης και τους κανόνες ονομάτων τους έχεις ήδη δει στις <a href="https://guides01.devs.surf/01-go-01.html#@variables" target="_blank" rel="noopener">μεταβλητές</a>, τους <a href="https://guides01.devs.surf/01-go-01.html#@operators" target="_blank" rel="noopener">operators</a> και το <a href="https://guides01.devs.surf/01-go-01.html#@shortvardeclaration" target="_blank" rel="noopener">short variable declaration</a> της Go.</p>
 
-<h2>Οι σύντομοι τελεστές ανάθεσης</h2>
+<h2>Σύνθετοι τελεστές ανάθεσης</h2>
 <pre><code class="lang-js">let total = 100
 
 total += 25       // same as: total = total + 25
@@ -1399,7 +1399,7 @@ const labelTernary = stock > 0 ? "in stock" : "out of stock"
   Ένα ternary μέσα σε ternary διαβάζεται δύσκολα σχεδόν πάντα. Αν χρειάζεσαι δεύτερη συνθήκη, πιθανότατα θέλεις if/else ή έναν πίνακα αντιστοιχίσεων, όχι εμφωλευμένα ternary.
 </div>
 
-<h2>Το guard clause που ήδη ξέρεις</h2>
+<h2>Πρόωρη επιστροφή (Guard Clauses)</h2>
 <p>Το <code>if</code> χωρίς <code>else</code>, με άμεσο <code>return</code>, παραμένει ο πιο καθαρός τρόπος όταν η λογική έχει πολλά βήματα ανά κλάδο:</p>
 <pre><code class="lang-js">const clamp = (n, min, max) => {
   if (n < min) return min
@@ -1506,7 +1506,7 @@ console.log(config.limits.maxUsers) // 999
 
 <p>Για να παγώσεις το αντικείμενο σε βάθος (deep freeze), χρειάζεσαι και πάλι αναδρομή (recursion): πρέπει να διασχίσεις τη δομή και να εφαρμόσεις το κλείδωμα σε κάθε φωλιασμένο αντικείμενο.</p>
 
-<h2>Η εναλλακτική προσέγγιση: Μην τροποποιείς</h2>
+<h2>Αμετάβλητες δομές και Non-mutating μέθοδοι</h2>
 <p>Το κλείδωμα λύνει το πρόβλημα αμυντικά. Η καλύτερη πρακτική είναι να μην δημιουργείς καν το πρόβλημα: αντί να αλλάζεις (mutate) την υπάρχουσα δομή, <strong>να παράγεις μια καινούργια</strong>. Σε αυτήν τη φιλοσοφία (immutability) βασίζονται οι περισσότερες σύγχρονες βιβλιοθήκες, καθώς και ο τρόπος που χτίζουμε UI στην Ενότητα 8.</p>
 
 <pre><code class="lang-js">// Mutating: changes the array we passed
@@ -1780,7 +1780,7 @@ item.field                   // undefined — this looked for a key literally na
 
 <p>Η τελευταία γραμμή είναι το πιο συχνό λάθος αρχαρίου στη γλώσσα. Η τελεία παίρνει το όνομα κυριολεκτικά· οι αγκύλες αξιολογούν αυτό που βρίσκεται μέσα τους.</p>
 
-<h2 id="@key-exists">Υπάρχει αυτό το κλειδί;</h2>
+<h2 id="@key-exists">Έλεγχος ύπαρξης κλειδιού</h2>
 <pre><code class="lang-js">const stock = { apples: 0 }
 
 stock.apples                      // 0
@@ -1871,7 +1871,7 @@ const unique = [...new Set([3, 1, 3, 7, 1])]    // [3, 1, 7]
   Η μοναδικότητα σε ένα <code>Set</code> κρίνεται με τους ίδιους κανόνες με τη <code>===</code>. Άρα ένα <code>Set</code> από objects δεν αφαιρεί «ίδια» objects — μόνο κυριολεκτικά τα ίδια. Για να αφαιρέσεις διπλότυπα objects με βάση κάποιο πεδίο, φτιάχνεις <code>Set</code> από <em>τα πεδία</em>, όχι από τα objects.
 </div>
 
-<h2 id="@map-vs-object">Πίνακας απόφασης: object ή Map;</h2>
+<h2 id="@map-vs-object">Κριτήρια επιλογής: Object ή Map</h2>
 <table style="width:100%;border-collapse:collapse">
   <tr style="border-bottom:1px solid rgba(var(--ink-rgb),0.3)"><th style="text-align:left;padding:6px">Ερώτηση</th><th style="text-align:left;padding:6px">Απάντηση</th></tr>
   <tr><td style="padding:6px">Τα κλειδιά είναι γνωστά ονόματα πεδίων;</td><td style="padding:6px">object</td></tr>
@@ -1884,7 +1884,7 @@ const unique = [...new Set([3, 1, 3, 7, 1])]    // [3, 1, 7]
 
 <p>Η γραμμή για το JSON δεν είναι λεπτομέρεια. Το <code>JSON.stringify(new Map(...))</code> δίνει <code>{}</code>, χωρίς προειδοποίηση. Αν τα δεδομένα σου φεύγουν προς τα έξω, το object είναι η φυσική επιλογή.</p>
 
-<h2>Το μοτίβο του μετρητή, σε δύο εκδοχές</h2>
+<h2>Υλοποίηση συχνότητας (Frequency Counter)</h2>
 <pre><code class="lang-js">// with a plain object — keys are strings anyway, so this is fine
 function countLetters(text) {
   const counts = {}
@@ -1915,7 +1915,7 @@ function countLettersMap(text) {
 <h1>Arrays</h1>
 <p class="lede">Δεν υπάρχει διάκριση array και slice, δεν υπάρχει χωρητικότητα, δεν υπάρχει τύπος στοιχείου. Υπάρχει ένα object με αριθμητικά κλειδιά και μια property που λέγεται length.</p>
 
-<h2>Το μέγεθος είναι γραφόμενο</h2>
+<h2>Η ιδιότητα length και δυναμικό μέγεθος</h2>
 <pre><code class="lang-js">const a = [1, 2, 3]
 
 a.length = 1
@@ -1928,15 +1928,17 @@ console.log(a.length)   // 6          — length follows the highest index
 
 <p>Οι θέσεις 1 έως 4 δεν έχουν <code>undefined</code>· δεν υπάρχουν καθόλου. Λέγονται holes, και συμπεριφέρονται ασυνεπώς: κάποιες methods τις προσπερνούν, άλλες τις βλέπουν ως <code>undefined</code>. Δεν τις φτιάχνεις σκόπιμα ποτέ· απλώς πρέπει να ξέρεις γιατί ένας πίνακας που «γέμισες» με ανάθεση σε τυχαία index συμπεριφέρεται παράξενα.</p>
 
-<h2 id="@array-init">Δημιουργία με ελεγχόμενο μέγεθος</h2>
+<h2 id="@array-init">Αρχικοποίηση πινάκων συγκεκριμένου μεγέθους</h2>
 <pre><code class="lang-js">new Array(3)                      // [empty × 3]   — holes, avoid
 new Array(3).fill(0)              // [0, 0, 0]
 Array.from({ length: 3 }, () =&gt; 0)          // [0, 0, 0]
 Array.from({ length: 4 }, (_, i) =&gt; i * i)  // [0, 1, 4, 9]
 
-// a 2D grid — note why the naive version is wrong
-const badGrid = new Array(3).fill([])       // three names for ONE array
-const grid = Array.from({ length: 3 }, () =&gt; [])   // three distinct arrays
+// Δισδιάστατος πίνακας: αποφυγή κοινής αναφοράς με Array.from
+// Το fill([]) βάζει την ίδια αναφορά σε όλες τις γραμμές (κοινός πίνακας στη μνήμη)
+const badGrid = new Array(3).fill([])
+// Ορθή αρχικοποίηση ανεξάρτητων γραμμών:
+const grid = Array.from({ length: 3 }, () =&gt; [])   // 3 διακριτοί πίνακες
 </code></pre>
 
 <div class="callout">
@@ -1944,7 +1946,7 @@ const grid = Array.from({ length: 3 }, () =&gt; [])   // three distinct arrays
   Το <code>fill([])</code> αξιολογεί το <code>[]</code> <em>μία φορά</em> και βάζει την ίδια αναφορά σε όλες τις θέσεις. Ένα <code>badGrid[0].push("x")</code> εμφανίζεται και στις τρεις γραμμές. Είναι η Ενότητα 2 σε νέα συσκευασία, και είναι το πιο συχνό bug σε δισδιάστατα πλέγματα.
 </div>
 
-<h2>Χρήσιμα μικρά</h2>
+<h2>Χρήσιμες μέθοδοι πινάκων (at, includes, concat)</h2>
 <pre><code class="lang-js">const items = ["a", "b", "c"]
 
 items.at(-1)                 // "c"    — last element, without length - 1
@@ -1999,7 +2001,7 @@ const { name: n2, ...others } = user      // others = { role, city }
 
 <p>Το <code>:</code> μέσα σε destructuring σημαίνει μετονομασία, όχι τύπο. Είναι το ένα σημείο όπου κάποιος που έρχεται από στατική γλώσσα διαβάζει λάθος αυτό που βλέπει.</p>
 
-<h2 id="@param-destruct">Σε παραμέτρους — εδώ κερδίζεις πραγματικά</h2>
+<h2 id="@param-destruct">Destructuring σε παραμέτρους συναρτήσεων</h2>
 <pre><code class="lang-js">// hard to call correctly: what is the third argument again?
 function drawBad(x, y, color, size, filled) { }
 drawBad(0, 0, "red", 4, true)
@@ -2018,7 +2020,7 @@ draw()                             // the = {} at the end makes this legal
   Είναι το functional options pattern που έλυνε το ίδιο πρόβλημα στη Go με πολύ περισσότερο κώδικα. Εδώ είναι σύνταξη της γλώσσας. Το <code>= {}</code> στο τέλος είναι σημαντικό: χωρίς αυτό, μια κλήση χωρίς όρισμα προσπαθεί να διαβάσει properties από το <code>undefined</code> και πετάει TypeError.
 </div>
 
-<h2>Φωλιασμένο destructuring, και πού σταματάει η χρησιμότητά του</h2>
+<h2>Εμφωλευμένο Destructuring και όρια αναγνωσιμότητας</h2>
 <pre><code class="lang-js">const response = { data: { user: { name: "Iris", tags: ["a", "b"] } } }
 
 const { data: { user: { name, tags: [firstTag] } } } = response
@@ -2052,7 +2054,7 @@ sum(1, 2, 3)                              // 6
 <h1>Ασφαλής πρόσβαση & JSON</h1>
 <p class="lede">Τα δεδομένα που έρχονται από API δεν έχουν εγγυημένο σχήμα. Δύο εργαλεία κάνουν τη διαφορά ανάμεσα σε κώδικα που αντέχει και σε κώδικα που καταρρέει στο πρώτο λειψό πεδίο.</p>
 
-<h2 id="@optional-chain">Ασφαλής πρόσβαση σε βάθος με Optional chaining (?.)</h2>
+<h2 id="@optional-chain">Ασφαλής πλοήγηση με Optional Chaining (?.)</h2>
 <p>Για να αποφύγουμε την κατάρρευση αν λείπει ένα πεδίο (π.χ. το <code>address</code>), χρησιμοποιούμε το <code>?.</code>, αντί να γράφουμε τεράστιες αλυσίδες ελέγχων.</p>
 
 <pre><code class="lang-js">const city = response?.data?.user?.address?.city ?? "unknown"
@@ -2103,10 +2105,10 @@ JSON.parse("{bad}")               // throws SyntaxError
 
 <div class="callout">
   <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>JSON.parse</code> πετάει σφάλμα σε άκυρο κείμενο, και το κείμενο έρχεται από το δίκτυο, δηλαδή από μέρος που δεν ελέγχεις. Κάθε <code>JSON.parse</code> σε δεδομένα εξωτερικής προέλευσης θέλει <code>try / catch</code> γύρω του. Θα δούμε το πλήρες pattern στην Ενότητα 9.
+  Το <code>JSON.parse</code> εγείρει σφάλμα (SyntaxError) σε άκυρο κείμενο, και το κείμενο έρχεται από το δίκτυο, δηλαδή από μέρος που δεν ελέγχεις. Κάθε <code>JSON.parse</code> σε δεδομένα εξωτερικής προέλευσης θέλει <code>try / catch</code> γύρω του. Θα δούμε το πλήρες pattern στην Ενότητα 9.
 </div>
 
-<h2>Τι δεν επιβιώνει</h2>
+<h2>Τύποι και τιμές που δεν υποστηρίζονται από το JSON</h2>
 <pre><code class="lang-js">JSON.stringify({ a: undefined, b: () =&gt; 1, c: NaN, d: new Date(0) })
 // '{"c":null,"d":"1970-01-01T00:00:00.000Z"}'
 //   a and b vanished, c became null, d became a string
@@ -2323,7 +2325,7 @@ other()    // 1   — a completely separate count
   Όποτε χρειάζεσαι κατάσταση που πρέπει να επιβιώσει ανάμεσα σε κλήσεις αλλά δεν πρέπει να είναι ορατή απ' έξω: μετρητές, caches, «έγινε ήδη μία φορά», ρυθμίσεις που δένονται μία φορά και μετά χρησιμοποιούνται πολλές. Στην Ενότητα 9 θα δεις ότι το <code>debounce</code> και το <code>throttle</code> είναι ακριβώς αυτό και τίποτα άλλο.
 </div>
 
-<h2 id="@var-loop-trap">Η κλασική παγίδα με το var</h2>
+<h2 id="@var-loop-trap">Εμβέλεια του var σε βρόχους</h2>
 <pre><code class="lang-js">const fns = []
 for (var i = 0; i &lt; 3; i++) {
   fns.push(() =&gt; i)
@@ -2347,7 +2349,7 @@ console.log(fns2[0](), fns2[1](), fns2[2]())  // 0 1 2
 <h1>Higher-Order Functions</h1>
 <p class="lede">Currying, partial application, composition. Τρία ονόματα για την ίδια βασική κίνηση: κρατάω κάτι τώρα, δέχομαι τα υπόλοιπα αργότερα.</p>
 
-<h2>Το ζητούμενο</h2>
+<h2>Συναρτήσεις ανώτερης τάξης (Higher-Order Functions)</h2>
 <p>Έχουμε έναν έλεγχο που εξαρτάται από ένα όριο. Το όριο είναι σταθερό μέσα σε ένα κομμάτι κώδικα, αλλά διαφορετικό σε άλλο. Η αφελής προσέγγιση γράφει την ίδια function δύο φορές:</p>
 
 <pre><code class="lang-js">const isOver18 = (age) =&gt; age &gt;= 18
@@ -2478,7 +2480,7 @@ try {
   Η συμπεριφορά είναι του <code>panic</code>/<code>recover</code>, όχι του <code>error</code>. Η διαφορά με τη Go είναι πολιτισμική: εκεί το panic ήταν για το απροσδόκητο και το <code>error</code> για το αναμενόμενο, ενώ εδώ το <code>throw</code> χρησιμοποιείται και για τα δύο. Το κόστος είναι ότι η υπογραφή μιας function δεν σου λέει τίποτα για το τι μπορεί να πάει στραβά.
 </div>
 
-<h2>Τι πετάς</h2>
+<h2>Το αντικείμενο Error και τύποι σφαλμάτων</h2>
 <pre><code class="lang-js">throw new Error("something went wrong")     // the base type
 throw new TypeError("expected a number")    // wrong type
 throw new RangeError("index out of bounds") // value outside allowed range
@@ -2507,9 +2509,9 @@ try {
 }
 </code></pre>
 
-<p>Το <code>throw err</code> μέσα στο <code>else</code> είναι σημαντικό pattern: πιάνεις μόνο ό,τι ξέρεις να χειριστείς και ξαναπετάς τα υπόλοιπα. Ένα <code>catch</code> που καταπίνει τα πάντα είναι χειρότερο από κανένα <code>catch</code>, γιατί κρύβει σφάλματα που θα έπρεπε να φτάσουν σε σένα.</p>
+<p>Το <code>throw err</code> μέσα στο <code>else</code> αποτελεί ουσιώδες μοτίβο (re-throw): διαχειρίζεσαι μόνο τα σφάλματα που αναγνωρίζεις και επανεγείρεις (re-throw) τα υπόλοιπα. Ένα μπλοκ <code>catch</code> που αποσιωπά αδιακρίτως κάθε εξαίρεση αποκρύπτει κρίσιμα σφάλματα που θα έπρεπε να κλιμακωθούν ανώτερα.</p>
 
-<h2 id="@throw-vs-return">Η άλλη επιλογή: επίστρεψε αντί να πετάξεις</h2>
+<h2 id="@throw-vs-return">Διαχείριση σφαλμάτων μέσω τιμών επιστροφής</h2>
 <pre><code class="lang-js">// throwing: the caller must remember to wrap the call
 function toNumberOrThrow(text) {
   const n = Number(text)
@@ -2680,7 +2682,7 @@ shout("  hey  ")   // "HEY"`,
 <h1>Εμφωλιασμένες κλήσεις</h1>
 <p class="lede">Σύντομη επανάληψη στο πώς διαβάζεται μια αλυσίδα εμφωλιασμένων κλήσεων, πριν προχωρήσουμε σε closures και higher-order functions.</p>
 
-<h2>Απλές functions, μία παράμετρος</h2>
+<h2>Συναρτήσεις μίας παραμέτρου</h2>
 <pre><code class="lang-js">const double = (n) => n * 2
 const addTax = (price) => price * 1.24
 
@@ -2688,7 +2690,7 @@ console.log(double(10))     // 20
 console.log(addTax(100))    // 124
 </code></pre>
 
-<h2>Φωλιάζοντας κλήσεις</h2>
+<h2>Διαδοχική σύνθεση κλήσεων</h2>
 <pre><code class="lang-js">console.log(addTax(double(10)))
 // JavaScript reads this left to right, but must finish the INNER call first:
 // 1. double(10) runs first, since its parentheses close before addTax's do
@@ -2702,7 +2704,7 @@ console.log(addTax(100))    // 124
 // addTax(20) → 24.8
 </code></pre>
 
-<h2>Χτίζοντας μία function πάνω σε άλλες</h2>
+<h2>Σύνθεση συναρτήσεων (Function Composition)</h2>
 <pre><code class="lang-js">// build a new function out of ones you already have
 const quadruple = (n) => double(double(n))
 
@@ -2743,7 +2745,7 @@ const factorial2 = (n) => (n <= 1 ? 1 : n * factorial2(n - 1))
 </code></pre>
 <p>Μια arrow function δεν έχει ενσωματωμένο τρόπο να αναφερθεί στον εαυτό της χωρίς όνομα (σε αντίθεση, π.χ., με μια named function declaration). Γι' αυτό η recursive arrow πρέπει πάντα να είναι δεμένη σε <code>const</code> πριν κληθεί — κάτι που δουλεύει, γιατί το <code>const factorial = ...</code> έχει ολοκληρωθεί πριν καν γίνει η πρώτη πραγματική κλήση.</p>
 
-<h2>Accumulator pattern, ξανά</h2>
+<h2>Αναδρομή με συσσωρευτή (Accumulator Pattern)</h2>
 <pre><code class="lang-js">// tail-style: carry the running result as an extra argument
 const sumTo = (n, acc = 0) => (n === 0 ? acc : sumTo(n - 1, acc + n))
 
@@ -2803,7 +2805,7 @@ console.log(sumTo(100))  // 5050
 <h1>Δηλωτικός προγραμματισμός</h1>
 <p class="lede">Ξέρεις ήδη να γράψεις οποιαδήποτε επεξεργασία με loop. Αυτή η ενότητα δεν σου μαθαίνει κάτι που δεν μπορείς να κάνεις· σου μαθαίνει τη γραφή που χρησιμοποιεί όλος ο υπόλοιπος κόσμος της JavaScript, και το πότε <em>δεν</em> τη χρησιμοποιείς.</p>
 
-<h2>Τα loops, πρώτα</h2>
+<h2>Προστακτική επανάληψη με βρόχους (Imperative Loops)</h2>
 <pre><code class="lang-js">const items = ["a", "b", "c"]
 
 // classic: you control the index
@@ -2824,7 +2826,7 @@ for (const key in items) { }        // "0", "1", "2" — strings, not numbers
   Το <code>for...in</code> μοιάζει με το <code>range</code> της Go αλλά δεν είναι. Δίνει κλειδιά ως strings, δεν εγγυάται σειρά, και περιλαμβάνει properties που κληρονομήθηκαν. Για πίνακες, χρησιμοποίησε <code>for...of</code>. Για objects, χρησιμοποίησε <code>Object.keys</code> ή <code>Object.entries</code>.
 </div>
 
-<h2>Το πρόβλημα με τα loops</h2>
+<h2>Μειονεκτήματα των προστακτικών βρόχων</h2>
 <p>Έστω ότι θέλουμε τα ονόματα των ενεργών χρηστών σε κεφαλαία. Με loop:</p>
 
 <pre><code class="lang-js">const result = []
@@ -2865,9 +2867,9 @@ nums.filter((n) =&gt; n &gt; 0)            // [1, 5]
 nums.filter(Boolean)                 // [1, -2, 5, -8]  — drops the falsy 0
 </code></pre>
 
-<p>Το <code>filter(Boolean)</code> είναι ένα ιδίωμα που θα δεις συχνά: περνάει την <code>Boolean</code> ως συνθήκη και έτσι κρατάει μόνο τα truthy. Χρήσιμο για να καθαρίσεις έναν πίνακα από <code>null</code> και κενά strings — αλλά θυμήσου την Ενότητα 1: πετάει και τα μηδενικά.</p>
+<p>Το <code>filter(Boolean)</code> αποτελεί διαδεδομένο ιδίωμα: περνάει την <code>Boolean</code> ως συνάρτηση ελέγχου και διατηρεί μόνο τις truthy τιμές. Είναι χρήσιμο για την αφαίρεση τιμών <code>null</code>, <code>undefined</code> και κενών strings από έναν πίνακα — προσοχή όμως: απορρίπτει επίσης και τον αριθμό 0 (καθώς είναι falsy).</p>
 
-<h2 id="@chain-cost">Το κόστος της αλυσίδας</h2>
+<h2 id="@chain-cost">Υπολογιστικό κόστος αλυσιδωτών μεθόδων</h2>
 <pre><code class="lang-js">// three passes over the data, two temporary arrays
 const total = orders
   .filter((o) =&gt; o.paid)
@@ -2883,7 +2885,7 @@ const total = orders
 <h1>reduce</h1>
 <p class="lede">Το <code>map</code> και το <code>filter</code> είναι ειδικές περιπτώσεις. Το <code>reduce</code> είναι η γενική μορφή: παίρνει μια συλλογή και δίνει <em>οτιδήποτε</em>.</p>
 
-<h2>Η υπογραφή, γραμμή προς γραμμή</h2>
+<h2>Η σύνταξη και οι παράμετροι της reduce</h2>
 <pre><code class="lang-js">const total = [10, 20, 30].reduce((acc, item) =&gt; acc + item, 0)
 //                                  ^     ^                   ^
 //                                  |     |                   the seed
@@ -2904,7 +2906,7 @@ const total = orders
   Είναι ο accumulator που έχεις ξαναγράψει δεκάδες φορές: μεταβλητή έξω από το loop, αρχική τιμή, ενημέρωση σε κάθε βήμα. Το <code>reduce</code> δεν προσθέτει ιδέα· δίνει όνομα και σχήμα σε αυτό που ήδη κάνεις.
 </div>
 
-<h2 id="@reduce-seed">Το seed δεν είναι προαιρετικό</h2>
+<h2 id="@reduce-seed">Σημασία της αρχικής τιμής (Initial Value)</h2>
 <pre><code class="lang-js">[].reduce((a, b) =&gt; a + b)        // TypeError: Reduce of empty array with no initial value
 [].reduce((a, b) =&gt; a + b, 0)     // 0
 
@@ -2915,7 +2917,7 @@ const total = orders
 
 <p>Ο κανόνας: <strong>δίνε πάντα seed</strong>, και δίνε το ουδέτερο στοιχείο της πράξης — <code>0</code> για άθροισμα, <code>1</code> για γινόμενο, <code>""</code> για κείμενο, <code>[]</code> για συλλογή, <code>{}</code> για λεξικό. Χωρίς αυτό, ο κώδικας δουλεύει μέχρι την πρώτη άδεια λίστα.</p>
 
-<h2>Το ίδιο εργαλείο, πέντε διαφορετικά αποτελέσματα</h2>
+<h2>Τυπικές περιπτώσεις χρήσης της reduce</h2>
 <pre><code class="lang-js">const words = ["delta", "alpha", "delta", "beta"]
 
 // 1. a number
@@ -2939,10 +2941,10 @@ words.reduce((set, w) =&gt; set.add(w), new Set())
 
 <div class="callout">
   <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Στην τρίτη περίπτωση, η γραμμή <code>return counts</code> ξεχνιέται συνεχώς. Χωρίς αυτήν, ο συσσωρευτής γίνεται <code>undefined</code> στο δεύτερο βήμα και ο κώδικας πετάει σφάλμα με μήνυμα που δεν λέει τίποτα για την αιτία.
+  Στην τρίτη περίπτωση, η γραμμή <code>return counts</code> ξεχνιέται συνεχώς. Χωρίς αυτήν, ο συσσωρευτής γίνεται <code>undefined</code> στο δεύτερο βήμα και ο κώδικας εγείρει εξαίρεση με μήνυμα που δεν λέει τίποτα για την αιτία.
 </div>
 
-<h2 id="@reduce-misuse">Πότε το <code>reduce</code> είναι λάθος επιλογή</h2>
+<h2 id="@reduce-misuse">Πότε πρέπει να αποφεύγεται η <code>reduce</code></h2>
 <p>Η τέταρτη περίπτωση παραπάνω — <code>[...out, x]</code> σε κάθε βήμα — φτιάχνει καινούργιο πίνακα σε κάθε επανάληψη. Είναι τετραγωνικού κόστους και γράφεται σε μία λέξη ως <code>map</code>. Αν το <code>reduce</code> σου καταλήγει να ξαναχτίζει τη συλλογή, χρησιμοποιείς λάθος εργαλείο.</p>
 
 <div class="callout good">
@@ -2994,7 +2996,7 @@ users.filter((u) =&gt; u.active).length   // works, but walks everything
   Δεν μπορείς να βγεις πρόωρα από <code>forEach</code>, <code>map</code> ή <code>filter</code>. Το <code>break</code> είναι συντακτικό σφάλμα και το <code>return</code> τερματίζει μόνο την τρέχουσα κλήση. Αν χρειάζεσαι <code>break</code>, χρειάζεσαι <code>for...of</code> — ή <code>some</code>, που είναι ακριβώς «loop με break» με άλλο όνομα.
 </div>
 
-<h2 id="@sorting">Ταξινόμηση: η μία method που πρέπει να προσέχεις</h2>
+<h2 id="@sorting">Ταξινόμηση με sort() και μεταβλητότητα</h2>
 <pre><code class="lang-js">[10, 9, 100, 1].sort()          // [1, 10, 100, 9]   &lt;- string comparison!
 </code></pre>
 
@@ -3176,7 +3178,7 @@ people.sort((a, b) => {
 <h1>While & for...of</h1>
 <p class="lede">Σύντομη επανάληψη στα loops με το χέρι, πριν αφήσουμε οριστικά πίσω μας τον μηχανισμό για το ζητούμενο.</p>
 
-<h2>while: μέτρημα με συνθήκη</h2>
+<h2>Βρόχος while με συνθήκη τερματισμού</h2>
 <pre><code class="lang-js">let attempts = 0
 
 while (attempts < 3) {
@@ -3189,7 +3191,7 @@ while (attempts < 3) {
 </code></pre>
 <p>Το <code>while</code> ελέγχει τη συνθήκη <em>πριν</em> από κάθε επανάληψη — αν είναι ψευδής από την αρχή, το σώμα δεν τρέχει ούτε μία φορά.</p>
 
-<h2>for...of: το προεπιλεγμένο εργαλείο</h2>
+<h2>Επανάληψη με for...of σε συλλογές</h2>
 <pre><code class="lang-js">const readings = [21.4, 22.1, 19.8, 23.0, 20.5]
 
 let total = 0
@@ -3246,7 +3248,7 @@ console.log(total / count)   // 21.36 — the average, computed by hand
 <h1>Strings</h1>
 <p class="lede">Στη Go δούλευες με bytes και runes και έπρεπε να ξέρεις τη διαφορά. Εδώ έχεις ένα πλουσιότερο σετ από methods και μια πιο ήπια αλλά υπαρκτή εκδοχή του ίδιου προβλήματος.</p>
 
-<h2>Το κείμενο δεν αλλάζει</h2>
+<h2>Αμεταβλητότητα συμβολοσειρών (String Immutability)</h2>
 <pre><code class="lang-js">let s = "hello"
 s[0] = "H"                  // silently does nothing
 console.log(s)              // "hello"
@@ -3256,7 +3258,7 @@ s = "H" + s.slice(1)        // you build a new string instead
 
 <p>Κάθε method που «αλλάζει» ένα string επιστρέφει καινούργιο. Δεν υπάρχει mutating εκδοχή καμιάς από αυτές, οπότε δεν χρειάζεται να θυμάσαι πίνακα όπως στους πίνακες της Ενότητας 2.</p>
 
-<h2>Τα εργαλεία που χρησιμοποιείς καθημερινά</h2>
+<h2>Βασικές μέθοδοι επεξεργασίας συμβολοσειρών</h2>
 <pre><code class="lang-js">const t = "  Hello World  "
 
 t.trim()                    // "Hello World"
@@ -3284,7 +3286,7 @@ w.repeat(2)                 // "Hello WorldHello World"
   Το <code>replace</code> με string ως πρώτο όρισμα αντικαθιστά <em>μόνο την πρώτη</em> εμφάνιση. Είναι από τα πιο συχνά bugs σε καθαρισμό κειμένου: δουλεύει στη δοκιμή σου γιατί το δείγμα είχε μία εμφάνιση. Χρησιμοποίησε <code>replaceAll</code>, ή regex με τη σημαία <code>g</code>.
 </div>
 
-<h2 id="@slice-substring">Το slice και το substring δεν είναι ίδια</h2>
+<h2 id="@slice-substring">Διαφορές slice και substring</h2>
 <pre><code class="lang-js">"abcdef".slice(2, 4)        // "cd"
 "abcdef".slice(-2)          // "ef"
 "abcdef".substring(2, 4)    // "cd"
@@ -3328,7 +3330,7 @@ String.fromCharCode(97)     // "a"
 <h1>Regular Expressions</h1>
 <p class="lede">Έχεις γράψει χειροκίνητο parsing χαρακτήρα προς χαρακτήρα. Ένα regex είναι η ίδια μηχανή καταστάσεων, γραμμένη σε μία γραμμή από κάποιον άλλον.</p>
 
-<h2>Η χειροκίνητη προσέγγιση (χωρίς regex)</h2>
+<h2>Έλεγχος μοτίβων χωρίς κανονικές εκφράσεις</h2>
 <p>Θέλουμε να ελέγξουμε αν ένα string είναι ώρα της μορφής <code>ΩΩ:ΛΛ</code> σε 24ωρη μορφή. Με το χέρι:</p>
 
 <pre><code class="lang-js">function isTimeManual(s) {
@@ -3353,7 +3355,7 @@ isTime(" 5:30")    // false
 
 <p>Η γραμμή δεν είναι ευανάγνωστη με την πρώτη ματιά, και αυτό είναι το πραγματικό κόστος των regex. Το κέρδος είναι ότι περιγράφεις <em>τι δέχεσαι</em> αντί να προγραμματίζεις <em>πώς το ελέγχεις</em>, και ότι δεν υπάρχει περιθώριο να ξεχάσεις μια περίπτωση.</p>
 
-<h2>Δύο τρόποι δημιουργίας</h2>
+<h2>Δημιουργία Regular Expressions</h2>
 <pre><code class="lang-js">const literal = /\\d+/g                       // written into the code
 const built = new RegExp("\\\\d+", "g")         // built from a string at runtime
 
@@ -3364,7 +3366,7 @@ const dynamic = new RegExp(word + "s?", "i")
 
 <p>Με τον constructor, οι backslashes πρέπει να γραφτούν διπλοί, γιατί πρώτα τους διαβάζει ο parser του string και μετά η μηχανή regex. Είναι η πιο κοινή πηγή σύγχυσης· αν το pattern είναι σταθερό, γράψε literal.</p>
 
-<h2 id="@regex-methods">Οι τέσσερις βασικές μέθοδοι</h2>
+<h2 id="@regex-methods">Βασικές μέθοδοι Regex (test, exec, match, replace)</h2>
 <pre><code class="lang-js">const re = /\\d+/
 
 re.test("abc 123")              // true            — boolean, the cheapest check
@@ -3515,7 +3517,7 @@ re.test("abc")     // true
   Μη βάζεις <code>g</code> σε regex που το χρησιμοποιείς με <code>test</code>. Αν χρειάζεσαι το <code>g</code> για κάτι άλλο, είτε γράψε το literal μέσα στην κλήση ώστε να δημιουργείται φρέσκο, είτε μηδένισε ρητά το <code>lastIndex</code> πριν από κάθε χρήση.
 </div>
 
-<h2 id="@regex-backtrack">Παγίδα 2: καταστροφική υποχώρηση</h2>
+<h2 id="@regex-backtrack">Παγίδα 2: καταστροφική οπισθοδρόμηση (Catastrophic Backtracking)</h2>
 <pre><code class="lang-js">// looks harmless, and freezes on long non-matching input
 const bad = /^(\\w+\\s?)+$/
 </code></pre>
@@ -3685,9 +3687,9 @@ console.log(words.join(" "))    // "javascript arrays methods"
 console.log(words.join(""))     // "javascriptarraysmethods"
 console.log(words.join(", "))   // "javascript, arrays, methods"
 </code></pre>
-<p>Το <code>split</code> και το <code>join</code> είναι αντίστροφες πράξεις: το ένα σπάει σε κομμάτια, το άλλο ενώνει κομμάτια πίσω σε ένα string.</p>
+<p>Το <code>split</code> και το <code>join</code> αποτελούν συμπληρωματικές πράξεις: η πρώτη διασπά ένα string σε πίνακα επιμέρους τμημάτων, ενώ η δεύτερη συνενώνει τα στοιχεία ενός πίνακα σε ενιαίο string.</p>
 
-<h2>Αλυσιδωτά, για γρήγορο καθάρισμα κειμένου</h2>
+<h2>Καθαρισμός κειμένου με συνδυασμό split και join</h2>
 <pre><code class="lang-js">const messyTag = "Java Script Arrays Methods"
 
 const cleanTag = messyTag.split(" ").join("-").toLowerCase()
@@ -3734,7 +3736,7 @@ console.log(cleanTag)   // "java-script-arrays-methods"
 <h1>Ημερομηνίες (Date)</h1>
 <p class="lede">Το <code>Date</code> είναι το πιο παλιό και το πιο κακοσχεδιασμένο κομμάτι της γλώσσας. Δεν είναι δύσκολο· είναι γεμάτο εκπλήξεις που πρέπει να τις ξέρεις μία-μία.</p>
 
-<h2>Τι είναι στην πραγματικότητα</h2>
+<h2>Εσωτερική αναπαράσταση του Date (Unix Epoch)</h2>
 <p>Ένα <code>Date</code> κρατάει έναν και μόνο αριθμό: πόσα χιλιοστά του δευτερολέπτου πέρασαν από τα μεσάνυχτα της 1ης Ιανουαρίου 1970 σε UTC. Αυτή η στιγμή λέγεται epoch. Ό,τι άλλο — χρονική ζώνη, μορφοποίηση, «τι μέρα είναι» — είναι ερμηνεία αυτού του αριθμού.</p>
 
 <pre><code class="lang-js">Date.now()                    // 1788400000000  — plain number, no object
@@ -3749,7 +3751,7 @@ new Date(86400000)            // one day after it
   Είναι το ίδιο μοντέλο με το Unix timestamp που έχεις δει στο shell. Η μία διαφορά που κοστίζει: εδώ η μονάδα είναι χιλιοστά, όχι δευτερόλεπτα. Ένα timestamp από backend σε δευτερόλεπτα θέλει πολλαπλασιασμό επί 1000, αλλιώς η ημερομηνία σου θα βρίσκεται κάπου στο 1970.
 </div>
 
-<h2 id="@date-creation">Δημιουργία: τέσσερις τρόποι, τρεις παγίδες</h2>
+<h2 id="@date-creation">Αρχικοποίηση Date και ιδιαιτερότητες</h2>
 <pre><code class="lang-js">new Date()                              // now
 new Date(1788400000000)                 // from a timestamp
 new Date("2026-09-03")                  // from ISO text — parsed as UTC
@@ -3774,9 +3776,9 @@ String(bad)                   // "Invalid Date"
 const isValidDate = (d) =&gt; d instanceof Date &amp;&amp; !Number.isNaN(d.getTime())
 </code></pre>
 
-<p>Το <code>new Date</code> δεν πετάει ποτέ σφάλμα για άκυρη είσοδο. Σου δίνει ένα object που μοιάζει κανονικό μέχρι να ζητήσεις τιμή. Είναι ο ίδιος μηχανισμός με το <code>NaN</code> της Ενότητας 1, και ισχύει ο ίδιος κανόνας: έλεγξε στο σύνορο, όχι τριάντα γραμμές αργότερα.</p>
+<p>Η <code>new Date</code> δεν εγείρει ποτέ σφάλμα για άκυρη είσοδο. Σου δίνει ένα object που μοιάζει κανονικό μέχρι να ζητήσεις τιμή. Είναι ο ίδιος μηχανισμός με το <code>NaN</code> της Ενότητας 1, και ισχύει ο ίδιος κανόνας: έλεγξε στο σύνορο, όχι τριάντα γραμμές αργότερα.</p>
 
-<h2>Ανάγνωση κομματιών</h2>
+<h2>Ανάγνωση επιμέρους πεδίων ημερομηνίας</h2>
 <pre><code class="lang-js">const d = new Date("2026-09-03T14:30:00Z")
 
 d.getFullYear()      // 2026
@@ -3799,7 +3801,7 @@ d.getTimezoneOffset()   // minutes to add to local to get UTC
 <h1>Αριθμητική Ημερομηνιών</h1>
 <p class="lede">Ένα χαρακτηριστικό του <code>Date</code> που φαίνεται σαν bug και είναι στην πραγματικότητα το πιο χρήσιμο εργαλείο του.</p>
 
-<h2>Το Date είναι μεταβλητό</h2>
+<h2>Μεταβλητότητα αντικειμένων Date</h2>
 <pre><code class="lang-js">const d = new Date("2026-09-03T00:00:00Z")
 
 d.setDate(10)          // changes d itself, returns a number not a Date
@@ -3808,7 +3810,7 @@ d.setDate(10)          // changes d itself, returns a number not a Date
 
 <p>Οι setters τροποποιούν το ίδιο το object, όπως το <code>sort</code> της Ενότητας 5. Αν το <code>Date</code> σου έρχεται απ' έξω, αντίγραψέ το πρώτα με <code>new Date(d)</code> — αλλιώς αλλάζεις δεδομένα του καλούντος χωρίς να το ξέρει.</p>
 
-<h2 id="@normalization">Η κανονικοποίηση</h2>
+<h2 id="@normalization">Αυτόματη κανονικοποίηση ημερομηνιών</h2>
 <pre><code class="lang-js">const d = new Date(2026, 0, 31)     // 31 January 2026
 d.setDate(d.getDate() + 1)
 // 1 February 2026 — it rolled over on its own
@@ -3868,7 +3870,7 @@ function daysBetween(a, b) {
 <h1>Εμφάνιση Ημερομηνίας</h1>
 <p class="lede">Η μορφοποίηση ημερομηνίας είναι το κλασικό πρόβλημα όπου η δική σου λύση δουλεύει τέλεια μέχρι να τη δει χρήστης από άλλη χώρα.</p>
 
-<h2 id="@intl-format">Πρώτα η έτοιμη λύση</h2>
+<h2 id="@intl-format">Μορφοποίηση με Intl.DateTimeFormat</h2>
 <pre><code class="lang-js">const d = new Date("2026-09-03T14:30:00Z")
 
 d.toISOString()        // "2026-09-03T14:30:00.000Z"   — machine format, always UTC
@@ -3889,7 +3891,7 @@ new Intl.DateTimeFormat("el-GR", { weekday: "long" }).format(d)   // "Πέμπτ
   Για μηχανές — αποθήκευση, API, σύγκριση, ταξινόμηση — χρησιμοποίησε πάντα ISO σε UTC. Για ανθρώπους, χρησιμοποίησε πάντα <code>Intl</code>. Ανάμεσα στα δύο δεν υπάρχει τρίτη περίπτωση που να αξίζει δική σου μορφοποίηση.
 </div>
 
-<h2>Και τώρα η δική σου, γιατί κάποτε θα τη χρειαστείς</h2>
+<h2>Χειροκίνητη μορφοποίηση ημερομηνιών</h2>
 <p>Υπάρχει μία περίπτωση όπου γράφεις μορφοποίηση με το χέρι: όταν η μορφή είναι δεδομένο και όχι απόφαση — π.χ. ο χρήστης δίνει ένα pattern σε ρύθμιση. Τότε χτίζεις έναν αντικαταστάτη με λεξικό:</p>
 
 <pre><code class="lang-js">const pad = (n, width = 2) =&gt; String(n).padStart(width, "0")
@@ -4068,389 +4070,470 @@ function daysBetween(a, b) {
     // ── Section 8 ────────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@dom-tree">Το DOM</div>
-<h1>Το DOM</h1>
-<p class="lede">Μέχρι τώρα ο κώδικας δούλευε με τιμές. Εδώ δουλεύει με ένα ζωντανό δέντρο που ο browser εμφανίζει, και κάθε αλλαγή σε αυτό φαίνεται αμέσως στην οθόνη.</p>
+<h1>Δομή και Φύση του DOM</h1>
+<p class="lede">Το DOM (Document Object Model) αποτελεί τη ζωντανή, ιεραρχική αντικειμενοστραφή αναπαράσταση της ιστοσελίδας στη μνήμη του browser. Κάθε αλλαγή σε αυτό το δέντρο αντικειμένων μεταφράζεται άμεσα σε οπτική ανανέωση στην οθόνη.</p>
 
-<h2>Τι είναι</h2>
-<p>Όταν ο browser διαβάζει HTML, χτίζει ένα δέντρο από objects. Αυτό το δέντρο λέγεται DOM και δεν είναι το HTML σου — είναι η ερμηνεία του. Ο κώδικάς σου δεν επεξεργάζεται ποτέ κείμενο HTML· δουλεύει πάνω στο δέντρο, και ο browser ξανασχεδιάζει.</p>
+<h2>Η αρχιτεκτονική του δέντρου κόμβων (Node vs Element)</h2>
+<p>Όταν ο browser επεξεργάζεται ένα αρχείο HTML, δεν εργάζεται με απλό κείμενο αλλά μετατρέπει κάθε tag, κείμενο και σχόλιο σε διακριτούς κόμβους (nodes) ενός δέντρου. Υπάρχει ουσιώδης διάκριση ανάμεσα σε έναν γενικό κόμβο (<code>Node</code>) και σε ένα στοιχείο HTML (<code>Element</code>):</p>
 
-<pre><code class="lang-js">document                       // the root object the runtime gives you
-document.documentElement       // the &lt;html&gt; element
-document.body                  // the &lt;body&gt; element
+<div class="grid2">
+  <div class="card"><h3>Node (Κόμβος)</h3>
+    <p>Η βασική κλάση όλων των αντικειμένων του δέντρου. Περιλαμβάνει στοιχεία (<code>Element nodes</code>), τμήματα απλού κειμένου (<code>Text nodes</code>, συμπεριλαμβανομένων κενών γραμμών και διαστημάτων) και σχόλια (<code>Comment nodes</code>).</p></div>
+  <div class="card"><h3>Element (Στοιχείο)</h3>
+    <p>Ειδική κατηγορία κόμβου που αντιστοιχεί σε συγκεκριμένη ετικέτα HTML (π.χ. <code>&lt;div&gt;</code>, <code>&lt;button&gt;</code>). Διαθέτει μεθόδους για χειρισμό κλάσεων, attributes, στυλ και διαστάσεων διάταξης.</p></div>
+</div>
+
+<p>Τα κύρια σημεία εκκίνησης που παρέχει το περιβάλλον εκτέλεσης του browser είναι:</p>
+<pre><code class="lang-js">document                 // Το ριζικό αντικείμενο του εγγράφου
+document.documentElement // Ο ριζικός κόμβος του HTML (&lt;html&gt;)
+document.head            // Το στοιχείο &lt;head&gt;
+document.body            // Το στοιχείο &lt;body&gt;
+</code></pre>
+
+<h2>Χρόνος εκτέλεσης και φόρτωση του εγγράφου</h2>
+<p>Η χρονική στιγμή εκτέλεσης της JavaScript σε σχέση με τη διάσχιση (parsing) του HTML καθορίζει αν τα στοιχεία είναι διαθέσιμα για ανάκτηση:</p>
+
+<pre><code class="lang-js">// 1. Σύγχρονο script χωρίς attributes:
+&lt;script src="app.js"&gt;&lt;/script&gt;
+//    Διακόπτει άμεσα το parsing του HTML. Αν τοποθετηθεί στο &lt;head&gt;,
+//    το &lt;body&gt; δεν έχει αναλυθεί ακόμα και οι αναζητήσεις επιστρέφουν null.
+
+// 2. Με το attribute defer:
+&lt;script src="app.js" defer&gt;&lt;/script&gt;
+//    Φορτώνεται παράλληλα και εκτελείται αυτόματα μόλις ολοκληρωθεί το parsing του HTML.
+
+// 3. Ως ES Module (προτεινόμενη σύγχρονη πρακτική):
+&lt;script type="module" src="app.js"&gt;&lt;/script&gt;
+//    Η συμπεριφορά defer ισχύει αυτόματα εξ ορισμού, διασφαλίζοντας ότι το DOM είναι διαθέσιμο.
 </code></pre>
 
 <div class="callout">
-  <span class="tag">Το αναγνωρίζεις;</span>
-  Είναι το ίδιο δέντρο με ό,τι έχεις χειριστεί σε αλγορίθμους: κόμβοι με παιδιά, μία ρίζα, iteration σε βάθος ή σε πλάτος. Η διαφορά είναι ότι δεν το φτιάχνεις εσύ και ότι κάθε τροποποίηση έχει ορατή συνέπεια.
+  <span class="tag">Κύκλος Ζωής Εγγράφου</span>
+  Το γεγονός <code>DOMContentLoaded</code> ενεργοποιείται μόλις κατασκευαστεί πλήρως το δέντρο του DOM (χωρίς να περιμένει εξωτερικά stylesheets ή εικόνες). Αντίθετα, το γεγονός <code>load</code> στο <code>window</code> περιμένει να κατέβουν όλα τα εξωτερικά assets. Με <code>type="module"</code> δεν χρειάζεται να περιμένεις χειροκίνητα κανένα γεγονός.
 </div>
 
-<h2>Πότε τρέχει ο κώδικάς σου</h2>
-<pre><code class="lang-js">// &lt;script src="app.js"&gt;&lt;/script&gt;          runs immediately, body may be empty
-// &lt;script src="app.js" defer&gt;&lt;/script&gt;    runs after the HTML is parsed
-// &lt;script src="app.js" type="module"&gt;     defer is implied
+<h2>Αναζήτηση στοιχείων με selectors</h2>
+<p>Για τον εντοπισμό στοιχείων χρησιμοποιούνται κατά βάση οι σύγχρονες μέθοδοι που αξιοποιούν την πλήρη σύνταξη των CSS Selectors:</p>
+
+<pre><code class="lang-js">// Ανάκτηση ενός μεμονωμένου στοιχείου βάσει ID (εξαιρετικά αποδοτικό)
+const totalEl = document.getElementById("total")
+
+// Ανάκτηση του πρώτου στοιχείου που ικανοποιεί τον selector (ή null αν δεν βρεθεί)
+const activeCard = document.querySelector(".card.active")
+
+// Ανάκτηση όλων των στοιχείων που ταιριάζουν ως στατικό NodeList
+const items = document.querySelectorAll("ul.menu &gt; li:not(.disabled)")
+
+// Στοχευμένη αναζήτηση μέσα σε συγκεκριμένο υποδέντρο (Scoped Query)
+const header = activeCard.querySelector(".card-header")
 </code></pre>
 
-<p>Ένα script χωρίς <code>defer</code> στο <code>head</code> τρέχει πριν υπάρξει το <code>body</code>, οπότε κάθε αναζήτηση στοιχείου δίνει <code>null</code>. Είναι το πιο συχνό «γιατί δεν δουλεύει τίποτα» των πρώτων ημερών. Με <code>type="module"</code> — που είναι έτσι κι αλλιώς αυτό που θέλεις από την Ενότητα 1 — το πρόβλημα δεν υπάρχει.</p>
+<h2 id="@live-vs-static">Στατικές vs Ζωντανές Συλλογές (Static NodeList vs Live HTMLCollection)</h2>
+<p>Μία από τις σημαντικότερες ιδιαιτερότητες του DOM είναι η διάκριση ανάμεσα σε στατικά στιγμιότυπα και δυναμικά ενημερούμενες συλλογές:</p>
 
-<h2>Εύρεση στοιχείων</h2>
-<pre><code class="lang-js">document.getElementById("total")             // one element or null
-document.querySelector(".card")              // first match of a CSS selector
-document.querySelectorAll(".card")           // all matches, as a NodeList
-
-document.getElementsByClassName("card")      // older, returns an HTMLCollection
-document.getElementsByTagName("li")          // older
-
-// any CSS selector works, including combinators and pseudo-classes
-document.querySelectorAll("ul.menu &gt; li:not(.hidden)")
-
-// search inside an element, not the whole document
-card.querySelector(".title")
-</code></pre>
-
-<p>Στην πράξη χρησιμοποιείς <code>querySelector</code> και <code>querySelectorAll</code> για σχεδόν τα πάντα: ένα API, όλη τη δύναμη των CSS selectors που ήδη ξέρεις.</p>
-
-<h2 id="@live-vs-static">Ζωντανές και στατικές συλλογές</h2>
-<p>Εδώ κρύβεται μια πραγματική παγίδα. Το <code>getElementsBy...</code> επιστρέφει <em>ζωντανή</em> συλλογή που ενημερώνεται μόνη της όταν αλλάζει το δέντρο. Το <code>querySelectorAll</code> επιστρέφει στιγμιότυπο.</p>
-
-<pre><code class="lang-js">// naive: remove every item — and it removes only half of them
-const items = document.getElementsByClassName("item")
-for (let i = 0; i &lt; items.length; i++) {
-  items[i].remove()          // the collection shrinks under our feet
-}
-
-// correct
-const items2 = document.querySelectorAll(".item")   // static snapshot
-items2.forEach((el) =&gt; el.remove())
-</code></pre>
-
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το πρώτο loop αφαιρεί τα μισά στοιχεία και τερματίζει χωρίς σφάλμα: κάθε <code>remove</code> μικραίνει το <code>items.length</code> ενώ ο δείκτης μεγαλώνει, οπότε τα δύο συναντιούνται στη μέση. Είναι ακριβώς η ίδια κατηγορία bug με το να αφαιρείς στοιχεία από slice ενώ το διατρέχεις.
+<div class="grid2">
+  <div class="card"><h3>Στατικό NodeList (querySelectorAll)</h3>
+    <p>Αποτελεί ένα στιγμιότυπο (snapshot) των στοιχείων τη στιγμή που εκτελέστηκε η μέθοδος. Αν προστεθούν ή αφαιρεθούν στοιχεία αργότερα, το μέγεθος και τα περιεχόμενα της συλλογής παραμένουν αναλλοίωτα.</p></div>
+  <div class="card"><h3>Ζωντανό HTMLCollection (getElementsBy...)</h3>
+    <p>Οι παλαιότερες μέθοδοι <code>getElementsByClassName</code> και <code>getElementsByTagName</code> επιστρέφουν ζωντανή συλλογή. Κάθε μεταβολή στο DOM αντικατοπτρίζεται άμεσα στο μέγεθός της (<code>length</code>).</p></div>
 </div>
 
-<h2>Μετακίνηση στο δέντρο</h2>
-<pre><code class="lang-js">el.parentElement
-el.children                    // elements only
-el.childNodes                  // includes text nodes — whitespace counts!
-el.firstElementChild
-el.nextElementSibling
-el.closest(".card")            // nearest ancestor matching a selector, or null
-el.matches(".active")          // does this element match a selector?
+<p>Η διαφορά αυτή έχει άμεση συνέπεια όταν διαγράφονται ή προστίθενται στοιχεία κατά τη διάρκεια επανάληψης:</p>
+
+<pre><code class="lang-js">// Ασφαλής διαγραφή με στατικό NodeList:
+const staticItems = document.querySelectorAll(".item")
+staticItems.forEach((el) =&gt; el.remove()) // Διαγράφονται όλα πλήρως και αξιόπιστα
+
+// Προσοχή με ζωντανές συλλογές:
+// Σε έναν βρόχο (let i = 0; i &lt; liveCollection.length; i++), κάθε remove()
+// μειώνει το length και μετατοπίζει τα επόμενα στοιχεία κατά μία θέση αριστερά,
+// με αποτέλεσμα να παραληφθούν τα μισά στοιχεία.
+// Ορθή πρακτική όταν υπάρχει ζωντανή συλλογή: μετατροπή σε Array πρώτα
+const liveArray = Array.from(document.getElementsByClassName("item"))
+liveArray.forEach((el) =&gt; el.remove())
 </code></pre>
 
-<p>Το <code>closest</code> και το <code>matches</code> θα φανούν κρίσιμα στην υποενότητα των events. Και πρόσεξε τη διαφορά <code>children</code> από <code>childNodes</code>: το δεύτερο περιλαμβάνει τους κόμβους κειμένου, δηλαδή και τα κενά ανάμεσα στα tags σου.</p>
+<h2>Πλοήγηση στην ιεραρχία του δέντρου (DOM Traversal)</h2>
+<p>Η μετακίνηση ανάμεσα σε κόμβους γίνεται με ειδικές ιδιότητες που διαχωρίζουν τα στοιχεία (Elements) από τους γενικούς κόμβους:</p>
+
+<pre><code class="lang-js">// Πλοήγηση αποκλειστικά ανάμεσα σε Elements (αγνοεί κενά διαστήματα και σχόλια):
+el.parentElement          // Ο άμεσος γονέας
+el.children               // Ζωντανή συλλογή μόνο των παιδιών-στοιχείων
+el.firstElementChild      // Το πρώτο παιδί-στοιχείο
+el.lastElementChild       // Το τελευταίο παιδί-στοιχείο
+el.nextElementSibling     // Το επόμενο αδελφό στοιχείο
+el.previousElementSibling // Το προηγούμενο αδελφό στοιχείο
+
+// Αναρρίχηση και έλεγχος σχέσεων:
+el.closest(".container")  // Ο πλησιέστερος πρόγονος που ταιριάζει στον selector (ή το ίδιο το el)
+el.matches(".active")     // Ελέγχει αν το στοιχείο ικανοποιεί τον selector (επιστρέφει boolean)
+container.contains(el)    // Ελέγχει αν το el είναι απόγονος του container
+</code></pre>
 `);
 
     addContent(`
 <div class="eyebrow" id="@dom-content">Το DOM</div>
-<h1>Δημιουργία στοιχείων DOM</h1>
-<p class="lede">Δύο δρόμοι για να βάλεις περιεχόμενο στη σελίδα. Ο ένας είναι σύντομος και επικίνδυνος, ο άλλος είναι λίγο μεγαλύτερος και σωστός.</p>
+<h1>Δημιουργία και Χειρισμός Στοιχείων</h1>
+<p class="lede">Ο ασφαλής, συντηρήσιμος και αποδοτικός χειρισμός κόμβων, ιδιοτήτων, κλάσεων και μεταδεδομένων στο έγγραφο.</p>
 
-<h2 id="@xss-risk">Ο σύντομος δρόμος</h2>
-<pre><code class="lang-js">container.innerHTML = "&lt;p class='note'&gt;" + userInput + "&lt;/p&gt;"
+<h2>Προγραμματιστική δημιουργία και εισαγωγή κόμβων</h2>
+<p>Η κατασκευή στοιχείων απευθείας μέσω του API του DOM προσφέρει πλήρη έλεγχο, σαφήνεια και διατήρηση αναφορών στα αντικείμενα:</p>
+
+<pre><code class="lang-js">// 1. Δημιουργία νέου στοιχείου στη μνήμη
+const card = document.createElement("article")
+card.className = "card user-card"
+
+// 2. Ασφαλής εισαγωγή κειμένου (αυτόματο encoding, καμία εκτέλεση HTML)
+card.textContent = "Αντώνης Παπαδόπουλος"
+
+// 3. Σύγχρονες μέθοδοι τοποθέτησης στο DOM
+parent.append(card)              // Προσθήκη στο τέλος (δέχεται πολλαπλούς κόμβους και strings)
+parent.prepend(card)             // Προσθήκη στην αρχή
+el.before(card)                  // Εισαγωγή ως προηγούμενο αδελφό στοιχείο
+el.after(card)                   // Εισαγωγή ως επόμενο αδελφό στοιχείο
+el.replaceWith(card)             // Αντικατάσταση του el με το card
+card.remove()                    // Αυτο-διαγραφή από το δέντρο χωρίς αναφορά στον γονέα
+parent.replaceChildren(card)     // Καθαρισμός όλων των παλιών παιδιών και εισαγωγή του νέου
 </code></pre>
 
-<p>Δουλεύει, και είναι μια από τις πιο διαδεδομένες ευπάθειες ασφαλείας στο web. Αν το <code>userInput</code> περιέχει tags, ο browser τα εκτελεί ως HTML. Ένα σχόλιο χρήστη μπορεί να εισάγει script που τρέχει στον browser κάθε άλλου επισκέπτη — αυτό λέγεται XSS.</p>
+<h2 id="@xss-risk">Ασφάλεια και πρόληψη επιθέσεων XSS</h2>
+<p>Η ιδιότητα <code>innerHTML</code> αναθέτει στον HTML parser του browser να διαβάσει ένα string και να το μετατρέψει σε κόμβους. Αυτή η διαδικασία κρύβει κρίσιμο κίνδυνο ασφαλείας:</p>
 
-<div class="callout">
-  <span class="tag">Κανόνας εργασίας</span>
-  Το <code>innerHTML</code> επιτρέπεται μόνο με κείμενο που έγραψες εσύ, ποτέ με δεδομένα από χρήστη, από API ή από URL. Για δεδομένα, υπάρχει το <code>textContent</code>, που τα βάζει ως κείμενο και τίποτα άλλο.
+<div class="callout bad">
+  <span class="tag">Κίνδυνος Ασφαλείας: Cross-Site Scripting (XSS)</span>
+  Αν συνενώσεις μη επαληθευμένα δεδομένα χρήστη (ή εξωτερικών APIs) σε string HTML μέσω <code>innerHTML</code>, οποιοδήποτε κακόβουλο tag (π.χ. <code>&lt;img src=x onerror="..."&gt;</code>) θα εκτελεστεί ως ενεργός κώδικας JavaScript στον browser των επισκεπτών.
 </div>
 
-<pre><code class="lang-js">el.textContent = userInput      // always safe: tags stay visible as text
-el.textContent                  // reading: all the text inside, tags stripped
+<p>Οι απαράβατοι κανόνες ασφαλούς διαχείρισης περιεχομένου:</p>
+<pre><code class="lang-js">// 1. ΓΙΑ ΔΥΝΑΜΙΚΑ ΔΕΔΟΜΕΝΑ ΧΡΗΣΤΗ: Πάντα textContent
+//    Εγγυάται ότι οι χαρακτήρες &lt;, &gt;, &amp; εμφανίζονται ως απλό κείμενο
+element.textContent = userInput
+
+// 2. ΓΙΑ ΣΥΝΘΕΤΕΣ ΔΟΜΕΣ: Δημιουργία με createElement και append
+const row = document.createElement("tr")
+const cell = document.createElement("td")
+cell.textContent = userInput
+row.append(cell)
+
+// 3. innerHTML: Επιτρέπεται ΜΟΝΟ για στατικό HTML γραμμένο από εσένα
+container.innerHTML = "&lt;span class='spinner'&gt;&lt;/span&gt;&lt;p&gt;Φόρτωση...&lt;/p&gt;"
 </code></pre>
 
-<h2>Ο σωστός δρόμος</h2>
-<pre><code class="lang-js">const note = document.createElement("p")
-note.className = "note"
-note.textContent = userInput
+<h2 id="@attr-vs-prop">Attributes (Χαρακτηριστικά) έναντι Properties (Ιδιοτήτων)</h2>
+<p>Μία από τις πιο συχνές παρανοήσεις στη διαχείριση φορμών αφορά τη διαφορά ανάμεσα σε attributes και properties:</p>
 
-container.append(note)
+<div class="grid2">
+  <div class="card"><h3>HTML Attribute (getAttribute / setAttribute)</h3>
+    <p>Αναπαριστά την αρχική τιμή όπως δηλώθηκε στον πηγαίο κώδικα HTML. Είναι πάντοτε string και παραμένει στατικό ακόμα κι αν ο χρήστης αλλάξει την τιμή στο input.</p></div>
+  <div class="card"><h3>DOM Property (π.χ. input.value)</h3>
+    <p>Αναπαριστά τη ζωντανή, τρέχουσα κατάσταση στο αντικείμενο JavaScript. Για πεδία εισαγωγής κειμένου, checkboxes και πλήκτρα, σχεδόν πάντα σε ενδιαφέρει η property.</p></div>
+</div>
+
+<pre><code class="lang-js">// Έστω το στοιχείο: &lt;input id="username" value="guest"&gt;
+const input = document.getElementById("username")
+
+// Ο χρήστης πληκτρολογεί "alexander" στο πεδίο:
+input.getAttribute("value")   // "guest"     — η αρχική τιμή του HTML
+input.value                   // "alexander" — η τρέχουσα τιμή που θέλουμε!
+
+// Για διακόπτες (checkboxes) και κατάσταση απενεργοποίησης (disabled):
+const checkbox = document.querySelector("#agree")
+console.log(checkbox.checked) // true ή false (boolean property, όχι string)
+checkbox.disabled = true      // Άμεση απενεργοποίηση μέσω property
 </code></pre>
 
-<p>Τέσσερις γραμμές αντί για μία, και κάθε κομμάτι είναι ρητό. Επιπλέον, κρατάς αναφορά στο στοιχείο και μπορείς να το αλλάξεις αργότερα χωρίς να το ξαναψάξεις.</p>
-
-<pre><code class="lang-js">parent.append(a, b)             // at the end, accepts several and plain strings
-parent.prepend(a)               // at the start
-el.before(a)                    // as a sibling, before
-el.after(a)                     // as a sibling, after
-el.replaceWith(a)
-el.remove()                     // removes itself, no parent needed
-</code></pre>
-
-<h2>Κλάσεις, στυλ και δεδομένα</h2>
-<pre><code class="lang-js">el.classList.add("active")
+<h2>Διαχείριση κλάσεων, στυλ και μεταδεδομένων</h2>
+<pre><code class="lang-js">// Διαχείριση κλάσεων με classList (Προτιμώμενη προσέγγιση έναντι style):
+el.classList.add("active")
 el.classList.remove("hidden")
-el.classList.toggle("open")             // returns whether it is now present
-el.classList.toggle("open", isOpen)     // force a state instead of flipping
-el.classList.contains("active")
-el.classList.replace("old", "new")
+el.classList.toggle("open")              // Εναλλαγή: προσθήκη αν λείπει, αφαίρεση αν υπάρχει
+el.classList.toggle("selected", isMatch) // Επιβολή κατάστασης βάσει boolean συνθήκης
+el.classList.contains("active")          // Επιστρέφει boolean
+el.classList.replace("theme-light", "theme-dark")
 
-el.style.color = "red"                  // inline style — one property at a time
-el.dataset.userId = "42"                // becomes the attribute data-user-id
-el.dataset.userId                       // "42" — always a string
+// Inline Styling με style (Μόνο για δυναμικές τιμές εκτέλεσης):
+el.style.transform = &#96;translate(&#36;{x}px, &#36;{y}px)&#96;
+el.style.backgroundColor = colorValue
+
+// Προσαρμοσμένα μεταδεδομένα με dataset (data-* attributes):
+// Το attribute data-user-id="42" στο HTML διαβάζεται και γράφεται σε camelCase:
+el.dataset.userId = "42"
+console.log(el.dataset.userId)           // "42" (πάντα string)
 </code></pre>
 
-<div class="callout good">
-  <span class="tag">Κανόνας εργασίας</span>
-  Προτίμησε <code>classList</code> από <code>style</code>. Το στυλ ανήκει στο CSS και ο κώδικάς σου πρέπει να λέει μόνο <em>σε ποια κατάσταση</em> βρίσκεται το στοιχείο. Το <code>style</code> μένει για τιμές που υπολογίζονται πραγματικά κατά την εκτέλεση — θέση, πλάτος από slider, χρώμα από δεδομένα.
-</div>
+<h2>Ολοκληρωμένο παράδειγμα: Δόμηση σύνθετης λίστας από δεδομένα</h2>
+<pre><code class="lang-js">function renderProducts(products, container) {
+  // Καθαρισμός παλαιού περιεχομένου
+  container.replaceChildren()
 
-<h2 id="@attr-vs-prop">Attributes και properties δεν είναι το ίδιο</h2>
-<pre><code class="lang-js">// &lt;input id="q" value="hello"&gt;
-const input = document.getElementById("q")
+  for (const product of products) {
+    const item = document.createElement("li")
+    item.className = "product-item"
+    item.dataset.productId = product.id
 
-input.getAttribute("value")     // "hello"  — what the HTML said
-input.value                     // whatever the user has typed right now
+    const title = document.createElement("h3")
+    title.textContent = product.title
 
-input.setAttribute("value", "x")   // changes the HTML attribute
-input.value = "x"                  // changes the current state — this is what you want
-</code></pre>
+    const price = document.createElement("span")
+    price.className = "price"
+    price.textContent = &#96;&#36;{product.price} €&#96;
 
-<p>Το attribute είναι η αρχική τιμή που γράφτηκε στο HTML· η property είναι η τρέχουσα κατάσταση. Για <code>value</code>, <code>checked</code> και <code>disabled</code> η διαφορά μετράει, και σχεδόν πάντα θέλεις την property.</p>
-
-<h2>Κατασκευή λίστας από δεδομένα</h2>
-<pre><code class="lang-js">function renderList(items) {
-  const list = document.createElement("ul")
-
-  for (const item of items) {
-    const li = document.createElement("li")
-    li.textContent = item.name
-    li.dataset.id = item.id          // keep the identity on the element itself
-    list.append(li)
+    item.append(title, price)
+    container.append(item)
   }
-
-  return list                        // one insertion by the caller, not N
 }
 </code></pre>
-
-<div class="callout">
-  <span class="tag">Πότε το αναγνωρίζεις</span>
-  Το <code>dataset.id</code> είναι το pattern που κάνει δυνατή την επόμενη υποενότητα: το στοιχείο κουβαλάει την ταυτότητα του δεδομένου του, οπότε όταν κάποιος το πατήσει ξέρεις ποιο αντικείμενο αφορά χωρίς να ψάχνεις θέσεις σε πίνακα.
-</div>
 `);
 
     addContent(`
 <div class="eyebrow" id="@event-delegation">Το DOM</div>
-<h1>Events</h1>
-<p class="lede">Η μία τεχνική αυτής της ενότητας που αλλάζει τον τρόπο που γράφεις διαδραστικές σελίδες.</p>
+<h1>Μοντέλο Γεγονότων και Event Handling</h1>
+<p class="lede">Ο μηχανισμός με τον οποίο ο browser καταγράφει, διαδίδει και διαχειρίζεται τις αλληλεπιδράσεις του χρήστη και των συστημάτων.</p>
 
-<h2>Τα βασικά</h2>
+<h2>Σύνδεση και αποσύνδεση listeners (addEventListener)</h2>
+<p>Η βασική μέθοδος εγγραφής σε ένα γεγονός είναι η <code>addEventListener</code>. Δέχεται τον τύπο του γεγονότος και μια συνάρτηση χειρισμού (handler):</p>
+
 <pre><code class="lang-js">button.addEventListener("click", (event) =&gt; {
-  console.log(event.type)            // "click"
-  console.log(event.target)          // the element actually clicked
-  console.log(event.currentTarget)   // the element the listener is attached to
+  console.log(event.type)          // "click"
+  console.log(event.target)        // Το αρχικό στοιχείο που δέχθηκε το κλικ
+  console.log(event.currentTarget) // Το στοιχείο στο οποίο είναι δεμένος ο listener (button)
 })
 
-// removing requires the same function reference
-const onClick = () =&gt; { }
-button.addEventListener("click", onClick)
-button.removeEventListener("click", onClick)   // an inline arrow could never be removed
+// Αποσύνδεση listener (Απαιτεί την ακριβή αναφορά της συνάρτησης):
+function handleClick(event) { /* ... */ }
+button.addEventListener("click", handleClick)
+button.removeEventListener("click", handleClick)
 
-// or let the browser clean up for you
+// Σύγχρονη και κομψή ακύρωση πολλαπλών listeners με AbortController:
 const controller = new AbortController()
-button.addEventListener("click", onClick, { signal: controller.signal })
-controller.abort()                   // removes it
+button.addEventListener("click", handleClick, { signal: controller.signal })
+window.addEventListener("resize", handleResize, { signal: controller.signal })
+
+// Μία κλήση αποσυνδέει όλους τους listeners ταυτόχρονα:
+controller.abort()
 </code></pre>
 
-<h2 id="@bubbling">Event Delegation και Bubbling</h2>
-<p>Όταν συμβαίνει ένα event σε ένα στοιχείο, δεν σταματά εκεί. Ανεβαίνει από γονέα σε γονέα μέχρι το <code>document</code>, ενεργοποιώντας κάθε listener στη διαδρομή. Αυτό λέγεται bubbling και μας επιτρέπει να βάλουμε <em>έναν</em> listener σε έναν γονέα, αντί για χίλιους στα παιδιά του:</p>
+<h2 id="@bubbling">Οι τρεις φάσεις διάδοσης και το Event Bubbling</h2>
+<p>Όταν συμβαίνει ένα γεγονός, η διάδοσή του περνά από τρεις διαδοχικές φάσεις:</p>
+<ol>
+  <li><strong>Capturing Phase:</strong> Το γεγονός ξεκινά από το <code>window</code> και κατεβαίνει διαμέσου των προγόνων προς το στοιχείο-στόχο.</li>
+  <li><strong>Target Phase:</strong> Το γεγονός φτάνει στο στοιχείο όπου έγινε η ενέργεια.</li>
+  <li><strong>Bubbling Phase:</strong> Το γεγονός «αναδύεται» από το στοιχείο-στόχο προς τα πάνω, ειδοποιώντας κατά σειρά όλους τους προγόνους μέχρι το <code>window</code>.</li>
+</ol>
 
-<pre><code class="lang-js">// ONE listener, on the container, forever
+<p>Η φάση ανάδυσης (Bubbling) είναι η προεπιλεγμένη συμπεριφορά και αποτελεί τη βάση για το ισχυρό μοτίβο του <strong>Event Delegation</strong>.</p>
+
+<h2>Event Delegation (Εκπροσώπηση Γεγονότων)</h2>
+<p>Αντί να συνδέεις δεκάδες ή εκατοντάδες listeners σε μεμονωμένα στοιχεία μιας λίστας, τοποθετείς <em>έναν μόνο listener στον κοινό γονέα</em>:</p>
+
+<pre><code class="lang-js">const list = document.querySelector("#items-list")
+
 list.addEventListener("click", (event) =&gt; {
-  const row = event.target.closest(".row")   // find the row from whatever was clicked
-  if (!row) return                           // the click was outside any row
-  if (!list.contains(row)) return            // safety when containers are nested
+  // Το event.target είναι το βαθύτερο στοιχείο (π.χ. ένα &lt;span&gt; ή &lt;svg&gt; μέσα στο κουμπί).
+  // Με το closest() αναρριχόμαστε στο επιθυμητό στοιχείο .delete-btn:
+  const btn = event.target.closest(".delete-btn")
+  if (!btn || !list.contains(btn)) return
 
-  select(row.dataset.id)
+  // Ανάκτηση ταυτότητας από το dataset του γονικού row
+  const row = btn.closest(".item-row")
+  const itemId = row.dataset.id
+
+  deleteItem(itemId)
 })
 </code></pre>
 
-<p>Αυτό λέγεται event delegation. Ο listener μπαίνει μία φορά στον γονέα και δουλεύει για κάθε γραμμή — τωρινή ή μελλοντική — χωρίς να ξέρει τίποτα για το πόσες είναι.</p>
-
-<div class="callout">
-  <span class="tag">Συχνό λάθος</span>
-  Μην προσπαθείς να βάλεις listener σε κάθε παιδί ξεχωριστά με <code>document.querySelectorAll(".row").forEach(...)</code>. Αυτό δουλεύει μόνο για τα στοιχεία που υπάρχουν <em>εκείνη τη στιγμή</em>. Όσα προστεθούν δυναμικά αργότερα δεν θα έχουν listener, και η σελίδα σου θα γεμίσει περιττούς listeners που καταναλώνουν μνήμη.
+<div class="grid2">
+  <div class="card"><h3>Γιατί υπερέχει το Delegation</h3>
+    <p>1. <strong>Δυναμικά στοιχεία:</strong> Λειτουργεί αυτόματα για στοιχεία που προστίθενται στο DOM αργότερα, χωρίς ανάγκη εκ νέου σύνδεσης listeners.<br>
+    2. <strong>Μικρότερη κατανάλωση μνήμης:</strong> Ένας listener αντί για εκατοντάδες, αποτρέποντας διαρροές μνήμης (memory leaks).</p></div>
+  <div class="card"><h3>Ο κρίσιμος ρόλος του closest()</h3>
+    <p>Το <code>event.target</code> επιστρέφει το ακριβές σημείο όπου πάτησε ο χρήστης (π.χ. εσωτερικό κείμενο). Η μέθοδος <code>element.closest(".selector")</code> εγγυάται τον εντοπισμό του σωστού λογικού component ανεξαρτήτως του βάθους της δομής.</p></div>
 </div>
 
-<div class="callout">
-  <span class="tag">Πότε το αναγνωρίζεις</span>
-  Όποτε πας να δέσεις listener μέσα σε loop. Αν ο ίδιος χειρισμός αφορά πολλά όμοια στοιχεία, ο listener ανήκει στον κοινό τους γονέα. Αυτή είναι η προεπιλογή, όχι η βελτιστοποίηση.
-</div>
-
-<h2>Γιατί χρειάζεται το closest</h2>
-<p>Το <code>event.target</code> είναι το βαθύτερο στοιχείο που πατήθηκε. Αν η γραμμή σου περιέχει ένα <code>span</code> με το όνομα, το <code>target</code> θα είναι το <code>span</code>, όχι η γραμμή. Το <code>closest</code> ανεβαίνει από εκεί μέχρι να βρει το στοιχείο που σε ενδιαφέρει, και επιστρέφει <code>null</code> αν δεν υπάρχει.</p>
-
-<h2>Ακύρωση προεπιλεγμένης συμπεριφοράς</h2>
-<pre><code class="lang-js">form.addEventListener("submit", (event) =&gt; {
-  event.preventDefault()        // stop the page from reloading
-  const data = new FormData(form)
-  send(Object.fromEntries(data))   // entries again, from Section 3
+<h2>Έλεγχος προεπιλεγμένης συμπεριφοράς και διάδοσης</h2>
+<pre><code class="lang-js">// 1. preventDefault(): Ακύρωση της προκαθορισμένης συμπεριφοράς του browser
+form.addEventListener("submit", (event) =&gt; {
+  event.preventDefault() // Αποτρέπει την επαναφόρτωση της σελίδας
+  const formData = new FormData(form)
+  submitAjax(Object.fromEntries(formData))
 })
 
-link.addEventListener("click", (e) =&gt; e.preventDefault())   // do not navigate
-event.stopPropagation()          // stop bubbling — use rarely, it breaks delegation
+// 2. stopPropagation(): Διακοπή της διάδοσης (Bubbling)
+// ΠΡΟΣΟΧΗ: Χρησιμοποίησέ το με εξαιρετική φειδώ!
+// Η διακοπή του bubbling ακυρώνει listeners που βασίζονται σε Event Delegation
+// σε ανώτερα επίπεδα (όπως global click trackers, modals, ή analytics).
 </code></pre>
 
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>stopPropagation</code> μοιάζει βολικό και είναι σχεδόν πάντα λάθος. Σταματώντας τη διάδοση, σπας κάθε delegation listener πιο ψηλά — συμπεριλαμβανομένων εκείνων που θα γράψει κάποιος άλλος αύριο. Αν θέλεις να αγνοήσεις ένα event, βάλε συνθήκη στον δικό σου handler αντί να το κρύψεις από τους υπόλοιπους.
-</div>
-
-<h2>Τα events που θα χρησιμοποιήσεις</h2>
+<h2>Συχνά γεγονότα στον Browser</h2>
 <table class="glossary-table">
-  <tr><td class="gt-term">click</td><td class="gt-def">και για ποντίκι και για πληκτρολόγιο, όταν το στοιχείο είναι εστιάσιμο</td></tr>
-  <tr><td class="gt-term">input</td><td class="gt-def">σε κάθε πληκτρολόγηση — αυτό θέλεις για ζωντανή αναζήτηση</td></tr>
-  <tr><td class="gt-term">change</td><td class="gt-def">όταν το πεδίο χάσει την εστίαση ή αλλάξει επιλογή</td></tr>
-  <tr><td class="gt-term">submit</td><td class="gt-def">στο form, όχι στο κουμπί</td></tr>
-  <tr><td class="gt-term">keydown</td><td class="gt-def">με <code>event.key</code> για το όνομα του πλήκτρου</td></tr>
-  <tr><td class="gt-term">mousemove</td><td class="gt-def">με <code>clientX</code> και <code>clientY</code>· πυκνό, θέλει φρενάρισμα</td></tr>
-  <tr><td class="gt-term">scroll</td><td class="gt-def">με <code>window.scrollY</code>· ακόμα πυκνότερο</td></tr>
+  <tr><td class="gt-term">click</td><td class="gt-def">Κλικ ποντικιού ή πάτημα αφής, καθώς και πλήκτρο Enter/Space σε εστιασμένα κουμπιά.</td></tr>
+  <tr><td class="gt-term">input</td><td class="gt-def">Πυροδοτείται άμεσα σε κάθε τροποποίηση πεδίου κειμένου (ιδανικό για live filtering).</td></tr>
+  <tr><td class="gt-term">change</td><td class="gt-def">Ενεργοποιείται κατά την οριστικοποίηση αλλαγής (απώλεια focus, επιλογή select ή checkbox).</td></tr>
+  <tr><td class="gt-term">submit</td><td class="gt-def">Συνδέεται πάντα στο στοιχείο <code>&lt;form&gt;</code> (όχι στο κουμπί), καλύπτοντας και το πάτημα Enter.</td></tr>
+  <tr><td class="gt-term">keydown</td><td class="gt-def">Καταγραφή πληκτρολογίου. Χρησιμοποιείται το <code>event.key</code> (π.χ. <code>"Escape"</code>, <code>"Enter"</code>).</td></tr>
 </table>
 `);
 
     addContent(`
 <div class="eyebrow" id="@dom-perf">Το DOM</div>
-<h1>Απόδοση (Performance)</h1>
-<p class="lede">Το DOM είναι αργό σε σχέση με τη JavaScript. Δύο κανόνες και ένα pattern κάνουν όλη τη διαφορά.</p>
+<h1>Βελτιστοποίηση Απόδοσης και Αρχιτεκτονική</h1>
+<p class="lede">Κατανόηση του κόστους σχεδίασης του browser και εφαρμογή του μοντέλου State-Driven UI για αποδοτικές και προβλέψιμες εφαρμογές.</p>
 
-<h2>Κανόνας 1: μία εισαγωγή, όχι N</h2>
-<pre><code class="lang-js">// slow: the browser may recalculate layout on every insertion
-for (const item of items) {
-  list.append(makeRow(item))
+<h2>Ο κύκλος σχεδίασης του Browser (Reflow και Repaint)</h2>
+<p>Η εκτέλεση κώδικα JavaScript στη μηχανή V8 είναι εξαιρετικά γρήγορη. Το πραγματικό υπολογιστικό κόστος σε μια web εφαρμογή προκύπτει όταν ο browser υποχρεώνεται να υπολογίσει τη γεωμετρία της σελίδας:</p>
+
+<div class="grid2">
+  <div class="card"><h3>Reflow (Layout)</h3>
+    <p>Ο υπολογισμός των ακριβών διαστάσεων και της θέσης κάθε στοιχείου στην οθόνη. Μια αλλαγή σε ένα στοιχείο μπορεί να προκαλέσει διαδοχικό επανυπολογισμό ολόκληρου του εγγράφου.</p></div>
+  <div class="card"><h3>Repaint</h3>
+    <p>Η σχεδίαση των pixels στην οθόνη (χρώματα, φόντα, σκιές, κείμενο). Ακολουθεί πάντα το Reflow και είναι επίσης υπολογιστικά απαιτητικό.</p></div>
+</div>
+
+<h2>Μαζική εισαγωγή στοιχείων με DocumentFragment</h2>
+<p>Όταν χρειάζεται να προστεθούν πολλαπλοί κόμβοι στο DOM, η μεμονωμένη προσθήκη καθενός προκαλεί πολλαπλά reflows. Η λύση είναι η κατασκευή τους εκτός οθόνης με <code>DocumentFragment</code>:</p>
+
+<pre><code class="lang-js">const fragment = document.createDocumentFragment()
+
+for (const user of users) {
+  const row = document.createElement("tr")
+  const nameCell = document.createElement("td")
+  nameCell.textContent = user.name
+  row.append(nameCell)
+
+  fragment.append(row) // Εισαγωγή στο ελαφρύ in-memory κοντέινερ (μηδενικό κόστος σχεδίασης)
 }
 
-// fast: build off-screen, insert once
-const frag = document.createDocumentFragment()
-for (const item of items) {
-  frag.append(makeRow(item))
-}
-list.append(frag)                    // the fragment dissolves, its children stay
+// Μία και μοναδική προσάρτηση στο ενεργό δέντρο:
+// Το DocumentFragment «διαλύεται» αυτόματα και όλα τα παιδιά του εισάγονται με μία πράξη.
+tableBody.append(fragment)
 </code></pre>
 
-<p>Ένα <code>DocumentFragment</code> είναι κοντέινερ που δεν ανήκει στη σελίδα. Ό,τι χτίζεις μέσα του δεν κοστίζει τίποτα σε σχεδίαση· όταν το βάλεις, μπαίνουν όλα τα παιδιά του με μία κίνηση.</p>
+<h2 id="@layout-thrash">Αποφυγή Layout Thrashing (Batching Αναγνώσεων &amp; Εγγραφών)</h2>
+<p>Ο browser συγκεντρώνει τις εγγραφές στο DOM και αναβάλλει τον υπολογισμό του layout μέχρι το τέλος της εκτέλεσης. Όταν όμως ζητάμε γεωμετρικές ιδιότητες (όπως <code>offsetWidth</code>, <code>clientHeight</code>, <code>getBoundingClientRect()</code>, <code>scrollTop</code>), ο browser εξαναγκάζεται να εκτελέσει άμεσα και συγχρονισμένα το layout (Forced Synchronous Layout):</p>
 
-<h2 id="@layout-thrash">Κανόνας 2: μη διαβάζεις και γράφεις εναλλάξ</h2>
-<pre><code class="lang-js">// bad: read, write, read, write — each read forces a fresh layout calculation
-for (const el of boxes) {
-  const w = el.offsetWidth          // read: browser must compute layout now
-  el.style.width = (w * 2) + "px"   // write: layout is invalidated again
-}
+<pre><code class="lang-js">// Σωστή προσέγγιση: Ομαδοποίηση (Batching)
+// Βήμα 1: Συγκέντρωση όλων των αναγνώσεων (Read Phase)
+const targetWidths = boxes.map((box) =&gt; box.offsetWidth * 2)
 
-// good: all reads, then all writes
-const widths = boxes.map((el) =&gt; el.offsetWidth)
-boxes.forEach((el, i) =&gt; { el.style.width = (widths[i] * 2) + "px" })
+// Βήμα 2: Εκτέλεση όλων των εγγραφών (Write Phase)
+boxes.forEach((box, i) =&gt; {
+  box.style.width = &#96;&#36;{targetWidths[i]}px&#96;
+})
 </code></pre>
 
-<p>Ο browser αναβάλλει τον υπολογισμό διάταξης όσο μπορεί. Κάθε ανάγνωση γεωμετρίας — <code>offsetWidth</code>, <code>getBoundingClientRect</code>, <code>scrollTop</code> — τον αναγκάζει να τον κάνει αμέσως. Εναλλάξ ανάγνωση και εγγραφή τον αναγκάζει μία φορά ανά επανάληψη, και αυτό λέγεται layout thrashing.</p>
+<div class="callout">
+  <span class="tag">Κανόνας Απόδοσης</span>
+  Μην εναλλάσσεις ανάγνωση γεωμετρίας και εγγραφή στυλ μέσα σε βρόχο. Ομαδοποίησε πρώτα όλες τις αναγνώσεις και στη συνέχεια εφάρμοσε όλες τις εγγραφές.
+</div>
 
-<h2 id="@state-render">Το pattern: κατάσταση και σχεδίαση</h2>
-<p>Η δελεαστική προσέγγιση σε μια διαδραστική σελίδα είναι να πειράζεις το DOM σε κάθε ενέργεια: στο πάτημα ενός κουμπιού, κρύψε αυτό, άλλαξε εκείνο, πρόσθεσε μια γραμμή. Δουλεύει για τρεις ενέργειες. Στην πέμπτη, δύο ενέργειες αλληλεπιδρούν και η οθόνη δείχνει κάτι που δεν αντιστοιχεί σε καμία έγκυρη κατάσταση.</p>
+<h2 id="@state-render">Αρχιτεκτονική State-Driven UI Rendering</h2>
+<p>Η προστακτική (imperative) διαχείριση της σελίδας — όπου κάθε κουμπί τροποποιεί απευθείας διάφορα τμήματα του DOM — γίνεται γρήγορα ανεξέλεγκτη. Η δηλωτική (declarative) προσέγγιση χωρίζει τα <strong>δεδομένα (State)</strong> από την <strong>εμφάνιση (Render)</strong>:</p>
 
-<p>Η εναλλακτική είναι να θεωρήσεις τη σελίδα ως το <em>αποτέλεσμα μιας function</em> πάνω στα δεδομένα:</p>
+<pre><code class="lang-js">// 1. Μοναδική πηγή αλήθειας (Single Source of Truth)
+const state = {
+  filter: "",
+  sortBy: "name",
+  items: []
+}
 
-<pre><code class="lang-js">// one object holds everything that can change
-const state = { query: "", sortBy: "name", ascending: true, page: 1 }
-let allRows = []
-
+// 2. Καθαρή συνάρτηση απεικόνισης (UI as a function of State)
 function render() {
-  const visible = allRows
-    .filter((r) =&gt; r.name.toLowerCase().includes(state.query.toLowerCase()))
-    .toSorted(compareBy(state.sortBy, state.ascending))
-    .slice((state.page - 1) * 20, state.page * 20)
+  const filtered = state.items
+    .filter((item) =&gt; item.name.toLowerCase().includes(state.filter.toLowerCase()))
+    .toSorted((a, b) =&gt; a[state.sortBy].localeCompare(b[state.sortBy]))
 
-  tbody.replaceChildren(...visible.map(makeRow))    // replace, do not patch
+  const fragment = document.createDocumentFragment()
+  for (const item of filtered) {
+    const li = document.createElement("li")
+    li.textContent = item.name
+    fragment.append(li)
+  }
+
+  itemsContainer.replaceChildren(fragment)
 }
 
-// every interaction changes state, then asks for a redraw
-search.addEventListener("input", (e) =&gt; {
-  state.query = e.target.value
-  state.page = 1                 // a new search starts from the first page
+// 3. Οι listeners τροποποιούν ΜΟΝΟ την κατάσταση και καλούν τη render()
+searchInput.addEventListener("input", (e) =&gt; {
+  state.filter = e.target.value
   render()
 })
 </code></pre>
 
 <div class="callout good">
-  <span class="tag">Γιατί αξίζει</span>
-  Κάθε handler γίνεται δύο γραμμές και δεν χρειάζεται να ξέρει τίποτα για τους υπόλοιπους. Δεν υπάρχει τρόπος να βρεθεί η οθόνη σε κατάσταση που δεν περιγράφεται από το <code>state</code>. Και όταν κάτι δείχνει λάθος, η ερώτηση είναι μία: τι λέει το <code>state</code>; Αυτή η ιδέα είναι όλο το θεμέλιο κάθε σύγχρονου UI framework — τα frameworks προσθέτουν μόνο το να ξανασχεδιάζουν λιγότερα.
+  <span class="tag">Αρχιτεκτονικό Όφελος</span>
+  Με το πρότυπο State-Driven UI, η οθόνη δεν μπορεί ποτέ να βρεθεί σε μη έγκυρη κατάσταση. Το UI είναι πάντοτε πιστή αντανάκλαση των δεδομένων στο <code>state</code>. Αυτή ακριβώς η ιδέα αποτελεί τον θεμέλιο λίθο όλων των σύγχρονων UI frameworks.
 </div>
 
-<div class="callout">
-  <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>replaceChildren</code> ξαναχτίζει τα πάντα, οπότε χάνεται η εστίαση και η θέση του κέρσορα αν ο χρήστης πληκτρολογεί μέσα στην περιοχή που ξαναγράφεις. Γι' αυτό το πεδίο αναζήτησης μένει <em>έξω</em> από ό,τι ξανασχεδιάζεται.
-</div>
-
-<h2>Πότε αρκεί η άμεση αλλαγή</h2>
-<p>Για μία γραμμή που αλλάζει κλάση, ή για έναν μετρητή που αυξάνεται, το <code>render</code> ολόκληρου του πίνακα είναι σπατάλη. Το pattern δεν είναι δόγμα: το χρησιμοποιείς όταν πολλαπλές ανεξάρτητες ενέργειες επηρεάζουν την ίδια περιοχή.</p>
+<h2>Στοχευμένες ενημερώσεις έναντι καθολικού Render</h2>
+<p>Για μεγάλες λίστες, το πλήρες <code>replaceChildren</code> διατηρεί την ορθότητα αλλά μπορεί να προκαλέσει απώλεια του focus αν αναδημιουργούνται πεδία εισαγωγής. Για μεμονωμένες αλλαγές κατάστασης (όπως το άνοιγμα ενός modal ή η εναλλαγή ενός badge), αρκεί η άμεση τροποποίηση κλάσεων μέσω <code>classList.toggle()</code> στο συγκεκριμένο στοιχείο.</p>
 `);
 
     addQuiz([
       {
-        q: "Γιατί ένα loop που αφαιρεί στοιχεία από HTMLCollection αφαιρεί μόνο τα μισά;",
+        q: "Γιατί η διαγραφή στοιχείων με βρόχο αυξανόμενου δείκτη σε ζωντανή συλλογή (HTMLCollection) παραλείπει στοιχεία;",
         options: [
-          "Η συλλογή είναι ζωντανή και μικραίνει ενώ ο δείκτης του loop μεγαλώνει",
-          "Το remove εκτελείται ασύγχρονα και ο browser προλαβαίνει να ολοκληρώσει τις μισές αφαιρέσεις πριν τερματίσει το loop",
-          "Το HTMLCollection επιτρέπει το πολύ μία αφαίρεση ανά επανάληψη για λόγους απόδοσης",
-          "Το length υπολογίζεται μία φορά στην αρχή και δεν αντιστοιχεί στο πραγματικό πλήθος"
+          "Η συλλογή είναι ζωντανή και το μέγεθός της μειώνεται σε κάθε διαγραφή, μετατοπίζοντας τα επόμενα στοιχεία σε μικρότερους δείκτες",
+          "Η μέθοδος remove εκτελείται ασύγχρονα και ο browser δεν προλαβαίνει να ενημερώσει το δέντρο πριν την επόμενη επανάληψη",
+          "Το HTMLCollection απαγορεύει διαδοχικές διαγραφές για λόγους ασφαλείας μνήμης",
+          "Η ιδιότητα length υπολογίζεται μία φορά στην αρχή του βρόχου και δεν αντανακλά το τρέχον πλήθος"
         ],
         correct: 0,
-        explain: "Το getElementsBy... δίνει ζωντανή συλλογή που ενημερώνεται μόνη της. Ο δείκτης και το μήκος συναντιούνται στη μέση. Η τέταρτη επιλογή περιγράφει το ακριβώς αντίθετο: αν το length υπολογιζόταν μία φορά, το loop θα δούλευε."
+        explain: "Οι μέθοδοι getElementsBy... επιστρέφουν ζωντανή συλλογή που ενημερώνεται δυναμικά σε κάθε αλλαγή του DOM. Όταν αφαιρείται το στοιχείο στη θέση i, το επόμενο στοιχείο μετακινείται στη θέση i, ενώ ο δείκτης αυξάνεται σε i+1. Η ασφαλής προσέγγιση είναι η μετατροπή σε στατικό Array ή η χρήση querySelectorAll."
       },
       {
-        q: "Πότε επιτρέπεται το innerHTML;",
+        q: "Πότε επιτρέπεται η χρήση της ιδιότητας innerHTML;",
         options: [
-          "Μόνο με κείμενο που έγραψες εσύ, ποτέ με δεδομένα εξωτερικής προέλευσης",
-          "Πάντα, εφόσον έχεις ελέγξει ότι το κείμενο δεν περιέχει τη λέξη script μέσα του",
-          "Μόνο για ανάγνωση, γιατί η ανάθεση σε αυτό δεν υποστηρίζεται πλέον",
-          "Όταν τα δεδομένα έρχονται από το δικό σου API, οπότε θεωρούνται εξ ορισμού ασφαλή"
+          "Αποκλειστικά με στατικό HTML περιεχόμενο που έχει γραφτεί από τον ίδιο τον προγραμματιστή, ποτέ με μη επαληθευμένα δεδομένα χρήστη ή εξωτερικών APIs",
+          "Πάντοτε, αρκεί το string να μην περιέχει ρητά την ετικέτα script",
+          "Μόνο για ανάγνωση περιεχομένου, καθώς η εγγραφή σε innerHTML έχει καταργηθεί από τα σύγχρονα πρότυπα",
+          "Όποτε τα δεδομένα επιστρέφονται από δικό μας backend API, καθώς θεωρούνται εκ των προτέρων ασφαλή"
         ],
         correct: 0,
-        explain: "Το innerHTML εκτελεί ό,τι του δώσεις ως HTML. Το φιλτράρισμα λέξεων δεν αρκεί — υπάρχουν δεκάδες τρόποι να εκτελεστεί κώδικας χωρίς τη λέξη script. Και το δικό σου API επιστρέφει ό,τι έγραψαν οι χρήστες σου."
+        explain: "Το innerHTML εκτελεί οποιοδήποτε markup του δοθεί. Ο αποκλεισμός της λέξης script δεν προστατεύει, καθώς υπάρχουν δεκάδες εναλλακτικοί τρόποι εκτέλεσης κώδικα (π.χ. onerror σε εικόνες). Για οποιαδήποτε δυναμική είσοδο χρησιμοποιείται υποχρεωτικά το textContent ή η δημιουργία στοιχείων με createElement."
       },
       {
-        q: "Τι είναι το event delegation;",
+        q: "Τι είναι το Event Delegation και ποιο είναι το βασικό του πλεονέκτημα;",
         options: [
-          "Ένας listener στον γονέα που εξυπηρετεί όλα τα παιδιά, τωρινά και μελλοντικά",
-          "Η ανάθεση του χειρισμού σε άλλη function για να μείνει καθαρός ο κώδικας του listener",
-          "Η δυνατότητα να δηλώσεις listener πριν καν υπάρξει το στοιχείο στο δέντρο του εγγράφου",
-          "Η αυτόματη αντιγραφή ενός listener σε κάθε νέο παιδί που προστίθεται στον γονέα"
+          "Η τοποθέτηση ενός ενιαίου listener σε έναν κοινό πρόγονο, ο οποίος εξυπηρετεί όλα τα τρέχοντα και μελλοντικά παιδιά αξιοποιώντας το event bubbling",
+          "Η ανάθεση του χειρισμού ενός γεγονότος σε Web Worker για αποφυγή επιβάρυνσης του κυρίως νήματος",
+          "Η δυνατότητα καταχώρισης listener πριν καν προστεθεί ο αντίστοιχος κόμβος στο δέντρο του DOM",
+          "Η αυτόματη αντιγραφή ενός event listener σε κάθε νέο παιδί που εισάγεται στο DOM"
         ],
         correct: 0,
-        explain: "Στηρίζεται στο bubbling: το event ανεβαίνει στον γονέα, οπότε ένας listener εκεί βλέπει τα πάντα. Η τέταρτη επιλογή περιγράφει κάτι που δεν υπάρχει και ακούγεται εύλογο — δεν αντιγράφεται τίποτα, απλώς δεν χρειάζεται."
+        explain: "Χάρη στο bubbling, τα γεγονότα ανέρχονται στην ιεραρχία του δέντρου. Ένας listener στον γονέα μπορεί να διαχειριστεί ενέργειες σε οποιοδήποτε παιδί, μειώνοντας δραστικά την κατανάλωση μνήμης και λειτουργώντας άψογα για στοιχεία που προστίθενται δυναμικά στο μέλλον."
       },
       {
-        q: "Γιατί χρειάζεται το closest μέσα σε έναν delegation handler;",
+        q: "Γιατί είναι απαραίτητη η χρήση της μεθόδου closest() μέσα σε έναν delegation handler;",
         options: [
-          "Επειδή το event.target είναι το βαθύτερο στοιχείο, που μπορεί να είναι παιδί της γραμμής",
-          "Επειδή το event.target είναι πάντα ο γονέας στον οποίο δέσαμε τον listener",
-          "Επειδή χωρίς αυτό ο listener εκτελείται δύο φορές, μία στη φάση καταγραφής και μία στη φάση ανόδου",
-          "Επειδή το event.target δεν έχει πρόσβαση στο dataset χωρίς προηγούμενη μετατροπή"
+          "Επειδή το event.target αντιστοιχεί στο βαθύτερο στοιχείο που δέχθηκε το κλικ, το οποίο μπορεί να είναι εσωτερικό παιδί (π.χ. span ή εικονίδιο)",
+          "Επειδή το event.target επιστρέφει πάντοτε τον γονέα στον οποίο έχει συνδεθεί ο listener",
+          "Επειδή χωρίς την closest() ο listener εκτελείται δύο φορές, μία στη φάση capturing και μία στη φάση bubbling",
+          "Επειδή το event.target δεν έχει άμεση πρόσβαση στις ιδιότητες dataset χωρίς ειδική μετατροπή"
         ],
         correct: 0,
-        explain: "Αν η γραμμή περιέχει span ή εικονίδιο, το target είναι εκείνο. Το closest ανεβαίνει μέχρι το στοιχείο που σε ενδιαφέρει. Το currentTarget είναι αυτό που περιγράφει η δεύτερη επιλογή, και είναι διαφορετική property."
+        explain: "Αν ένα κουμπί περιέχει εσωτερικά ένα span ή εικονίδιο, το event.target θα είναι το εσωτερικό αυτό στοιχείο. Η μέθοδος closest() αναρριχάται προς τα πάνω μέχρι να εντοπίσει το στοιχείο που φέρει τον επιθυμητό selector (π.χ. το κουμπί ή τη γραμμή)."
       },
       {
-        q: "Τι είναι το layout thrashing;",
+        q: "Τι ονομάζεται Layout Thrashing και πώς αντιμετωπίζεται;",
         options: [
-          "Εναλλάξ αναγνώσεις γεωμετρίας και εγγραφές στυλ, που αναγκάζουν επανυπολογισμό σε κάθε βήμα",
-          "Πολλές εισαγωγές στοιχείων στη σειρά, οι οποίες γεμίζουν τη μνήμη του browser με κόμβους",
-          "Η χρήση classList αντί για απευθείας ανάθεση σε properties του style κάθε στοιχείου",
-          "Η δημιουργία στοιχείων που δεν προστίθενται ποτέ στο δέντρο και μένουν αχρησιμοποίητα"
+          "Η διαδοχική εναλλαγή ανάγνωσης γεωμετρικών ιδιοτήτων και εγγραφής στυλ, που επιβάλλει πολλαπλούς συγχρονισμένους επανυπολογισμούς διάταξης (forced reflows)",
+          "Η εισαγωγή πολλών στοιχείων στη σειρά, η οποία υπερχειλίζει τη μνήμη cache του browser",
+          "Η χρήση classList αντί για απευθείας ανάθεση σε properties του αντικειμένου style",
+          "Η δημιουργία κόμβων στο DOM που παραμένουν αχρησιμοποίητοι χωρίς να προσαρτηθούν στο δέντρο"
         ],
         correct: 0,
-        explain: "Ο browser αναβάλλει τον υπολογισμό διάταξης, αλλά κάθε ανάγνωση γεωμετρίας τον επιβάλλει αμέσως. Η λύση είναι να μαζέψεις όλες τις αναγνώσεις πρώτα και μετά να κάνεις όλες τις εγγραφές."
+        explain: "Ο browser αναβάλλει τον υπολογισμό διάταξης, αλλά κάθε ανάγνωση γεωμετρίας (π.χ. offsetWidth) τον εξαναγκάζει σε άμεσο υπολογισμό. Η λύση είναι η ομαδοποίηση (batching): εκτέλεση όλων των αναγνώσεων πρώτα και στη συνέχεια εφαρμογή όλων των εγγραφών."
       },
       {
-        q: "Ποιο είναι το κύριο κέρδος του pattern κατάσταση προς σχεδίαση;",
+        q: "Ποιο είναι το θεμελιώδες όφελος του αρχιτεκτονικού προτύπου State-Driven UI;",
         options: [
-          "Η οθόνη δεν μπορεί να βρεθεί σε κατάσταση που δεν περιγράφεται από τα δεδομένα",
-          "Ο browser ξανασχεδιάζει λιγότερα στοιχεία, οπότε η σελίδα γίνεται ταχύτερη σε κάθε περίπτωση, ανεξάρτητα από το μέγεθος των δεδομένων",
-          "Δεν χρειάζονται πλέον listeners, γιατί η σχεδίαση ενεργοποιείται αυτόματα με κάθε αλλαγή",
-          "Επιτρέπει να αποθηκεύσεις όλη τη σελίδα ως JSON και να τη φορτώσεις αργότερα"
+          "Η διεπαφή είναι πάντοτε προβλέψιμη και συνεπής, καθώς αποτελεί καθαρή συνάρτηση των δεδομένων της κατάστασης (State)",
+          "Ο browser αποφεύγει πλήρως το repaint σε οποιαδήποτε αλλαγή, αυξάνοντας δραστικά την ταχύτητα",
+          "Καταργείται η ανάγκη για event listeners, αφού το DOM ενημερώνεται αυτόματα από το λειτουργικό σύστημα",
+          "Επιτρέπει την αυτόματη μετατροπή ολόκληρου του DOM σε δυαδική μορφή WebAssembly"
         ],
         correct: 0,
-        explain: "Το κέρδος είναι ορθότητα, όχι ταχύτητα — το ξανασχεδίασμα των πάντων είναι συνήθως πιο ακριβό, όχι πιο φθηνό. Τα frameworks προσθέτουν ακριβώς αυτό που λείπει: να ξανασχεδιάζουν λιγότερα."
+        explain: "Το κύριο κέρδος είναι η αρχιτεκτονική ορθότητα: αποτρέπεται ο αποσυγχρονισμός ανάμεσα στα δεδομένα και την οθόνη. Κάθε αλληλεπίδραση ενημερώνει πρώτα την κατάσταση (state) και η συνάρτηση render αναλαμβάνει την αξιόπιστη αποτύπωσή της."
       }
     ]);
 
@@ -4458,61 +4541,61 @@ search.addEventListener("input", (e) =&gt; {
       {
         lang: "js",
         code:
-          `// One listener for the whole list, working for rows added later too.
+          `// Ενιαίος listener στον κοινό γονέα με Delegation
 list.addEventListener("click", (event) => {
-  // event.target may be a child of the row, so climb to the row itself
+  // Το event.target μπορεί να είναι εσωτερικό span, αναρριχόμαστε στη γραμμή:
   const row = event.target.__climb__(".row")
-  if (!row) return                       // click landed outside any row
+  if (!row) return                       // Το κλικ έγινε εκτός γραμμής
 
-  // the identity travels on the element, put there when it was built
+  // Ανάκτηση της ταυτότητας του στοιχείου από το DOM:
   select(row.__data__.id)
 })
 
-// when the row was created:
+// Κατά την κατασκευή της γραμμής:
 li.__data__.id = item.id`,
         blanks: [
           { id: "climb", answer: "closest" },
           { id: "data", answer: "dataset" }
         ],
-        explain: "Το closest είναι αυτό που κάνει τον handler ανεξάρτητο από το πόσο φωλιασμένο είναι το περιεχόμενο κάθε γραμμής. Και το dataset κρατάει την ταυτότητα του δεδομένου πάνω στο στοιχείο, ώστε να μη χρειάζεται να ψάξεις θέση σε πίνακα κατά το πάτημα."
+        explain: "Η μέθοδος closest() εντοπίζει τον πλησιέστερο πρόγονο που ικανοποιεί τον selector ανεξάρτητα από το βάθος του κλικ. Το dataset αποθηκεύει προσαρμοσμένα μεταδεδομένα απευθείας πάνω στον κόμβο."
       },
       {
         lang: "js",
         code:
-          `// Build many rows without making the browser redraw N times.
+          `// Μαζική κατασκευή γραμμών εκτός οθόνης για αποφυγή πολλαπλών reflows:
 const frag = document.__container__()
 
 for (const item of items) {
   const li = document.createElement("li")
-  li.__setter__ = item.name       // safe assignment for user data
+  li.__setter__ = item.name       // Ασφαλής ανάθεση κειμένου για αποτροπή XSS
   frag.append(li)
 }
 
-list.append(frag)                 // a single insertion`,
+list.append(frag)                 // Μία και μοναδική προσάρτηση στο DOM`,
         blanks: [
           { id: "container", answer: "createDocumentFragment" },
           { id: "setter", answer: "textContent" }
         ],
-        explain: "Το fragment ζει εκτός σελίδας, οπότε ό,τι χτίζεις μέσα του δεν κοστίζει σχεδίαση. Και το textContent αντί για innerHTML είναι ο κανόνας για κάθε δεδομένο που δεν το έγραψες εσύ — εδώ το item.name μπορεί να προέρχεται από χρήστη."
+        explain: "Το DocumentFragment είναι ένας ελαφρύς κόμβος στη μνήμη εκτός ενεργού DOM, επιτρέποντας μαζική εισαγωγή με ένα μόνο reflow. Το textContent εγγυάται ότι τα δεδομένα εισάγονται ως απλό κείμενο χωρίς κίνδυνο XSS."
       }
     ]);
 
     addMatching([
       [
-        { term: "<code>querySelectorAll</code>", def: "Στατικό στιγμιότυπο των στοιχείων που ταιριάζουν" },
-        { term: "<code>getElementsByClassName</code>", def: "Ζωντανή συλλογή που ενημερώνεται μόνη της" },
-        { term: "<code>textContent</code>", def: "Βάζει κείμενο· δεν εκτελεί ποτέ tags" },
-        { term: "<code>dataset</code>", def: "Τα <code>data-*</code> attributes ως object" },
-        { term: "<code>closest</code>", def: "Ο πλησιέστερος πρόγονος που ταιριάζει σε selector" },
-        { term: "<code>DocumentFragment</code>", def: "Κοντέινερ εκτός σελίδας για μαζική κατασκευή" }
+        { term: "<code>querySelectorAll</code>", def: "Στατικό στιγμιότυπο των στοιχείων που ταιριάζουν (Static NodeList)" },
+        { term: "<code>getElementsByClassName</code>", def: "Ζωντανή συλλογή που ενημερώνεται δυναμικά (Live HTMLCollection)" },
+        { term: "<code>textContent</code>", def: "Ασφαλής εισαγωγή κειμένου με αυτόματο escaping (προστασία XSS)" },
+        { term: "<code>dataset</code>", def: "Αντικείμενο διαχείρισης των <code>data-*</code> attributes" },
+        { term: "<code>closest</code>", def: "Αναζήτηση του πλησιέστερου προγόνου που ικανοποιεί τον selector" },
+        { term: "<code>DocumentFragment</code>", def: "Κοντέινερ στη μνήμη εκτός δέντρου για μαζική εισαγωγή" }
       ],
       [
-        { term: "Όλα τα <code>querySelector</code> δίνουν <code>null</code>", def: "Το script έτρεξε πριν φορτωθεί το <code>body</code>" },
-        { term: "Οι νέες γραμμές δεν αντιδρούν στο κλικ", def: "Οι listeners δέθηκαν σε loop, χωρίς delegation" },
-        { term: "Το κλικ έδωσε το <code>span</code> αντί για τη γραμμή", def: "Χρησιμοποιήθηκε <code>target</code> χωρίς <code>closest</code>" },
-        { term: "Η φόρμα ξαναφόρτωσε τη σελίδα", def: "Λείπει το <code>preventDefault</code> στο <code>submit</code>" },
-        { term: "Το scroll κολλάει", def: "Ανάγνωση γεωμετρίας μέσα σε πυκνό handler" },
-        { term: "Ο handler ενός γονέα σταμάτησε να τρέχει", def: "Κάποιος κάλεσε <code>stopPropagation</code> πιο κάτω" }
+        { term: "Όλα τα <code>querySelector</code> επιστρέφουν <code>null</code>", def: "Το script εκτελέστηκε πριν αναλυθεί το <code>body</code> (λείπει το defer/module)" },
+        { term: "Νέα δυναμικά στοιχεία δεν ανταποκρίνονται στο κλικ", def: "Οι listeners συνδέθηκαν μεμονωμένα αντί για event delegation στον γονέα" },
+        { term: "Το <code>event.target</code> επέστρεψε εσωτερικό span", def: "Χρησιμοποιήθηκε το target χωρίς κλήση της <code>closest()</code>" },
+        { term: "Η φόρμα επαναφορτώνει τη σελίδα στο submit", def: "Δεν κλήθηκε η <code>event.preventDefault()</code> στον submit handler" },
+        { term: "Παρατηρείται καθυστέρηση (jank) κατά το scroll", def: "Εκτέλεση συγχρονισμένων αναγνώσεων γεωμετρίας (layout thrashing)" },
+        { term: "Ο listener ενός ανώτερου προγόνου σταμάτησε να τρέχει", def: "Κλήθηκε η <code>event.stopPropagation()</code> σε κατώτερο handler" }
       ]
     ], { allowHTML: true });
 
@@ -4520,26 +4603,24 @@ list.append(frag)                 // a single insertion`,
 <div class="eyebrow">Μίνι Γλωσσάρι</div>
 <h2>Όροι που μόλις είδαμε</h2>
 <div class="glossary-columns">
-  <div class="gc-line"><span class="gc-term">DOM</span><span class="gc-def">το δέντρο από objects που χτίζει ο browser από το HTML</span></div>
-  <div class="gc-line"><span class="gc-term">node / element</span><span class="gc-def">κάθε κόμβος του δέντρου / ο κόμβος που αντιστοιχεί σε tag</span></div>
-  <div class="gc-line"><span class="gc-term">live collection</span><span class="gc-def">συλλογή που ενημερώνεται όταν αλλάζει το δέντρο</span></div>
-  <div class="gc-line"><span class="gc-term">XSS</span><span class="gc-def">εκτέλεση ξένου κώδικα μέσω δεδομένων που μπήκαν ως HTML</span></div>
-  <div class="gc-line"><span class="gc-term">bubbling</span><span class="gc-def">η άνοδος ενός event από το στοιχείο προς τους προγόνους</span></div>
-  <div class="gc-line"><span class="gc-term">delegation</span><span class="gc-def">ένας listener στον γονέα αντί για πολλούς στα παιδιά</span></div>
-  <div class="gc-line"><span class="gc-term">target / currentTarget</span><span class="gc-def">πού συνέβη / πού είναι δεμένος ο listener</span></div>
-  <div class="gc-line"><span class="gc-term">preventDefault</span><span class="gc-def">ακύρωση της προεπιλεγμένης ενέργειας του browser</span></div>
-  <div class="gc-line"><span class="gc-term">reflow / layout</span><span class="gc-def">ο υπολογισμός θέσεων και μεγεθών από τον browser</span></div>
-  <div class="gc-line"><span class="gc-term">DocumentFragment</span><span class="gc-def">προσωρινό κοντέινερ εκτός σελίδας</span></div>
+  <div class="gc-line"><span class="gc-term">DOM</span><span class="gc-def">το ιεραρχικό δέντρο αντικειμένων που χτίζει ο browser από το HTML</span></div>
+  <div class="gc-line"><span class="gc-term">Node / Element</span><span class="gc-def">κάθε κόμβος του δέντρου / εξειδικευμένος κόμβος που αντιστοιχεί σε HTML tag</span></div>
+  <div class="gc-line"><span class="gc-term">Live Collection</span><span class="gc-def">συλλογή που ενημερώνεται αυτόματα σε κάθε αλλαγή του DOM</span></div>
+  <div class="gc-line"><span class="gc-term">XSS</span><span class="gc-def">εκτέλεση κακόβουλου κώδικα μέσω εισαγωγής μη ελεγμένου HTML</span></div>
+  <div class="gc-line"><span class="gc-term">Bubbling</span><span class="gc-def">η διάδοση ενός γεγονότος από τον στόχο προς τους προγόνους του</span></div>
+  <div class="gc-line"><span class="gc-term">Event Delegation</span><span class="gc-def">χειρισμός γεγονότων πολλών παιδιών μέσω ενός listener στον κοινό γονέα</span></div>
+  <div class="gc-line"><span class="gc-term">target / currentTarget</span><span class="gc-def">το στοιχείο που δέχθηκε την ενέργεια / το στοιχείο όπου είναι δεμένος ο listener</span></div>
+  <div class="gc-line"><span class="gc-term">preventDefault</span><span class="gc-def">ακύρωση της προκαθορισμένης συμπεριφοράς του browser</span></div>
+  <div class="gc-line"><span class="gc-term">Reflow / Layout</span><span class="gc-def">ο υπολογισμός θέσεων και διαστάσεων των στοιχείων στην οθόνη</span></div>
+  <div class="gc-line"><span class="gc-term">DocumentFragment</span><span class="gc-def">ελαφρύ κοντέινερ στη μνήμη για μαζικές και αποδοτικές εισαγωγές</span></div>
 </div>
 `);
-
-    // ── Section 9 ────────────────────────────────────────────────────────── ⊃
     addContent(`
 <div class="eyebrow" id="@single-thread">Ασύγχρονη JavaScript</div>
 <h1>Single Thread</h1>
 <p class="lede">Στη Go ξεκινούσες goroutine με μία λέξη και ο χρονοδρομολογητής φρόντιζε τα υπόλοιπα. Εδώ δεν υπάρχει δεύτερο νήμα για τον κώδικά σου. Υπάρχει ένα, και ό,τι το απασχολεί σταματάει τα πάντα.</p>
 
-<h2>Το πρόβλημα, συγκεκριμένα</h2>
+<h2>Single-Threaded μοντέλο και blocking λειτουργίες</h2>
 <pre><code class="lang-js">function blockFor(ms) {
   const end = Date.now() + ms
   while (Date.now() &lt; end) { }        // busy loop
@@ -4562,7 +4643,7 @@ button.addEventListener("click", () =&gt; {
 
 <p>Το κρίσιμο σημείο είναι το «όταν η στοίβα αδειάσει». Τίποτα από την ουρά δεν τρέχει όσο τρέχει δικός σου κώδικας. Ένα <code>setTimeout(fn, 0)</code> δεν σημαίνει «τώρα», σημαίνει «στην πρώτη ευκαιρία μετά από ό,τι κάνω αυτή τη στιγμή».</p>
 
-<h2 id="@two-queues">Δύο ουρές, όχι μία</h2>
+<h2 id="@two-queues">Ουρές εκτέλεσης: Microtasks vs Macrotasks</h2>
 <pre><code class="lang-js">console.log("1")
 
 setTimeout(() =&gt; console.log("2"), 0)      // macrotask queue
@@ -4602,7 +4683,7 @@ console.log("4")
 <h1>Promises</h1>
 <p class="lede">Ο παλιός τρόπος δούλευε. Το πρόβλημά του δεν ήταν η ορθότητα αλλά ότι η ροή του κώδικα έπαυε να διαβάζεται από πάνω προς τα κάτω.</p>
 
-<h2>Πρώτα ο παλιός τρόπος</h2>
+<h2>Ασύγχρονος έλεγχος με Callbacks</h2>
 <pre><code class="lang-js">loadUser(id, (err, user) =&gt; {
   if (err) return handle(err)
   loadOrders(user.id, (err, orders) =&gt; {
@@ -4657,7 +4738,7 @@ function readFilePromise(path) {
   Χρειάζεσαι τον constructor <code>new Promise</code> <em>μόνο</em> για να τυλίξεις κάτι που δεν επιστρέφει ήδη Promise — timers, παλιά API. Αν το γράφεις γύρω από κάτι που ήδη επιστρέφει Promise, προσθέτεις ένα άχρηστο επίπεδο και συνήθως χάνεις και τα σφάλματα στην πορεία.
 </div>
 
-<h2 id="@unhandled-reject">Ένα rejection που δεν το πιάνει κανείς</h2>
+<h2 id="@unhandled-reject">Μη διαχειριζόμενες απορρίψεις (Unhandled Rejections)</h2>
 <pre><code class="lang-js">loadUser(id).then(show)      // no .catch — if it rejects, nobody handles it
 </code></pre>
 
@@ -4669,7 +4750,7 @@ function readFilePromise(path) {
 <h1>async / await</h1>
 <p class="lede">Η ίδια μηχανική με τα Promises, γραμμένη σαν να ήταν σύγχρονη. Και μία συμπεριφορά που κοστίζει δευτερόλεπτα χωρίς να το καταλάβεις.</p>
 
-<h2>Η γραφή</h2>
+<h2>Σύνταξη async και await</h2>
 <pre><code class="lang-js">async function showDetails(id) {
   try {
     const user = await loadUser(id)
@@ -4691,7 +4772,7 @@ two()                        // Promise, not 2
 await two()                  // 2
 </code></pre>
 
-<h2 id="@await-loop-trap">Η παγίδα</h2>
+<h2 id="@await-loop-trap">Η παγίδα της σειριακής εκτέλεσης σε βρόχο</h2>
 <pre><code class="lang-js">// each iteration waits for the previous one: 10 requests of 200ms = 2 seconds
 async function loadAllSlow(ids) {
   const out = []
@@ -4712,7 +4793,7 @@ async function loadAll(ids) {
   Κάθε <code>await</code> μέσα σε loop είναι ύποπτο. Ρώτα: χρειάζεται το βήμα <em>n</em> το αποτέλεσμα του <em>n−1</em>; Αν όχι, οι κλήσεις πρέπει να ξεκινήσουν όλες μαζί. Αν ναι — π.χ. σελιδοποίηση όπου κάθε απάντηση δίνει το επόμενο token — τότε το σειριακό <code>await</code> είναι σωστό και δεν το πειράζεις.
 </div>
 
-<h2>Γιατί το map δουλεύει εδώ</h2>
+<h2>Παράλληλη εκτέλεση με Promise.all και map</h2>
 <p>Το <code>ids.map(...)</code> δεν περιμένει τίποτα: καλεί τη <code>fetchItem</code> για κάθε id και μαζεύει τα Promises που επιστρέφουν. Όλα ξεκίνησαν ήδη. Το <code>Promise.all</code> απλώς περιμένει να ολοκληρωθούν όλα και δίνει πίνακα με τα αποτελέσματα, με τη σειρά που δόθηκαν — όχι με τη σειρά που τελείωσαν.</p>
 
 <h2 id="@promise-combos">Οι τέσσερις συνδυαστές</h2>
@@ -4751,7 +4832,7 @@ const data = await Promise.race([fetchItem(id), timeout(3000)])
 <h1>fetch & Rate limiting</h1>
 <p class="lede">Το πραγματικό API που θα χρησιμοποιείς, με τη μία συμπεριφορά του που εκπλήσσει τους πάντες — και δύο τεχνικές που είναι απλώς closures με timer.</p>
 
-<h2 id="@fetch-no-reject">Το fetch δεν απορρίπτεται σε σφάλμα διακομιστή</h2>
+<h2 id="@fetch-no-reject">Διαχείριση HTTP status codes στο fetch API</h2>
 <pre><code class="lang-js">const res = await fetch("/api/items")
 // res.ok is false for 404 and 500, but the promise FULFILLED normally
 </code></pre>
@@ -4796,7 +4877,7 @@ controller.abort()          // e.g. the user typed something new
 
 <p>Είναι το ίδιο <code>AbortController</code> που είδαμε για listeners στο 8.3. Σε ζωντανή αναζήτηση, ακυρώνεις το προηγούμενο αίτημα πριν στείλεις το επόμενο — αλλιώς μια αργή παλιά απάντηση μπορεί να φτάσει μετά από μια γρήγορη νέα και να γράψει από πάνω της.</p>
 
-<h2 id="@debounce">Debounce: περίμενε να σταματήσει</h2>
+<h2 id="@debounce">Τεχνική Debounce</h2>
 <pre><code class="lang-js">function debounce(fn, wait) {
   let timer                              // hidden state, one per wrapped function
 
@@ -4811,7 +4892,7 @@ search.addEventListener("input", debounce((e) =&gt; query(e.target.value), 300))
 
 <p>Κάθε νέα κλήση ακυρώνει την προηγούμενη προγραμματισμένη εκτέλεση. Το αποτέλεσμα: η <code>fn</code> τρέχει μία φορά, 300ms αφότου ο χρήστης σταματήσει να πληκτρολογεί. Δέκα πλήκτρα, ένα αίτημα.</p>
 
-<h2 id="@throttle">Throttle: το πολύ μία φορά ανά διάστημα</h2>
+<h2 id="@throttle">Τεχνική Throttle</h2>
 <pre><code class="lang-js">function throttle(fn, interval) {
   let last = 0
 
@@ -4983,7 +5064,7 @@ function debounce(fn, wait) {
 <h1>Γιατί Promises</h1>
 <p class="lede">Αυτό δεν έχει άμεσο αντίστοιχο στη Go (εκεί η λύση είναι channels/goroutines, τελείως διαφορετική προσέγγιση) — μια τελευταία ματιά στο ακριβές πρόβλημα που λύνει το Promise, φτιάχνοντας ένα πρόχειρο, δικό σου.</p>
 
-<h2>Το πρόβλημα: ένα callback δεν επιστρέφει τίποτα</h2>
+<h2>Περιορισμοί επιστροφής τιμών στα callbacks</h2>
 <pre><code class="lang-js">function loadScoreCallback(id, onDone) {
   setTimeout(() => onDone(id * 10), 100)   // pretend this is a network call
 }
@@ -4999,7 +5080,7 @@ console.log(getScoreBroken(5))   // undefined
 </code></pre>
 <p>Το <code>setTimeout</code> προγραμματίζει το callback για αργότερα· το <code>return result</code> εκτελείται αμέσως, πριν καν κληθεί το <code>onDone</code>. Δεν υπάρχει τρόπος να «περιμένεις» μέσα σε απλή function — αυτό ακριβώς λύνει το Promise.</p>
 
-<h2>Χτίζοντας μια πολύ απλή εκδοχή</h2>
+<h2>Υλοποίηση βασικού Promise abstraction</h2>
 <pre><code class="lang-js">// a minimal stand-in: an object that remembers its value once it arrives
 function makeDeferred() {
   const state = { value: undefined, listener: null }
@@ -5072,7 +5153,7 @@ setTimeout(() => deferred.resolve(50), 100)
   <tr><td style="padding:6px">1 · Τιμές και τύποι</td><td style="padding:6px">Δεν υπάρχει compiler· η γλώσσα μετατρέπει αντί να σταματά</td><td style="padding:6px">Έλεγχος με <code>==</code> ή με <code>if (value)</code> εκεί όπου το μηδέν είναι έγκυρο</td></tr>
   <tr><td style="padding:6px">2 · Αναφορές</td><td style="padding:6px">Τα objects περνούν ως αναφορά· το <code>const</code> δεν προστατεύει περιεχόμενο</td><td style="padding:6px">Αντίγραφο που δεν είναι αντίγραφο</td></tr>
   <tr><td style="padding:6px">3 · Συλλογές</td><td style="padding:6px">Τα κλειδιά object είναι πάντα strings· υπάρχουν <code>Map</code> και <code>Set</code></td><td style="padding:6px">Object ως κλειδί, και μία εγγραφή αντί για πολλές</td></tr>
-  <tr><td style="padding:6px">4 · Functions</td><td style="padding:6px">Η function είναι τιμή που κουβαλάει το scope της</td><td style="padding:6px">Κατάσταση δημόσια εκεί που έπρεπε να είναι κρυφή</td></tr>
+  <tr><td style="padding:6px">4 · Functions</td><td style="padding:6px">Η συνάρτηση είναι τιμή πρώτης τάξης που διατηρεί την αναφορά στο λεξικό της περιβάλλον (scope)</td><td style="padding:6px">Κατάσταση δημόσια εκεί που έπρεπε να είναι κρυφή</td></tr>
   <tr><td style="padding:6px">5 · Συλλογές δηλωτικά</td><td style="padding:6px"><code>map</code>, <code>filter</code>, <code>reduce</code>: το ζητούμενο αντί για τα βήματα</td><td style="padding:6px">Ταξινόμηση χωρίς comparator· τροποποίηση του αρχικού</td></tr>
   <tr><td style="padding:6px">6 · Κείμενο και regex</td><td style="padding:6px">Ένα pattern αντί για μηχανή καταστάσεων</td><td style="padding:6px">Greedy quantifier και validation χωρίς άγκυρες</td></tr>
   <tr><td style="padding:6px">7 · Ημερομηνίες</td><td style="padding:6px">Ένας αριθμός από το epoch· η δομή ξέρει τους κανόνες</td><td style="padding:6px">Μήνας από το 1, και ζώνη που δεν δηλώθηκε</td></tr>
@@ -5080,7 +5161,7 @@ setTimeout(() => deferred.resolve(50), 100)
   <tr><td style="padding:6px">9 · Ασύγχρονη</td><td style="padding:6px">Ένα νήμα, ουρές και event loop</td><td style="padding:6px"><code>await</code> σε loop χωρίς εξάρτηση· <code>fetch</code> χωρίς <code>res.ok</code></td></tr>
 </table>
 
-<h2 id="@debug-questions">Τέσσερις ερωτήσεις για κώδικα που δεν συμπεριφέρεται όπως περιμένεις</h2>
+<h2 id="@debug-questions">Μεθοδολογία εντοπισμού σφαλμάτων: 4 κατευθυντήριες ερωτήσεις</h2>
 <div class="grid2">
   <div class="card"><h3>1. Είναι θέμα τύπου;</h3><p>Πήρες <code>undefined</code>, <code>NaN</code>, ή string εκεί που περίμενες αριθμό; Ψάξε πού μπήκαν τα δεδομένα στο σύστημα και τι μετατροπή έλειπε εκεί. Ενότητα 1.</p></div>
   <div class="card"><h3>2. Είναι θέμα ταυτότητας;</h3><p>Κάτι άλλαξε χωρίς να το αγγίξεις, ή δύο ίσα πράγματα δεν βγήκαν ίσα; Είναι αναφορά. Ενότητα 2.</p></div>
@@ -5400,8 +5481,8 @@ setTimeout(() => deferred.resolve(50), 100)
 `);
 
     addContent(`
-<div class="eyebrow">Έφτασες στο τέλος</div>
-<h1>Ελπίζω να έμαθες κάτι νέο και να σου φάνηκε χρήσιμο.</h1>
+<div class="eyebrow">Ολοκλήρωση Οδηγού</div>
+<h1>Επόμενα Βήματα και Εμβάθυνση</h1>
 
 <p>Αν κρατήσεις τρία πράγματα από όλο τον οδηγό, ας είναι αυτά. Πρώτο: μετάτρεψε ρητά στο σύνορο του συστήματος, εκεί που μπαίνουν δεδομένα από έξω — τα μισά προβλήματα της γλώσσας γεννιούνται όταν αφήνεις τη μετατροπή να συμβεί μόνη της κάπου παρακάτω. Δεύτερο: οι τιμές που δεν είναι primitives μοιράζονται, και το ξέρεις πριν σε εκπλήξει. Τρίτο: η κατάσταση ζει στα δεδομένα και η οθόνη είναι η προβολή τους, όχι το αντίστροφο.</p>
 
