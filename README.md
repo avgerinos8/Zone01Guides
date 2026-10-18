@@ -94,7 +94,7 @@ The file `lessontemplate/detailed-lesson-generator-instructions.json` defines a 
 The specification also includes:
 - **banned expressions** (e.g. no “το πρόγραμμα πεθαίνει” – use “τερματίζει βίαια”)
 - **grammar checks** (e.g. double accent in imperative + clitic)
-- **pedagogical patterns** (naive‑first, concrete failures, recognition callouts, explicit callbacks to earlier sections)
+- **pedagogical patterns** (concrete failures, recognition callouts, explicit callbacks to earlier sections)
 
 > All lessons must be written in **Greek** (prose) with **English code comments**.
 

@@ -218,10 +218,10 @@
 
 * **3.2.**
   **Break / Continue / Early Return** — τρία παραδείγματα, σύγκριση nested-if "χάος" vs flat early-exit, παραπομπή στον επίσημο Go Code Review Comments οδηγό
-  **Sentinel Value** — `SumNumbers`/`Atoi` naive → σπάει σε μη-αριθμό → `-1` sentinel → μετάβαση σε `(sum int, ok bool)`
+  **Sentinel Value** — `SumNumbers`/`Atoi` με `-1` sentinel σε μη-αριθμό → μετάβαση σε `(sum int, ok bool)`
 
 * **3.3.**
-  **Extremum** — `Max` naive (bug με αρνητικούς) → `numbers[0]` fix → `math.MinInt` εναλλακτική
+  **Extremum** — `Max` με `numbers[0]` → `math.MinInt` εναλλακτική
   **Previous Value** — `LongestUpstreak` πάνω σε `prices` dataset, σύγκριση με `prices[i-1]`
   **Two Pointers**
   **Sliding Window fixed/variable**
