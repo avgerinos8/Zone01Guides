@@ -218,6 +218,7 @@
       <div class="toc-section">ΑΣΥΓΧΡΟΝΗ JAVASCRIPT</div>
       <a href="#@single-thread" class="toc-link toc-h1">Single Thread &amp; Event Loop</a>
       <a href="#@two-queues" class="toc-link toc-h2">Ουρές: Microtasks vs Macrotasks</a>
+      <a href="#@callbacks" class="toc-link toc-h1">Callbacks</a>
       <a href="#@promises" class="toc-link toc-h1">Promises</a>
       <a href="#@unhandled-reject" class="toc-link toc-h2">Μη διαχειριζόμενες απορρίψεις</a>
       <a href="#@async-await" class="toc-link toc-h1">async / await</a>
@@ -4618,7 +4619,7 @@ list.append(frag)                 // Μία και μοναδική προσάρ
     addContent(`
 <div class="eyebrow" id="@single-thread">Ασύγχρονη JavaScript</div>
 <h1>Single Thread</h1>
-<p class="lede">Στη Go ξεκινούσες goroutine με μία λέξη και ο χρονοδρομολογητής φρόντιζε τα υπόλοιπα. Εδώ δεν υπάρχει δεύτερο νήμα για τον κώδικά σου. Υπάρχει ένα, και ό,τι το απασχολεί σταματάει τα πάντα.</p>
+<p class="lede">Στη Go ξεκινούσες goroutine με μία λέξη και ο χρονοδρομολογητής μοίραζε τη δουλειά σε πολλά νήματα. Στη JavaScript υπάρχει μόνο ένα νήμα εκτέλεσης. Ό,τι το κρατάει απασχολημένο, μπλοκάρει ολόκληρη τη σελίδα.</p>
 
 <h2>Single-Threaded μοντέλο και blocking λειτουργίες</h2>
 <pre><code class="lang-js">function blockFor(ms) {
@@ -4632,7 +4633,7 @@ button.addEventListener("click", () =&gt; {
 })
 </code></pre>
 
-<p>Για τρία δευτερόλεπτα μετά το πάτημα, η σελίδα είναι νεκρή: δεν σχεδιάζεται, δεν κυλάει, δεν δέχεται κλικ, ούτε το κείμενο δεν επιλέγεται. Δεν υπάρχει άλλο νήμα να τα αναλάβει. Γι' αυτό ολόκληρη η γλώσσα είναι χτισμένη γύρω από τη μη αναμονή.</p>
+<p>Για τρία δευτερόλεπτα μετά το κλικ, η σελίδα παγώνει: δεν σχεδιάζεται, δεν κυλάει, δεν δέχεται κλικ, δεν επιλέγει κείμενο. Κανένα δεύτερο νήμα δεν αναλαμβάνει τη δουλειά. Αυτός ο περιορισμός εξηγεί γιατί ολόκληρη η γλώσσα είναι σχεδιασμένη ώστε να αποφεύγει την αναμονή.</p>
 
 <h2>Ο μηχανισμός: στοίβα, ουρές, βρόχος</h2>
 <div class="grid3">
@@ -4641,7 +4642,7 @@ button.addEventListener("click", () =&gt; {
   <div class="card"><h3>Event loop</h3><p>Όταν η στοίβα αδειάσει, παίρνει το επόμενο από την ουρά και το βάζει στη στοίβα. Ξανά και ξανά.</p></div>
 </div>
 
-<p>Το κρίσιμο σημείο είναι το «όταν η στοίβα αδειάσει». Τίποτα από την ουρά δεν τρέχει όσο τρέχει δικός σου κώδικας. Ένα <code>setTimeout(fn, 0)</code> δεν σημαίνει «τώρα», σημαίνει «στην πρώτη ευκαιρία μετά από ό,τι κάνω αυτή τη στιγμή».</p>
+<p>Η λέξη-κλειδί είναι «όταν η στοίβα αδειάσει». Καμία εργασία από την ουρά δεν εκτελείται ενώ τρέχει σύγχρονος κώδικας. Η κλήση <code>setTimeout(fn, 0)</code> δεν σημαίνει «εκτέλεσε αμέσως». Σημαίνει «εκτέλεσε στην πρώτη ευκαιρία, αφού αδειάσει η στοίβα».</p>
 
 <h2 id="@two-queues">Ουρές εκτέλεσης: Microtasks vs Macrotasks</h2>
 <pre><code class="lang-js">console.log("1")
@@ -4665,41 +4666,146 @@ console.log("4")
   <tr><td style="padding:6px">6</td><td style="padding:6px">τυπώνει 2</td><td style="padding:6px">—</td><td style="padding:6px">—</td></tr>
 </table>
 
-<p>Οι microtasks — ό,τι προκύπτει από promises — έχουν απόλυτη προτεραιότητα: ο event loop τις αδειάζει <em>όλες</em> πριν αγγίξει έστω και μία macrotask. Αυτό εξηγεί γιατί το 3 προηγείται του 2 παρόλο που προγραμματίστηκε αργότερα.</p>
+<p>Οι microtasks (callbacks από promises) έχουν απόλυτη προτεραιότητα. Ο event loop αδειάζει <em>ολόκληρη</em> την ουρά microtasks πριν επεξεργαστεί έστω και μία macrotask. Γι' αυτό το 3 εμφανίζεται πριν από το 2, παρότι το setTimeout προγραμματίστηκε πρώτο.</p>
 
 <div class="callout">
   <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Ο δεύτερος αριθμός του <code>setTimeout</code> είναι ελάχιστη καθυστέρηση, όχι ακριβής. Αν η στοίβα είναι απασχολημένη για δύο δευτερόλεπτα, ένα <code>setTimeout(fn, 100)</code> θα τρέξει μετά από δύο δευτερόλεπτα. Ποτέ μη χτίζεις χρονισμό πάνω σε αυτή την υπόσχεση.
+  Η δεύτερη παράμετρος του <code>setTimeout</code> ορίζει <em>ελάχιστη</em> καθυστέρηση, όχι ακριβή. Αν σύγχρονος κώδικας κρατήσει τη στοίβα απασχολημένη για δύο δευτερόλεπτα, η κλήση <code>setTimeout(fn, 100)</code> θα εκτελεστεί μετά από δύο δευτερόλεπτα — όχι μετά από εκατό χιλιοστά. Μην βασίζεις χρονισμό ακριβείας στο <code>setTimeout</code>.
 </div>
 
 <div class="callout">
   <span class="tag">Το αναγνωρίζεις;</span>
-  Στη Go, μια goroutine που έκανε αναμονή δεν εμπόδιζε τις υπόλοιπες, γιατί υπήρχαν πραγματικά νήματα από κάτω. Εδώ ο παραλληλισμός δεν είναι στον κώδικά σου· είναι στο runtime. Το δίκτυο, οι timers και το I/O τρέχουν αλλού και σου γυρίζουν το αποτέλεσμα στην ουρά. Ο δικός σου κώδικας παραμένει πάντα ένας.
+  Στη Go, μια goroutine σε αναμονή δεν μπλοκάρει τις υπόλοιπες, γιατί ο χρονοδρομολογητής χρησιμοποιεί πολλά νήματα. Στη JavaScript ο παραλληλισμός βρίσκεται στο runtime, όχι στον κώδικά σου. Το δίκτυο, οι timers και το I/O εκτελούνται σε χαμηλότερο επίπεδο. Όταν ολοκληρωθούν, τοποθετούν το αποτέλεσμα στην ουρά. Ο κώδικας JavaScript παραμένει πάντα μονονηματικός.
 </div>
 `);
 
     addContent(`
-<div class="eyebrow" id="@promises">Ασύγχρονη JavaScript</div>
-<h1>Promises</h1>
-<p class="lede">Ο παλιός τρόπος δούλευε. Το πρόβλημά του δεν ήταν η ορθότητα αλλά ότι η ροή του κώδικα έπαυε να διαβάζεται από πάνω προς τα κάτω.</p>
+<div class="eyebrow" id="@callbacks">Ασύγχρονη JavaScript</div>
+<h1>Callbacks</h1>
+<p class="lede">Ένα callback είναι μια function που περνάμε ως όρισμα σε μια άλλη function. Η δεύτερη function εκτελεί το callback όταν ικανοποιηθεί μια συνθήκη ή ολοκληρωθεί μια εργασία.</p>
 
-<h2>Ασύγχρονος έλεγχος με Callbacks</h2>
-<pre><code class="lang-js">loadUser(id, (err, user) =&gt; {
-  if (err) return handle(err)
+<h2>Ο μηχανισμός και η τεχνική</h2>
+<p>Στη JavaScript οι functions είναι τιμές πρώτης τάξης (first-class citizens). Μπορούμε να αποθηκεύσουμε μια function σε μεταβλητή ή να την περάσουμε ως παράμετρο. Αυτή η τεχνική ονομάζεται <em>callback pattern</em>. Επιτρέπει την αντιστροφή ελέγχου (Inversion of Control): δεν εκτελούμε εμείς τη λογική άμεσα, αλλά αναθέτουμε την εκτέλεσή της σε έναν αποδέκτη.</p>
+
+<div class="callout">
+  <span class="tag">Το αναγνωρίζεις;</span>
+  Έχεις ήδη χρησιμοποιήσει callbacks σε προηγούμενες ενότητες. Στην Ενότητα 4 είδαμε συναρτήσεις ανώτερης τάξης (higher-order functions). Στην Ενότητα 5 περάσαμε callbacks στις μεθόδους <code>map</code> και <code>filter</code>. Στην Ενότητα 8 συνδέσαμε callbacks ως listeners με την <code>addEventListener</code>.
+</div>
+
+<h2>Σύγχρονα έναντι Ασύγχρονων Callbacks</h2>
+<p>Η διαφορά τους βρίσκεται στον χρόνο και στον τρόπο εκτέλεσης από τον μηχανισμό της γλώσσας:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Σύγχρονο Callback</h3>
+    <p>Εκτελείται άμεσα μέσα στην ίδια τη στοίβα κλήσεων (Call Stack). Μπλοκάρει την εκτέλεση του υπόλοιπου κώδικα μέχρι να επιστρέψει τιμή.</p>
+  </div>
+  <div class="card">
+    <h3>Ασύγχρονο Callback</h3>
+    <p>Δεν εκτελείται άμεσα. Τοποθετείται σε ουρά (Macrotasks ή Microtasks) και περιμένει να αδειάσει η στοίβα κλήσεων.</p>
+  </div>
+</div>
+
+<pre><code class="lang-js">// Synchronous: the callback runs immediately for each item
+const doubled = [1, 2, 3].map((n) =&gt; n * 2)
+console.log(doubled) // [2, 4, 6]
+
+// Asynchronous: the callback runs later, after the timer expires
+setTimeout(() =&gt; {
+  console.log("Executed from the macrotask queue")
+}, 1000)
+console.log("Runs before the timer callback")
+</code></pre>
+
+<h2>Πού βοηθά αυτή η τεχνική</h2>
+<p>Το callback pattern εξυπηρετεί δύο βασικές προγραμματιστικές ανάγκες:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>1. Παραμετροποίηση λογικής</h3>
+    <p>Ορίζουμε έναν γενικό αλγόριθμο. Ο καλών παρέχει έναν προσαρμοσμένο κανόνα ελέγχου ή μετασχηματισμού χωρίς αλλαγή του βασικού κώδικα.</p>
+  </div>
+  <div class="card">
+    <h3>2. Non-blocking I/O</h3>
+    <p>Σε λειτουργίες I/O ή δικτύου, η JavaScript δεν περιμένει αδρανής. Συνεχίζει την εκτέλεση και ειδοποιεί το callback όταν φτάσουν δεδομένα.</p>
+  </div>
+</div>
+
+<pre><code class="lang-js">// Real-world pattern: Custom filter strategy
+function filterTransactions(items, predicate) {
+  const matching = []
+  for (const item of items) {
+    if (predicate(item)) {
+      matching.push(item)
+    }
+  }
+  return matching
+}
+
+const highValue = filterTransactions(orders, (o) =&gt; o.amount &gt; 500)
+</code></pre>
+
+<h2>Η σύμβαση Error-First και τα όρια των Callbacks</h2>
+<p>Στα ασύγχρονα περιβάλλοντα (όπως στη Node.js), καθιερώθηκε η σύμβαση <em>error-first callback</em>: η πρώτη παράμετρος περιέχει το πιθανό αντικείμενο σφάλματος και η δεύτερη τα δεδομένα επιτυχίας.</p>
+
+<pre><code class="lang-js">function handleError(err) {
+  console.error("Operation failed:", err.message)
+}
+
+function renderDetails(details) {
+  console.log("Order details loaded:", details)
+}
+
+loadUser(id, (err, user) =&gt; {
+  if (err) return handleError(err)
   loadOrders(user.id, (err, orders) =&gt; {
-    if (err) return handle(err)
+    if (err) return handleError(err)
     loadDetails(orders[0].id, (err, details) =&gt; {
-      if (err) return handle(err)
-      show(details)
+      if (err) return handleError(err)
+      renderDetails(details)
     })
   })
 })
 </code></pre>
 
-<p>Τρία βήματα στη σειρά, τέσσερα επίπεδα φωλιάσματος, και ο χειρισμός σφάλματος επαναλαμβάνεται σε κάθε επίπεδο. Πρόσθεσε δύο ακόμη βήματα και η γραμμή δεν χωράει στην οθόνη. Επιπλέον, ένα <code>try</code> γύρω από όλο αυτό δεν πιάνει τίποτα — για τον λόγο που ειπώθηκε στο 4.4: όταν εμφανίζεται το σφάλμα, το <code>try</code> έχει τελειώσει.</p>
+<p>Αυτή η τεχνική λειτούργησε, αλλά αποκάλυψε δύο σημαντικά μειονεκτήματα όταν οι ασύγχρονες πράξεις εκτελούνται διαδοχικά:</p>
 
-<h2>Το Promise</h2>
-<p>Ένα Promise είναι object που παριστάνει μια τιμή <em>που δεν υπάρχει ακόμη</em>. Βρίσκεται σε μία από τρεις καταστάσεις και αλλάζει το πολύ μία φορά.</p>
+<div class="grid2">
+  <div class="card">
+    <h3>Callback Hell</h3>
+    <p>Κάθε νέο ασύγχρονο βήμα απαιτεί ένα επιπλέον επίπεδο φωλιάσματος. Ο κώδικας μετακινείται προς τα δεξιά και η αναγνωσιμότητα μειώνεται δραστικά.</p>
+  </div>
+  <div class="card">
+    <h3>Επανάληψη ελέγχων</h3>
+    <p>Ο έλεγχος <code>if (err)</code> επαναλαμβάνεται σε κάθε επίπεδο. Ένα παραληφθέν <code>return</code> οδηγεί σε σιωπηρή αποτυχία.</p>
+  </div>
+</div>
+
+<h2>Γιατί το try / catch αποτυγχάνει στα ασύγχρονα Callbacks</h2>
+<p>Στην Ενότητα 4 είδαμε το <code>try / catch</code> για σύγχρονο κώδικα. Στα ασύγχρονα callbacks, το <code>try / catch</code> δεν μπορεί να παγιδεύσει σφάλματα:</p>
+
+<pre><code class="lang-js">try {
+  setTimeout(() =&gt; {
+    throw new Error("Network timeout") // Throws later inside the macrotask queue
+  }, 100)
+} catch (err) {
+  console.log("Caught:", err.message) // This line NEVER executes
+}
+
+// Browser console output:
+// Uncaught Error: Network timeout
+</code></pre>
+
+<p>Ο λόγος βασίζεται στον τρόπο λειτουργίας του Event Loop: η <code>setTimeout</code> προγραμματίζει το callback και επιστρέφει άμεσα. Το μπλοκ <code>try</code> ολοκληρώνεται και απομακρύνεται από τη στοίβα κλήσεων (Call Stack). Όταν το callback εκτελεστεί αργότερα, το <code>catch</code> δεν υπάρχει πλέον στη στοίβα. Γι' αυτό τα callbacks υποχρεώθηκαν να επιστρέφουν το σφάλμα ως παράμετρο (error-first pattern).</p>
+`);
+
+    addContent(`
+<div class="eyebrow" id="@promises">Ασύγχρονη JavaScript</div>
+<h1>Promises</h1>
+<p class="lede">Τα Promises αντικαθιστούν τα βαθιά φωλιασμένα callbacks με μια επίπεδη, σειριακή αλυσίδα. Προσφέρουν ενιαία διαχείριση σφαλμάτων και καθαρή ροή εκτέλεσης.</p>
+
+<h2>Τι είναι το Promise</h2>
+<p>Ένα Promise είναι object που αντιπροσωπεύει μια τιμή η οποία <em>δεν υπάρχει ακόμη</em>. Κάθε Promise βρίσκεται σε μία από τρεις καταστάσεις. Μεταβαίνει σε νέα κατάσταση το πολύ μία φορά — μετά παραμένει σταθερό.</p>
 
 <div class="grid3">
   <div class="card"><h3>pending</h3><p>Δεν έχει κριθεί ακόμη.</p></div>
@@ -4710,12 +4816,12 @@ console.log("4")
 <pre><code class="lang-js">loadUser(id)
   .then((user) =&gt; loadOrders(user.id))       // returning a promise flattens the chain
   .then((orders) =&gt; loadDetails(orders[0].id))
-  .then((details) =&gt; show(details))
-  .catch(handle)                             // one handler for every step above
+  .then((details) =&gt; renderDetails(details))
+  .catch(handleError)                        // one handler for every step above
   .finally(() =&gt; hideSpinner())              // runs either way
 </code></pre>
 
-<p>Η ίδια ροή, επίπεδη, με έναν χειρισμό σφάλματος. Το κρίσιμο σημείο είναι ότι αν το <code>then</code> επιστρέψει Promise, η αλυσίδα περιμένει εκείνο πριν συνεχίσει — γι' αυτό δεν φωλιάζει.</p>
+<p>Η ίδια ροή γράφεται τώρα επίπεδα, με έναν μόνο χειρισμό σφάλματος στο τέλος. Αν ένα <code>then</code> επιστρέψει νέο Promise, η αλυσίδα περιμένει αυτό το Promise πριν συνεχίσει στο επόμενο <code>then</code>. Αυτός ο μηχανισμός εξαλείφει το φώλιασμα.</p>
 
 <h2>Δημιουργία Promise</h2>
 <pre><code class="lang-js">const delay = (ms) =&gt; new Promise((resolve) =&gt; setTimeout(resolve, ms))
@@ -4735,20 +4841,20 @@ function readFilePromise(path) {
 
 <div class="callout">
   <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Χρειάζεσαι τον constructor <code>new Promise</code> <em>μόνο</em> για να τυλίξεις κάτι που δεν επιστρέφει ήδη Promise — timers, παλιά API. Αν το γράφεις γύρω από κάτι που ήδη επιστρέφει Promise, προσθέτεις ένα άχρηστο επίπεδο και συνήθως χάνεις και τα σφάλματα στην πορεία.
+  Χρησιμοποίησε τον constructor <code>new Promise</code> <em>μόνο</em> όταν τυλίγεις κώδικα που δεν επιστρέφει ήδη Promise — για παράδειγμα timers ή παλιά API με callbacks. Αν ο κώδικας επιστρέφει ήδη Promise, μην τον τυλίγεις ξανά: το πρόσθετο επίπεδο είναι περιττό και συχνά χάνει τα σφάλματα.
 </div>
 
 <h2 id="@unhandled-reject">Μη διαχειριζόμενες απορρίψεις (Unhandled Rejections)</h2>
 <pre><code class="lang-js">loadUser(id).then(show)      // no .catch — if it rejects, nobody handles it
 </code></pre>
 
-<p>Ένα Promise που απορρίπτεται χωρίς <code>catch</code> παράγει προειδοποίηση στην κονσόλα και, στο Node, μπορεί να τερματίσει τη διεργασία. Κάθε αλυσίδα χρειάζεται τερματισμό: είτε <code>catch</code>, είτε να επιστραφεί σε κάποιον άλλον που θα το κάνει.</p>
+<p>Ένα Promise που απορρίπτεται χωρίς <code>catch</code> παράγει προειδοποίηση στην κονσόλα. Στο Node.js, μια μη χειριζόμενη απόρριψη μπορεί να τερματίσει ολόκληρη τη διεργασία. Κάθε αλυσίδα Promise χρειάζεται ρητό χειρισμό σφάλματος: πρόσθεσε <code>catch</code>, ή επέστρεψε το Promise σε κώδικα που τον διαθέτει.</p>
 `);
 
     addContent(`
 <div class="eyebrow" id="@async-await">Ασύγχρονη JavaScript</div>
 <h1>async / await</h1>
-<p class="lede">Η ίδια μηχανική με τα Promises, γραμμένη σαν να ήταν σύγχρονη. Και μία συμπεριφορά που κοστίζει δευτερόλεπτα χωρίς να το καταλάβεις.</p>
+<p class="lede">Το <code>async</code> / <code>await</code> χρησιμοποιεί τον ίδιο μηχανισμό με τα Promises, αλλά η σύνταξη μοιάζει με σύγχρονο κώδικα. Υπάρχει ωστόσο ένα μοτίβο — η σειριακή εκτέλεση σε βρόχο — που μπορεί να κοστίζει δευτερόλεπτα χωρίς εμφανή ένδειξη.</p>
 
 <h2>Σύνταξη async και await</h2>
 <pre><code class="lang-js">async function showDetails(id) {
@@ -4765,7 +4871,7 @@ function readFilePromise(path) {
 }
 </code></pre>
 
-<p>Δύο κανόνες και τελειώσαμε: μια <code>async</code> function επιστρέφει <em>πάντα</em> Promise, ακόμη κι αν το σώμα της επιστρέφει σκέτο αριθμό· και το <code>await</code> επιτρέπεται μόνο μέσα σε <code>async</code> function ή στο ανώτατο επίπεδο ενός module.</p>
+<p>Δύο κανόνες αρκούν. Πρώτος: μια <code>async</code> function επιστρέφει <em>πάντα</em> Promise, ακόμη κι αν η εντολή <code>return</code> δίνει αριθμό. Δεύτερος: η λέξη <code>await</code> επιτρέπεται μόνο μέσα σε <code>async</code> function ή στο ανώτατο επίπεδο ενός module.</p>
 
 <pre><code class="lang-js">async function two() { return 2 }
 two()                        // Promise, not 2
@@ -4790,11 +4896,11 @@ async function loadAll(ids) {
 
 <div class="callout">
   <span class="tag">Πότε το αναγνωρίζεις</span>
-  Κάθε <code>await</code> μέσα σε loop είναι ύποπτο. Ρώτα: χρειάζεται το βήμα <em>n</em> το αποτέλεσμα του <em>n−1</em>; Αν όχι, οι κλήσεις πρέπει να ξεκινήσουν όλες μαζί. Αν ναι — π.χ. σελιδοποίηση όπου κάθε απάντηση δίνει το επόμενο token — τότε το σειριακό <code>await</code> είναι σωστό και δεν το πειράζεις.
+  Κάθε <code>await</code> μέσα σε βρόχο είναι ύποπτο. Κάνε τον εξής έλεγχο: χρειάζεται η επανάληψη <em>n</em> το αποτέλεσμα της <em>n−1</em>; Αν δεν χρειάζεται, ξεκίνησε όλες τις κλήσεις ταυτόχρονα με <code>Promise.all</code>. Αν χρειάζεται — π.χ. σελιδοποίηση όπου κάθε απάντηση περιέχει το token της επόμενης σελίδας — τότε η σειριακή εκτέλεση είναι σωστή.
 </div>
 
 <h2>Παράλληλη εκτέλεση με Promise.all και map</h2>
-<p>Το <code>ids.map(...)</code> δεν περιμένει τίποτα: καλεί τη <code>fetchItem</code> για κάθε id και μαζεύει τα Promises που επιστρέφουν. Όλα ξεκίνησαν ήδη. Το <code>Promise.all</code> απλώς περιμένει να ολοκληρωθούν όλα και δίνει πίνακα με τα αποτελέσματα, με τη σειρά που δόθηκαν — όχι με τη σειρά που τελείωσαν.</p>
+<p>Η μέθοδος <code>ids.map(...)</code> δεν περιμένει κανένα αποτέλεσμα. Καλεί τη <code>fetchItem</code> για κάθε id και μαζεύει τα Promises που επιστρέφουν. Όλα τα αιτήματα ξεκινούν ταυτόχρονα. Στη συνέχεια, το <code>Promise.all</code> περιμένει να ολοκληρωθούν όλα και επιστρέφει πίνακα με τα αποτελέσματα — με τη σειρά εισόδου, όχι με τη σειρά ολοκλήρωσης.</p>
 
 <h2 id="@promise-combos">Οι τέσσερις συνδυαστές</h2>
 <table style="width:100%;border-collapse:collapse">
@@ -4813,7 +4919,7 @@ const failed = results.filter((r) =&gt; r.status === "rejected")
 
 <div class="callout">
   <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>Promise.all</code> απορρίπτεται μόλις αποτύχει το πρώτο, αλλά τα υπόλοιπα <em>δεν σταματούν</em> — απλώς κανείς δεν ακούει πια το αποτέλεσμά τους. Αν έχεις δέκα εγγραφές και η τρίτη αποτύχει, οι άλλες εννέα θα γίνουν κανονικά. Όταν αυτό δεν σε βολεύει, το εργαλείο είναι το <code>allSettled</code> και ρητός χειρισμός ανά περίπτωση.
+  Το <code>Promise.all</code> απορρίπτεται μόλις αποτύχει το πρώτο Promise. Τα υπόλοιπα Promises <em>δεν ακυρώνονται</em> — συνεχίζουν να εκτελούνται, αλλά κανείς δεν λαμβάνει πια τα αποτελέσματά τους. Παράδειγμα: σε δέκα αιτήματα, αν αποτύχει το τρίτο, τα υπόλοιπα εννέα θα ολοκληρωθούν κανονικά. Αν χρειάζεσαι τόσο τις επιτυχίες όσο και τις αποτυχίες, χρησιμοποίησε <code>allSettled</code> και χειρίσου κάθε αποτέλεσμα ξεχωριστά.
 </div>
 
 <h2>Χρονικό όριο, με race</h2>
@@ -4824,7 +4930,7 @@ const failed = results.filter((r) =&gt; r.status === "rejected")
 const data = await Promise.race([fetchItem(id), timeout(3000)])
 </code></pre>
 
-<p>Δύο Promises στη γραμμή εκκίνησης· κερδίζει όποιο κριθεί πρώτο. Αν προλάβει το αίτημα, παίρνεις τα δεδομένα· αν προλάβει ο timer, παίρνεις σφάλμα. Πρόσεξε ότι το αίτημα <em>συνεχίζει</em> να τρέχει — το <code>race</code> δεν ακυρώνει τίποτα, απλώς σταματάει να περιμένει.</p>
+<p>Δύο Promises ξεκινούν ταυτόχρονα. Το <code>race</code> επιστρέφει το αποτέλεσμα όποιου κριθεί πρώτο. Αν ολοκληρωθεί πρώτα το αίτημα, λαμβάνεις τα δεδομένα. Αν ολοκληρωθεί πρώτα ο timer, λαμβάνεις σφάλμα χρονικού ορίου. Σημαντικό: το αίτημα <em>συνεχίζει</em> να εκτελείται στο παρασκήνιο — το <code>race</code> δεν ακυρώνει Promises, σταματάει μόνο να περιμένει.</p>
 `);
 
     addContent(`
@@ -4837,7 +4943,7 @@ const data = await Promise.race([fetchItem(id), timeout(3000)])
 // res.ok is false for 404 and 500, but the promise FULFILLED normally
 </code></pre>
 
-<p>Το <code>fetch</code> απορρίπτεται μόνο αν το αίτημα δεν έφτασε καν — δίκτυο κάτω, DNS, ακυρωμένο. Μια απάντηση 500 είναι, από τη σκοπιά του, επιτυχής παράδοση ενός μηνύματος που τυχαίνει να λέει «σφάλμα». Αν δεν ελέγξεις το <code>ok</code>, θα προσπαθήσεις να διαβάσεις σελίδα σφάλματος ως JSON.</p>
+<p>Το <code>fetch</code> απορρίπτει το Promise μόνο σε αποτυχία δικτύου — π.χ. DNS που δεν επιλύθηκε, σύνδεση που έπεσε, ή αίτημα που ακυρώθηκε. Μια απάντηση HTTP 500 αποτελεί, για το <code>fetch</code>, επιτυχημένη παράδοση μηνύματος. Αν δεν ελέγξεις την ιδιότητα <code>res.ok</code>, ο κώδικάς σου θα προσπαθήσει να αναλύσει μια σελίδα σφάλματος ως JSON.</p>
 
 <pre><code class="lang-js">async function getJSON(url) {
   const res = await fetch(url)
@@ -4875,7 +4981,7 @@ fetch(url, { signal: controller.signal })
 controller.abort()          // e.g. the user typed something new
 </code></pre>
 
-<p>Είναι το ίδιο <code>AbortController</code> που είδαμε για listeners στο 8.3. Σε ζωντανή αναζήτηση, ακυρώνεις το προηγούμενο αίτημα πριν στείλεις το επόμενο — αλλιώς μια αργή παλιά απάντηση μπορεί να φτάσει μετά από μια γρήγορη νέα και να γράψει από πάνω της.</p>
+<p>Πρόκειται για το ίδιο <code>AbortController</code> που χρησιμοποιήσαμε για listeners στην Ενότητα 8.3. Σε ζωντανή αναζήτηση, ακύρωνε πάντα το προηγούμενο αίτημα πριν στείλεις νέο. Αλλιώς, μια αργή παλιά απάντηση μπορεί να φτάσει μετά από μια γρήγορη νέα και να αντικαταστήσει τα σωστά αποτελέσματα.</p>
 
 <h2 id="@debounce">Τεχνική Debounce</h2>
 <pre><code class="lang-js">function debounce(fn, wait) {
@@ -4890,7 +4996,7 @@ controller.abort()          // e.g. the user typed something new
 search.addEventListener("input", debounce((e) =&gt; query(e.target.value), 300))
 </code></pre>
 
-<p>Κάθε νέα κλήση ακυρώνει την προηγούμενη προγραμματισμένη εκτέλεση. Το αποτέλεσμα: η <code>fn</code> τρέχει μία φορά, 300ms αφότου ο χρήστης σταματήσει να πληκτρολογεί. Δέκα πλήκτρα, ένα αίτημα.</p>
+<p>Κάθε νέα κλήση ακυρώνει την προηγούμενη προγραμματισμένη εκτέλεση. Αποτέλεσμα: η <code>fn</code> εκτελείται μία μόνο φορά, 300 ms αφότου ο χρήστης σταματήσει να πληκτρολογεί. Δέκα πλήκτρα παράγουν ένα μόνο αίτημα.</p>
 
 <h2 id="@throttle">Τεχνική Throttle</h2>
 <pre><code class="lang-js">function throttle(fn, interval) {
@@ -4914,12 +5020,12 @@ window.addEventListener("scroll", throttle(updateHeader, 100))
 
 <div class="callout">
   <span class="tag">Το αναγνωρίζεις;</span>
-  Και οι δύο είναι ακριβώς η <code>makeCounter</code> του 4.2: μια function που επιστρέφει function και κρατάει κρυφή κατάσταση ανάμεσα στις κλήσεις. Η μόνη διαφορά είναι ότι η κρυφή κατάσταση εδώ είναι ένας timer ή μια χρονοσήμανση αντί για μετρητή. Καμία νέα έννοια — μόνο νέα χρήση.
+  Και οι δύο τεχνικές ακολουθούν το ίδιο μοτίβο με τη <code>makeCounter</code> της Ενότητας 4.2: μια function επιστρέφει function και κρατάει κρυφή κατάσταση ανάμεσα στις κλήσεις. Η μόνη διαφορά είναι ο τύπος της κρυφής κατάστασης — timer ή χρονοσήμανση αντί για μετρητή. Δεν εισάγεται νέα έννοια, μόνο νέα εφαρμογή.
 </div>
 
 <div class="callout">
   <span class="tag">Προσοχή / Συχνό λάθος</span>
-  Το <code>debounce</code> πρέπει να κληθεί <em>μία φορά</em> και το αποτέλεσμά του να δοθεί ως listener. Αν γράψεις <code>addEventListener("input", () =&gt; debounce(fn, 300)())</code>, φτιάχνεις καινούργιο τυλιγμένο αντικείμενο σε κάθε πληκτρολόγηση, καθένα με δικό του άδειο timer, και δεν ακυρώνεται ποτέ τίποτα.
+  Κάλεσε τη <code>debounce</code> <em>μία φορά</em> και πέρασε το αποτέλεσμα ως listener. Λανθασμένο μοτίβο: <code>addEventListener("input", () =&gt; debounce(fn, 300)())</code>. Αυτός ο κώδικας δημιουργεί νέο τυλιγμένο αντικείμενο σε κάθε πληκτρολόγηση. Κάθε αντικείμενο έχει δικό του άδειο timer, οπότε η ακύρωση δεν λειτουργεί ποτέ.
 </div>
 `);
 
@@ -5062,7 +5168,7 @@ function debounce(fn, wait) {
     addContent(`
 <div class="eyebrow" id="@why-promises">Ασύγχρονη JavaScript</div>
 <h1>Γιατί Promises</h1>
-<p class="lede">Αυτό δεν έχει άμεσο αντίστοιχο στη Go (εκεί η λύση είναι channels/goroutines, τελείως διαφορετική προσέγγιση) — μια τελευταία ματιά στο ακριβές πρόβλημα που λύνει το Promise, φτιάχνοντας ένα πρόχειρο, δικό σου.</p>
+<p class="lede">Η Go χρησιμοποιεί channels και goroutines — εντελώς διαφορετική προσέγγιση. Αυτή η ενότητα δείχνει το ακριβές πρόβλημα που λύνει το Promise, μέσα από μια ελάχιστη υλοποίηση.</p>
 
 <h2>Περιορισμοί επιστροφής τιμών στα callbacks</h2>
 <pre><code class="lang-js">function loadScoreCallback(id, onDone) {
@@ -5078,7 +5184,7 @@ function getScoreBroken(id) {
 
 console.log(getScoreBroken(5))   // undefined
 </code></pre>
-<p>Το <code>setTimeout</code> προγραμματίζει το callback για αργότερα· το <code>return result</code> εκτελείται αμέσως, πριν καν κληθεί το <code>onDone</code>. Δεν υπάρχει τρόπος να «περιμένεις» μέσα σε απλή function — αυτό ακριβώς λύνει το Promise.</p>
+<p>Η <code>setTimeout</code> προγραμματίζει το callback για μελλοντική εκτέλεση. Η εντολή <code>return result</code> εκτελείται αμέσως — πριν κληθεί το <code>onDone</code>. Μια κανονική function δεν μπορεί να «περιμένει» ασύγχρονο αποτέλεσμα. Αυτό ακριβώς είναι το πρόβλημα που λύνει το Promise.</p>
 
 <h2>Υλοποίηση βασικού Promise abstraction</h2>
 <pre><code class="lang-js">// a minimal stand-in: an object that remembers its value once it arrives
@@ -5102,11 +5208,11 @@ deferred.onValue((score) => console.log("final score:", score))
 setTimeout(() => deferred.resolve(50), 100)
 // after 100ms: "final score: 50"
 </code></pre>
-<p>Αυτό είναι, σε πολύ μικρή κλίμακα, η ιδέα πίσω από ένα Promise: ένα object που κρατάει μια τιμή που δεν υπάρχει ακόμα, και ειδοποιεί όποιον περιμένει μόλις η τιμή φτάσει. Το πραγματικό <code>Promise</code> προσθέτει πάνω σε αυτό chaining (<code>.then</code>), χειρισμό σφαλμάτων (<code>.catch</code>), και την εγγύηση ότι αλλάζει κατάσταση το πολύ μία φορά.</p>
+<p>Αυτό είναι η βασική ιδέα του Promise σε ελάχιστη μορφή: ένα object που αποθηκεύει μια τιμή η οποία δεν υπάρχει ακόμη, και ειδοποιεί τον ενδιαφερόμενο μόλις η τιμή φτάσει. Το πραγματικό <code>Promise</code> προσθέτει τρεις δυνατότητες: αλυσίδωση μέσω <code>.then</code>, χειρισμό σφαλμάτων μέσω <code>.catch</code>, και εγγύηση ότι η κατάσταση αλλάζει το πολύ μία φορά.</p>
 
 <div class="callout">
   <span class="tag">Το αναγνωρίζεις;</span>
-  Το <code>onValue</code> εδώ είναι ακριβώς ένας listener, ίδια ιδέα με το <code>addEventListener</code> της Ενότητας 8 — κάποιος δηλώνει ενδιαφέρον τώρα, και ειδοποιείται αργότερα όταν συμβεί κάτι.
+  Η μέθοδος <code>onValue</code> ακολουθεί την ίδια λογική με το <code>addEventListener</code> της Ενότητας 8. Ο κώδικας δηλώνει ενδιαφέρον τώρα και λαμβάνει ειδοποίηση αργότερα, μόλις η τιμή γίνει διαθέσιμη.
 </div>
 
 `);
