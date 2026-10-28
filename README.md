@@ -1,4 +1,4 @@
-<h1 align="center">Visit the following link:</h1>
+<div align="center"><pre> G U I D E S  0 1 . D E V S . S U R F </pre></div>
 
 <p align="center" style="font-size: 18px;">
     <a href="https://guides01.devs.surf/">https://guides01.devs.surf/</a>
@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/badge/Cohort-2.3-ed1c24?style=for-the-badge&labelColor=grey&logo=medusa" alt="Cohort" />
 </p>
 
-# Guides01 — Interactive Lesson Engine
+<div align="center"><pre> Z O N E  0 1   A T H E N S   G U I D E S </pre></div>
 
 This repository contains the source, content, and generation tooling for interactive slide‑deck lessons. The lesson content (prose, instructions, and exercises) is written entirely in Greek. Each lesson is a self‑contained HTML file, powered by a lightweight JavaScript engine that turns a simple API into a fully navigable, interactive course with quizzes, fill‑in‑the‑blank exercises, matching games, and progress tracking.
 
