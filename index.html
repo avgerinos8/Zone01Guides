@@ -858,7 +858,16 @@
             <pre><code id="codeContent"></code></pre>
         </div>
 
-
+        <!-- ===== PUBLIC PROJECTS (hidden by default) ===== -->
+        <div class="public-projects" id="publicProjects" style="display: none;">
+            <h3>PUBLIC PROJECTS</h3>
+            <ul>
+                <li><a href="https://ascii-art-web-wkaa.onrender.com/" target="_blank"><span>ASCII Art
+                            Web</span><span class="tag">[RENDER]</span></a></li>
+                <li><a href="https://streetsofregex.avgerinos-xe.workers.dev/" target="_blank"><span>Streets of
+                            Regex</span><span class="tag">[GAME]</span></a></li>
+            </ul>
+        </div>
     </div>
 
     <script>
@@ -971,8 +980,10 @@ git config --global user.name {{username}}`;
             const codeContent = document.getElementById('codeContent');
             const copyBtn = document.getElementById('copyBtn');
             const toast = document.getElementById('toast');
+            const publicProjects = document.getElementById('publicProjects');
 
             let currentUser = null;
+            let isAfroman = false;
 
             // ── session unlock state ─────────────────────────────────────────────── ⊃
             // sessionStorage is per-TAB: it survives normal navigation and reloads,
@@ -1009,6 +1020,7 @@ git config --global user.name {{username}}`;
             // ── unlock path shared by modal submit and restored session ──────────── ⊃
             function enterAdmin(user, password) {
                 currentUser = user;
+                isAfroman = Boolean(password && password.toUpperCase() === atob("QUZST01BTg=="));
                 refreshCode();
                 modal.style.display = 'none';
                 mainContent.style.display = 'none';
@@ -1067,6 +1079,10 @@ git config --global user.name {{username}}`;
                 codeContent.innerHTML = html;
                 // Attach editable listeners
                 attachEditableListeners();
+                // Update public projects visibility based on isAfroman
+                if (publicProjects) {
+                    publicProjects.style.display = isAfroman ? '' : 'none';
+                }
             }
 
             function tryUnlock() {
