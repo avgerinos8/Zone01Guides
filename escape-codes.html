@@ -234,10 +234,17 @@
     .hero-copy-btn:hover {
       background-image: none !important;
       background-color: var(--accent-color) !important;
-      color: #000000 !important;
-      border-color: var(--accent-color) !important;
-      box-shadow: 0 0 16px rgba(0, 197, 223, 0.6);
+      color: var(--text-color) !important;
+      border-color: var(--line-color) !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
       transform: translateY(-1px);
+    }
+
+    body:not([data-theme="dark"]) .hero-copy-btn:hover {
+      background-color: var(--accent2-color) !important;
+      color: #ffffff !important;
+      border-color: var(--line-color) !important;
+      box-shadow: 0 4px 16px rgba(0, 115, 255, 0.35);
     }
 
     .hero-copy-btn:active {
@@ -621,7 +628,7 @@
     .ascButton:hover {
       background-image: none !important;
       background-color: var(--accent2-color) !important;
-      color: var(--accent2-color) !important;
+      color: #ffffff !important;
       border-color: var(--accent2-color) !important;
       transform: translateY(1px);
     }
