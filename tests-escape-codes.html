@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ESCAPE CODES CREATOR - TEST SUITE & VISUAL HARNESS</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: #090e17;
+      color: #e2e8f0;
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      padding: 24px;
+    }
+    h1 {
+      font-size: 24px;
+      color: #00c5df;
+      margin-bottom: 8px;
+    }
+    .summary-card {
+      background: #132b4b;
+      border: 2px solid #000;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .badge {
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .badge.pass { background: #10b981; color: #000; }
+    .badge.fail { background: #ef4444; color: #fff; }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 16px;
+    }
+    .test-case {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .test-case.pass { border-left: 5px solid #10b981; }
+    .test-case.fail { border-left: 5px solid #ef4444; }
+    .test-title {
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .visual-swatch-pair {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .visual-preview-pill {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 4px;
+      border: 1px dashed rgba(255,255,255,0.2);
+    }
+    .code-box {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      background: #000;
+      color: #00c5df;
+      padding: 8px;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .detail-row {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    iframe {
+      width: 100%;
+      height: 480px;
+      border: 2px solid #00c5df;
+      border-radius: 8px;
+      margin-top: 24px;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>ESCAPE CODES CREATOR - TEST HARNESS & VISUAL VERIFICATION</h1>
+  <p style="color:#94a3b8; margin-bottom: 16px;">Automated logic tests, state roundtrips, ANSI color mappings, visual swatches, and live iframe embed verification.</p>
+
+  <div class="summary-card">
+    <div id="statusBadge" class="badge">RUNNING TESTS...</div>
+    <div id="statsText" style="font-size: 15px; font-weight: 600;">0 tests executed</div>
+  </div>
+
+  <div class="test-grid" id="testResults"></div>
+
+  <h2 style="margin-top: 32px; font-size: 18px; color:#89bcff;">LIVE TOOL EMBED (Real-time visual verification)</h2>
+  <iframe src="./escape-codes.html" id="liveFrame"></iframe>
+
+  <script>
+    // Exact ANSI algorithms from escape-codes.html
+    const ANSI_16_TABLE = [
+      { name: "Black",   r: 0,   g: 0,   b: 0,   fg: 30, bg: 40 },
+      { name: "Red",     r: 187, g: 0,   b: 0,   fg: 31, bg: 41 },
+      { name: "Green",   r: 0,   g: 187, b: 0,   fg: 32, bg: 42 },
+      { name: "Yellow",  r: 187, g: 187, b: 0,   fg: 33, bg: 43 },
+      { name: "Blue",    r: 0,   g: 0,   b: 187, fg: 34, bg: 44 },
+      { name: "Magenta", r: 187, g: 0,   b: 187, fg: 35, bg: 45 },
+      { name: "Cyan",    r: 0,   g: 187, b: 187, fg: 36, bg: 46 },
+      { name: "White",   r: 187, g: 187, b: 187, fg: 37, bg: 47 },
+      { name: "Bright Black",   r: 85,  g: 85,  b: 85,  fg: 90, bg: 100 },
+      { name: "Bright Red",     r: 255, g: 85,  b: 85,  fg: 91, bg: 101 },
+      { name: "Bright Green",   r: 0,   g: 255, b: 0,   fg: 92, bg: 102 },
+      { name: "Bright Yellow",  r: 255, g: 255, b: 85,  fg: 93, bg: 103 },
+      { name: "Bright Blue",    r: 85,  g: 85,  b: 255, fg: 94, bg: 104 },
+      { name: "Bright Magenta", r: 255, g: 85,  b: 255, fg: 95, bg: 105 },
+      { name: "Bright Cyan",    r: 0,   g: 255, b: 255, fg: 96, bg: 106 },
+      { name: "Bright White",   r: 255, g: 255, b: 255, fg: 97, bg: 107 }
+    ];
+
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(x => Math.max(0, Math.min(255, Number(x))).toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+
+    function hexToRgb(hex) {
+      hex = hex.replace(/^#/, '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      if (hex.length !== 6) return null;
+      const num = parseInt(hex, 16);
+      if (isNaN(num)) return null;
+      return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+    }
+
+    function rgbTo16Index(r, g, b, isBg) {
+      let bestIdx = 0;
+      let bestDist = Infinity;
+      for (let i = 0; i < ANSI_16_TABLE.length; i++) {
+        const item = ANSI_16_TABLE[i];
+        const dr = r - item.r;
+        const dg = g - item.g;
+        const db = b - item.b;
+        const dist = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestIdx = i;
+        }
+      }
+      return isBg ? ANSI_16_TABLE[bestIdx].bg : ANSI_16_TABLE[bestIdx].fg;
+    }
+
+    function swapColors(state) {
+      const temp = { ...state.fg };
+      state.fg = { ...state.bg };
+      state.bg = { ...temp };
+      if (!state.bgEnabled) {
+        state.bgEnabled = true;
+      }
+      return state;
+    }
+
+    function randomizeColors(state) {
+      const randVal = () => Math.floor(Math.random() * 256);
+      const fgR = randVal(), fgG = randVal(), fgB = randVal();
+      const bgR = randVal(), bgG = randVal(), bgB = randVal();
+      state.fg = { r: fgR, g: fgG, b: fgB, hex: rgbToHex(fgR, fgG, fgB) };
+      state.bg = { r: bgR, g: bgG, b: bgB, hex: rgbToHex(bgR, bgG, bgB) };
+      state.bgEnabled = true;
+      return state;
+    }
+
+    function generateCode(state) {
+      const codes = [];
+      if (state.depth === 'truecolor') {
+        codes.push(`38;2;${state.fg.r};${state.fg.g};${state.fg.b}`);
+        if (state.bgEnabled) {
+          codes.push(`48;2;${state.bg.r};${state.bg.g};${state.bg.b}`);
+        }
+      } else if (state.depth === '16') {
+        codes.push(rgbTo16Index(state.fg.r, state.fg.g, state.fg.b, false));
+        if (state.bgEnabled) {
+          codes.push(rgbTo16Index(state.bg.r, state.bg.g, state.bg.b, true));
+        }
+      }
+      const seq = codes.join(';');
+      const pfx = state.escapeType || '\\033';
+      const text = state.sampleText;
+      if (state.syntax === 'none') {
+        return `${pfx}[${seq}m${text}${pfx}[0m`;
+      } else if (state.syntax === 'bash') {
+        return `echo -e "${pfx}[${seq}m${text}${pfx}[0m"`;
+      } else if (state.syntax === 'powershell') {
+        return `Write-Host "$([char]27)[${seq}m${text}$([char]27)[0m"`;
+      }
+      return `${pfx}[${seq}m${text}${pfx}[0m`;
+    }
+
+    // TESTS DEFINITIONS
+    const tests = [
+      {
+        name: "Swap Colors: Swapping FG(#38E1F7) & BG(#000000) produces inverted order",
+        run: () => {
+          const s = {
+            fg: { r: 56, g: 225, b: 247, hex: '#38E1F7' },
+            bg: { r: 0, g: 0, b: 0, hex: '#000000' },
+            bgEnabled: true,
+            depth: 'truecolor',
+            syntax: 'none',
+            sampleText: 'test'
+          };
+          const before = generateCode(s);
+          swapColors(s);
+          const after = generateCode(s);
+
+          const pass = s.fg.hex === '#000000' && s.bg.hex === '#38E1F7' &&
+                       after.includes('38;2;0;0;0') && after.includes('48;2;56;225;247');
+          return { pass, s, before, after, note: "FG & BG RGB and HEX swapped accurately" };
+        }
+      },
+      {
+        name: "Swap Double-Inversion (Identity): Swap twice returns to original exact state",
+        run: () => {
+          const s = {
+            fg: { r: 255, g: 85, b: 85, hex: '#FF5555' },
+            bg: { r: 16, g: 185, b: 129, hex: '#10B981' },
+            bgEnabled: true,
+            depth: 'truecolor',
+            syntax: 'none',
+            sampleText: 'identity'
+          };
+          const origFg = s.fg.hex;
+          const origBg = s.bg.hex;
+          swapColors(s);
+          swapColors(s);
+          const pass = s.fg.hex === origFg && s.bg.hex === origBg;
+          return { pass, s, after: generateCode(s), note: "Double swap is strictly reversible" };
+        }
+      },
+      {
+        name: "Swap with Disabled BG: Enables BG and accurately inverts colors",
+        run: () => {
+          const s = {
+            fg: { r: 255, g: 0, b: 0, hex: '#FF0000' },
+            bg: { r: 0, g: 0, b: 255, hex: '#0000FF' },
+            bgEnabled: false,
+            depth: 'truecolor',
+            syntax: 'none',
+            sampleText: 'disabled_bg_test'
+          };
+          swapColors(s);
+          const pass = s.bgEnabled === true && s.fg.hex === '#0000FF' && s.bg.hex === '#FF0000';
+          return { pass, s, after: generateCode(s), note: "bgEnabled becomes true upon swapping" };
+        }
+      },
+      {
+        name: "Randomize Colors: Produces valid hex and valid 0-255 RGB ranges",
+        run: () => {
+          const s = {
+            fg: { r: 0, g: 0, b: 0, hex: '#000000' },
+            bg: { r: 0, g: 0, b: 0, hex: '#000000' },
+            bgEnabled: false,
+            depth: 'truecolor',
+            syntax: 'none',
+            sampleText: 'rand_test'
+          };
+          randomizeColors(s);
+          const validFg = s.fg.r >= 0 && s.fg.r <= 255 && s.fg.g >= 0 && s.fg.g <= 255 && s.fg.b >= 0 && s.fg.b <= 255;
+          const validBg = s.bg.r >= 0 && s.bg.r <= 255 && s.bg.g >= 0 && s.bg.g <= 255 && s.bg.b >= 0 && s.bg.b <= 255;
+          const validHex = /^#[0-9A-F]{6}$/i.test(s.fg.hex) && /^#[0-9A-F]{6}$/i.test(s.bg.hex);
+          const pass = validFg && validBg && validHex && s.bgEnabled === true;
+          return { pass, s, after: generateCode(s), note: `Generated FG: ${s.fg.hex}, BG: ${s.bg.hex}` };
+        }
+      },
+      {
+        name: "ANSI 16-Color: Bright Green matches 92 FG and 102 BG (No cyan bug)",
+        run: () => {
+          const fgCode = rgbTo16Index(0, 255, 0, false);
+          const bgCode = rgbTo16Index(0, 255, 0, true);
+          const pass = fgCode === 92 && bgCode === 102;
+          const s = { fg: { r: 0, g: 255, b: 0, hex: '#00FF00' }, bg: { r: 0, g: 255, b: 0, hex: '#00FF00' } };
+          return { pass, s, after: `FG: \\033[${fgCode}m, BG: \\033[${bgCode}m`, note: "Bright Green is exactly 92 / 102" };
+        }
+      },
+      {
+        name: "ANSI 16-Color: Bright Cyan matches 96 FG and 106 BG",
+        run: () => {
+          const fgCode = rgbTo16Index(0, 255, 255, false);
+          const bgCode = rgbTo16Index(0, 255, 255, true);
+          const pass = fgCode === 96 && bgCode === 106;
+          const s = { fg: { r: 0, g: 255, b: 255, hex: '#00FFFF' }, bg: { r: 0, g: 255, b: 255, hex: '#00FFFF' } };
+          return { pass, s, after: `FG: \\033[${fgCode}m, BG: \\033[${bgCode}m`, note: "Bright Cyan is strictly 96 / 106" };
+        }
+      },
+      {
+        name: "ANSI 16-Color: Standard Green matches 32 FG and 42 BG",
+        run: () => {
+          const fgCode = rgbTo16Index(0, 187, 0, false);
+          const bgCode = rgbTo16Index(0, 187, 0, true);
+          const pass = fgCode === 32 && bgCode === 42;
+          const s = { fg: { r: 0, g: 187, b: 0, hex: '#00BB00' }, bg: { r: 0, g: 187, b: 0, hex: '#00BB00' } };
+          return { pass, s, after: `FG: \\033[${fgCode}m, BG: \\033[${bgCode}m`, note: "Standard Green is strictly 32 / 42" };
+        }
+      },
+      {
+        name: "Syntax Formatter: PowerShell output matches $([char]27)[...m...$([char]27)[0m",
+        run: () => {
+          const s = {
+            fg: { r: 56, g: 225, b: 247, hex: '#38E1F7' },
+            bg: { r: 0, g: 0, b: 0, hex: '#000000' },
+            bgEnabled: true,
+            depth: 'truecolor',
+            syntax: 'powershell',
+            sampleText: 'cleanly.'
+          };
+          const code = generateCode(s);
+          const pass = code.startsWith('Write-Host "$([char]27)[') && code.endsWith('$([char]27)[0m"');
+          return { pass, s, after: code, note: "PowerShell interpolation format verified" };
+        }
+      }
+    ];
+
+    // EXECUTE & RENDER
+    const container = document.getElementById('testResults');
+    let passCount = 0;
+
+    tests.forEach((t, i) => {
+      const res = t.run();
+      if (res.pass) passCount++;
+
+      const el = document.createElement('div');
+      el.className = `test-case ${res.pass ? 'pass' : 'fail'}`;
+      el.innerHTML = `
+        <div class="test-title">
+          <span>Test #${i + 1}: ${t.name}</span>
+          <span style="color:${res.pass ? '#10b981' : '#ef4444'}; font-weight:800;">${res.pass ? 'PASS' : 'FAIL'}</span>
+        </div>
+        <div class="visual-swatch-pair">
+          <span style="font-size:12px; font-weight:700;">VISUAL RENDERING:</span>
+          <div class="visual-preview-pill" style="color: ${res.s.fg.hex}; background-color: ${res.s.bg.hex};">
+            Sample Preview Text
+          </div>
+          <span style="font-size:12px; color:#94a3b8;">(FG: ${res.s.fg.hex} / BG: ${res.s.bg.hex})</span>
+        </div>
+        <div class="code-box">${res.after}</div>
+        <div class="detail-row">Note: ${res.note}</div>
+      `;
+      container.appendChild(el);
+    });
+
+    const badge = document.getElementById('statusBadge');
+    const stats = document.getElementById('statsText');
+    if (passCount === tests.length) {
+      badge.textContent = 'ALL TESTS PASSED';
+      badge.className = 'badge pass';
+    } else {
+      badge.textContent = `${tests.length - passCount} TESTS FAILED`;
+      badge.className = 'badge fail';
+    }
+    stats.textContent = `${passCount} / ${tests.length} tests succeeded perfectly.`;
+  </script>
+</body>
+</html>

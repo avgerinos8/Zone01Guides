@@ -20,6 +20,7 @@
       --bg-color: #ffffff;
       --bg-effect-color: #eeeeee;
       --panel-color: #132b4bcc;
+      --panel-solid-color: #132b4b;
       --panel-text-color: #ffffff;
       --line-color: #000000;
       --text-color: #000000;
@@ -34,9 +35,10 @@
     }
 
     body[data-theme="dark"] {
-      --bg-color: #000000;
-      --bg-effect-color: #111111;
+      --bg-color: #060b13;
+      --bg-effect-color: #0e1726;
       --panel-color: #242c41b2;
+      --panel-solid-color: #242c41;
       --panel-text-color: #ffffff;
       --line-color: #000000;
       --text-color: #ffffff;
@@ -80,45 +82,19 @@
       user-select: none;
     }
 
-    /* STEALTH BACK LINK */
-    .top-stealth-bar {
-      position: absolute;
-      top: 6px;
-      right: 12px;
-      z-index: 50;
-      opacity: 0.25;
-      transition: opacity 0.2s;
-    }
-
-    .top-stealth-bar:hover {
-      opacity: 1;
-    }
-
-    .top-stealth-link {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-color);
-      text-decoration: none;
-      background: var(--card-bg);
-      border: 1px solid var(--line-color);
-      padding: 2px 8px;
-      border-radius: 3px;
-    }
-
+    
     /* ==========================================================================
        HERO DISPLAY AREA: PREVIEW, 100% FULL-WIDTH MODAL & COPY BUTTON
        ========================================================================== */
     .hero-display-area {
-      flex-grow: 1;
-      min-height: 0;
+      flex: none;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 1vh 0;
+      justify-content: flex-start;
+      padding-top: clamp(14px, 3vh, 32px);
       position: relative;
       z-index: 10;
-      overflow: hidden;
       width: 100vw;
     }
 
@@ -221,6 +197,12 @@
       transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s, scale 0.15s;
     }
 
+    body:not([data-theme="dark"]) .hero-copy-btn {
+      color: #ffffff !important;
+      background-image: none !important;
+      background-color: var(--panel-color) !important;
+    }
+
     .hero-copy-btn:hover {
       background-image: none !important;
       background-color: var(--accent-color) !important;
@@ -239,6 +221,7 @@
        FOOTER / CONTROLS PANEL (EXACT ASCII-ART-WEB STYLE)
        ========================================================================== */
     footer {
+      margin-top: auto;
       flex-shrink: 0;
       width: 100vw;
       border: 3px solid var(--line-color);
@@ -449,6 +432,14 @@
       border-color: var(--accent-color) !important;
       color: var(--line-color) !important;
       scale: 0.94;
+    }
+
+
+    /* HIDE RGB & HSL SLIDERS ON SCREENS SMALLER THAN 950PX */
+    @media (max-width: 950px) {
+      .sliders-dual-group {
+        display: none !important;
+      }
     }
 
     /* SLIDERS + LIVE SIMPLE TEXT VALUE PACK */
@@ -761,8 +752,9 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(8px);
+      background: transparent;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
       z-index: 9999;
       display: none;
       align-items: center;
@@ -773,8 +765,14 @@
       display: flex;
     }
 
+
+    body:not([data-theme="dark"]) .detailed-picker-box {
+      background-color: #132b4b !important;
+      color: #ffffff !important;
+    }
+
     .detailed-picker-box {
-      background-color: var(--panel-color);
+      background-color: var(--panel-solid-color);
       border: 3px solid var(--line-color);
       box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
       border-radius: 12px;
@@ -905,6 +903,71 @@
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
+
+    @media (max-height: 715px) {
+      footer {
+        padding: 6px 0 8px !important;
+      }
+      .FooterContainer {
+        gap: 6px !important;
+      }
+      .zipper-row {
+        padding-top: 8px !important;
+        padding-bottom: 5px !important;
+      }
+      .zipper-row.row-collapsed {
+        height: 7px !important;
+        min-height: 7px !important;
+        max-height: 7px !important;
+        margin-bottom: 1px !important;
+      }
+      .line-title {
+        font-size: 9px !important;
+        padding: 0 5px !important;
+      }
+      .line-title .arrow {
+        font-size: 9px !important;
+      }
+      .color-indicator-box {
+        width: 28px !important;
+        height: 28px !important;
+      }
+      .hex-box {
+        font-size: 13px !important;
+        width: 78px !important;
+        padding: 3px 6px !important;
+      }
+      .btn-detailed-picker {
+        font-size: 12px !important;
+        padding: 4px 10px !important;
+      }
+      .compact-range {
+        height: 14px !important;
+      }
+      .slider-tag, .val-text-display, .ascButton, .ascSelect, .checkbox-container {
+        font-size: 11px !important;
+      }
+      .ascButton {
+        padding: 4px 10px !important;
+      }
+      .optionsLine3 {
+        padding-top: 2px !important;
+        gap: 6px !important;
+      }
+      .line3-subgroup {
+        gap: 6px !important;
+      }
+      .preview-box-container {
+        gap: 0.8vh !important;
+      }
+      .escape-code-full-wrapper {
+        gap: 0.8vh !important;
+      }
+      .escape-code-modal {
+        padding: 1vh 2vw !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -913,11 +976,7 @@
   <!-- BACKGROUND VIGNETTE CANVAS (BREATHING ASCII PARTICLES) -->
   <canvas id="bgCanvas"></canvas>
 
-  <!-- STEALTH BACK LINK -->
-  <div class="top-stealth-bar">
-    <a href="./index.html" class="top-stealth-link">← Zone01</a>
-  </div>
-
+  
   <!-- MAIN HERO AREA: PREVIEW + 100% FULL-WIDTH CODE MODAL + COPY BUTTON DIRECTLY BELOW -->
   <div class="hero-display-area">
     <div class="preview-box-container">
@@ -1150,6 +1209,7 @@
           </label>
 
           <button type="button" id="btnSwapColors" class="ascButton" title="Swap Foreground and Background">⇄ Swap</button>
+          <button type="button" id="btnRandomize" class="ascButton" title="Randomize Foreground and Background colors">Randomize</button>
           <button type="button" id="btnReset" class="ascButton" title="Reset all settings to default">Reset</button>
         </div>
       </div>
@@ -1738,6 +1798,30 @@
         saveState();
       }
 
+
+      function fitResultWidth() {
+        if (!escapeCodeDisplay) return;
+        const container = escapeCodeDisplay.parentElement || document.body;
+        // Available width inside modal box:
+        const availWidth = container.clientWidth - 32;
+        if (availWidth <= 50) return;
+
+        // Reset scroll position
+        escapeCodeDisplay.scrollLeft = 0;
+
+        // Start large for fit to width (up to 75px)
+        let fs = 75;
+        escapeCodeDisplay.style.fontSize = fs + 'px';
+
+        // Shrink progressively down until it fits without needing scroll!
+        while (escapeCodeDisplay.scrollWidth > availWidth && fs > 9) {
+          fs -= 1;
+          escapeCodeDisplay.style.fontSize = fs + 'px';
+        }
+      }
+
+      window.addEventListener('resize', fitResultWidth);
+
       function syncUI() {
         // FG
         fgIndicator.style.backgroundColor = state.fg.hex;
@@ -2251,7 +2335,7 @@
         const maxD = Math.hypot(cx, cy);
 
         const isDark = document.body.getAttribute('data-theme') === 'dark';
-        const colorStr = isDark ? '54, 54, 54' : '190, 190, 190';
+        const colorStr = isDark ? '54, 54, 54' : '155, 155, 155';
 
         for (let y = 0; y < rows; y++) {
           for (let x = 0; x < cols; x++) {
