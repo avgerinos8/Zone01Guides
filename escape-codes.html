@@ -112,7 +112,7 @@
       /* Dynamic instant font size */
       font-weight: 700;
       text-align: center;
-      padding: 1.2vh 3vw;
+      padding: 1.2vh 16px;
       border-radius: 6px;
       border: 2px dashed var(--line-color);
       background-color: var(--input-bg);
@@ -127,6 +127,21 @@
       outline: none;
       white-space: pre; /* PRESERVE EXACT SPACES & PREVENT TRIM */
       word-break: normal;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line-color) transparent;
+    }
+
+    .preview-text-render::-webkit-scrollbar {
+      height: 4px;
+    }
+    .preview-text-render::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .preview-text-render::-webkit-scrollbar-thumb {
+      background: var(--line-color);
+      border-radius: 2px;
     }
 
     /* 100% EDGE-TO-EDGE RESULT MODAL (0 GAP ON RIGHT/LEFT) */
@@ -148,7 +163,7 @@
       border-left: none;
       border-right: none;
       border-radius: 0;
-      padding: 1.5vh 2vw;
+      padding: 1.5vh 0;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
       box-sizing: border-box;
       display: flex;
@@ -161,24 +176,32 @@
       width: 96vw;
       max-width: 96vw;
       margin: 0 auto;
+      padding: 0 16px;
       box-sizing: border-box;
       font-family: var(--font-mono);
       /* Dynamic instant font size */
       font-weight: 700;
       color: var(--accent-color);
-      letter-spacing: 0.8px;
+      letter-spacing: 0;
       white-space: nowrap;
       overflow-x: auto;
       overflow-y: hidden;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line-color) transparent;
       user-select: all;
       text-align: center;
       line-height: 1.2;
     }
 
     .escape-code-text::-webkit-scrollbar {
-      display: none;
+      height: 4px;
+    }
+    .escape-code-text::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .escape-code-text::-webkit-scrollbar-thumb {
+      background: var(--line-color);
+      border-radius: 2px;
     }
 
     /* COPY BUTTON */
@@ -1813,13 +1836,12 @@
       function calculateFitFontSize(text, availWidth, maxCap) {
         if (!text || text.length === 0) return maxCap || 72;
         const len = text.length;
-        // In monospace fonts (IBM Plex Mono / Cousine), character width ratio is ~0.60
-        // Effective characters = text.length + 2.0 (the 2-character safety buffer)
-        const effectiveChars = len + 2.0;
-        const usableWidth = availWidth - 28; // safe inner margins
-        // Scaled by 0.94 (~6% smaller) for a slightly more comfortable breathing room
-        const fs = Math.floor((usableWidth / (effectiveChars * 0.60)) * 0.94);
-        return Math.max(10, Math.min(maxCap || 120, fs));
+        // In monospace fonts (IBM Plex Mono / Cousine), character width ratio is 0.60
+        // Effective characters = len + 2.5 (guaranteed safety buffer against rounding & borders)
+        const effectiveChars = len + 2.5;
+        const usableWidth = Math.max(20, availWidth - 36); // accounts for 32px total inner padding + borders
+        const fs = Math.floor(usableWidth / (effectiveChars * 0.60));
+        return Math.max(1, Math.min(maxCap || 120, fs));
       }
 
       function fitHeroTexts() {
