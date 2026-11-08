@@ -1,0 +1,2297 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESCAPE CODES creator - ANSI Terminal Color Generator</title>
+  <link rel="icon" type="image/png" href="./images/favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cousine:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Outfit:wght@100..900&family=Fira+Code:wght@400;600;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       THEME VARIABLES - 100% FAITHFUL TO C:\dev\ascii-art-web
+       ========================================================================== */
+    :root {
+      --bg-color: #ffffff;
+      --bg-effect-color: #eeeeee;
+      --panel-color: #132b4bcc;
+      --panel-text-color: #ffffff;
+      --line-color: #000000;
+      --text-color: #000000;
+      --accent-color: #89bcff;
+      --accent2-color: #0073ff;
+      --light-bg-effe: #bebebe;
+      --dark-bg-effe: #363636;
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --input-bg: #ffffff;
+      --font-display: 'Outfit', sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Fira Code', 'Cousine', monospace;
+    }
+
+    body[data-theme="dark"] {
+      --bg-color: #000000;
+      --bg-effect-color: #111111;
+      --panel-color: #242c41b2;
+      --panel-text-color: #ffffff;
+      --line-color: #000000;
+      --text-color: #ffffff;
+      --accent-color: #00c5df;
+      --accent2-color: #0095a8;
+      --card-bg: #090e17;
+      --input-bg: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden; /* STRICT NO-SCROLL LAYOUT */
+      background-image: linear-gradient(to bottom, var(--bg-color) 20%, var(--bg-effect-color) 75%);
+      background-attachment: fixed;
+      color: var(--text-color);
+      font-family: var(--font-display);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      position: relative;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* VIGNETTE CANVAS (DYNAMIC BREATHING ASCII BACKGROUND) */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* STEALTH BACK LINK */
+    .top-stealth-bar {
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      z-index: 50;
+      opacity: 0.25;
+      transition: opacity 0.2s;
+    }
+
+    .top-stealth-bar:hover {
+      opacity: 1;
+    }
+
+    .top-stealth-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-color);
+      text-decoration: none;
+      background: var(--card-bg);
+      border: 1px solid var(--line-color);
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    /* ==========================================================================
+       HERO DISPLAY AREA: PREVIEW, 100% FULL-WIDTH MODAL & COPY BUTTON
+       ========================================================================== */
+    .hero-display-area {
+      flex-grow: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1vh 0;
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+      width: 100vw;
+    }
+
+    .preview-box-container {
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.6vh;
+    }
+
+    /* PREVIEW / INPUT BOX */
+    .preview-text-render {
+      font-family: var(--font-mono);
+      font-size: clamp(24px, 3.2vw, 42px); /* LARGER TEXT SIZE */
+      font-weight: 700;
+      text-align: center;
+      padding: 1.2vh 3vw;
+      border-radius: 6px;
+      border: 2px dashed var(--line-color);
+      background-color: var(--input-bg);
+      color: #38e1f7;
+      width: fit-content;
+      max-width: 94vw;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+      cursor: text;
+      outline: none;
+      white-space: pre; /* PRESERVE EXACT SPACES & PREVENT TRIM */
+      word-break: normal;
+    }
+
+    /* 100% EDGE-TO-EDGE RESULT MODAL (0 GAP ON RIGHT/LEFT) */
+    .escape-code-full-wrapper {
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4vh;
+    }
+
+    .escape-code-modal {
+      width: 100vw;
+      background-color: var(--panel-color);
+      border-top: 3px solid var(--line-color);
+      border-bottom: 3px solid var(--line-color);
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
+      padding: 1.5vh 2vw;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .escape-code-text {
+      width: 100%;
+      font-family: var(--font-mono);
+      font-size: clamp(20px, 2.7vw, 40px); /* LARGER HERO ESCAPE CODE */
+      font-weight: 700;
+      color: var(--accent-color);
+      letter-spacing: 0.8px;
+      white-space: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      user-select: all;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .escape-code-text::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* COPY BUTTON */
+    .hero-copy-btn {
+      font-family: var(--font-display);
+      font-size: clamp(14px, 1.25vw, 19px);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background-color: rgba(0, 0, 0, 0.25) !important;
+      background-image: repeating-linear-gradient(-45deg, var(--line-color), var(--line-color) 1px, transparent 1px, transparent 5px) !important;
+      color: var(--panel-text-color);
+      border: 3px solid var(--line-color);
+      border-radius: 6px;
+      padding: 1vh 3.5vw;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s, scale 0.15s;
+    }
+
+    .hero-copy-btn:hover {
+      background-image: none !important;
+      background-color: var(--accent-color) !important;
+      color: #000000 !important;
+      border-color: var(--accent-color) !important;
+      box-shadow: 0 0 16px rgba(0, 197, 223, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .hero-copy-btn:active {
+      transform: translateY(1px);
+      scale: 0.95;
+    }
+
+    /* ==========================================================================
+       FOOTER / CONTROLS PANEL (EXACT ASCII-ART-WEB STYLE)
+       ========================================================================== */
+    footer {
+      flex-shrink: 0;
+      width: 100vw;
+      border: 3px solid var(--line-color);
+      border-bottom: none;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      background-color: var(--panel-color);
+      color: var(--panel-text-color);
+      text-align: center;
+      padding: 12px 0 14px;
+      z-index: 100;
+      box-sizing: border-box;
+      backdrop-filter: blur(8px);
+    }
+
+    .FooterContainer {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      width: 100vw;
+      gap: 10px;
+    }
+
+    /* COLLAPSIBLE ZIPPER ROWS - FULL WIDTH (98VW) */
+    .zipper-row {
+      width: 98vw;
+      margin: 0 auto;
+      padding-top: 11px;
+      padding-bottom: 7px;
+      border: var(--line-color) solid 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .zipper-row.dashed {
+      border: var(--line-color) dashed 1px;
+    }
+
+    /* COLLAPSED STATE (UNCHANGED HEIGHT - COLLAPSE / EXPAND PRESERVED) */
+    .zipper-row.row-collapsed {
+      border: var(--line-color) solid 1px !important;
+      height: 10px !important;
+      min-height: 10px !important;
+      max-height: 10px !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      margin-bottom: 2px;
+      background-color: rgba(0, 0, 0, 0.15);
+      background-image: repeating-linear-gradient(90deg, var(--line-color), var(--line-color) 1px, transparent 1px, transparent 5px) !important;
+      cursor: pointer;
+    }
+
+    .zipper-row.row-collapsed .zipper-content {
+      display: none !important;
+    }
+
+    /* LOCKED COLLAPSE (WHEN BG IS UNCHECKED / DISABLED) */
+    .zipper-row.row-locked {
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+      opacity: 0.35;
+    }
+
+    .zipper-row.row-locked .line-title .arrow {
+      display: none !important;
+    }
+
+    .zipper-row.row-locked .line-title {
+      cursor: not-allowed !important;
+      background-color: #000000 !important;
+      color: #666666 !important;
+      border-color: #000000 !important;
+    }
+
+    /* LINE TITLE (THE ZIPPER HANDLE) - HEIGHT & BUTTON STAYS EXACTLY AS IN ASCII ART WEB */
+    .line-title {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, calc(-50% - 5px));
+      font-family: var(--font-display);
+      font-size: 10px;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 1px;
+      background-color: #000000;
+      padding: 0 8px;
+      border: 3px solid #000000;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 25;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.4s, background-color 0.4s;
+      white-space: nowrap;
+    }
+
+    .line-title .arrow {
+      display: inline-block;
+      transform: translateY(-3px);
+      transition: transform 0.4s ease;
+      font-size: 11px;
+    }
+
+    .line-title:hover {
+      color: var(--text-color) !important;
+      background-color: var(--accent-color) !important;
+    }
+
+    .zipper-row.row-collapsed .line-title .arrow {
+      transform: translateY(2px) rotate(180deg);
+    }
+
+    .zipper-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      padding: 0 1.5vw;
+      box-sizing: border-box;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* COLOR CONTROLS BAR: LARGER ELEMENTS */
+    .color-zipper-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: clamp(10px, 1.8vw, 22px);
+      flex-wrap: wrap;
+    }
+
+    .color-swatch-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .color-indicator-box {
+      width: clamp(28px, 2.5vw, 36px);
+      height: clamp(28px, 2.5vw, 36px);
+      border-radius: 4px;
+      border: 2px solid var(--line-color);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .hex-box {
+      font-family: var(--font-mono);
+      font-size: clamp(13px, 1.1vw, 16px); /* LARGER */
+      font-weight: 700;
+      width: clamp(75px, 6vw, 90px);
+      background: var(--input-bg);
+      border: 2px solid var(--line-color);
+      color: var(--text-color);
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      outline: none;
+    }
+
+    .hex-box:focus {
+      border-color: var(--accent-color);
+    }
+
+    /* BROAD COLOR PICKER BUTTON */
+    .btn-detailed-picker {
+      font-family: var(--font-display);
+      font-size: clamp(12px, 1.05vw, 15px);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      background-color: rgba(0, 0, 0, 0.25) !important;
+      background-image: repeating-linear-gradient(-45deg, var(--line-color), var(--line-color) 1px, transparent 1px, transparent 5px) !important;
+      color: var(--panel-text-color);
+      border: 2px solid var(--line-color);
+      border-radius: 4px;
+      padding: 6px 20px; /* PLENTY BROAD */
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-detailed-picker:hover {
+      background-image: none !important;
+      background-color: var(--accent2-color) !important;
+      color: #ffffff !important;
+      border-color: var(--accent2-color) !important;
+      transform: translateY(1px);
+    }
+
+    .btn-detailed-picker:active {
+      background-image: none !important;
+      background-color: var(--accent-color) !important;
+      border-color: var(--accent-color) !important;
+      color: var(--line-color) !important;
+      scale: 0.94;
+    }
+
+    /* SLIDERS + LIVE SIMPLE TEXT VALUE PACK */
+    .sliders-dual-group {
+      display: flex;
+      align-items: center;
+      gap: clamp(10px, 1.6vw, 20px);
+      flex: 1;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .slider-pack {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .slider-tag {
+      font-family: var(--font-mono);
+      font-size: clamp(12px, 1.1vw, 15px);
+      font-weight: 700;
+      width: 14px;
+      text-align: center;
+    }
+
+    .compact-range {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px; /* THICKER */
+      width: clamp(48px, 5.5vw, 80px);
+      background: rgba(125, 125, 125, 0.25);
+      border-radius: 4px;
+      border: 1px solid var(--line-color);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .compact-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(0, 197, 223, 0.7);
+    }
+
+    .val-text-display {
+      font-family: var(--font-mono);
+      font-size: clamp(12px, 1.05vw, 14px);
+      font-weight: 600;
+      color: var(--panel-text-color);
+      opacity: 0.9;
+      min-width: 26px;
+      text-align: left;
+    }
+
+    /* MINI SWATCHES */
+    .mini-swatches-strip {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .mini-swatch {
+      width: clamp(20px, 1.7vw, 26px);
+      height: clamp(20px, 1.7vw, 26px);
+      border-radius: 4px;
+      border: 1px solid var(--line-color);
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .mini-swatch:hover {
+      transform: scale(1.3);
+      border-color: var(--accent-color);
+      z-index: 10;
+    }
+
+    /* CHECKBOXES & SELECTS - FAITHFUL TO ASCII ART WEB */
+    .checkbox-container {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(14px, 1.25vw, 18px); /* 18px in ascii-art-web */
+      color: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--line-color);
+      background-color: rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      border-radius: 4px;
+      position: relative;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .checkbox-container input[type="checkbox"]:checked {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    .checkbox-container input[type="checkbox"]:checked::after {
+      content: "✓";
+      position: absolute;
+      top: -3px;
+      left: 2px;
+      color: #000000;
+      font-size: 14px;
+      font-weight: 900;
+      font-family: monospace;
+    }
+
+    .checkbox-container input[type="checkbox"]:checked + .checkmark-text {
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    /* .ascButton */
+    .ascButton {
+      font-family: var(--font-display);
+      font-size: clamp(12px, 1.05vw, 14px);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background-color: rgba(0, 0, 0, 0.25) !important;
+      background-image: repeating-linear-gradient(-45deg, var(--line-color), var(--line-color) 1px, transparent 1px, transparent 5px) !important;
+      color: var(--panel-text-color);
+      border: 2px solid var(--line-color);
+      border-radius: 4px;
+      padding: 6px 14px;
+      cursor: pointer;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s, scale 0.15s;
+    }
+
+    .ascButton:hover {
+      background-image: none !important;
+      background-color: var(--accent2-color) !important;
+      color: var(--accent2-color) !important;
+      border-color: var(--accent2-color) !important;
+      transform: translateY(1px);
+    }
+
+    .ascButton:active {
+      background-image: none !important;
+      background-color: var(--accent-color) !important;
+      border-color: var(--accent-color) !important;
+      color: var(--line-color) !important;
+      scale: 0.9;
+    }
+
+    /* .ascSelect */
+    .ascSelect {
+      font-family: var(--font-display);
+      font-size: clamp(12px, 1.05vw, 14px);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background-color: rgba(0, 0, 0, 0.25);
+      color: var(--panel-text-color);
+      border: 2px solid var(--line-color);
+      border-radius: 4px;
+      text-align-last: center;
+      padding: 4px 12px;
+      height: 30px;
+      box-sizing: border-box;
+      cursor: pointer;
+      user-select: none;
+      appearance: none;
+      -webkit-appearance: none;
+      outline: none;
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .ascSelect:hover {
+      background-color: var(--accent2-color);
+      border-color: var(--accent2-color);
+      color: var(--bg-color);
+    }
+
+    .ascSelect option {
+      background-color: var(--panel-color);
+      color: var(--panel-text-color);
+      font-weight: 600;
+      padding: 8px;
+    }
+
+    /* SWITCH SLIDER ENGINE (ASCII-ART-WEB STYLE) */
+    .slider-container {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .slider-text {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 18px; /* EXACT 18px FROM ASCII ART WEB */
+      color: inherit;
+      pointer-events: none;
+      white-space: nowrap;
+      transition: color 0.3s, opacity 0.3s;
+    }
+
+    .SLtext-left { order: 1; }
+    .SLtext-right { order: 3; }
+
+    .slider {
+      position: relative;
+      width: 40px;
+      height: 20px;
+      border: 2px solid var(--line-color);
+      background-color: rgba(0, 0, 0, 0.25);
+      box-sizing: border-box;
+      transition: .4s;
+      border-radius: 34px;
+      order: 2;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 0px;
+      top: 0px;
+      background-color: var(--panel-text-color);
+      border-radius: 50%;
+      transition: .4s;
+    }
+
+    .slider-container input:checked + .slider {
+      background-color: var(--accent-color);
+    }
+
+    .slider-container input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .slider-container input:checked ~ .SLtext-right {
+      color: var(--accent-color);
+      opacity: 1;
+    }
+
+    .slider-container input:checked ~ .SLtext-left {
+      color: var(--panel-text-color);
+      opacity: 0.4;
+    }
+
+    .slider-container input:not(:checked) ~ .SLtext-left {
+      color: var(--accent-color);
+      opacity: 1;
+    }
+
+    .slider-container input:not(:checked) ~ .SLtext-right {
+      color: var(--panel-text-color);
+      opacity: 0.4;
+    }
+
+    .slider-container input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    /* OPTIONS LINE 3 */
+    .optionsLine3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 98vw;
+      margin: 0 auto;
+      padding-top: 6px;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .line3-subgroup {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    /* ==========================================================================
+       DETAILED MODAL COLOR PICKER (MATCHING FOOTER THEME & METRICS)
+       ========================================================================== */
+    .detailed-picker-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .detailed-picker-modal.show {
+      display: flex;
+    }
+
+    .detailed-picker-box {
+      background-color: var(--panel-color);
+      border: 3px solid var(--line-color);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 360px;
+      max-width: 94vw;
+      color: var(--panel-text-color);
+    }
+
+    .detailed-picker-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--line-color);
+      padding-bottom: 8px;
+    }
+
+    .detailed-picker-title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--panel-text-color);
+      letter-spacing: 1.5px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 230px;
+      height: 230px;
+      user-select: none;
+    }
+
+    #pickerCanvas {
+      width: 230px;
+      height: 230px;
+      display: block;
+      cursor: crosshair;
+      border-radius: 50%;
+    }
+
+    .modal-controls-grid {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .modal-slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .modal-slider-pack {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .modal-slider-pack .compact-range {
+      width: 100%;
+    }
+
+    .modal-hex-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 2px solid var(--line-color);
+      border-radius: 4px;
+      padding: 5px 12px;
+    }
+
+    .btn-picker-done {
+      width: 100%;
+      padding: 10px 0;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background-color: var(--accent-color);
+      color: #000000;
+      border: 2px solid var(--line-color);
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s;
+    }
+
+    .btn-picker-done:hover {
+      background-color: var(--accent2-color);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* TOAST NOTIFICATION PILL */
+    .toast-pill {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50px);
+      background: var(--accent-color);
+      color: #000000;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 6px 18px;
+      border-radius: 20px;
+      box-shadow: 0 4px 18px rgba(0, 197, 223, 0.5);
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast-pill.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+
+  <!-- BACKGROUND VIGNETTE CANVAS (BREATHING ASCII PARTICLES) -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- STEALTH BACK LINK -->
+  <div class="top-stealth-bar">
+    <a href="./index.html" class="top-stealth-link">← Zone01</a>
+  </div>
+
+  <!-- MAIN HERO AREA: PREVIEW + 100% FULL-WIDTH CODE MODAL + COPY BUTTON DIRECTLY BELOW -->
+  <div class="hero-display-area">
+    <div class="preview-box-container">
+      <!-- CONSOLE PREVIEW BOX (PRESERVES EXACT SPACES & PURE TEXT PASTE) -->
+      <div id="previewBox" class="preview-text-render" contenteditable="plaintext-only" spellcheck="false" title="Click to edit sample text">sample text</div>
+
+      <!-- 100VW FULL-WIDTH RESULT MODAL (FROM ONE EDGE TO THE OTHER, ZERO RIGHT GAP) -->
+      <div class="escape-code-full-wrapper">
+        <div class="escape-code-modal">
+          <div id="escapeCodeDisplay" class="escape-code-text" title="Click to select all"></div>
+        </div>
+        <!-- COPY BUTTON DIRECTLY UNDERNEATH -->
+        <button type="button" id="btnCopyEscape" class="hero-copy-btn" title="Copy escape code to clipboard">
+          <span>COPY</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER CONTROLS PANEL (EXACT ASCII-ART-WEB STYLE) -->
+  <footer>
+    <div class="FooterContainer">
+
+      <!-- 1. FOREGROUND COLOR ZIPPER -->
+      <div class="zipper-row dashed" id="rowFg">
+        <span class="line-title" id="toggleFg">
+          <span class="arrow">&#8964;</span>&nbsp;FOREGROUND COLOR&nbsp;<span class="arrow">&#8964;</span>
+        </span>
+
+        <div class="zipper-content">
+          <div class="color-zipper-bar">
+            <!-- Left group: Swatch, HEX, Broad Button "COLOR PICKER" -->
+            <div class="color-swatch-badge">
+              <div class="color-indicator-box" id="fgIndicator" style="background: #38e1f7;" title="Click to open Advanced Color Wheel"></div>
+              <input type="text" id="fgHex" class="hex-box" maxlength="7" value="#38E1F7" title="Enter / Paste HEX (e.g. #38E1F7)">
+              <button type="button" class="btn-detailed-picker" onclick="openDetailedPicker('fg')">COLOR PICKER</button>
+            </div>
+
+            <!-- 3 RGB Sliders + 3 HSL Sliders with Plain Text Value Display -->
+            <div class="sliders-dual-group">
+              <!-- RGB Sliders -->
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#ff5555;">R</span>
+                <input type="range" class="compact-range" id="fgR" min="0" max="255" value="56">
+                <span class="val-text-display" id="fgRVal">56</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#44ff44;">G</span>
+                <input type="range" class="compact-range" id="fgG" min="0" max="255" value="225">
+                <span class="val-text-display" id="fgGVal">225</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#5588ff;">B</span>
+                <input type="range" class="compact-range" id="fgB" min="0" max="255" value="247">
+                <span class="val-text-display" id="fgBVal">247</span>
+              </div>
+
+              <!-- HSL Sliders -->
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#ffaa44;">H</span>
+                <input type="range" class="compact-range" id="fgH" min="0" max="360" value="187">
+                <span class="val-text-display" id="fgHVal">187°</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#33ffaa;">S</span>
+                <input type="range" class="compact-range" id="fgS" min="0" max="100" value="77">
+                <span class="val-text-display" id="fgSVal">77%</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#bb88ff;">L</span>
+                <input type="range" class="compact-range" id="fgL" min="0" max="100" value="59">
+                <span class="val-text-display" id="fgLVal">59%</span>
+              </div>
+            </div>
+
+            <div class="mini-swatches-strip" id="fgQuickSwatches"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. BACKGROUND COLOR ZIPPER (EXACT IDENTICAL METRICS) -->
+      <div class="zipper-row" id="rowBg">
+        <span class="line-title" id="toggleBg">
+          <span class="arrow">&#8964;</span>&nbsp;BACKGROUND COLOR&nbsp;<span class="arrow">&#8964;</span>
+        </span>
+
+        <div class="zipper-content">
+          <div class="color-zipper-bar">
+            <!-- Left group: Swatch, HEX, Broad Button "COLOR PICKER" -->
+            <div class="color-swatch-badge">
+              <div class="color-indicator-box" id="bgIndicator" style="background: #000000;" title="Click to open Advanced Color Wheel"></div>
+              <input type="text" id="bgHex" class="hex-box" maxlength="7" value="#000000" title="Enter / Paste HEX (e.g. #000000)">
+              <button type="button" class="btn-detailed-picker" onclick="openDetailedPicker('bg')">COLOR PICKER</button>
+            </div>
+
+            <!-- 3 RGB Sliders + 3 HSL Sliders with Plain Text Value Display -->
+            <div class="sliders-dual-group">
+              <!-- RGB Sliders -->
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#ff5555;">R</span>
+                <input type="range" class="compact-range" id="bgR" min="0" max="255" value="0">
+                <span class="val-text-display" id="bgRVal">0</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#44ff44;">G</span>
+                <input type="range" class="compact-range" id="bgG" min="0" max="255" value="0">
+                <span class="val-text-display" id="bgGVal">0</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#5588ff;">B</span>
+                <input type="range" class="compact-range" id="bgB" min="0" max="255" value="0">
+                <span class="val-text-display" id="bgBVal">0</span>
+              </div>
+
+              <!-- HSL Sliders -->
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#ffaa44;">H</span>
+                <input type="range" class="compact-range" id="bgH" min="0" max="360" value="0">
+                <span class="val-text-display" id="bgHVal">0°</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#33ffaa;">S</span>
+                <input type="range" class="compact-range" id="bgS" min="0" max="100" value="0">
+                <span class="val-text-display" id="bgSVal">0%</span>
+              </div>
+              <div class="slider-pack">
+                <span class="slider-tag" style="color:#bb88ff;">L</span>
+                <input type="range" class="compact-range" id="bgL" min="0" max="100" value="0">
+                <span class="val-text-display" id="bgLVal">0%</span>
+              </div>
+            </div>
+
+            <div class="mini-swatches-strip" id="bgQuickSwatches"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. TEXT FORMATTING & ANSI ATTRIBUTES ZIPPER -->
+      <div class="zipper-row dashed" id="rowAttrs">
+        <span class="line-title" id="toggleAttrs">
+          <span class="arrow">&#8964;</span>&nbsp;ATTRIBUTES &amp; STYLES&nbsp;<span class="arrow">&#8964;</span>
+        </span>
+
+        <div class="zipper-content">
+          <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:center;">
+            <!-- Apply Background Checkbox: Collapses/Expands and locks BG row -->
+            <label class="checkbox-container" style="border-right: 2px dashed var(--line-color); padding-right:12px;">
+              <input type="checkbox" id="chkBgEnable" checked>
+              <span class="checkmark-text">Apply Background</span>
+            </label>
+
+            <label class="checkbox-container">
+              <input type="checkbox" id="chkBold">
+              <span class="checkmark-text">Bold</span>
+            </label>
+            <label class="checkbox-container">
+              <input type="checkbox" id="chkDim">
+              <span class="checkmark-text">Dim</span>
+            </label>
+            <label class="checkbox-container">
+              <input type="checkbox" id="chkItalic">
+              <span class="checkmark-text">Italic</span>
+            </label>
+            <label class="checkbox-container">
+              <input type="checkbox" id="chkUnderline">
+              <span class="checkmark-text">Underline</span>
+            </label>
+            <label class="checkbox-container">
+              <input type="checkbox" id="chkBlink">
+              <span class="checkmark-text">Blink</span>
+            </label>
+            <label class="checkbox-container">
+              <input type="checkbox" id="chkReverse">
+              <span class="checkmark-text">Reverse</span>
+            </label>
+            <label class="checkbox-container">
+              <input type="checkbox" id="chkStrike">
+              <span class="checkmark-text">Strike</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. OPTIONS LINE 3 (SYNTAX, ESCAPE TYPE, COLOR DEPTH, THEME SWITCH & ACTIONS) -->
+      <div class="optionsLine3">
+        <div class="line3-subgroup">
+          <!-- SYNTAX DROPDOWN -->
+          <div style="display:inline-flex; align-items:center; gap:6px;">
+            <span style="font-size:12px; font-weight:700;">SYNTAX:</span>
+            <select id="selSyntax" class="ascSelect">
+              <option value="none" selected>NONE (Raw Escape Code)</option>
+              <option value="bash">Bash / Zsh (echo -e)</option>
+              <option value="go">Go (fmt.Printf)</option>
+              <option value="python">Python (f-string)</option>
+              <option value="js">JavaScript / Node</option>
+              <option value="c">C / C++ (printf)</option>
+              <option value="powershell">PowerShell</option>
+            </select>
+          </div>
+
+          <!-- ESCAPE TYPE DROPDOWN (\033 DEFAULT) -->
+          <div style="display:inline-flex; align-items:center; gap:6px;">
+            <span style="font-size:12px; font-weight:700;">TYPE:</span>
+            <select id="selEscapeType" class="ascSelect">
+              <option value="\033" selected>\033</option>
+              <option value="\x1b">\x1b</option>
+              <option value="\e">\e</option>
+              <option value="\u001b">\u001b</option>
+            </select>
+          </div>
+
+          <!-- COLOR DEPTH -->
+          <div style="display:inline-flex; align-items:center; gap:6px;">
+            <span style="font-size:12px; font-weight:700;">DEPTH:</span>
+            <select id="selDepth" class="ascSelect">
+              <option value="truecolor" selected>TrueColor (24-bit RGB)</option>
+              <option value="256">256-Color (8-bit index)</option>
+              <option value="16">16-Color (Standard ANSI)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="line3-subgroup">
+          <!-- THEME SWITCH (EXACT ASCII-ART-WEB STYLE TOGGLE: LIGHT / DARK) -->
+          <label class="slider-container" title="Switch Light/Dark Theme">
+            <input type="checkbox" id="theme-toggle" checked>
+            <span class="slider round"></span>
+            <span class="slider-text SLtext-left">Light</span>
+            <span class="slider-text SLtext-right">Dark</span>
+          </label>
+
+          <button type="button" id="btnSwapColors" class="ascButton" title="Swap Foreground and Background">⇄ Swap</button>
+          <button type="button" id="btnReset" class="ascButton" title="Reset all settings to default">Reset</button>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- DETAILED MODAL COLOR PICKER (MATCHING FOOTER THEME & STYLING) -->
+  <div class="detailed-picker-modal" id="detailedPickerModal">
+    <div class="detailed-picker-box">
+      <div class="detailed-picker-header">
+        <span class="detailed-picker-title" id="detailedPickerTitle">COLOR PICKER</span>
+        <span style="font-weight:bold; font-size:16px; cursor:pointer;" onclick="closeDetailedPicker()">✕</span>
+      </div>
+
+      <!-- 1. Wheel & Triangle Canvas -->
+      <div class="canvas-wrapper">
+        <canvas id="pickerCanvas" width="230" height="230"></canvas>
+      </div>
+
+      <!-- 2. Modal Sliders & Inputs -->
+      <div class="modal-controls-grid">
+        <!-- HEX Input & Live Swatch -->
+        <div class="modal-hex-bar">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:12px; font-weight:700; color:var(--accent-color);">HEX:</span>
+            <input type="text" id="modalHex" class="hex-box" maxlength="7" value="#38E1F7">
+          </div>
+          <div class="color-indicator-box" id="modalIndicator" style="background:#38E1F7; width:24px; height:24px;"></div>
+        </div>
+
+        <!-- RGB Sliders in Modal -->
+        <div class="modal-slider-row">
+          <div class="modal-slider-pack">
+            <span class="slider-tag" style="color:#ff5555;">R</span>
+            <input type="range" class="compact-range" id="modalR" min="0" max="255" value="56">
+            <span class="val-text-display" id="modalRVal">56</span>
+          </div>
+          <div class="modal-slider-pack">
+            <span class="slider-tag" style="color:#44ff44;">G</span>
+            <input type="range" class="compact-range" id="modalG" min="0" max="255" value="225">
+            <span class="val-text-display" id="modalGVal">225</span>
+          </div>
+          <div class="modal-slider-pack">
+            <span class="slider-tag" style="color:#5588ff;">B</span>
+            <input type="range" class="compact-range" id="modalB" min="0" max="255" value="247">
+            <span class="val-text-display" id="modalBVal">247</span>
+          </div>
+        </div>
+
+        <!-- HSL Sliders in Modal -->
+        <div class="modal-slider-row">
+          <div class="modal-slider-pack">
+            <span class="slider-tag" style="color:#ffaa44;">H</span>
+            <input type="range" class="compact-range" id="modalH" min="0" max="360" value="187">
+            <span class="val-text-display" id="modalHVal">187°</span>
+          </div>
+          <div class="modal-slider-pack">
+            <span class="slider-tag" style="color:#33ffaa;">S</span>
+            <input type="range" class="compact-range" id="modalS" min="0" max="100" value="77">
+            <span class="val-text-display" id="modalSVal">77%</span>
+          </div>
+          <div class="modal-slider-pack">
+            <span class="slider-tag" style="color:#bb88ff;">L</span>
+            <input type="range" class="compact-range" id="modalL" min="0" max="100" value="59">
+            <span class="val-text-display" id="modalLVal">59%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DONE Button -->
+      <button type="button" class="btn-picker-done" onclick="closeDetailedPicker()">DONE</button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION PILL -->
+  <div id="toast" class="toast-pill">COPIED TO CLIPBOARD!</div>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    (function () {
+      // =====================================================================
+      // HARD RELOAD / CTRL+F5 DETECTION -> WIPE STORAGE & USE DEFAULTS
+      // =====================================================================
+      const STORAGE_KEY = 'escape_codes_creator_state';
+      const DEFAULT_BG_SIZE_LARGE = 4.8;
+
+      const DEFAULT_STATE = {
+        theme: 'dark',
+        fg: { r: 56, g: 225, b: 247, hex: '#38E1F7' },
+        bg: { r: 0, g: 0, b: 0, hex: '#000000' },
+        bgEnabled: true,
+        attrs: {
+          bold: false,
+          dim: false,
+          italic: false,
+          underline: false,
+          blink: false,
+          reverse: false,
+          strike: false
+        },
+        syntax: 'none',
+        escapeType: '\\033', // DEFAULT \033
+        depth: 'truecolor',
+        sampleText: 'sample text',
+        bgParams: {
+          size: DEFAULT_BG_SIZE_LARGE,
+          dist: 1.0,
+          speed: 0.0004,
+          noise: 0.30,
+          depth: 0.25
+        },
+        collapsed: {
+          fg: false,
+          bg: false,
+          attrs: false
+        }
+      };
+
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'F5' || e.key === 'r' || e.key === 'R')) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      });
+
+      let state = loadState();
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) return { ...DEFAULT_STATE, ...JSON.parse(raw) };
+        } catch (e) { }
+        return { ...DEFAULT_STATE };
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) { }
+      }
+
+      const PRESET_SWATCHES = [
+        '#38e1f7', '#00ff66', '#facc15', '#f43f5e', '#a855f7',
+        '#3b82f6', '#ff8800', '#ffffff', '#718096', '#000000'
+      ];
+
+      // =====================================================================
+      // ANSI STANDARD 16 COLORS SPECIFICATION (EXACT SPEC COMPLIANT)
+      // Standard FG: 30-37 | Standard BG: 40-47
+      // High-Intensity (Bright) FG: 90-97 | High-Intensity (Bright) BG: 100-107
+      // Standard Colors (0..7):
+      // 0: Black(30/40), 1: Red(31/41), 2: Green(32/42), 3: Yellow(33/43),
+      // 4: Blue(34/44), 5: Magenta(35/45), 6: Cyan(36/46), 7: White(37/47)
+      // Bright Colors (0..7):
+      // 0: Gray(90/100), 1: Bright Red(91/101), 2: Bright Green(92/102), 3: Bright Yellow(93/103),
+      // 4: Bright Blue(94/104), 5: Bright Magenta(95/105), 6: Bright Cyan(96/106), 7: Bright White(97/107)
+      // =====================================================================
+      const ANSI_16_TABLE = [
+        // Standard 8 (30-37 / 40-47)
+        { name: "Black",   r: 0,   g: 0,   b: 0,   fg: 30, bg: 40 },
+        { name: "Red",     r: 187, g: 0,   b: 0,   fg: 31, bg: 41 },
+        { name: "Green",   r: 0,   g: 187, b: 0,   fg: 32, bg: 42 },
+        { name: "Yellow",  r: 187, g: 187, b: 0,   fg: 33, bg: 43 },
+        { name: "Blue",    r: 0,   g: 0,   b: 187, fg: 34, bg: 44 },
+        { name: "Magenta", r: 187, g: 0,   b: 187, fg: 35, bg: 45 },
+        { name: "Cyan",    r: 0,   g: 187, b: 187, fg: 36, bg: 46 },
+        { name: "White",   r: 187, g: 187, b: 187, fg: 37, bg: 47 },
+
+        // Bright 8 (90-97 / 100-107)
+        { name: "Bright Black",   r: 85,  g: 85,  b: 85,  fg: 90, bg: 100 },
+        { name: "Bright Red",     r: 255, g: 85,  b: 85,  fg: 91, bg: 101 },
+        { name: "Bright Green",   r: 85,  g: 255, b: 85,  fg: 92, bg: 102 },
+        { name: "Bright Yellow",  r: 255, g: 255, b: 85,  fg: 93, bg: 103 },
+        { name: "Bright Blue",    r: 85,  g: 85,  b: 255, fg: 94, bg: 104 },
+        { name: "Bright Magenta", r: 255, g: 85,  b: 255, fg: 95, bg: 105 },
+        { name: "Bright Cyan",    r: 85,  g: 255, b: 255, fg: 96, bg: 106 },
+        { name: "Bright White",   r: 255, g: 255, b: 255, fg: 97, bg: 107 }
+      ];
+
+      // =====================================================================
+      // CONVERSIONS: RGB <-> HSV <-> HSL <-> HEX
+      // =====================================================================
+      function rgbToHex(r, g, b) {
+        return '#' + [r, g, b].map(x => Math.max(0, Math.min(255, Number(x))).toString(16).padStart(2, '0')).join('').toUpperCase();
+      }
+
+      function hexToRgb(hex) {
+        hex = hex.replace(/^#/, '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        if (hex.length !== 6) return null;
+        const num = parseInt(hex, 16);
+        if (isNaN(num)) return null;
+        return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+      }
+
+      function rgbToHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        if (max === min) {
+          h = s = 0;
+        } else {
+          const d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+          }
+          h /= 6;
+        }
+        return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+      }
+
+      function hslToRgb(h, s, l) {
+        h = ((h % 360) + 360) % 360 / 360;
+        s = Math.max(0, Math.min(100, s)) / 100;
+        l = Math.max(0, Math.min(100, l)) / 100;
+        if (s === 0) {
+          const val = Math.round(l * 255);
+          return [val, val, val];
+        }
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        return [
+          Math.round(hue2rgb(p, q, h + 1/3) * 255),
+          Math.round(hue2rgb(p, q, h) * 255),
+          Math.round(hue2rgb(p, q, h - 1/3) * 255)
+        ];
+      }
+
+      function hsvToRgb(h, s, v) {
+        h = ((h % 360) + 360) % 360;
+        s = Math.max(0, Math.min(1, s));
+        v = Math.max(0, Math.min(1, v));
+        const c = v * s;
+        const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+        const m = v - c;
+        let r = 0, g = 0, b = 0;
+        if (h < 60) { r = c; g = x; b = 0; }
+        else if (h < 120) { r = x; g = c; b = 0; }
+        else if (h < 180) { r = 0; g = c; b = x; }
+        else if (h < 240) { r = 0; g = x; b = c; }
+        else if (h < 300) { r = x; g = 0; b = c; }
+        else { r = c; g = 0; b = x; }
+        return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+      }
+
+      function rgbToHsv(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        const d = max - min;
+        let h = 0;
+        const s = max === 0 ? 0 : d / max;
+        const v = max;
+        if (max !== min) {
+          if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+          else if (max === g) h = (b - r) / d + 2;
+          else if (max === b) h = (r - g) / d + 4;
+          h *= 60;
+        }
+        return [Math.round((h % 360 + 360) % 360), s, v];
+      }
+
+      function rgbTo256Index(r, g, b) {
+        if (r === g && g === b) {
+          if (r < 8) return 16;
+          if (r > 248) return 231;
+          return Math.round(((r - 8) / 247) * 23) + 232;
+        }
+        const v6 = x => Math.max(0, Math.min(5, Math.floor((x / 256) * 6)));
+        return 16 + 36 * v6(r) + 6 * v6(g) + v6(b);
+      }
+
+      // Exact distance in weighted Euclidean color space
+      function rgbTo16Index(r, g, b, isBg) {
+        let bestIdx = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < ANSI_16_TABLE.length; i++) {
+          const item = ANSI_16_TABLE[i];
+          const dr = r - item.r;
+          const dg = g - item.g;
+          const db = b - item.b;
+          const dist = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+          if (dist < bestDist) {
+            bestDist = dist;
+            bestIdx = i;
+          }
+        }
+        return isBg ? ANSI_16_TABLE[bestIdx].bg : ANSI_16_TABLE[bestIdx].fg;
+      }
+
+      // =====================================================================
+      // DOM REFERENCES
+      // =====================================================================
+      const previewBox = document.getElementById('previewBox');
+      const escapeCodeDisplay = document.getElementById('escapeCodeDisplay');
+      const btnCopyEscape = document.getElementById('btnCopyEscape');
+      const toast = document.getElementById('toast');
+      const themeToggle = document.getElementById('theme-toggle');
+
+      // Foreground DOM
+      const fgIndicator = document.getElementById('fgIndicator');
+      const fgHex = document.getElementById('fgHex');
+      const fgR = document.getElementById('fgR');
+      const fgG = document.getElementById('fgG');
+      const fgB = document.getElementById('fgB');
+      const fgH = document.getElementById('fgH');
+      const fgS = document.getElementById('fgS');
+      const fgL = document.getElementById('fgL');
+
+      const fgRVal = document.getElementById('fgRVal');
+      const fgGVal = document.getElementById('fgGVal');
+      const fgBVal = document.getElementById('fgBVal');
+      const fgHVal = document.getElementById('fgHVal');
+      const fgSVal = document.getElementById('fgSVal');
+      const fgLVal = document.getElementById('fgLVal');
+
+      // Background DOM
+      const rowBg = document.getElementById('rowBg');
+      const bgIndicator = document.getElementById('bgIndicator');
+      const bgHex = document.getElementById('bgHex');
+      const bgR = document.getElementById('bgR');
+      const bgG = document.getElementById('bgG');
+      const bgB = document.getElementById('bgB');
+      const bgH = document.getElementById('bgH');
+      const bgS = document.getElementById('bgS');
+      const bgL = document.getElementById('bgL');
+
+      const bgRVal = document.getElementById('bgRVal');
+      const bgGVal = document.getElementById('bgGVal');
+      const bgBVal = document.getElementById('bgBVal');
+      const bgHVal = document.getElementById('bgHVal');
+      const bgSVal = document.getElementById('bgSVal');
+      const bgLVal = document.getElementById('bgLVal');
+
+      const chkBgEnable = document.getElementById('chkBgEnable');
+
+      // Attributes DOM
+      const chkBold = document.getElementById('chkBold');
+      const chkDim = document.getElementById('chkDim');
+      const chkItalic = document.getElementById('chkItalic');
+      const chkUnderline = document.getElementById('chkUnderline');
+      const chkBlink = document.getElementById('chkBlink');
+      const chkReverse = document.getElementById('chkReverse');
+      const chkStrike = document.getElementById('chkStrike');
+
+      const selSyntax = document.getElementById('selSyntax');
+      const selEscapeType = document.getElementById('selEscapeType');
+      const selDepth = document.getElementById('selDepth');
+
+      // Detailed Modal Elements
+      const detailedModal = document.getElementById('detailedPickerModal');
+      const detailedTitle = document.getElementById('detailedPickerTitle');
+      const modalHex = document.getElementById('modalHex');
+      const modalIndicator = document.getElementById('modalIndicator');
+      const modalR = document.getElementById('modalR');
+      const modalG = document.getElementById('modalG');
+      const modalB = document.getElementById('modalB');
+      const modalH = document.getElementById('modalH');
+      const modalS = document.getElementById('modalS');
+      const modalL = document.getElementById('modalL');
+
+      const modalRVal = document.getElementById('modalRVal');
+      const modalGVal = document.getElementById('modalGVal');
+      const modalBVal = document.getElementById('modalBVal');
+      const modalHVal = document.getElementById('modalHVal');
+      const modalSVal = document.getElementById('modalSVal');
+      const modalLVal = document.getElementById('modalLVal');
+
+      // =====================================================================
+      // THEME SWITCH LOGIC (EXACT ASCII-ART-WEB STYLE)
+      // =====================================================================
+      function applyTheme(isDark) {
+        if (isDark) {
+          document.body.setAttribute('data-theme', 'dark');
+          state.theme = 'dark';
+        } else {
+          document.body.removeAttribute('data-theme');
+          state.theme = 'light';
+        }
+        themeToggle.checked = isDark;
+        saveState();
+      }
+
+      themeToggle.addEventListener('change', (e) => {
+        applyTheme(e.target.checked);
+      });
+
+      // =====================================================================
+      // COLLAPSIBLE ZIPPER LOGIC WITH BG LOCK
+      // =====================================================================
+      function setupZipper(triggerId, rowId, stateKey) {
+        const trigger = document.getElementById(triggerId);
+        const row = document.getElementById(rowId);
+        if (!trigger || !row) return;
+
+        const updateArrows = () => {
+          const arrows = trigger.querySelectorAll(".arrow");
+          const isCollapsed = row.classList.contains("row-collapsed");
+          arrows.forEach(arrow => {
+            arrow.innerHTML = isCollapsed ? "&#8963;" : "&#8964;";
+          });
+        };
+
+        if (state.collapsed && state.collapsed[stateKey]) {
+          row.classList.add('row-collapsed');
+        }
+        updateArrows();
+
+        trigger.addEventListener('click', (e) => {
+          if (row.classList.contains('row-locked')) return;
+          e.stopPropagation();
+          row.classList.toggle('row-collapsed');
+          if (!state.collapsed) state.collapsed = {};
+          state.collapsed[stateKey] = row.classList.contains('row-collapsed');
+          updateArrows();
+          saveState();
+        });
+
+        row.addEventListener('click', (e) => {
+          if (row.classList.contains('row-locked')) return;
+          if (row.classList.contains('row-collapsed')) {
+            row.classList.remove('row-collapsed');
+            state.collapsed[stateKey] = false;
+            updateArrows();
+            saveState();
+          }
+        });
+      }
+
+      setupZipper('toggleFg', 'rowFg', 'fg');
+      setupZipper('toggleBg', 'rowBg', 'bg');
+      setupZipper('toggleAttrs', 'rowAttrs', 'attrs');
+
+      function updateBgLockState() {
+        if (!state.bgEnabled) {
+          rowBg.classList.add('row-collapsed', 'row-locked');
+        } else {
+          rowBg.classList.remove('row-locked');
+          if (!state.collapsed.bg) {
+            rowBg.classList.remove('row-collapsed');
+          }
+        }
+        const trigger = document.getElementById('toggleBg');
+        const arrows = trigger.querySelectorAll(".arrow");
+        const isCollapsed = rowBg.classList.contains("row-collapsed");
+        arrows.forEach(arrow => {
+          arrow.innerHTML = isCollapsed ? "&#8963;" : "&#8964;";
+        });
+      }
+
+      // =====================================================================
+      // MINI SWATCHES
+      // =====================================================================
+      function initQuickSwatches() {
+        const fgContainer = document.getElementById('fgQuickSwatches');
+        const bgContainer = document.getElementById('bgQuickSwatches');
+
+        PRESET_SWATCHES.forEach(hex => {
+          const sFg = document.createElement('div');
+          sFg.className = 'mini-swatch';
+          sFg.style.backgroundColor = hex;
+          sFg.title = `FG: ${hex}`;
+          sFg.onclick = () => {
+            const rgb = hexToRgb(hex);
+            if (rgb) {
+              state.fg = { r: rgb[0], g: rgb[1], b: rgb[2], hex: hex.toUpperCase() };
+              syncUI();
+            }
+          };
+          fgContainer.appendChild(sFg);
+
+          const sBg = document.createElement('div');
+          sBg.className = 'mini-swatch';
+          sBg.style.backgroundColor = hex;
+          sBg.title = `BG: ${hex}`;
+          sBg.onclick = () => {
+            const rgb = hexToRgb(hex);
+            if (rgb) {
+              state.bg = { r: rgb[0], g: rgb[1], b: rgb[2], hex: hex.toUpperCase() };
+              state.bgEnabled = true;
+              syncUI();
+            }
+          };
+          bgContainer.appendChild(sBg);
+        });
+      }
+
+      // =====================================================================
+      // ESCAPE SEQUENCE GENERATOR & RENDER
+      // =====================================================================
+      function buildAnsiSequence() {
+        const codes = [];
+
+        if (state.attrs.bold) codes.push(1);
+        if (state.attrs.dim) codes.push(2);
+        if (state.attrs.italic) codes.push(3);
+        if (state.attrs.underline) codes.push(4);
+        if (state.attrs.blink) codes.push(5);
+        if (state.attrs.reverse) codes.push(7);
+        if (state.attrs.strike) codes.push(9);
+
+        if (state.depth === 'truecolor') {
+          codes.push(`38;2;${state.fg.r};${state.fg.g};${state.fg.b}`);
+        } else if (state.depth === '256') {
+          codes.push(`38;5;${rgbTo256Index(state.fg.r, state.fg.g, state.fg.b)}`);
+        } else if (state.depth === '16') {
+          codes.push(rgbTo16Index(state.fg.r, state.fg.g, state.fg.b, false));
+        }
+
+        if (state.bgEnabled) {
+          if (state.depth === 'truecolor') {
+            codes.push(`48;2;${state.bg.r};${state.bg.g};${state.bg.b}`);
+          } else if (state.depth === '256') {
+            codes.push(`48;5;${rgbTo256Index(state.bg.r, state.bg.g, state.bg.b)}`);
+          } else if (state.depth === '16') {
+            codes.push(rgbTo16Index(state.bg.r, state.bg.g, state.bg.b, true));
+          }
+        }
+
+        return codes.join(';');
+      }
+
+      function updateDisplay() {
+        const seq = buildAnsiSequence();
+        const text = state.sampleText; // Raw text with spaces preserved
+        const pfx = state.escapeType || '\\033';
+
+        // Preview Render
+        let effFg = state.fg.hex;
+        let effBg = state.bgEnabled ? state.bg.hex : 'transparent';
+
+        if (state.attrs.reverse) {
+          const t = effFg;
+          effFg = effBg === 'transparent' ? '#000000' : effBg;
+          effBg = t;
+        }
+
+        previewBox.style.color = effFg;
+        previewBox.style.backgroundColor = effBg;
+        previewBox.style.fontWeight = state.attrs.bold ? '700' : '400';
+        previewBox.style.opacity = state.attrs.dim ? '0.6' : '1';
+        previewBox.style.fontStyle = state.attrs.italic ? 'italic' : 'normal';
+
+        const decorations = [];
+        if (state.attrs.underline) decorations.push('underline');
+        if (state.attrs.strike) decorations.push('line-through');
+        previewBox.style.textDecoration = decorations.join(' ') || 'none';
+
+        // Output Code Formatter
+        let code = '';
+        switch (state.syntax) {
+          case 'none':
+            code = `${pfx}[${seq}m${text}${pfx}[0m`;
+            break;
+          case 'bash':
+            code = `echo -e "${pfx}[${seq}m${text}${pfx}[0m"`;
+            break;
+          case 'go':
+            code = `fmt.Printf("${pfx}[${seq}m%s${pfx}[0m\\n", "${text}")`;
+            break;
+          case 'python':
+            code = `print(f"${pfx}[${seq}m${text}${pfx}[0m")`;
+            break;
+          case 'js':
+            code = `console.log(\`${pfx}[${seq}m${text}${pfx}[0m\`);`;
+            break;
+          case 'c':
+            code = `printf("${pfx}[${seq}m%s${pfx}[0m\\n", "${text}");`;
+            break;
+          case 'powershell':
+            code = `Write-Host "$([char]27)[${seq}m${text}$([char]27)[0m"`;
+            break;
+        }
+
+        escapeCodeDisplay.textContent = code;
+        saveState();
+      }
+
+      function syncUI() {
+        // FG
+        fgIndicator.style.backgroundColor = state.fg.hex;
+        fgHex.value = state.fg.hex;
+        fgR.value = state.fg.r; fgRVal.textContent = state.fg.r;
+        fgG.value = state.fg.g; fgGVal.textContent = state.fg.g;
+        fgB.value = state.fg.b; fgBVal.textContent = state.fg.b;
+
+        const [fh, fs, fl] = rgbToHsl(state.fg.r, state.fg.g, state.fg.b);
+        fgH.value = fh; fgHVal.textContent = fh + '°';
+        fgS.value = fs; fgSVal.textContent = fs + '%';
+        fgL.value = fl; fgLVal.textContent = fl + '%';
+
+        // BG
+        bgIndicator.style.backgroundColor = state.bgEnabled ? state.bg.hex : 'transparent';
+        bgHex.value = state.bg.hex;
+        bgR.value = state.bg.r; bgRVal.textContent = state.bg.r;
+        bgG.value = state.bg.g; bgGVal.textContent = state.bg.g;
+        bgB.value = state.bg.b; bgBVal.textContent = state.bg.b;
+
+        const [bh, bs, bl] = rgbToHsl(state.bg.r, state.bg.g, state.bg.b);
+        bgH.value = bh; bgHVal.textContent = bh + '°';
+        bgS.value = bs; bgSVal.textContent = bs + '%';
+        bgL.value = bl; bgLVal.textContent = bl + '%';
+
+        chkBgEnable.checked = state.bgEnabled;
+        updateBgLockState();
+
+        // Attributes
+        chkBold.checked = state.attrs.bold;
+        chkDim.checked = state.attrs.dim;
+        chkItalic.checked = state.attrs.italic;
+        chkUnderline.checked = state.attrs.underline;
+        chkBlink.checked = state.attrs.blink;
+        chkReverse.checked = state.attrs.reverse;
+        chkStrike.checked = state.attrs.strike;
+
+        selSyntax.value = state.syntax;
+        selEscapeType.value = state.escapeType;
+        selDepth.value = state.depth;
+
+        if (previewBox.textContent !== state.sampleText) {
+          previewBox.textContent = state.sampleText;
+        }
+
+        applyTheme(state.theme === 'dark');
+        updateDisplay();
+      }
+
+      // =====================================================================
+      // DUAL SLIDERS LISTENERS (RGB & HSL)
+      // =====================================================================
+      [fgR, fgG, fgB].forEach(slider => {
+        slider.addEventListener('input', () => {
+          state.fg.r = Number(fgR.value);
+          state.fg.g = Number(fgG.value);
+          state.fg.b = Number(fgB.value);
+          state.fg.hex = rgbToHex(state.fg.r, state.fg.g, state.fg.b);
+          syncUI();
+        });
+      });
+
+      [fgH, fgS, fgL].forEach(slider => {
+        slider.addEventListener('input', () => {
+          const rgb = hslToRgb(Number(fgH.value), Number(fgS.value), Number(fgL.value));
+          state.fg.r = rgb[0]; state.fg.g = rgb[1]; state.fg.b = rgb[2];
+          state.fg.hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+          syncUI();
+        });
+      });
+
+      fgHex.addEventListener('input', (e) => {
+        const rgb = hexToRgb(e.target.value);
+        if (rgb) {
+          state.fg = { r: rgb[0], g: rgb[1], b: rgb[2], hex: e.target.value.toUpperCase() };
+          syncUI();
+        }
+      });
+
+      [bgR, bgG, bgB].forEach(slider => {
+        slider.addEventListener('input', () => {
+          state.bg.r = Number(bgR.value);
+          state.bg.g = Number(bgG.value);
+          state.bg.b = Number(bgB.value);
+          state.bg.hex = rgbToHex(state.bg.r, state.bg.g, state.bg.b);
+          syncUI();
+        });
+      });
+
+      [bgH, bgS, bgL].forEach(slider => {
+        slider.addEventListener('input', () => {
+          const rgb = hslToRgb(Number(bgH.value), Number(bgS.value), Number(bgL.value));
+          state.bg.r = rgb[0]; state.bg.g = rgb[1]; state.bg.b = rgb[2];
+          state.bg.hex = rgbToHex(rgb[0], rgb[1], rgb[2]);
+          syncUI();
+        });
+      });
+
+      bgHex.addEventListener('input', (e) => {
+        const rgb = hexToRgb(e.target.value);
+        if (rgb) {
+          state.bg = { r: rgb[0], g: rgb[1], b: rgb[2], hex: e.target.value.toUpperCase() };
+          syncUI();
+        }
+      });
+
+      chkBgEnable.addEventListener('change', () => {
+        state.bgEnabled = chkBgEnable.checked;
+        updateBgLockState();
+        updateDisplay();
+      });
+
+      // Format Checkboxes
+      const attrMap = [
+        { el: chkBold, key: 'bold' },
+        { el: chkDim, key: 'dim' },
+        { el: chkItalic, key: 'italic' },
+        { el: chkUnderline, key: 'underline' },
+        { el: chkBlink, key: 'blink' },
+        { el: chkReverse, key: 'reverse' },
+        { el: chkStrike, key: 'strike' }
+      ];
+
+      attrMap.forEach(({ el, key }) => {
+        el.addEventListener('change', () => {
+          state.attrs[key] = el.checked;
+          updateDisplay();
+        });
+      });
+
+      selSyntax.addEventListener('change', () => {
+        state.syntax = selSyntax.value;
+        updateDisplay();
+      });
+
+      selEscapeType.addEventListener('change', () => {
+        state.escapeType = selEscapeType.value;
+        updateDisplay();
+      });
+
+      selDepth.addEventListener('change', () => {
+        state.depth = selDepth.value;
+        updateDisplay();
+      });
+
+      // PURE TEXT INPUT & PLAIN TEXT PASTE (PRESERVE SPACES, REMOVE NON-PRINTABLES)
+      previewBox.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const text = (e.clipboardData || window.clipboardData).getData('text/plain') || '';
+        const clean = text.replace(/[\r\n\x00-\x1F\x7F]/g, '');
+        document.execCommand('insertText', false, clean);
+      });
+
+      previewBox.addEventListener('input', () => {
+        const raw = previewBox.textContent.replace(/[\r\n\x00-\x1F\x7F]/g, '');
+        state.sampleText = raw;
+        updateDisplay();
+      });
+
+      document.getElementById('btnSwapColors').addEventListener('click', () => {
+        const temp = { ...state.fg };
+        state.fg = { ...state.bg };
+        state.bg = { ...temp };
+        syncUI();
+      });
+
+      document.getElementById('btnReset').addEventListener('click', () => {
+        localStorage.removeItem(STORAGE_KEY);
+        state = { ...DEFAULT_STATE };
+        syncUI();
+      });
+
+      btnCopyEscape.addEventListener('click', () => {
+        const text = escapeCodeDisplay.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 1800);
+        });
+      });
+
+      // =====================================================================
+      // DETAILED COLOR PICKER MODAL (WHEEL + TRIANGLE + 3 RGB + 3 HSL + HEX + DONE)
+      // =====================================================================
+      const canvas = document.getElementById('pickerCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const TRI_APEX_X = 188;
+      const TRI_APEX_Y = 115;
+      const TRI_LEFT_X = 78;
+      const TRI_WHITE_Y = 51.4;
+      const TRI_BLACK_Y = 178.6;
+      const TRI_WIDTH = TRI_APEX_X - TRI_LEFT_X;
+      const TRI_SLOPE = (TRI_APEX_Y - TRI_WHITE_Y) / TRI_WIDTH;
+
+      let activePickerTarget = 'fg';
+      let activeHsv = { h: 187, s: 0.77, v: 0.97 };
+      let isDraggingWheel = false;
+      let isDraggingTriangle = false;
+
+      window.openDetailedPicker = function (target) {
+        activePickerTarget = target;
+        detailedTitle.textContent = (target === 'fg' ? 'FOREGROUND' : 'BACKGROUND') + ' COLOR PICKER';
+        const color = target === 'fg' ? state.fg : state.bg;
+        const [h, s, v] = rgbToHsv(color.r, color.g, color.b);
+        activeHsv = { h, s, v };
+        syncModalControls();
+        detailedModal.classList.add('show');
+        drawDetailedWheel();
+      };
+
+      window.closeDetailedPicker = function () {
+        detailedModal.classList.remove('show');
+      };
+
+      fgIndicator.onclick = () => openDetailedPicker('fg');
+      bgIndicator.onclick = () => {
+        if (!state.bgEnabled) return;
+        openDetailedPicker('bg');
+      };
+
+      function syncModalControls() {
+        const [r, g, b] = hsvToRgb(activeHsv.h, activeHsv.s, activeHsv.v);
+        const hex = rgbToHex(r, g, b);
+        modalHex.value = hex;
+        modalIndicator.style.backgroundColor = hex;
+
+        modalR.value = r; modalRVal.textContent = r;
+        modalG.value = g; modalGVal.textContent = g;
+        modalB.value = b; modalBVal.textContent = b;
+
+        const [h, s, l] = rgbToHsl(r, g, b);
+        modalH.value = h; modalHVal.textContent = h + '°';
+        modalS.value = s; modalSVal.textContent = s + '%';
+        modalL.value = l; modalLVal.textContent = l + '%';
+      }
+
+      function applyModalColor() {
+        const [r, g, b] = hsvToRgb(activeHsv.h, activeHsv.s, activeHsv.v);
+        const hex = rgbToHex(r, g, b);
+        if (activePickerTarget === 'fg') {
+          state.fg = { r, g, b, hex };
+        } else {
+          state.bg = { r, g, b, hex };
+          state.bgEnabled = true;
+        }
+        syncUI();
+        syncModalControls();
+      }
+
+      [modalR, modalG, modalB].forEach(slider => {
+        slider.addEventListener('input', () => {
+          const r = Number(modalR.value), g = Number(modalG.value), b = Number(modalB.value);
+          const [h, s, v] = rgbToHsv(r, g, b);
+          activeHsv = { h, s, v };
+          drawDetailedWheel();
+          applyModalColor();
+        });
+      });
+
+      [modalH, modalS, modalL].forEach(slider => {
+        slider.addEventListener('input', () => {
+          const rgb = hslToRgb(Number(modalH.value), Number(modalS.value), Number(modalL.value));
+          const [h, s, v] = rgbToHsv(rgb[0], rgb[1], rgb[2]);
+          activeHsv = { h, s, v };
+          drawDetailedWheel();
+          applyModalColor();
+        });
+      });
+
+      modalHex.addEventListener('input', (e) => {
+        const rgb = hexToRgb(e.target.value);
+        if (rgb) {
+          const [h, s, v] = rgbToHsv(rgb[0], rgb[1], rgb[2]);
+          activeHsv = { h, s, v };
+          drawDetailedWheel();
+          applyModalColor();
+        }
+      });
+
+      function drawDetailedWheel() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, 230, 230);
+        const cx = 115, cy = 115;
+        const rOut = 111, rIn = 91, ringMid = 101;
+
+        // 1. Barycentric Equilateral Triangle
+        const imgData = ctx.createImageData(230, 230);
+        const data = imgData.data;
+        const pureHueRgb = hsvToRgb(activeHsv.h, 1, 1);
+
+        for (let x = TRI_LEFT_X; x <= TRI_APEX_X; x++) {
+          const wHue = (x - TRI_LEFT_X) / TRI_WIDTH;
+          const yTop = TRI_WHITE_Y + (x - TRI_LEFT_X) * TRI_SLOPE;
+          const yBot = TRI_BLACK_Y - (x - TRI_LEFT_X) * TRI_SLOPE;
+          const yTopI = Math.ceil(yTop);
+          const yBotI = Math.floor(yBot);
+          const hySpan = yBot - yTop;
+
+          for (let y = yTopI; y <= yBotI; y++) {
+            const t = hySpan > 0 ? (y - yTop) / hySpan : 0;
+            const wBlack = t * (1 - wHue);
+            const wWhite = (1 - t) * (1 - wHue);
+            const r = Math.round(wHue * pureHueRgb[0] + wWhite * 255);
+            const g = Math.round(wHue * pureHueRgb[1] + wWhite * 255);
+            const b = Math.round(wHue * pureHueRgb[2] + wWhite * 255);
+            const pIdx = (y * 230 + x) * 4;
+            data[pIdx] = r;
+            data[pIdx + 1] = g;
+            data[pIdx + 2] = b;
+            data[pIdx + 3] = 255;
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        // 2. Outer Ring
+        for (let angle = 0; angle < 360; angle += 1) {
+          const startRad = (angle - 1) * Math.PI / 180;
+          const endRad = (angle + 1) * Math.PI / 180;
+          ctx.beginPath();
+          ctx.arc(cx, cy, ringMid, startRad, endRad);
+          ctx.strokeStyle = `hsl(${angle}, 100%, 50%)`;
+          ctx.lineWidth = (rOut - rIn);
+          ctx.stroke();
+        }
+
+        // 3. Discrete tiles
+        for (let i = 0; i < 12; i++) {
+          const tileH = i * 30;
+          const startRad = (tileH - 12) * Math.PI / 180;
+          const endRad = (tileH + 12) * Math.PI / 180;
+          const [tr, tg, tb] = hsvToRgb(tileH, Math.max(0.4, activeHsv.s), Math.max(0.3, activeHsv.v));
+          ctx.beginPath();
+          ctx.arc(cx, cy, 83.5, startRad, endRad);
+          ctx.strokeStyle = `rgb(${tr},${tg},${tb})`;
+          ctx.lineWidth = 11;
+          ctx.stroke();
+        }
+
+        // 4. Hue pin
+        const hueRad = activeHsv.h * Math.PI / 180;
+        const hx = cx + ringMid * Math.cos(hueRad);
+        const hy = cy + ringMid * Math.sin(hueRad);
+        ctx.save();
+        ctx.translate(hx, hy);
+        ctx.beginPath();
+        ctx.arc(0, 0, 6, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+        ctx.restore();
+
+        // 5. Triangle pin
+        const s = activeHsv.s, v = activeHsv.v;
+        const wHue = s * v;
+        const wBlack = 1 - v;
+        const wWhite = v * (1 - s);
+        const tx = wHue * TRI_APEX_X + wWhite * TRI_LEFT_X + wBlack * TRI_LEFT_X;
+        const ty = wHue * TRI_APEX_Y + wWhite * TRI_WHITE_Y + wBlack * TRI_BLACK_Y;
+
+        ctx.beginPath();
+        ctx.arc(tx, ty, 5, 0, Math.PI * 2);
+        ctx.fillStyle = activeHsv.v > 0.5 ? '#000000' : '#ffffff';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = activeHsv.v > 0.5 ? '#ffffff' : '#000000';
+        ctx.stroke();
+      }
+
+      function getCanvasCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+          x: (clientX - rect.left) * scaleX,
+          y: (clientY - rect.top) * scaleY
+        };
+      }
+
+      function updateTrianglePos(x, y) {
+        const clampedX = Math.max(TRI_LEFT_X, Math.min(TRI_APEX_X, x));
+        const wHue = (clampedX - TRI_LEFT_X) / TRI_WIDTH;
+        const yTop = TRI_WHITE_Y + (clampedX - TRI_LEFT_X) * TRI_SLOPE;
+        const yBot = TRI_BLACK_Y - (clampedX - TRI_LEFT_X) * TRI_SLOPE;
+        const clampedY = Math.max(yTop, Math.min(yBot, y));
+        const hySpan = yBot - yTop;
+        const t = hySpan > 0 ? (clampedY - yTop) / hySpan : 0;
+        const wBlack = t * (1 - wHue);
+        const v = 1 - wBlack;
+        const s = v > 0.001 ? wHue / v : 0;
+        activeHsv.s = Math.max(0, Math.min(1, s));
+        activeHsv.v = Math.max(0, Math.min(1, v));
+        drawDetailedWheel();
+        applyModalColor();
+      }
+
+      canvas.addEventListener('mousedown', (e) => {
+        const { x, y } = getCanvasCoords(e);
+        const dist = Math.sqrt((x - 115)**2 + (y - 115)**2);
+        if (dist >= 75 && dist <= 115) {
+          isDraggingWheel = true;
+          let deg = Math.round(Math.atan2(y - 115, x - 115) * 180 / Math.PI);
+          if (deg < 0) deg += 360;
+          activeHsv.h = deg;
+          drawDetailedWheel();
+          applyModalColor();
+        } else if (x >= TRI_LEFT_X - 5 && x <= TRI_APEX_X + 5) {
+          isDraggingTriangle = true;
+          updateTrianglePos(x, y);
+        }
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingWheel && !isDraggingTriangle) return;
+        const { x, y } = getCanvasCoords(e);
+        if (isDraggingWheel) {
+          let deg = Math.round(Math.atan2(y - 115, x - 115) * 180 / Math.PI);
+          if (deg < 0) deg += 360;
+          activeHsv.h = deg;
+          drawDetailedWheel();
+          applyModalColor();
+        } else if (isDraggingTriangle) {
+          updateTrianglePos(x, y);
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        isDraggingWheel = false;
+        isDraggingTriangle = false;
+      });
+
+      // =====================================================================
+      // ASCII-ART-WEB VIGNETTE BACKGROUND ENGINE
+      // =====================================================================
+      const bgCanvas = document.getElementById('bgCanvas');
+      const bgCtx = bgCanvas.getContext('2d');
+
+      const CHARS = [' ', ' ', '░', '░', '▒', '▓', '█'];
+      let BGSIZE = state.bgParams ? state.bgParams.size : DEFAULT_BG_SIZE_LARGE;
+      let BgDistance = state.bgParams ? state.bgParams.dist : 1.0;
+      let FS = 16 * BGSIZE;
+      let LINE_HEIGHT = FS * BgDistance;
+      let CW = FS * 0.6;
+      const OP = 0.35;
+      let NOISE = state.bgParams ? state.bgParams.noise : 0.30;
+      let BREATHE_SPEED = state.bgParams ? state.bgParams.speed : 0.0004;
+      const WAVE_SPREAD = 0.6;
+      let BREATHE_DEPTH = state.bgParams ? state.bgParams.depth : 0.25;
+
+      const MOUSE_RADIUS = 12;
+      const MOUSE_PEAK = 0.4;
+      const MOUSE_DECAY = 0.001;
+      const SOFTNESS = 7.5;
+
+      let noiseGrid = [];
+      let heatGrid = [];
+
+      function buildGrid() {
+        const cols = Math.floor(bgCanvas.width / CW) + 1;
+        const rows = Math.floor(bgCanvas.height / LINE_HEIGHT) + 1;
+        noiseGrid = [];
+        heatGrid = [];
+        for (let y = 0; y < rows; y++) {
+          noiseGrid[y] = [];
+          heatGrid[y] = [];
+          for (let x = 0; x < cols; x++) {
+            noiseGrid[y][x] = {
+              spatialNoise: (Math.random() - 0.5) * NOISE,
+              phaseOffset: Math.random() * Math.PI * 2,
+            };
+            heatGrid[y][x] = 0;
+          }
+        }
+      }
+
+      window.addEventListener('mousemove', e => {
+        const cols = heatGrid[0]?.length ?? 0;
+        const rows = heatGrid.length;
+        const gx = e.clientX / CW;
+        const gy = e.clientY / LINE_HEIGHT;
+        const igx = Math.floor(gx);
+        const igy = Math.floor(gy);
+
+        for (let dy = -MOUSE_RADIUS; dy <= MOUSE_RADIUS; dy++) {
+          for (let dx = -MOUSE_RADIUS; dx <= MOUSE_RADIUS; dx++) {
+            const nx = igx + dx;
+            const ny = igy + dy;
+            if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
+            const screenDx = dx * CW;
+            const screenDy = dy * LINE_HEIGHT;
+            const screenR = MOUSE_RADIUS * Math.max(CW, LINE_HEIGHT);
+            const d2 = (screenDx * screenDx + screenDy * screenDy) / (screenR * screenR);
+            const heat = Math.exp(-d2 * SOFTNESS) * MOUSE_PEAK;
+            if (heat > heatGrid[ny][nx]) heatGrid[ny][nx] = heat;
+          }
+        }
+      });
+
+      function drawBg(timestamp) {
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+        bgCtx.font = `${FS}px monospace`;
+
+        const cols = Math.floor(bgCanvas.width / CW) + 1;
+        const rows = Math.floor(bgCanvas.height / LINE_HEIGHT) + 1;
+        const cx = cols / 2;
+        const cy = rows / 2;
+        const maxD = Math.hypot(cx, cy);
+
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        const colorStr = isDark ? '54, 54, 54' : '190, 190, 190';
+
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            const cell = noiseGrid[y]?.[x];
+            if (!cell) continue;
+
+            const dist = Math.hypot(x - cx, y - cy) / maxD;
+            const wave = Math.sin(timestamp * BREATHE_SPEED + dist * WAVE_SPREAD + cell.phaseOffset);
+            const heat = heatGrid[y]?.[x] ?? 0;
+            const t = Math.max(0, Math.min(1, 0.75 * dist + cell.spatialNoise + wave * BREATHE_DEPTH + heat));
+
+            const charIndex = Math.floor(t * (CHARS.length - 1));
+            const opacity = Math.min(1, OP + wave * 0.08 + heat * 0.2);
+
+            bgCtx.fillStyle = `rgba(${colorStr}, ${opacity.toFixed(3)})`;
+            bgCtx.fillText(CHARS[charIndex], x * CW, (y + 1) * LINE_HEIGHT);
+
+            if (heatGrid[y][x] > 0) heatGrid[y][x] = Math.max(0, heatGrid[y][x] - MOUSE_DECAY);
+          }
+        }
+        requestAnimationFrame(drawBg);
+      }
+
+      window.addEventListener('resize', () => {
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+        buildGrid();
+      });
+
+      // =====================================================================
+      // INIT
+      // =====================================================================
+      initQuickSwatches();
+      syncUI();
+      bgCanvas.width = window.innerWidth;
+      bgCanvas.height = window.innerHeight;
+      buildGrid();
+      requestAnimationFrame(drawBg);
+    })();
+  </script>
+</body>
+
+</html>
