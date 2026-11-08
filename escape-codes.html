@@ -1817,7 +1817,8 @@
         // Effective characters = text.length + 2.0 (the 2-character safety buffer)
         const effectiveChars = len + 2.0;
         const usableWidth = availWidth - 28; // safe inner margins
-        const fs = Math.floor(usableWidth / (effectiveChars * 0.60));
+        // Scaled by 0.94 (~6% smaller) for a slightly more comfortable breathing room
+        const fs = Math.floor((usableWidth / (effectiveChars * 0.60)) * 0.94);
         return Math.max(10, Math.min(maxCap || 120, fs));
       }
 
