@@ -1295,7 +1295,7 @@
       // HARD RELOAD / CTRL+F5 DETECTION -> WIPE STORAGE & USE DEFAULTS
       // =====================================================================
       const STORAGE_KEY = 'escape_codes_creator_state';
-      const DEFAULT_BG_SIZE_LARGE = 4.8;
+      const DEFAULT_BG_SIZE_LARGE = 2.8;
 
       const DEFAULT_STATE = {
         theme: 'dark',
@@ -1795,6 +1795,7 @@
         }
 
         escapeCodeDisplay.textContent = code;
+        fitResultWidth();
         saveState();
       }
 
@@ -1802,20 +1803,32 @@
       function fitResultWidth() {
         if (!escapeCodeDisplay) return;
         const container = escapeCodeDisplay.parentElement || document.body;
-        // Available width inside modal box:
-        const availWidth = container.clientWidth - 32;
-        if (availWidth <= 50) return;
+        if (!container.clientWidth) return;
 
         // Reset scroll position
         escapeCodeDisplay.scrollLeft = 0;
 
-        // Start large for fit to width (up to 75px)
-        let fs = 75;
+        // Start large (up to 72px)
+        let fs = 72;
         escapeCodeDisplay.style.fontSize = fs + 'px';
 
-        // Shrink progressively down until it fits without needing scroll!
-        while (escapeCodeDisplay.scrollWidth > availWidth && fs > 9) {
+        // In monospace fonts, 1 character width is approximately 0.60 * fontSize.
+        // We ensure a strict 2-character buffer (buffer = 2 * 0.60 * fs = 1.2 * fs + 36px)
+        // so that scrollWidth NEVER touches the edges and NEVER requires horizontal scroll.
+        const getAvailWidth = (currentFs) => {
+          const charWidthApprox = currentFs * 0.62;
+          const twoCharBuffer = charWidthApprox * 2.2;
+          return container.clientWidth - (40 + twoCharBuffer);
+        };
+
+        while (escapeCodeDisplay.scrollWidth > getAvailWidth(fs) && fs > 10) {
           fs -= 1;
+          escapeCodeDisplay.style.fontSize = fs + 'px';
+        }
+
+        // Final safety check
+        if (escapeCodeDisplay.scrollWidth > container.clientWidth - 30 && fs > 10) {
+          fs -= 2;
           escapeCodeDisplay.style.fontSize = fs + 'px';
         }
       }
