@@ -109,7 +109,7 @@
     /* PREVIEW / INPUT BOX */
     .preview-text-render {
       font-family: var(--font-mono);
-      font-size: clamp(24px, 3.2vw, 42px); /* LARGER TEXT SIZE */
+      /* Dynamic instant font size */
       font-weight: 700;
       text-align: center;
       padding: 1.2vh 3vw;
@@ -117,10 +117,12 @@
       border: 2px dashed var(--line-color);
       background-color: var(--input-bg);
       color: #38e1f7;
-      width: fit-content;
-      max-width: 94vw;
+      width: 96vw;
+      max-width: 96vw;
+      margin: 0 auto;
+      box-sizing: border-box;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-      transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: color 0.2s, background-color 0.2s, border-color 0.2s;
       cursor: text;
       outline: none;
       white-space: pre; /* PRESERVE EXACT SPACES & PREVENT TRIM */
@@ -156,9 +158,12 @@
     }
 
     .escape-code-text {
-      width: 100%;
+      width: 96vw;
+      max-width: 96vw;
+      margin: 0 auto;
+      box-sizing: border-box;
       font-family: var(--font-mono);
-      font-size: clamp(20px, 2.7vw, 40px); /* LARGER HERO ESCAPE CODE */
+      /* Dynamic instant font size */
       font-weight: 700;
       color: var(--accent-color);
       letter-spacing: 0.8px;
@@ -1795,45 +1800,46 @@
         }
 
         escapeCodeDisplay.textContent = code;
-        fitResultWidth();
+        fitHeroTexts();
         saveState();
       }
 
 
-      function fitResultWidth() {
-        if (!escapeCodeDisplay) return;
-        const container = escapeCodeDisplay.parentElement || document.body;
-        if (!container.clientWidth) return;
+      // =====================================================================
+      // INSTANT ACCURATE FONT SIZING (ZERO FLICKER, ZERO JUMPING)
+      // Independent calculation for Preview & Result using exact character metrics.
+      // Strict 2-character buffer ensuring neither field overflows or scrolls.
+      // =====================================================================
+      function calculateFitFontSize(text, availWidth, maxCap) {
+        if (!text || text.length === 0) return maxCap || 72;
+        const len = text.length;
+        // In monospace fonts (IBM Plex Mono / Cousine), character width ratio is ~0.60
+        // Effective characters = text.length + 2.0 (the 2-character safety buffer)
+        const effectiveChars = len + 2.0;
+        const usableWidth = availWidth - 28; // safe inner margins
+        const fs = Math.floor(usableWidth / (effectiveChars * 0.60));
+        return Math.max(10, Math.min(maxCap || 120, fs));
+      }
 
-        // Reset scroll position
-        escapeCodeDisplay.scrollLeft = 0;
+      function fitHeroTexts() {
+        const fullAvailableW = window.innerWidth * 0.96;
 
-        // Start large (up to 72px)
-        let fs = 72;
-        escapeCodeDisplay.style.fontSize = fs + 'px';
-
-        // In monospace fonts, 1 character width is approximately 0.60 * fontSize.
-        // We ensure a strict 2-character buffer (buffer = 2 * 0.60 * fs = 1.2 * fs + 36px)
-        // so that scrollWidth NEVER touches the edges and NEVER requires horizontal scroll.
-        const getAvailWidth = (currentFs) => {
-          const charWidthApprox = currentFs * 0.62;
-          const twoCharBuffer = charWidthApprox * 2.2;
-          return container.clientWidth - (40 + twoCharBuffer);
-        };
-
-        while (escapeCodeDisplay.scrollWidth > getAvailWidth(fs) && fs > 10) {
-          fs -= 1;
-          escapeCodeDisplay.style.fontSize = fs + 'px';
+        // 1. Preview Box (Sample Text)
+        if (previewBox) {
+          const sample = previewBox.textContent || state.sampleText || '';
+          const fsPreview = calculateFitFontSize(sample, fullAvailableW, 110);
+          previewBox.style.fontSize = fsPreview + 'px';
         }
 
-        // Final safety check
-        if (escapeCodeDisplay.scrollWidth > container.clientWidth - 30 && fs > 10) {
-          fs -= 2;
-          escapeCodeDisplay.style.fontSize = fs + 'px';
+        // 2. Escape Code Result Box
+        if (escapeCodeDisplay) {
+          const codeText = escapeCodeDisplay.textContent || '';
+          const fsCode = calculateFitFontSize(codeText, fullAvailableW, 85);
+          escapeCodeDisplay.style.fontSize = fsCode + 'px';
         }
       }
 
-      window.addEventListener('resize', fitResultWidth);
+      window.addEventListener('resize', fitHeroTexts);
 
       function syncUI() {
         // FG
