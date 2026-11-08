@@ -1827,7 +1827,7 @@
         // 1. Preview Box (Sample Text)
         if (previewBox) {
           const sample = previewBox.textContent || state.sampleText || '';
-          const fsPreview = calculateFitFontSize(sample, fullAvailableW, 110);
+          const fsPreview = calculateFitFontSize(sample, fullAvailableW, 69);
           previewBox.style.fontSize = fsPreview + 'px';
         }
 
@@ -2006,6 +2006,43 @@
         state.bg = { ...temp };
         syncUI();
       });
+
+      function getRandomInterestingRgb() {
+        let r, g, b, sum, mean;
+        do {
+          r = Math.floor(Math.random() * 256);
+          g = Math.floor(Math.random() * 256);
+          b = Math.floor(Math.random() * 256);
+          sum = r + g + b;
+          mean = sum / 3;
+        } while (
+          sum < 120 ||
+          sum > 650 ||
+          (Math.abs(r - mean) < 30 && Math.abs(g - mean) < 30 && Math.abs(b - mean) < 30)
+        );
+        return { r, g, b };
+      }
+
+      const btnRandomize = document.getElementById('btnRandomize');
+      if (btnRandomize) {
+        btnRandomize.addEventListener('click', () => {
+          const fg = getRandomInterestingRgb();
+          let bg;
+          let attempts = 0;
+          do {
+            bg = getRandomInterestingRgb();
+            attempts++;
+            const lumFg = 0.2126 * fg.r + 0.7152 * fg.g + 0.0722 * fg.b;
+            const lumBg = 0.2126 * bg.r + 0.7152 * bg.g + 0.0722 * bg.b;
+            if (Math.abs(lumFg - lumBg) >= 60 || attempts > 25) break;
+          } while (true);
+
+          state.fg = { ...fg, hex: rgbToHex(fg.r, fg.g, fg.b) };
+          state.bg = { ...bg, hex: rgbToHex(bg.r, bg.g, bg.b) };
+          state.bgEnabled = true;
+          syncUI();
+        });
+      }
 
       document.getElementById('btnReset').addEventListener('click', () => {
         localStorage.removeItem(STORAGE_KEY);
