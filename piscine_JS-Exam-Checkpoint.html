@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>01-edu JS Exam / Checkpoint — subjects</title>
+  <style>
+    :root {
+      --bg: #0f1115;
+      --fg: #e6e6e6;
+      --dim: #8b929e;
+      --acc: #7aa2f7;
+      --acc-soft: #7aa2f71a;
+      --card: #141821;
+      --line: #232936;
+      --code: #1b202a;
+      --nav-w: 290px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 16px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased
+    }
+
+    /* ── sidebar ─────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--nav-w);
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border-right: 1px solid var(--line);
+      z-index: 40
+    }
+
+    .brand {
+      padding: 1.1rem 1.1rem .7rem;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .brand b {
+      display: block;
+      font-size: .95rem;
+      letter-spacing: .04em
+    }
+
+    .brand span {
+      font-size: .72rem;
+      color: var(--dim)
+    }
+
+    .search {
+      margin: .7rem 1.1rem 0;
+      padding: .5rem .7rem;
+      width: calc(100% - 2.2rem);
+      background: #0e121a;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--fg);
+      font: inherit;
+      font-size: .85rem;
+      outline: none
+    }
+
+    .search:focus {
+      border-color: var(--acc)
+    }
+
+    .toc {
+      flex: 1;
+      overflow-y: auto;
+      padding: .6rem 1.1rem 2rem;
+      scrollbar-width: thin;
+      scrollbar-color: #2d3444 transparent
+    }
+
+    .toc::-webkit-scrollbar {
+      width: 8px
+    }
+
+    .toc::-webkit-scrollbar-thumb {
+      background: #2d3444;
+      border-radius: 99px
+    }
+
+    .toc::-webkit-scrollbar-thumb:hover {
+      background: #3b4356
+    }
+
+    .toc h3 {
+      margin: 1.1rem 0 .35rem;
+      font-size: .68rem;
+      letter-spacing: .16em;
+      color: var(--dim);
+      text-transform: uppercase
+    }
+
+    .toc a {
+      display: block;
+      padding: .26rem .55rem;
+      margin: 1px 0;
+      border-radius: 6px;
+      color: #c8cdd6;
+      text-decoration: none;
+      font-size: .875rem;
+      border-left: 2px solid transparent;
+      transition: background .12s, color .12s
+    }
+
+    .toc a:hover {
+      background: #1d2330;
+      color: #fff
+    }
+
+    .toc a.active {
+      background: var(--acc-soft);
+      color: var(--acc);
+      border-left-color: var(--acc);
+      font-weight: 600
+    }
+
+    .toc a.missing {
+      color: #6f4a4a
+    }
+
+    .toc a[hidden] {
+      display: none
+    }
+
+    /* ── content ─────────────────────────────────────────────────────────────── */
+    main {
+      margin-left: var(--nav-w);
+      padding: 2.6rem 3rem 6rem;
+      max-width: none !important;
+      padding-right: 2rem !important;
+    }
+
+    .crumb {
+      font-size: .7rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--dim)
+    }
+
+    article h2 {
+      margin: .2rem 0 1.4rem;
+      font-size: 1.9rem;
+      color: var(--acc);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace
+    }
+
+    pre {
+      background: var(--code);
+      padding: 1rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      font-size: .88rem
+    }
+
+    code {
+      background: var(--code);
+      padding: .15em .4em;
+      border-radius: 5px;
+      font-size: .9em
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border: 0
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: .92rem
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: .45rem .75rem;
+      text-align: left
+    }
+
+    th {
+      background: #1a1f2a
+    }
+
+    blockquote {
+      margin: 1rem 0;
+      padding: .4rem 1rem;
+      border-left: 3px solid var(--acc);
+      color: #c3c9d3;
+      background: #141922
+    }
+
+    img {
+      max-width: 100%
+    }
+
+    a {
+      color: var(--acc)
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--line)
+    }
+
+    .missing {
+      color: #e07a7a
+    }
+
+    /* prev / next */
+    .pager {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 3rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--line)
+    }
+
+    .pager button {
+      background: #1a1f2a;
+      border: 1px solid var(--line);
+      color: var(--fg);
+      padding: .55rem 1rem;
+      border-radius: 8px;
+      font: inherit;
+      font-size: .88rem;
+      cursor: pointer
+    }
+
+    .pager button:hover:not(:disabled) {
+      border-color: var(--acc);
+      color: var(--acc)
+    }
+
+    .pager button:disabled {
+      opacity: .35;
+      cursor: default
+    }
+
+    /* ── mobile ──────────────────────────────────────────────────────────────── */
+    .bar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      align-items: center;
+      gap: .8rem;
+      padding: .7rem 1rem;
+      background: #141821e6;
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line)
+    }
+
+    .burger {
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--fg);
+      padding: .35rem .6rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer
+    }
+
+    .scrim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000a;
+      z-index: 35
+    }
+
+    @media(max-width:820px) {
+      .bar {
+        display: flex
+      }
+
+      nav {
+        transform: translateX(-100%);
+        transition: transform .22s ease;
+        width: 80vw;
+        max-width: 320px
+      }
+
+      body.menu-open nav {
+        transform: translateX(0)
+      }
+
+      body.menu-open .scrim {
+        display: block
+      }
+
+      main {
+        margin-left: 0;
+        padding: 1.4rem 1.1rem 5rem
+      }
+
+      article h2 {
+        font-size: 1.45rem;
+        word-break: break-word
+      }
+    }
+
+    body.hide-sidebar nav {
+      display: none !important;
+    }
+
+    body.hide-sidebar main {
+      margin-left: 0 !important;
+    }
+
+    article[hidden] {
+      display: none !important;
+    }
+
+    article:has(.sol-container) {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 30px;
+    }
+
+    .exercise-content {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+
+    .sol-container {
+      flex: 1 1 0%;
+      min-width: 0;
+      max-width: none;
+      margin-top: 0;
+      position: sticky;
+      top: 2rem;
+    }
+
+    @media (max-width: 1200px) {
+      .sol-container {
+        flex: 1 1 100%;
+        max-width: none;
+        position: static;
+        margin-top: 20px;
+      }
+    }
+
+    /* Petrol Styling */
+    .sol-btn {
+      background: #24362D;
+      color: #e0e6e2;
+      border: 1px solid #364F42;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+      font-family: Consolas, "Courier New", monospace;
+      transition: background 0.2s;
+      width: 100%;
+      text-align: left;
+    }
+
+    .sol-btn:hover {
+      background: #2E453A;
+    }
+
+    .sol-code {
+      margin-top: 10px;
+      background: #1E2B24;
+      padding: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #364F42;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 14px;
+      color: #ffffff;
+      line-height: 1.6;
+      overflow-x: auto;
+      counter-reset: line;
+    }
+
+    .sol-line {
+      display: flex;
+      border-bottom: 1px solid #2B3D34;
+    }
+
+    .sol-line:last-child {
+      border-bottom: none;
+    }
+
+    .sol-line::before {
+      counter-increment: line;
+      content: counter(line);
+      width: 40px;
+      flex-shrink: 0;
+      text-align: right;
+      padding-right: 12px;
+      color: #698776;
+      user-select: none;
+    }
+
+    /* Exercise Meta Box (01-edu style) */
+    .exam-meta {
+      background: #141922;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      font-size: .84rem;
+    }
+
+    .exam-meta-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .65rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: #181e29;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: .78rem;
+    }
+
+    .exam-meta-header .meta-left {
+      display: flex;
+      gap: 1.8rem;
+    }
+
+    .exam-meta-header .meta-badge {
+      color: var(--dim);
+    }
+
+    .exam-meta-header .meta-badge strong {
+      color: var(--fg);
+    }
+
+    .exam-meta-header .stars {
+      color: var(--dim);
+      letter-spacing: .2em;
+    }
+
+    .exam-meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+    }
+
+    .exam-meta-table th,
+    .exam-meta-table td {
+      border: none;
+      border-right: 1px solid var(--line);
+      padding: .6rem 1rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .exam-meta-table th:last-child,
+    .exam-meta-table td:last-child {
+      border-right: none;
+    }
+
+    .exam-meta-table th {
+      background: #12161f;
+      color: var(--dim);
+      font-size: .75rem;
+      font-weight: 500;
+      text-transform: none;
+    }
+
+    .exam-meta-table td {
+      background: #141922;
+      color: var(--fg);
+      font-size: .84rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .sol-line-content {
+      white-space: pre;
+      padding-left: 12px;
+    }
+
+    .copy-btn {
+      display: block;
+      margin: 10px 10px 0 auto;
+      background: #2E453A;
+      color: #ffffff;
+      border: 1px solid #364F42;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: bold;
+      transition: background 0.2s;
+      position: sticky;
+      left: 100%;
+    }
+
+    .copy-btn:hover {
+      background: #3a5749;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav id="nav">
+    <div class="brand"><b>01-edu · JS Exam</b><span id="exCount">1 exercise</span></div>
+    <input id="q" class="search" type="search" placeholder="filter…" autocomplete="off">
+    <div class="toc" id="toc">
+      <h3>EXAMLVL1</h3>
+      <a class='ex' href='#examlvl1-perfect-num'>perfect-num</a>
+      <a class='ex' href='#examlvl1-sentence-pyramid'>sentence-pyramid</a>
+      <a class='ex' href='#examlvl1-bubble-sort-analyzer'>bubble-sort-analyzer</a>
+      <a class='ex' href='#examlvl1-flat-object'>flat-object</a>
+    </div>
+  </nav>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="bar">
+    <button class="burger" id="burger" aria-label="menu">☰</button>
+    <strong id="barTitle" style="font-size:.95rem"></strong>
+  </div>
+
+  <main id="main">
+    <article id='examlvl1-perfect-num' hidden>
+      <div class="exercise-content">
+        <div class="exam-meta">
+          <div class="exam-meta-header">
+            <div class="meta-left">
+              <span class="meta-badge">LEVEL <strong>7</strong></span>
+              <span class="meta-badge"><strong>REQUIRED</strong></span>
+            </div>
+            <div class="stars">☆☆☆☆☆</div>
+          </div>
+          <table class="exam-meta-table">
+            <thead>
+              <tr>
+                <th>XP</th>
+                <th>Files to submit</th>
+                <th>Allowed functions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>50.0 B</td>
+                <td><code>perfect-num.js</code></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class='crumb'>EXAMLVL1</div>
+        <h2>perfect-num</h2>
+        <h3>Instructions</h3>
+        <p>Write a function that takes a number (<code>n</code>) and returns:</p>
+        <ul>
+          <li><code>true</code> → if the number is a perfect number.</li>
+          <li><code>false</code> → if it’s not a perfect number.</li>
+        </ul>
+        <p><strong>What’s a perfect number?</strong></p>
+        <p>A perfect number is a positive number where the sum of all its proper divisors (numbers that divide it except itself) equals the number.</p>
+        <p>For example:</p>
+        <ul>
+          <li><code>6</code> → divisors: 1, 2, 3 → 1 + 2 + 3 = 6 → <strong>perfect!</strong></li>
+          <li><code>28</code> → divisors: 1, 2, 4, 7, 14 → 1 + 2 + 4 + 7 + 14 = 28 → <strong>perfect!</strong></li>
+          <li><code>12</code> → divisors: 1, 2, 3, 4, 6 → 1 + 2 + 3 + 4 + 6 = 16 → <strong>not perfect.</strong></li>
+        </ul>
+        <h3>Expected function</h3>
+        <pre><code class="language-javascript">function isPerfectNum(n) {
+
+}</code></pre>
+        <h3>Usage</h3>
+        <p>Here is a possible program to test your function:</p>
+        <pre><code class="language-javascript">console.log(isPerfectNum(6))
+console.log(isPerfectNum(28))
+console.log(isPerfectNum(12))</code></pre>
+        <p>And its output:</p>
+        <pre><code class="language-console">$ node main.js
+true
+true
+false
+$</code></pre>
+        <div class="hint">
+          <p><strong>Tip:</strong></p>
+          <p>To check if a number is perfect:</p>
+          <ul>
+            <li>Start with the total as 0.</li>
+            <li>For every number less than <code>n</code> (from 1 to <code>n - 1</code>): If it divides <code>n</code> with no remainder, add it to the total.</li>
+            <li>At the end, if the total equals <code>n</code>, it’s a perfect number.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sol-container">
+        <button class="sol-btn"
+          onclick="document.getElementById('sol-perfect-num').hidden = !document.getElementById('sol-perfect-num').hidden">Toggle
+          Solution</button>
+        <div id="sol-perfect-num" hidden class="sol-code">
+          <div class="sol-line">
+            <div class="sol-line-content">function isPerfectNum(n) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  if (n &lt;= 1) return false</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let divisors = [1]</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  for (let i = 2; i &lt; n; i++) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    if (n % i === 0) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      divisors.push(i)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let summary = divisors.reduce(summ, 0)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let verdict</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  summary === n ? verdict = true : verdict = false</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  return verdict</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">}</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">function summ(acc, number) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  return acc + number</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">}</div>
+          </div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+    </article>
+
+    <article id='examlvl1-sentence-pyramid' hidden>
+      <div class="exercise-content">
+        <div class="exam-meta">
+          <div class="exam-meta-header">
+            <div class="meta-left">
+              <span class="meta-badge">LEVEL <strong>7</strong></span>
+              <span class="meta-badge"><strong>REQUIRED</strong></span>
+            </div>
+            <div class="stars">☆☆☆☆☆</div>
+          </div>
+          <table class="exam-meta-table">
+            <thead>
+              <tr>
+                <th>XP</th>
+                <th>Files to submit</th>
+                <th>Allowed functions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>50.0 B</td>
+                <td><code>sentence-pyramid.js</code></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class='crumb'>EXAMLVL1</div>
+        <h2>sentence-pyramid</h2>
+        <h3>Instructions</h3>
+        <p>Write a function that takes a string (<code>sentence</code>) and prints a pyramid where:</p>
+        <ul>
+          <li>The first line prints the first word.</li>
+          <li>The second line prints the first two words.</li>
+          <li>The third line prints the first three words.</li>
+          <li>And so on… until the full sentence is printed.</li>
+        </ul>
+        <h3>Expected function</h3>
+        <pre><code class="language-javascript">function sentencePyramid(sentence) {
+
+}</code></pre>
+        <h3>Usage</h3>
+        <p>Here is a possible program to test your function:</p>
+        <pre><code class="language-javascript">sentencePyramid("This is a simple sentence pyramid")</code></pre>
+        <p>And its output:</p>
+        <pre><code class="language-console">$ node main.js
+This
+This is
+This is a
+This is a simple
+This is a simple sentence
+This is a simple sentence pyramid
+$</code></pre>
+        <div class="hint">
+          <p><strong>Tip:</strong></p>
+          <p>To build the pyramid:</p>
+          <ul>
+            <li>Split the sentence into words → use <code>.split(" ")</code>.</li>
+            <li>Start from the first word and print lines adding one more word each time.</li>
+            <li>Stop when all words are printed.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sol-container">
+        <button class="sol-btn"
+          onclick="document.getElementById('sol-sentence-pyramid').hidden = !document.getElementById('sol-sentence-pyramid').hidden">Toggle
+          Solution</button>
+        <div id="sol-sentence-pyramid" hidden class="sol-code">
+          <div class="sol-line">
+            <div class="sol-line-content">function sentencePyramid(str) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  if (!str) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    return</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let words = str.trim().split(/\s+/)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  for (let i = 1; i &lt;= words.length; i++) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    console.log(words.slice(0, i).join(" "))</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">}</div>
+          </div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+    </article>
+
+    <article id='examlvl1-bubble-sort-analyzer' hidden>
+      <div class="exercise-content">
+        <div class="exam-meta">
+          <div class="exam-meta-header">
+            <div class="meta-left">
+              <span class="meta-badge">LEVEL <strong>7</strong></span>
+              <span class="meta-badge"><strong>REQUIRED</strong></span>
+            </div>
+            <div class="stars">☆☆☆☆☆</div>
+          </div>
+          <table class="exam-meta-table">
+            <thead>
+              <tr>
+                <th>XP</th>
+                <th>Files to submit</th>
+                <th>Allowed functions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>50.0 B</td>
+                <td><code>bubble-sort-analyzer.js</code></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class='crumb'>EXAMLVL1</div>
+        <h2>bubble-sort-analyzer</h2>
+        <h3>Instructions</h3>
+        <p>Write a function that takes:</p>
+        <ul>
+          <li>An array (<code>arr</code>)</li>
+          <li>A comparator function (<code>comparator</code>) to compare two numbers.</li>
+        </ul>
+        <p>Your function should:</p>
+        <ol>
+          <li>Sort the array using the bubble sort algorithm.</li>
+          <li>Count:
+            <ul>
+              <li><code>iterations</code> → total number of comparisons/steps.</li>
+              <li><code>swaps</code> → total times two numbers were switched.</li>
+            </ul>
+          </li>
+          <li>Return an object with:
+            <ul>
+              <li>The sorted array.</li>
+              <li>The number of iterations.</li>
+              <li>The number of swaps.</li>
+            </ul>
+          </li>
+        </ol>
+        <h3>Expected function</h3>
+        <pre><code class="language-javascript">function bubbleSortAnalyzer(arr, comparator) {
+
+}</code></pre>
+        <h3>Usage</h3>
+        <p>Here is a possible program to test your function:</p>
+        <pre><code class="language-javascript">const comparator = (a, b) =&gt; a - b
+
+const result = bubbleSortAnalyzer([4, 2, 7, 1, 3], comparator)
+
+console.log(result)</code></pre>
+        <p>And its output:</p>
+        <pre><code class="language-console">$ node main.js
+{
+  sortedArray: [ 1, 2, 3, 4, 7 ],
+  iterations: 10,
+  swaps: 6
+}
+$</code></pre>
+        <div class="hint">
+          <p><strong>Tip — How Bubble Sort Works:</strong></p>
+          <ul>
+            <li>Compare each pair of items in the array.</li>
+            <li>If they’re in the wrong order (according to the comparator), swap them.</li>
+            <li>Repeat this process for the whole array multiple times until no swaps are needed.</li>
+            <li>On every pass, the largest item "bubbles up" to the end.</li>
+          </ul>
+          <p><strong>Tip — About the Comparator:</strong></p>
+          <p>The comparator decides how to compare two numbers:</p>
+          <pre><code class="language-javascript">(a, b) =&gt; a - b</code></pre>
+          <ul>
+            <li>If result &lt; 0 → <code>a</code> comes before <code>b</code>.</li>
+            <li>If result === 0 → <code>a</code> and <code>b</code> are equal.</li>
+            <li>If result &gt; 0 → <code>a</code> comes after <code>b</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sol-container">
+        <button class="sol-btn"
+          onclick="document.getElementById('sol-bubble-sort-analyzer').hidden = !document.getElementById('sol-bubble-sort-analyzer').hidden">Toggle
+          Solution</button>
+        <div id="sol-bubble-sort-analyzer" hidden class="sol-code">
+          <div class="sol-line">
+            <div class="sol-line-content">function bubbleSortAnalyzer(arr, comparator) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let a = [...arr]</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let iterations = 0</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let swaps = 0</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let n = a.length</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  for (let i = 0; i &lt; n - 1; i++) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    let swapped = false</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    for (let j = 0; j &lt; n - 1 - i; j++) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      iterations++</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      if (comparator(a[j], a[j + 1]) &gt; 0) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        let temp = a[j]</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        a[j] = a[j + 1]</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        a[j + 1] = temp</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        swaps++</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        swapped = true</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    if (!swapped) break</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  return {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    sortedArray: a,</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    iterations,</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    swaps</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">}</div>
+          </div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+    </article>
+
+    <article id='examlvl1-flat-object' hidden>
+      <div class="exercise-content">
+        <div class="exam-meta">
+          <div class="exam-meta-header">
+            <div class="meta-left">
+              <span class="meta-badge">LEVEL <strong>7</strong></span>
+              <span class="meta-badge"><strong>OPTIONAL</strong></span>
+            </div>
+            <div class="stars">☆☆☆☆☆</div>
+          </div>
+          <table class="exam-meta-table">
+            <thead>
+              <tr>
+                <th>XP</th>
+                <th>Files to submit</th>
+                <th>Allowed functions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>50.0 B</td>
+                <td><code>flat-object.js</code></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class='crumb'>EXAMLVL1</div>
+        <h2>flat-object</h2>
+        <h3>Instructions</h3>
+        <p>Write a function <code>flattenAndMap(obj, mapper)</code> that:</p>
+        <ul>
+          <li>Takes a deeply nested object <code>obj</code> where values might be objects or primitives.</li>
+          <li>Flattens this object so that each key in the resulting object represents the path to the value in the original object, using dot notation for nesting (e.g. <code>user.address.city</code>).</li>
+          <li>Applies a <code>mapper</code> function to each value (primitive) before placing it into the flattened result.</li>
+          <li>Returns an object with:
+            <ul>
+              <li><code>flattened</code>: The flattened object after mapping values.</li>
+              <li><code>originalKeysCount</code>: The total number of keys (including nested) found in the original object.</li>
+              <li><code>transformedKeysCount</code>: The total number of keys whose values were transformed by the mapper.</li>
+            </ul>
+          </li>
+        </ul>
+        <h3>Expected function</h3>
+        <pre><code class="language-javascript">function flattenAndMap(obj, mapper) {
+
+}</code></pre>
+        <h3>Usage</h3>
+        <p>Here is a possible program to test your function:</p>
+        <pre><code class="language-javascript">const nestedObj = {
+  user: {
+    name: "Alice",
+    address: {
+      city: "Wonderland",
+      zip: 12345,
+    },
+  },
+  meta: {
+    roles: ["admin", "editor"],
+    active: true,
+  },
+}
+
+const toUpperCaseStrings = (value) =&gt;
+  typeof value === "string" ? value.toUpperCase() : value
+
+const result = flattenAndMap(nestedObj, toUpperCaseStrings)
+
+console.log(result)</code></pre>
+        <p>And its output:</p>
+        <pre><code class="language-console">$ node main.js
+{
+  flattened: {
+    'user.name': 'ALICE',
+    'user.address.city': 'WONDERLAND',
+    'user.address.zip': 12345,
+    'meta.roles': [ 'ADMIN', 'EDITOR' ],
+    'meta.active': true
+  },
+  originalKeysCount: 5,
+  transformedKeysCount: 5
+}
+$</code></pre>
+        <div class="hint">
+          <p><strong>Notes:</strong></p>
+          <ul>
+            <li>The mapper function should be applied to every value, regardless of type. If it's not a string or the mapper doesn't change it, that's fine.</li>
+            <li>Arrays are considered values too, and should be mapped. If mapping arrays, apply the mapper to each element.</li>
+            <li>Count all final flattened paths as keys in the resulting object.</li>
+            <li><code>originalKeysCount</code> is how many ultimate primitive or array-containing keys were found in the original nested structure.</li>
+            <li><code>transformedKeysCount</code> is how many values ended up being transformed by the mapper (even if that transformation doesn't change the value).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sol-container">
+        <button class="sol-btn"
+          onclick="document.getElementById('sol-flat-object').hidden = !document.getElementById('sol-flat-object').hidden">Toggle
+          Solution</button>
+        <div id="sol-flat-object" hidden class="sol-code">
+          <div class="sol-line">
+            <div class="sol-line-content">function flattenAndMap(obj, mapper) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let flattened = {}</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let originalKeysCount = 0</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  let transformedKeysCount = 0</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  function traverse(current, path) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    for (let key in current) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      if (!Object.prototype.hasOwnProperty.call(current, key)) continue</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      let val = current[key]</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      let newPath = path ? path + "." + key : key</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      if (val !== null &amp;&amp; typeof val === "object" &amp;&amp; !Array.isArray(val)) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        traverse(val, newPath)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      } else {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        originalKeysCount++</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        if (Array.isArray(val)) {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">          flattened[newPath] = val.map(item =&gt; mapper(item))</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        } else {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">          flattened[newPath] = mapper(val)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">        transformedKeysCount++</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">      }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">    }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  traverse(obj, "")</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">  return { flattened, originalKeysCount, transformedKeysCount }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">}</div>
+          </div>
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+    </article>
+
+    <div class="pager">
+      <button id="prev">← previous</button>
+      <button id="next">next →</button>
+    </div>
+  </main>
+
+  <script>
+    const arts = [...document.querySelectorAll('main article')];
+    const ids = arts.map(a => a.id);
+    const links = [...document.querySelectorAll('.toc a')];
+
+    // Auto-update count
+    const exCountEl = document.getElementById('exCount');
+    if (exCountEl) exCountEl.textContent = `${ids.length} exercise${ids.length === 1 ? '' : 's'}`;
+
+    function show(id) {
+      if (!id || !ids.includes(id)) id = ids[0];
+      arts.forEach(a => a.hidden = a.id !== id);
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+      const i = ids.indexOf(id);
+      prev.disabled = i <= 0;
+      next.disabled = i >= ids.length - 1;
+      const act = links.find(l => l.getAttribute('href') === '#' + id);
+      if (act) {
+        barTitle.textContent = act.textContent;
+        act.scrollIntoView({ block: 'nearest' });
+      }
+      window.scrollTo(0, 0);
+    }
+
+    window.onhashchange = () => show(location.hash.slice(1));
+    show(location.hash.slice(1));
+
+    const go = step => {
+      const i = ids.indexOf(arts.find(a => !a.hidden).id);
+      const j = i + step;
+      if (j >= 0 && j < ids.length) location.hash = ids[j];
+    };
+    prev.onclick = () => go(-1);
+    next.onclick = () => go(1);
+    addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT') return;
+      const code = e.code;
+      if (e.key === 'ArrowLeft' || code === 'KeyA') go(-1);
+      if (e.key === 'ArrowRight' || code === 'KeyD') go(1);
+      if (code === 'KeyW') window.scrollBy(0, -60);
+      if (code === 'KeyS') window.scrollBy(0, 60);
+      if (code === 'KeyQ') document.body.classList.toggle('hide-sidebar');
+      if (code === 'KeyE') {
+        const activeArt = arts.find(a => !a.hidden);
+        if (activeArt) {
+          const btn = activeArt.querySelector('.sol-btn');
+          if (btn) btn.click();
+        }
+      }
+    });
+
+    // ── menu + filter ────────────────────────────────────────────────────────── ⊃
+    burger.onclick = () => document.body.classList.toggle('menu-open');
+    scrim.onclick = () => document.body.classList.remove('menu-open');
+
+    q.oninput = () => {
+      const t = q.value.trim().toLowerCase();
+      links.forEach(l => l.hidden = t && !l.textContent.toLowerCase().includes(t));
+      document.querySelectorAll('.toc h3').forEach(h => {
+        let any = false;
+        for (let n = h.nextElementSibling; n && n.tagName === 'A'; n = n.nextElementSibling)
+          if (!n.hidden) any = true;
+        h.hidden = !any;
+      });
+    };
+
+    function copySolution(btn) {
+      const codeBlock = btn.closest('.sol-code');
+      const lines = [...codeBlock.querySelectorAll('.sol-line-content')].map(div => div.textContent);
+      const text = lines.join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = originalText, 2000);
+      });
+    }
+  </script>
+</body>
+
+</html>
+

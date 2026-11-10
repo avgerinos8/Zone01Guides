@@ -516,7 +516,6 @@
       <a class='ex' href='#examlvl3-repeatalpha'>repeatalpha</a>
       <a class='ex' href='#examlvl3-searchreplace'>searchreplace</a>
       <a class='ex' href='#examlvl3-findprevprime'>findprevprime</a>
-      <a class='ex' href='#examlvl3-thirdtimeisacharm'>thirdtimeisacharm</a>
       <a class='ex' href='#examlvl3-printrevcomb'>printrevcomb</a>
       <a class='ex' href='#examlvl3-printmemory'>printmemory</a>
       <h3>EXAMLVL4</h3>
@@ -530,6 +529,7 @@
       <a class='ex' href='#examlvl4-concatalternate'>concatalternate</a>
       <a class='ex' href='#examlvl4-reversestrcap'>reversestrcap</a>
       <a class='ex' href='#examlvl4-wdmatch'>wdmatch</a>
+      <a class='ex' href='#examlvl4-thirdtimeisacharm'>thirdtimeisacharm</a>
       <h3>EXAMLVL5</h3>
       <a class='ex' href='#examlvl5-hiddenp'>hiddenp</a>
       <a class='ex' href='#examlvl5-concatslice'>concatslice</a>
@@ -543,8 +543,8 @@
       <a class='ex' href='#examlvl6-canjump'>canjump</a>
       <a class='ex' href='#examlvl6-notdecimal'>notdecimal</a>
       <a class='ex' href='#examlvl6-slice'>slice</a>
+      <a class='ex' href='#examlvl6-fifthandskip'>fifthandskip</a>
       <h3>EXAMLVL7</h3>
-      <a class='ex' href='#examlvl7-fifthandskip'>fifthandskip</a>
       <a class='ex' href='#examlvl7-revconcatalternate'>revconcatalternate</a>
       <a class='ex' href='#examlvl7-wordflip'>wordflip</a>
       <a class='ex' href='#examlvl7-revwstr'>revwstr</a>
@@ -553,8 +553,8 @@
       <a class='ex' href='#examlvl8-findpairs'>findpairs</a>
       <a class='ex' href='#examlvl8-options'>options</a>
       <a class='ex' href='#examlvl8-romannumbers'>romannumbers</a>
+      <a class='ex' href='#examlvl8-piglatin'>piglatin</a>
       <h3>EXAMLVL9</h3>
-      <a class='ex' href='#examlvl9-piglatin'>piglatin</a>
       <a class='ex' href='#examlvl9-itoabase'>itoabase</a>
       <a class='ex' href='#examlvl9-rpncalc'>rpncalc</a>
       <a class='ex' href='#examlvl9-brackets'>brackets</a>
@@ -2280,52 +2280,43 @@ $
             <div class="sol-line-content"> </div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> text := os.Args[1]</div>
+            <div class="sol-line-content">	if len([]rune(os.Args[2])) != 1 || len([]rune(os.Args[3])) != 1 {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> targetLetter := os.Args[2]</div>
+            <div class="sol-line-content">		return</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> replacement := os.Args[3]</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> </div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> if len(targetLetter) != 1 || len(replacement) != 1 {</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> return</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> }</div>
+            <div class="sol-line-content">	}</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content"> </div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> for _, letter := range text {</div>
+            <div class="sol-line-content">	oldRune := []rune(os.Args[2])[0]</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> if string(letter) == targetLetter {</div>
+            <div class="sol-line-content">	newRune := []rune(os.Args[3])[0]</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> for _, replacementChar := range replacement {</div>
+            <div class="sol-line-content"> </div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> z01.PrintRune(replacementChar)</div>
+            <div class="sol-line-content">	for _, r := range os.Args[1] {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> }</div>
+            <div class="sol-line-content">		if r == oldRune {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> } else {</div>
+            <div class="sol-line-content">			z01.PrintRune(newRune)</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> z01.PrintRune(letter)</div>
+            <div class="sol-line-content">		} else {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> }</div>
+            <div class="sol-line-content">			z01.PrintRune(r)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">		}</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content"> }</div>
@@ -2439,83 +2430,6 @@ $
           </div>
           <div class="sol-line">
             <div class="sol-line-content"> return true</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content">}</div>
-          </div>
-          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
-        </div>
-      </div>
-    </article>
-    <article id='examlvl3-thirdtimeisacharm' hidden>
-      <div class="exercise-content">
-        <div class='crumb'>EXAMLVL3</div>
-        <h2>thirdtimeisacharm</h2>
-        <h3>Instructions</h3>
-        <p>Write a function <code>ThirdTimeIsACharm()</code> that takes a <code>string</code> as an argument and returns
-          another <code>string</code> with every third character.</p>
-        <ul>
-          <li>Return the output followed by a newline <code>\n</code>.</li>
-          <li>If the <code>string</code> is empty, return a newline <code>\n</code>.</li>
-          <li>If there is no third character, return a newline <code>\n</code>.</li>
-        </ul>
-        <h3>Expected function</h3>
-        <pre><code class="language-go">func ThirdTimeIsACharm(str string) string {
-
-}
-</code></pre>
-        <h3>Usage</h3>
-        <p>Here is a possible program to test your function:</p>
-        <pre><code class="language-go">package main
-
-import (
-	&quot;fmt&quot;
-)
-
-func main() {
-	fmt.Print(ThirdTimeIsACharm(&quot;123456789&quot;))
-	fmt.Print(ThirdTimeIsACharm(&quot;&quot;))
-	fmt.Print(ThirdTimeIsACharm(&quot;a b c d e f&quot;))
-	fmt.Print(ThirdTimeIsACharm(&quot;12&quot;))
-}
-</code></pre>
-        <p>And its output:</p>
-        <pre><code class="language-console">$ go run . | cat -e
-369$
-$
-b e$
-$
-</code></pre>
-      </div>
-
-      <div class="sol-container">
-        <button class="sol-btn"
-          onclick="document.getElementById('sol-thirdtimeisacharm').hidden = !document.getElementById('sol-thirdtimeisacharm').hidden">Toggle
-          Solution</button>
-        <div id="sol-thirdtimeisacharm" hidden class="sol-code">
-          <div class="sol-line">
-            <div class="sol-line-content">package piscine</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> </div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content">func ThirdTimeIsACharm(str string) string {</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> result := ""</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> for i := 2; i &lt; len(str); i += 3 {</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> result = result + string(str[i])</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> }</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> return result + "\n"</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content">}</div>
@@ -4173,6 +4087,83 @@ $
             <div class="sol-line-content">}</div>
           </div>
 
+          <button class="copy-btn" onclick="copySolution(this)">Copy</button>
+        </div>
+      </div>
+    </article>
+    <article id='examlvl4-thirdtimeisacharm' hidden>
+      <div class="exercise-content">
+        <div class='crumb'>EXAMLVL4</div>
+        <h2>thirdtimeisacharm</h2>
+        <h3>Instructions</h3>
+        <p>Write a function <code>ThirdTimeIsACharm()</code> that takes a <code>string</code> as an argument and returns
+          another <code>string</code> with every third character.</p>
+        <ul>
+          <li>Return the output followed by a newline <code>\n</code>.</li>
+          <li>If the <code>string</code> is empty, return a newline <code>\n</code>.</li>
+          <li>If there is no third character, return a newline <code>\n</code>.</li>
+        </ul>
+        <h3>Expected function</h3>
+        <pre><code class="language-go">func ThirdTimeIsACharm(str string) string {
+
+}
+</code></pre>
+        <h3>Usage</h3>
+        <p>Here is a possible program to test your function:</p>
+        <pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+)
+
+func main() {
+	fmt.Print(ThirdTimeIsACharm(&quot;123456789&quot;))
+	fmt.Print(ThirdTimeIsACharm(&quot;&quot;))
+	fmt.Print(ThirdTimeIsACharm(&quot;a b c d e f&quot;))
+	fmt.Print(ThirdTimeIsACharm(&quot;12&quot;))
+}
+</code></pre>
+        <p>And its output:</p>
+        <pre><code class="language-console">$ go run . | cat -e
+369$
+$
+b e$
+$
+</code></pre>
+      </div>
+
+      <div class="sol-container">
+        <button class="sol-btn"
+          onclick="document.getElementById('sol-thirdtimeisacharm').hidden = !document.getElementById('sol-thirdtimeisacharm').hidden">Toggle
+          Solution</button>
+        <div id="sol-thirdtimeisacharm" hidden class="sol-code">
+          <div class="sol-line">
+            <div class="sol-line-content">package piscine</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">func ThirdTimeIsACharm(str string) string {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> result := ""</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> for i := 2; i &lt; len(str); i += 3 {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> result = result + string(str[i])</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> }</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> return result + "\n"</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">}</div>
+          </div>
           <button class="copy-btn" onclick="copySolution(this)">Copy</button>
         </div>
       </div>
@@ -5984,9 +5975,9 @@ func main(){
         </div>
       </div>
     </article>
-    <article id='examlvl7-fifthandskip' hidden>
+    <article id='examlvl6-fifthandskip' hidden>
       <div class="exercise-content">
-        <div class='crumb'>EXAMLVL7</div>
+        <div class='crumb'>EXAMLVL6</div>
         <h2>fifthandskip</h2>
         <h3>Instructions</h3>
         <p>Write a function <code>FifthAndSkip()</code> that takes a <code>string</code> and returns another
@@ -7828,9 +7819,9 @@ $
         </div>
       </div>
     </article>
-    <article id='examlvl9-piglatin' hidden>
+    <article id='examlvl8-piglatin' hidden>
       <div class="exercise-content">
-        <div class='crumb'>EXAMLVL9</div>
+        <div class='crumb'>EXAMLVL8</div>
         <h2>piglatin</h2>
         <h3>Instructions</h3>
         <p>Write a <strong>program</strong> that transforms a string passed as argument in its <code>Pig Latin</code>
@@ -7874,10 +7865,10 @@ $
             <div class="sol-line-content">import (</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> "os"</div>
+            <div class="sol-line-content">	"os"</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> "github.com/01-edu/z01"</div>
+            <div class="sol-line-content">	"github.com/01-edu/z01"</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content">)</div>
@@ -7886,122 +7877,116 @@ $
             <div class="sol-line-content"> </div>
           </div>
           <div class="sol-line">
+            <div class="sol-line-content">func isVowel(r rune) bool {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	switch r {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	case 'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U':</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">		return true</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	default:</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">		return false</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	}</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">}</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
             <div class="sol-line-content">func main() {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> if len(os.Args) != 2 {</div>
+            <div class="sol-line-content">	if len(os.Args) != 2 || len(os.Args[1]) == 0 {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> return</div>
+            <div class="sol-line-content">		return</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> }</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> </div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> word := os.Args[1]</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> hasVowel := false</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> vowelIndex := -1</div>
+            <div class="sol-line-content">	}</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content"> </div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> for i, letter := range word {</div>
+            <div class="sol-line-content">	word := os.Args[1]</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> if isVowel(letter) {</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> hasVowel = true</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> vowelIndex = i</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> break</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> }</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> }</div>
+            <div class="sol-line-content">	vowelIndex := -1</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content"> </div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> if !hasVowel {</div>
+            <div class="sol-line-content">	for i, letter := range word {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> msg := "No vowels\n"</div>
+            <div class="sol-line-content">		if isVowel(letter) {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> for _, letter := range msg {</div>
+            <div class="sol-line-content">			vowelIndex = i</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> z01.PrintRune(letter)</div>
+            <div class="sol-line-content">			break</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> }</div>
+            <div class="sol-line-content">		}</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> return</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> }</div>
+            <div class="sol-line-content">	}</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content"> </div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> result := word[vowelIndex:] + word[:vowelIndex] + "ay\n"</div>
+            <div class="sol-line-content">	if vowelIndex == -1 {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> for _, letter := range result {</div>
+            <div class="sol-line-content">		msg := "No vowels\n"</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> z01.PrintRune(letter)</div>
+            <div class="sol-line-content">		for _, letter := range msg {</div>
           </div>
           <div class="sol-line">
-            <div class="sol-line-content"> }</div>
+            <div class="sol-line-content">			z01.PrintRune(letter)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">		}</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">		return</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	}</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content"> </div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	result := word[vowelIndex:] + word[:vowelIndex] + "ay\n"</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	for _, letter := range result {</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">		z01.PrintRune(letter)</div>
+          </div>
+          <div class="sol-line">
+            <div class="sol-line-content">	}</div>
           </div>
           <div class="sol-line">
             <div class="sol-line-content">}</div>
           </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> </div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content">func isVowel(letter rune) bool {</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> if letter == 'a' || letter == 'e' || letter == 'i' || letter == 'o' || letter
-              == 'u' ||</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter ==
-              'U' {</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> return true</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> }</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content"> return false</div>
-          </div>
-          <div class="sol-line">
-            <div class="sol-line-content">}</div>
-          </div>
-
           <button class="copy-btn" onclick="copySolution(this)">Copy</button>
         </div>
       </div>
