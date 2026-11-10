@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+  <script>
+    window.__initialHash = location.hash
+    if (location.hash) {
+      history.replaceState(null, "", location.pathname + location.search)
+    }
+  </script>
+
+  <script>
+    (function () {
+      var shown = false
+      window.addEventListener("error", function () {
+        if (shown) return
+        if (window.__pageInitialized) return
+        shown = true
+        showContentChangedFallback()
+      })
+
+      function showContentChangedFallback() {
+        var overlay = document.createElement("div")
+        overlay.style.cssText = "position:fixed;inset:0;z-index:999999;background:#0b0c10;" +
+          "display:flex;flex-direction:column;align-items:center;justify-content:center;" +
+          "gap:20px;font-family:-apple-system,'Segoe UI',Arial,sans-serif;color:#f5f5f0;" +
+          "text-align:center;padding:24px;"
+
+        var msg = document.createElement("div")
+        msg.textContent = "Internal Error"
+        msg.style.cssText = "font-size:22px;font-weight:600;letter-spacing:.02em;"
+        overlay.appendChild(msg)
+
+        var btn = document.createElement("button")
+        btn.textContent = "Reset Progress"
+        btn.style.cssText = "font-family:inherit;font-size:15px;padding:10px 22px;" +
+          "border-radius:2px;border:2px solid #e5fe40;background:transparent;" +
+          "color:#e5fe40;cursor:pointer;"
+        btn.addEventListener("click", function () {
+          var prefix = "quiz_deck_" + window.location.pathname.replace(/[^a-zA-Z0-9]/g, "_") + "_"
+          localStorage.removeItem(prefix + "current_slide")
+          localStorage.removeItem(prefix + "answers")
+          localStorage.removeItem(prefix + "scores")
+          localStorage.removeItem(prefix + "notified_100")
+          localStorage.removeItem(prefix + "version")
+          window.location.reload()
+        })
+        overlay.appendChild(btn)
+
+        document.body.appendChild(overlay)
+      }
+    })()
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relational Databases, Σχέσεις &amp; SQL σε Go</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="static/style.css?v=20260801">
+  <link rel="stylesheet" href="static/theme-brutalist.css?v=20261110">
+</head>
+
+<body>
+
+  <div id="progress-track">
+    <div id="progress-fill"></div>
+  </div>
+  <div id="slide-bg-layer"></div>
+  <div id="deck"></div>
+
+  <div id="nav-bar">
+    <div class="nav-group">
+      <button class="nav-btn" id="btn-toc">
+        <span class="desktop-text">☰</span>
+        <span class="mobile-text">☰</span>
+      </button>
+      <button class="nav-btn" id="btn-prev">
+        <span class="desktop-text">←Back</span>
+        <span class="mobile-text">←</span>
+      </button>
+    </div>
+    <div id="dots">
+      <div class="dots-arrow dots-arrow-left" id="dots-arrow-left"><span class="dots-arrow-triangle"></span></div>
+      <div id="dots-track"></div>
+      <div class="dots-arrow dots-arrow-right" id="dots-arrow-right"><span class="dots-arrow-triangle"></span></div>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <span id="slide-counter"></span>
+      <button class="nav-btn" id="btn-next">
+        <span class="desktop-text">Next→</span>
+        <span class="mobile-text">→</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="toc-backdrop"></div>
+  <div id="toc-sidebar">
+    <div id="toc-header">
+      <span id="toc-title">Contents</span>
+      <div class="toc-header-actions">
+        <button id="btn-reset-inner" class="toc-icon-btn" title="Reset Progress" aria-label="Reset Progress">Reset Progress</button>
+        <button id="toc-close" class="toc-icon-btn" aria-label="Κλείσιμο">✕</button>
+      </div>
+    </div>
+
+    <input type="text" id="toc-search" placeholder="Αναζήτηση..." autocomplete="off">
+
+    <div id="toc-list">
+      <a href="#@databases-go" data-slide="0" class="toc-link toc-h1">Relational Databases &amp; SQL σε Go</a>
+      <a href="#@ti-einai-mia-vasi" data-slide="1" class="toc-link toc-h1">1. Τι είναι μια Βάση Δεδομένων</a>
+      <a href="#@primary-key-pk" data-slide="2" class="toc-link toc-h1">2. Primary Key &amp; Μοναδικότητα</a>
+      <a href="#@foreign-key-fk" data-slide="3" class="toc-link toc-h1">3. Foreign Key (FK) &amp; Ακεραιότητα</a>
+      <a href="#@oi-scheseis-relat" data-slide="5" class="toc-link toc-h1">4. Σχέσεις (1:1, 1:N, N:M)</a>
+      <a href="#@pos-analyoyme-ti" data-slide="6" class="toc-link toc-h1">5. Πώς Αναλύουμε τι Θέλουμε</a>
+      <a href="#@schediastika-dilimmata" data-slide="7" class="toc-link toc-h1">6. Σχεδιαστικά Διλήμματα (Reactions)</a>
+      <a href="#@pos-grafontai-se" data-slide="9" class="toc-link toc-h1">7. Πώς Γράφονται σε SQL (DDL)</a>
+      <a href="#@sql-joins-aggregations" data-slide="10" class="toc-link toc-h1">8. JOIN, GROUP BY &amp; Φιλτράρισμα</a>
+      <a href="#@apo-tin-sql-sti-go" data-slide="11" class="toc-link toc-h1">9. Από την SQL στη Go (database/sql)</a>
+      <a href="#@scheseis-kai-1n-go" data-slide="12" class="toc-link toc-h1">10. Σχέσεις, 1:N &amp; Transactions στη Go</a>
+      <a href="#@exaskisi-schediasm" data-slide="14" class="toc-link toc-h1">11. Εξάσκηση Σχεδιασμού</a>
+      <a href="#@oloi-oi-oroi" data-slide="16" class="toc-link toc-h1">Συγκεντρωτικό Γλωσσάρι</a>
+    </div>
+
+    <div id="toc-footer">
+      <a class="nav-btn" href="https://avgerinos8.github.io/Zone01Guides">
+        <span class="desktop-text">Return Home</span>
+        <span class="mobile-text">Home</span>
+      </a>
+      <button class="nav-btn" id="btn-toc-close-footer">
+        <span class="desktop-text">Close</span>
+        <span class="mobile-text">Close</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="static/script.js?v=20260801"></script>
+  <script src="static/notify-progress.js?v=20260818"></script>
+  <script src="static/highlighter.js?v=20260801"></script>
+  <script>
+    // ── Slide 0: Title Slide ─────────────────────────────────────────────── ⊃
+    addContent(`
+<div class="title-slide">
+  <div class="title-badge">
+    <svg viewBox="0 0 220 170" xmlns="http://www.w3.org/2000/svg" style="height:100%; width:auto; max-width:100%; display:block;" role="img" aria-label="Neo-Brutalist Database Badge">
+      <rect x="24" y="24" width="176" height="128" fill="#07080a" stroke="#e5fe40" stroke-width="3"/>
+      <rect x="14" y="14" width="176" height="128" fill="#13151c" stroke="#f5f5f0" stroke-width="3"/>
+      <rect x="14" y="14" width="176" height="32" fill="#e5fe40" stroke="#f5f5f0" stroke-width="3"/>
+      <text x="26" y="35" font-family="monospace" font-size="14" font-weight="800" fill="#0b0c10">SQL :: PK -&gt; FK</text>
+      <rect x="26" y="58" width="52" height="22" fill="#1b1f2a" stroke="#e5fe40" stroke-width="2"/>
+      <text x="52" y="73" font-family="monospace" font-size="12" font-weight="700" fill="#e5fe40" text-anchor="middle">PK: 1</text>
+      <rect x="86" y="58" width="92" height="22" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2"/>
+      <text x="132" y="73" font-family="monospace" font-size="12" fill="#f5f5f0" text-anchor="middle">users</text>
+      <line x1="52" y1="80" x2="52" y2="104" stroke="#38bdf8" stroke-width="3"/>
+      <polygon points="46,98 58,98 52,106" fill="#38bdf8"/>
+      <rect x="26" y="106" width="52" height="22" fill="#1b1f2a" stroke="#38bdf8" stroke-width="2"/>
+      <text x="52" y="121" font-family="monospace" font-size="12" font-weight="700" fill="#38bdf8" text-anchor="middle">FK: 1</text>
+      <rect x="86" y="106" width="92" height="22" fill="#1b1f2a" stroke="#ff5a5f" stroke-width="2"/>
+      <text x="132" y="121" font-family="monospace" font-size="12" fill="#ff5a5f" text-anchor="middle">1 : N</text>
+    </svg>
+  </div>
+  <div class="kicker-line">Zone01 Athens · Study Guide · Databases &amp; Go</div>
+  <h1 id="@databases-go">Relational Databases, Σχέσεις &amp; SQL σε Go</h1>
+  <p class="lede">Από το μηδέν στον σωστό σχεδιασμό web εφαρμογών: Πίνακες, Primary/Foreign Keys, Σχέσεις (1:1, 1:N, N:M), ανάλυση απαιτήσεων, SQL aggregations &amp; filtering, και πλήρης υλοποίηση σε Go με SQLite.</p>
+  <div class="callout"><span class="tag">ΣΗΜΕΙΩΣΗ:</span>Άνοιξε ένα tab, ρώτα το AI για άγνωστες λέξεις ή κάνε copy-paste ό,τι σε δυσκολεύει για να σου το εξηγήσει με παραδείγματα. Ο οδηγός αυτός σου δίνει το push, η συνέχεια και η εξερεύνηση είναι δική σου!</div>
+</div>
+`)
+
+    // ── Slide 1: Ενότητα 1 — Τι είναι μια Βάση Δεδομένων ──────────────────── ⊃
+    addContent(`
+<div id="@ti-einai-mia-vasi" class="eyebrow">Ενότητα 1 / 11 — Θεμέλια Δεδομένων</div>
+<h1>Τι είναι μια Βάση Δεδομένων (RDBMS)</h1>
+<p class="lede">Όταν φτιάχνεις έναν web server σε Go, τα slices και τα maps στη RAM χάνονται μόλις κλείσει η εφαρμογή. Μια βάση δεδομένων αποθηκεύει μόνιμα, γρήγορα και με ασφάλεια τα δεδομένα σου στον δίσκο.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Γιατί όχι απλά ένα .json αρχείο;</h3>
+    <p>Αν 50 χρήστες κάνουν ταυτόχρονα εγγραφή ή comment σε ένα JSON αρχείο, θα γίνουν overwrite δεδομένα (race condition). Επίσης, για να φιλτράρεις posts ανά κατηγορία, δεν γίνεται να διαβάζεις κάθε φορά όλο το αρχείο στη RAM.</p>
+  </div>
+  <div class="card">
+    <h3>Τι κάνει μια SQLite / RDBMS</h3>
+    <p>Μια <strong>Relational Database</strong> (όπως η ενσωματωμένη <strong>SQLite</strong> ή η PostgreSQL) οργανώνει τα δεδομένα σε αυστηρούς πίνακες, εγγυάται ACID συναλλαγές (όλα ή τίποτα) και απαντάει σε φίλτρα μέσα σε milliseconds.</p>
+  </div>
+</div>
+
+<h2>Ανατομία ενός Πίνακα (Table)</h2>
+<p>Κάθε πίνακας μοντελοποιεί <strong>μία οντότητα</strong> (π.χ. <code>users</code>). Αποτελείται από <strong>Στήλες (Columns / Attributes)</strong> που ορίζουν το Schema (ονόματα, τύπους και περιορισμούς) και <strong>Γραμμές (Rows / Records)</strong> που είναι οι εγγραφές.</p>
+
+<div class="brutalist-diagram-wrap">
+  <svg viewBox="0 0 840 265" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:580px; height:auto; display:block;" role="img" aria-label="Ανατομία Πίνακα users">
+    <rect x="28" y="42" width="780" height="190" fill="#000000"/>
+    <rect x="20" y="34" width="780" height="190" fill="#13151c" stroke="#f5f5f0" stroke-width="3"/>
+    <rect x="20" y="34" width="780" height="42" fill="#e5fe40" stroke="#f5f5f0" stroke-width="3"/>
+    <text x="36" y="61" font-family="monospace" font-size="16" font-weight="800" fill="#0b0c10">TABLE: users</text>
+    <text x="784" y="60" font-family="monospace" font-size="12" font-weight="700" fill="#0b0c10" text-anchor="end">SCHEMA = STRUCTURE + CONSTRAINTS</text>
+
+    <rect x="20" y="76" width="130" height="42" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2"/>
+    <text x="85" y="95" font-family="monospace" font-size="13" font-weight="700" fill="#e5fe40" text-anchor="middle">id (PK)</text>
+    <text x="85" y="111" font-family="monospace" font-size="10" fill="#38bdf8" text-anchor="middle">INTEGER</text>
+
+    <rect x="150" y="76" width="180" height="42" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2"/>
+    <text x="240" y="95" font-family="monospace" font-size="13" font-weight="700" fill="#f5f5f0" text-anchor="middle">username</text>
+    <text x="240" y="111" font-family="monospace" font-size="10" fill="#38bdf8" text-anchor="middle">TEXT NOT NULL</text>
+
+    <rect x="330" y="76" width="240" height="42" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2"/>
+    <text x="450" y="95" font-family="monospace" font-size="13" font-weight="700" fill="#f5f5f0" text-anchor="middle">email</text>
+    <text x="450" y="111" font-family="monospace" font-size="10" fill="#38bdf8" text-anchor="middle">TEXT UNIQUE</text>
+
+    <rect x="570" y="76" width="230" height="42" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2"/>
+    <text x="685" y="95" font-family="monospace" font-size="13" font-weight="700" fill="#f5f5f0" text-anchor="middle">password_hash</text>
+    <text x="685" y="111" font-family="monospace" font-size="10" fill="#38bdf8" text-anchor="middle">TEXT NOT NULL</text>
+
+    <rect x="20" y="118" width="130" height="46" fill="#0b0c10" stroke="#475569" stroke-width="1.5"/>
+    <text x="85" y="146" font-family="monospace" font-size="14" font-weight="700" fill="#e5fe40" text-anchor="middle">1</text>
+    <rect x="150" y="118" width="180" height="46" fill="#0b0c10" stroke="#475569" stroke-width="1.5"/>
+    <text x="240" y="146" font-family="monospace" font-size="13" fill="#f5f5f0" text-anchor="middle">"nikos"</text>
+    <rect x="330" y="118" width="240" height="46" fill="#0b0c10" stroke="#475569" stroke-width="1.5"/>
+    <text x="450" y="146" font-family="monospace" font-size="13" fill="#f5f5f0" text-anchor="middle">"nikos@z01.gr"</text>
+    <rect x="570" y="118" width="230" height="46" fill="#0b0c10" stroke="#475569" stroke-width="1.5"/>
+    <text x="685" y="146" font-family="monospace" font-size="12" fill="#00e043" text-anchor="middle">"$2a$10$N9qo..."</text>
+
+    <rect x="20" y="164" width="130" height="46" fill="#13151c" stroke="#475569" stroke-width="1.5"/>
+    <text x="85" y="192" font-family="monospace" font-size="14" font-weight="700" fill="#e5fe40" text-anchor="middle">2</text>
+    <rect x="150" y="164" width="180" height="46" fill="#13151c" stroke="#475569" stroke-width="1.5"/>
+    <text x="240" y="192" font-family="monospace" font-size="13" fill="#f5f5f0" text-anchor="middle">"elena"</text>
+    <rect x="330" y="164" width="240" height="46" fill="#13151c" stroke="#475569" stroke-width="1.5"/>
+    <text x="450" y="192" font-family="monospace" font-size="13" fill="#f5f5f0" text-anchor="middle">"elena@z01.gr"</text>
+    <rect x="570" y="164" width="230" height="46" fill="#13151c" stroke="#475569" stroke-width="1.5"/>
+    <text x="685" y="192" font-family="monospace" font-size="12" fill="#00e043" text-anchor="middle">"$2a$10$xK8p..."</text>
+
+    <text x="410" y="22" font-family="monospace" font-size="12" font-weight="700" fill="#38bdf8" text-anchor="middle">COLUMNS / ATTRIBUTES (Στήλες &amp; Περιορισμοί)</text>
+    <text x="410" y="252" font-family="monospace" font-size="12" font-weight="700" fill="#e5fe40" text-anchor="middle">ROWS / RECORDS (Ποτέ plain-text password — πάντα bcrypt hash!)</text>
+  </svg>
+  <div class="brutalist-diagram-caption">Σχήμα 1 — Ο πίνακας users με μοναδικό email και κρυπτογραφημένο password_hash</div>
+</div>
+`)
+
+    // ── Slide 2: Ενότητα 2 — Primary Key & Μοναδικότητα ────────────────────── ⊃
+    addContent(`
+<div id="@primary-key-pk" class="eyebrow">Ενότητα 2 / 11 — Ταυτότητα &amp; Περιορισμοί</div>
+<h1>Primary Key (PK) &amp; Μοναδικότητα</h1>
+<p class="lede">Κάθε γραμμή χρειάζεται μια ταυτότητα που δεν αλλάζει ποτέ: το <strong>Primary Key (Πρωτεύον Κλειδί)</strong>. Παράλληλα, πεδία όπως το <code>email</code> χρειάζονται έλεγχο μοναδικότητας (<code>UNIQUE</code>) κατά την εγγραφή.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Οι 2 κανόνες του Primary Key</h3>
+    <p>1. <strong>UNIQUE:</strong> Δύο εγγραφές δεν μπορούν να έχουν ποτέ το ίδιο PK.<br>
+    2. <strong>NOT NULL:</strong> Κάθε γραμμή πρέπει υποχρεωτικά να έχει PK.<br>
+    Η βάση δημιουργεί αυτόματα ένα <strong>Index</strong> πάνω στο PK για ακαριαίες αναζητήσεις.</p>
+  </div>
+  <div class="card">
+    <h3>Τι γίνεται με το Email (<code>UNIQUE</code>);</h3>
+    <p>Δεν βάζουμε το <code>email</code> ως Primary Key (Natural Key), γιατί αν ο χρήστης αλλάξει email θα σπάσουν όλα τα links του. Χρησιμοποιούμε <strong>Surrogate Key</strong> (<code>id</code>) για PK, και βάζουμε constraint <code>UNIQUE</code> στη στήλη <code>email</code>.</p>
+  </div>
+</div>
+
+<h2>Αυτόματο ID (<code>AUTOINCREMENT</code>) vs <code>UUID</code></h2>
+<div class="grid2">
+  <div class="card">
+    <h3>INTEGER PRIMARY KEY AUTOINCREMENT</h3>
+    <p>Αριθμοί <code>1, 2, 3...</code>. Μικροί σε μέγεθος, ταχύτατοι στα JOINs και ιδανικοί για <code>users</code>, <code>posts</code>, <code>comments</code> και <code>categories</code>.</p>
+  </div>
+  <div class="card">
+    <h3>TEXT PRIMARY KEY (UUID)</h3>
+    <p>Τυχαία 128-bit strings (π.χ. <code>550e8400-e29b...</code>). Εξαιρετικά για <strong><code>sessions</code></strong> (cookies) ή δημόσια IDs, γιατί κανείς δεν μπορεί να μαντέψει το επόμενο <code>id + 1</code>!</p>
+  </div>
+</div>
+
+<div class="callout good">
+  <span class="tag">Γιατί <code>UNIQUE</code> στη βάση και όχι μόνο έλεγχος στη Go;</span>
+  Αν δύο αιτήματα εγγραφής με το ίδιο email φτάσουν ταυτόχρονα από δύο goroutines, ο έλεγχος με <code>SELECT</code> στον κώδικα μπορεί να προλάβει να περάσει και στα δύο. Ο περιορισμός <code>UNIQUE</code> στη βάση εγγυάται 100% ότι μόνο το ένα <code>INSERT</code> θα πετύχει!
+</div>
+`)
+
+    // ── Slide 3: Ενότητα 3 — Foreign Key (FK) & Referential Integrity ──────── ⊃
+    addContent(`
+<div id="@foreign-key-fk" class="eyebrow">Ενότητα 3 / 11 — Σύνδεση Πινάκων</div>
+<h1>Foreign Key (FK) &amp; Αναφορική Ακεραιότητα</h1>
+<p class="lede">Όταν ένας εγγεγραμμένος χρήστης φτιάχνει ένα post ή ένα σχόλιο, δεν αντιγράφουμε το όνομά του παντού. Αποθηκεύουμε απλώς το <code>id</code> του σε μια στήλη <strong>Foreign Key (Ξένο Κλειδί)</strong>.</p>
+
+<p>Το <strong>Foreign Key</strong> συνδέει μια στήλη του πίνακα-παιδιού (π.χ. <code>posts.user_id</code>) με το <strong>Primary Key</strong> του πίνακα-γονέα (<code>users.id</code>). Η βάση επιβάλλει <strong>Referential Integrity</strong>: δεν επιτρέπει «ορφανές» εγγραφές.</p>
+
+<div class="brutalist-diagram-wrap">
+  <svg viewBox="0 0 820 280" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:580px; height:auto; display:block;" role="img" aria-label="Διάγραμμα σύνδεσης users PK σε posts FK">
+    <rect x="28" y="34" width="270" height="170" fill="#000000"/>
+    <rect x="20" y="26" width="270" height="170" fill="#13151c" stroke="#f5f5f0" stroke-width="3"/>
+    <rect x="20" y="26" width="270" height="38" fill="#e5fe40" stroke="#f5f5f0" stroke-width="3"/>
+    <text x="34" y="51" font-family="monospace" font-size="15" font-weight="800" fill="#0b0c10">users (Parent)</text>
+
+    <rect x="20" y="64" width="270" height="44" fill="#1b1f2a" stroke="#e5fe40" stroke-width="2"/>
+    <text x="34" y="91" font-family="monospace" font-size="13" font-weight="700" fill="#e5fe40">PK  id = 1</text>
+    <text x="274" y="91" font-family="monospace" font-size="13" fill="#f5f5f0" text-anchor="end">"nikos"</text>
+
+    <rect x="20" y="108" width="270" height="44" fill="#0b0c10" stroke="#475569" stroke-width="1.5"/>
+    <text x="34" y="135" font-family="monospace" font-size="13" font-weight="700" fill="#e5fe40">PK  id = 2</text>
+    <text x="274" y="135" font-family="monospace" font-size="13" fill="#f5f5f0" text-anchor="end">"elena"</text>
+
+    <rect x="20" y="152" width="270" height="44" fill="#13151c" stroke="#475569" stroke-width="1.5"/>
+    <text x="155" y="179" font-family="monospace" font-size="12" fill="#94a3b8" text-anchor="middle">δεν υπάρχει id = 999</text>
+
+    <rect x="438" y="34" width="362" height="214" fill="#000000"/>
+    <rect x="430" y="26" width="362" height="214" fill="#13151c" stroke="#f5f5f0" stroke-width="3"/>
+    <rect x="430" y="26" width="362" height="38" fill="#38bdf8" stroke="#f5f5f0" stroke-width="3"/>
+    <text x="444" y="51" font-family="monospace" font-size="15" font-weight="800" fill="#0b0c10">posts (Child)</text>
+
+    <rect x="430" y="64" width="362" height="44" fill="#1b1f2a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="444" y="91" font-family="monospace" font-size="13" font-weight="700" fill="#e5fe40">id:10</text>
+    <text x="515" y="91" font-family="monospace" font-size="13" font-weight="700" fill="#38bdf8">FK user_id=1</text>
+    <text x="778" y="91" font-family="monospace" font-size="12" fill="#f5f5f0" text-anchor="end">"Go SQLite"</text>
+
+    <rect x="430" y="108" width="362" height="44" fill="#0b0c10" stroke="#38bdf8" stroke-width="2"/>
+    <text x="444" y="135" font-family="monospace" font-size="13" font-weight="700" fill="#e5fe40">id:11</text>
+    <text x="515" y="135" font-family="monospace" font-size="13" font-weight="700" fill="#38bdf8">FK user_id=1</text>
+    <text x="778" y="135" font-family="monospace" font-size="12" fill="#f5f5f0" text-anchor="end">"Sessions"</text>
+
+    <rect x="430" y="152" width="362" height="44" fill="#13151c" stroke="#475569" stroke-width="1.5"/>
+    <text x="444" y="179" font-family="monospace" font-size="13" font-weight="700" fill="#e5fe40">id:12</text>
+    <text x="515" y="179" font-family="monospace" font-size="13" font-weight="700" fill="#38bdf8">FK user_id=2</text>
+    <text x="778" y="179" font-family="monospace" font-size="12" fill="#f5f5f0" text-anchor="end">"Dockerize"</text>
+
+    <rect x="430" y="196" width="362" height="44" fill="#2a1216" stroke="#ff5a5f" stroke-width="2.5"/>
+    <text x="444" y="223" font-family="monospace" font-size="13" font-weight="700" fill="#ff5a5f">✗ FK user_id=999  REJECTED BY DB!</text>
+
+    <polyline points="290,86 360,86 360,86 422,86" fill="none" stroke="#e5fe40" stroke-width="3"/>
+    <polyline points="360,86 360,130 422,130" fill="none" stroke="#e5fe40" stroke-width="3"/>
+    <polygon points="418,80 430,86 418,92" fill="#e5fe40"/>
+    <polygon points="418,124 430,130 418,136" fill="#e5fe40"/>
+
+    <polyline points="290,130 336,130 336,174 422,174" fill="none" stroke="#38bdf8" stroke-width="3"/>
+    <polygon points="418,168 430,174 418,180" fill="#38bdf8"/>
+
+    <rect x="302" y="54" width="32" height="22" fill="#0b0c10" stroke="#e5fe40" stroke-width="2"/>
+    <text x="318" y="69" font-family="monospace" font-size="12" font-weight="800" fill="#e5fe40" text-anchor="middle">1</text>
+    <rect x="384" y="54" width="32" height="22" fill="#0b0c10" stroke="#38bdf8" stroke-width="2"/>
+    <text x="400" y="69" font-family="monospace" font-size="12" font-weight="800" fill="#38bdf8" text-anchor="middle">N</text>
+  </svg>
+  <div class="brutalist-diagram-caption">Σχήμα 2 — Referential Integrity: Ένα post δεν μπορεί να ανήκει σε ανύπαρκτο user_id</div>
+</div>
+
+<h2>Τι συμβαίνει αν διαγραφεί ο γονέας (<code>DELETE FROM users WHERE id = 1</code>);</h2>
+<div class="grid3">
+  <div class="card">
+    <h3>RESTRICT (Default)</h3>
+    <p>Η βάση <strong>μπλοκάρει</strong> τη διαγραφή του χρήστη όσο υπάρχουν posts ή comments που δείχνουν σε αυτόν.</p>
+  </div>
+  <div class="card">
+    <h3>ON DELETE CASCADE</h3>
+    <p>Διαγράφονται <strong>αυτόματα</strong> όλα τα posts, sessions ή reactions που ανήκουν στον χρήστη (ή τα comments ενός post).</p>
+  </div>
+  <div class="card">
+    <h3>ON DELETE SET NULL</h3>
+    <p>Το περιεχόμενο μένει στη βάση, αλλά το <code>user_id</code> γίνεται <code>NULL</code> (π.χ. "Deleted User").</p>
+  </div>
+</div>
+`)
+
+    // ── Slide 4: Checkpoint 1 (Quiz) ─────────────────────────────────────── ⊃
+    addQuiz([
+      {
+        q: "Ποιος είναι ο πιο αξιόπιστος τρόπος για να εμποδίσεις δύο ταυτόχρονα αιτήματα εγγραφής από το να καταχωρήσουν το ίδιο email;",
+        options: [
+          "Έλεγχος με SELECT πριν το INSERT στον Go server χωρίς περιορισμό στον πίνακα",
+          "Ορισμός UNIQUE constraint στη στήλη email μέσα στον πίνακα users",
+          "Αποθήκευση του email σε ένα global map στη μνήμη RAM της εφαρμογής",
+          "Χρήση του email ως Primary Key αντί για INTEGER id ώστε να ταξινομείται"
+        ],
+        correct: 1,
+        explain: "Μόνο το UNIQUE constraint στη βάση εγγυάται ατομικά (χωρίς race conditions μεταξύ goroutines) ότι δεν θα γραφτούν ποτέ δύο εγγραφές με το ίδιο email."
+      },
+      {
+        q: "Γιατί προτιμάμε UUID αντί για AUTOINCREMENT INTEGER ως αναγνωριστικό στον πίνακα sessions;",
+        options: [
+          "Επειδή η SQLite δεν επιτρέπει ακέραιους αριθμούς σε πίνακες με ημερομηνία λήξης",
+          "Επειδή τα strings καταλαμβάνουν λιγότερο χώρο στον δίσκο από τα 64-bit integers",
+          "Επειδή το τυχαίο UUID δεν επιτρέπει σε τρίτους να μαντέψουν το cookie του επόμενου χρήστη",
+          "Επειδή μόνο τα UUIDs μπορούν να χρησιμοποιηθούν μαζί με ON DELETE CASCADE"
+        ],
+        correct: 2,
+        explain: "Ένα session ID ταξιδεύει μέσα σε HTTP cookie. Αν ήταν 1, 2, 3, κάποιος θα άλλαζε το cookie του σε 4 για να μπει στον λογαριασμό άλλου. Το UUID είναι πρακτικά αδύνατο να μαντευτεί."
+      }
+    ], {
+      label: "Checkpoint 1 · Θεμέλια, Κλειδιά & Ασφάλεια",
+      note: "Έλεγξε την κατανόησή σου σε PK, UNIQUE, UUID και Foreign Keys."
+    })
+
+    // ── Slide 5: Ενότητα 4 — Οι Σχέσεις (Relations & Cardinality) ────────── ⊃
+    addContent(`
+<div id="@oi-scheseis-relat" class="eyebrow">Ενότητα 4 / 11 — Σχεσιακά Μοντέλα</div>
+<h1>Πώς λέγονται οι Σχέσεις (Cardinality)</h1>
+<p class="lede">Η σχέση ανάμεσα σε δύο πίνακες μετριέται με το πόσες εγγραφές του ενός αντιστοιχούν στον άλλον (<strong>Cardinality</strong>). Σε μια web εφαρμογή κοινότητας συναντάς και τους <strong>3 τύπους</strong> στην πράξη:</p>
+
+<div class="brutalist-diagram-wrap">
+  <svg viewBox="0 0 840 330" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:620px; height:auto; display:block;" role="img" aria-label="Διαγράμματα Σχέσεων 1:1 sessions, 1:N posts, N:M categories">
+    <!-- ROW 1: 1:1 (users <-> sessions) -->
+    <rect x="20" y="16" width="800" height="82" fill="#13151c" stroke="#475569" stroke-width="2"/>
+    <rect x="20" y="16" width="120" height="82" fill="#e5fe40" stroke="#f5f5f0" stroke-width="2"/>
+    <text x="80" y="54" font-family="monospace" font-size="18" font-weight="800" fill="#0b0c10" text-anchor="middle">1 : 1</text>
+    <text x="80" y="74" font-family="monospace" font-size="10" font-weight="700" fill="#0b0c10" text-anchor="middle">ONE-TO-ONE</text>
+
+    <rect x="175" y="34" width="175" height="46" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2.5"/>
+    <text x="262" y="62" font-family="monospace" font-size="14" font-weight="700" fill="#f5f5f0" text-anchor="middle">users (id PK)</text>
+    <line x1="350" y1="57" x2="495" y2="57" stroke="#e5fe40" stroke-width="3"/>
+    <text x="366" y="49" font-family="monospace" font-size="12" font-weight="800" fill="#e5fe40">1</text>
+    <text x="478" y="49" font-family="monospace" font-size="12" font-weight="800" fill="#e5fe40">1</text>
+    <rect x="495" y="34" width="300" height="46" fill="#1b1f2a" stroke="#e5fe40" stroke-width="2.5"/>
+    <text x="645" y="62" font-family="monospace" font-size="12.5" font-weight="700" fill="#e5fe40" text-anchor="middle">sessions (user_id FK+UNIQUE)</text>
+
+    <!-- ROW 2: 1:N (users -> posts) -->
+    <rect x="20" y="114" width="800" height="82" fill="#13151c" stroke="#475569" stroke-width="2"/>
+    <rect x="20" y="114" width="120" height="82" fill="#38bdf8" stroke="#f5f5f0" stroke-width="2"/>
+    <text x="80" y="152" font-family="monospace" font-size="18" font-weight="800" fill="#0b0c10" text-anchor="middle">1 : N</text>
+    <text x="80" y="172" font-family="monospace" font-size="10" font-weight="700" fill="#0b0c10" text-anchor="middle">ONE-TO-MANY</text>
+
+    <rect x="175" y="132" width="175" height="46" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2.5"/>
+    <text x="262" y="160" font-family="monospace" font-size="14" font-weight="700" fill="#f5f5f0" text-anchor="middle">users (id PK)</text>
+    <line x1="350" y1="155" x2="495" y2="155" stroke="#38bdf8" stroke-width="3"/>
+    <line x1="477" y1="155" x2="495" y2="144" stroke="#38bdf8" stroke-width="2.5"/>
+    <line x1="477" y1="155" x2="495" y2="166" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="366" y="147" font-family="monospace" font-size="12" font-weight="800" fill="#e5fe40">1</text>
+    <text x="470" y="142" font-family="monospace" font-size="12" font-weight="800" fill="#38bdf8">N</text>
+    <rect x="495" y="132" width="300" height="46" fill="#1b1f2a" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="645" y="160" font-family="monospace" font-size="13" font-weight="700" fill="#38bdf8" text-anchor="middle">posts (user_id FK)</text>
+
+    <!-- ROW 3: N:M (posts <-> categories) -->
+    <rect x="20" y="212" width="800" height="102" fill="#13151c" stroke="#475569" stroke-width="2"/>
+    <rect x="20" y="212" width="120" height="102" fill="#ff5a5f" stroke="#f5f5f0" stroke-width="2"/>
+    <text x="80" y="256" font-family="monospace" font-size="18" font-weight="800" fill="#0b0c10" text-anchor="middle">N : M</text>
+    <text x="80" y="276" font-family="monospace" font-size="10" font-weight="700" fill="#0b0c10" text-anchor="middle">MANY-TO-MANY</text>
+
+    <rect x="165" y="240" width="135" height="46" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2.5"/>
+    <text x="232" y="268" font-family="monospace" font-size="14" font-weight="700" fill="#f5f5f0" text-anchor="middle">posts</text>
+
+    <line x1="300" y1="263" x2="372" y2="263" stroke="#ff5a5f" stroke-width="3"/>
+    <line x1="356" y1="263" x2="372" y2="253" stroke="#ff5a5f" stroke-width="2.5"/>
+    <line x1="356" y1="263" x2="372" y2="273" stroke="#ff5a5f" stroke-width="2.5"/>
+    <text x="310" y="254" font-family="monospace" font-size="11" fill="#e5fe40">1</text>
+    <text x="352" y="248" font-family="monospace" font-size="11" fill="#ff5a5f">N</text>
+
+    <rect x="372" y="226" width="224" height="74" fill="#2a1216" stroke="#ff5a5f" stroke-width="3"/>
+    <text x="484" y="247" font-family="monospace" font-size="12" font-weight="800" fill="#ff5a5f" text-anchor="middle">post_categories (PIVOT)</text>
+    <text x="484" y="267" font-family="monospace" font-size="11" fill="#f5f5f0" text-anchor="middle">PK (post_id, category_id)</text>
+    <text x="484" y="284" font-family="monospace" font-size="11" fill="#38bdf8" text-anchor="middle">FK post_id + FK cat_id</text>
+
+    <line x1="596" y1="263" x2="668" y2="263" stroke="#ff5a5f" stroke-width="3"/>
+    <line x1="612" y1="263" x2="596" y2="253" stroke="#ff5a5f" stroke-width="2.5"/>
+    <line x1="612" y1="263" x2="596" y2="273" stroke="#ff5a5f" stroke-width="2.5"/>
+    <text x="608" y="248" font-family="monospace" font-size="11" fill="#ff5a5f">N</text>
+    <text x="652" y="254" font-family="monospace" font-size="11" fill="#e5fe40">1</text>
+
+    <rect x="668" y="240" width="132" height="46" fill="#1b1f2a" stroke="#f5f5f0" stroke-width="2.5"/>
+    <text x="734" y="268" font-family="monospace" font-size="13" font-weight="700" fill="#f5f5f0" text-anchor="middle">categories</text>
+  </svg>
+  <div class="brutalist-diagram-caption">Σχήμα 3 — 1:1 (1 ενεργό session ανά user), 1:N (posts ανά user) &amp; N:M (post_categories)</div>
+</div>
+
+<div class="grid3">
+  <div class="card">
+    <h3>1:1 (One-to-One)</h3>
+    <p>Αν ένας χρήστης επιτρέπεται να έχει <strong>μόνο 1 ενεργό session</strong> ταυτόχρονα, βάζουμε <code>user_id FK + UNIQUE</code> στον πίνακα <code>sessions</code> (μαζί με <code>expires_at</code>).</p>
+  </div>
+  <div class="card">
+    <h3>1:N / N:1 (One-to-Many)</h3>
+    <p>1 χρήστης γράφει πολλά posts, 1 post έχει πολλά comments. Το Foreign Key μπαίνει <strong>πάντα στη μεριά του Many</strong> (<code>posts.user_id</code>, <code>comments.post_id</code>).</p>
+  </div>
+  <div class="card">
+    <h3>N:M (Many-to-Many)</h3>
+    <p>Ένα post μπορεί να ανήκει σε 1+ κατηγορίες και μια κατηγορία έχει πολλά posts. Σπάει σε δύο <code>1:N</code> με <strong>Junction / Pivot Table</strong> (<code>post_categories</code>).</p>
+  </div>
+</div>
+`)
+
+    // ── Slide 6: Ενότητα 5 — Πώς Αναλύουμε τι Θέλουμε (Database Modeling) ── ⊃
+    addContent(`
+<div id="@pos-analyoyme-ti" class="eyebrow">Ενότητα 5 / 11 — Μεθοδολογία Σχεδιασμού</div>
+<h1>Πώς Αναλύουμε τι Θέλουμε (Modeling)</h1>
+<p class="lede">Όταν σχεδιάζεις μια εφαρμογή συζητήσεων όπου οι χρήστες συνδέονται με cookies, δημοσιεύουν κείμενα σε κατηγορίες, σχολιάζουν και κάνουν like/dislike, ακολούθησε αυτά τα <strong>5 βήματα</strong> πριν γράψεις SQL:</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Βήμα 1: Βρες τα Ουσιαστικά → Tables</h3>
+    <p>Κύκλωσε τις κύριες οντότητες (<strong>Entities</strong>): <code>users</code>, <code>sessions</code>, <code>posts</code>, <code>comments</code>, <code>categories</code>, και οι αλληλεπιδράσεις <strong>likes/dislikes</strong>.</p>
+  </div>
+  <div class="card">
+    <h3>Βήμα 2: Βρες τις Ιδιότητες → Columns</h3>
+    <p>Τι δεδομένα χρειάζεται η κάθε οντότητα (<strong>Attributes</strong>); Π.χ. το session θέλει <code>id</code> (UUID), <code>user_id</code>, <code>expires_at</code>. Ο user θέλει <code>email</code>, <code>username</code>, <code>password_hash</code>.</p>
+  </div>
+  <div class="card">
+    <h3>Βήμα 3: Το «Τεστ των 2 Ερωτήσεων»</h3>
+    <p>Για κάθε ζεύγος ρώτα:<br>
+    • <em>«Ένα Post πόσες Κατηγορίες έχει;»</em> → Πολλές (<code>N</code>).<br>
+    • <em>«Μία Κατηγορία πόσα Posts έχει;»</em> → Πολλά (<code>M</code>).<br>
+    Άρα: <strong>N:M</strong> → Θέλει πίνακα <code>post_categories</code>!</p>
+  </div>
+  <div class="card">
+    <h3>Βήμα 4 &amp; 5: FKs &amp; Normalization</h3>
+    <p>Τοποθέτησε τα FKs στη μεριά του <code>N</code> (<code>comments.post_id</code>, <code>comments.user_id</code>). Μην αποθηκεύεις ποτέ το <code>username</code> μέσα στο <code>comments</code> ή μετρητές σε strings — η βάση τα υπολογίζει δυναμικά!</p>
+  </div>
+</div>
+
+<div class="brutalist-diagram-wrap">
+  <svg viewBox="0 0 840 215" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:600px; height:auto; display:block;" role="img" aria-label="ERD Blueprint κοινότητας">
+    <!-- sessions -->
+    <rect x="20" y="18" width="145" height="90" fill="#13151c" stroke="#e5fe40" stroke-width="2.5"/>
+    <rect x="20" y="18" width="145" height="26" fill="#e5fe40"/>
+    <text x="92" y="36" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">sessions</text>
+    <text x="30" y="62" font-family="monospace" font-size="11" fill="#e5fe40">PK id (UUID)</text>
+    <text x="30" y="80" font-family="monospace" font-size="11" fill="#38bdf8">FK user_id (UQ)</text>
+    <text x="30" y="98" font-family="monospace" font-size="11" fill="#f5f5f0">   expires_at</text>
+
+    <!-- 1:1 line -->
+    <line x1="92" y1="108" x2="92" y2="128" stroke="#e5fe40" stroke-width="2.5"/>
+    <text x="102" y="122" font-family="monospace" font-size="10" fill="#e5fe40">1:1</text>
+
+    <!-- users -->
+    <rect x="20" y="128" width="145" height="72" fill="#13151c" stroke="#f5f5f0" stroke-width="2.5"/>
+    <rect x="20" y="128" width="145" height="24" fill="#f5f5f0"/>
+    <text x="92" y="145" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">users</text>
+    <text x="30" y="169" font-family="monospace" font-size="11" fill="#e5fe40">PK id</text>
+    <text x="30" y="187" font-family="monospace" font-size="11" fill="#f5f5f0">   email (UQ)</text>
+
+    <!-- users 1:N posts -->
+    <line x1="165" y1="164" x2="225" y2="100" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="180" y="122" font-family="monospace" font-size="10" fill="#38bdf8">1:N</text>
+
+    <!-- posts -->
+    <rect x="225" y="18" width="165" height="100" fill="#13151c" stroke="#38bdf8" stroke-width="2.5"/>
+    <rect x="225" y="18" width="165" height="26" fill="#38bdf8"/>
+    <text x="307" y="36" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">posts</text>
+    <text x="235" y="62" font-family="monospace" font-size="11" fill="#e5fe40">PK id</text>
+    <text x="235" y="80" font-family="monospace" font-size="11" fill="#38bdf8">FK user_id</text>
+    <text x="235" y="98" font-family="monospace" font-size="11" fill="#f5f5f0">   title, body</text>
+
+    <!-- posts 1:N comments -->
+    <line x1="307" y1="118" x2="307" y2="136" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="315" y="131" font-family="monospace" font-size="10" fill="#38bdf8">1:N</text>
+
+    <!-- comments -->
+    <rect x="225" y="136" width="165" height="64" fill="#13151c" stroke="#38bdf8" stroke-width="2"/>
+    <rect x="225" y="136" width="165" height="22" fill="#1b1f2a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="307" y="152" font-family="monospace" font-size="12" font-weight="700" fill="#38bdf8" text-anchor="middle">comments</text>
+    <text x="235" y="175" font-family="monospace" font-size="11" fill="#38bdf8">FK post_id, user_id</text>
+    <text x="235" y="192" font-family="monospace" font-size="11" fill="#f5f5f0">   body</text>
+
+    <!-- posts N:M categories -->
+    <line x1="390" y1="68" x2="450" y2="68" stroke="#ff5a5f" stroke-width="2.5"/>
+    <text x="412" y="60" font-family="monospace" font-size="10" fill="#ff5a5f">1:N</text>
+
+    <rect x="450" y="18" width="180" height="100" fill="#2a1216" stroke="#ff5a5f" stroke-width="2.5"/>
+    <rect x="450" y="18" width="180" height="26" fill="#ff5a5f"/>
+    <text x="540" y="36" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">post_categories</text>
+    <text x="460" y="62" font-family="monospace" font-size="11" fill="#38bdf8">FK post_id</text>
+    <text x="460" y="80" font-family="monospace" font-size="11" fill="#38bdf8">FK category_id</text>
+    <text x="460" y="98" font-family="monospace" font-size="10.5" fill="#f5f5f0">PK (post_id, cat_id)</text>
+
+    <line x1="630" y1="68" x2="680" y2="68" stroke="#ff5a5f" stroke-width="2.5"/>
+    <text x="646" y="60" font-family="monospace" font-size="10" fill="#ff5a5f">N:1</text>
+
+    <rect x="680" y="18" width="140" height="100" fill="#13151c" stroke="#f5f5f0" stroke-width="2.5"/>
+    <rect x="680" y="18" width="140" height="26" fill="#f5f5f0"/>
+    <text x="750" y="36" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">categories</text>
+    <text x="690" y="62" font-family="monospace" font-size="11" fill="#e5fe40">PK id</text>
+    <text x="690" y="80" font-family="monospace" font-size="11" fill="#f5f5f0">   name (UQ)</text>
+
+    <!-- reactions box -->
+    <rect x="450" y="136" width="370" height="64" fill="#13151c" stroke="#e5fe40" stroke-width="2"/>
+    <rect x="450" y="136" width="370" height="22" fill="#1b1f2a" stroke="#e5fe40" stroke-width="2"/>
+    <text x="635" y="152" font-family="monospace" font-size="12" font-weight="700" fill="#e5fe40" text-anchor="middle">post_reactions (ή + comment_reactions)</text>
+    <text x="460" y="175" font-family="monospace" font-size="11" fill="#38bdf8">UNIQUE (user_id, post_id)</text>
+    <text x="460" y="192" font-family="monospace" font-size="11" fill="#f5f5f0">value: +1 (Like) / -1 (Dislike)</text>
+  </svg>
+  <div class="brutalist-diagram-caption">Σχήμα 4 — Πλήρες Entity-Relationship Diagram (ERD) με users, sessions, posts, comments, categories &amp; reactions</div>
+</div>
+`)
+
+    // ── Slide 7: Ενότητα 6 — Σχεδιαστικά Διλήμματα (Likes / Dislikes) ─────── ⊃
+    addContent(`
+<div id="@schediastika-dilimmata" class="eyebrow">Ενότητα 6 / 11 — Αρχιτεκτονικές Επιλογές</div>
+<h1>Σχεδιαστικά Διλήμματα: Reactions (Like / Dislike)</h1>
+<p class="lede">Πώς μοντελοποιείς τα Likes και Dislikes όταν ένας χρήστης μπορεί να αντιδράσει τόσο σε <code>posts</code> όσο και σε <code>comments</code>, αλλά το πολύ <strong>1 φορά</strong> ανά στοιχείο;</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>Κανόνας #1: Μία αντίδραση ανά χρήστη</h3>
+    <p>Ο χρήστης δεν πρέπει να μπορεί να κάνει 50 likes ή ταυτόχρονα like και dislike στο ίδιο post! Βάζουμε <strong>Composite Unique Constraint</strong>: <code>UNIQUE(user_id, post_id)</code> και μία στήλη <code>value</code> με έλεγχο <code>CHECK (value IN (1, -1))</code>. Αν πατήσει ξανά like, το διαγράφουμε· αν πατήσει dislike, το ενημερώνουμε σε <code>-1</code>!</p>
+  </div>
+  <div class="card">
+    <h3>Κανόνας #2: Separate vs Polymorphic</h3>
+    <p><strong>Επιλογή Α (Ξεχωριστοί Πίνακες):</strong> <code>post_reactions</code> &amp; <code>comment_reactions</code>. Πλεονέκτημα: <strong>καθαρά Foreign Keys</strong> με <code>ON DELETE CASCADE</code>.<br>
+    <strong>Επιλογή Β (1 Πίνακας):</strong> <code>reactions(user_id, target_type, target_id, value)</code>. Πιο compact, αλλά χάνεις τον έλεγχο Foreign Key από τη βάση.</p>
+  </div>
+</div>
+
+<div class="callout good">
+  <span class="tag">Γιατί value IN (1, -1) αντί για δύο πίνακες likes &amp; dislikes;</span>
+  Με ένα πεδίο <code>value</code> (+1 ή -1) και <code>UNIQUE(user_id, post_id)</code>, η ίδια η βάση αποτρέπει το να έχει ένας χρήστης ταυτόχρονα και like και dislike στην ίδια δημοσίευση — και τα μετράς όλα με ένα μόνο query!
+</div>
+`)
+
+    // ── Slide 8: Checkpoint 2 (Multi-Set Matching Pairs) ─────────────────── ⊃
+    addMatching([
+      [
+        { term: "Primary Key (PK)", def: "Μοναδικό και μη-κενό αναγνωριστικό κάθε γραμμής" },
+        { term: "email TEXT UNIQUE", def: "Αποτρέπει διπλή εγγραφή ίδιου email ακόμα και σε race condition" },
+        { term: "sessions.user_id UNIQUE", def: "Επιβάλλει 1:1 σχέση (ένα ενεργό session ανά χρήστη)" },
+        { term: "ON DELETE CASCADE", def: "Διαγράφει αυτόματα comments ή sessions αν φύγει ο γονέας" },
+        { term: "bcrypt hash", def: "Ασφαλής αποθήκευση κωδικού — ποτέ plain-text password" }
+      ],
+      [
+        { term: "One-to-Many (1:N)", def: "users -> posts (το FK μπαίνει στη μεριά του Many)" },
+        { term: "Many-to-Many (N:M)", def: "posts <-> categories μέσω pivot πίνακα post_categories" },
+        { term: "UNIQUE(user_id, post_id)", def: "Εγγυάται το πολύ μία αντίδραση (like/dislike) ανά χρήστη" },
+        { term: "Normalization", def: "Δεν αντιγράφουμε username/counters σε άλλους πίνακες" },
+        { term: "ERD", def: "Χάρτης οντοτήτων και σχέσεων πριν γράψουμε SQL" }
+      ]
+    ], {
+      label: "Checkpoint 2 · Ταίριαξε τους Όρους",
+      note: "Δύο σετ: Keys/Sessions (Set 1) και Σχέσεις/Reactions (Set 2)."
+    })
+
+    // ── Slide 9: Ενότητα 7 — Πώς Γράφονται σε SQL (DDL) ──────────────────── ⊃
+    addContent(`
+<div id="@pos-grafontai-se" class="eyebrow">Ενότητα 7 / 11 — SQL Schema (DDL)</div>
+<h1>Πώς Γράφονται Όλα Αυτά σε SQL</h1>
+<p class="lede">Τώρα μεταφράζουμε το ERD σε <strong>SQL DDL</strong> (<code>CREATE TABLE</code>). Πρόσεξε πώς γράφονται το <code>UNIQUE</code>, το <code>CHECK</code>, τα <code>FOREIGN KEY</code>s και το Composite Primary Key:</p>
+
+<pre><code><span class="tok-com">-- CRITICAL in SQLite: enable Foreign Keys enforcement on every connection!</span>
+<span class="tok-kw">PRAGMA</span> foreign_keys = <span class="tok-kw">ON</span>;
+
+<span class="tok-kw">CREATE TABLE</span> <span class="tok-kw">IF NOT EXISTS</span> users (
+    id            <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
+    email         <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL UNIQUE</span>,
+    username      <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL UNIQUE</span>,
+    password_hash <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL</span>
+);
+
+<span class="tok-kw">CREATE TABLE</span> <span class="tok-kw">IF NOT EXISTS</span> sessions (
+    id         <span class="tok-type">TEXT</span>     <span class="tok-kw">PRIMARY KEY</span>, <span class="tok-com">-- UUID token stored in cookie</span>
+    user_id    <span class="tok-type">INTEGER</span>  <span class="tok-kw">NOT NULL UNIQUE</span>, <span class="tok-com">-- 1:1 enforces 1 active session</span>
+    expires_at <span class="tok-type">DATETIME</span> <span class="tok-kw">NOT NULL</span>,
+    <span class="tok-kw">FOREIGN KEY</span> (user_id) <span class="tok-kw">REFERENCES</span> users(id) <span class="tok-kw">ON DELETE CASCADE</span>
+);
+
+<span class="tok-kw">CREATE TABLE</span> <span class="tok-kw">IF NOT EXISTS</span> post_categories (
+    post_id     <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    category_id <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    <span class="tok-kw">PRIMARY KEY</span> (post_id, category_id),
+    <span class="tok-kw">FOREIGN KEY</span> (post_id)     <span class="tok-kw">REFERENCES</span> posts(id)      <span class="tok-kw">ON DELETE CASCADE</span>,
+    <span class="tok-kw">FOREIGN KEY</span> (category_id) <span class="tok-kw">REFERENCES</span> categories(id) <span class="tok-kw">ON DELETE CASCADE</span>
+);
+
+<span class="tok-kw">CREATE TABLE</span> <span class="tok-kw">IF NOT EXISTS</span> post_reactions (
+    id      <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
+    user_id <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    post_id <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    value   <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL CHECK</span> (value <span class="tok-kw">IN</span> (<span class="tok-num">1</span>, -<span class="tok-num">1</span>)),
+    <span class="tok-kw">UNIQUE</span> (user_id, post_id),
+    <span class="tok-kw">FOREIGN KEY</span> (user_id) <span class="tok-kw">REFERENCES</span> users(id) <span class="tok-kw">ON DELETE CASCADE</span>,
+    <span class="tok-kw">FOREIGN KEY</span> (post_id) <span class="tok-kw">REFERENCES</span> posts(id) <span class="tok-kw">ON DELETE CASCADE</span>
+);</code></pre>
+
+<div class="callout">
+  <span class="tag">Παγίδα SQLite</span>
+  Από προεπιλογή, η SQLite <strong>αγνοεί</strong> τα <code>FOREIGN KEY</code> constraints για backwards compatibility! Πρέπει πάντα να περνάς <code>PRAGMA foreign_keys = ON;</code> ή να το βάζεις στο DSN (<code>./app.db?_foreign_keys=on</code>).
+</div>
+`)
+
+    // ── Slide 10: Ενότητα 8 — SQL Queries: JOIN, GROUP BY & Φιλτράρισμα ──── ⊃
+    addContent(`
+<div id="@sql-joins-aggregations" class="eyebrow">Ενότητα 8 / 11 — SQL Queries (DML)</div>
+<h1><code>JOIN</code>, <code>GROUP BY</code> &amp; Φιλτράρισμα</h1>
+<p class="lede">Πώς φέρνεις τα posts μαζί με το username του συγγραφέα, το σύνολο των likes/dislikes και τα φίλτρα (ανά κατηγορία, δικά μου posts, ή posts που έκανα like); Όλα γίνονται καθαρά στην SQL!</p>
+
+<pre><code><span class="tok-com">-- 1) Count likes &amp; dislikes for every post using LEFT JOIN + GROUP BY</span>
+<span class="tok-kw">SELECT</span> p.id, p.title, u.username,
+       <span class="tok-kw">COALESCE</span>(<span class="tok-func">SUM</span>(<span class="tok-kw">CASE WHEN</span> r.value = <span class="tok-num">1</span>  <span class="tok-kw">THEN</span> <span class="tok-num">1</span> <span class="tok-kw">ELSE</span> <span class="tok-num">0</span> <span class="tok-kw">END</span>), <span class="tok-num">0</span>) <span class="tok-kw">AS</span> likes,
+       <span class="tok-kw">COALESCE</span>(<span class="tok-func">SUM</span>(<span class="tok-kw">CASE WHEN</span> r.value = -<span class="tok-num">1</span> <span class="tok-kw">THEN</span> <span class="tok-num">1</span> <span class="tok-kw">ELSE</span> <span class="tok-num">0</span> <span class="tok-kw">END</span>), <span class="tok-num">0</span>) <span class="tok-kw">AS</span> dislikes
+<span class="tok-kw">FROM</span> posts p
+<span class="tok-kw">JOIN</span> users u <span class="tok-kw">ON</span> u.id = p.user_id
+<span class="tok-kw">LEFT JOIN</span> post_reactions r <span class="tok-kw">ON</span> r.post_id = p.id
+<span class="tok-kw">GROUP BY</span> p.id;</code></pre>
+
+<h2>Τα 3 βασικά μοτίβα φιλτραρίσματος (Filtering)</h2>
+<pre><code><span class="tok-com">-- Filter A: Posts belonging to a specific category (via N:M junction table)</span>
+<span class="tok-kw">SELECT</span> p.* <span class="tok-kw">FROM</span> posts p
+<span class="tok-kw">JOIN</span> post_categories pc <span class="tok-kw">ON</span> pc.post_id = p.id
+<span class="tok-kw">WHERE</span> pc.category_id = ?;
+
+<span class="tok-com">-- Filter B: Posts created by the logged-in user</span>
+<span class="tok-kw">SELECT</span> * <span class="tok-kw">FROM</span> posts <span class="tok-kw">WHERE</span> user_id = ?;
+
+<span class="tok-com">-- Filter C: Posts liked (+1) by the logged-in user</span>
+<span class="tok-kw">SELECT</span> p.* <span class="tok-kw">FROM</span> posts p
+<span class="tok-kw">JOIN</span> post_reactions r <span class="tok-kw">ON</span> r.post_id = p.id
+<span class="tok-kw">WHERE</span> r.user_id = ? <span class="tok-kw">AND</span> r.value = <span class="tok-num">1</span>;</code></pre>
+`)
+
+    // ── Slide 11: Ενότητα 9 — Από την SQL στη Go (database/sql) ─────────────── ⊃
+    addContent(`
+<div id="@apo-tin-sql-sti-go" class="eyebrow">Ενότητα 9 / 11 — Go Standard Library</div>
+<h1>Από την SQL στη Go (<code>database/sql</code>)</h1>
+<p class="lede">Η Go προσφέρει το κοινό interface <code>database/sql</code> και συνδέεται με την SQLite μέσω driver (<code>_ "github.com/mattn/go-sqlite3"</code>). Δες πώς κάνεις Register, Login &amp; έλεγχο duplicate email με ασφάλεια:</p>
+
+<pre><code class="lang-go">package main
+
+import (
+	"database/sql"
+	"errors"
+	"strings"
+
+	_ "github.com/mattn/go-sqlite3" // blank import registers sqlite3 driver
+	"golang.org/x/crypto/bcrypt"
+)
+
+var ErrEmailTaken = errors.New("email already exists")
+
+func RegisterUser(db *sql.DB, email, username, plainPassword string) error {
+	// Never store plain-text passwords in the DB
+	hash, err := bcrypt.GenerateFromPassword([]byte(plainPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	// Parameterized query (?): protects 100% against SQL Injection
+	_, err = db.Exec(
+		"INSERT INTO users (email, username, password_hash) VALUES (?, ?, ?)",
+		email, username, string(hash),
+	)
+	if err != nil &&amp; strings.Contains(err.Error(), "UNIQUE constraint failed") {
+		return ErrEmailTaken
+	}
+	return err
+}
+
+func VerifyCredentials(db *sql.DB, email, plainPassword string) (int, error) {
+	var userID int
+	var storedHash string
+	err := db.QueryRow(
+		"SELECT id, password_hash FROM users WHERE email = ?", email,
+	).Scan(&amp;userID, &amp;storedHash)
+	if errors.Is(err, sql.ErrNoRows) {
+		return 0, errors.New("invalid credentials")
+	}
+	if err != nil {
+		return 0, err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(plainPassword)); err != nil {
+		return 0, errors.New("invalid credentials")
+	}
+	return userID, nil
+}</code></pre>
+
+<div class="callout">
+  <span class="tag">Ασφάλεια #1 — Ποτέ string concatenation!</span>
+  Μην φτιάχνεις ποτέ SQL με <code>+</code> ή <code>fmt.Sprintf</code> πάνω σε input χρήστη (π.χ. φίλτρα ή login) — αυτό ανοίγει τρύπα για <strong>SQL Injection</strong>. Χρησιμοποιούμε <strong>πάντα</strong> placeholders (<code>?</code> στην SQLite).
+</div>
+`)
+
+    // ── Slide 12: Ενότητα 10 — Σχέσεις, 1:N & Transactions στη Go ──────────── ⊃
+    addContent(`
+<div id="@scheseis-kai-1n-go" class="eyebrow">Ενότητα 10 / 11 — Go Struct Mapping &amp; Transactions</div>
+<h1>Σχέσεις, 1:N &amp; Transactions στη Go</h1>
+<p class="lede">Πώς φέρνεις πολλά posts με τα comments τους στη Go χωρίς N+1 queries, και πώς εξασφαλίζεις ότι η δημιουργία ενός post + κατηγοριών γίνεται ατομικά (Transactions);</p>
+
+<div class="brutalist-diagram-wrap">
+  <svg viewBox="0 0 820 150" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:580px; height:auto; display:block;" role="img" aria-label="Χαρτογράφηση LEFT JOIN γραμμών σε Go Post struct με []Comment">
+    <rect x="20" y="20" width="235" height="105" fill="#13151c" stroke="#38bdf8" stroke-width="2.5"/>
+    <rect x="20" y="20" width="235" height="28" fill="#38bdf8"/>
+    <text x="137" y="39" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">SQL LEFT JOIN ROWS</text>
+    <text x="32" y="68" font-family="monospace" font-size="11" fill="#f5f5f0">10 | "Go SQL" | 1 | "Nice!"</text>
+    <text x="32" y="88" font-family="monospace" font-size="11" fill="#f5f5f0">10 | "Go SQL" | 2 | "Clean"</text>
+    <text x="32" y="108" font-family="monospace" font-size="11" fill="#ff5a5f">11 | "Docker" | NULL | NULL</text>
+
+    <line x1="255" y1="72" x2="325" y2="72" stroke="#e5fe40" stroke-width="3"/>
+    <polygon points="320,66 332,72 320,78" fill="#e5fe40"/>
+    <text x="290" y="60" font-family="monospace" font-size="11" font-weight="700" fill="#e5fe40" text-anchor="middle">Scan()</text>
+
+    <rect x="335" y="20" width="215" height="105" fill="#13151c" stroke="#e5fe40" stroke-width="2.5"/>
+    <rect x="335" y="20" width="215" height="28" fill="#e5fe40"/>
+    <text x="442" y="39" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">sql.Null* + map[int]*Post</text>
+    <text x="347" y="68" font-family="monospace" font-size="11" fill="#38bdf8">if cID.Valid {</text>
+    <text x="347" y="88" font-family="monospace" font-size="11" fill="#f5f5f0">  p.Comments = append(...)</text>
+    <text x="347" y="108" font-family="monospace" font-size="11" fill="#38bdf8">}</text>
+
+    <line x1="550" y1="72" x2="605" y2="72" stroke="#e5fe40" stroke-width="3"/>
+    <polygon points="600,66 612,72 600,78" fill="#e5fe40"/>
+
+    <rect x="615" y="20" width="185" height="105" fill="#13151c" stroke="#00e043" stroke-width="2.5"/>
+    <rect x="615" y="20" width="185" height="28" fill="#00e043"/>
+    <text x="707" y="39" font-family="monospace" font-size="12" font-weight="800" fill="#0b0c10" text-anchor="middle">Go Post{ Comments[] }</text>
+    <text x="627" y="70" font-family="monospace" font-size="11" fill="#f5f5f0">Post{10, "Go SQL", [2]}</text>
+    <text x="627" y="96" font-family="monospace" font-size="11" fill="#f5f5f0">Post{11, "Docker", []}</text>
+  </svg>
+  <div class="brutalist-diagram-caption">Σχήμα 5 — Ένα LEFT JOIN φέρνει flat γραμμές· τα sql.Null* προστατεύουν από NULLs (posts χωρίς σχόλια)</div>
+</div>
+
+<pre><code class="lang-go">// Transaction: Create a post AND attach categories atomically (all or nothing)
+func CreatePostWithCategories(db *sql.DB, userID int, title, body string, catIDs []int) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback() // safe no-op if tx.Commit() succeeds
+
+	res, err := tx.Exec("INSERT INTO posts (user_id, title, body) VALUES (?, ?, ?)", userID, title, body)
+	if err != nil {
+		return err
+	}
+	postID, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	for _, catID := range catIDs {
+		if _, err := tx.Exec("INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)", postID, catID); err != nil {
+			return err // if any category_id is invalid, Rollback undoes the post too!
+		}
+	}
+	return tx.Commit()
+}</code></pre>
+`)
+
+    // ── Slide 13: Checkpoint 3 (Fill in the Blank) ───────────────────────── ⊃
+    addFillBlank([
+      {
+        lang: "generic",
+        code: `-- Πίνακας sessions (1 ενεργό session ανά user) & αντιδράσεις
+CREATE TABLE sessions (
+    id         TEXT     PRIMARY KEY,
+    user_id    INTEGER  NOT NULL __uq__,
+    expires_at DATETIME NOT NULL,
+    __fk__ (user_id) __ref__ users(id) ON DELETE CASCADE
+);`,
+        blanks: [
+          { id: "uq", answer: "UNIQUE" },
+          { id: "fk", answer: "FOREIGN KEY" },
+          { id: "ref", answer: "REFERENCES" }
+        ],
+        explain: "Το UNIQUE στο user_id επιβάλλει 1:1 σχέση (1 ενεργό session ανά χρήστη), και η σύνδεση με τον γονέα δηλώνεται με FOREIGN KEY (...) REFERENCES users(id)."
+      },
+      {
+        lang: "go",
+        code: `func GetPostsByCategory(db *sql.DB, catID int) ([]Post, error) {
+	rows, err := db.__qry__(\`
+		SELECT p.id, p.title FROM posts p
+		JOIN post_categories pc ON pc.post_id = p.id
+		WHERE pc.category_id = ?\`, catID)
+	if err != nil {
+		return nil, err
+	}
+	__def__ rows.Close()
+
+	var posts []Post
+	for rows.Next() {
+		var p Post
+		if err := rows.__scn__(&p.ID, &p.Title); err != nil {
+			return nil, err
+		}
+		posts = append(posts, p)
+	}
+	return posts, rows.Err()
+}`,
+        blanks: [
+          { id: "qry", answer: "Query" },
+          { id: "def", answer: "defer" },
+          { id: "scn", answer: "Scan" }
+        ],
+        explain: "Χρησιμοποιούμε db.Query για πολλαπλές γραμμές, defer rows.Close() για να ελευθερώνουμε πάντα τον πόρο, και rows.Scan(&...) για κάθε γραμμή."
+      }
+    ], {
+      label: "Checkpoint 3 · Γράψε SQL & Go",
+      note: "Συμπλήρωσε τα κενά για sessions και φιλτράρισμα ανά κατηγορία."
+    })
+
+    // ── Slide 14: Ενότητα 11 — Εξάσκηση Σχεδιασμού (Spoiler Challenge) ─────── ⊃
+    addContent(`
+<div id="@exaskisi-schediasm" class="eyebrow">Ενότητα 11 / 11 — Εξάσκηση στην Πράξη</div>
+<h1>Εξάσκηση: Comment Reactions &amp; Active Session</h1>
+<p class="lede">Σκέψου πώς θα έγραφες: (α) τον πίνακα για likes/dislikes πάνω σε <code>comments</code>, και (β) την εντολή σε Go που ανοίγει ένα νέο session διαγράφοντας/αντικαθιστώντας τυχόν παλιό session του ίδιου χρήστη.</p>
+
+<div class="grid2">
+  <div class="card">
+    <h3>1. Τι περιορισμούς χρειάζεται;</h3>
+    <p>Πώς εμποδίζεις διπλό like του ίδιου χρήστη στο ίδιο comment, και πώς βεβαιώνεσαι ότι το <code>value</code> είναι μόνο +1 ή -1;</p>
+  </div>
+  <div class="card">
+    <h3>2. Πώς διαχειρίζεσαι το 1:1 Session;</h3>
+    <p>Αν ο χρήστης κάνει login από άλλον browser, πώς λες στη βάση «κράτα μόνο αυτό το session»; Σύρε τη μπάρα παρακάτω για να δεις μια καθαρή προσέγγιση!</p>
+  </div>
+</div>
+
+<div class="spoiler">
+  <div class="spoiler-lock"><span>Σύρε δεξιά για να αποκαλύψεις τη λύση →</span></div>
+  <pre><code><span class="tok-com">-- 1) Comment reactions table with FK cascade + Composite UNIQUE</span>
+<span class="tok-kw">CREATE TABLE</span> <span class="tok-kw">IF NOT EXISTS</span> comment_reactions (
+    id         <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
+    user_id    <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    comment_id <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    value      <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL CHECK</span> (value <span class="tok-kw">IN</span> (<span class="tok-num">1</span>, -<span class="tok-num">1</span>)),
+    <span class="tok-kw">UNIQUE</span> (user_id, comment_id),
+    <span class="tok-kw">FOREIGN KEY</span> (user_id)    <span class="tok-kw">REFERENCES</span> users(id)    <span class="tok-kw">ON DELETE CASCADE</span>,
+    <span class="tok-kw">FOREIGN KEY</span> (comment_id) <span class="tok-kw">REFERENCES</span> comments(id) <span class="tok-kw">ON DELETE CASCADE</span>
+);
+
+<span class="tok-com">-- 2) Replace any previous session for this user_id in a single atomic query</span>
+<span class="tok-kw">INSERT OR REPLACE INTO</span> sessions (id, user_id, expires_at)
+<span class="tok-kw">VALUES</span> (?, ?, ?);</code></pre>
+</div>
+`)
+
+    // ── Slide 15: Final Combined Quiz ────────────────────────────────────── ⊃
+    addQuiz([
+      {
+        q: "Ένα Post μπορεί να έχει πολλές Κατηγορίες, και κάθε Κατηγορία περιέχει πολλά Posts. Πώς μοντελοποιείς σωστά αυτή τη σχέση;",
+        options: [
+          "Αποθηκεύεις ένα comma-separated string με τα category_ids μέσα στον πίνακα posts",
+          "Δημιουργείς έναν τρίτο Junction πίνακα (post_categories) με Composite PK (post_id, category_id)",
+          "Βάζεις ένα category_id στον πίνακα posts και ένα post_id στον πίνακα categories",
+          "Φτιάχνεις 5 ξεχωριστές στήλες category_1 έως category_5 μέσα στον πίνακα posts"
+        ],
+        correct: 1,
+        explain: "Μια σχέση Many-to-Many (N:M) λύνεται πάντα με έναν ενδιάμεσο Junction/Pivot πίνακα που σπάει τη σχέση σε δύο 1:N."
+      },
+      {
+        q: "Πώς επιβάλλει η βάση δεδομένων το «ένας χρήστης μπορεί να έχει μόνο ΕΝΑ ανοιχτό session κάθε στιγμή»;",
+        options: [
+          "Με UNIQUE constraint στη στήλη user_id του πίνακα sessions",
+          "Με CHECK (expires_at > 0) πάνω στον πίνακα users",
+          "Με LEFT JOIN ανάμεσα σε posts και sessions σε κάθε HTTP αίτημα",
+          "Με ON DELETE SET NULL στη στήλη του κωδικού cookie"
+        ],
+        correct: 0,
+        explain: "Ένα Foreign Key με UNIQUE constraint (sessions.user_id UNIQUE) μετατρέπει τη σχέση από 1:N σε 1:1 — η βάση δεν επιτρέπει δεύτερη ενεργή γραμμή για τον ίδιο χρήστη."
+      },
+      {
+        q: "Γιατί προσθέτουμε UNIQUE(user_id, post_id) και CHECK (value IN (1, -1)) στον πίνακα post_reactions;",
+        options: [
+          "Για να μην μπορεί κανένας guest χρήστης να δει τον αριθμό των likes",
+          "Για να αποτρέψουμε έναν χρήστη από το να κάνει πολλαπλά likes ή ταυτόχρονα like και dislike στο ίδιο post",
+          "Επειδή η SQLite δεν επιτρέπει αύξηση του PRIMARY KEY AUTOINCREMENT πάνω από δύο τιμές",
+          "Για να διαγράφονται αυτόματα τα παλιά posts μόλις φτάσουν τα αρνητικά votes"
+        ],
+        correct: 1,
+        explain: "Το Composite UNIQUE επιτρέπει το πολύ μία γραμμή για κάθε ζεύγος (χρήστης, post), και το CHECK εξασφαλίζει ότι η τιμή είναι αυστηρά +1 (like) ή -1 (dislike)."
+      },
+      {
+        q: "Τι θα συμβεί στην SQLite αν γράψεις FOREIGN KEY στο CREATE TABLE αλλά ξεχάσεις το PRAGMA foreign_keys = ON;",
+        options: [
+          "Η SQLite θα αρνηθεί να ανοίξει το αρχείο .db και θα επιστρέψει syntax error",
+          "Η SQLite θα δεχτεί κανονικά εγγραφές με ανύπαρκτο user_id χωρίς σφάλμα",
+          "Ο compiler της Go θα εμφανίσει compile error κατά το build του προγράμματος",
+          "Η βάση θα διαγράψει αυτόματα όλες τις υπάρχουσες εγγραφές για ασφάλεια"
+        ],
+        correct: 1,
+        explain: "Στην SQLite το foreign key enforcement είναι απενεργοποιημένο by default σε κάθε νέα σύνδεση — χωρίς PRAGMA foreign_keys = ON ή ?_foreign_keys=on, δεν ελέγχει τα FKs!"
+      },
+      {
+        q: "Γιατί στο LEFT JOIN παράδειγμα (posts με comments) στη Go χρησιμοποιήσαμε sql.NullInt64 και sql.NullString;",
+        options: [
+          "Επειδή η SQLite δεν υποστηρίζει καθόλου ακέραιους αριθμούς 32-bit σε Go",
+          "Γιατί ένα post με 0 σχόλια επιστρέφει NULL στα πεδία του comment και το απλό int/string αποτυγχάνει στο Scan",
+          "Επειδή η συνάρτηση db.Query δέχεται μόνο τύπους από το πακέτο sql και όχι built-in τύπους της Go",
+          "Για να κρυπτογραφεί αυτόματα τα ονόματα των πινάκων κατά τη διάρκεια της μεταφοράς δεδομένων"
+        ],
+        correct: 1,
+        explain: "Το LEFT JOIN επιστρέφει όλα τα posts, ακόμα κι όσα δεν έχουν σχόλια (οπότε οι στήλες του comment είναι NULL). Τα sql.Null* αποφεύγουν το Scan error όταν η τιμή είναι NULL."
+      },
+      {
+        q: "Ποιος είναι ο σωστός λόγος για να βάλεις τη δημιουργία ενός post και την εισαγωγή των post_categories μέσα σε Transaction (db.Begin / tx.Commit);",
+        options: [
+          "Για να τρέχουν τα INSERTs σε παράλληλα CPU cores χωρίς locks",
+          "Για να αναιρεθεί όλη η εγγραφή (Rollback) αν αποτύχει η σύνδεση με κάποια κατηγορία",
+          "Επειδή η SQLite δεν επιτρέπει INSERT χωρίς tx.Commit() σε πίνακες με N:M",
+          "Για να αποφεύγουμε τη χρήση parameterized queries με ερωτηματικά"
+        ],
+        correct: 1,
+        explain: "Ένα Transaction εγγυάται ατομικότητα (Atomicity): είτε γράφεται το post μαζί με όλες τις κατηγορίες του, είτε αν κάτι αποτύχει γίνεται Rollback και δεν μένουν μισοτελειωμένα δεδομένα."
+      }
+    ], {
+      label: "Τελικό Checkpoint · Έλεγχος Γνώσεων",
+      note: "6 ερωτήσεις που καλύπτουν όλο το μάθημα — από το ERD μέχρι Go Transactions."
+    })
+
+    // ── Slide 16: Consolidated Glossary ──────────────────────────────────── ⊃
+    addContent(`
+<div id="@oloi-oi-oroi" class="eyebrow">Συγκεντρωτικό Γλωσσάρι</div>
+<h1>Όλοι οι όροι που είδαμε, σε ένα σημείο</h1>
+<p class="lede">Γρήγορη αναφορά για ορολογία Βάσεων Δεδομένων, Σχέσεων, Φίλτρων και Go <code>database/sql</code>.</p>
+
+<div class="glossary-group">
+  <h2>Δομή &amp; Κλειδιά · στυλ: πίνακας</h2>
+  <table class="glossary-table">
+    <tr><td class="gt-term">Primary Key (PK)</td><td class="gt-def">Μοναδικό (UNIQUE) και υποχρεωτικό (NOT NULL) αναγνωριστικό γραμμής (ID ή UUID)</td></tr>
+    <tr><td class="gt-term">Foreign Key (FK)</td><td class="gt-def">Στήλη που δείχνει στο Primary Key ενός άλλου πίνακα</td></tr>
+    <tr><td class="gt-term">UNIQUE &amp; CHECK</td><td class="gt-def">Περιορισμοί ακεραιότητας (π.χ. μοναδικό email, 1:1 session, value IN (1, -1))</td></tr>
+    <tr><td class="gt-term">Referential Integrity</td><td class="gt-def">Εγγύηση της βάσης ότι δεν υπάρχουν ορφανές εγγραφές</td></tr>
+  </table>
+</div>
+
+<div class="glossary-group">
+  <h2>Σχέσεις &amp; Ανάλυση · στυλ: οριζόντια λίστα</h2>
+  <div class="glossary-strip">
+    <div class="gs-pill"><span class="gs-name">1:1 (One-to-One)</span><span class="gs-def">users ↔ sessions (user_id UNIQUE)</span></div>
+    <div class="gs-pill"><span class="gs-name">1:N (One-to-Many)</span><span class="gs-def">το FK μπαίνει στη μεριά του Many</span></div>
+    <div class="gs-pill"><span class="gs-name">Junction / Pivot</span><span class="gs-def">ενδιάμεσος πίνακας για N:M (post_categories)</span></div>
+    <div class="gs-pill"><span class="gs-name">Normalization</span><span class="gs-def">αποφυγή διπλοεγγραφών</span></div>
+    <div class="gs-pill"><span class="gs-name">ERD</span><span class="gs-def">οπτικό διάγραμμα οντοτήτων</span></div>
+  </div>
+</div>
+
+<div class="glossary-group">
+  <h2>SQL &amp; Go API · στυλ: πυκνές στήλες</h2>
+  <div class="glossary-columns">
+    <div class="gc-line"><span class="gc-term">INNER / LEFT JOIN</span><span class="gc-def">ένωση πινάκων (το LEFT κρατά και τα 0-matches ως NULL)</span></div>
+    <div class="gc-line"><span class="gc-term">SUM(CASE...) + GROUP BY</span><span class="gc-def">υπολογισμός likes/dislikes μέσα στην SQL</span></div>
+    <div class="gc-line"><span class="gc-term">PRAGMA foreign_keys</span><span class="gc-def">απαραίτητο στη SQLite για έλεγχο FKs</span></div>
+    <div class="gc-line"><span class="gc-term">Parameterized (?)</span><span class="gc-def">ασφαλή queries κατά του SQL Injection</span></div>
+    <div class="gc-line"><span class="gc-term">db.Begin / tx.Commit</span><span class="gc-def">ατομική εκτέλεση πολλαπλών queries (Transactions)</span></div>
+    <div class="gc-line"><span class="gc-term">sql.NullInt64 / NullString</span><span class="gc-def">ασφαλές Scan όταν μια SQL τιμή μπορεί να είναι NULL</span></div>
+  </div>
+</div>
+`)
+
+    // ── Slide 17: Sources, Final Score & Feedback ────────────────────────── ⊃
+    addContent(`
+<div class="eyebrow">Έφτασες στο τέλος</div>
+<p class="lede">Χρήσιμες πηγές για περαιτέρω εμβάθυνση σε SQLite, Σχεδιασμό Βάσεων και Go:</p>
+<div class="sources-list">
+  <a href="https://pkg.go.dev/database/sql" target="_blank" rel="noopener">Go database/sql official docs</a>
+  <a href="https://go.dev/doc/tutorial/database-access" target="_blank" rel="noopener">Go.dev Tutorial: Accessing a relational database</a>
+  <a href="https://www.sqlite.org/foreignkeys.html" target="_blank" rel="noopener">SQLite Foreign Key Support</a>
+  <a href="https://pkg.go.dev/golang.org/x/crypto/bcrypt" target="_blank" rel="noopener">Go x/crypto/bcrypt docs</a>
+  <a href="https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP Session Management Cheat Sheet</a>
+</div>
+<div id="final-score"></div>
+<p style="margin-top:48px; color:rgba(var(--ink-rgb),0.55); font-family:var(--font-mono); font-size:14px;">Το παρόν presentation δημιουργήθηκε από τον pavgerin/avgerinos8.</p>
+<div class="feedback-box">
+  <span class="tag">Feedback</span>
+  <p>Πες μου προαιρετικά τη γνώμη σου για το guide. Αν θέλεις να προτείνεις διόρθωση σε κάτι συγκεκριμένο, ήθελες κάτι πιο αναλυτικά, ή δεν σου άρεσε κάποιο κομμάτι, στείλε μου τα σχόλιά σου και θα κάνω άμεσα τις διορθώσεις.</p>
+  <form id="feedback-form" class="feedback-form">
+    <input type="text" id="feedback-username" class="feedback-input" placeholder="Το όνομά σου (προαιρετικό)" autocomplete="off" maxlength="120">
+    <textarea id="feedback-text" class="feedback-textarea" placeholder="Τα σχόλιά σου..." rows="4" maxlength="24000"></textarea>
+    <button type="submit" id="feedback-submit-btn" class="nav-btn feedback-submit-btn">Αποστολή feedback</button>
+    <div id="feedback-status" class="feedback-status"></div>
+  </form>
+</div>
+`)
+
+    initSlideDeck({
+      version: "1.1.0",
+      notifyUrl: "https://script.google.com/macros/s/AKfycbzZRFWgg0WwQXHE6H0yg-QS-cem-d4qaYYYNmZ58Fss-fZmSXqmuu-u7DPXyLzn1Lc/exec"
+    })
+  </script>
+</body>
+
+</html>

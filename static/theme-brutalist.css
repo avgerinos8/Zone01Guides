@@ -1,0 +1,134 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   theme-brutalist.css — Neo-Brutalist dark theme.
+   Load this AFTER static/style.css in the lesson HTML.
+   High-contrast ink & acid-lime accents, sharp corners, flat hard shadows.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Core 5-tone palette (no gradients) */
+  --tone-1: #0b0c10ff;
+  --tone-2: #13151cff;
+  --tone-3: #1b1f2aff;
+  --tone-4: #38bdf8ff;
+  --tone-5: #e5fe40ff;
+
+  --tone-1-rgb: 11, 12, 16;
+  --tone-2-rgb: 19, 21, 28;
+  --tone-3-rgb: 27, 31, 42;
+  --tone-4-rgb: 56, 189, 248;
+  --tone-5-rgb: 229, 254, 64;
+
+  --tone-text: #f5f5f0ff;
+  --tone-text-rgb: 245, 245, 240;
+
+  --code-bg: #07080aff;
+  --code-bg-rgb: 7, 8, 10;
+
+  /* Semantic roles */
+  --bg: var(--tone-1);
+  --panel: var(--tone-3);
+  --panel-rgb: var(--tone-3-rgb);
+  --ink: var(--tone-text);
+  --ink-rgb: var(--tone-text-rgb);
+  --accent: var(--tone-5);
+  --accent-rgb: var(--tone-5-rgb);
+
+  --danger: #ff5a5fff;
+  --danger-rgb: 255, 90, 95;
+  --correct: #00e043ff;
+  --correct-rgb: 0, 224, 67;
+  --wrong: var(--danger);
+  --wrong-rgb: var(--danger-rgb);
+
+  --h1-color: var(--tone-text);
+  --h1-shadow: #000000ff;
+}
+
+/* Neo-brutalist typography & crisp edges */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.025em;
+}
+
+h1 {
+  color: var(--h1-color);
+  text-shadow:
+    3px 3px 0 var(--code-bg),
+    5px 5px 0 rgba(var(--accent-rgb), 0.25);
+}
+
+h2 {
+  border-bottom: 2px solid rgba(var(--accent-rgb), 0.45);
+}
+
+.card,
+.quiz-box,
+.fb-item,
+.feedback-box {
+  background: var(--tone-2);
+  border: 2px solid rgba(var(--ink-rgb), 0.35);
+  border-radius: 2px;
+  box-shadow: 5px 5px 0 var(--code-bg);
+}
+
+.callout {
+  border: 2px solid var(--danger);
+  border-left-width: 6px;
+  border-radius: 2px;
+  background: rgba(var(--danger-rgb), 0.12);
+  box-shadow: 4px 4px 0 var(--code-bg);
+}
+
+.callout.good {
+  border-color: var(--correct);
+  background: rgba(var(--correct-rgb), 0.11);
+}
+
+pre {
+  border: 2px solid rgba(var(--ink-rgb), 0.28);
+  border-left: 6px solid var(--accent);
+  border-radius: 2px;
+  box-shadow: 4px 4px 0 var(--code-bg);
+}
+
+.quiz-opt,
+.nav-btn,
+.reset-quiz-btn,
+.gs-pill {
+  border-radius: 2px;
+  border-width: 2px;
+}
+
+.quiz-opt:hover:not(:disabled),
+.nav-btn:hover:not(:disabled) {
+  box-shadow: 3px 3px 0 var(--accent);
+}
+
+.fb-blank {
+  border-radius: 2px;
+  border-width: 2px;
+}
+
+.glossary-table td {
+  border-bottom: 2px solid rgba(var(--ink-rgb), 0.16);
+}
+
+.brutalist-diagram-wrap {
+  margin: 22px 0;
+  padding: 16px;
+  background: var(--code-bg);
+  border: 2px solid rgba(var(--ink-rgb), 0.38);
+  box-shadow: 6px 6px 0 rgba(var(--accent-rgb), 0.22);
+  overflow-x: auto;
+}
+
+.brutalist-diagram-caption {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 10px;
+}
+
