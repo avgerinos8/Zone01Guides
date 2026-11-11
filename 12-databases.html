@@ -117,7 +117,7 @@
       <a href="#@sql-joins-aggregations" data-slide="10" class="toc-link toc-h1">8. JOIN, GROUP BY &amp; Φιλτράρισμα</a>
       <a href="#@apo-tin-sql-sti-go" data-slide="11" class="toc-link toc-h1">9. Από την SQL στη Go (database/sql)</a>
       <a href="#@scheseis-kai-1n-go" data-slide="12" class="toc-link toc-h1">10. Σχέσεις, 1:N &amp; Transactions στη Go</a>
-      <a href="#@exaskisi-schediasm" data-slide="14" class="toc-link toc-h1">11. Εξάσκηση Σχεδιασμού</a>
+      <a href="#@groupie-tracker-case-study" data-slide="14" class="toc-link toc-h1">11. Case Study: Groupie Tracker</a>
       <a href="#@oloi-oi-oroi" data-slide="16" class="toc-link toc-h1">Συγκεντρωτικό Γλωσσάρι</a>
     </div>
 
@@ -870,40 +870,135 @@ CREATE TABLE sessions (
       note: "Συμπλήρωσε τα κενά για sessions και φιλτράρισμα ανά κατηγορία."
     })
 
-    // ── Slide 14: Ενότητα 11 — Εξάσκηση Σχεδιασμού (Spoiler Challenge) ─────── ⊃
+    // ── Slide 14: Ενότητα 11 — Case Study: Πώς θα ήταν η Βάση του Groupie Tracker ─────── ⊃
     addContent(`
-<div id="@exaskisi-schediasm" class="eyebrow">Ενότητα 11 / 11 — Εξάσκηση στην Πράξη</div>
-<h1>Εξάσκηση: Comment Reactions &amp; Active Session</h1>
-<p class="lede">Σκέψου πώς θα έγραφες: (α) τον πίνακα για likes/dislikes πάνω σε <code>comments</code>, και (β) την εντολή σε Go που ανοίγει ένα νέο session διαγράφοντας/αντικαθιστώντας τυχόν παλιό session του ίδιου χρήστη.</p>
+<div id="@groupie-tracker-case-study" class="eyebrow">Ενότητα 11 / 11 — Real-World Case Study</div>
+<h1>Τι Βάση Δεδομένων θα είχε το Groupie Tracker;</h1>
+<p class="lede">Στο REST API του Groupie Tracker λάμβανες 4 ξεχωριστά endpoints (<code>artists</code>, <code>locations</code>, <code>dates</code>, <code>relation</code>) γεμάτα διπλότυπα string. Αν όμως σχεδιάζαμε μια <strong>πραγματική σχεσιακή βάση (Relational DB)</strong>, ποτέ δεν θα αποθηκεύαμε διπλότυπα — όλα συνδέονται καθαρά με <strong>Primary &amp; Foreign Keys</strong>!</p>
 
-<div class="grid2">
-  <div class="card">
-    <h3>1. Τι περιορισμούς χρειάζεται;</h3>
-    <p>Πώς εμποδίζεις διπλό like του ίδιου χρήστη στο ίδιο comment, και πώς βεβαιώνεσαι ότι το <code>value</code> είναι μόνο +1 ή -1;</p>
-  </div>
-  <div class="card">
-    <h3>2. Πώς διαχειρίζεσαι το 1:1 Session;</h3>
-    <p>Αν ο χρήστης κάνει login από άλλον browser, πώς λες στη βάση «κράτα μόνο αυτό το session»; Σύρε τη μπάρα παρακάτω για να δεις μια καθαρή προσέγγιση!</p>
-  </div>
+<div class="brutalist-diagram-wrap">
+  <svg viewBox="0 0 860 310" xmlns="http://www.w3.org/2000/svg" style="width:100%; min-width:620px; height:auto; display:block;" role="img" aria-label="Groupie Tracker Relational Database Diagram">
+    <!-- Box 1: artists -->
+    <rect x="20" y="25" width="220" height="120" fill="#13151c" stroke="#e5fe40" stroke-width="2.5"/>
+    <rect x="20" y="25" width="220" height="28" fill="#e5fe40"/>
+    <text x="130" y="44" font-family="monospace" font-size="13" font-weight="800" fill="#0b0c10" text-anchor="middle">artists (Καλλιτέχνες)</text>
+    <text x="32" y="74" font-family="monospace" font-size="11" fill="#e5fe40">id (PK)</text>
+    <text x="32" y="94" font-family="monospace" font-size="11" fill="#f5f5f0">name, image_url</text>
+    <text x="32" y="114" font-family="monospace" font-size="11" fill="#f5f5f0">creation_date, first_album</text>
+
+    <!-- Box 2: members (1:N from artists) -->
+    <rect x="20" y="195" width="220" height="95" fill="#13151c" stroke="#38bdf8" stroke-width="2.5"/>
+    <rect x="20" y="195" width="220" height="28" fill="#38bdf8"/>
+    <text x="130" y="214" font-family="monospace" font-size="13" font-weight="800" fill="#0b0c10" text-anchor="middle">members (Μέλη)</text>
+    <text x="32" y="244" font-family="monospace" font-size="11" fill="#38bdf8">id (PK)</text>
+    <text x="32" y="264" font-family="monospace" font-size="11" fill="#38bdf8">artist_id (FK → artists)</text>
+    <text x="32" y="282" font-family="monospace" font-size="11" fill="#f5f5f0">name</text>
+
+    <!-- Arrow artists -> members (1:N) -->
+    <line x1="130" y1="145" x2="130" y2="195" stroke="#38bdf8" stroke-width="2.5"/>
+    <line x1="123" y1="183" x2="130" y2="195" stroke="#38bdf8" stroke-width="2"/>
+    <line x1="137" y1="183" x2="130" y2="195" stroke="#38bdf8" stroke-width="2"/>
+    <text x="142" y="172" font-family="monospace" font-size="11" font-weight="800" fill="#38bdf8">1 : N</text>
+
+    <!-- Box 3: concerts (Junction linking artists to locations with date) -->
+    <rect x="330" y="25" width="250" height="135" fill="#13151c" stroke="#ff5a5f" stroke-width="2.5"/>
+    <rect x="330" y="25" width="250" height="28" fill="#ff5a5f"/>
+    <text x="455" y="44" font-family="monospace" font-size="13" font-weight="800" fill="#0b0c10" text-anchor="middle">concerts (Το "Relation")</text>
+    <text x="342" y="74" font-family="monospace" font-size="11" fill="#ff5a5f">id (PK)</text>
+    <text x="342" y="94" font-family="monospace" font-size="11" fill="#e5fe40">artist_id (FK → artists)</text>
+    <text x="342" y="114" font-family="monospace" font-size="11" fill="#00e043">location_id (FK → locations)</text>
+    <text x="342" y="134" font-family="monospace" font-size="11" fill="#f5f5f0">concert_date (TEXT/DATE)</text>
+
+    <!-- Arrow artists -> concerts (1:N) -->
+    <line x1="240" y1="85" x2="330" y2="85" stroke="#e5fe40" stroke-width="2.5"/>
+    <line x1="318" y1="78" x2="330" y2="85" stroke="#e5fe40" stroke-width="2"/>
+    <line x1="318" y1="92" x2="330" y2="85" stroke="#e5fe40" stroke-width="2"/>
+    <text x="270" y="76" font-family="monospace" font-size="11" font-weight="800" fill="#e5fe40">1 : N</text>
+
+    <!-- Box 4: locations (Unique places) -->
+    <rect x="650" y="25" width="190" height="120" fill="#13151c" stroke="#00e043" stroke-width="2.5"/>
+    <rect x="650" y="25" width="190" height="28" fill="#00e043"/>
+    <text x="745" y="44" font-family="monospace" font-size="13" font-weight="800" fill="#0b0c10" text-anchor="middle">locations (Τοποθεσίες)</text>
+    <text x="662" y="74" font-family="monospace" font-size="11" fill="#00e043">id (PK)</text>
+    <text x="662" y="94" font-family="monospace" font-size="11" fill="#f5f5f0">city, country</text>
+    <text x="662" y="114" font-family="monospace" font-size="10.5" fill="#e5fe40">UNIQUE(city, country)</text>
+
+    <!-- Arrow locations -> concerts (1:N) -->
+    <line x1="650" y1="85" x2="580" y2="85" stroke="#00e043" stroke-width="2.5"/>
+    <line x1="592" y1="78" x2="580" y2="85" stroke="#00e043" stroke-width="2"/>
+    <line x1="592" y1="92" x2="580" y2="85" stroke="#00e043" stroke-width="2"/>
+    <text x="600" y="76" font-family="monospace" font-size="11" font-weight="800" fill="#00e043">N : 1</text>
+
+    <!-- Bottom comparison card -->
+    <rect x="330" y="195" width="510" height="95" fill="#181b24" stroke="#475569" stroke-width="1.5"/>
+    <text x="345" y="222" font-family="monospace" font-size="12" font-weight="700" fill="#e5fe40">REST API vs Relational Database:</text>
+    <text x="345" y="244" font-family="sans-serif" font-size="11.5" fill="#f5f5f0">• Το API είχε ξεχωριστά /locations και /dates χωρίς συσχέτιση (Redundancy).</text>
+    <text x="345" y="264" font-family="sans-serif" font-size="11.5" fill="#f5f5f0">• Στη Βάση, το "Relation" είναι ο πίνακας concerts (Junction) που ενώνει Artist + Location + Ημερομηνία!</text>
+  </svg>
+  <div class="brutalist-diagram-caption">Σχήμα 6 — Το ERD του Groupie Tracker: 4 κανονικοποιημένοι πίνακες χωρίς κανένα διπλότυπο δεδομένο</div>
 </div>
 
-<div class="spoiler">
-  <div class="spoiler-lock"><span>Σύρε δεξιά για να αποκαλύψεις τη λύση →</span></div>
-  <pre><code><span class="tok-com">-- 1) Comment reactions table with FK cascade + Composite UNIQUE</span>
-<span class="tok-kw">CREATE TABLE</span> <span class="tok-kw">IF NOT EXISTS</span> comment_reactions (
-    id         <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
-    user_id    <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
-    comment_id <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
-    value      <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL CHECK</span> (value <span class="tok-kw">IN</span> (<span class="tok-num">1</span>, -<span class="tok-num">1</span>)),
-    <span class="tok-kw">UNIQUE</span> (user_id, comment_id),
-    <span class="tok-kw">FOREIGN KEY</span> (user_id)    <span class="tok-kw">REFERENCES</span> users(id)    <span class="tok-kw">ON DELETE CASCADE</span>,
-    <span class="tok-kw">FOREIGN KEY</span> (comment_id) <span class="tok-kw">REFERENCES</span> comments(id) <span class="tok-kw">ON DELETE CASCADE</span>
+<h2>1. Το DDL Schema σε SQLite</h2>
+<pre><code><span class="tok-kw">CREATE TABLE IF NOT EXISTS</span> artists (
+    id            <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
+    name          <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL</span>,
+    image_url     <span class="tok-type">TEXT</span>,
+    creation_date <span class="tok-type">INTEGER</span>,
+    first_album   <span class="tok-type">TEXT</span>
 );
 
-<span class="tok-com">-- 2) Replace any previous session for this user_id in a single atomic query</span>
-<span class="tok-kw">INSERT OR REPLACE INTO</span> sessions (id, user_id, expires_at)
-<span class="tok-kw">VALUES</span> (?, ?, ?);</code></pre>
-</div>
+<span class="tok-com">-- 1:N σχέση: Ένας καλλιτέχνης έχει πολλά μέλη (λίστα)</span>
+<span class="tok-kw">CREATE TABLE IF NOT EXISTS</span> members (
+    id        <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
+    artist_id <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    name      <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL</span>,
+    <span class="tok-kw">FOREIGN KEY</span> (artist_id) <span class="tok-kw">REFERENCES</span> artists(id) <span class="tok-kw">ON DELETE CASCADE</span>
+);
+
+<span class="tok-com">-- Μοναδικές τοποθεσίες (Zero duplicates)</span>
+<span class="tok-kw">CREATE TABLE IF NOT EXISTS</span> locations (
+    id      <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
+    city    <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL</span>,
+    country <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL</span>,
+    <span class="tok-kw">UNIQUE</span> (city, country)
+);
+
+<span class="tok-com">-- Το "Relation": Συνδέει καλλιτέχνη, πόλη και ημερομηνία</span>
+<span class="tok-kw">CREATE TABLE IF NOT EXISTS</span> concerts (
+    id           <span class="tok-type">INTEGER</span> <span class="tok-kw">PRIMARY KEY AUTOINCREMENT</span>,
+    artist_id    <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    location_id  <span class="tok-type">INTEGER</span> <span class="tok-kw">NOT NULL</span>,
+    concert_date <span class="tok-type">TEXT</span>    <span class="tok-kw">NOT NULL</span>,
+    <span class="tok-kw">FOREIGN KEY</span> (artist_id)   <span class="tok-kw">REFERENCES</span> artists(id)   <span class="tok-kw">ON DELETE CASCADE</span>,
+    <span class="tok-kw">FOREIGN KEY</span> (location_id) <span class="tok-kw">REFERENCES</span> locations(id)
+);</code></pre>
+
+<h2>2. Πώς το διαβάζουμε στη Go με 1 μόνο Query</h2>
+<pre><code class="lang-go">// Αντί για 4 HTTP κλήσεις στο internet, ένα απλό JOIN φέρνει τα πάντα άμεσα:
+func GetArtistTour(db *sql.DB, artistID int) ([]ConcertInfo, error) {
+	query := \`
+		SELECT c.concert_date, l.city, l.country
+		FROM concerts c
+		JOIN locations l ON l.id = c.location_id
+		WHERE c.artist_id = ?
+		ORDER BY c.concert_date ASC;\`
+
+	rows, err := db.Query(query, artistID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tour []ConcertInfo
+	for rows.Next() {
+		var c ConcertInfo
+		if err := rows.Scan(&amp;c.Date, &amp;c.City, &amp;c.Country); err != nil {
+			return nil, err
+		}
+		tour = append(tour, c)
+	}
+	return tour, nil
+}</code></pre>
 `)
 
     // ── Slide 15: Final Combined Quiz ────────────────────────────────────── ⊃
