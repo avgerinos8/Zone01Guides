@@ -2104,6 +2104,7 @@
     .slide.workshop-board[data-board="3"] .board-case-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto auto auto;
       gap: 12px 20px;
     }
 
@@ -2139,7 +2140,7 @@
     }
 
     .slide.workshop-board[data-board="3"] {
-      --board-code-size: 24px;
+      --board-code-size: 19px;
     }
 
     .slide.workshop-board[data-board="3"] .board-terminal {
@@ -3234,25 +3235,20 @@
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code"
-                        style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">
-                        <span class="kw">var</span> result []<span class="typ">rune</span>
-                        inSpace := <span class="kw">false</span>
-                        <span class="kw">for</span> _, letter := <span class="kw">range</span> text {
-                        <span class="kw">if</span> letter == <span class="str">' '</span> || letter == <span
-                          class="str">'\t'</span> {
-                        <span class="kw">if</span> !inSpace &amp;&amp; <span class="fn">len</span>(result) &gt; <span
-                          class="num">0</span> {
-                        result = <span class="fn">append</span>(result, <span class="str">' '</span>)
-                        inSpace = <span class="kw">true</span>
-                        }
-                        } <span class="kw">else</span> {
-                        result = <span class="fn">append</span>(result, letter)
-                        inSpace = <span class="kw">false</span>
-                        }
-                        }
-                        clean := <span class="fn">string</span>(result)
-                      </div>
+                      <div class="code-card board-code"><span class="kw">var</span> result []<span class="typ">rune</span>
+inSpace := <span class="kw">false</span>
+<span class="kw">for</span> _, letter := <span class="kw">range</span> text {
+    <span class="kw">if</span> letter == <span class="str">' '</span> || letter == <span class="str">'\t'</span> {
+        <span class="kw">if</span> !inSpace &amp;&amp; <span class="fn">len</span>(result) &gt; <span class="num">0</span> {
+            result = <span class="fn">append</span>(result, <span class="str">' '</span>)
+            inSpace = <span class="kw">true</span>
+        }
+    } <span class="kw">else</span> {
+        result = <span class="fn">append</span>(result, letter)
+        inSpace = <span class="kw">false</span>
+    }
+}
+clean := <span class="fn">string</span>(result)</div>
                     </div>
                   </div>
 
@@ -3276,20 +3272,12 @@
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code"
-                        style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">
-                        <span class="cm">// strings.Fields: απομονώνει λέξεις αγνοώντας πολλαπλά κενά/tabs</span>
-                        <span class="cm">// strings.Join: επανασυνδέει τις λέξεις με μονό κενό</span>
-                        clean := <span class="go-doc-symbol" data-go-doc="Join" tabindex="0"
-                          aria-describedby="go-doc-tooltip">strings.<span class="fn">Join</span></span>(<span
-                          class="go-doc-symbol" data-go-doc="Fields" tabindex="0"
-                          aria-describedby="go-doc-tooltip">strings.<span class="fn">Fields</span></span>(text), <span
-                          class="str">" "</span>)
+                      <div class="code-card board-code"><span class="cm">// strings.Fields: απομονώνει λέξεις αγνοώντας πολλαπλά κενά/tabs</span>
+<span class="cm">// strings.Join: επανασυνδέει τις λέξεις με μονό κενό</span>
+clean := <span class="go-doc-symbol" data-go-doc="Join" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">Join</span></span>(<span class="go-doc-symbol" data-go-doc="Fields" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">Fields</span></span>(text), <span class="str">" "</span>)
 
-                        <span class="cm">// Ή για αφαίρεση κενών μόνο στην αρχή και στο τέλος:</span>
-                        trimmed := <span class="go-doc-symbol" data-go-doc="TrimSpace" tabindex="0"
-                          aria-describedby="go-doc-tooltip">strings.<span class="fn">TrimSpace</span></span>(text)
-                      </div>
+<span class="cm">// Ή για αφαίρεση κενών μόνο στην αρχή και στο τέλος:</span>
+trimmed := <span class="go-doc-symbol" data-go-doc="TrimSpace" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">TrimSpace</span></span>(text)</div>
                     </div>
                   </div>
                 </div>
@@ -3324,18 +3312,13 @@
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code"
-                        style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">b
-                        := []<span class="typ">byte</span>(text)
-                        <span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span
-                          class="fn">len</span>(b); i++ {
-                        <span class="kw">if</span> b[i] &gt;= <span class="str">'a'</span> &amp;&amp; b[i] &lt;= <span
-                          class="str">'z'</span> {
-                        b[i] -= <span class="num">32</span>
-                        }
-                        }
-                        upper := <span class="fn">string</span>(b)
-                      </div>
+                      <div class="code-card board-code">b := []<span class="typ">byte</span>(text)
+<span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="fn">len</span>(b); i++ {
+    <span class="kw">if</span> b[i] &gt;= <span class="str">'a'</span> &amp;&amp; b[i] &lt;= <span class="str">'z'</span> {
+        b[i] -= <span class="num">32</span>
+    }
+}
+upper := <span class="fn">string</span>(b)</div>
                     </div>
                   </div>
 
@@ -3359,16 +3342,11 @@
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code"
-                        style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">
-                        <span class="cm">// Πλήρης υποστήριξη Unicode / UTF-8, μηδενικά boundary bugs</span>
-                        upper := <span class="go-doc-symbol" data-go-doc="ToUpper" tabindex="0"
-                          aria-describedby="go-doc-tooltip">strings.<span class="fn">ToUpper</span></span>(text)
+                      <div class="code-card board-code"><span class="cm">// Πλήρης υποστήριξη Unicode / UTF-8, μηδενικά boundary bugs</span>
+upper := <span class="go-doc-symbol" data-go-doc="ToUpper" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">ToUpper</span></span>(text)
 
-                        <span class="cm">// Αντίστοιχα για πεζά:</span>
-                        lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0"
-                          aria-describedby="go-doc-tooltip">strings.<span class="fn">ToLower</span></span>(text)
-                      </div>
+<span class="cm">// Αντίστοιχα για πεζά:</span>
+lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">ToLower</span></span>(text)</div>
                     </div>
                   </div>
                 </div>
@@ -3586,73 +3564,6 @@
           </div>
         </div>
       </section>
-      <section class="slide split-layout workshop-board" aria-labelledby="slide-07-title" data-theme="night"
-        data-board="7" style="--board-size: 43px;">
-        <div class="workshop-frame">
-          <header class="slide-header">
-            <div class="eyebrow">Κανόνες κειμένου</div>
-            <h2 id="slide-07-title" class="slide-title">Τα 4 Επίσημα Audit Cases</h2>
-          </header>
-
-
-          <div class="board-body">
-            <div class="split-grid">
-              <div class="split-left">
-                <div style="display: flex; flex-direction: column; gap: 16px;">
-                  <div
-                    style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;"
-                    class="board-audit-card">
-                    <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">
-                      CASE #1</div>
-                    <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: If I make you
-                      BREAKFAST IN BED (low, 3) just say thank you instead of: how (cap) did you get in my house (up, 2)
-                      ?</div>
-                    <div class="mono board-label" style="color: var(--success);">OUT: If I make you breakfast in bed
-                      just say thank you instead of: How did you get in MY HOUSE?</div>
-                  </div>
-
-                  <div
-                    style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;"
-                    class="board-audit-card">
-                    <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">
-                      CASE #2</div>
-                    <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: I have to pack
-                      101 (bin) outfits. Packed 1a (hex) just to be sure</div>
-                    <div class="mono board-label" style="color: var(--success);">OUT: I have to pack 5 outfits. Packed
-                      26 just to be sure</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="split-right">
-                <div style="display: flex; flex-direction: column; gap: 16px;">
-                  <div
-                    style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;"
-                    class="board-audit-card">
-                    <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">
-                      CASE #3</div>
-                    <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: Don not be sad
-                      ,because sad backwards is das . And das not good</div>
-                    <div class="mono board-label" style="color: var(--success);">OUT: Don not be sad, because sad
-                      backwards is das. And das not good</div>
-                  </div>
-
-                  <div
-                    style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;"
-                    class="board-audit-card">
-                    <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">
-                      CASE #4</div>
-                    <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: harold wilson
-                      (cap, 2) : ' I am a optimist ,but a optimist who carries a raincoat . '</div>
-                    <div class="mono board-label" style="color: var(--success);">OUT: Harold Wilson: 'I am an optimist,
-                      but an optimist who carries a raincoat.'</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       <section class="slide workshop-board" aria-labelledby="slide-08-title" data-theme="paper"
         data-transition="registration" data-board="8" style="--board-size: 43px;">
         <div class="workshop-frame">
@@ -3698,7 +3609,7 @@
         <div class="workshop-frame">
           <header>
             <p class="eyebrow">The Vibe Coding Blueprint · Crissa Systems</p>
-            <h2 id="blueprint-docs-title">Άλλα αρχεία του έργου</h2>
+            <h2 id="blueprint-docs-title">Άλλα αρχεία ενός repo</h2>
           </header>
           <dl class="prd-brief-rail">
             <div>
@@ -5019,7 +4930,7 @@ fmt.Println("Hello, Go")
           </div>
           <div class="discovery-copy">
             <p>Discovery phase</p>
-            <h2 id="discovery-title">Από το πρώτο PRD<br>στην πρώτη αρχιτεκτονική απόφαση</h2>
+            <h2 id="discovery-title">Είστε έτοιμοι να γράψετε το πρώτο σας PRD?</h2>
           </div>
         </div>
       </section>
@@ -5027,8 +4938,8 @@ fmt.Println("Hello, Go")
         data-transition="registration">
         <div class="workshop-frame">
           <header class="slide-header">
-            <p class="eyebrow">Παράρτημα · Αρχεία στη Go</p>
-            <h2 class="slide-title" id="appendix-file-1">Ολόκληρο το αρχείο</h2>
+            <p class="eyebrow">Παράρτημα · Πώς διαβάζουμε ένα αρχείο στη Go</p>
+            <h2 class="slide-title" id="appendix-file-1">Διαβάζουμε ολόκληρο το αρχείο</h2>
           </header>
           <div class="technical-columns io-columns">
             <figure>
@@ -5307,7 +5218,7 @@ printBlock(block)
         <div class="prd-map-heading">## 3. Core Features</div>
         <input type="text" autocomplete="off" aria-label="3. Core Features, line 1">
         <input type="text" autocomplete="off" aria-label="3. Core Features, line 2">
-        <div class="prd-map-heading">## 4. Non-Goals</div>
+        <div class="prd-map-heading">## 4. Goals / Non-Goals</div>
         <input type="text" autocomplete="off" aria-label="4. Non-Goals, line 1">
         <input type="text" autocomplete="off" aria-label="4. Non-Goals, line 2">
         <div class="prd-map-heading">## 5. Acceptance Criteria</div>
