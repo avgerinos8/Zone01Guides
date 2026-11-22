@@ -1213,7 +1213,108 @@
 .slide.io-appendix .io-literal { color: var(--success); }
 .slide.io-appendix .io-comment { color: var(--ink-muted); }
 
-  </style>
+  
+/* Projection typography for the workshop core on the 1920 × 1080 stage. */
+.slide.workshop-rebuilt .workshop-frame { gap: 48px; }
+.slide.workshop-rebuilt .eyebrow {
+  margin: 0 0 12px;
+  font: 650 28px/1.2 var(--font-sans);
+  color: var(--accent);
+}
+.slide.workshop-rebuilt .slide-title { font-size: 144px; line-height: .91; }
+.slide.workshop-rebuilt .workshop-content {
+  display: grid;
+  align-content: center;
+  gap: 44px;
+  flex: 1;
+  min-height: 0;
+  font: 430 40px/1.25 var(--font-notes);
+}
+.slide.workshop-rebuilt .workshop-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 480px;
+  align-items: center;
+  gap: 56px;
+}
+.slide.workshop-rebuilt .workshop-rail {
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: 56px;
+}
+.slide.workshop-rebuilt .workshop-rail > div,
+.slide.workshop-rebuilt .workshop-ledger > div {
+  border-top: 2px solid var(--rule);
+  padding-top: 20px;
+}
+.slide.workshop-rebuilt .workshop-ledger { display: grid; gap: 24px; }
+.slide.workshop-rebuilt .workshop-table { gap: 0; }
+.slide.workshop-rebuilt .workshop-table > div {
+  display: grid;
+  grid-template-columns: 540px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 44px;
+  padding: 18px 0;
+}
+.slide.workshop-rebuilt :is(h3, dt) {
+  color: var(--display-ink);
+  font: 800 46px/1.02 var(--font-notes);
+}
+.slide.workshop-rebuilt .workshop-ledger:not(.workshop-table) dd,
+.slide.workshop-rebuilt h3 + p { margin-top: 12px; }
+.slide.workshop-rebuilt :not(pre) > code {
+  font: 400 32px/1.24 var(--font-code);
+  color: var(--accent);
+  white-space: pre;
+}
+.slide.workshop-rebuilt .workshop-prompt {
+  width: fit-content;
+  border-left: 4px solid var(--accent);
+  padding-left: 22px;
+  color: var(--ink);
+  font-size: 36px;
+}
+.slide.workshop-rebuilt a { color: var(--accent); }
+.slide.workshop-rebuilt .terminal { max-width: 1200px; }
+.slide.workshop-rebuilt .terminal-bar {
+  min-height: 48px;
+  background: var(--code-surface);
+  border-radius: 10px 10px 0 0;
+}
+.slide.workshop-rebuilt .terminal-dots i { width: 10px; height: 10px; }
+.slide.workshop-rebuilt .terminal-controls svg { width: 18px; height: 18px; }
+.slide.workshop-rebuilt .terminal pre {
+  font-size: 34px;
+  line-height: 1.22;
+  padding: 20px 30px;
+  background: var(--code-surface);
+}
+.slide.workshop-rebuilt .terminal pre code { font: inherit; color: inherit; }
+.slide.workshop-rebuilt .workshop-diagram { margin: 0; }
+.slide.workshop-rebuilt .workshop-diagram svg { display: block; width: 100%; }
+.slide.workshop-rebuilt .workshop-diagram-box {
+  fill: var(--code-surface);
+  stroke: var(--rule);
+  stroke-width: 2;
+}
+.slide.workshop-rebuilt .workshop-diagram-arrow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+.slide.workshop-rebuilt .workshop-diagram-title {
+  font: 800 54px var(--font-notes);
+  fill: var(--display-ink);
+}
+.slide.workshop-rebuilt .workshop-diagram-code {
+  font: 400 38px var(--font-code);
+  fill: var(--accent);
+}
+.slide.workshop-rebuilt .workshop-diagram-detail {
+  font: 650 40px var(--font-notes);
+  fill: var(--ink);
+}
+
+</style>
 </head>
 <body>
   <main id="viewport">
@@ -1304,1135 +1405,457 @@
   </div>
 </section>
 
-<section class="slide split-layout" aria-labelledby="slide-02-title" data-theme="paper" data-transition="registration"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Κανόνες κειμένου</div>
-          <h2 id="slide-02-title" class="slide-title">Το Συμβόλαιο του go-reloaded</h2>
-        </header>
-
-        <div class="split-grid">
-          <div class="split-left">
-            <p class="lead-statement">Το <strong>CLI contract</strong> ορίζει πώς χρησιμοποιούμε μια εφαρμογή από τη γραμμή εντολών (Command-Line Interface ή CLI). Περιγράφει τις διαθέσιμες εντολές, τα ορίσματα και τις επιλογές (flags), τη μορφή της εξόδου, τα μηνύματα σφάλματος και τους κωδικούς εξόδου (exit codes).</p>
-            <p class="lead-statement">
-              <code>go run main.go &lt;inputFile&gt; &lt;outputFile&gt;</code>
-            </p>
-            <ul class="point-list">
-              <li><strong>Σκοπός:</strong> Ανάγνωση αρχείου κειμένου, εφαρμογή μετασχηματισμών και εγγραφή σε νέο αρχείο.</li>
-              <li><strong>Έλεγχος Ορισμάτων:</strong> Έλεγχος ύπαρξης των δύο παραμέτρων εισόδου/εξόδου και ασφαλής χειρισμός σφαλμάτων συστήματος αρχείων.</li>
-            </ul>
-          </div>
-
-          <div class="split-right">
-            <div class="visual-card">
-              <svg viewBox="0 0 740 440" width="100%" height="100%">
-                <!-- Input Box -->
-                <rect x="30" y="40" width="680" height="100" rx="8" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
-                <text x="55" y="75" fill="var(--danger)" font-family="var(--font-mono)" font-size="16" font-weight="700">INPUT FILE (sample.txt)</text>
-                <text x="55" y="112" fill="var(--ink)" font-family="var(--font-mono)" font-size="17">Raw string containing markers, quotes, and punctuation</text>
-
-                <!-- Processing Box -->
-                <path d="M 370 145 L 370 205 M 358 193 L 370 205 L 382 193" stroke="var(--accent)" stroke-width="3" fill="none"/>
-                <rect x="220" y="210" width="300" height="44" rx="6" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
-                <text x="252" y="238" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="600">TRANSFORMATION ENGINE</text>
-
-                <!-- Output Box -->
-                <path d="M 370 258 L 370 318 M 358 306 L 370 318 L 382 306" stroke="var(--accent)" stroke-width="3" fill="none"/>
-                <rect x="30" y="320" width="680" height="100" rx="8" fill="var(--surface-raised)" stroke="var(--success)" stroke-width="1.5"/>
-                <text x="55" y="355" fill="var(--success)" font-family="var(--font-mono)" font-size="16" font-weight="700">OUTPUT FILE (result.txt)</text>
-                <text x="55" y="392" fill="var(--ink)" font-family="var(--font-mono)" font-size="17">Clean, formatted string (Exact character match required)</text>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div></section>
-<section class="slide comparison-layout" aria-labelledby="slide-03-title" data-theme="night"><div class="workshop-frame">
-        <header class="slide-header" style="margin-bottom: 18px;">
-          <div class="eyebrow">Κανόνες κειμένου</div>
-          <h2 id="slide-03-title" class="slide-title">Χειροκίνητα Loops vs Go Standard Library (<code>strings</code>)</h2>
-        </header>
-
-        <div style="display: flex; flex-direction: column; gap: 18px; flex: 1;">
-          <!-- Case 1: Normalize Spaces -->
-          <div class="case-row" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px;">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-              <span class="mono" style="color: var(--accent); font-weight: 700; font-size: 15px;">ΠΕΡΙΠΤΩΣΗ 01 //</span>
-              <h3 style="font-size: 19px; font-weight: 700; color: var(--ink);">Κανονικοποίηση &amp; Αφαίρεση Περιττών Κενών (Normalize Spaces)</h3>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <!-- Manual Loop -->
-              <div style="background: var(--code-surface); border: 1px solid rgba(239, 171, 163, 0.28); border-radius: 8px; padding: 12px 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <span class="col-badge bad" style="font-size: 11px; padding: 2px 8px; margin-bottom: 0;">ΧΕΙΡΟΚΙΝΗΤΟΣ ΕΛΕΓΧΟΣ (PISCINE LOOPS)</span>
-                  <span class="mono" style="font-size: 12px; color: var(--danger);">~16 γραμμές κώδικα</span>
-                </div>
-                <div class="code-card" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">
-<span class="kw">var</span> res []<span class="typ">rune</span>
-inSpace := <span class="kw">false</span>
-<span class="kw">for</span> _, r := <span class="kw">range</span> s {
-    <span class="kw">if</span> r == <span class="str">' '</span> || r == <span class="str">'\t'</span> {
-        <span class="kw">if</span> !inSpace && <span class="fn">len</span>(res) &gt; <span class="num">0</span> {
-            res = <span class="fn">append</span>(res, <span class="str">' '</span>)
-            inSpace = <span class="kw">true</span>
-        }
-    } <span class="kw">else</span> {
-        res = <span class="fn">append</span>(res, r)
-        inSpace = <span class="kw">false</span>
-    }
-}
-clean := <span class="fn">string</span>(res)</div>
-              </div>
-
-              <!-- Standard Library -->
-              <div style="background: var(--code-surface); border: 1px solid rgba(163, 210, 181, 0.32); border-radius: 8px; padding: 12px 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <span class="col-badge good" style="font-size: 11px; padding: 2px 8px; margin-bottom: 0;">GO STANDARD LIBRARY (STRINGS)</span>
-                  <span class="mono" style="font-size: 12px; color: var(--success);">1 γραμμή κώδικα</span>
-                </div>
-                <div class="code-card" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">
-<span class="cm">// strings.Fields: απομονώνει λέξεις αγνοώντας πολλαπλά κενά/tabs</span>
-<span class="cm">// strings.Join: επανασυνδέει τις λέξεις με μονό κενό</span>
-clean := strings.<span class="fn">Join</span>(strings.<span class="fn">Fields</span>(s), <span class="str">" "</span>)
-
-<span class="cm">// Ή για αφαίρεση κενών μόνο στην αρχή και στο τέλος:</span>
-trimmed := strings.<span class="fn">TrimSpace</span>(s)</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Case 2: Uppercase -->
-          <div class="case-row" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px;">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-              <span class="mono" style="color: var(--accent); font-weight: 700; font-size: 15px;">ΠΕΡΙΠΤΩΣΗ 02 //</span>
-              <h3 style="font-size: 19px; font-weight: 700; color: var(--ink);">Μετατροπή σε Κεφαλαία (Uppercase Transformation)</h3>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <!-- Manual Loop -->
-              <div style="background: var(--code-surface); border: 1px solid rgba(239, 171, 163, 0.28); border-radius: 8px; padding: 12px 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <span class="col-badge bad" style="font-size: 11px; padding: 2px 8px; margin-bottom: 0;">ΧΕΙΡΟΚΙΝΗΤΟΣ ΕΛΕΓΧΟΣ (ASCII ARITHMETIC)</span>
-                  <span class="mono" style="font-size: 12px; color: var(--danger);">ASCII only, σπάει σε UTF-8</span>
-                </div>
-                <div class="code-card" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">
-<span class="cm">// Αριθμητική byte-by-byte (ευάλωτο σε multi-byte runes)</span>
-b := []<span class="typ">byte</span>(s)
-<span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="fn">len</span>(b); i++ {
-    <span class="kw">if</span> b[i] &gt;= <span class="str">'a'</span> && b[i] &lt;= <span class="str">'z'</span> {
-        b[i] -= <span class="num">32</span>
-    }
-}
-upper := <span class="fn">string</span>(b)</div>
-              </div>
-
-              <!-- Standard Library -->
-              <div style="background: var(--code-surface); border: 1px solid rgba(163, 210, 181, 0.32); border-radius: 8px; padding: 12px 16px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <span class="col-badge good" style="font-size: 11px; padding: 2px 8px; margin-bottom: 0;">GO STANDARD LIBRARY (STRINGS)</span>
-                  <span class="mono" style="font-size: 12px; color: var(--success);">Native Unicode Support</span>
-                </div>
-                <div class="code-card" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;">
-<span class="cm">// Πλήρης υποστήριξη Unicode / UTF-8, μηδενικά boundary bugs</span>
-upper := strings.<span class="fn">ToUpper</span>(s)
-
-<span class="cm">// Αντίστοιχα για πεζά:</span>
-lower := strings.<span class="fn">ToLower</span>(s)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div></section>
-<section class="slide split-layout" aria-labelledby="slide-04-title" data-theme="night"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Κανόνες κειμένου</div>
-          <h2 id="slide-04-title" class="slide-title">Βασικές Μέθοδοι του Package <code>strings</code></h2>
-        </header>
-
-        <div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between;">
-          <table class="tech-table" style="font-size: 17.5px;">
-            <thead>
-              <tr>
-                <th style="width: 25%;">Συνάρτηση (Function)</th>
-                <th style="width: 45%;">Περιγραφή (Description)</th>
-                <th style="width: 30%;">Παράδειγμα (Example)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><code>strings.Fields(s)</code></td>
-                <td>Χωρίζει το string σε slice λέξεων, αγνοώντας πολλαπλά κενά, tabs &amp; newlines.</td>
-                <td><code>strings.Fields(" a   b ")</code> ➔ <code>["a", "b"]</code></td>
-              </tr>
-              <tr>
-                <td><code>strings.Join(slice, sep)</code></td>
-                <td>Ενώνει ένα slice από strings με ένα συγκεκριμένο διαχωριστικό ανάμεσά τους.</td>
-                <td><code>strings.Join(w, " ")</code> ➔ <code>"hello world"</code></td>
-              </tr>
-              <tr>
-                <td><code>strings.Split(s, sep)</code></td>
-                <td>Χωρίζει το string σε slice βάσει αυστηρού separator (π.χ. κόμμα ή άνω κάτω τελεία).</td>
-                <td><code>strings.Split("a,b,c", ",")</code> ➔ <code>["a","b","c"]</code></td>
-              </tr>
-              <tr>
-                <td><code>strings.ToUpper / ToLower</code></td>
-                <td>Μετατρέπει όλους τους χαρακτήρες σε κεφαλαία ή πεζά με πλήρη υποστήριξη UTF-8.</td>
-                <td><code>strings.ToUpper("wilson")</code> ➔ <code>"WILSON"</code></td>
-              </tr>
-              <tr>
-                <td><code>strings.Trim(s, cutset)</code></td>
-                <td>Αφαιρεί οποιονδήποτε χαρακτήρα του `cutset` από την αρχή και το τέλος του string.</td>
-                <td><code>strings.Trim(" 'hello' ", " '")</code> ➔ <code>"hello"</code></td>
-              </tr>
-              <tr>
-                <td><code>strings.TrimSpace(s)</code></td>
-                <td>Αφαιρεί όλα τα whitespace κενά από την αρχή και το τέλος του string.</td>
-                <td><code>strings.TrimSpace(" text ")</code> ➔ <code>"text"</code></td>
-              </tr>
-              <tr>
-                <td><code>strings.HasPrefix / HasSuffix</code></td>
-                <td>Ελέγχει αν το string ξεκινάει ή τελειώνει με συγκεκριμένο πρόθεμα/επίθεμα.</td>
-                <td><code>strings.HasSuffix(w, ":")</code> ➔ <code>true</code></td>
-              </tr>
-              <tr>
-                <td><code>strings.ReplaceAll(s, old, new)</code></td>
-                <td>Αντικαθιστά όλες τις εμφανίσεις ενός substring χωρίς το overhead της regex.</td>
-                <td><code>strings.ReplaceAll(s, " ,", ", ")</code></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <!-- Official Doc Banner -->
-          <div style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; margin-top: 14px;">
-            <div style="display: flex; align-items: center; gap: 14px;">
-              <span class="mono" style="color: var(--accent); font-weight: 700; font-size: 16px;">GO STANDARD LIBRARY DOCUMENTATION:</span>
-              <span style="font-size: 16.5px; color: var(--ink);">Επίσημο API reference και παραδείγματα όλων των συναρτήσεων strings</span>
-            </div>
-            <a href="https://pkg.go.dev/strings" target="_blank" rel="noopener" class="mono" style="color: var(--accent); font-weight: 700; font-size: 16px; text-decoration: underline; letter-spacing: 0.05em;">pkg.go.dev/strings ↗</a>
-          </div>
-        </div>
-      </div></section>
-<section class="slide split-layout" aria-labelledby="slide-05-title" data-theme="night"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Κανόνες κειμένου</div>
-          <h2 id="slide-05-title" class="slide-title">Οι 7 Συναρτήσεις Μετασχηματισμού</h2>
-        </header>
-
-        <div class="split-grid">
-          <div class="split-left">
-            <table class="tech-table">
-              <thead>
-                <tr>
-                  <th>Κατηγορία</th>
-                  <th>Λειτουργία</th>
-                  <th>Παράδειγμα</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Numbers</strong></td>
-                  <td><code>(hex)</code>, <code>(bin)</code> σε δεκαδικό</td>
-                  <td><code>1E (hex)</code> ➔ <code>30</code></td>
-                </tr>
-                <tr>
-                  <td><strong>Casing</strong></td>
-                  <td><code>(up)</code>, <code>(low)</code>, <code>(cap)</code></td>
-                  <td><code>go (up)</code> ➔ <code>GO</code></td>
-                </tr>
-                <tr>
-                  <td><strong>Multi-Casing</strong></td>
-                  <td><code>(up, N)</code>, <code>(low, N)</code>, <code>(cap, N)</code></td>
-                  <td><code>so exciting (up, 2)</code> ➔ <code>SO EXCITING</code></td>
-                </tr>
-                <tr>
-                  <td><strong>Punctuation</strong></td>
-                  <td><code>. , ! ? : ;</code> ένωση με προηγούμενη λέξη</td>
-                  <td><code>there ,and</code> ➔ <code>there, and</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="split-right">
-            <table class="tech-table">
-              <thead>
-                <tr>
-                  <th>Κατηγορία</th>
-                  <th>Λειτουργία</th>
-                  <th>Παράδειγμα</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Punct. Groups</strong></td>
-                  <td><code>...</code>, <code>!?</code> χωρίς ενδιάμεσα κενά</td>
-                  <td><code>thinking ...</code> ➔ <code>thinking...</code></td>
-                </tr>
-                <tr>
-                  <td><strong>Quotes</strong></td>
-                  <td>Ζεύγη <code>'...'</code> με αφαίρεση εσωτερικών κενών</td>
-                  <td><code>' awesome '</code> ➔ <code>'awesome'</code></td>
-                </tr>
-                <tr>
-                  <td><strong>Multi-Word Quotes</strong></td>
-                  <td>Διατήρηση κενών ανάμεσα στις λέξεις</td>
-                  <td><code>' I am best '</code> ➔ <code>'I am best'</code></td>
-                </tr>
-                <tr>
-                  <td><strong>Articles</strong></td>
-                  <td><code>a</code> ➔ <code>an</code> πριν από φωνήεν ή <code>h</code></td>
-                  <td><code>a honest</code> ➔ <code>an honest</code></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div></section>
-<section class="slide diagram-layout" aria-labelledby="slide-06-title" data-theme="night"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Κανόνες κειμένου</div>
-          <h2 id="slide-06-title" class="slide-title">Βήμα-προς-Βήμα Ανάλυση του Audit Case #4</h2>
-        </header>
-
-        <div class="diagram-canvas-wrapper">
-          <svg viewBox="0 0 1680 540" width="100%" height="100%">
-            <!-- Initial Input String -->
-            <rect x="40" y="20" width="1600" height="60" rx="8" fill="var(--surface-raised)" stroke="var(--danger)" stroke-width="1.5"/>
-            <text x="60" y="56" fill="var(--danger)" font-family="var(--font-mono)" font-size="18" font-weight="700">IN:</text>
-            <text x="110" y="56" fill="var(--ink)" font-family="var(--font-mono)" font-size="18">harold wilson (cap, 2) : ' I am a optimist ,but a optimist who carries a raincoat . '</text>
-
-            <!-- Steps Flow -->
-            <!-- Step 1 -->
-            <rect x="40" y="105" width="1600" height="60" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="60" y="142" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">1. (cap, 2)</text>
-            <text x="210" y="142" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="17">harold wilson (cap, 2) ➔ <tspan fill="var(--ink)" font-weight="600">Harold Wilson</tspan></text>
-
-            <!-- Step 2 -->
-            <rect x="40" y="180" width="1600" height="60" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="60" y="217" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">2. PUNCT ':'</text>
-            <text x="210" y="217" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="17">Harold Wilson : ➔ <tspan fill="var(--ink)" font-weight="600">Harold Wilson:</tspan></text>
-
-            <!-- Step 3 -->
-            <rect x="40" y="255" width="1600" height="60" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="60" y="292" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">3. QUOTES</text>
-            <text x="210" y="292" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="17">' I am ... raincoat . ' ➔ <tspan fill="var(--ink)" font-weight="600">'I am ... raincoat.'</tspan></text>
-
-            <!-- Step 4 -->
-            <rect x="40" y="330" width="1600" height="60" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="60" y="367" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">4. ARTICLE</text>
-            <text x="210" y="367" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="17">a optimist ➔ <tspan fill="var(--ink)" font-weight="600">an optimist</tspan> (εφαρμογή και στις δύο εμφανίσεις)</text>
-
-            <!-- Final Output String -->
-            <rect x="40" y="420" width="1600" height="70" rx="8" fill="var(--surface-raised)" stroke="var(--success)" stroke-width="2"/>
-            <text x="60" y="464" fill="var(--success)" font-family="var(--font-mono)" font-size="18" font-weight="700">OUT:</text>
-            <text x="120" y="464" fill="var(--ink)" font-family="var(--font-mono)" font-size="18">Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</text>
-          </svg>
-        </div>
-      </div></section>
-<section class="slide split-layout" aria-labelledby="slide-07-title" data-theme="night"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Κανόνες κειμένου</div>
-          <h2 id="slide-07-title" class="slide-title">Τα 4 Επίσημα Audit Cases</h2>
-        </header>
-
-        <div class="split-grid">
-          <div class="split-left">
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
-                <div class="mono" style="color: var(--accent); font-size: 15px; margin-bottom: 4px;">CASE #1</div>
-                <div class="mono" style="color: var(--danger); font-size: 14px; margin-bottom: 4px;">IN: If I make you BREAKFAST IN BED (low, 3) just say thank you instead of: how (cap) did you get in my house (up, 2) ?</div>
-                <div class="mono" style="color: var(--success); font-size: 14px;">OUT: If I make you breakfast in bed just say thank you instead of: How did you get in MY HOUSE?</div>
-              </div>
-
-              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
-                <div class="mono" style="color: var(--accent); font-size: 15px; margin-bottom: 4px;">CASE #2</div>
-                <div class="mono" style="color: var(--danger); font-size: 14px; margin-bottom: 4px;">IN: I have to pack 101 (bin) outfits. Packed 1a (hex) just to be sure</div>
-                <div class="mono" style="color: var(--success); font-size: 14px;">OUT: I have to pack 5 outfits. Packed 26 just to be sure</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="split-right">
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
-                <div class="mono" style="color: var(--accent); font-size: 15px; margin-bottom: 4px;">CASE #3</div>
-                <div class="mono" style="color: var(--danger); font-size: 14px; margin-bottom: 4px;">IN: Don not be sad ,because sad backwards is das . And das not good</div>
-                <div class="mono" style="color: var(--success); font-size: 14px;">OUT: Don not be sad, because sad backwards is das. And das not good</div>
-              </div>
-
-              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
-                <div class="mono" style="color: var(--accent); font-size: 15px; margin-bottom: 4px;">CASE #4</div>
-                <div class="mono" style="color: var(--danger); font-size: 14px; margin-bottom: 4px;">IN: harold wilson (cap, 2) : ' I am a optimist ,but a optimist who carries a raincoat . '</div>
-                <div class="mono" style="color: var(--success); font-size: 14px;">OUT: Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div></section>
-<section class="slide " aria-labelledby="slide-08-title" data-theme="paper" data-transition="registration"><div class="workshop-frame">
-  <header class="slide-header">
-    <p class="eyebrow">Προδιαγραφή & δομή</p>
-    <h2 id="slide-08-title" class="slide-title">Τύποι Τεχνικών Εγγράφων στη Μηχανική Λογισμικού</h2>
-  </header>
-  
-<div class="repo-docs">
-  <div><h3><code>README.md</code></h3><p>Τι κάνει το έργο και πώς το εγκαθιστώ, το τρέχω ή το δοκιμάζω.</p></div>
-  <div><h3><code>LICENSE</code></h3><p>Η άδεια ορίζει με ποιους όρους άλλοι μπορούν να χρησιμοποιούν, να τροποποιούν ή να διανέμουν τον κώδικα.</p></div>
-  <div><h3><code>CONTRIBUTING.md</code></h3><p>Πώς αναφέρω ένα bug, ποια tests τρέχω και πώς υποβάλλω μια αλλαγή.</p></div>
-  <div><h3><code>PRD.md</code></h3><p>Τι πρέπει να κάνει το έργο και πώς θα ελέγξουμε ότι καλύπτει τις απαιτήσεις.</p></div>
-  <div><h3><code>AGENTS.md</code></h3><p>Οδηγίες για coding agents, όπως οι εντολές των tests και οι κανόνες του repo.</p></div>
-  <div><h3><code>CHANGELOG.md</code></h3><p>Τι άλλαξε σε κάθε έκδοση του έργου, όπως νέες λειτουργίες και διορθώσεις.</p></div>
-</div>
-</div></section>
-<section class="slide split-layout" aria-labelledby="slide-09-title" data-theme="paper"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Προδιαγραφή & δομή</div>
-          <h2 id="slide-09-title" class="slide-title">Η Δομή του Product Requirements Document</h2>
-        </header>
-
-        <div class="split-grid">
-          <div class="split-left">
-            <p class="lead-statement">
-              Βασισμένο στο επίσημο template (<code>templates/prd-template.md</code>).
-            </p>
-            <ul class="point-list">
-              <li><strong>Problem Statement:</strong> Μία πρόταση για τον ακριβή ρόλο του προγράμματος.</li>
-              <li><strong>CLI Contract:</strong> Συμπεριφορά σε λάθος παραμέτρους, αρχεία που λείπουν, permissions.</li>
-              <li><strong>Functional Rules:</strong> Καταγραφή των 7 κανόνων με δικά σου παραδείγματα.</li>
-              <li><strong>Architecture Choice:</strong> Επιλογή Pipeline ή FSM με ρητά trade-offs.</li>
-              <li><strong>Acceptance Criteria:</strong> Τα 4 audit cases + 2-3 custom edge cases.</li>
-            </ul>
-          </div>
-
-          <div class="split-right">
-            <div class="visual-card">
-              <svg viewBox="0 0 740 440" width="100%" height="100%">
-                <rect x="30" y="30" width="680" height="380" rx="10" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
-                
-                <rect x="60" y="60" width="620" height="48" rx="6" fill="var(--surface)" stroke="var(--border-subtle)" stroke-width="1"/>
-                <text x="80" y="90" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">1. PROBLEM STATEMENT</text>
-                <text x="360" y="90" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="16">1-2 sentences scope</text>
-
-                <rect x="60" y="120" width="620" height="48" rx="6" fill="var(--surface)" stroke="var(--border-subtle)" stroke-width="1"/>
-                <text x="80" y="150" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">2. CLI CONTRACT</text>
-                <text x="360" y="150" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="16">Args validation &amp; exit codes</text>
-
-                <rect x="60" y="180" width="620" height="48" rx="6" fill="var(--surface)" stroke="var(--border-subtle)" stroke-width="1"/>
-                <text x="80" y="210" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">3. GOALS &amp; NON-GOALS</text>
-                <text x="360" y="210" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="16">Scope boundary enforcement</text>
-
-                <rect x="60" y="240" width="620" height="48" rx="6" fill="var(--surface)" stroke="var(--border-subtle)" stroke-width="1"/>
-                <text x="80" y="270" fill="var(--accent)" font-family="var(--font-mono)" font-size="16" font-weight="700">4. ARCHITECTURE</text>
-                <text x="360" y="270" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="16">Pipeline vs FSM trade-offs</text>
-
-                <rect x="60" y="300" width="620" height="48" rx="6" fill="var(--surface)" stroke="var(--border-subtle)" stroke-width="1"/>
-                <text x="80" y="330" fill="var(--success)" font-family="var(--font-mono)" font-size="16" font-weight="700">5. ACCEPTANCE CRITERIA</text>
-                <text x="360" y="330" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="16">Golden tests suite</text>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div></section>
-<section class="slide comparison-layout" aria-labelledby="slide-10-title" data-theme="paper"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Προδιαγραφή & δομή</div>
-          <h2 id="slide-10-title" class="slide-title">Καθορισμός Goals και Non-Goals</h2>
-        </header>
-
-        <div class="comparison-grid">
-          <div class="comparison-col neutral">
-            <h3 class="col-title">Στόχοι Έργου</h3>
-            <ul class="col-points">
-              <li>Επεξεργασία UTF-8 αρχείων κειμένου μεγέθους κάτω των 10MB</li>
-              <li>Πλήρης υποστήριξη των 7 συναρτήσεων μετασχηματισμού</li>
-              <li>Αυστηρή έξοδος με status code 1 και μήνυμα σφάλματος σε λάθος arguments</li>
-              <li>100% επιτυχία στα 4 επίσημα audit cases</li>
-            </ul>
-          </div>
-
-          <div class="comparison-col neutral">
-            <h3 class="col-title">Μη-Στόχοι (Αποκλεισμοί)</h3>
-            <ul class="col-points">
-              <li>Υποστήριξη streaming αρχείων πολλαπλών gigabytes</li>
-              <li>Χειρισμός ειδικών encodings πέραν του standard UTF-8 (π.χ. UTF-16, ISO)</li>
-              <li>Προσθήκη custom CLI flags πέραν των δύο positional arguments</li>
-              <li>Χρήση εξωτερικών regex ή third-party parsing libraries</li>
-            </ul>
-          </div>
-        </div>
-      </div></section>
-<section class="slide " aria-labelledby="slide-11-title" data-theme="paper"><div class="workshop-frame">
-  <header class="slide-header">
-    <p class="eyebrow">Δομή έργου</p>
-    <h2 id="slide-11-title" class="slide-title">Πού μπαίνει ο κώδικας;</h2>
-  </header>
-  
-<div class="split-grid">
-  <div>
-    <p class="lead-statement">Για ένα μικρό CLI, ξεκίνα με <code>main.go</code> και <code>go.mod</code> στη ρίζα.</p>
-    <ul class="point-list">
-      <li><strong><code>main.go</code></strong> · Ορίσματα, μηνύματα σφάλματος και συντονισμός της εκτέλεσης.</li>
-      <li><strong><code>internal/transform/</code></strong> · Οι κανόνες επεξεργασίας κειμένου, αν χρειαστεί χωριστό πακέτο.</li>
-      <li><strong><code>cmd/&lt;command&gt;/</code></strong> · Συνηθισμένη διάταξη για τα εκτελέσιμα ενός repo, ειδικά όταν είναι πάνω από ένα.</li>
-    </ul>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-02-title" data-theme="paper" data-transition="registration">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Κανόνες κειμένου</p>
+      <h2 id="slide-02-title" class="slide-title">Το συμβόλαιο του CLI</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>$ go run . sample.txt result.txt</code></pre>
   </div>
-  <div>
-    <p class="lead-statement">Μία εντολή, με χωριστή λογική κειμένου</p>
-    <pre class="sample-block">go-reloaded/
+      <div class="workshop-rail" style="--columns:3">
+          <div><h3>Είσοδος</h3><p>Διαβάζει το <code>sample.txt</code>.</p></div>
+          <div><h3>Έξοδος</h3><p>Γράφει το αποτέλεσμα στο <code>result.txt</code>.</p></div>
+          <div><h3>Σφάλμα</h3><p>Δείχνει τι συνέβη και τερματίζει με μη μηδενικό κωδικό.</p></div>
+        </div>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-03-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Κανόνες κειμένου</p>
+      <h2 id="slide-03-title" class="slide-title">Από το loop στο strings</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-split"><div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>words := strings.Fields(s)
+clean := strings.Join(words, " ")
+upper := strings.ToUpper(clean)</code></pre>
+  </div>
+      <dl class="workshop-ledger">
+          <div><dt>Κενά</dt><dd>Χώρισε σε λέξεις. Ένωσέ τες με ένα κενό.</dd></div>
+          <div><dt>Κεφαλαία</dt><dd>Δώσε το κείμενο στο <code>ToUpper</code>.</dd></div>
+        </dl></div>
+      <p class="workshop-prompt">Τι γίνεται το <code>"  hello   Go  "</code> μετά το <code>Join</code>;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-04-title" data-theme="paper">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Κανόνες κειμένου</p>
+      <h2 id="slide-04-title" class="slide-title">Το πακέτο strings</h2>
+    </header>
+    <div class="workshop-content">
+      <dl class="workshop-ledger workshop-table">
+          <div><dt><code>Fields</code> / <code>Split</code></dt><dd>Χωρισμός σε whitespace ή σε συγκεκριμένο διαχωριστή</dd></div>
+          <div><dt><code>Join</code></dt><dd>Ένωση με διαχωριστή</dd></div>
+          <div><dt><code>ToUpper</code> / <code>ToLower</code></dt><dd>Κεφαλαία ή πεζά</dd></div>
+          <div><dt><code>Trim</code> / <code>TrimSpace</code></dt><dd>Καθάρισμα στις άκρες</dd></div>
+          <div><dt><code>HasPrefix</code> / <code>HasSuffix</code></dt><dd>Έλεγχος αρχής ή τέλους</dd></div>
+          <div><dt><code>ReplaceAll</code></dt><dd>Αντικατάσταση όλων των εμφανίσεων</dd></div>
+        </dl>
+      <p class="workshop-prompt"><a href="https://pkg.go.dev/strings" target="_blank" rel="noopener noreferrer">pkg.go.dev/strings ↗</a></p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-05-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Κανόνες κειμένου</p>
+      <h2 id="slide-05-title" class="slide-title">Τι αλλάζει στο κείμενο;</h2>
+    </header>
+    <div class="workshop-content">
+      <dl class="workshop-ledger workshop-table">
+          <div><dt>Αριθμοί</dt><dd><code>1E (hex) → 30</code> · <code>101 (bin) → 5</code></dd></div>
+          <div><dt>Πεζά / κεφαλαία</dt><dd><code>(up)</code>, <code>(low)</code>, <code>(cap)</code>. Με <code>, N</code> αλλάζουν N λέξεις.</dd></div>
+          <div><dt>Στίξη</dt><dd><code>there ,and → there, and</code> · <code>wait ... → wait...</code></dd></div>
+          <div><dt>Εισαγωγικά</dt><dd><code>' hello Go ' → 'hello Go'</code></dd></div>
+          <div><dt>Άρθρο</dt><dd><code>a honest → an honest</code>. Πριν από φωνήεν ή <code>h</code>.</dd></div>
+        </dl>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-06-title" data-theme="indigo">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Κανόνες κειμένου</p>
+      <h2 id="slide-06-title" class="slide-title">Audit case #4</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>IN
+harold wilson (cap, 2) : ' I am a optimist ,but
+a optimist who carries a raincoat . '
+
+OUT
+Harold Wilson: 'I am an optimist, but
+an optimist who carries a raincoat.'</code></pre>
+  </div>
+      <div class="workshop-rail" style="--columns:3">
+          <div><h3>Όνομα</h3><p><code>(cap, 2)</code> στις δύο λέξεις.</p></div>
+          <div><h3>Στίξη και εισαγωγικά</h3><p>Κολλάνε στο κείμενο.</p></div>
+          <div><h3>Άρθρο</h3><p>Δύο φορές <code>an optimist</code>.</p></div>
+        </div>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-07-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Κανόνες κειμένου</p>
+      <h2 id="slide-07-title" class="slide-title">Τα τέσσερα audit cases</h2>
+    </header>
+    <div class="workshop-content">
+      <dl class="workshop-ledger workshop-table">
+          <div><dt>01 · Πεζά / κεφαλαία</dt><dd><code>my house (up, 2) ? → MY HOUSE?</code></dd></div>
+          <div><dt>02 · Αριθμοί</dt><dd><code>101 (bin) → 5</code> · <code>1a (hex) → 26</code></dd></div>
+          <div><dt>03 · Στίξη</dt><dd><code>sad ,because → sad, because</code></dd></div>
+          <div><dt>04 · Συνδυασμός</dt><dd>Όνομα, στίξη, εισαγωγικά και άρθρα</dd></div>
+        </dl>
+      <p class="workshop-prompt">Σύγκρινε ολόκληρη την έξοδο με το αναμενόμενο κείμενο.</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-08-title" data-theme="paper" data-transition="registration">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Προδιαγραφή και δομή</p>
+      <h2 id="slide-08-title" class="slide-title">Τι διαβάζω στο repo;</h2>
+    </header>
+    <div class="workshop-content">
+      <dl class="workshop-ledger workshop-table">
+          <div><dt><code>README.md</code></dt><dd>Τι κάνει το έργο και πώς το τρέχω</dd></div>
+          <div><dt><code>LICENSE</code></dt><dd>Όροι χρήσης και διανομής</dd></div>
+          <div><dt><code>CONTRIBUTING.md</code></dt><dd>Πώς υποβάλλω μια αλλαγή</dd></div>
+          <div><dt><code>PRD.md</code></dt><dd>Απαιτήσεις και κριτήρια αποδοχής</dd></div>
+          <div><dt><code>AGENTS.md</code></dt><dd>Οδηγίες για coding agents</dd></div>
+          <div><dt><code>CHANGELOG.md</code></dt><dd>Τι άλλαξε ανά έκδοση</dd></div>
+        </dl>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-09-title" data-theme="indigo">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Προδιαγραφή και δομή</p>
+      <h2 id="slide-09-title" class="slide-title">Τι γράφω στο PRD;</h2>
+    </header>
+    <div class="workshop-content">
+      <dl class="workshop-ledger workshop-table">
+          <div><dt>Πρόβλημα</dt><dd>Μία πρόταση για το τι κάνει το εργαλείο.</dd></div>
+          <div><dt>CLI contract</dt><dd>Εντολή, ορίσματα, έξοδος και σφάλματα.</dd></div>
+          <div><dt>Κανόνες και όρια</dt><dd>Τι καλύπτει η λύση, με παραδείγματα.</dd></div>
+          <div><dt>Αρχιτεκτονική</dt><dd>Ποια δομή επιλέγουμε και γιατί.</dd></div>
+          <div><dt>Κριτήρια αποδοχής</dt><dd>Τέσσερα audit cases και δικές μας οριακές περιπτώσεις.</dd></div>
+        </dl>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-10-title" data-theme="paper">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Προδιαγραφή και δομή</p>
+      <h2 id="slide-10-title" class="slide-title">Goals και Non-Goals</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-rail" style="--columns:2">
+          <div><h3>Goals</h3><p>Μετασχηματισμοί κειμένου, αρχείο εξόδου και σαφή μηνύματα σφάλματος.</p></div>
+          <div><h3>Non-Goals</h3><p>Γραφικό περιβάλλον, μετάφραση και επεξεργασία πολλών αρχείων μαζί.</p></div>
+        </div>
+      <p class="workshop-prompt">Αυτόματη ορθογραφική διόρθωση. Σε ποια στήλη τη βάζουμε;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-11-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Δομή έργου</p>
+      <h2 id="slide-11-title" class="slide-title">Πού μπαίνει ο κώδικας;</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-split"><div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>$ tree
+go-reloaded/
 ├── go.mod
 ├── main.go
 └── internal/
     └── transform/
-        └── transform.go</pre>
+        └── transform.go</code></pre>
   </div>
-</div>
-</div></section>
-<section class="slide " aria-labelledby="slide-12-title" data-theme="paper"><div class="workshop-frame">
-  <header class="slide-header">
-    <p class="eyebrow">Δομή έργου</p>
-    <h2 id="slide-12-title" class="slide-title">Πού μπαίνουν τα tests;</h2>
-  </header>
-  
-<div class="split-grid">
-  <div>
-    <ul class="point-list">
-      <li><strong><code>*_test.go</code></strong> · Δίπλα στον κώδικα του πακέτου που ελέγχει, π.χ. <code>transform_test.go</code>.</li>
-      <li><strong><code>testdata/</code></strong> · Αρχεία εισόδου και αναμενόμενης εξόδου, δίπλα στο test που τα διαβάζει.</li>
-      <li><strong><code>README.md</code></strong> · Στη ρίζα, με οδηγίες εκτέλεσης και την εντολή <code>go test ./...</code>.</li>
-    </ul>
+      <dl class="workshop-ledger">
+          <div><dt><code>main.go</code></dt><dd>Διαβάζει ορίσματα και συντονίζει την εκτέλεση.</dd></div>
+          <div><dt><code>internal/transform/</code></dt><dd>Εφαρμόζει τους κανόνες στο κείμενο.</dd></div>
+        </dl></div>
+      <p class="workshop-prompt">Ποιο αρχείο θα ανοίξεις για ένα κόμμα που μπήκε λάθος;</p>
+    </div>
   </div>
-  <div>
-    <p class="lead-statement">Παράδειγμα μέσα στο <code>internal/transform/</code></p>
-    <pre class="sample-block">transform/
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-12-title" data-theme="paper">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Δομή έργου</p>
+      <h2 id="slide-12-title" class="slide-title">Πού μπαίνουν τα tests;</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-split"><div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>$ tree internal/transform
+transform/
 ├── transform.go
 ├── transform_test.go
 └── testdata/
     ├── case01.in.txt
-    └── case01.golden</pre>
+    └── case01.golden</code></pre>
   </div>
-</div>
-</div></section>
-<section class="slide comparison-layout" aria-labelledby="slide-13-title" data-theme="paper" data-transition="scorch"><div class="workshop-frame">
-        <header class="slide-header" style="margin-bottom: 16px;">
-          <div class="eyebrow">Δοκιμές</div>
-          <h2 id="slide-13-title" class="slide-title">TDD (Test-Driven Development) &amp; Σύγκριση με BDD</h2>
-        </header>
-
-        <!-- Top Definition Banner -->
-        <div style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 22px; margin-bottom: 18px;">
-          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px;">
-            <span class="mono" style="color: var(--accent); font-weight: 700; font-size: 15px;">ΟΡΙΣΜΟΣ TDD //</span>
-            <span style="font-size: 19px; font-weight: 700; color: var(--ink);">Η προδιαγραφή (test) γράφεται ΠΡΙΝ από τον κώδικα υλοποίησης</span>
-          </div>
-          <p style="font-size: 16.5px; color: var(--ink-secondary); line-height: 1.45;">
-            Ο κύκλος <strong>Red ➔ Green ➔ Refactor</strong>: Πρώτα γράφεις το test που αποτυγχάνει (Red), στη συνέχεια υλοποιείς τον ελάχιστο κώδικα για να περάσει (Green), και τέλος καθαρίζεις τη σχεδίαση (Refactor) διατηρώντας τα tests πράσινα.
-          </p>
+      <dl class="workshop-ledger">
+          <div><dt><code>*_test.go</code></dt><dd>Δίπλα στον κώδικα του πακέτου.</dd></div>
+          <div><dt><code>testdata/</code></dt><dd>Είσοδοι και αναμενόμενα αποτελέσματα.</dd></div>
+        </dl></div>
+      <p class="workshop-prompt">Από τη ρίζα του module τρέχουμε <code>go test ./...</code>.</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-13-title" data-theme="indigo" data-transition="scorch">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Δοκιμές</p>
+      <h2 id="slide-13-title" class="slide-title">TDD και BDD</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-rail" style="--columns:2">
+          <div><h3>TDD</h3><p>Γράψε ένα test που αποτυγχάνει. Κάν’ το να περάσει. Καθάρισε τον κώδικα.</p></div>
+          <div><h3>BDD</h3><p>Περιέγραψε τη συμπεριφορά ως σενάριο. Δεδομένου… όταν… τότε…</p></div>
         </div>
-
-        <div class="comparison-grid" style="margin-top: 0;">
-          <div class="comparison-col neutral">
-            <h3 class="col-title" style="font-size: 20px; margin-bottom: 10px;">TDD: Εστίαση στη Συνάρτηση</h3>
-            <ul class="col-points">
-              <li><strong>Κύκλος Red ➔ Green ➔ Refactor:</strong> Απομονωμένος έλεγχος μεμονωμένων functions.</li>
-              <li><strong>Developer-Facing:</strong> Επαληθεύει εσωτερικά API contracts, edge cases και return types.</li>
-              <li><strong>Ερώτημα Ελέγχου:</strong> "Κάνει η συνάρτηση <code>ToUppercase()</code> ακριβώς αυτό που αναμένεται;"</li>
-              <li><strong>Υλοποίηση:</strong> Standard library package <code>testing</code> της Go.</li>
-            </ul>
-          </div>
-
-          <div class="comparison-col neutral">
-            <h3 class="col-title" style="font-size: 20px; margin-bottom: 10px;">BDD: Εστίαση στο Σύστημα</h3>
-            <ul class="col-points">
-              <li><strong>Μοντέλο Given / When / Then:</strong> Προδιαγραφή ροής από τη σκοπιά του τελικού χρήστη.</li>
-              <li><strong>System/User-Facing:</strong> Ελέγχει τη συνολική έξοδο του προγράμματος βάσει προδιαγραφών.</li>
-              <li><strong>Ερώτημα Ελέγχου:</strong> "Όταν δοθεί το input αρχείο, παράγεται το ακριβές expected output;"</li>
-              <li><strong>Στο go-reloaded:</strong> Golden Master black-box testing με τα 4 audit cases.</li>
-            </ul>
-          </div>
-        </div>
-      </div></section>
-<section class="slide split-layout" aria-labelledby="slide-14-title" data-theme="night"><div class="workshop-frame">
-        <header class="slide-header" style="margin-bottom: 16px;">
-          <div class="eyebrow">Δοκιμές</div>
-          <h2 id="slide-14-title" class="slide-title">Γράφοντας ένα Test στην Πράξη: <code>ToUppercase</code></h2>
-        </header>
-
-        <div class="split-grid" style="gap: var(--space-lg);">
-          <!-- Left: What you need to know -->
-          <div class="split-left" style="display: flex; flex-direction: column; gap: 14px;">
-            <p class="lead-statement" style="font-size: 21px; margin-bottom: 4px;">
-              Πώς διαβάζουμε ένα table-driven test;
-            </p>
-
-            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;">
-              <div class="mono" style="color: var(--accent); font-weight: 700; font-size: 15px; margin-bottom: 4px;">1. ΥΠΟΓΡΑΦΗ: (t *testing.T)</div>
-              <p style="font-size: 15.5px; color: var(--ink-secondary); line-height: 1.4;">
-                Κάθε test ξεκινά με <code>Test...</code> και δέχεται υποχρεωτικά <code>t *testing.T</code>. Μέσω αυτού καλούμε <code>t.Errorf()</code> για αναφορά αποτυχίας χωρίς άμεσο τερματισμό.
-              </p>
-            </div>
-
-            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;">
-              <div class="mono" style="color: var(--accent); font-weight: 700; font-size: 15px; margin-bottom: 4px;">2. ΠΕΔΙΑ ΚΑΘΕ TEST CASE</div>
-              <p style="font-size: 15.5px; color: var(--ink-secondary); line-height: 1.4;">
-                Στο παράδειγμα χρησιμοποιούμε <code>type TestCase struct</code> με πεδία <code>name</code>, <code>input</code>, <code>expected</code>.
-              </p>
-            </div>
-
-            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;">
-              <div class="mono" style="color: var(--accent); font-weight: 700; font-size: 15px; margin-bottom: 4px;">3. ΤΙ ΔΕΧΕΤΑΙ ΤΟ t.Run(name, f)</div>
-              <p style="font-size: 15.5px; color: var(--ink-secondary); line-height: 1.4;">
-                • <code>name string</code>: Το όνομα του sub-test (εμφανίζεται αναλυτικά στο <code>go test -v</code>).<br>
-                • <code>f func(t *testing.T)</code>: Η συνάρτηση που εκτελεί τον έλεγχο.
-              </p>
-            </div>
-
-            <div style="background: var(--code-surface); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px;">
-              <span class="mono" style="color: var(--success); font-weight: 700; font-size: 13.5px;">TDD FLOW: </span>
-              <span style="font-size: 14.5px; color: var(--ink-muted);">Γράφεις πρώτα το test (FAIL) ➔ Υλοποιείς τη function ➔ go test -v (PASS)</span>
-            </div>
-          </div>
-
-          <!-- Right: Concrete Code Snippet -->
-          <div class="split-right">
-            <div class="code-card" style="font-size: 13.8px; line-height: 1.42; padding: 16px 20px;">
-<span class="cm">// 1. Τα δεδομένα κάθε test case</span>
-<span class="kw">type</span> <span class="typ">TestCase</span> <span class="kw">struct</span> {
-    name     <span class="typ">string</span>
-    input    <span class="typ">string</span>
-    expected <span class="typ">string</span>
-}
-
-<span class="cm">// 2. Το Unit Test που γράφουμε ΠΡΩΤΑ (Red Phase)</span>
-<span class="kw">func</span> <span class="fn">TestToUppercase</span>(t *testing.T) {
-    cases := []<span class="typ">TestCase</span>{
-        {name: <span class="str">"simple word"</span>, input: <span class="str">"hello"</span>, expected: <span class="str">"HELLO"</span>},
-        {name: <span class="str">"already upper"</span>, input: <span class="str">"GO"</span>, expected: <span class="str">"GO"</span>},
-        {name: <span class="str">"empty string"</span>, input: <span class="str">""</span>, expected: <span class="str">""</span>},
+      <p class="workshop-prompt">Δεδομένου του <code>go (up)</code>, όταν τρέξω το CLI, τότε παίρνω <code>GO</code>.</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-14-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Δοκιμές</p>
+      <h2 id="slide-14-title" class="slide-title">Ένα table-driven test</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-split"><div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>func TestToUppercase(t *testing.T) {
+  cases := []struct{ in, want string }{
+    {"hello", "HELLO"},
+    {"GO", "GO"},
+    {"", ""},
+  }
+  for _, tc := range cases {
+    if got := ToUppercase(tc.in); got != tc.want {
+      t.Errorf("%q: got %q, want %q",
+        tc.in, got, tc.want)
     }
-
-    <span class="kw">for</span> _, tc := <span class="kw">range</span> cases {
-        <span class="cm">// t.Run δέχεται: (name string, f func(t *testing.T))</span>
-        t.<span class="fn">Run</span>(tc.name, <span class="kw">func</span>(t *testing.T) {
-            got := <span class="fn">ToUppercase</span>(tc.input)
-            <span class="kw">if</span> got != tc.expected {
-                t.<span class="fn">Errorf</span>(<span class="str">"got %q, want %q"</span>, got, tc.expected)
-            }
-        })
-    }
-}
-
-<span class="cm">// 3. Η συνάρτηση που γράφουμε ΜΕΤΑ για να περάσει το test (Green Phase)</span>
-<span class="kw">func</span> <span class="fn">ToUppercase</span>(s <span class="typ">string</span>) <span class="typ">string</span> {
-    <span class="kw">return</span> strings.<span class="fn">ToUpper</span>(s)
-}</div>
-          </div>
+  }
+}</code></pre>
+  </div>
+      <dl class="workshop-ledger">
+          <div><dt><code>in</code> και <code>want</code></dt><dd>Τι δίνουμε και τι περιμένουμε.</dd></div>
+          <div><dt><code>got</code></dt><dd>Τι επέστρεψε η συνάρτηση.</dd></div>
+        </dl></div>
+      <p class="workshop-prompt">Ποια γραμμή θα πρόσθετες για ελληνικούς χαρακτήρες;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-15-title" data-theme="paper">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Δοκιμές</p>
+      <h2 id="slide-15-title" class="slide-title">Τρεις χρήσιμες δοκιμές</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-rail" style="--columns:3">
+          <div><h3>Golden test</h3><p>Σύγκρινε την ακριβή έξοδο με ένα αρχείο αναφοράς.</p></div>
+          <div><h3>Fuzzing</h3><p>Δοκίμασε πολλές εισόδους. Έλεγξε π.χ. ότι δεν γίνεται panic.</p></div>
+          <div><h3>Boundary test</h3><p>Δοκίμασε ένα συγκεκριμένο όριο, π.χ. το κενό αρχείο.</p></div>
         </div>
-      </div></section>
-<section class="slide pillars-layout" aria-labelledby="slide-15-title" data-theme="night"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Δοκιμές</div>
-          <h2 id="slide-15-title" class="slide-title">Εναλλακτικά Μοντέλα Δοκιμών</h2>
-        </header>
+      <p class="workshop-prompt">Ποια δοκιμή πιάνει ένα περιττό τελικό κενό;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-16-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Δοκιμές</p>
+      <h2 id="slide-16-title" class="slide-title">Τι ελέγχω σε κάθε επίπεδο;</h2>
+    </header>
+    <div class="workshop-content">
+      <dl class="workshop-ledger workshop-table">
+          <div><dt>Unit</dt><dd>Μία λειτουργία, π.χ. <code>101 (bin) → 5</code>.</dd></div>
+          <div><dt>Integration</dt><dd>Ανάγνωση, μετασχηματισμός και εγγραφή συνεργάζονται.</dd></div>
+          <div><dt>End-to-end</dt><dd>Η πραγματική εντολή γράφει το σωστό αρχείο.</dd></div>
+        </dl>
+      <p class="workshop-prompt">Πού θα έπιανες ότι το CLI αγνοεί τη διαδρομή εξόδου;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-17-title" data-theme="indigo" data-transition="registration">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Αρχιτεκτονική</p>
+      <h2 id="slide-17-title" class="slide-title">Pipeline</h2>
+    </header>
+    <div class="workshop-content">
+      <figure class="workshop-diagram" id="pipeline">
+  <svg viewBox="0 0 1712 310" role="img" aria-labelledby="pipeline-heading pipeline-desc">
+    <title id="pipeline-heading">Παράδειγμα ροής pipeline</title>
+    <desc id="pipeline-desc">Η είσοδος χωρίζεται σε tokens, εφαρμόζεται το modifier και διορθώνεται η στίξη.</desc>
+    <g class="workshop-diagram-box">
+      <rect x="4" y="44" width="522" height="218"/><rect x="595" y="44" width="522" height="218"/><rect x="1186" y="44" width="522" height="218"/>
+    </g>
+    <g class="workshop-diagram-arrow"><path d="M540 153h42m-14-14 14 14-14 14M1131 153h42m-14-14 14 14-14 14"/></g>
+    <g class="workshop-diagram-title" text-anchor="middle">
+      <text x="265" y="120">Χωρισμός σε tokens</text><text x="856" y="120">Εφαρμογή κανόνων</text><text x="1447" y="120">Τελική σύνθεση</text>
+    </g>
+    <g class="workshop-diagram-code" text-anchor="middle">
+      <text x="265" y="198">go | (up) | !</text><text x="856" y="198">GO | !</text><text x="1447" y="198">GO!</text>
+    </g>
+  </svg>
+</figure>
+      <p class="workshop-prompt">Σε ποιο στάδιο θα κοιτούσες αν η έξοδος ήταν <code>GO !</code>;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-18-title" data-theme="paper">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Αρχιτεκτονική</p>
+      <h2 id="slide-18-title" class="slide-title">Μηχανή καταστάσεων (FSM)</h2>
+    </header>
+    <div class="workshop-content">
+      <figure class="workshop-diagram" id="fsm">
+  <svg viewBox="0 0 1712 370" role="img" aria-labelledby="fsm-heading fsm-desc">
+    <title id="fsm-heading">Μηχανή δύο καταστάσεων για ζεύγη εισαγωγικών</title>
+    <desc id="fsm-desc">Ξεκινάμε έξω. Το άνοιγμα εισαγωγικού μάς μεταφέρει μέσα και το κλείσιμο μάς επιστρέφει έξω.</desc>
+    <g class="workshop-diagram-box"><rect x="118" y="104" width="464" height="164"/><rect x="1130" y="104" width="464" height="164"/></g>
+    <g class="workshop-diagram-arrow"><path d="M607 130h498m-17-17 17 17-17 17M1105 242H607m17-17-17 17 17 17"/></g>
+    <g text-anchor="middle">
+      <g class="workshop-diagram-title"><text x="350" y="199">Έξω</text><text x="1362" y="199">Μέσα</text></g>
+      <g class="workshop-diagram-detail"><text x="856" y="100">Ανοίγει το εισαγωγικό</text><text x="856" y="298">Κλείνει το εισαγωγικό</text></g>
+    </g>
+  </svg>
+</figure>
+      <p class="workshop-prompt">Πες «μέσα» ή «έξω» για κάθε βήμα του <code>'hello world'</code>.</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-19-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Αρχιτεκτονική</p>
+      <h2 id="slide-19-title" class="slide-title">Τι θυμάται το state;</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-split"><div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>if runeRead == '\'' {
+  inQuote = !inQuote
+}</code></pre>
+  </div>
+      <dl class="workshop-ledger">
+          <div><dt><code>if</code> ή <code>switch</code></dt><dd>Ελέγχει τι διαβάζουμε τώρα.</dd></div>
+          <div><dt><code>inQuote</code></dt><dd>Θυμάται αν βρισκόμαστε μέσα σε εισαγωγικά.</dd></div>
+        </dl></div>
+      <p class="workshop-prompt">Βλέπουμε <code>'</code>. Τι χρειάζεται να ξέρουμε για να πούμε αν ανοίγει ή κλείνει;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-20-title" data-theme="indigo">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Αρχιτεκτονική</p>
+      <h2 id="slide-20-title" class="slide-title">Τι αναγνωρίζει ένα regex;</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-split"><div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>\((up|low|cap)(,\s*(\d+))?\)
 
-        <div class="pillars-grid">
-          <div class="pillar-card">
-              <h3 class="pillar-heading">Golden Master / Snapshot</h3>
-            <p class="pillar-desc">
-              Συγκρίνει ολόκληρα αρχεία output με vetted golden files. Εξασφαλίζει ότι καμία αλλαγή σε έναν κανόνα δεν αλλοιώνει το τελικό αποτέλεσμα άλλων κανόνων.
-            </p>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;">
-              <span style="color: var(--ink-muted);">// Σύγκριση fixture αρχείων</span><br>
-              got, _ := os.<span style="color: var(--accent);">ReadFile</span>(<span style="color: var(--success);">"result.txt"</span>)<br>
-              want, _ := os.<span style="color: var(--accent);">ReadFile</span>(<span style="color: var(--success);">"testdata/case1.golden"</span>)<br>
-              <span style="color: var(--purple);">if</span> <span style="color: var(--typ);">string</span>(got) != <span style="color: var(--typ);">string</span>(want) {<br>
-              &nbsp;&nbsp;t.<span style="color: var(--accent);">Errorf</span>(<span style="color: var(--danger);">"golden mismatch"</span>)<br>
-              }
-            </div>
-            </div>
-
-          <div class="pillar-card">
-              <h3 class="pillar-heading">Property-Based &amp; Fuzzing</h3>
-            <p class="pillar-desc">
-              Χρήση του <code>testing.F</code> της Go. Τροφοδότηση του parser με εκατομμύρια τυχαία strings για τον εντοπισμό index out of range και memory panics.
-            </p>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;">
-              <span style="color: var(--ink-muted);">// testing.F fuzzing στη Go</span><br>
-              <span style="color: var(--purple);">func</span> <span style="color: var(--accent);">FuzzTransform</span>(f *testing.F) {<br>
-              &nbsp;&nbsp;f.<span style="color: var(--accent);">Add</span>(<span style="color: var(--success);">"sample (hex) 1E test"</span>)<br>
-              &nbsp;&nbsp;f.<span style="color: var(--accent);">Fuzz</span>(<span style="color: var(--purple);">func</span>(t *testing.T, s <span style="color: var(--typ);">string</span>) {<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;transform.<span style="color: var(--accent);">Run</span>(s) <span style="color: var(--ink-muted);">// 0 crashes</span><br>
-              &nbsp;&nbsp;})<br>
-              }
-            </div>
-            </div>
-
-          <div class="pillar-card">
-              <h3 class="pillar-heading">Defensive Boundary Tests</h3>
-            <p class="pillar-desc">
-              Έλεγχος ακραίων περιπτώσεων: κενό αρχείο εισόδου, μονοί αριθμοί χωρίς modifiers, ασύμμετρα εισαγωγικά, modifiers χωρίς προηγούμενες λέξεις.
-            </p>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;">
-              <span style="color: var(--ink-muted);">// Ακραία edge-case inputs</span><br>
-              cases := []<span style="color: var(--typ);">string</span>{<br>
-              &nbsp;&nbsp;<span style="color: var(--success);">""</span>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ink-muted);">// 1. Κενό αρχείο</span><br>
-              &nbsp;&nbsp;<span style="color: var(--success);">"(up, 3)"</span>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ink-muted);">// 2. Modifier χωρίς λέξη</span><br>
-              &nbsp;&nbsp;<span style="color: var(--success);">"hello ' world"</span>, &nbsp;&nbsp;<span style="color: var(--ink-muted);">// 3. Μονό εισαγωγικό</span><br>
-              &nbsp;&nbsp;<span style="color: var(--success);">"(bin, invalid)"</span>, <span style="color: var(--ink-muted);">// 4. Μη έγκυρος αριθμός</span><br>
-              }
-            </div>
-            </div>
+  (up, 2)
+   ^^  ^
+   up  2</code></pre>
+  </div>
+      <dl class="workshop-ledger">
+          <div><dt>Αναγνώριση</dt><dd>Βρίσκει τον τύπο της οδηγίας και το πλήθος.</dd></div>
+          <div><dt>Εφαρμογή</dt><dd>Στο workshop χρησιμοποιούμε <code>strings</code>, slices και <code>strconv</code>.</dd></div>
+        </dl></div>
+      <p class="workshop-prompt">Πώς χειρίζεσαι το <code>(up, 2)</code> αν υπάρχει μόνο μία προηγούμενη λέξη;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-21-title" data-theme="night">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Αρχιτεκτονική</p>
+      <h2 id="slide-21-title" class="slide-title">Περάσματα ή buffer;</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block" dir="ltr"><code>so exciting (up, 2) → SO EXCITING</code></pre>
+  </div>
+      <div class="workshop-rail" style="--columns:2">
+          <div><h3>Πολλά περάσματα</h3><p>Κάθε στάδιο βλέπει το ενδιάμεσο κείμενο.</p></div>
+          <div><h3>Ένα πέρασμα</h3><p>Κράτα διαθέσιμες τις λέξεις που μπορεί να αλλάξει ένας modifier.</p></div>
         </div>
-      </div></section>
-<section class="slide pillars-layout" aria-labelledby="slide-16-title" data-theme="paper"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Δοκιμές</div>
-          <h2 id="slide-16-title" class="slide-title">Επίπεδα Δοκιμών: Unit, Integration &amp; E2E (Acceptance)</h2>
-        </header>
-
-        <div class="pillars-grid">
-          <div class="pillar-card">
-              <h3 class="pillar-heading">Unit Tests (Μοναδιαία)</h3>
-            <p class="pillar-desc">
-              <strong>Εμβέλεια: Μεμονωμένη συνάρτηση.</strong><br>
-              Ελέγχουν τη μικρότερη δυνατή μονάδα κώδικα σε πλήρη απομόνωση (χωρίς I/O ή εξωτερικά αρχεία).
-            </p>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;">
-              <span style="color: var(--ink-muted);">// internal/transform/rules_test.go</span><br>
-              got := <span style="color: var(--accent);">HexToDec</span>(<span style="color: var(--success);">"1E"</span>)<br>
-              <span style="color: var(--purple);">if</span> got != <span style="color: var(--success);">"30"</span> {<br>
-              &nbsp;&nbsp;t.<span style="color: var(--accent);">Errorf</span>(<span style="color: var(--danger);">"got %s, want 30"</span>, got)<br>
-              }<br>
-              <span style="color: var(--ink-muted);">// Ταχύτητα: &lt; 1ms (άμεσο feedback)</span>
-            </div>
-            </div>
-
-          <div class="pillar-card">
-              <h3 class="pillar-heading">Integration Tests (Ολοκλήρωσης)</h3>
-            <p class="pillar-desc">
-              <strong>Εμβέλεια: Συνεργασία Modules.</strong><br>
-              Ελέγχουν τη σύνδεση και τη ροή δεδομένων μεταξύ δύο ή περισσότερων πακέτων (π.χ. file reader + transform pipeline).
-            </p>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;">
-              <span style="color: var(--ink-muted);">// internal/file + internal/transform</span><br>
-              raw := file.<span style="color: var(--accent);">Read</span>(<span style="color: var(--success);">"sample.txt"</span>)<br>
-              tokens := transform.<span style="color: var(--accent);">Tokenize</span>(raw)<br>
-              out := transform.<span style="color: var(--accent);">Pipeline</span>(tokens)<br>
-              <span style="color: var(--ink-muted);">// Επαλήθευση contract επικοινωνίας</span>
-            </div>
-            </div>
-
-          <div class="pillar-card">
-              <h3 class="pillar-heading">E2E &amp; System / Acceptance</h3>
-            <p class="pillar-desc">
-              <strong>Εμβέλεια: Ολόκληρο το σύστημα (CLI).</strong><br>
-              Black-box δοκιμή του τελικού binary, ακριβώς όπως το τρέχει ο χρήστης ή το audit script του σχολείου.
-            </p>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;">
-              <span style="color: var(--ink-muted);"># Black-box CLI εκτέλεση &amp; diff</span><br>
-              <span style="color: var(--accent);">$</span> go run . in.txt out.txt<br>
-              <span style="color: var(--accent);">$</span> diff out.txt expected.txt<br>
-              <span style="color: var(--ink-muted);"># Έλεγχος exit code 1 σε λάθος args</span><br>
-              <span style="color: var(--accent);">$</span> go run . &amp;&amp; echo "FAIL"
-            </div>
-            </div>
+      <p class="workshop-prompt">Τι πρέπει να μπορείς ακόμη να αλλάξεις όταν φτάσεις στο <code>(up, 3)</code>;</p>
+    </div>
+  </div>
+</section>
+<section class="slide workshop-rebuilt" aria-labelledby="slide-22-title" data-theme="paper">
+  <div class="workshop-frame">
+    <header class="slide-header">
+      <p class="eyebrow">Αρχιτεκτονική</p>
+      <h2 id="slide-22-title" class="slide-title">Ποια λύση διαλέγουμε;</h2>
+    </header>
+    <div class="workshop-content">
+      <div class="workshop-rail" style="--columns:2">
+          <div><h3>Pipeline</h3><p>Μικρά αρχεία και στάδια που ελέγχονται χωριστά.</p></div>
+          <div><h3>FSM σε ροή</h3><p>Μεγάλα αρχεία, όταν οι κανόνες επιτρέπουν ελεγχόμενο buffer.</p></div>
         </div>
-      </div></section>
-<section class="slide diagram-layout" aria-labelledby="slide-17-title" data-theme="indigo" data-transition="registration"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Αρχιτεκτονική</div>
-          <h2 id="slide-17-title" class="slide-title">Αρχιτεκτονική Pipeline (Διαδοχικά Στάδια)</h2>
-        </header>
-
-        <div class="diagram-canvas-wrapper">
-          <svg viewBox="0 0 1680 540" width="100%" height="100%">
-            <!-- Pipeline Track Behind Cards -->
-            <line x1="60" y1="265" x2="1620" y2="265" stroke="var(--border-strong)" stroke-width="4" stroke-dasharray="8 8"/>
-
-            <!-- Inter-stage Arrowheads -->
-            <path d="M 314 259 L 324 265 L 314 271" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M 582 259 L 592 265 L 582 271" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M 850 259 L 860 265 L 850 271" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M 1118 259 L 1128 265 L 1118 271" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <path d="M 1386 259 L 1396 265 L 1386 271" stroke="var(--accent)" stroke-width="3" fill="none" stroke-linecap="round"/>
-
-            <!-- Stage 1 -->
-            <g transform="translate(60, 140)">
-              <rect x="0" y="0" width="236" height="250" rx="10" fill="var(--surface-raised)" stroke="var(--border)" stroke-width="1.5"/>
-              <text x="22" y="38" fill="var(--accent)" font-family="var(--font-mono)" font-size="15" font-weight="700">STAGE 01</text>
-              <text x="22" y="74" fill="var(--ink)" font-family="var(--font-sans)" font-size="22" font-weight="700">Tokenize</text>
-              <line x1="22" y1="92" x2="214" y2="92" stroke="var(--border-subtle)" stroke-width="1"/>
-              <text x="22" y="122" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                <tspan x="22" dy="0">Διαχωρισμός κειμένου</tspan>
-                <tspan x="22" dy="24">σε επιμέρους λέξεις</tspan>
-                <tspan x="22" dy="24">και σημεία στίξης</tspan>
-                <tspan x="22" dy="24">(tokens string slice)</tspan>
-              </text>
-            </g>
-
-            <!-- Stage 2 -->
-            <g transform="translate(328, 140)">
-              <rect x="0" y="0" width="236" height="250" rx="10" fill="var(--surface-raised)" stroke="var(--accent)" stroke-width="1.5"/>
-              <text x="22" y="38" fill="var(--accent)" font-family="var(--font-mono)" font-size="15" font-weight="700">STAGE 02</text>
-              <text x="22" y="74" fill="var(--ink)" font-family="var(--font-sans)" font-size="22" font-weight="700">Numbers</text>
-              <line x1="22" y1="92" x2="214" y2="92" stroke="var(--border-subtle)" stroke-width="1"/>
-              <text x="22" y="122" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                <tspan x="22" dy="0">Μετατροπή (hex) &amp; (bin)</tspan>
-                <tspan x="22" dy="24">προηγούμενης λέξης</tspan>
-                <tspan x="22" dy="24">σε δεκαδική τιμή</tspan>
-                <tspan x="22" dy="24">μέσω του strconv</tspan>
-              </text>
-            </g>
-
-            <!-- Stage 3 -->
-            <g transform="translate(596, 140)">
-              <rect x="0" y="0" width="236" height="250" rx="10" fill="var(--surface-raised)" stroke="var(--accent)" stroke-width="1.5"/>
-              <text x="22" y="38" fill="var(--accent)" font-family="var(--font-mono)" font-size="15" font-weight="700">STAGE 03</text>
-              <text x="22" y="74" fill="var(--ink)" font-family="var(--font-sans)" font-size="22" font-weight="700">Casing</text>
-              <line x1="22" y1="92" x2="214" y2="92" stroke="var(--border-subtle)" stroke-width="1"/>
-              <text x="22" y="122" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                <tspan x="22" dy="0">Εφαρμογή (up), (low)</tspan>
-                <tspan x="22" dy="24">και (cap) σε μία ή</tspan>
-                <tspan x="22" dy="24">σε N προηγούμενες</tspan>
-                <tspan x="22" dy="24">λέξεις αναδρομικά</tspan>
-              </text>
-            </g>
-
-            <!-- Stage 4 -->
-            <g transform="translate(864, 140)">
-              <rect x="0" y="0" width="236" height="250" rx="10" fill="var(--surface-raised)" stroke="var(--accent)" stroke-width="1.5"/>
-              <text x="22" y="38" fill="var(--accent)" font-family="var(--font-mono)" font-size="15" font-weight="700">STAGE 04</text>
-              <text x="22" y="74" fill="var(--ink)" font-family="var(--font-sans)" font-size="22" font-weight="700">Punctuation</text>
-              <line x1="22" y1="92" x2="214" y2="92" stroke="var(--border-subtle)" stroke-width="1"/>
-              <text x="22" y="122" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                <tspan x="22" dy="0">Ένωση συμβόλων με</tspan>
-                <tspan x="22" dy="24">την προηγούμενη λέξη</tspan>
-                <tspan x="22" dy="24">και διατήρηση ομάδων</tspan>
-                <tspan x="22" dy="24">όπως ... και !?</tspan>
-              </text>
-            </g>
-
-            <!-- Stage 5 -->
-            <g transform="translate(1132, 140)">
-              <rect x="0" y="0" width="236" height="250" rx="10" fill="var(--surface-raised)" stroke="var(--accent)" stroke-width="1.5"/>
-              <text x="22" y="38" fill="var(--accent)" font-family="var(--font-mono)" font-size="15" font-weight="700">STAGE 05</text>
-              <text x="22" y="74" fill="var(--ink)" font-family="var(--font-sans)" font-size="22" font-weight="700">Quotes &amp; a/an</text>
-              <line x1="22" y1="92" x2="214" y2="92" stroke="var(--border-subtle)" stroke-width="1"/>
-              <text x="22" y="122" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                <tspan x="22" dy="0">Κλείσιμο ζευγών '' και</tspan>
-                <tspan x="22" dy="24">μετατροπή άρθρου a</tspan>
-                <tspan x="22" dy="24">σε an πριν από</tspan>
-                <tspan x="22" dy="24">φωνήεν ή γράμμα h</tspan>
-              </text>
-            </g>
-
-            <!-- Stage 6 -->
-            <g transform="translate(1400, 140)">
-              <rect x="0" y="0" width="220" height="250" rx="10" fill="var(--surface-raised)" stroke="var(--success)" stroke-width="2"/>
-              <text x="22" y="38" fill="var(--success)" font-family="var(--font-mono)" font-size="15" font-weight="700">OUTPUT</text>
-              <text x="22" y="74" fill="var(--ink)" font-family="var(--font-sans)" font-size="22" font-weight="700">Export</text>
-              <line x1="22" y1="92" x2="198" y2="92" stroke="var(--border-subtle)" stroke-width="1"/>
-              <text x="22" y="122" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                <tspan x="22" dy="0">Σύνθεση καθαρού</tspan>
-                <tspan x="22" dy="24">τελικού κειμένου και</tspan>
-                <tspan x="22" dy="24">εγγραφή στο δίσκο</tspan>
-                <tspan x="22" dy="24">(outputFile)</tspan>
-              </text>
-            </g>
-
-            <!-- Bottom Architecture Note -->
-            <rect x="60" y="420" width="1560" height="66" rx="8" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-            <text x="85" y="460" fill="var(--ink)" font-family="var(--font-sans)" font-size="16">
-              <tspan fill="var(--accent)" font-family="var(--font-mono)" font-weight="700">ΑΡΧΙΤΕΚΤΟΝΙΚΗ ΑΠΟΜΟΝΩΣΗ: </tspan>
-              Κάθε στάδιο δέχεται έγκυρο κείμενο και παράγει έγκυρο κείμενο. Επιτρέπει άμεσο debugging με ενδιάμεσα print statements και αυτόνομα unit tests.
-            </text>
-          </svg>
-        </div>
-      </div></section>
-<section class="slide diagram-layout" aria-labelledby="slide-18-title" data-theme="indigo"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Αρχιτεκτονική</div>
-          <h2 id="slide-18-title" class="slide-title">Αρχιτεκτονική Finite State Machine (FSM)</h2>
-        </header>
-
-        <div class="diagram-canvas-wrapper">
-          <svg viewBox="0 0 1680 540" width="100%" height="100%">
-            <!-- State 1 -->
-            <g transform="translate(180, 170)">
-              <circle cx="100" cy="100" r="95" fill="var(--surface-raised)" stroke="var(--purple)" stroke-width="2.5"/>
-              <text x="100" y="95" fill="var(--ink)" font-family="var(--font-mono)" font-size="19" font-weight="700" text-anchor="middle">NORMAL</text>
-              <text x="100" y="125" fill="var(--purple)" font-family="var(--font-mono)" font-size="15" text-anchor="middle">TEXT</text>
-            </g>
-
-            <!-- Transition 1 -> 2 -->
-            <path d="M 380 240 L 520 240 M 505 228 L 522 240 L 505 252" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
-            <text x="450" y="225" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="14" text-anchor="middle">char == '('</text>
-
-            <!-- State 2 -->
-            <g transform="translate(540, 170)">
-              <circle cx="100" cy="100" r="95" fill="var(--surface-raised)" stroke="var(--accent)" stroke-width="2.5"/>
-              <text x="100" y="95" fill="var(--ink)" font-family="var(--font-mono)" font-size="19" font-weight="700" text-anchor="middle">INSIDE</text>
-              <text x="100" y="125" fill="var(--accent)" font-family="var(--font-mono)" font-size="15" text-anchor="middle">MARKER</text>
-            </g>
-
-            <!-- Transition 2 -> 3 -->
-            <path d="M 740 240 L 880 240 M 865 228 L 882 240 L 865 252" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
-            <text x="810" y="225" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="14" text-anchor="middle">char == '\''</text>
-
-            <!-- State 3 -->
-            <g transform="translate(900, 170)">
-              <circle cx="100" cy="100" r="95" fill="var(--surface-raised)" stroke="var(--warning)" stroke-width="2.5"/>
-              <text x="100" y="95" fill="var(--ink)" font-family="var(--font-mono)" font-size="19" font-weight="700" text-anchor="middle">INSIDE</text>
-              <text x="100" y="125" fill="var(--warning)" font-family="var(--font-mono)" font-size="15" text-anchor="middle">QUOTES</text>
-            </g>
-
-            <!-- Transition 3 -> 4 -->
-            <path d="M 1100 240 L 1240 240 M 1225 228 L 1242 240 L 1225 252" stroke="var(--accent)" stroke-width="2.5" fill="none"/>
-            <text x="1170" y="225" fill="var(--ink-secondary)" font-family="var(--font-mono)" font-size="14" text-anchor="middle">isPunct(char)</text>
-
-            <!-- State 4 -->
-            <g transform="translate(1260, 170)">
-              <circle cx="100" cy="100" r="95" fill="var(--surface-raised)" stroke="var(--success)" stroke-width="2.5"/>
-              <text x="100" y="95" fill="var(--ink)" font-family="var(--font-mono)" font-size="19" font-weight="700" text-anchor="middle">PUNCT</text>
-              <text x="100" y="125" fill="var(--success)" font-family="var(--font-mono)" font-size="15" text-anchor="middle">GROUP</text>
-            </g>
-
-            <!-- Loop back arc -->
-            <path d="M 1360 165 C 1360 70, 280 70, 280 165" stroke="var(--border-strong)" stroke-width="2" stroke-dasharray="6 6" fill="none"/>
-            <text x="820" y="85" fill="var(--ink-muted)" font-family="var(--font-mono)" font-size="15" text-anchor="middle">Επαναφορά σε Normal Text μετά την εκπομπή (flush)</text>
-          </svg>
-        </div>
-      </div></section>
-<section class="slide comparison-layout" aria-labelledby="slide-19-title" data-theme="indigo"><div class="workshop-frame">
-        <header class="slide-header" style="margin-bottom: 14px;">
-          <div class="eyebrow">Αρχιτεκτονική</div>
-          <h2 id="slide-19-title" class="slide-title">Τι Διαφορά Έχει το State από ένα απλό If ή Switch Case;</h2>
-        </header>
-
-        <!-- Top Banner: if vs switch relation -->
-        <div style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px 20px; margin-bottom: 16px;">
-          <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px;">
-            <span class="mono" style="color: var(--accent); font-weight: 700; font-size: 14px;">ΥΠΕΝΘΥΜΙΣΗ //</span>
-            <span style="font-size: 18px; font-weight: 700; color: var(--ink);">Συσχέτιση <code>if / else</code> και <code>switch case</code></span>
-          </div>
-          <p style="font-size: 15.5px; color: var(--ink-secondary); line-height: 1.45;">
-            Το <code>if</code> ελέγχει μία boolean έκφραση. Το <code>switch case</code> είναι συντακτικό "sugar" για πολλαπλά <code>if / else if</code> ελέγχοντας την ίδια μεταβλητή. Και τα δύο είναι <strong>στιγμιαίοι έλεγχοι (Stateless)</strong>: βλέπουν μόνο το τρέχον input χωρίς να θυμούνται το παρελθόν.
-          </p>
-        </div>
-
-        <div class="comparison-grid" style="margin-top: 0; margin-bottom: 16px;">
-          <!-- Left Column: Stateless if / switch -->
-          <div class="comparison-col neutral" style="padding: 18px 22px;">
-            <div class="col-badge bad" style="margin-bottom: 8px;">STATELESS // ΧΩΡΙΣ ΜΝΗΜΗ</div>
-            <h3 class="col-title" style="font-size: 19px; margin-bottom: 8px;">Σκέτο If / Switch: Τυφλός Έλεγχος</h3>
-            <ul class="col-points" style="gap: 10px; margin-bottom: 14px;">
-              <li style="font-size: 15px;">Εξετάζει μόνο τον τρέχοντα χαρακτήρα: π.χ. «Είναι ο χαρακτήρας <code>'</code> ;» ➔ Ναι.</li>
-              <li style="font-size: 15px;"><strong>Το αδιέξοδο στα εισαγωγικά:</strong> Το ίδιο σύμβολο <code>'</code> τη μία φορά ανοίγει (κολλάει δεξιά) και την άλλη κλείνει (κολλάει αριστερά).</li>
-              <li style="font-size: 15px;">Χωρίς μνήμη ιστορικού, ένα απλό <code>if</code> αδυνατεί να αποφασίσει τι από τα δύο συμβαίνει!</li>
-            </ul>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.45; color: var(--ink-secondary); margin-top: auto;">
-              <span style="color: var(--danger);">// Τυφλός στιγμιαίος έλεγχος</span><br>
-              <span style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>' {<br>
-              &nbsp;&nbsp;<span style="color: var(--danger);">// Ανοίγει ή κλείνει;</span><br>
-              &nbsp;&nbsp;<span style="color: var(--danger);">// Αδύνατον να απαντηθεί χωρίς μνήμη!</span><br>
-              }
-            </div>
-          </div>
-
-          <!-- Right Column: Stateful State Machine -->
-          <div class="comparison-col good" style="padding: 18px 22px;">
-            <div class="col-badge good" style="margin-bottom: 8px;">STATEFUL // ΜΕ ΜΝΗΜΗ &amp; CONTEXT</div>
-            <h3 class="col-title" style="font-size: 19px; margin-bottom: 8px;">State: Μνήμη &amp; Context Ροής</h3>
-            <ul class="col-points" style="gap: 10px; margin-bottom: 14px;">
-              <li style="font-size: 15px;">Το <code>State</code> απαντά στο ερώτημα: *«Πού βρίσκομαι στη ροή του χρόνου;»*.</li>
-              <li style="font-size: 15px;"><strong>Το ίδιο input παράγει διαφορετική συμπεριφορά:</strong></li>
-              <li style="font-size: 15px;">• Αν <code>OutsideQuote</code> ➔ Το <code>'</code> ανοίγει εισαγωγικά και μεταβαίνει σε <code>InsideQuote</code>.</li>
-              <li style="font-size: 15px;">• Αν <code>InsideQuote</code> ➔ Το <code>'</code> κλείνει εισαγωγικά και μεταβαίνει σε <code>OutsideQuote</code>.</li>
-            </ul>
-            <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.45; color: var(--ink-secondary); margin-top: auto;">
-              <span style="color: var(--success);">// Το State δίνει μνήμη, το switch κάνει τη μετάβαση</span><br>
-              <span style="color: var(--purple);">switch</span> state {<br>
-              <span style="color: var(--purple);">case</span> OutsideQuote:<br>
-              &nbsp;&nbsp;<span style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>' { state = InsideQuote }<br>
-              <span style="color: var(--purple);">case</span> InsideQuote:<br>
-              &nbsp;&nbsp;<span style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>' { state = OutsideQuote }<br>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Banner: Key Takeaway -->
-        <div style="background: rgba(242, 203, 134, 0.08); border: 1px solid rgba(242, 203, 134, 0.3); border-radius: 8px; padding: 10px 18px; display: flex; align-items: center; gap: 14px;">
-          <span class="mono" style="background: rgba(242, 203, 134, 0.2); color: var(--accent); font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 4px; white-space: nowrap;">ΣΥΜΠΕΡΑΣΜΑ</span>
-          <div style="font-size: 15.5px; color: var(--ink); line-height: 1.45;">
-            Το <strong>State</strong> είναι η <em>μνήμη</em> (πού βρίσκομαι). Το <strong>if / switch</strong> είναι ο <em>μηχανισμός μετάβασης</em> (πώς αντιδρώ σε ένα σύμβολο για να αλλάξω κατάσταση).
-          </div>
-        </div>
-      </div></section>
-<section class="slide" aria-labelledby="slide-20-title" data-theme="indigo"><div class="workshop-frame">
-        <header class="slide-header" style="margin-bottom: 14px;">
-          <div class="eyebrow">Αρχιτεκτονική</div>
-          <h2 id="slide-20-title" class="slide-title">Regular Expressions (Regex) &amp; Το Πνεύμα των Audits</h2>
-        </header>
-
-        <!-- Top Section: Header with link to regex101 + 3 Regex Cards -->
-        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;">
-          <span class="mono" style="color: var(--accent); font-weight: 700; font-size: 14px; letter-spacing: 0.05em;">ΠΑΡΑΔΕΙΓΜΑΤΑ REGEX PATTERNS (DSL)</span>
-          <a href="https://regex101.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(242, 203, 134, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 5px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 14px; font-weight: 600; text-decoration: none;">
-            <span>Δοκιμή &amp; Visualizer: regex101.com</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          </a>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
-          <!-- Card 1: Words -->
-          <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
-            <div class="mono" style="color: var(--accent); font-size: 13px; font-weight: 700; margin-bottom: 6px;">01 // TOKENIZE ΣΕ ΛΕΞΕΙΣ</div>
-            <div class="mono" style="font-size: 18px; font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">\b\w+\b <span style="font-size: 13px; color: var(--ink-muted);">ή</span> [^\s]+</div>
-            <p style="font-size: 14.5px; color: var(--ink-secondary); line-height: 1.4;">
-              Επιλέγει μία-μία όλες τις διακριτές λέξεις του κειμένου, απομονώνοντάς τες από τα κενά διαστήματα.
-            </p>
-          </div>
-
-          <!-- Card 2: Numbers -->
-          <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
-            <div class="mono" style="color: var(--accent); font-size: 13px; font-weight: 700; margin-bottom: 6px;">02 // ΕΝΤΟΠΙΣΜΟΣ ΑΡΙΘΜΩΝ</div>
-            <div class="mono" style="font-size: 18px; font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">\d+ <span style="font-size: 13px; color: var(--ink-muted);">ή</span> [0-9]+</div>
-            <p style="font-size: 14.5px; color: var(--ink-secondary); line-height: 1.4;">
-              Εντοπίζει αυστηρά μόνο τα ψηφία και τους αριθμούς μέσα στη ροή του κειμένου (π.χ. για modifiers με count).
-            </p>
-          </div>
-
-          <!-- Card 3: Modifiers with Groups -->
-          <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
-            <div class="mono" style="color: var(--accent); font-size: 13px; font-weight: 700; margin-bottom: 6px;">03 // MODIFIERS &amp; CAPTURE GROUPS</div>
-            <div class="mono" style="font-size: 17px; font-weight: 700; color: var(--purple); background: rgba(212, 184, 226, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">\((up|low|cap)(?:,\s*(\d+))?\)</div>
-            <p style="font-size: 14.5px; color: var(--ink-secondary); line-height: 1.4;">
-              Απομονώνει modifiers τύπου <code>(up)</code> ή <code>(up, 2)</code> εξάγοντας απευθείας τον τύπο και τον αριθμό.
-            </p>
-          </div>
-        </div>
-
-        <!-- Middle Section: Direct Instruction (No heavy reasoning) -->
-        <div style="background: rgba(239, 171, 163, 0.08); border: 1px solid rgba(239, 171, 163, 0.35); border-radius: 8px; padding: 12px 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px;">
-          <span class="mono" style="background: rgba(239, 171, 163, 0.2); color: var(--danger); font-weight: 700; font-size: 13px; padding: 4px 10px; border-radius: 4px; white-space: nowrap;">ΣΥΣΤΑΣΗ // GO-RELOADED</span>
-          <div style="font-size: 16.5px; color: var(--ink); line-height: 1.45;">
-            <strong>Στο go-reloaded μην το κάνετε με regex!</strong> Το ζητούμενο του project είναι το tokenization και η επεξεργασία να γίνουν αποκλειστικά με μεθόδους της Go Standard Library (<code>strings</code>, runes, slices, <code>strconv</code>).
-          </div>
-        </div>
-
-        <!-- Bottom Section: The Zone01 Peer Audit Defense -->
-        <div style="background: var(--surface); border: 1px solid rgba(163, 210, 181, 0.35); border-radius: 8px; padding: 16px 22px;">
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-            <span class="col-badge good" style="margin-bottom: 0;">ZONE01 AUDIT CULTURE</span>
-            <h3 style="font-size: 18.5px; font-weight: 700; color: var(--ink); margin: 0;">Το Πνεύμα των Audits &amp; Υποστήριξη Επιλογών (Defense)</h3>
-          </div>
-          <p style="font-size: 15.5px; color: var(--ink-secondary); line-height: 1.45; margin-bottom: 10px;">
-            Ωστόσο, το πνεύμα των audits γενικά στο Zone01 είναι: Αν μπορείς να υποστηρίξεις στο audit (1) τη βαθιά γνώση και (2) τους λόγους / pros &amp; cons για τους οποίους χρησιμοποιήθηκε κάτι (ακόμα κι αν το project ζητάει standard library), <strong>τότε είναι απόλυτα σεβαστό και περνάει το audit</strong>, αρκεί να υπάρχει τεκμηριωμένο reasoning και επιχειρήματα:
-          </p>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
-            <div style="background: rgba(255, 255, 255, 0.02); border-left: 3px solid var(--success); padding: 10px 14px; border-radius: 0 6px 6px 0;">
-              <strong style="color: var(--ink); font-size: 15px;">1. Βαθιά Γνώση &amp; Κατανόηση:</strong>
-              <p style="font-size: 14.5px; color: var(--ink-secondary); margin-top: 4px; line-height: 1.4;">
-                Μπορείς να εξηγήσεις αναλυτικά στον auditor πώς λειτουργεί το pattern, τα capture groups και ο μηχανισμός εκτέλεσης — αποδεικνύοντας ότι δεν είναι copy-paste από AI ή Google.
-              </p>
-            </div>
-            <div style="background: rgba(255, 255, 255, 0.02); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 6px 6px 0;">
-              <strong style="color: var(--ink); font-size: 15px;">2. Τεκμηριωμένα Επιχειρήματα (Pros &amp; Cons):</strong>
-              <p style="font-size: 14.5px; color: var(--ink-secondary); margin-top: 4px; line-height: 1.4;">
-                Μπορείς να υποστηρίξεις γιατί το επέλεξες, πού κερδίζει σε ταχύτητα υλοποίησης ή εκφραστικότητα, και τι ρίσκα αναλαμβάνεις σε αναγνωσιμότητα ή μελλοντικό debugging.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div></section>
-<section class="slide split-layout" aria-labelledby="slide-21-title" data-theme="indigo"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Αρχιτεκτονική</div>
-          <h2 id="slide-21-title" class="slide-title">Πολλά Περάσματα vs Buffer/FSM: Τεχνική Ανάλυση</h2>
-        </header>
-
-        <div class="split-grid">
-          <div class="split-left">
-            <p class="lead-statement">
-              Διάσπαση σε επιμέρους υποπροβλήματα (Divide &amp; Conquer).
-            </p>
-            <ul class="point-list">
-              <li><strong>Multi-Pass (Απομονωμένα Στάδια):</strong> Κάθε στάδιο αναλαμβάνει έναν μετασχηματισμό. Εάν υπάρξει σφάλμα στα εισαγωγικά, η διερεύνηση περιορίζεται αποκλειστικά στη συγκεκριμένη συνάρτηση.</li>
-              <li><strong>Single-Pass Buffer:</strong> Ένα πέρασμα με buffer ολίσθησης. Απαιτεί ταυτόχρονο συγχρονισμό πολλαπλών σημαιών κατάστασης (inQuotes, modifierCount, pendingPunctuation).</li>
-              <li><strong>Γνωστικό Φορτίο:</strong> Το multi-pass μειώνει δραστικά την πιθανότητα απρόβλεπτων παρενεργειών μεταξύ κανόνων.</li>
-            </ul>
-          </div>
-
-          <div class="split-right">
-            <div class="visual-card">
-              <svg viewBox="0 0 760 460" width="100%" height="100%">
-                <!-- Multi-Pass Card -->
-                <rect x="20" y="20" width="720" height="190" rx="8" fill="var(--surface-raised)" stroke="var(--success)" stroke-width="1.5"/>
-                <text x="45" y="52" fill="var(--success)" font-family="var(--font-mono)" font-size="16" font-weight="700">MULTI-PASS (ISOLATED STAGES)</text>
-                
-                <rect x="45" y="78" width="120" height="38" rx="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-                <text x="72" y="102" fill="var(--ink)" font-family="var(--font-mono)" font-size="14">Hex/Bin</text>
-
-                <path d="M 173 97 L 203 97" stroke="var(--accent)" stroke-width="2"/>
-                <rect x="210" y="78" width="120" height="38" rx="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-                <text x="242" y="102" fill="var(--ink)" font-family="var(--font-mono)" font-size="14">Casing</text>
-
-                <path d="M 338 97 L 368 97" stroke="var(--accent)" stroke-width="2"/>
-                <rect x="375" y="78" width="120" height="38" rx="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-                <text x="408" y="102" fill="var(--ink)" font-family="var(--font-mono)" font-size="14">Punct</text>
-
-                <path d="M 503 97 L 533 97" stroke="var(--accent)" stroke-width="2"/>
-                <rect x="540" y="78" width="120" height="38" rx="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-                <text x="572" y="102" fill="var(--ink)" font-family="var(--font-mono)" font-size="14">Quotes</text>
-                
-                <text x="45" y="148" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                  <tspan x="45" dy="0">Κάθε πέρασμα παράγει πλήρως έγκυρο ενδιάμεσο κείμενο.</tspan>
-                  <tspan x="45" dy="24">Εύκολη αποσφαλμάτωση με ενδιάμεσα print statements.</tspan>
-                </text>
-
-                <!-- Single-Pass Card -->
-                <rect x="20" y="235" width="720" height="205" rx="8" fill="var(--surface-raised)" stroke="var(--warning)" stroke-width="1.5"/>
-                <text x="45" y="268" fill="var(--warning)" font-family="var(--font-mono)" font-size="16" font-weight="700">SINGLE-PASS BUFFER (COUPLED STATE)</text>
-                
-                <rect x="45" y="292" width="670" height="44" rx="5" fill="var(--surface)" stroke="var(--border)" stroke-width="1"/>
-                <text x="60" y="320" fill="var(--warning)" font-family="var(--font-mono)" font-size="14.5">State = [inQuote: true | nextCap: 2 | lastPunct: '.' | prevRune: 'a']</text>
-                
-                <text x="45" y="366" fill="var(--ink-secondary)" font-family="var(--font-sans)" font-size="15">
-                  <tspan x="45" dy="0">Μικρότερος αριθμός iterations και χαμηλή κατανάλωση μνήμης,</tspan>
-                  <tspan x="45" dy="24">αλλά αυξημένη δυσκολία αποσφαλμάτωσης σε συγκρούσεις κανόνων.</tspan>
-                </text>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div></section>
-<section class="slide comparison-layout" aria-labelledby="slide-22-title" data-theme="paper"><div class="workshop-frame">
-        <header class="slide-header">
-          <div class="eyebrow">Αρχιτεκτονική</div>
-          <h2 id="slide-22-title" class="slide-title">Πεδία Εφαρμογής &amp; Trade-offs</h2>
-        </header>
-
-        <div class="comparison-grid">
-          <div class="comparison-col neutral">
-            <h3 class="col-title">Πλεονεκτήματα Pipeline</h3>
-            <ul class="col-points">
-              <li><strong>Απομόνωση Σφαλμάτων:</strong> Κάθε στάδιο ελέγχεται πλήρως ανεξάρτητα με unit tests</li>
-              <li><strong>Απλότητα Debugging:</strong> Άμεση επιθεώρηση ενδιάμεσου string μεταξύ των σταδίων</li>
-              <li><strong>Ταχύτητα Ανάπτυξης:</strong> Σαφής διαχωρισμός σε επιμέρους task cards</li>
-              <li><strong>Κόστος:</strong> Δημιουργία ενδιάμεσων strings στη μνήμη (αμελητέο για αρχεία &lt; 10MB)</li>
-            </ul>
-          </div>
-
-          <div class="comparison-col neutral">
-            <h3 class="col-title">Πλεονεκτήματα Single-Pass FSM</h3>
-            <ul class="col-points">
-              <li><strong>Διαχείριση Μεγάλων Αρχείων:</strong> Επεξεργασία gigabytes χωρίς φόρτωση όλου του αρχείου στη RAM</li>
-              <li><strong>Μηδενικές Κατανομές (Zero Allocations):</strong> Εγγραφή απευθείας στον output buffer</li>
-              <li><strong>Συστήματα Χαμηλού Επιπέδου:</strong> Κατάλληλο για embedded firmware και network drivers</li>
-              <li><strong>Κόστος:</strong> Υψηλή πολυπλοκότητα στη διαχείριση σύνθετων μεταβάσεων κατάστασης</li>
-            </ul>
-          </div>
-        </div>
-      </div></section>
+      <p class="workshop-prompt">Ψήφισε για το πρώτο σου go-reloaded. Ποιος είναι ο λόγος σου;</p>
+    </div>
+  </div>
+</section>
 <section class="slide prd-slide" aria-labelledby="slide-23-title" data-theme="paper" data-transition="scorch"><div class="workshop-frame">
   <header class="slide-header">
     <p class="eyebrow">Ενδεικτικό PRD.md · 1/3</p>
@@ -2592,7 +2015,7 @@ fmt.Println("Hello, Go")
 </svg>
     </div><div class="discovery-copy">
       <p>Discovery phase</p>
-      <h2 id="discovery-title">Έτοιμοι για το πρώτο PRD<br>και τις πρώτες αρχιτεκτονικές<br>μας επιλογές;</h2>
+      <h2 id="discovery-title">Από το πρώτο PRD<br>στην πρώτη αρχιτεκτονική απόφαση</h2>
     </div>
   </div>
 </section>
