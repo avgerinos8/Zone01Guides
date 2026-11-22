@@ -1214,123 +1214,420 @@
 .slide.io-appendix .io-comment { color: var(--ink-muted); }
 
   
-/* Projection typography for the workshop core on the 1920 × 1080 stage. */
-.slide.workshop-rebuilt .workshop-frame { gap: 48px; }
-.slide.workshop-rebuilt .eyebrow {
-  margin: 0 0 12px;
-  font: 650 28px/1.2 var(--font-sans);
-  color: var(--accent);
+
+/* Presentation typography for the original workshop text, on the 1920 × 1080 stage. */
+.slide.workshop-board {
+  --board-size: 36px;
+  --board-code-size: clamp(22px, .75em, 34px);
+  --board-notes: "Deck Notes", "Segoe UI", sans-serif;
+  --board-mono: "Deck Mono", Consolas, monospace;
+  --bg: #1a2220;
+  --ink: #f2f0e4;
+  --display-ink: #fffbef;
+  --ink-secondary: #e1e9df;
+  --ink-muted: #b0c3b9;
+  --surface: #242e2a;
+  --surface-raised: #2c3b34;
+  --code-surface: #141c19;
+  --accent: #f4d487;
+  --danger: #ffb9b0;
+  --success: #b0e8bd;
+  --warning: #ffce92;
+  --purple: #dfc4fa;
+  --border: #526b60;
+  --border-strong: #6d8979;
+  --border-subtle: #42564c;
+  --syntax-kw: #f3b9dd;
+  --syntax-fn: #b2d8f6;
+  --syntax-str: #b5eac2;
+  --syntax-num: #ffc58c;
+  --syntax-cm: #bdcfc1;
+  --syntax-typ: #f4d487;
+  --typ: var(--syntax-typ);
+  --slide-pad-x: 64px;
+  --slide-pad-y: 50px;
+  background: var(--bg);
 }
-.slide.workshop-rebuilt .slide-title { font-size: 144px; line-height: .91; }
-.slide.workshop-rebuilt .workshop-content {
-  display: grid;
-  align-content: center;
-  gap: 44px;
-  flex: 1;
-  min-height: 0;
-  font: 430 40px/1.25 var(--font-notes);
+.slide.workshop-board[data-theme="paper"] {
+  --bg: #e9eddd;
+  --ink: #152a22;
+  --display-ink: #12261f;
+  --ink-secondary: #283b32;
+  --ink-muted: #45574c;
+  --surface: #e0e8d9;
+  --surface-raised: #d3e1d3;
+  --code-surface: #dce6d9;
+  --accent: #235e4a;
+  --danger: #8c302b;
+  --success: #245e37;
+  --warning: #744510;
+  --purple: #603775;
+  --border: #9aae9f;
+  --border-strong: #768f7d;
+  --border-subtle: #aabdae;
+  --syntax-kw: #802254;
+  --syntax-fn: #174f74;
+  --syntax-str: #245e37;
+  --syntax-num: #744510;
+  --syntax-cm: #40594a;
+  --syntax-typ: #184d70;
 }
-.slide.workshop-rebuilt .workshop-split {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 480px;
-  align-items: center;
-  gap: 56px;
+.slide.workshop-board[data-theme="indigo"] {
+  --bg: #202d42;
+  --surface: #293c52;
+  --surface-raised: #30465c;
+  --code-surface: #172338;
+  --border: #617989;
+  --border-strong: #7791a2;
+  --border-subtle: #4c6379;
 }
-.slide.workshop-rebuilt .workshop-split-copy {
-  display: grid;
-  gap: 42px;
+.slide.workshop-board .slide-header {
+  margin: 0 0 20px !important;
+  padding-bottom: 15px;
 }
-.slide.workshop-rebuilt .workshop-rail {
-  display: grid;
-  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
-  gap: 56px;
+.slide.workshop-board .eyebrow {
+  margin-bottom: 6px;
+  font: 800 26px/1.05 var(--board-notes);
+  letter-spacing: .025em;
 }
-.slide.workshop-rebuilt .workshop-rail > div,
-.slide.workshop-rebuilt .workshop-ledger > div {
-  border-top: 2px solid var(--rule);
-  padding-top: 20px;
+.slide.workshop-board .slide-title {
+  font-size: 104px;
+  line-height: .92;
 }
-.slide.workshop-rebuilt .workshop-ledger { display: grid; gap: 24px; }
-.slide.workshop-rebuilt .workshop-table { gap: 0; }
-.slide.workshop-rebuilt .workshop-table > div {
-  display: grid;
-  grid-template-columns: 540px minmax(0, 1fr);
-  align-items: baseline;
-  gap: 44px;
-  padding: 18px 0;
-}
-.slide.workshop-rebuilt :is(h3, dt) {
-  color: var(--display-ink);
-  font: 800 46px/1.02 var(--font-notes);
-}
-.slide.workshop-rebuilt .workshop-ledger:not(.workshop-table) dd,
-.slide.workshop-rebuilt h3 + p { margin-top: 12px; }
-.slide.workshop-rebuilt :not(pre) > code {
-  font: 400 32px/1.24 var(--font-code);
-  color: var(--accent);
-  white-space: pre;
-}
-.slide.workshop-rebuilt .workshop-prompt {
-  width: fit-content;
-  border-left: 4px solid var(--accent);
-  padding-left: 22px;
-  color: var(--ink);
-  font-size: 36px;
-}
-.slide.workshop-rebuilt a { color: var(--accent); }
-.slide.workshop-rebuilt .terminal { max-width: 1200px; }
-.slide.workshop-rebuilt .terminal-bar {
-  min-height: 48px;
-  background: var(--code-surface);
-  border-radius: 10px 10px 0 0;
-}
-.slide.workshop-rebuilt .terminal-dots i { width: 10px; height: 10px; }
-.slide.workshop-rebuilt .terminal-controls svg { width: 18px; height: 18px; }
-.slide.workshop-rebuilt .terminal pre {
-  font-size: 34px;
-  line-height: 1.22;
-  padding: 20px 30px;
-  background: var(--code-surface);
-}
-.slide.workshop-rebuilt .terminal pre code {
-  font: inherit;
-  color: inherit;
-  background: transparent;
+.slide.workshop-board .slide-title code {
+  font: 800 .75em/1 var(--board-notes);
+  padding: 0;
+  background: none;
   border: 0;
+  vertical-align: baseline;
+}
+.slide.workshop-board[data-board="3"] .slide-title { font-size: 82px; }
+.slide.workshop-board[data-board="6"] .slide-title,
+.slide.workshop-board[data-board="16"] .slide-title,
+.slide.workshop-board[data-board="19"] .slide-title,
+.slide.workshop-board[data-board="20"] .slide-title { font-size: 90px; }
+.slide.workshop-board .board-body {
+  margin-block: auto;
+  flex: none;
+  color: var(--ink);
+  font: 460 var(--board-size)/1.17 var(--board-notes);
+}
+.slide.workshop-board :is(.board-body > div, .split-grid > div, .comparison-grid > div, .pillars-grid > div) { min-width: 0; }
+.slide.workshop-board .board-body strong { font-weight: 900; color: var(--display-ink); }
+.slide.workshop-board :is(.board-copy, .pillars-grid .pillar-desc, li, .lead-statement, .repo-docs p) {
+  font: 460 1em/1.17 var(--board-notes) !important;
+  color: var(--ink-secondary);
+}
+.slide.workshop-board .board-label {
+  font: 900 .77em/1.05 var(--board-notes) !important;
+  letter-spacing: .018em;
+}
+.slide.workshop-board .board-body :is(h3, .board-emphasis, .col-title, .pillar-heading) {
+  font: 900 1.14em/1.05 var(--board-notes) !important;
+  color: var(--display-ink);
+}
+.slide.workshop-board .board-body code {
+  font: 500 .84em/1.12 var(--board-mono);
+  padding: 0 3px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  white-space: pre-wrap;
+}
+.slide.workshop-board .board-body :is(.split-grid, .comparison-grid, .pillars-grid, .repo-docs) {
+  gap: 34px;
+  margin: 0;
+  align-items: start;
+}
+.slide.workshop-board .board-body .comparison-col {
+  padding: 18px 12px 0;
+  height: auto;
+}
+.slide.workshop-board .board-body :is(.point-list, .col-points) { gap: 14px; }
+.slide.workshop-board .board-body :is(.point-list li, .col-points li) { padding-left: 22px; }
+.slide.workshop-board .board-body .col-badge {
+  font: 900 .76em/1.1 var(--board-notes);
+  padding: 4px 8px;
+  margin-bottom: 10px;
+}
+.slide.workshop-board .board-body .col-title { margin-bottom: 16px; }
+.slide.workshop-board .board-body .lead-statement { margin-bottom: 20px; }
+.slide.workshop-board .board-body .repo-docs { gap: 36px 52px; }
+.slide.workshop-board .board-body .repo-docs h3 code {
+  font: 900 1em/1.05 var(--board-notes);
   padding: 0;
 }
-.slide.workshop-rebuilt[aria-labelledby="slide-06-title"] .terminal pre { white-space: pre-wrap; }
-.slide.workshop-rebuilt .workshop-diagram { margin: 0; }
-.slide.workshop-rebuilt .workshop-diagram svg { display: block; width: 100%; }
-.slide.workshop-rebuilt .workshop-diagram-box {
-  fill: var(--code-surface);
-  stroke: var(--rule);
-  stroke-width: 2;
+.slide.workshop-board .board-body .repo-docs p { margin-top: 12px; }
+.slide.workshop-board .board-body .tech-table { table-layout: fixed; }
+.slide.workshop-board .tech-table :is(th,td) {
+  font: 460 var(--board-size)/1.12 var(--board-notes);
+  padding: 9px 12px;
+  overflow-wrap: anywhere;
 }
-.slide.workshop-rebuilt .workshop-diagram-arrow {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 4;
+.slide.workshop-board .tech-table th {
+  color: var(--accent);
+  font-weight: 900;
+  letter-spacing: 0;
+  font-size: calc(var(--board-size) * .85);
 }
-.slide.workshop-rebuilt .workshop-diagram-title {
-  font: 800 54px var(--font-notes);
-  fill: var(--display-ink);
+.slide.workshop-board .board-strings { gap: 12px; }
+.slide.workshop-board .board-strings > div { padding: 12px 18px !important; }
+.slide.workshop-board[data-board="4"] .board-strings th:nth-child(1) { width: 25% !important; }
+.slide.workshop-board[data-board="4"] .board-strings th:nth-child(2) { width: 40% !important; }
+.slide.workshop-board[data-board="4"] .board-strings th:nth-child(3) { width: 35% !important; }
+.slide.workshop-board[data-board="4"] .tech-table :is(th,td) { padding-block: 5px; }
+.slide.workshop-board[data-board="5"] .tech-table th:first-child { width: 26%; }
+.slide.workshop-board[data-board="5"] .tech-table th:nth-child(2) { width: 34%; }
+.slide.workshop-board[data-board="5"] .tech-table td:first-child { overflow-wrap: normal; }
+.slide.workshop-board .board-terminal {
+  max-width: none;
+  border: 1px solid var(--border-strong);
+  overflow: hidden;
+  background: var(--code-surface);
 }
-.slide.workshop-rebuilt .workshop-diagram-code {
-  font: 400 38px var(--font-code);
-  fill: var(--accent);
+.slide.workshop-board .board-terminal .terminal-bar {
+  min-height: 27px;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
 }
-.slide.workshop-rebuilt .workshop-diagram-detail {
-  font: 650 40px var(--font-notes);
-  fill: var(--ink);
+.slide.workshop-board .board-terminal .terminal-controls { gap: 10px; }
+.slide.workshop-board .board-terminal .terminal-controls svg { width: 11px; height: 11px; color: var(--ink-muted); }
+.slide.workshop-board .board-terminal .terminal-dots i { background: var(--ink-muted); }
+.slide.workshop-board .board-terminal .board-code {
+  font: 400 var(--board-code-size)/1.17 var(--board-mono) !important;
+  color: var(--ink);
+  overflow: visible;
+  overflow-wrap: normal;
+  white-space: pre;
+  direction: ltr;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0;
+  margin: 0 !important;
+  padding: 8px 12px !important;
+  letter-spacing: -.025em;
 }
-.slide .terminal.workshop-source-terminal { max-width: 1280px; }
+.slide.workshop-board .board-terminal p.board-code { margin: 0 !important; }
+.slide.workshop-board .board-terminal p.board-code code {
+  color: var(--accent);
+  font: inherit;
+}
+.slide.workshop-board[data-board="2"] .board-terminal { margin: 18px 0 22px; }
+.slide.workshop-board[data-board="2"] .board-body .split-grid { grid-template-columns: 1.23fr 1fr; align-items: center; }
+.slide.workshop-board[data-board="3"] .board-case-grid {
+  display: grid !important;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: start;
+  gap: 20px !important;
+}
+.slide.workshop-board .case-row { padding: 12px 14px !important; }
+.slide.workshop-board .board-case-title { align-items: start !important; gap: 8px 12px !important; flex-wrap: wrap; }
+.slide.workshop-board .board-case-examples { grid-template-columns: minmax(0,1fr) !important; gap: 10px !important; }
+.slide.workshop-board .board-case-examples > div { padding: 7px 9px !important; min-width: 0; }
+.slide.workshop-board .board-case-examples .col-badge { margin-bottom: 0; }
+.slide.workshop-board[data-board="3"] { --board-code-size: clamp(24px, .87em, 29px); }
+.slide.workshop-board[data-board="3"] .board-terminal .board-code { line-height: 1.10 !important; }
+.slide.workshop-board[data-board="3"] .board-code .cm { font-family: var(--board-notes); }
+.slide.workshop-board[data-board="3"] .board-case-title { margin-bottom: 5px !important; }
+.slide.workshop-board[data-board="3"] .case-row { padding-block: 8px !important; }
+.slide.workshop-board[data-board="3"] .board-terminal .terminal-bar { min-height: 23px; }
+.slide.workshop-board[data-board="3"] .board-terminal .board-code { padding-block: 5px !important; }
+.slide.workshop-board .board-audit-card {
+  display: grid;
+  gap: 9px;
+  padding: 17px 20px !important;
+}
+.slide.workshop-board[data-board="7"] .board-audit-card .mono {
+  font: 500 clamp(22px, .80em, 34px)/1.23 var(--board-mono) !important;
+  overflow-wrap: anywhere;
+  margin: 0 !important;
+}
+.slide.workshop-board[data-board="7"] .board-audit-card .board-audit-title { font-family: var(--board-notes) !important; font-weight: 900 !important; }
+.slide.workshop-board[data-board="11"] .board-terminal,
+.slide.workshop-board[data-board="12"] .board-terminal { max-width: 820px; }
+.slide.workshop-board[data-board="11"] .sample-block,
+.slide.workshop-board[data-board="12"] .sample-block { font-size: 36px !important; padding: 18px 24px !important; }
+.slide.workshop-board[data-board="14"] {
+  --board-code-size: 24px;
+}
+.slide.workshop-board[data-board="14"] .board-body {
+  display: grid;
+  grid-template-columns: minmax(0, .52fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+.slide.workshop-board[data-board="14"] .board-body .lead-statement { margin: 0 !important; }
+.slide.workshop-board[data-board="14"] .board-body .split-left p:not(.lead-statement) {
+  font-size: 1em !important;
+  line-height: 1.12 !important;
+}
+.slide.workshop-board[data-board="14"] .board-body .split-left > div { padding: 10px 14px !important; }
+.slide.workshop-board[data-board="14"] .board-test-code .board-code { line-height: 1.065 !important; }
+.slide.workshop-board[data-board="14"] .board-code .cm { font-family: var(--board-notes); }
+.slide.workshop-board:is([data-board="15"], [data-board="16"]) { --board-code-size: 31px; }
+.slide.workshop-board[data-board="15"] { --board-code-size: 29px; }
+.slide.workshop-board:is([data-board="15"], [data-board="16"]) .board-body .pillars-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.slide.workshop-board:is([data-board="15"], [data-board="16"]) .board-body .pillar-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  column-gap: 28px;
+  align-items: start;
+  padding: 8px 6px 0;
+}
+.slide.workshop-board .pillar-card .pillar-heading { margin-bottom: 6px; }
+.slide.workshop-board .pillar-card .terminal-bar { min-height: 23px; }
+.slide.workshop-board .pillar-card .board-terminal .board-code {
+  line-height: 1.08 !important;
+  padding-block: 5px !important;
+}
+.slide.workshop-board .pillar-card .board-code span[style*="var(--ink-muted)"] { font-family: var(--board-notes); }
+.slide.workshop-board[data-board="19"] .board-body .comparison-grid {
+  grid-template-columns: minmax(0,1fr);
+  gap: 12px;
+}
+.slide.workshop-board[data-board="19"] .board-body .comparison-col {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,.98fr);
+  gap: 0 24px;
+  align-items: start;
+  padding: 9px 8px 0 !important;
+}
+.slide.workshop-board[data-board="19"] .board-body :is(.col-badge,.col-title,.col-points) { grid-column: 1; }
+.slide.workshop-board[data-board="19"] .board-body .comparison-col .board-terminal {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+}
+.slide.workshop-board[data-board="19"] .board-body .col-badge { justify-self: start; }
+.slide.workshop-board[data-board="19"] .board-body .col-points { gap: 6px !important; margin-bottom: 8px !important; }
+.slide.workshop-board[data-board="19"] .board-body li { line-height: 1.11 !important; }
+.slide.workshop-board[data-board="19"] .board-body > div:last-child { margin-top: 10px; }
+.slide.workshop-board[data-board="19"] { --board-code-size: clamp(26px,.83em,32px); }
+.slide.workshop-board[data-board="20"] .board-regex-header { gap: 12px; }
+.slide.workshop-board[data-board="20"] .board-regex-cards { grid-template-columns: 1fr 1fr 1.12fr !important; gap: 12px !important; margin-bottom: 12px !important; }
+.slide.workshop-board .board-regex-cards > div { padding: 10px 12px !important; min-width: 0; }
+.slide.workshop-board[data-board="20"] .board-regex-cards .board-terminal { margin-bottom: 7px; }
+.slide.workshop-board[data-board="20"] .board-regex-cards .board-terminal .board-code { color: var(--success); white-space: pre; font-size: clamp(28px,.84em,33px) !important; }
+.slide.workshop-board[data-board="20"] .board-regex-cards .board-terminal span { font-family: inherit !important; }
+.slide.workshop-board[data-board="20"] .board-body p { font-size: 1em !important; line-height: 1.13 !important; }
+.slide.workshop-board[data-board="20"] .board-regex-rule { padding: 9px 12px !important; margin-bottom: 12px !important; align-items: start !important; }
+.slide.workshop-board[data-board="20"] .board-regex-audit { padding: 10px 14px !important; }
+
+.slide.workshop-board .board-figure { display: grid; gap: 12px; }
+.slide.workshop-board .board-figure-card {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  padding: 15px 19px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border-strong);
+  border-radius: 6px;
+}
+.slide.workshop-board .board-figure-code,
+.slide.workshop-board .board-figure-copy { min-width: 0; overflow-wrap: anywhere; }
+.slide.workshop-board .board-figure-kicker { font-weight: 900; line-height: 1.08; }
+.slide.workshop-board .board-figure-code { font: 500 .84em/1.18 var(--board-mono); }
+.slide.workshop-board .board-in { border-left-color: var(--danger); }
+.slide.workshop-board .board-out { border-left-color: var(--success); }
+.slide.workshop-board .board-engine {
+  position: relative;
+  justify-self: center;
+  margin: 34px 0;
+  border-left: 1px solid var(--border);
+}
+.slide.workshop-board .board-engine::before,
+.slide.workshop-board .board-engine::after {
+  content: '↓';
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  color: var(--accent);
+  line-height: 1;
+}
+.slide.workshop-board .board-engine::before { bottom: calc(100% + 7px); }
+.slide.workshop-board .board-engine::after { top: calc(100% + 7px); }
+.slide.workshop-board .board-figure-6 .board-figure-card,
+.slide.workshop-board .board-figure-9 .board-figure-card { grid-template-columns: minmax(230px, .45fr) minmax(0,1fr); align-items: baseline; }
+.slide.workshop-board .board-figure-6 .board-figure-card { grid-template-columns: 275px minmax(0,1fr); }
+.slide.workshop-board .board-figure-6 .board-figure-copy { font: 500 .88em/1.2 var(--board-mono); white-space: pre-wrap; }
+.slide.workshop-board .board-figure-6 .board-figure-card :is(.board-figure-kicker,.board-figure-copy) { color: var(--ink); }
+.slide.workshop-board .board-flow {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 36px 42px;
+}
+.slide.workshop-board .board-phase {
+  position: relative;
+  padding: 16px 22px;
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--accent);
+  background: var(--surface);
+}
+.slide.workshop-board .board-phase:nth-child(4),
+.slide.workshop-board .board-phase:nth-child(5),
+.slide.workshop-board .board-phase:nth-child(6) { grid-row: 2; }
+.slide.workshop-board .board-phase:nth-child(4) { grid-column: 3; }
+.slide.workshop-board .board-phase:nth-child(5) { grid-column: 2; }
+.slide.workshop-board .board-phase:nth-child(6) { grid-column: 1; border-top-color: var(--success); }
+.slide.workshop-board .board-phase:nth-child(-n+5)::after {
+  content: '→';
+  position: absolute;
+  color: var(--accent);
+  line-height: 1;
+  top: 50%;
+  left: 100%;
+}
+.slide.workshop-board .board-phase:nth-child(3)::after { content: '↓'; left: 50%; top: calc(100% - 2px); }
+.slide.workshop-board .board-phase:nth-child(4)::after,
+.slide.workshop-board .board-phase:nth-child(5)::after { content: '←'; left: auto; right: 100%; }
+.slide.workshop-board .board-body .board-phase-name { margin: 5px 0 8px; }
+.slide.workshop-board .board-flow-note { border-left: 4px solid var(--accent); padding: 10px 18px; background: var(--surface); }
+.slide.workshop-board .board-figure-18 {
+  grid-template-columns: minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);
+  align-items: center;
+  gap: 18px 8px;
+  text-align: center;
+}
+.slide.workshop-board .board-figure-18 .board-figure-card { padding: 24px 8px; }
+.slide.workshop-board .board-state-arrow { font: 500 .75em/1.15 var(--board-mono); }
+.slide.workshop-board .board-state-arrow::after {
+  content: '⟶';
+  display: block;
+  color: var(--accent);
+  font: 800 1.7em/.8 var(--board-notes);
+}
+.slide.workshop-board .board-state-loop {
+  grid-column: 1/-1;
+  grid-row: 1;
+  margin: 0 7%;
+  padding: 12px 18px 20px;
+  border: 2px dashed var(--border-strong);
+  border-bottom: 0;
+}
+.slide.workshop-board .board-state-loop::before { content: '↶ '; color: var(--accent); }
+.slide.workshop-board[data-board="21"] .board-body .split-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.34fr); }
+.slide.workshop-board[data-board="21"] .board-figure-code { font-size: 23px; white-space: pre; overflow-wrap: normal; }
+.slide.workshop-board .board-mini-flow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.slide.workshop-board .board-mini-step { font: 700 .79em/1.05 var(--board-notes); color: var(--ink); padding: 5px 8px; background: var(--code-surface); border-radius: 3px; }
+.slide.workshop-board .board-mini-step + .board-mini-step::before { content: '→ '; color: var(--accent); }
+.slide.workshop-board .board-single-pass { border-left-color: var(--warning); }
+
+.slide .terminal.workshop-source-terminal { max-width: 1480px; }
+.slide.prd-slide[aria-labelledby="slide-25-title"] .prd-columns {
+  grid-template-columns: minmax(0, .94fr) minmax(0, 1.06fr);
+}
 .slide .workshop-source-terminal .terminal-bar {
   min-height: 40px;
   background: var(--code-surface);
   border-radius: 10px 10px 0 0;
 }
 .slide .workshop-source-terminal pre {
+  white-space: pre;
+  overflow-wrap: normal;
   border: 0;
   border-radius: 0 0 10px 10px;
 }
@@ -1436,455 +1733,864 @@
   </div>
 </section>
 
-<section class="slide workshop-rebuilt" aria-labelledby="slide-02-title" data-theme="paper" data-transition="registration">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Κανόνες κειμένου</p>
-      <h2 id="slide-02-title" class="slide-title">Το συμβόλαιο του CLI</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
-      <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>$ go run . sample.txt result.txt</code></pre>
-  </div>
-      <div class="workshop-rail" style="--columns:3">
-          <div><h3>Είσοδος</h3><p>Διαβάζει το <code>sample.txt</code>.</p></div>
-          <div><h3>Έξοδος</h3><p>Γράφει το αποτέλεσμα στο <code>result.txt</code>.</p></div>
-          <div><h3>Σφάλμα</h3><p>Δείχνει τι συνέβη και τερματίζει με μη μηδενικό κωδικό.</p></div>
-        </div>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-03-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Κανόνες κειμένου</p>
-      <h2 id="slide-03-title" class="slide-title">Από το loop στο strings</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-split"><div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
-      <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>words := strings.Fields(s)
-clean := strings.Join(words, " ")
-upper := strings.ToUpper(clean)</code></pre>
-  </div>
-      <dl class="workshop-ledger">
-          <div><dt>Κενά</dt><dd>Χώρισε σε λέξεις. Ένωσέ τες με ένα κενό.</dd></div>
-          <div><dt>Κεφαλαία</dt><dd>Δώσε το κείμενο στο <code>ToUpper</code>.</dd></div>
-        </dl></div>
-      <p class="workshop-prompt">Τι γίνεται το <code>"  hello   Go  "</code> μετά το <code>Join</code>;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-04-title" data-theme="paper">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Κανόνες κειμένου</p>
-      <h2 id="slide-04-title" class="slide-title">Το πακέτο strings</h2>
-    </header>
-    <div class="workshop-content">
-      <dl class="workshop-ledger workshop-table">
-          <div><dt><code>Fields</code> / <code>Split</code></dt><dd>Χωρισμός σε whitespace ή σε συγκεκριμένο διαχωριστή</dd></div>
-          <div><dt><code>Join</code></dt><dd>Ένωση με διαχωριστή</dd></div>
-          <div><dt><code>ToUpper</code> / <code>ToLower</code></dt><dd>Κεφαλαία ή πεζά</dd></div>
-          <div><dt><code>Trim</code> / <code>TrimSpace</code></dt><dd>Καθάρισμα στις άκρες</dd></div>
-          <div><dt><code>HasPrefix</code> / <code>HasSuffix</code></dt><dd>Έλεγχος αρχής ή τέλους</dd></div>
-          <div><dt><code>ReplaceAll</code></dt><dd>Αντικατάσταση όλων των εμφανίσεων</dd></div>
-        </dl>
-      <p class="workshop-prompt"><a href="https://pkg.go.dev/strings" target="_blank" rel="noopener noreferrer">pkg.go.dev/strings ↗</a></p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-05-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Κανόνες κειμένου</p>
-      <h2 id="slide-05-title" class="slide-title">Τι αλλάζει στο κείμενο;</h2>
-    </header>
-    <div class="workshop-content">
-      <dl class="workshop-ledger workshop-table">
-          <div><dt>Αριθμοί</dt><dd><code>1E (hex) → 30</code> · <code>101 (bin) → 5</code></dd></div>
-          <div><dt>Πεζά / κεφαλαία</dt><dd><code>(up)</code>, <code>(low)</code>, <code>(cap)</code>. Με <code>, N</code> αλλάζουν N λέξεις.</dd></div>
-          <div><dt>Στίξη</dt><dd><code>there ,and → there, and</code> · <code>wait ... → wait...</code></dd></div>
-          <div><dt>Εισαγωγικά</dt><dd><code>' hello Go ' → 'hello Go'</code></dd></div>
-          <div><dt>Άρθρο</dt><dd><code>a honest → an honest</code>. Πριν από φωνήεν ή <code>h</code>.</dd></div>
-        </dl>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-06-title" data-theme="indigo">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Κανόνες κειμένου</p>
-      <h2 id="slide-06-title" class="slide-title">Audit case #4</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
-      <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>IN
-harold wilson (cap, 2) : ' I am a optimist ,but a optimist who carries a raincoat . '
+<section class="slide split-layout workshop-board" aria-labelledby="slide-02-title" data-theme="paper" data-transition="registration" data-board="2" style="--board-size: 37px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Κανόνες κειμένου</div>
+          <h2 id="slide-02-title" class="slide-title">Το Συμβόλαιο του go-reloaded</h2>
+        </header>
 
-OUT
-Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</code></pre>
-  </div>
-      <div class="workshop-rail" style="--columns:3">
-          <div><h3>Όνομα</h3><p><code>(cap, 2)</code> στις δύο λέξεις.</p></div>
-          <div><h3>Στίξη και εισαγωγικά</h3><p>Κολλάνε στο κείμενο.</p></div>
-          <div><h3>Άρθρο</h3><p>Δύο φορές <code>an optimist</code>.</p></div>
-        </div>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-07-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Κανόνες κειμένου</p>
-      <h2 id="slide-07-title" class="slide-title">Τα τέσσερα audit cases</h2>
-    </header>
-    <div class="workshop-content">
-      <dl class="workshop-ledger workshop-table">
-          <div><dt>01 · Πεζά / κεφαλαία</dt><dd><code>my house (up, 2) ? → MY HOUSE?</code></dd></div>
-          <div><dt>02 · Αριθμοί</dt><dd><code>101 (bin) → 5</code> · <code>1a (hex) → 26</code></dd></div>
-          <div><dt>03 · Στίξη</dt><dd><code>sad ,because → sad, because</code></dd></div>
-          <div><dt>04 · Συνδυασμός</dt><dd>Όνομα, στίξη, εισαγωγικά και άρθρα</dd></div>
-        </dl>
-      <p class="workshop-prompt">Σύγκρινε ολόκληρη την έξοδο με το αναμενόμενο κείμενο.</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-08-title" data-theme="paper" data-transition="registration">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Προδιαγραφή και δομή</p>
-      <h2 id="slide-08-title" class="slide-title">Τι διαβάζω στο repo;</h2>
-    </header>
-    <div class="workshop-content">
-      <dl class="workshop-ledger workshop-table">
-          <div><dt><code>README.md</code></dt><dd>Τι κάνει το έργο και πώς το τρέχω</dd></div>
-          <div><dt><code>LICENSE</code></dt><dd>Όροι χρήσης και διανομής</dd></div>
-          <div><dt><code>CONTRIBUTING.md</code></dt><dd>Πώς υποβάλλω μια αλλαγή</dd></div>
-          <div><dt><code>PRD.md</code></dt><dd>Απαιτήσεις και κριτήρια αποδοχής</dd></div>
-          <div><dt><code>AGENTS.md</code></dt><dd>Οδηγίες για coding agents</dd></div>
-          <div><dt><code>CHANGELOG.md</code></dt><dd>Τι άλλαξε ανά έκδοση</dd></div>
-        </dl>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-09-title" data-theme="indigo">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Προδιαγραφή και δομή</p>
-      <h2 id="slide-09-title" class="slide-title">Τι γράφω στο PRD;</h2>
-    </header>
-    <div class="workshop-content">
-      <dl class="workshop-ledger workshop-table">
-          <div><dt>Πρόβλημα</dt><dd>Μία πρόταση για το τι κάνει το εργαλείο.</dd></div>
-          <div><dt>CLI contract</dt><dd>Εντολή, ορίσματα, έξοδος και σφάλματα.</dd></div>
-          <div><dt>Κανόνες και όρια</dt><dd>Τι καλύπτει η λύση, με παραδείγματα.</dd></div>
-          <div><dt>Αρχιτεκτονική</dt><dd>Ποια δομή επιλέγουμε και γιατί.</dd></div>
-          <div><dt>Κριτήρια αποδοχής</dt><dd>Τέσσερα audit cases και δικές μας οριακές περιπτώσεις.</dd></div>
-        </dl>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-10-title" data-theme="paper">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Προδιαγραφή και δομή</p>
-      <h2 id="slide-10-title" class="slide-title">Goals και Non-Goals</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-rail" style="--columns:2">
-          <div><h3>Goals</h3><p>Μετασχηματισμοί κειμένου, αρχείο εξόδου και σαφή μηνύματα σφάλματος.</p></div>
-          <div><h3>Non-Goals</h3><p>Γραφικό περιβάλλον, μετάφραση και επεξεργασία πολλών αρχείων μαζί.</p></div>
-        </div>
-      <p class="workshop-prompt">Αυτόματη ορθογραφική διόρθωση. Σε ποια στήλη τη βάζουμε;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-11-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Δομή έργου</p>
-      <h2 id="slide-11-title" class="slide-title">Πού μπαίνει ο κώδικας;</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-split"><div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
+
+      <div class="board-body"><div class="split-grid">
+          <div class="split-left">
+            <p class="lead-statement">Το <strong>CLI contract</strong> ορίζει πώς χρησιμοποιούμε μια εφαρμογή από τη γραμμή εντολών (Command-Line Interface ή CLI). Περιγράφει τις διαθέσιμες εντολές, τα ορίσματα και τις επιλογές (flags), τη μορφή της εξόδου, τα μηνύματα σφάλματος και τους κωδικούς εξόδου (exit codes).</p>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
       <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>$ tree
-go-reloaded/
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><p class="lead-statement board-code"><code>go run main.go &lt;inputFile&gt; &lt;outputFile&gt;</code></p></div>
+            <ul class="point-list">
+              <li><strong>Σκοπός:</strong> Ανάγνωση αρχείου κειμένου, εφαρμογή μετασχηματισμών και εγγραφή σε νέο αρχείο.</li>
+              <li><strong>Έλεγχος Ορισμάτων:</strong> Έλεγχος ύπαρξης των δύο παραμέτρων εισόδου/εξόδου και ασφαλής χειρισμός σφαλμάτων συστήματος αρχείων.</li>
+            </ul>
+          </div>
+
+          <div class="split-right">
+            <div class="board-figure board-figure-2"><div class="board-figure-card board-in"><div class="board-figure-kicker" style="color: var(--danger);">INPUT FILE (sample.txt)</div><div class="board-figure-copy" style="color: var(--ink);">Raw string containing markers, quotes, and punctuation</div></div><div class="board-figure-card board-engine"><div class="board-figure-kicker" style="color: var(--accent);">TRANSFORMATION ENGINE</div></div><div class="board-figure-card board-out"><div class="board-figure-kicker" style="color: var(--success);">OUTPUT FILE (result.txt)</div><div class="board-figure-copy" style="color: var(--ink);">Clean, formatted string (Exact character match required)</div></div></div>
+          </div>
+        </div></div></div></section>
+<section class="slide comparison-layout workshop-board" aria-labelledby="slide-03-title" data-theme="night" data-board="3" style="--board-size: 27px;"><div class="workshop-frame">
+        <header class="slide-header" style="margin-bottom: 18px;">
+          <div class="eyebrow">Κανόνες κειμένου</div>
+          <h2 id="slide-03-title" class="slide-title">Χειροκίνητα Loops vs Go Standard Library (<code>strings</code>)</h2>
+        </header>
+
+
+      <div class="board-body"><div style="display: flex; flex-direction: column; gap: 18px; flex: 1;" class="board-case-grid">
+          <!-- Case 1: Normalize Spaces -->
+          <div class="case-row" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;" class="board-case-title">
+              <span class="mono board-label" style="color: var(--accent); font-weight: 700;">ΠΕΡΙΠΤΩΣΗ 01 //</span>
+              <h3 style="font-weight: 700; color: var(--ink);" class="board-emphasis">Κανονικοποίηση &amp; Αφαίρεση Περιττών Κενών (Normalize Spaces)</h3>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;" class="board-case-examples">
+              <!-- Manual Loop -->
+              <div style="background: var(--code-surface); border: 1px solid rgba(239, 171, 163, 0.28); border-radius: 8px; padding: 12px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span class="col-badge bad board-label" style="padding: 2px 8px; margin-bottom: 0px;">ΧΕΙΡΟΚΙΝΗΤΟΣ ΕΛΕΓΧΟΣ (PISCINE LOOPS)</span>
+                  <span class="mono board-label" style="color: var(--danger);">~16 γραμμές κώδικα</span>
+                </div>
+                <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="code-card board-code" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;"><span class="kw">var</span> res []<span class="typ">rune</span>
+inSpace := <span class="kw">false</span>
+<span class="kw">for</span> _, r := <span class="kw">range</span> s {
+    <span class="kw">if</span> r == <span class="str">' '</span> || r == <span class="str">'\t'</span> {
+        <span class="kw">if</span> !inSpace &amp;&amp; <span class="fn">len</span>(res) &gt; <span class="num">0</span> {
+            res = <span class="fn">append</span>(res, <span class="str">' '</span>)
+            inSpace = <span class="kw">true</span>
+        }
+    } <span class="kw">else</span> {
+        res = <span class="fn">append</span>(res, r)
+        inSpace = <span class="kw">false</span>
+    }
+}
+clean := <span class="fn">string</span>(res)</div></div>
+              </div>
+
+              <!-- Standard Library -->
+              <div style="background: var(--code-surface); border: 1px solid rgba(163, 210, 181, 0.32); border-radius: 8px; padding: 12px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span class="col-badge good board-label" style="padding: 2px 8px; margin-bottom: 0px;">GO STANDARD LIBRARY (STRINGS)</span>
+                  <span class="mono board-label" style="color: var(--success);">1 γραμμή κώδικα</span>
+                </div>
+                <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="code-card board-code" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;"><span class="cm">// strings.Fields: απομονώνει λέξεις αγνοώντας πολλαπλά κενά/tabs</span>
+<span class="cm">// strings.Join: επανασυνδέει τις λέξεις με μονό κενό</span>
+clean := strings.<span class="fn">Join</span>(strings.<span class="fn">Fields</span>(s), <span class="str">" "</span>)
+
+<span class="cm">// Ή για αφαίρεση κενών μόνο στην αρχή και στο τέλος:</span>
+trimmed := strings.<span class="fn">TrimSpace</span>(s)</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Case 2: Uppercase -->
+          <div class="case-row" style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;" class="board-case-title">
+              <span class="mono board-label" style="color: var(--accent); font-weight: 700;">ΠΕΡΙΠΤΩΣΗ 02 //</span>
+              <h3 style="font-weight: 700; color: var(--ink);" class="board-emphasis">Μετατροπή σε Κεφαλαία (Uppercase Transformation)</h3>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;" class="board-case-examples">
+              <!-- Manual Loop -->
+              <div style="background: var(--code-surface); border: 1px solid rgba(239, 171, 163, 0.28); border-radius: 8px; padding: 12px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span class="col-badge bad board-label" style="padding: 2px 8px; margin-bottom: 0px;">ΧΕΙΡΟΚΙΝΗΤΟΣ ΕΛΕΓΧΟΣ (ASCII ARITHMETIC)</span>
+                  <span class="mono board-label" style="color: var(--danger);">ASCII only, σπάει σε UTF-8</span>
+                </div>
+                <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="code-card board-code" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;"><span class="cm">// Αριθμητική byte-by-byte (ευάλωτο σε multi-byte runes)</span>
+b := []<span class="typ">byte</span>(s)
+<span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="fn">len</span>(b); i++ {
+    <span class="kw">if</span> b[i] &gt;= <span class="str">'a'</span> &amp;&amp; b[i] &lt;= <span class="str">'z'</span> {
+        b[i] -= <span class="num">32</span>
+    }
+}
+upper := <span class="fn">string</span>(b)</div></div>
+              </div>
+
+              <!-- Standard Library -->
+              <div style="background: var(--code-surface); border: 1px solid rgba(163, 210, 181, 0.32); border-radius: 8px; padding: 12px 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <span class="col-badge good board-label" style="padding: 2px 8px; margin-bottom: 0px;">GO STANDARD LIBRARY (STRINGS)</span>
+                  <span class="mono board-label" style="color: var(--success);">Native Unicode Support</span>
+                </div>
+                <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="code-card board-code" style="font-size: 14px; padding: 0; background: transparent; border: none; line-height: 1.4;"><span class="cm">// Πλήρης υποστήριξη Unicode / UTF-8, μηδενικά boundary bugs</span>
+upper := strings.<span class="fn">ToUpper</span>(s)
+
+<span class="cm">// Αντίστοιχα για πεζά:</span>
+lower := strings.<span class="fn">ToLower</span>(s)</div></div>
+              </div>
+            </div>
+          </div>
+        </div></div></div></section>
+<section class="slide split-layout workshop-board" aria-labelledby="slide-04-title" data-theme="night" data-board="4" style="--board-size: 31px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Κανόνες κειμένου</div>
+          <h2 id="slide-04-title" class="slide-title">Βασικές Μέθοδοι του Package <code>strings</code></h2>
+        </header>
+
+
+      <div class="board-body"><div style="display: flex; flex-direction: column; flex: 1; justify-content: space-between;" class="board-strings">
+          <table class="tech-table board-copy" style="">
+            <thead>
+              <tr>
+                <th style="width: 25%;">Συνάρτηση (Function)</th>
+                <th style="width: 45%;">Περιγραφή (Description)</th>
+                <th style="width: 30%;">Παράδειγμα (Example)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>strings.Fields(s)</code></td>
+                <td>Χωρίζει το string σε slice λέξεων, αγνοώντας πολλαπλά κενά, tabs &amp; newlines.</td>
+                <td><code>strings.Fields(" a   b ")</code> ➔ <code>["a", "b"]</code></td>
+              </tr>
+              <tr>
+                <td><code>strings.Join(slice, sep)</code></td>
+                <td>Ενώνει ένα slice από strings με ένα συγκεκριμένο διαχωριστικό ανάμεσά τους.</td>
+                <td><code>strings.Join(w, " ")</code> ➔ <code>"hello world"</code></td>
+              </tr>
+              <tr>
+                <td><code>strings.Split(s, sep)</code></td>
+                <td>Χωρίζει το string σε slice βάσει αυστηρού separator (π.χ. κόμμα ή άνω κάτω τελεία).</td>
+                <td><code>strings.Split("a,b,c", ",")</code> ➔ <code>["a","b","c"]</code></td>
+              </tr>
+              <tr>
+                <td><code>strings.ToUpper / ToLower</code></td>
+                <td>Μετατρέπει όλους τους χαρακτήρες σε κεφαλαία ή πεζά με πλήρη υποστήριξη UTF-8.</td>
+                <td><code>strings.ToUpper("wilson")</code> ➔ <code>"WILSON"</code></td>
+              </tr>
+              <tr>
+                <td><code>strings.Trim(s, cutset)</code></td>
+                <td>Αφαιρεί οποιονδήποτε χαρακτήρα του `cutset` από την αρχή και το τέλος του string.</td>
+                <td><code>strings.Trim(" 'hello' ", " '")</code> ➔ <code>"hello"</code></td>
+              </tr>
+              <tr>
+                <td><code>strings.TrimSpace(s)</code></td>
+                <td>Αφαιρεί όλα τα whitespace κενά από την αρχή και το τέλος του string.</td>
+                <td><code>strings.TrimSpace(" text ")</code> ➔ <code>"text"</code></td>
+              </tr>
+              <tr>
+                <td><code>strings.HasPrefix / HasSuffix</code></td>
+                <td>Ελέγχει αν το string ξεκινάει ή τελειώνει με συγκεκριμένο πρόθεμα/επίθεμα.</td>
+                <td><code>strings.HasSuffix(w, ":")</code> ➔ <code>true</code></td>
+              </tr>
+              <tr>
+                <td><code>strings.ReplaceAll(s, old, new)</code></td>
+                <td>Αντικαθιστά όλες τις εμφανίσεις ενός substring χωρίς το overhead της regex.</td>
+                <td><code>strings.ReplaceAll(s, " ,", ", ")</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Official Doc Banner -->
+          <div style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; margin-top: 14px;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span class="mono board-label" style="color: var(--accent); font-weight: 700;">GO STANDARD LIBRARY DOCUMENTATION:</span>
+              <span style="color: var(--ink);" class="board-copy">Επίσημο API reference και παραδείγματα όλων των συναρτήσεων strings</span>
+            </div>
+            <a href="https://pkg.go.dev/strings" target="_blank" rel="noopener" class="mono board-label" style="color: var(--accent); font-weight: 700; text-decoration: underline; letter-spacing: 0.05em;">pkg.go.dev/strings ↗</a>
+          </div>
+        </div></div></div></section>
+<section class="slide split-layout workshop-board" aria-labelledby="slide-05-title" data-theme="night" data-board="5" style="--board-size: 36px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Κανόνες κειμένου</div>
+          <h2 id="slide-05-title" class="slide-title">Οι 7 Συναρτήσεις Μετασχηματισμού</h2>
+        </header>
+
+
+      <div class="board-body"><div class="split-grid">
+          <div class="split-left">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th>Κατηγορία</th>
+                  <th>Λειτουργία</th>
+                  <th>Παράδειγμα</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Numbers</strong></td>
+                  <td><code>(hex)</code>, <code>(bin)</code> σε δεκαδικό</td>
+                  <td><code>1E (hex)</code> ➔ <code>30</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Casing</strong></td>
+                  <td><code>(up)</code>, <code>(low)</code>, <code>(cap)</code></td>
+                  <td><code>go (up)</code> ➔ <code>GO</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Multi-Casing</strong></td>
+                  <td><code>(up, N)</code>, <code>(low, N)</code>, <code>(cap, N)</code></td>
+                  <td><code>so exciting (up, 2)</code> ➔ <code>SO EXCITING</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Punctuation</strong></td>
+                  <td><code>. , ! ? : ;</code> ένωση με προηγούμενη λέξη</td>
+                  <td><code>there ,and</code> ➔ <code>there, and</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="split-right">
+            <table class="tech-table">
+              <thead>
+                <tr>
+                  <th>Κατηγορία</th>
+                  <th>Λειτουργία</th>
+                  <th>Παράδειγμα</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Punct. Groups</strong></td>
+                  <td><code>...</code>, <code>!?</code> χωρίς ενδιάμεσα κενά</td>
+                  <td><code>thinking ...</code> ➔ <code>thinking...</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Quotes</strong></td>
+                  <td>Ζεύγη <code>'...'</code> με αφαίρεση εσωτερικών κενών</td>
+                  <td><code>' awesome '</code> ➔ <code>'awesome'</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Multi-Word Quotes</strong></td>
+                  <td>Διατήρηση κενών ανάμεσα στις λέξεις</td>
+                  <td><code>' I am best '</code> ➔ <code>'I am best'</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Articles</strong></td>
+                  <td><code>a</code> ➔ <code>an</code> πριν από φωνήεν ή <code>h</code></td>
+                  <td><code>a honest</code> ➔ <code>an honest</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div></div></div></section>
+<section class="slide diagram-layout workshop-board" aria-labelledby="slide-06-title" data-theme="night" data-board="6" style="--board-size: 41px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Κανόνες κειμένου</div>
+          <h2 id="slide-06-title" class="slide-title">Βήμα-προς-Βήμα Ανάλυση του Audit Case #4</h2>
+        </header>
+
+
+      <div class="board-body"><div class="board-figure board-figure-6"><div class="board-figure-card board-in"><div class="board-figure-kicker" style="color: var(--danger);">IN:</div><div class="board-figure-copy" style="color: var(--ink);">harold wilson (cap, 2) : ' I am a optimist ,but a optimist who carries a raincoat . '</div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">1. (cap, 2)</div><div class="board-figure-copy" style="color: var(--ink-secondary);">harold wilson (cap, 2) ➔ <span style="font-weight: 900; color: var(--ink);">Harold Wilson</span></div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">2. PUNCT ':'</div><div class="board-figure-copy" style="color: var(--ink-secondary);">Harold Wilson : ➔ <span style="font-weight: 900; color: var(--ink);">Harold Wilson:</span></div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">3. QUOTES</div><div class="board-figure-copy" style="color: var(--ink-secondary);">' I am ... raincoat . ' ➔ <span style="font-weight: 900; color: var(--ink);">'I am ... raincoat.'</span></div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">4. ARTICLE</div><div class="board-figure-copy" style="color: var(--ink-secondary);">a optimist ➔ <span style="font-weight: 900; color: var(--ink);">an optimist</span> (εφαρμογή και στις δύο εμφανίσεις)</div></div><div class="board-figure-card board-out"><div class="board-figure-kicker" style="color: var(--success);">OUT:</div><div class="board-figure-copy" style="color: var(--ink);">Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</div></div></div></div></div></section>
+<section class="slide split-layout workshop-board" aria-labelledby="slide-07-title" data-theme="night" data-board="7" style="--board-size: 43px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Κανόνες κειμένου</div>
+          <h2 id="slide-07-title" class="slide-title">Τα 4 Επίσημα Audit Cases</h2>
+        </header>
+
+
+      <div class="board-body"><div class="split-grid">
+          <div class="split-left">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;" class="board-audit-card">
+                <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">CASE #1</div>
+                <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: If I make you BREAKFAST IN BED (low, 3) just say thank you instead of: how (cap) did you get in my house (up, 2) ?</div>
+                <div class="mono board-label" style="color: var(--success);">OUT: If I make you breakfast in bed just say thank you instead of: How did you get in MY HOUSE?</div>
+              </div>
+
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;" class="board-audit-card">
+                <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">CASE #2</div>
+                <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: I have to pack 101 (bin) outfits. Packed 1a (hex) just to be sure</div>
+                <div class="mono board-label" style="color: var(--success);">OUT: I have to pack 5 outfits. Packed 26 just to be sure</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="split-right">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;" class="board-audit-card">
+                <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">CASE #3</div>
+                <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: Don not be sad ,because sad backwards is das . And das not good</div>
+                <div class="mono board-label" style="color: var(--success);">OUT: Don not be sad, because sad backwards is das. And das not good</div>
+              </div>
+
+              <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;" class="board-audit-card">
+                <div class="mono board-label board-audit-title" style="color: var(--accent); margin-bottom: 4px;">CASE #4</div>
+                <div class="mono board-label" style="color: var(--danger); margin-bottom: 4px;">IN: harold wilson (cap, 2) : ' I am a optimist ,but a optimist who carries a raincoat . '</div>
+                <div class="mono board-label" style="color: var(--success);">OUT: Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</div>
+              </div>
+            </div>
+          </div>
+        </div></div></div></section>
+<section class="slide workshop-board" aria-labelledby="slide-08-title" data-theme="paper" data-transition="registration" data-board="8" style="--board-size: 43px;"><div class="workshop-frame">
+  <header class="slide-header">
+    <p class="eyebrow">Προδιαγραφή &amp; δομή</p>
+    <h2 id="slide-08-title" class="slide-title">Τύποι Τεχνικών Εγγράφων στη Μηχανική Λογισμικού</h2>
+  </header>
+
+
+<div class="board-body"><div class="repo-docs">
+  <div><h3><code>README.md</code></h3><p>Τι κάνει το έργο και πώς το εγκαθιστώ, το τρέχω ή το δοκιμάζω.</p></div>
+  <div><h3><code>LICENSE</code></h3><p>Η άδεια ορίζει με ποιους όρους άλλοι μπορούν να χρησιμοποιούν, να τροποποιούν ή να διανέμουν τον κώδικα.</p></div>
+  <div><h3><code>CONTRIBUTING.md</code></h3><p>Πώς αναφέρω ένα bug, ποια tests τρέχω και πώς υποβάλλω μια αλλαγή.</p></div>
+  <div><h3><code>PRD.md</code></h3><p>Τι πρέπει να κάνει το έργο και πώς θα ελέγξουμε ότι καλύπτει τις απαιτήσεις.</p></div>
+  <div><h3><code>AGENTS.md</code></h3><p>Οδηγίες για coding agents, όπως οι εντολές των tests και οι κανόνες του repo.</p></div>
+  <div><h3><code>CHANGELOG.md</code></h3><p>Τι άλλαξε σε κάθε έκδοση του έργου, όπως νέες λειτουργίες και διορθώσεις.</p></div>
+</div></div></div></section>
+<section class="slide split-layout workshop-board" aria-labelledby="slide-09-title" data-theme="paper" data-board="9" style="--board-size: 33px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Προδιαγραφή &amp; δομή</div>
+          <h2 id="slide-09-title" class="slide-title">Η Δομή του Product Requirements Document</h2>
+        </header>
+
+
+      <div class="board-body"><div class="split-grid">
+          <div class="split-left">
+            <p class="lead-statement">
+              Βασισμένο στο επίσημο template (<code>templates/prd-template.md</code>).
+            </p>
+            <ul class="point-list">
+              <li><strong>Problem Statement:</strong> Μία πρόταση για τον ακριβή ρόλο του προγράμματος.</li>
+              <li><strong>CLI Contract:</strong> Συμπεριφορά σε λάθος παραμέτρους, αρχεία που λείπουν, permissions.</li>
+              <li><strong>Functional Rules:</strong> Καταγραφή των 7 κανόνων με δικά σου παραδείγματα.</li>
+              <li><strong>Architecture Choice:</strong> Επιλογή Pipeline ή FSM με ρητά trade-offs.</li>
+              <li><strong>Acceptance Criteria:</strong> Τα 4 audit cases + 2-3 custom edge cases.</li>
+            </ul>
+          </div>
+
+          <div class="split-right">
+            <div class="board-figure board-figure-9"><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">1. PROBLEM STATEMENT</div><div class="board-figure-copy" style="color: var(--ink-secondary);">1-2 sentences scope</div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">2. CLI CONTRACT</div><div class="board-figure-copy" style="color: var(--ink-secondary);">Args validation &amp; exit codes</div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">3. GOALS &amp; NON-GOALS</div><div class="board-figure-copy" style="color: var(--ink-secondary);">Scope boundary enforcement</div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--accent);">4. ARCHITECTURE</div><div class="board-figure-copy" style="color: var(--ink-secondary);">Pipeline vs FSM trade-offs</div></div><div class="board-figure-card "><div class="board-figure-kicker" style="color: var(--success);">5. ACCEPTANCE CRITERIA</div><div class="board-figure-copy" style="color: var(--ink-secondary);">Golden tests suite</div></div></div>
+          </div>
+        </div></div></div></section>
+<section class="slide comparison-layout workshop-board" aria-labelledby="slide-10-title" data-theme="paper" data-board="10" style="--board-size: 43px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Προδιαγραφή &amp; δομή</div>
+          <h2 id="slide-10-title" class="slide-title">Καθορισμός Goals και Non-Goals</h2>
+        </header>
+
+
+      <div class="board-body"><div class="comparison-grid">
+          <div class="comparison-col neutral">
+            <h3 class="col-title">Στόχοι Έργου</h3>
+            <ul class="col-points">
+              <li>Επεξεργασία UTF-8 αρχείων κειμένου μεγέθους κάτω των 10MB</li>
+              <li>Πλήρης υποστήριξη των 7 συναρτήσεων μετασχηματισμού</li>
+              <li>Αυστηρή έξοδος με status code 1 και μήνυμα σφάλματος σε λάθος arguments</li>
+              <li>100% επιτυχία στα 4 επίσημα audit cases</li>
+            </ul>
+          </div>
+
+          <div class="comparison-col neutral">
+            <h3 class="col-title">Μη-Στόχοι (Αποκλεισμοί)</h3>
+            <ul class="col-points">
+              <li>Υποστήριξη streaming αρχείων πολλαπλών gigabytes</li>
+              <li>Χειρισμός ειδικών encodings πέραν του standard UTF-8 (π.χ. UTF-16, ISO)</li>
+              <li>Προσθήκη custom CLI flags πέραν των δύο positional arguments</li>
+              <li>Χρήση εξωτερικών regex ή third-party parsing libraries</li>
+            </ul>
+          </div>
+        </div></div></div></section>
+<section class="slide workshop-board" aria-labelledby="slide-11-title" data-theme="paper" data-board="11" style="--board-size: 43px;"><div class="workshop-frame">
+  <header class="slide-header">
+    <p class="eyebrow">Δομή έργου</p>
+    <h2 id="slide-11-title" class="slide-title">Πού μπαίνει ο κώδικας;</h2>
+  </header>
+
+
+<div class="board-body"><div class="split-grid">
+  <div>
+    <p class="lead-statement">Για ένα μικρό CLI, ξεκίνα με <code>main.go</code> και <code>go.mod</code> στη ρίζα.</p>
+    <ul class="point-list">
+      <li><strong><code>main.go</code></strong> · Ορίσματα, μηνύματα σφάλματος και συντονισμός της εκτέλεσης.</li>
+      <li><strong><code>internal/transform/</code></strong> · Οι κανόνες επεξεργασίας κειμένου, αν χρειαστεί χωριστό πακέτο.</li>
+      <li><strong><code>cmd/&lt;command&gt;/</code></strong> · Συνηθισμένη διάταξη για τα εκτελέσιμα ενός repo, ειδικά όταν είναι πάνω από ένα.</li>
+    </ul>
+  </div>
+  <div>
+    <p class="lead-statement">Μία εντολή, με χωριστή λογική κειμένου</p>
+    <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><pre class="sample-block board-code">go-reloaded/
 ├── go.mod
 ├── main.go
 └── internal/
     └── transform/
-        └── transform.go</code></pre>
+        └── transform.go</pre></div>
   </div>
-      <dl class="workshop-ledger">
-          <div><dt><code>main.go</code></dt><dd>Διαβάζει ορίσματα και συντονίζει την εκτέλεση.</dd></div>
-          <div><dt><code>internal/transform/</code></dt><dd>Εφαρμόζει τους κανόνες στο κείμενο.</dd></div>
-        </dl></div>
-      <p class="workshop-prompt">Ποιο αρχείο θα ανοίξεις για ένα κόμμα που μπήκε λάθος;</p>
-    </div>
+</div></div></div></section>
+<section class="slide workshop-board" aria-labelledby="slide-12-title" data-theme="paper" data-board="12" style="--board-size: 43px;"><div class="workshop-frame">
+  <header class="slide-header">
+    <p class="eyebrow">Δομή έργου</p>
+    <h2 id="slide-12-title" class="slide-title">Πού μπαίνουν τα tests;</h2>
+  </header>
+
+
+<div class="board-body"><div class="split-grid">
+  <div>
+    <ul class="point-list">
+      <li><strong><code>*_test.go</code></strong> · Δίπλα στον κώδικα του πακέτου που ελέγχει, π.χ. <code>transform_test.go</code>.</li>
+      <li><strong><code>testdata/</code></strong> · Αρχεία εισόδου και αναμενόμενης εξόδου, δίπλα στο test που τα διαβάζει.</li>
+      <li><strong><code>README.md</code></strong> · Στη ρίζα, με οδηγίες εκτέλεσης και την εντολή <code>go test ./...</code>.</li>
+    </ul>
   </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-12-title" data-theme="paper">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Δομή έργου</p>
-      <h2 id="slide-12-title" class="slide-title">Πού μπαίνουν τα tests;</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-split"><div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
+  <div>
+    <p class="lead-statement">Παράδειγμα μέσα στο <code>internal/transform/</code></p>
+    <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
       <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>$ tree internal/transform
-transform/
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><pre class="sample-block board-code">transform/
 ├── transform.go
 ├── transform_test.go
 └── testdata/
     ├── case01.in.txt
-    └── case01.golden</code></pre>
+    └── case01.golden</pre></div>
   </div>
-      <dl class="workshop-ledger">
-          <div><dt><code>*_test.go</code></dt><dd>Δίπλα στον κώδικα του πακέτου.</dd></div>
-          <div><dt><code>testdata/</code></dt><dd>Είσοδοι και αναμενόμενα αποτελέσματα.</dd></div>
-        </dl></div>
-      <p class="workshop-prompt">Από τη ρίζα του module τρέχουμε <code>go test ./...</code>.</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-13-title" data-theme="indigo" data-transition="scorch">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Δοκιμές</p>
-      <h2 id="slide-13-title" class="slide-title">TDD και BDD</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-rail" style="--columns:2">
-          <div><h3>TDD</h3><p>Γράψε ένα test που αποτυγχάνει. Κάν’ το να περάσει. Καθάρισε τον κώδικα.</p></div>
-          <div><h3>BDD</h3><p>Περιέγραψε τη συμπεριφορά ως σενάριο. Δεδομένου… όταν… τότε…</p></div>
-        </div>
-      <p class="workshop-prompt">Δεδομένου του <code>go (up)</code>, όταν τρέξω το CLI, τότε παίρνω <code>GO</code>.</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-14-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Δοκιμές</p>
-      <h2 id="slide-14-title" class="slide-title">Ένα table-driven test</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-split"><div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
-      <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>func TestToUppercase(t *testing.T) {
-  cases := []struct{ in, want string }{
-    {"hello", "HELLO"},
-    {"GO", "GO"},
-    {"", ""},
-  }
-  for _, tc := range cases {
-    if got := ToUppercase(tc.in); got != tc.want {
-      t.Errorf("%q: got %q, want %q",
-        tc.in, got, tc.want)
-    }
-  }
-}</code></pre>
-  </div><div class="workshop-split-copy">
-      <dl class="workshop-ledger">
-          <div><dt><code>in</code> και <code>want</code></dt><dd>Τι δίνουμε και τι περιμένουμε.</dd></div>
-          <div><dt><code>got</code></dt><dd>Τι επέστρεψε η συνάρτηση.</dd></div>
-        </dl>
-      <p class="workshop-prompt">Ποια γραμμή θα πρόσθετες για ελληνικούς χαρακτήρες;</p></div></div>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-15-title" data-theme="paper">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Δοκιμές</p>
-      <h2 id="slide-15-title" class="slide-title">Τρεις χρήσιμες δοκιμές</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-rail" style="--columns:3">
-          <div><h3>Golden test</h3><p>Σύγκρινε την ακριβή έξοδο με ένα αρχείο αναφοράς.</p></div>
-          <div><h3>Fuzzing</h3><p>Δοκίμασε πολλές εισόδους. Έλεγξε π.χ. ότι δεν γίνεται panic.</p></div>
-          <div><h3>Boundary test</h3><p>Δοκίμασε ένα συγκεκριμένο όριο, π.χ. το κενό αρχείο.</p></div>
-        </div>
-      <p class="workshop-prompt">Ποια δοκιμή πιάνει ένα περιττό τελικό κενό;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-16-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Δοκιμές</p>
-      <h2 id="slide-16-title" class="slide-title">Τι ελέγχω σε κάθε επίπεδο;</h2>
-    </header>
-    <div class="workshop-content">
-      <dl class="workshop-ledger workshop-table">
-          <div><dt>Unit</dt><dd>Μία λειτουργία, π.χ. <code>101 (bin) → 5</code>.</dd></div>
-          <div><dt>Integration</dt><dd>Ανάγνωση, μετασχηματισμός και εγγραφή συνεργάζονται.</dd></div>
-          <div><dt>End-to-end</dt><dd>Η πραγματική εντολή γράφει το σωστό αρχείο.</dd></div>
-        </dl>
-      <p class="workshop-prompt">Πού θα έπιανες ότι το CLI αγνοεί τη διαδρομή εξόδου;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-17-title" data-theme="indigo" data-transition="registration">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Αρχιτεκτονική</p>
-      <h2 id="slide-17-title" class="slide-title">Pipeline</h2>
-    </header>
-    <div class="workshop-content">
-      <figure class="workshop-diagram" id="pipeline">
-  <svg viewBox="0 0 1712 310" role="img" aria-labelledby="pipeline-heading pipeline-desc">
-    <title id="pipeline-heading">Παράδειγμα ροής pipeline</title>
-    <desc id="pipeline-desc">Η είσοδος χωρίζεται σε tokens, εφαρμόζεται το modifier και διορθώνεται η στίξη.</desc>
-    <g class="workshop-diagram-box">
-      <rect x="4" y="44" width="522" height="218"/><rect x="595" y="44" width="522" height="218"/><rect x="1186" y="44" width="522" height="218"/>
-    </g>
-    <g class="workshop-diagram-arrow"><path d="M540 153h42m-14-14 14 14-14 14M1131 153h42m-14-14 14 14-14 14"/></g>
-    <g class="workshop-diagram-title" text-anchor="middle">
-      <text x="265" y="120">Χωρισμός σε tokens</text><text x="856" y="120">Εφαρμογή κανόνων</text><text x="1447" y="120">Τελική σύνθεση</text>
-    </g>
-    <g class="workshop-diagram-code" text-anchor="middle">
-      <text x="265" y="198">go | (up) | !</text><text x="856" y="198">GO | !</text><text x="1447" y="198">GO!</text>
-    </g>
-  </svg>
-</figure>
-      <p class="workshop-prompt">Σε ποιο στάδιο θα κοιτούσες αν η έξοδος ήταν <code>GO !</code>;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-18-title" data-theme="paper">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Αρχιτεκτονική</p>
-      <h2 id="slide-18-title" class="slide-title">Μηχανή καταστάσεων (FSM)</h2>
-    </header>
-    <div class="workshop-content">
-      <figure class="workshop-diagram" id="fsm">
-  <svg viewBox="0 0 1712 370" role="img" aria-labelledby="fsm-heading fsm-desc">
-    <title id="fsm-heading">Μηχανή δύο καταστάσεων για ζεύγη εισαγωγικών</title>
-    <desc id="fsm-desc">Ξεκινάμε έξω. Το άνοιγμα εισαγωγικού μάς μεταφέρει μέσα και το κλείσιμο μάς επιστρέφει έξω.</desc>
-    <g class="workshop-diagram-box"><rect x="118" y="104" width="464" height="164"/><rect x="1130" y="104" width="464" height="164"/></g>
-    <g class="workshop-diagram-arrow"><path d="M607 130h498m-17-17 17 17-17 17M1105 242H607m17-17-17 17 17 17"/></g>
-    <g text-anchor="middle">
-      <g class="workshop-diagram-title"><text x="350" y="199">Έξω</text><text x="1362" y="199">Μέσα</text></g>
-      <g class="workshop-diagram-detail"><text x="856" y="100">Ανοίγει το εισαγωγικό</text><text x="856" y="298">Κλείνει το εισαγωγικό</text></g>
-    </g>
-  </svg>
-</figure>
-      <p class="workshop-prompt">Πες «μέσα» ή «έξω» για κάθε βήμα του <code>'hello world'</code>.</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-19-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Αρχιτεκτονική</p>
-      <h2 id="slide-19-title" class="slide-title">Τι θυμάται το state;</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-split"><div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
-      <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>if runeRead == '\'' {
-  inQuote = !inQuote
-}</code></pre>
-  </div>
-      <dl class="workshop-ledger">
-          <div><dt><code>if</code> ή <code>switch</code></dt><dd>Ελέγχει τι διαβάζουμε τώρα.</dd></div>
-          <div><dt><code>inQuote</code></dt><dd>Θυμάται αν βρισκόμαστε μέσα σε εισαγωγικά.</dd></div>
-        </dl></div>
-      <p class="workshop-prompt">Βλέπουμε <code>'</code>. Τι χρειάζεται να ξέρουμε για να πούμε αν ανοίγει ή κλείνει;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-20-title" data-theme="indigo">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Αρχιτεκτονική</p>
-      <h2 id="slide-20-title" class="slide-title">Τι αναγνωρίζει ένα regex;</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-split"><div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
-      <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>\((up|low|cap)(,\s*(\d+))?\)
+</div></div></div></section>
+<section class="slide comparison-layout workshop-board" aria-labelledby="slide-13-title" data-theme="paper" data-transition="scorch" data-board="13" style="--board-size: 38px;"><div class="workshop-frame">
+        <header class="slide-header" style="margin-bottom: 16px;">
+          <div class="eyebrow">Δοκιμές</div>
+          <h2 id="slide-13-title" class="slide-title">TDD (Test-Driven Development) &amp; Σύγκριση με BDD</h2>
+        </header>
 
-  (up, 2)
-   ^^  ^
-   up  2</code></pre>
-  </div>
-      <dl class="workshop-ledger">
-          <div><dt>Αναγνώριση</dt><dd>Βρίσκει τον τύπο της οδηγίας και το πλήθος.</dd></div>
-          <div><dt>Εφαρμογή</dt><dd>Στο workshop χρησιμοποιούμε <code>strings</code>, slices και <code>strconv</code>.</dd></div>
-        </dl></div>
-      <p class="workshop-prompt">Πώς χειρίζεσαι το <code>(up, 2)</code> αν υπάρχει μόνο μία προηγούμενη λέξη;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-21-title" data-theme="night">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Αρχιτεκτονική</p>
-      <h2 id="slide-21-title" class="slide-title">Περάσματα ή buffer;</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="terminal">
-    <div class="terminal-bar" aria-hidden="true">
+        <!-- Top Definition Banner -->
+
+
+
+      <div class="board-body"><div style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 22px; margin-bottom: 18px;">
+          <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px;">
+            <span class="mono board-label" style="color: var(--accent); font-weight: 700;">ΟΡΙΣΜΟΣ TDD //</span>
+            <span style="font-weight: 700; color: var(--ink);" class="board-emphasis">Η προδιαγραφή (test) γράφεται ΠΡΙΝ από τον κώδικα υλοποίησης</span>
+          </div>
+          <p style="color: var(--ink-secondary);" class="board-copy">
+            Ο κύκλος <strong>Red ➔ Green ➔ Refactor</strong>: Πρώτα γράφεις το test που αποτυγχάνει (Red), στη συνέχεια υλοποιείς τον ελάχιστο κώδικα για να περάσει (Green), και τέλος καθαρίζεις τη σχεδίαση (Refactor) διατηρώντας τα tests πράσινα.
+          </p>
+        </div><div class="comparison-grid" style="margin-top: 0;">
+          <div class="comparison-col neutral">
+            <h3 class="col-title board-emphasis" style="margin-bottom: 10px;">TDD: Εστίαση στη Συνάρτηση</h3>
+            <ul class="col-points">
+              <li><strong>Κύκλος Red ➔ Green ➔ Refactor:</strong> Απομονωμένος έλεγχος μεμονωμένων functions.</li>
+              <li><strong>Developer-Facing:</strong> Επαληθεύει εσωτερικά API contracts, edge cases και return types.</li>
+              <li><strong>Ερώτημα Ελέγχου:</strong> "Κάνει η συνάρτηση <code>ToUppercase()</code> ακριβώς αυτό που αναμένεται;"</li>
+              <li><strong>Υλοποίηση:</strong> Standard library package <code>testing</code> της Go.</li>
+            </ul>
+          </div>
+
+          <div class="comparison-col neutral">
+            <h3 class="col-title board-emphasis" style="margin-bottom: 10px;">BDD: Εστίαση στο Σύστημα</h3>
+            <ul class="col-points">
+              <li><strong>Μοντέλο Given / When / Then:</strong> Προδιαγραφή ροής από τη σκοπιά του τελικού χρήστη.</li>
+              <li><strong>System/User-Facing:</strong> Ελέγχει τη συνολική έξοδο του προγράμματος βάσει προδιαγραφών.</li>
+              <li><strong>Ερώτημα Ελέγχου:</strong> "Όταν δοθεί το input αρχείο, παράγεται το ακριβές expected output;"</li>
+              <li><strong>Στο go-reloaded:</strong> Golden Master black-box testing με τα 4 audit cases.</li>
+            </ul>
+          </div>
+        </div></div></div></section>
+<section class="slide split-layout workshop-board" aria-labelledby="slide-14-title" data-theme="night" data-board="14" style="--board-size: 30px;"><div class="workshop-frame">
+        <header class="slide-header" style="margin-bottom: 16px;">
+          <div class="eyebrow">Δοκιμές</div>
+          <h2 id="slide-14-title" class="slide-title">Γράφοντας ένα Test στην Πράξη: <code>ToUppercase</code></h2>
+        </header>
+
+
+      <div class="board-body"><div class="split-left" style="display: flex; flex-direction: column; gap: 14px;">
+            <p class="lead-statement board-copy" style="margin-bottom: 4px;">
+              Πώς διαβάζουμε ένα table-driven test;
+            </p>
+
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;">
+              <div class="mono board-label" style="color: var(--accent); font-weight: 700; margin-bottom: 4px;">1. ΥΠΟΓΡΑΦΗ: (t *testing.T)</div>
+              <p style="color: var(--ink-secondary);" class="board-copy">
+                Κάθε test ξεκινά με <code>Test...</code> και δέχεται υποχρεωτικά <code>t *testing.T</code>. Μέσω αυτού καλούμε <code>t.Errorf()</code> για αναφορά αποτυχίας χωρίς άμεσο τερματισμό.
+              </p>
+            </div>
+
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;">
+              <div class="mono board-label" style="color: var(--accent); font-weight: 700; margin-bottom: 4px;">2. ΠΕΔΙΑ ΚΑΘΕ TEST CASE</div>
+              <p style="color: var(--ink-secondary);" class="board-copy">
+                Στο παράδειγμα χρησιμοποιούμε <code>type TestCase struct</code> με πεδία <code>name</code>, <code>input</code>, <code>expected</code>.
+              </p>
+            </div>
+
+            <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;">
+              <div class="mono board-label" style="color: var(--accent); font-weight: 700; margin-bottom: 4px;">3. ΤΙ ΔΕΧΕΤΑΙ ΤΟ t.Run(name, f)</div>
+              <p style="color: var(--ink-secondary);" class="board-copy">
+                • <code>name string</code>: Το όνομα του sub-test (εμφανίζεται αναλυτικά στο <code>go test -v</code>).<br>
+                • <code>f func(t *testing.T)</code>: Η συνάρτηση που εκτελεί τον έλεγχο.
+              </p>
+            </div>
+
+            <div style="background: var(--code-surface); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px;">
+              <span class="mono board-label" style="color: var(--success); font-weight: 700;">TDD FLOW: </span>
+              <span style="color: var(--ink-muted);" class="board-copy">Γράφεις πρώτα το test (FAIL) ➔ Υλοποιείς τη function ➔ go test -v (PASS)</span>
+            </div>
+          </div><div class="split-right board-test-code">
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
       <span class="terminal-dots"><i></i><i></i><i></i></span>
-      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
-    </div>
-    <pre class="code-block" dir="ltr"><code>so exciting (up, 2) → SO EXCITING</code></pre>
-  </div>
-      <div class="workshop-rail" style="--columns:2">
-          <div><h3>Πολλά περάσματα</h3><p>Κάθε στάδιο βλέπει το ενδιάμεσο κείμενο.</p></div>
-          <div><h3>Ένα πέρασμα</h3><p>Κράτα διαθέσιμες τις λέξεις που μπορεί να αλλάξει ένας modifier.</p></div>
-        </div>
-      <p class="workshop-prompt">Τι πρέπει να μπορείς ακόμη να αλλάξεις όταν φτάσεις στο <code>(up, 3)</code>;</p>
-    </div>
-  </div>
-</section>
-<section class="slide workshop-rebuilt" aria-labelledby="slide-22-title" data-theme="paper">
-  <div class="workshop-frame">
-    <header class="slide-header">
-      <p class="eyebrow">Αρχιτεκτονική</p>
-      <h2 id="slide-22-title" class="slide-title">Ποια λύση διαλέγουμε;</h2>
-    </header>
-    <div class="workshop-content">
-      <div class="workshop-rail" style="--columns:2">
-          <div><h3>Pipeline</h3><p>Μικρά αρχεία και στάδια που ελέγχονται χωριστά.</p></div>
-          <div><h3>FSM σε ροή</h3><p>Μεγάλα αρχεία, όταν οι κανόνες επιτρέπουν ελεγχόμενο buffer.</p></div>
-        </div>
-      <p class="workshop-prompt">Ψήφισε για το πρώτο σου go-reloaded. Ποιος είναι ο λόγος σου;</p>
-    </div>
-  </div>
-</section>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="code-card board-code"><span class="cm">// 1. Τα δεδομένα κάθε test case</span>
+<span class="kw">type</span> <span class="typ">TestCase</span> <span class="kw">struct</span> {
+    name     <span class="typ">string</span>
+    input    <span class="typ">string</span>
+    expected <span class="typ">string</span>
+}
+
+<span class="cm">// 2. Το Unit Test που γράφουμε ΠΡΩΤΑ (Red Phase)</span>
+<span class="kw">func</span> <span class="fn">TestToUppercase</span>(t *testing.T) {
+    cases := []<span class="typ">TestCase</span>{
+        {name: <span class="str">"simple word"</span>, input: <span class="str">"hello"</span>, expected: <span class="str">"HELLO"</span>},
+        {name: <span class="str">"already upper"</span>, input: <span class="str">"GO"</span>, expected: <span class="str">"GO"</span>},
+        {name: <span class="str">"empty string"</span>, input: <span class="str">""</span>, expected: <span class="str">""</span>},
+    }
+
+    <span class="kw">for</span> _, tc := <span class="kw">range</span> cases {
+        <span class="cm">// t.Run δέχεται: (name string, f func(t *testing.T))</span>
+        t.<span class="fn">Run</span>(tc.name, <span class="kw">func</span>(t *testing.T) {
+            got := <span class="fn">ToUppercase</span>(tc.input)
+            <span class="kw">if</span> got != tc.expected {
+                t.<span class="fn">Errorf</span>(<span class="str">"got %q, want %q"</span>, got, tc.expected)
+            }
+        })
+    }
+}
+
+<span class="cm">// 3. Η συνάρτηση που γράφουμε ΜΕΤΑ για να περάσει το test (Green Phase)</span>
+<span class="kw">func</span> <span class="fn">ToUppercase</span>(s <span class="typ">string</span>) <span class="typ">string</span> {
+    <span class="kw">return</span> strings.<span class="fn">ToUpper</span>(s)
+}</div></div>
+          </div></div></div></section>
+<section class="slide pillars-layout workshop-board" aria-labelledby="slide-15-title" data-theme="night" data-board="15" style="--board-size: 37px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Δοκιμές</div>
+          <h2 id="slide-15-title" class="slide-title">Εναλλακτικά Μοντέλα Δοκιμών</h2>
+        </header>
+
+
+      <div class="board-body"><div class="pillars-grid">
+          <div class="pillar-card">
+              <div class="pillar-copy"><h3 class="pillar-heading">Golden Master / Snapshot</h3>
+            <p class="pillar-desc">
+              Συγκρίνει ολόκληρα αρχεία output με vetted golden files. Εξασφαλίζει ότι καμία αλλαγή σε έναν κανόνα δεν αλλοιώνει το τελικό αποτέλεσμα άλλων κανόνων.
+            </p></div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;" class="board-code"><span style="color: var(--ink-muted);">// Σύγκριση fixture αρχείων</span><br>got, _ := os.<span style="color: var(--accent);">ReadFile</span>(<span style="color: var(--success);">"result.txt"</span>)<br>want, _ := os.<span style="color: var(--accent);">ReadFile</span>(<span style="color: var(--success);">"testdata/case1.golden"</span>)<br><span style="color: var(--purple);">if</span> <span style="color: var(--typ);">string</span>(got) != <span style="color: var(--typ);">string</span>(want) {<br>&nbsp;&nbsp;t.<span style="color: var(--accent);">Errorf</span>(<span style="color: var(--danger);">"golden mismatch"</span>)<br>}</div></div>
+            </div>
+
+          <div class="pillar-card">
+              <div class="pillar-copy"><h3 class="pillar-heading">Property-Based &amp; Fuzzing</h3>
+            <p class="pillar-desc">
+              Χρήση του <code>testing.F</code> της Go. Τροφοδότηση του parser με εκατομμύρια τυχαία strings για τον εντοπισμό index out of range και memory panics.
+            </p></div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;" class="board-code"><span style="color: var(--ink-muted);">// testing.F fuzzing στη Go</span><br><span style="color: var(--purple);">func</span> <span style="color: var(--accent);">FuzzTransform</span>(f *testing.F) {<br>&nbsp;&nbsp;f.<span style="color: var(--accent);">Add</span>(<span style="color: var(--success);">"sample (hex) 1E test"</span>)<br>&nbsp;&nbsp;f.<span style="color: var(--accent);">Fuzz</span>(<span style="color: var(--purple);">func</span>(t *testing.T, s <span style="color: var(--typ);">string</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;transform.<span style="color: var(--accent);">Run</span>(s) <span style="color: var(--ink-muted);">// 0 crashes</span><br>&nbsp;&nbsp;})<br>}</div></div>
+            </div>
+
+          <div class="pillar-card">
+              <div class="pillar-copy"><h3 class="pillar-heading">Defensive Boundary Tests</h3>
+            <p class="pillar-desc">
+              Έλεγχος ακραίων περιπτώσεων: κενό αρχείο εισόδου, μονοί αριθμοί χωρίς modifiers, ασύμμετρα εισαγωγικά, modifiers χωρίς προηγούμενες λέξεις.
+            </p></div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;" class="board-code"><span style="color: var(--ink-muted);">// Ακραία edge-case inputs</span><br>cases := []<span style="color: var(--typ);">string</span>{<br>&nbsp;&nbsp;<span style="color: var(--success);">""</span>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ink-muted);">// 1. Κενό αρχείο</span><br>&nbsp;&nbsp;<span style="color: var(--success);">"(up, 3)"</span>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: var(--ink-muted);">// 2. Modifier χωρίς λέξη</span><br>&nbsp;&nbsp;<span style="color: var(--success);">"hello ' world"</span>, &nbsp;&nbsp;<span style="color: var(--ink-muted);">// 3. Μονό εισαγωγικό</span><br>&nbsp;&nbsp;<span style="color: var(--success);">"(bin, invalid)"</span>, <span style="color: var(--ink-muted);">// 4. Μη έγκυρος αριθμός</span><br>}</div></div>
+            </div>
+        </div></div></div></section>
+<section class="slide pillars-layout workshop-board" aria-labelledby="slide-16-title" data-theme="paper" data-board="16" style="--board-size: 40px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Δοκιμές</div>
+          <h2 id="slide-16-title" class="slide-title">Επίπεδα Δοκιμών: Unit, Integration &amp; E2E (Acceptance)</h2>
+        </header>
+
+
+      <div class="board-body"><div class="pillars-grid">
+          <div class="pillar-card">
+              <div class="pillar-copy"><h3 class="pillar-heading">Unit Tests (Μοναδιαία)</h3>
+            <p class="pillar-desc">
+              <strong>Εμβέλεια: Μεμονωμένη συνάρτηση.</strong><br>
+              Ελέγχουν τη μικρότερη δυνατή μονάδα κώδικα σε πλήρη απομόνωση (χωρίς I/O ή εξωτερικά αρχεία).
+            </p></div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;" class="board-code"><span style="color: var(--ink-muted);">// internal/transform/rules_test.go</span><br>got := <span style="color: var(--accent);">HexToDec</span>(<span style="color: var(--success);">"1E"</span>)<br><span style="color: var(--purple);">if</span> got != <span style="color: var(--success);">"30"</span> {<br>&nbsp;&nbsp;t.<span style="color: var(--accent);">Errorf</span>(<span style="color: var(--danger);">"got %s, want 30"</span>, got)<br>}<br><span style="color: var(--ink-muted);">// Ταχύτητα: &lt; 1ms (άμεσο feedback)</span></div></div>
+            </div>
+
+          <div class="pillar-card">
+              <div class="pillar-copy"><h3 class="pillar-heading">Integration Tests (Ολοκλήρωσης)</h3>
+            <p class="pillar-desc">
+              <strong>Εμβέλεια: Συνεργασία Modules.</strong><br>
+              Ελέγχουν τη σύνδεση και τη ροή δεδομένων μεταξύ δύο ή περισσότερων πακέτων (π.χ. file reader + transform pipeline).
+            </p></div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;" class="board-code"><span style="color: var(--ink-muted);">// internal/file + internal/transform</span><br>raw := file.<span style="color: var(--accent);">Read</span>(<span style="color: var(--success);">"sample.txt"</span>)<br>tokens := transform.<span style="color: var(--accent);">Tokenize</span>(raw)<br>out := transform.<span style="color: var(--accent);">Pipeline</span>(tokens)<br><span style="color: var(--ink-muted);">// Επαλήθευση contract επικοινωνίας</span></div></div>
+            </div>
+
+          <div class="pillar-card">
+              <div class="pillar-copy"><h3 class="pillar-heading">E2E &amp; System / Acceptance</h3>
+            <p class="pillar-desc">
+              <strong>Εμβέλεια: Ολόκληρο το σύστημα (CLI).</strong><br>
+              Black-box δοκιμή του τελικού binary, ακριβώς όπως το τρέχει ο χρήστης ή το audit script του σχολείου.
+            </p></div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;" class="board-code"><span style="color: var(--ink-muted);"># Black-box CLI εκτέλεση &amp; diff</span><br><span style="color: var(--accent);">$</span> go run . in.txt out.txt<br><span style="color: var(--accent);">$</span> diff out.txt expected.txt<br><span style="color: var(--ink-muted);"># Έλεγχος exit code 1 σε λάθος args</span><br><span style="color: var(--accent);">$</span> go run . &amp;&amp; echo "FAIL"</div></div>
+            </div>
+        </div></div></div></section>
+<section class="slide diagram-layout workshop-board" aria-labelledby="slide-17-title" data-theme="indigo" data-transition="registration" data-board="17" style="--board-size: 39px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Αρχιτεκτονική</div>
+          <h2 id="slide-17-title" class="slide-title">Αρχιτεκτονική Pipeline (Διαδοχικά Στάδια)</h2>
+        </header>
+
+
+      <div class="board-body"><div class="board-figure board-figure-17"><div class="board-flow"><div class="board-phase"><div class="board-figure-kicker" style="color: var(--accent);">STAGE 01</div><h3 class="board-phase-name" style="color: var(--ink);">Tokenize</h3><p class="board-figure-copy" style="color: var(--ink-secondary);">Διαχωρισμός κειμένου σε επιμέρους λέξεις και σημεία στίξης (tokens string slice)</p></div><div class="board-phase"><div class="board-figure-kicker" style="color: var(--accent);">STAGE 02</div><h3 class="board-phase-name" style="color: var(--ink);">Numbers</h3><p class="board-figure-copy" style="color: var(--ink-secondary);">Μετατροπή (hex) &amp; (bin) προηγούμενης λέξης σε δεκαδική τιμή μέσω του strconv</p></div><div class="board-phase"><div class="board-figure-kicker" style="color: var(--accent);">STAGE 03</div><h3 class="board-phase-name" style="color: var(--ink);">Casing</h3><p class="board-figure-copy" style="color: var(--ink-secondary);">Εφαρμογή (up), (low) και (cap) σε μία ή σε N προηγούμενες λέξεις αναδρομικά</p></div><div class="board-phase"><div class="board-figure-kicker" style="color: var(--accent);">STAGE 04</div><h3 class="board-phase-name" style="color: var(--ink);">Punctuation</h3><p class="board-figure-copy" style="color: var(--ink-secondary);">Ένωση συμβόλων με την προηγούμενη λέξη και διατήρηση ομάδων όπως ... και !?</p></div><div class="board-phase"><div class="board-figure-kicker" style="color: var(--accent);">STAGE 05</div><h3 class="board-phase-name" style="color: var(--ink);">Quotes &amp; a/an</h3><p class="board-figure-copy" style="color: var(--ink-secondary);">Κλείσιμο ζευγών '' και μετατροπή άρθρου a σε an πριν από φωνήεν ή γράμμα h</p></div><div class="board-phase"><div class="board-figure-kicker" style="color: var(--success);">OUTPUT</div><h3 class="board-phase-name" style="color: var(--ink);">Export</h3><p class="board-figure-copy" style="color: var(--ink-secondary);">Σύνθεση καθαρού τελικού κειμένου και εγγραφή στο δίσκο (outputFile)</p></div></div><p class="board-flow-note" style="color: var(--ink);">
+              <span style="font-weight: 900; color: var(--accent);">ΑΡΧΙΤΕΚΤΟΝΙΚΗ ΑΠΟΜΟΝΩΣΗ: </span>
+              Κάθε στάδιο δέχεται έγκυρο κείμενο και παράγει έγκυρο κείμενο. Επιτρέπει άμεσο debugging με ενδιάμεσα print statements και αυτόνομα unit tests.
+            </p></div></div></div></section>
+<section class="slide diagram-layout workshop-board" aria-labelledby="slide-18-title" data-theme="indigo" data-board="18" style="--board-size: 43px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Αρχιτεκτονική</div>
+          <h2 id="slide-18-title" class="slide-title">Αρχιτεκτονική Finite State Machine (FSM)</h2>
+        </header>
+
+
+      <div class="board-body"><div class="board-figure board-figure-18"><div class="board-figure-card board-state-0"><div class="board-figure-kicker" style="color: var(--ink);">NORMAL</div><div class="board-figure-copy" style="color: var(--purple);">TEXT</div></div><div class="board-state-arrow" style="color: var(--ink-secondary);">char == '('</div><div class="board-figure-card board-state-1"><div class="board-figure-kicker" style="color: var(--ink);">INSIDE</div><div class="board-figure-copy" style="color: var(--accent);">MARKER</div></div><div class="board-state-arrow" style="color: var(--ink-secondary);">char == '\''</div><div class="board-figure-card board-state-2"><div class="board-figure-kicker" style="color: var(--ink);">INSIDE</div><div class="board-figure-copy" style="color: var(--warning);">QUOTES</div></div><div class="board-state-arrow" style="color: var(--ink-secondary);">isPunct(char)</div><div class="board-figure-card board-state-3"><div class="board-figure-kicker" style="color: var(--ink);">PUNCT</div><div class="board-figure-copy" style="color: var(--success);">GROUP</div></div><div class="board-state-loop" style="color: var(--ink-muted);">Επαναφορά σε Normal Text μετά την εκπομπή (flush)</div></div></div></div></section>
+<section class="slide comparison-layout workshop-board" aria-labelledby="slide-19-title" data-theme="indigo" data-board="19" style="--board-size: 26px;"><div class="workshop-frame">
+        <header class="slide-header" style="margin-bottom: 14px;">
+          <div class="eyebrow">Αρχιτεκτονική</div>
+          <h2 id="slide-19-title" class="slide-title">Τι Διαφορά Έχει το State από ένα απλό If ή Switch Case;</h2>
+        </header>
+
+        <!-- Top Banner: if vs switch relation -->
+
+
+
+
+        <!-- Bottom Banner: Key Takeaway -->
+
+      <div class="board-body"><div style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px 20px; margin-bottom: 16px;">
+          <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px;">
+            <span class="mono board-label" style="color: var(--accent); font-weight: 700;">ΥΠΕΝΘΥΜΙΣΗ //</span>
+            <span style="font-weight: 700; color: var(--ink);" class="board-emphasis">Συσχέτιση <code>if / else</code> και <code>switch case</code></span>
+          </div>
+          <p style="color: var(--ink-secondary);" class="board-copy">
+            Το <code>if</code> ελέγχει μία boolean έκφραση. Το <code>switch case</code> είναι συντακτικό "sugar" για πολλαπλά <code>if / else if</code> ελέγχοντας την ίδια μεταβλητή. Και τα δύο είναι <strong>στιγμιαίοι έλεγχοι (Stateless)</strong>: βλέπουν μόνο το τρέχον input χωρίς να θυμούνται το παρελθόν.
+          </p>
+        </div><div class="comparison-grid" style="margin-top: 0; margin-bottom: 16px;">
+          <!-- Left Column: Stateless if / switch -->
+          <div class="comparison-col neutral" style="padding: 18px 22px;">
+            <div class="col-badge bad" style="margin-bottom: 8px;">STATELESS // ΧΩΡΙΣ ΜΝΗΜΗ</div>
+            <h3 class="col-title board-emphasis" style="margin-bottom: 8px;">Σκέτο If / Switch: Τυφλός Έλεγχος</h3>
+            <ul class="col-points" style="gap: 10px; margin-bottom: 14px;">
+              <li style="" class="board-copy">Εξετάζει μόνο τον τρέχοντα χαρακτήρα: π.χ. «Είναι ο χαρακτήρας <code>'</code> ;» ➔ Ναι.</li>
+              <li style="" class="board-copy"><strong>Το αδιέξοδο στα εισαγωγικά:</strong> Το ίδιο σύμβολο <code>'</code> τη μία φορά ανοίγει (κολλάει δεξιά) και την άλλη κλείνει (κολλάει αριστερά).</li>
+              <li style="" class="board-copy">Χωρίς μνήμη ιστορικού, ένα απλό <code>if</code> αδυνατεί να αποφασίσει τι από τα δύο συμβαίνει!</li>
+            </ul>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.45; color: var(--ink-secondary); margin-top: auto;" class="board-code"><span style="color: var(--danger);">// Τυφλός στιγμιαίος έλεγχος</span><br><span style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>' {<br>&nbsp;&nbsp;<span style="color: var(--danger);">// Ανοίγει ή κλείνει;</span><br>&nbsp;&nbsp;<span style="color: var(--danger);">// Αδύνατον να απαντηθεί χωρίς μνήμη!</span><br>}</div></div>
+          </div>
+
+          <!-- Right Column: Stateful State Machine -->
+          <div class="comparison-col good" style="padding: 18px 22px;">
+            <div class="col-badge good" style="margin-bottom: 8px;">STATEFUL // ΜΕ ΜΝΗΜΗ &amp; CONTEXT</div>
+            <h3 class="col-title board-emphasis" style="margin-bottom: 8px;">State: Μνήμη &amp; Context Ροής</h3>
+            <ul class="col-points" style="gap: 10px; margin-bottom: 14px;">
+              <li style="" class="board-copy">Το <code>State</code> απαντά στο ερώτημα: *«Πού βρίσκομαι στη ροή του χρόνου;»*.</li>
+              <li style="" class="board-copy"><strong>Το ίδιο input παράγει διαφορετική συμπεριφορά:</strong></li>
+              <li style="" class="board-copy">• Αν <code>OutsideQuote</code> ➔ Το <code>'</code> ανοίγει εισαγωγικά και μεταβαίνει σε <code>InsideQuote</code>.</li>
+              <li style="" class="board-copy">• Αν <code>InsideQuote</code> ➔ Το <code>'</code> κλείνει εισαγωγικά και μεταβαίνει σε <code>OutsideQuote</code>.</li>
+            </ul>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.45; color: var(--ink-secondary); margin-top: auto;" class="board-code"><span style="color: var(--success);">// Το State δίνει μνήμη, το switch κάνει τη μετάβαση</span><br><span style="color: var(--purple);">switch</span> state {<br><span style="color: var(--purple);">case</span> OutsideQuote:<br>&nbsp;&nbsp;<span style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>' { state = InsideQuote }<br><span style="color: var(--purple);">case</span> InsideQuote:<br>&nbsp;&nbsp;<span style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>' { state = OutsideQuote }<br>}</div></div>
+          </div>
+        </div><div style="background: rgba(242, 203, 134, 0.08); border: 1px solid rgba(242, 203, 134, 0.3); border-radius: 8px; padding: 10px 18px; display: flex; align-items: center; gap: 14px;">
+          <span class="mono board-label" style="background: rgba(242, 203, 134, 0.2); color: var(--accent); font-weight: 700; padding: 4px 10px; border-radius: 4px; white-space: nowrap;">ΣΥΜΠΕΡΑΣΜΑ</span>
+          <div style="color: var(--ink);" class="board-copy">
+            Το <strong>State</strong> είναι η <em>μνήμη</em> (πού βρίσκομαι). Το <strong>if / switch</strong> είναι ο <em>μηχανισμός μετάβασης</em> (πώς αντιδρώ σε ένα σύμβολο για να αλλάξω κατάσταση).
+          </div>
+        </div></div></div></section>
+<section class="slide workshop-board" aria-labelledby="slide-20-title" data-theme="indigo" data-board="20" style="--board-size: 31px;"><div class="workshop-frame">
+        <header class="slide-header" style="margin-bottom: 14px;">
+          <div class="eyebrow">Αρχιτεκτονική</div>
+          <h2 id="slide-20-title" class="slide-title">Regular Expressions (Regex) &amp; Το Πνεύμα των Audits</h2>
+        </header>
+
+        <!-- Top Section: Header with link to regex101 + 3 Regex Cards -->
+
+
+
+
+        <!-- Middle Section: Direct Instruction (No heavy reasoning) -->
+
+
+        <!-- Bottom Section: The Zone01 Peer Audit Defense -->
+
+      <div class="board-body"><div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px;" class="board-regex-header">
+          <span class="mono board-label" style="color: var(--accent); font-weight: 700; letter-spacing: 0.05em;">ΠΑΡΑΔΕΙΓΜΑΤΑ REGEX PATTERNS (DSL)</span>
+          <a href="https://regex101.com" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; background: rgba(242, 203, 134, 0.1); border: 1px solid var(--accent); color: var(--accent); padding: 5px 14px; border-radius: 6px; font-family: var(--font-mono); font-weight: 600; text-decoration: none;" class="board-label">
+            <span>Δοκιμή &amp; Visualizer: regex101.com</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        </div><div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;" class="board-regex-cards">
+          <!-- Card 1: Words -->
+          <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
+            <div class="mono board-label" style="color: var(--accent); font-weight: 700; margin-bottom: 6px;">01 // TOKENIZE ΣΕ ΛΕΞΕΙΣ</div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="mono board-emphasis board-code" style="font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">\b\w+\b <span style="color: var(--ink-muted);" class="board-label">ή</span> [^\s]+</div></div>
+            <p style="color: var(--ink-secondary);" class="board-copy">
+              Επιλέγει μία-μία όλες τις διακριτές λέξεις του κειμένου, απομονώνοντάς τες από τα κενά διαστήματα.
+            </p>
+          </div>
+
+          <!-- Card 2: Numbers -->
+          <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
+            <div class="mono board-label" style="color: var(--accent); font-weight: 700; margin-bottom: 6px;">02 // ΕΝΤΟΠΙΣΜΟΣ ΑΡΙΘΜΩΝ</div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="mono board-emphasis board-code" style="font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">\d+ <span style="color: var(--ink-muted);" class="board-label">ή</span> [0-9]+</div></div>
+            <p style="color: var(--ink-secondary);" class="board-copy">
+              Εντοπίζει αυστηρά μόνο τα ψηφία και τους αριθμούς μέσα στη ροή του κειμένου (π.χ. για modifiers με count).
+            </p>
+          </div>
+
+          <!-- Card 3: Modifiers with Groups -->
+          <div style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px;">
+            <div class="mono board-label" style="color: var(--accent); font-weight: 700; margin-bottom: 6px;">03 // MODIFIERS &amp; CAPTURE GROUPS</div>
+            <div class="terminal board-terminal"><div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"></path></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"></rect></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"></path></svg></span>
+    </div><div class="mono board-label board-code" style="font-weight: 700; color: var(--purple); background: rgba(212, 184, 226, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">\((up|low|cap)(?:,\s*(\d+))?\)</div></div>
+            <p style="color: var(--ink-secondary);" class="board-copy">
+              Απομονώνει modifiers τύπου <code>(up)</code> ή <code>(up, 2)</code> εξάγοντας απευθείας τον τύπο και τον αριθμό.
+            </p>
+          </div>
+        </div><div style="background: rgba(239, 171, 163, 0.08); border: 1px solid rgba(239, 171, 163, 0.35); border-radius: 8px; padding: 12px 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px;" class="board-regex-rule">
+          <span class="mono board-label" style="background: rgba(239, 171, 163, 0.2); color: var(--danger); font-weight: 700; padding: 4px 10px; border-radius: 4px; white-space: nowrap;">ΣΥΣΤΑΣΗ // GO-RELOADED</span>
+          <div style="color: var(--ink);" class="board-copy">
+            <strong>Στο go-reloaded μην το κάνετε με regex!</strong> Το ζητούμενο του project είναι το tokenization και η επεξεργασία να γίνουν αποκλειστικά με μεθόδους της Go Standard Library (<code>strings</code>, runes, slices, <code>strconv</code>).
+          </div>
+        </div><div style="background: var(--surface); border: 1px solid rgba(163, 210, 181, 0.35); border-radius: 8px; padding: 16px 22px;" class="board-regex-audit">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+            <span class="col-badge good" style="margin-bottom: 0;">ZONE01 AUDIT CULTURE</span>
+            <h3 style="font-weight: 700; color: var(--ink); margin: 0px;" class="board-emphasis">Το Πνεύμα των Audits &amp; Υποστήριξη Επιλογών (Defense)</h3>
+          </div>
+          <p style="color: var(--ink-secondary); margin-bottom: 10px;" class="board-copy">
+            Ωστόσο, το πνεύμα των audits γενικά στο Zone01 είναι: Αν μπορείς να υποστηρίξεις στο audit (1) τη βαθιά γνώση και (2) τους λόγους / pros &amp; cons για τους οποίους χρησιμοποιήθηκε κάτι (ακόμα κι αν το project ζητάει standard library), <strong>τότε είναι απόλυτα σεβαστό και περνάει το audit</strong>, αρκεί να υπάρχει τεκμηριωμένο reasoning και επιχειρήματα:
+          </p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+            <div style="background: rgba(255, 255, 255, 0.02); border-left: 3px solid var(--success); padding: 10px 14px; border-radius: 0 6px 6px 0;">
+              <strong style="color: var(--ink);" class="board-copy">1. Βαθιά Γνώση &amp; Κατανόηση:</strong>
+              <p style="color: var(--ink-secondary); margin-top: 4px;" class="board-copy">
+                Μπορείς να εξηγήσεις αναλυτικά στον auditor πώς λειτουργεί το pattern, τα capture groups και ο μηχανισμός εκτέλεσης — αποδεικνύοντας ότι δεν είναι copy-paste από AI ή Google.
+              </p>
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.02); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 0 6px 6px 0;">
+              <strong style="color: var(--ink);" class="board-copy">2. Τεκμηριωμένα Επιχειρήματα (Pros &amp; Cons):</strong>
+              <p style="color: var(--ink-secondary); margin-top: 4px;" class="board-copy">
+                Μπορείς να υποστηρίξεις γιατί το επέλεξες, πού κερδίζει σε ταχύτητα υλοποίησης ή εκφραστικότητα, και τι ρίσκα αναλαμβάνεις σε αναγνωσιμότητα ή μελλοντικό debugging.
+              </p>
+            </div>
+          </div>
+        </div></div></div></section>
+<section class="slide split-layout workshop-board" aria-labelledby="slide-21-title" data-theme="indigo" data-board="21" style="--board-size: 37px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Αρχιτεκτονική</div>
+          <h2 id="slide-21-title" class="slide-title">Πολλά Περάσματα vs Buffer/FSM: Τεχνική Ανάλυση</h2>
+        </header>
+
+
+      <div class="board-body"><div class="split-grid">
+          <div class="split-left">
+            <p class="lead-statement">
+              Διάσπαση σε επιμέρους υποπροβλήματα (Divide &amp; Conquer).
+            </p>
+            <ul class="point-list">
+              <li><strong>Multi-Pass (Απομονωμένα Στάδια):</strong> Κάθε στάδιο αναλαμβάνει έναν μετασχηματισμό. Εάν υπάρξει σφάλμα στα εισαγωγικά, η διερεύνηση περιορίζεται αποκλειστικά στη συγκεκριμένη συνάρτηση.</li>
+              <li><strong>Single-Pass Buffer:</strong> Ένα πέρασμα με buffer ολίσθησης. Απαιτεί ταυτόχρονο συγχρονισμό πολλαπλών σημαιών κατάστασης (inQuotes, modifierCount, pendingPunctuation).</li>
+              <li><strong>Γνωστικό Φορτίο:</strong> Το multi-pass μειώνει δραστικά την πιθανότητα απρόβλεπτων παρενεργειών μεταξύ κανόνων.</li>
+            </ul>
+          </div>
+
+          <div class="split-right">
+            <div class="board-figure board-figure-21"><div class="board-figure-card board-out"><div class="board-figure-kicker" style="color: var(--success);">MULTI-PASS (ISOLATED STAGES)</div><div class="board-mini-flow"><div class="board-mini-step" style="color: var(--ink);">Hex/Bin</div><div class="board-mini-step" style="color: var(--ink);">Casing</div><div class="board-mini-step" style="color: var(--ink);">Punct</div><div class="board-mini-step" style="color: var(--ink);">Quotes</div></div><div class="board-figure-copy" style="color: var(--ink-secondary);">Κάθε πέρασμα παράγει πλήρως έγκυρο ενδιάμεσο κείμενο. Εύκολη αποσφαλμάτωση με ενδιάμεσα print statements.</div></div><div class="board-figure-card board-single-pass"><div class="board-figure-kicker" style="color: var(--warning);">SINGLE-PASS BUFFER (COUPLED STATE)</div><div class="board-figure-code" style="color: var(--warning);">State = [inQuote: true | nextCap: 2 | lastPunct: '.' | prevRune: 'a']</div><div class="board-figure-copy" style="color: var(--ink-secondary);">Μικρότερος αριθμός iterations και χαμηλή κατανάλωση μνήμης, αλλά αυξημένη δυσκολία αποσφαλμάτωσης σε συγκρούσεις κανόνων.</div></div></div>
+          </div>
+        </div></div></div></section>
+<section class="slide comparison-layout workshop-board" aria-labelledby="slide-22-title" data-theme="paper" data-board="22" style="--board-size: 43px;"><div class="workshop-frame">
+        <header class="slide-header">
+          <div class="eyebrow">Αρχιτεκτονική</div>
+          <h2 id="slide-22-title" class="slide-title">Πεδία Εφαρμογής &amp; Trade-offs</h2>
+        </header>
+
+
+      <div class="board-body"><div class="comparison-grid">
+          <div class="comparison-col neutral">
+            <h3 class="col-title">Πλεονεκτήματα Pipeline</h3>
+            <ul class="col-points">
+              <li><strong>Απομόνωση Σφαλμάτων:</strong> Κάθε στάδιο ελέγχεται πλήρως ανεξάρτητα με unit tests</li>
+              <li><strong>Απλότητα Debugging:</strong> Άμεση επιθεώρηση ενδιάμεσου string μεταξύ των σταδίων</li>
+              <li><strong>Ταχύτητα Ανάπτυξης:</strong> Σαφής διαχωρισμός σε επιμέρους task cards</li>
+              <li><strong>Κόστος:</strong> Δημιουργία ενδιάμεσων strings στη μνήμη (αμελητέο για αρχεία &lt; 10MB)</li>
+            </ul>
+          </div>
+
+          <div class="comparison-col neutral">
+            <h3 class="col-title">Πλεονεκτήματα Single-Pass FSM</h3>
+            <ul class="col-points">
+              <li><strong>Διαχείριση Μεγάλων Αρχείων:</strong> Επεξεργασία gigabytes χωρίς φόρτωση όλου του αρχείου στη RAM</li>
+              <li><strong>Μηδενικές Κατανομές (Zero Allocations):</strong> Εγγραφή απευθείας στον output buffer</li>
+              <li><strong>Συστήματα Χαμηλού Επιπέδου:</strong> Κατάλληλο για embedded firmware και network drivers</li>
+              <li><strong>Κόστος:</strong> Υψηλή πολυπλοκότητα στη διαχείριση σύνθετων μεταβάσεων κατάστασης</li>
+            </ul>
+          </div>
+        </div></div></div></section>
 <section class="slide prd-slide" aria-labelledby="slide-23-title" data-theme="paper" data-transition="scorch"><div class="workshop-frame">
   <header class="slide-header">
     <p class="eyebrow">Ενδεικτικό PRD.md · 1/3</p>
@@ -2283,29 +2989,171 @@ const transitions = (() => {
     + 0.29 * valueNoise(x * 2.05, y * 2.05, seed + 3)
     + 0.14 * valueNoise(x * 4.2, y * 4.2, seed + 7)
 
+  function tiles(cols, rows, prepare, seed) {
+    return Array.from({ length: cols * rows }, (_, i) => {
+      const col = i % cols
+      const row = Math.floor(i / cols)
+      const x = Math.round(col * W / cols)
+      const y = Math.round(row * H / rows)
+      const w = Math.round((col + 1) * W / cols) - x
+      const h = Math.round((row + 1) * H / rows) - y
+      return prepare({
+        x, y, w, h, col, row,
+        u: (x + w / 2) / W, v: (y + h / 2) / H,
+        r: hash(col, row, seed), s: hash(col, row, seed + 1)
+      }, seed)
+    })
+  }
+
   function grid(cols, rows, prepare, paint) {
     return (seed, direction) => {
-      const cells = Array.from({ length: cols * rows }, (_, i) => {
-        const col = i % cols
-        const row = Math.floor(i / cols)
-        const x = Math.round(col * W / cols)
-        const y = Math.round(row * H / rows)
-        const w = Math.round((col + 1) * W / cols) - x
-        const h = Math.round((row + 1) * H / rows) - y
-        return prepare({
-          x, y, w, h, col, row,
-          u: (x + w / 2) / W, v: (y + h / 2) / H,
-          r: hash(col, row, seed), s: hash(col, row, seed + 1)
-        }, seed)
-      })
+      const cells = tiles(cols, rows, prepare, seed)
       return (f, t) => {
         for (const cell of cells) paint(f, cell, t, direction)
       }
     }
   }
 
-  function still(f, c, a = 1) {
-    f.blit(c.x, c.y, c.w, c.h, c.x, c.y, c.w, c.h, a)
+  // A stationary tile changes only its opacity. Composite the whole field at once.
+  function tileMask(cols, rows, prepare, opacity) {
+    return seed => {
+      const values = tiles(cols, rows, prepare, seed)
+      const image = new ImageData(cols, rows)
+      const pixels = image.data
+      return (f, t) => {
+        const remaining = smooth(1 - t)
+        for (let i = 0; i < values.length; i++) {
+          pixels[i * 4 + 3] = 255 * opacity(values[i], t, remaining)
+        }
+        f.mask(cols, rows, mask => mask.putImageData(image, 0, 0))
+      }
+    }
+  }
+
+  function halftone() {
+    const width = W / 4
+    const height = H / 4
+    const cols = 34
+    const rows = 19
+    const cellWidth = width / cols
+    const cellHeight = height / rows
+    const distance = new Float32Array(width * height)
+    const line = new Uint8Array(height)
+    const extent = new Float32Array(rows)
+    const image = new ImageData(width, height)
+    const pixels = image.data
+    const maxRadius = Math.hypot(cellWidth, cellHeight) / 2
+    const horizontal = Float32Array.from({ length: width }, (_, x) => {
+      const center = (Math.floor((x + 0.5) / cellWidth) + 0.5) * cellWidth
+      return (x + 0.5 - center) ** 2
+    })
+    // A pixel's distance to its dot center stays fixed. Store it once.
+    for (let y = 0; y < height; y++) {
+      const row = Math.floor((y + 0.5) / cellHeight)
+      const vertical = (y + 0.5 - (row + 0.5) * cellHeight) ** 2
+      line[y] = row
+      for (let x = 0; x < width; x++) distance[y * width + x] = Math.sqrt(horizontal[x] + vertical)
+    }
+    return (f, t) => {
+      for (let row = 0; row < rows; row++) {
+        const delay = (row + 0.5) / rows * 0.32
+        extent[row] = maxRadius * (1 - smooth(between(t, delay, 0.96))) + 0.5
+      }
+      let i = 0
+      for (const row of line) {
+        const edge = extent[row]
+        for (let x = 0; x < width; x++, i++) pixels[i * 4 + 3] = 255 * (edge - distance[i])
+      }
+      f.mask(width, height, mask => mask.putImageData(image, 0, 0), true)
+    }
+  }
+
+  function mirage(seed) {
+    const cells = tiles(56, 32, (c, seed) => ({
+      ...c, dx: (field(c.u * 13, c.v * 13, seed) - 0.5) * 0.14 * W,
+      dy: (field(c.u * 13, c.v * 13, seed + 9) - 0.5) * 0.14 * H
+    }), seed)
+    return (f, t) => {
+      const p = smooth(t)
+      if (p >= 0.995) return 0
+      for (const c of cells) {
+        const x = Math.round(Math.max(0, Math.min(W - c.w, c.x + c.dx * p)))
+        const y = Math.round(Math.max(0, Math.min(H - c.h, c.y + c.dy * p)))
+        f.blit(x, y, c.w, c.h, c.x, c.y, c.w, c.h)
+      }
+      // Blend the whole mosaic once. Its tiles cover distinct rectangles.
+      return 1 - p
+    }
+  }
+
+  function glitch() {
+    const cols = 48
+    const rows = 64
+    return (f, t) => {
+      const p = smooth(t)
+      const alpha = (1 - smooth(p)) * (1 - smooth(between(p, 0.55, 1)))
+      if (alpha <= 0.005) return
+      const band = Math.floor(p * 18)
+      const shift = Math.floor(p * 32)
+      const jitter = Math.floor(p * 64)
+      const phase = Math.floor(p * 22)
+      const ramp = smooth(p / 0.08)
+      for (let row = 0; row < rows; row++) {
+        const tear = hash(row, band) >= 0.55 ? (hash(row, shift) - 0.5) * W * 0.10 : 0
+        const slip = (hash(row, jitter) - 0.5) * W * 0.025
+        const dx = (tear + slip) * ramp
+        const y = Math.round(row * H / rows)
+        const h = Math.round((row + 1) * H / rows) - y
+        let start = -1
+        for (let col = 0; col <= cols; col++) {
+          if (col < cols && (p < 0.03 || hash(col, row, phase) < 1 - p * 0.92)) {
+            if (start === -1) start = col
+          } else if (start !== -1) {
+            const x = start * W / cols
+            const w = col * W / cols - x
+            f.blit(x, y, w, h, x + dx, y, w, h, alpha)
+            start = -1
+          }
+        }
+      }
+    }
+  }
+
+  function thanos(seed) {
+    const cols = 68
+    const cells = tiles(cols, 39, c => ({
+      ...c, start: clamp(((2 - c.u - c.v) / 2) * 0.6 + (c.r - 0.5) * 0.15),
+      wind: (0.5 + (c.r - 0.5) * 0.4) * W,
+      lift: (0.2 + (c.v - 0.5) * 0.6 + (c.s - 0.5) * 0.6) * H,
+      curve: (c.s - 0.5) * W * 0.8
+    }), seed)
+    return (f, t) => {
+      for (let row = 0; row < cells.length; row += cols) {
+        const { y, h } = cells[row]
+        const end = row + cols
+        let run = -1
+        for (let i = row; i <= end; i++) {
+          const c = cells[i]
+          if (i < end && t <= c.start) {
+            if (run === -1) run = c.x
+            continue
+          }
+          // Adjacent particles at rest still form one rectangle.
+          if (run !== -1) {
+            const w = (i === end ? W : c.x) - run
+            f.blit(run, y, w, h, run, y, w, h)
+            run = -1
+          }
+          if (i === end) break
+          const p = between(t, c.start, c.start + 0.4)
+          if (p >= 0.995) continue
+          const x = c.x + c.wind * p + c.curve * p * p
+          const dy = c.y + c.lift * p - H * 0.32 * p * p
+          if (x >= W || dy >= H || x + c.w <= 0 || dy + c.h <= 0) continue
+          f.blit(c.x, c.y, c.w, c.h, x, dy, c.w, c.h, 1 - p)
+        }
+      }
+    }
   }
 
   function genie(_seed, _direction, edge) {
@@ -2337,39 +3185,24 @@ const transitions = (() => {
 
   const effects = {
     genie: [680, genie],
-    'ink-splash': [660, grid(120, 68, (c, seed) => ({
-      ...c, d: Math.hypot((c.u - 0.5) * W / H, c.v - 0.5)
+    'ink-splash': [660, tileMask(120, 68, (c, seed) =>
+      Math.hypot((c.u - 0.5) * W / H, c.v - 0.5)
         + (field(c.u * 3.5, c.v * 3.5, seed) - 0.5) * 0.5
-        + (field(c.u * 14, c.v * 14, seed) - 0.5) * 0.18
-    }), (f, c, t) => still(f, c, smooth(((1 - t) * 1.7 - 0.11 - c.d) / 0.08)))],
-    scorch: [700, grid(96, 54, (c, seed) => ({
-      ...c, d: 1.55 * Math.hypot(1 - c.u, 1 - c.v) + hash(c.col, 1, seed) * 0.42,
-      speed: 1.42 + 0.58 * Math.exp((valueNoise(c.u * 2.8, 0, seed) - 0.5) * 0.8)
-    }), (f, c, t) => {
-      const p = smooth(1 - t)
-      still(f, c, p > 0.995 || c.d <= p * c.speed ? 1 : p ** 4)
-    })],
-    splinter: [650, grid(96, 54, (c, seed) => ({
-      ...c, d: Math.hypot(c.u - 0.5, c.v - 0.5) / 3.2
-        + Math.min(hash(c.col, 0, seed), hash(0, c.row, seed + 1)) * 0.38
-    }), (f, c, t) => {
-      const p = smooth(1 - t)
-      still(f, c, smooth(p / 0.08) * (c.d < p ? 1 : smooth((p - 0.92) / 0.08)))
-    })],
-    mirage: [620, grid(64, 36, (c, seed) => ({
-      ...c, dx: (field(c.u * 13, c.v * 13, seed) - 0.5) * 0.14 * W,
-      dy: (field(c.u * 13, c.v * 13, seed + 9) - 0.5) * 0.14 * H
-    }), (f, c, t) => {
-      const p = smooth(t)
-      f.blit(Math.max(0, Math.min(W - c.w, c.x + c.dx * p)),
-        Math.max(0, Math.min(H - c.h, c.y + c.dy * p)), c.w, c.h,
-        c.x, c.y, c.w, c.h, 1 - p)
-    })],
-    stipple: [590, grid(120, 68, (c, seed) => ({
-      ...c, threshold: c.r * (0.25 + 0.74 * field(c.u * 9, c.v * 9, seed))
-    }), (f, c, t) => {
-      if (c.threshold < smooth(1 - t)) still(f, c)
-    })],
+        + (field(c.u * 14, c.v * 14, seed) - 0.5) * 0.18,
+    (distance, t) => smooth(((1 - t) * 1.7 - 0.11 - distance) / 0.08))],
+    scorch: [700, tileMask(96, 54, (c, seed) => {
+      const distance = 1.55 * Math.hypot(1 - c.u, 1 - c.v) + hash(c.col, 1, seed) * 0.42
+      const speed = 1.42 + 0.58 * Math.exp((valueNoise(c.u * 2.8, 0, seed) - 0.5) * 0.8)
+      return distance / speed
+    }, (threshold, _t, p) => p > 0.995 || threshold <= p ? 1 : p ** 4)],
+    splinter: [650, tileMask(96, 54, (c, seed) =>
+      Math.hypot(c.u - 0.5, c.v - 0.5) / 3.2
+        + Math.min(hash(c.col, 0, seed), hash(0, c.row, seed + 1)) * 0.38,
+    (distance, _t, p) => smooth(p / 0.08) * (distance < p ? 1 : smooth((p - 0.92) / 0.08)))],
+    mirage: [620, mirage],
+    stipple: [590, tileMask(120, 68, (c, seed) =>
+      c.r * (0.25 + 0.74 * field(c.u * 9, c.v * 9, seed)),
+    (threshold, _t, p) => Number(threshold < p))],
     swell: [440, () => (f, t, mode) => {
       const p = out(t)
       f.quad(W / 2, H / 2, 1 + 0.18 * p, 1 + 0.18 * p, mode === 'in' ? smooth(1 - t) : 1 - p)
@@ -2397,28 +3230,10 @@ const transitions = (() => {
       const distance = out(t, 5) * (200 + c.r * 1000)
       f.blit(c.x, c.y, c.w, c.h, c.x + c.dx * distance, c.y + c.dy * distance, c.w, c.h, 1 - t)
     })],
-    thanos: [810, grid(68, 39, c => ({
-      ...c, start: clamp(((2 - c.u - c.v) / 2) * 0.6 + (c.r - 0.5) * 0.15),
-      wind: (0.5 + (c.r - 0.5) * 0.4) * W,
-      lift: (0.2 + (c.v - 0.5) * 0.6 + (c.s - 0.5) * 0.6) * H
-    }), (f, c, t) => {
-      const p = between(t, c.start, c.start + 0.4)
-      f.blit(c.x, c.y, c.w, c.h, c.x + c.wind * p + (c.s - 0.5) * W * 0.8 * p * p,
-        c.y + c.lift * p - H * 0.32 * p * p, c.w, c.h, 1 - p)
-    })],
-    perlin: [700, grid(96, 54, (c, seed) => ({
-      ...c, start: 0.82 * field(c.x / 150, c.y / 150, seed)
-    }), (f, c, t) => still(f, c, 1 - between(t, c.start, c.start + 0.16)))],
-    glitch: [490, grid(48, 64, c => c, (f, c, t) => {
-      const p = smooth(t)
-      const tear = hash(c.row, Math.floor(p * 18)) >= 0.55
-        ? (hash(c.row, Math.floor(p * 32)) - 0.5) * W * 0.10 : 0
-      const slip = (hash(c.row, Math.floor(p * 64)) - 0.5) * W * 0.025
-      if (p < 0.03 || hash(c.col, c.row, Math.floor(p * 22)) < 1 - p * 0.92) {
-        f.blit(c.x, c.y, c.w, c.h, c.x + (tear + slip) * smooth(p / 0.08), c.y,
-          c.w, c.h, (1 - smooth(p)) * (1 - smooth(between(p, 0.55, 1))))
-      }
-    })],
+    thanos: [810, thanos],
+    perlin: [700, tileMask(96, 54, (c, seed) => 0.82 * field(c.x / 150, c.y / 150, seed),
+      (start, t) => 1 - between(t, start, start + 0.16))],
+    glitch: [490, glitch],
     'tv-off': [550, () => (f, t) => {
       const squashEnd = 0.42
       const zipEnd = 0.78
@@ -2426,9 +3241,10 @@ const transitions = (() => {
         const p = (t / squashEnd) ** 3
         const h = lerp(H, 2, p)
         const alpha = between(h, 2, 10)
-        f.ctx.filter = 'brightness(' + (1 + p * 0.85) + ')'
         f.quad(W / 2, H / 2, 1, h / H, alpha)
-        f.ctx.filter = 'none'
+        f.ctx.globalCompositeOperation = 'lighter'
+        f.quad(W / 2, H / 2, 1, h / H, alpha * p * 0.85)
+        f.ctx.globalCompositeOperation = 'source-over'
         f.rect(W / 2, H / 2, W, 3, '#fff', 1 - alpha)
       } else {
         const w = lerp(W, 2, between(t, squashEnd, zipEnd) ** 2)
@@ -2467,9 +3283,7 @@ const transitions = (() => {
     }],
     registration: [440, (_, d) => (f, t) => {
       const slip = out(t) * d
-      f.ctx.filter = 'sepia(1) saturate(2.5)'
-      f.quad(W / 2 - 66 * slip, H / 2 + 28 * slip, 1, 1, 0.42 * Math.sin(Math.PI * t))
-      f.ctx.filter = 'none'
+      f.printTint(W / 2 - 66 * slip, H / 2 + 28 * slip, 0.42 * Math.sin(Math.PI * t))
       f.quad(W / 2 + 37 * slip, H / 2 - 16 * slip, 1, 1, 1 - smooth(t))
     }],
     trapdoor: [560, () => (f, t) => {
@@ -2532,10 +3346,7 @@ const transitions = (() => {
       f.blit(c.x, 0, c.w, H, x, rise, w, H, 1 - between(p, 0.82, 1))
       f.rect(x + w / 2, H / 2 + rise, w, H, '#000', c.col % 2 ? 0.28 * p : 0)
     })],
-    halftone: [660, grid(34, 19, c => c, (f, c, t) => {
-      const radius = Math.hypot(c.w, c.h) / 2 * (1 - smooth(between(t, c.v * 0.32, 0.96)))
-      f.disc(c.x + c.w / 2, c.y + c.h / 2, radius, () => still(f, c))
-    })],
+    halftone: [660, halftone],
     'ticker-splice': [550, grid(1, 5, c => c, (f, c, t, d) => {
       const p = smooth(between(t, c.v * 0.32, c.v * 0.32 + 0.66))
       f.blit(0, c.y, W, c.h, d * W * p, c.y, W, c.h)
@@ -2607,7 +3418,6 @@ const transitions = (() => {
   }
   return Object.freeze(effects)
 })()
-
 
 function initDeck() {
   const W = 1920
@@ -2715,7 +3525,12 @@ function initDeck() {
       const image = new Image()
       image.src = url
       await image.decode()
-      return image
+      // Freeze the SVG once. Every effect then samples the same raster pixels.
+      const bitmap = document.createElement('canvas')
+      bitmap.width = W
+      bitmap.height = H
+      bitmap.getContext('2d').drawImage(image, 0, 0)
+      return bitmap
     } finally {
       URL.revokeObjectURL(url)
     }
@@ -2759,14 +3574,46 @@ function initDeck() {
   }
 
   function frame(image, back, paper) {
-    function blit(sx, sy, sw, sh, dx, dy, dw, dh, alpha = 1) {
+    let maskLayer
+    let tinted
+
+    function blit(sx, sy, sw, sh, dx, dy, dw, dh, alpha = 1, source = image) {
       if (alpha <= 0.005 || dw <= 0 || dh <= 0 || sw <= 0 || sh <= 0) return
       ctx.globalAlpha = Math.min(1, alpha)
-      ctx.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh)
+      ctx.drawImage(source, sx, sy, sw, sh, dx, dy, dw, dh)
     }
 
-    function quad(x, y, sx = 1, sy = 1, alpha = 1) {
-      blit(0, 0, W, H, x - W * sx / 2, y - H * sy / 2, W * sx, H * sy, alpha)
+    function quad(x, y, sx = 1, sy = 1, alpha = 1, source = image) {
+      blit(0, 0, W, H, x - W * sx / 2, y - H * sy / 2, W * sx, H * sy, alpha, source)
+    }
+
+    function mask(width, height, drawMask, soften = false) {
+      if (!maskLayer) {
+        const surface = document.createElement('canvas')
+        surface.width = width
+        surface.height = height
+        maskLayer = surface.getContext('2d')
+      }
+      drawMask(maskLayer)
+      quad(W / 2, H / 2)
+      ctx.save()
+      ctx.globalCompositeOperation = 'destination-in'
+      ctx.imageSmoothingEnabled = soften
+      ctx.drawImage(maskLayer.canvas, 0, 0, W, H)
+      ctx.restore()
+    }
+
+    function printTint(x, y, alpha) {
+      if (alpha <= 0.005) return
+      if (!tinted) {
+        tinted = document.createElement('canvas')
+        tinted.width = W
+        tinted.height = H
+        const ink = tinted.getContext('2d')
+        ink.filter = 'sepia(1) saturate(2.5)'
+        ink.drawImage(image, 0, 0)
+      }
+      quad(x, y, 1, 1, alpha, tinted)
     }
 
     function rect(x, y, w, h, color, alpha) {
@@ -2803,8 +3650,7 @@ function initDeck() {
     }
 
     return {
-      ctx, blit, quad, rect, paper, oval,
-      disc: (x, y, r, paint) => oval(x, y, r, r, paint),
+      ctx, blit, quad, mask, printTint, rect, paper, oval,
       clip: (points, paint) => group(() => {
         path(points)
         ctx.clip()
@@ -2844,13 +3690,12 @@ function initDeck() {
     function paint(t) {
       ctx.clearRect(0, 0, W, H)
       ctx.globalAlpha = 1
-      ctx.filter = 'none'
+      let layerOpacity
       if (t === 0 && mode === 'out') view.quad(W / 2, H / 2)
-      else if (mode === 'pair') draw(view, t, mode, t)
-      else draw(view, mode === 'in' ? 1 - t : t, mode, t)
+      else layerOpacity = draw(view, mode === 'in' ? 1 - t : t, mode, t)
       const opacity = mode === 'out' ? Math.min(1, (1 - t) / 0.06)
         : mode === 'in' && name !== 'windows10' ? Math.min(1, t / 0.06) : 1
-      canvas.style.opacity = String(opacity)
+      canvas.style.opacity = String(opacity * (layerOpacity ?? 1))
     }
 
     paint(0)
