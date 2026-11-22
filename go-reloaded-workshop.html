@@ -1236,6 +1236,10 @@
   align-items: center;
   gap: 56px;
 }
+.slide.workshop-rebuilt .workshop-split-copy {
+  display: grid;
+  gap: 42px;
+}
 .slide.workshop-rebuilt .workshop-rail {
   display: grid;
   grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
@@ -1288,7 +1292,14 @@
   padding: 20px 30px;
   background: var(--code-surface);
 }
-.slide.workshop-rebuilt .terminal pre code { font: inherit; color: inherit; }
+.slide.workshop-rebuilt .terminal pre code {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.slide.workshop-rebuilt[aria-labelledby="slide-06-title"] .terminal pre { white-space: pre-wrap; }
 .slide.workshop-rebuilt .workshop-diagram { margin: 0; }
 .slide.workshop-rebuilt .workshop-diagram svg { display: block; width: 100%; }
 .slide.workshop-rebuilt .workshop-diagram-box {
@@ -1313,6 +1324,26 @@
   font: 650 40px var(--font-notes);
   fill: var(--ink);
 }
+.slide .terminal.workshop-source-terminal { max-width: 1280px; }
+.slide .workshop-source-terminal .terminal-bar {
+  min-height: 40px;
+  background: var(--code-surface);
+  border-radius: 10px 10px 0 0;
+}
+.slide .workshop-source-terminal pre {
+  border: 0;
+  border-radius: 0 0 10px 10px;
+}
+.slide.prd-slide .workshop-frame > .workshop-source-terminal pre {
+  font-size: 31px;
+  line-height: 1.35;
+}
+.slide.io-appendix .workshop-source-terminal .io-code {
+  border: 0;
+  padding-block: 12px;
+  line-height: 1.13;
+}
+.slide.io-appendix .workshop-source-terminal .terminal-bar { min-height: 36px; }
 
 </style>
 </head>
@@ -1500,12 +1531,10 @@ upper := strings.ToUpper(clean)</code></pre>
       <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
     </div>
     <pre class="code-block" dir="ltr"><code>IN
-harold wilson (cap, 2) : ' I am a optimist ,but
-a optimist who carries a raincoat . '
+harold wilson (cap, 2) : ' I am a optimist ,but a optimist who carries a raincoat . '
 
 OUT
-Harold Wilson: 'I am an optimist, but
-an optimist who carries a raincoat.'</code></pre>
+Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</code></pre>
   </div>
       <div class="workshop-rail" style="--columns:3">
           <div><h3>Όνομα</h3><p><code>(cap, 2)</code> στις δύο λέξεις.</p></div>
@@ -1678,12 +1707,12 @@ transform/
     }
   }
 }</code></pre>
-  </div>
+  </div><div class="workshop-split-copy">
       <dl class="workshop-ledger">
           <div><dt><code>in</code> και <code>want</code></dt><dd>Τι δίνουμε και τι περιμένουμε.</dd></div>
           <div><dt><code>got</code></dt><dd>Τι επέστρεψε η συνάρτηση.</dd></div>
-        </dl></div>
-      <p class="workshop-prompt">Ποια γραμμή θα πρόσθετες για ελληνικούς χαρακτήρες;</p>
+        </dl>
+      <p class="workshop-prompt">Ποια γραμμή θα πρόσθετες για ελληνικούς χαρακτήρες;</p></div></div>
     </div>
   </div>
 </section>
@@ -1861,7 +1890,12 @@ transform/
     <p class="eyebrow">Ενδεικτικό PRD.md · 1/3</p>
     <h2 id="slide-23-title" class="slide-title">Το PRD με μια ματιά</h2>
   </header>
-  <pre class="sample-block markdown-source"><span class="md-heading"># PRD</span>
+  <div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="sample-block markdown-source"><span class="md-heading"># PRD</span>
 
 <span class="md-heading">## 1. Problem Statement</span>
 Μετασχηματίζουμε κείμενο με τους κανόνες του go-reloaded.
@@ -1870,13 +1904,19 @@ transform/
 - `go run . input.txt output.txt`
 - Επιτυχία: γράφει την έξοδο και επιστρέφει κωδικό 0.
 - Λάθος ορίσματα ή σφάλμα αρχείου: μήνυμα στο stderr και μη μηδενικός κωδικός.</pre>
+  </div>
 </div></section>
 <section class="slide prd-slide" aria-labelledby="slide-24-title" data-theme="paper"><div class="workshop-frame">
   <header class="slide-header">
     <p class="eyebrow">Ενδεικτικό PRD.md · 2/3</p>
     <h2 id="slide-24-title" class="slide-title">Κανόνες και κριτήρια</h2>
   </header>
-  <pre class="sample-block markdown-source"><span class="md-heading">## 3. Transformation Functions</span>
+  <div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="sample-block markdown-source"><span class="md-heading">## 3. Transformation Functions</span>
 - `(hex)`, `(bin)` → δεκαδικός αριθμός.
 - `(up)`, `(low)`, `(cap)` → αλλαγή στην προηγούμενη λέξη ή στις N προηγούμενες.
 - Στίξη: κολλάει αριστερά. Οι ομάδες όπως `...` μένουν μαζί.
@@ -1889,13 +1929,19 @@ transform/
 <span class="md-heading">## 5. Acceptance Criteria</span>
 - Ακριβής έξοδος στα 4 audit cases.
 - `go test ./...` περνά, μαζί με κενό input και ομάδες στίξης.</pre>
+  </div>
 </div></section>
 <section class="slide prd-slide" aria-labelledby="slide-25-title" data-theme="paper"><div class="workshop-frame">
   <header class="slide-header">
     <p class="eyebrow">Ενδεικτικό PRD.md · 3/3</p>
     <h2 id="slide-25-title" class="slide-title">Αρχιτεκτονική και πλάνο</h2>
   </header>
-  <div class="prd-columns"><pre class="sample-block markdown-source"><span class="md-heading">## 6. Architecture</span>
+  <div class="prd-columns"><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="sample-block markdown-source"><span class="md-heading">## 6. Architecture</span>
 We choose: Pipeline
 
 <span class="md-heading">#### Because:</span>
@@ -1908,14 +1954,21 @@ We choose: Pipeline
 <span class="md-fence">```text</span>
 input → tokens → αριθμοί → casing
       → στίξη → quotes → άρθρα → output
-<span class="md-fence">```</span></pre><pre class="sample-block markdown-source"><span class="md-heading">## 7. Milestones</span>
+<span class="md-fence">```</span></pre>
+  </div><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="sample-block markdown-source"><span class="md-heading">## 7. Milestones</span>
 1. PRD και fixtures.
 2. Μετασχηματισμοί με unit tests.
 3. Έλεγχος CLI με τα audit cases.
 
 <span class="md-heading">## 8. Risks / Open Questions</span>
 - Τι γίνεται αν το N ξεπερνά τις διαθέσιμες λέξεις;
-- Τι κάνουμε με ένα εισαγωγικό χωρίς ζευγάρι;</pre></div>
+- Τι κάνουμε με ένα εισαγωγικό χωρίς ζευγάρι;</pre>
+  </div></div>
 </div></section>
 <section class="slide prd-slide" aria-labelledby="slide-26-title" data-theme="indigo" data-transition="tv-off"><div class="workshop-frame">
   <header class="slide-header">
@@ -1933,9 +1986,15 @@ input → tokens → αριθμοί → casing
   </dl>
   <div>
     <p class="lead-statement">Τρεις περισπωμένες <code>~~~</code> ανοίγουν και κλείνουν μπλοκ κώδικα.</p>
+    <div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
     <pre class="sample-block markdown-source"><span class="md-fence">~~~go</span>
 fmt.Println("Hello, Go")
 <span class="md-fence">~~~</span></pre>
+  </div>
     <p class="code-caption">Το <code>go</code> δηλώνει τη γλώσσα. Μπορείς επίσης να χρησιμοποιήσεις τρία backticks <code>```</code>.</p>
   </div>
 </div>
@@ -2026,12 +2085,18 @@ fmt.Println("Hello, Go")
       <h2 class="slide-title" id="appendix-file-1">Ολόκληρο το αρχείο</h2>
     </header>
     <div class="technical-columns io-columns">
-      <figure><pre class="code-block io-code" dir="ltr"><code>data, err := os.ReadFile(<span class="io-literal">&quot;test.txt&quot;</span>)
+      <figure><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block io-code" dir="ltr"><code>data, err := os.ReadFile(<span class="io-literal">&quot;test.txt&quot;</span>)
 <span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
     <span class="io-keyword">return</span> err
 }
 fmt.Print(string(data))
-<span class="io-keyword">return</span> <span class="io-keyword">nil</span></code></pre><figcaption class="io-caption">Μέσα σε συνάρτηση που επιστρέφει <code>error</code>.</figcaption></figure>
+<span class="io-keyword">return</span> <span class="io-keyword">nil</span></code></pre>
+  </div><figcaption class="io-caption">Μέσα σε συνάρτηση που επιστρέφει <code>error</code>.</figcaption></figure>
       <aside class="notes-copy io-notes"><h3>A · os.ReadFile</h3><p>Μικρό αρχείο και χρειάζεσαι όλο το κείμενο; Το <code>os.ReadFile</code> επιστρέφει <code>[]byte</code> και κλείνει μόνο του το αρχείο.</p><p>Η μνήμη που χρειάζεται μεγαλώνει μαζί με το αρχείο.</p></aside>
     </div>
   </div>
@@ -2043,7 +2108,12 @@ fmt.Print(string(data))
       <h2 class="slide-title" id="appendix-file-2">Ανάγνωση σε κομμάτια</h2>
     </header>
     <div class="technical-columns io-columns">
-      <figure><pre class="code-block io-code" dir="ltr"><code>file, err := os.Open(<span class="io-literal">&quot;test.txt&quot;</span>)
+      <figure><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block io-code" dir="ltr"><code>file, err := os.Open(<span class="io-literal">&quot;test.txt&quot;</span>)
 <span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
     <span class="io-keyword">return</span> err
 }
@@ -2059,7 +2129,8 @@ buf := <span class="io-keyword">make</span>([]byte, 4096)
     <span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
         <span class="io-keyword">return</span> err
     }
-}</code></pre><figcaption class="io-caption">Μέσα σε συνάρτηση που επιστρέφει <code>error</code>.</figcaption></figure>
+}</code></pre>
+  </div><figcaption class="io-caption">Μέσα σε συνάρτηση που επιστρέφει <code>error</code>.</figcaption></figure>
       <aside class="notes-copy io-notes"><h3>Β · os.Open και Read</h3><p>Ξαναχρησιμοποιούμε έναν buffer 4 KiB. Καλούμε <code>defer file.Close()</code> μετά από επιτυχημένο άνοιγμα.</p><p>Χρησιμοποιούμε τα <code>n</code> bytes πριν ελέγξουμε το <code>err</code>. Το <code>io.EOF</code> σημαίνει τέλος αρχείου.</p></aside>
     </div>
   </div>
@@ -2071,11 +2142,17 @@ buf := <span class="io-keyword">make</span>([]byte, 4096)
       <h2 class="slide-title" id="appendix-file-3">Γραμμή-γραμμή</h2>
     </header>
     <div class="technical-columns io-columns">
-      <figure><pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
+      <figure><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
 <span class="io-keyword">for</span> scanner.Scan() {
     fmt.Println(scanner.Text())
 }
-<span class="io-keyword">return</span> scanner.Err()</code></pre><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
+<span class="io-keyword">return</span> scanner.Err()</code></pre>
+  </div><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
       <aside class="notes-copy io-notes"><h3>Γ · bufio.Scanner</h3><p>Ο Scanner δίνει μία γραμμή σε κάθε επιτυχημένο <code>Scan()</code>. Το <code>Text()</code> αφαιρεί τον τερματισμό γραμμής.</p><p>Στο τέλος καλούμε <code>Err()</code>. Για πολύ μεγάλες γραμμές, ρύθμισε το <code>Buffer</code> πριν ξεκινήσει η σάρωση ή χρησιμοποίησε <code>bufio.Reader</code>.</p></aside>
     </div>
   </div>
@@ -2087,14 +2164,20 @@ buf := <span class="io-keyword">make</span>([]byte, 4096)
       <h2 class="slide-title" id="appendix-file-4">Ανά rune ή ανά λέξη</h2>
     </header>
     <div class="technical-columns io-columns">
-      <figure><pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
+      <figure><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
 scanner.Split(bufio.ScanRunes)
 <span class="io-comment">// Για λέξεις, επίλεξε bufio.ScanWords.</span>
 
 <span class="io-keyword">for</span> scanner.Scan() {
     fmt.Println(scanner.Text())
 }
-<span class="io-keyword">return</span> scanner.Err()</code></pre><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
+<span class="io-keyword">return</span> scanner.Err()</code></pre>
+  </div><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
       <aside class="notes-copy io-notes"><h3>Γ · Scanner.Split</h3><p><code>ScanRunes</code> δίνει ένα σημείο κώδικα Unicode τη φορά. <code>ScanWords</code> δίνει λέξεις χωρισμένες με λευκούς χαρακτήρες.</p><p>Διάλεξε μία συνάρτηση <code>Split</code> πριν από το πρώτο <code>Scan()</code>.</p></aside>
     </div>
   </div>
@@ -2106,7 +2189,12 @@ scanner.Split(bufio.ScanRunes)
       <h2 class="slide-title" id="appendix-file-5">Μέχρι το κόμμα</h2>
     </header>
     <div class="technical-columns io-columns">
-      <figure><pre class="code-block io-code" dir="ltr"><code>reader := bufio.NewReader(file)
+      <figure><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block io-code" dir="ltr"><code>reader := bufio.NewReader(file)
 <span class="io-keyword">for</span> {
     text, err := reader.ReadString(<span class="io-literal">&#x27;,&#x27;</span>)
     fmt.Print(text)
@@ -2117,7 +2205,8 @@ scanner.Split(bufio.ScanRunes)
     <span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
         <span class="io-keyword">return</span> err
     }
-}</code></pre><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
+}</code></pre>
+  </div><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
       <aside class="notes-copy io-notes"><h3>bufio.Reader · ReadString</h3><p>Το <code>ReadString</code> διαβάζει μέχρι ένα byte-διαχωριστή και τον περιλαμβάνει στο αποτέλεσμα. Το τελευταίο κομμάτι μπορεί να έρθει μαζί με <code>io.EOF</code>.</p><p>Για δικούς σου κανόνες χωρισμού υπάρχει το <code>Scanner.Split</code> με δική σου συνάρτηση. Για κανονικό CSV, χρησιμοποίησε <code>encoding/csv</code>.</p></aside>
     </div>
   </div>
@@ -2129,7 +2218,12 @@ scanner.Split(bufio.ScanRunes)
       <h2 class="slide-title" id="appendix-file-6">Μέχρι κενή γραμμή ή EOF</h2>
     </header>
     <div class="technical-columns io-columns">
-      <figure><pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
+      <figure><div class="terminal workshop-source-terminal">
+    <div class="terminal-bar" aria-hidden="true">
+      <span class="terminal-dots"><i></i><i></i><i></i></span>
+      <span class="terminal-controls"><svg viewBox="0 0 14 14"><path d="M2 7h10"/></svg><svg viewBox="0 0 14 14"><rect x="2.5" y="2.5" width="9" height="9"/></svg><svg viewBox="0 0 14 14"><path d="m3 3 8 8m0-8-8 8"/></svg></span>
+    </div>
+    <pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
 <span class="io-keyword">var</span> block []string
 <span class="io-keyword">for</span> scanner.Scan() {
     line := scanner.Text()
@@ -2144,7 +2238,8 @@ scanner.Split(bufio.ScanRunes)
     <span class="io-keyword">return</span> err
 }
 printBlock(block)
-<span class="io-keyword">return</span> <span class="io-keyword">nil</span></code></pre><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
+<span class="io-keyword">return</span> <span class="io-keyword">nil</span></code></pre>
+  </div><figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και <code>defer file.Close()</code>.</figcaption></figure>
       <aside class="notes-copy io-notes"><h3>Ομαδοποίηση γραμμών</h3><p>Κρατάμε τις γραμμές του τρέχοντος μπλοκ. Κενή γραμμή ή γραμμή με μόνο λευκούς χαρακτήρες κλείνει το μπλοκ.</p><p>Η <code>printBlock</code> τυπώνει μόνο μη κενά μπλοκ. Μετά από κανονικό EOF τυπώνουμε και το υπόλοιπο.</p></aside>
     </div>
   </div>
