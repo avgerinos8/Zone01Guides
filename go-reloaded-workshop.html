@@ -104,15 +104,26 @@
     }
 
     #slide-status.visible-counter {
-      left: 12px;
-      bottom: 12px;
+      left: auto;
+      right: 12px;
+      bottom: 8px;
       width: auto;
       height: auto;
       clip-path: none;
-      padding: 4px 8px;
-      background: #14161a;
-      color: white;
-      font: 14px system-ui
+      overflow: visible;
+      padding: 2px 5px;
+      background: rgba(10, 14, 18, 0.75);
+      border: 1px solid rgba(80, 250, 123, 0.3);
+      border-radius: 2px;
+      color: #50fa7b;
+      font: 700 11px/1.2 "Consolas", "Courier New", monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 0 3px rgba(80, 250, 123, 0.4), 1px 1px 0 #000;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
     }
 
     #slide-progress {
@@ -2179,6 +2190,32 @@
       font-weight: 900 !important;
     }
 
+    .slide.workshop-board[data-board="11"] .board-body {
+      margin-block: 46px 0;
+    }
+
+    .slide.workshop-board[data-board="11"] .split-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .slide.workshop-board[data-board="11"] .layout-trees {
+      position: relative;
+    }
+
+    .slide.workshop-board[data-board="11"] [data-layout-phase] {
+      position: absolute;
+      inset: 0 0 auto;
+    }
+
+    .slide.workshop-board[data-board="11"] .layout-source {
+      margin-top: auto;
+      font: 650 26px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .slide.workshop-board[data-board="11"] .layout-source a {
+      color: var(--accent);
+    }
+
     .slide.workshop-board[data-board="11"] .board-terminal,
     .slide.workshop-board[data-board="12"] .board-terminal {
       max-width: 820px;
@@ -2424,6 +2461,11 @@
     .slide.workshop-board .board-figure-6 .board-figure-copy {
       font: 500 .88em/1.2 var(--board-mono);
       white-space: pre-wrap;
+    }
+
+    .slide.workshop-board .board-figure-6 .board-out .board-figure-copy {
+      font-size: 32px;
+      white-space: nowrap;
     }
 
     .slide.workshop-board .board-figure-6 .board-figure-card :is(.board-figure-kicker, .board-figure-copy) {
@@ -2685,7 +2727,7 @@
     }
 
     .slide.blueprint-docs h2 {
-      font-size: 171px;
+      font-size: 104px;
     }
 
     .slide.blueprint-docs .prd-brief-rail dt code {
@@ -2861,6 +2903,17 @@
       background: #192720;
       color: #f4f2e6;
       font: 800 15px/1.1 "Deck Notes", system-ui, sans-serif;
+    }
+
+    .slide[data-reveal] .reveal-pending,
+    .board-figure-17 .reveal-pending,
+    .board-figure-17 .board-phase:has(+ .reveal-pending)::after {
+      visibility: hidden;
+    }
+
+    .slide[data-reveal][data-reveal-phase="1"] .case-row {
+      background: transparent;
+      border-color: transparent;
     }
   </style>
 </head>
@@ -3116,6 +3169,7 @@
           </dl>
         </div>
       </section>
+
       <section class="slide prd-workshop-brief" aria-labelledby="problem-statement-title" data-theme="indigo">
         <div class="workshop-frame">
           <header>
@@ -3130,6 +3184,7 @@
           </div>
         </div>
       </section>
+
       <section class="slide split-layout workshop-board" aria-labelledby="slide-02-title" data-theme="paper"
         data-transition="registration" data-board="2" style="--board-size: 37px;">
         <div class="workshop-frame">
@@ -3157,7 +3212,8 @@
                         <path d="m3 3 8 8m0-8-8 8"></path>
                       </svg></span>
                   </div>
-                  <p class="lead-statement board-code"><code>go run main.go &lt;inputFile&gt; &lt;outputFile&gt;</code>
+                  <p class="lead-statement board-code"
+                    data-snippet-html="&lt;code&gt;go run main.go &amp;lt;inputFile&amp;gt; &amp;lt;outputFile&amp;gt;&lt;/code&gt;">
                   </p>
                 </div>
                 <ul class="point-list">
@@ -3189,6 +3245,7 @@
           </div>
         </div>
       </section>
+
       <section class="slide comparison-layout workshop-board" aria-labelledby="library-intro-title" data-theme="night"
         data-board="3" data-reveal style="--board-size: 27px;">
         <div class="library-intro">
@@ -3222,7 +3279,6 @@
                       style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                       <span class="col-badge bad board-label" style="padding: 2px 8px; margin-bottom: 0px;">ΧΕΙΡΟΚΙΝΗΤΟΣ
                         ΕΛΕΓΧΟΣ (PISCINE LOOPS)</span>
-                      <span class="mono board-label" style="color: var(--danger);">~16 γραμμές κώδικα</span>
                     </div>
                     <div class="terminal board-terminal">
                       <div class="terminal-bar" aria-hidden="true">
@@ -3235,20 +3291,9 @@
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code"><span class="kw">var</span> result []<span class="typ">rune</span>
-inSpace := <span class="kw">false</span>
-<span class="kw">for</span> _, letter := <span class="kw">range</span> text {
-    <span class="kw">if</span> letter == <span class="str">' '</span> || letter == <span class="str">'\t'</span> {
-        <span class="kw">if</span> !inSpace &amp;&amp; <span class="fn">len</span>(result) &gt; <span class="num">0</span> {
-            result = <span class="fn">append</span>(result, <span class="str">' '</span>)
-            inSpace = <span class="kw">true</span>
-        }
-    } <span class="kw">else</span> {
-        result = <span class="fn">append</span>(result, letter)
-        inSpace = <span class="kw">false</span>
-    }
-}
-clean := <span class="fn">string</span>(result)</div>
+                      <div class="code-card board-code"
+                        data-snippet-html="&lt;span class=&quot;kw&quot;&gt;var&lt;/span&gt; result []&lt;span class=&quot;typ&quot;&gt;rune&lt;/span&gt;&#10;inSpace := &lt;span class=&quot;kw&quot;&gt;false&lt;/span&gt;&#10;&lt;span class=&quot;kw&quot;&gt;for&lt;/span&gt; _, letter := &lt;span class=&quot;kw&quot;&gt;range&lt;/span&gt; text {&#10;    &lt;span class=&quot;kw&quot;&gt;if&lt;/span&gt; letter == &lt;span class=&quot;str&quot;&gt;' '&lt;/span&gt; || letter == &lt;span class=&quot;str&quot;&gt;'\t'&lt;/span&gt; {&#10;        &lt;span class=&quot;kw&quot;&gt;if&lt;/span&gt; !inSpace &amp;amp;&amp;amp; &lt;span class=&quot;fn&quot;&gt;len&lt;/span&gt;(result) &amp;gt; &lt;span class=&quot;num&quot;&gt;0&lt;/span&gt; {&#10;            result = &lt;span class=&quot;fn&quot;&gt;append&lt;/span&gt;(result, &lt;span class=&quot;str&quot;&gt;' '&lt;/span&gt;)&#10;            inSpace = &lt;span class=&quot;kw&quot;&gt;true&lt;/span&gt;&#10;        }&#10;    } &lt;span class=&quot;kw&quot;&gt;else&lt;/span&gt; {&#10;        result = &lt;span class=&quot;fn&quot;&gt;append&lt;/span&gt;(result, letter)&#10;        inSpace = &lt;span class=&quot;kw&quot;&gt;false&lt;/span&gt;&#10;    }&#10;}&#10;clean := &lt;span class=&quot;fn&quot;&gt;string&lt;/span&gt;(result)">
+                      </div>
                     </div>
                   </div>
 
@@ -3259,7 +3304,6 @@ clean := <span class="fn">string</span>(result)</div>
                       style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                       <span class="col-badge good board-label" style="padding: 2px 8px; margin-bottom: 0px;">GO STANDARD
                         LIBRARY (STRINGS)</span>
-                      <span class="mono board-label" style="color: var(--success);">1 γραμμή κώδικα</span>
                     </div>
                     <div class="terminal board-terminal">
                       <div class="terminal-bar" aria-hidden="true">
@@ -3272,12 +3316,9 @@ clean := <span class="fn">string</span>(result)</div>
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code"><span class="cm">// strings.Fields: απομονώνει λέξεις αγνοώντας πολλαπλά κενά/tabs</span>
-<span class="cm">// strings.Join: επανασυνδέει τις λέξεις με μονό κενό</span>
-clean := <span class="go-doc-symbol" data-go-doc="Join" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">Join</span></span>(<span class="go-doc-symbol" data-go-doc="Fields" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">Fields</span></span>(text), <span class="str">" "</span>)
-
-<span class="cm">// Ή για αφαίρεση κενών μόνο στην αρχή και στο τέλος:</span>
-trimmed := <span class="go-doc-symbol" data-go-doc="TrimSpace" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">TrimSpace</span></span>(text)</div>
+                      <div class="code-card board-code"
+                        data-snippet-html="&lt;span class=&quot;cm&quot;&gt;// strings.Fields: απομονώνει λέξεις αγνοώντας πολλαπλά κενά/tabs&lt;/span&gt;&#10;&lt;span class=&quot;cm&quot;&gt;// strings.Join: επανασυνδέει τις λέξεις με μονό κενό&lt;/span&gt;&#10;clean := &lt;span class=&quot;go-doc-symbol&quot; data-go-doc=&quot;Join&quot; tabindex=&quot;0&quot; aria-describedby=&quot;go-doc-tooltip&quot;&gt;strings.&lt;span class=&quot;fn&quot;&gt;Join&lt;/span&gt;&lt;/span&gt;(&lt;span class=&quot;go-doc-symbol&quot; data-go-doc=&quot;Fields&quot; tabindex=&quot;0&quot; aria-describedby=&quot;go-doc-tooltip&quot;&gt;strings.&lt;span class=&quot;fn&quot;&gt;Fields&lt;/span&gt;&lt;/span&gt;(text), &lt;span class=&quot;str&quot;&gt;&quot; &quot;&lt;/span&gt;)&#10;&#10;&lt;span class=&quot;cm&quot;&gt;// Ή για αφαίρεση κενών μόνο στην αρχή και στο τέλος:&lt;/span&gt;&#10;trimmed := &lt;span class=&quot;go-doc-symbol&quot; data-go-doc=&quot;TrimSpace&quot; tabindex=&quot;0&quot; aria-describedby=&quot;go-doc-tooltip&quot;&gt;strings.&lt;span class=&quot;fn&quot;&gt;TrimSpace&lt;/span&gt;&lt;/span&gt;(text)">
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -3299,7 +3340,6 @@ trimmed := <span class="go-doc-symbol" data-go-doc="TrimSpace" tabindex="0" aria
                       style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                       <span class="col-badge bad board-label" style="padding: 2px 8px; margin-bottom: 0px;">ΧΕΙΡΟΚΙΝΗΤΟΣ
                         ΕΛΕΓΧΟΣ (ASCII ARITHMETIC)</span>
-                      <span class="mono board-label" style="color: var(--danger);">[]byte</span>
                     </div>
                     <div class="terminal board-terminal">
                       <div class="terminal-bar" aria-hidden="true">
@@ -3312,13 +3352,9 @@ trimmed := <span class="go-doc-symbol" data-go-doc="TrimSpace" tabindex="0" aria
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code">b := []<span class="typ">byte</span>(text)
-<span class="kw">for</span> i := <span class="num">0</span>; i &lt; <span class="fn">len</span>(b); i++ {
-    <span class="kw">if</span> b[i] &gt;= <span class="str">'a'</span> &amp;&amp; b[i] &lt;= <span class="str">'z'</span> {
-        b[i] -= <span class="num">32</span>
-    }
-}
-upper := <span class="fn">string</span>(b)</div>
+                      <div class="code-card board-code"
+                        data-snippet-html="b := []&lt;span class=&quot;typ&quot;&gt;byte&lt;/span&gt;(text)&#10;&lt;span class=&quot;kw&quot;&gt;for&lt;/span&gt; i := &lt;span class=&quot;num&quot;&gt;0&lt;/span&gt;; i &amp;lt; &lt;span class=&quot;fn&quot;&gt;len&lt;/span&gt;(b); i++ {&#10;    &lt;span class=&quot;kw&quot;&gt;if&lt;/span&gt; b[i] &amp;gt;= &lt;span class=&quot;str&quot;&gt;'a'&lt;/span&gt; &amp;amp;&amp;amp; b[i] &amp;lt;= &lt;span class=&quot;str&quot;&gt;'z'&lt;/span&gt; {&#10;        b[i] -= &lt;span class=&quot;num&quot;&gt;32&lt;/span&gt;&#10;    }&#10;}&#10;upper := &lt;span class=&quot;fn&quot;&gt;string&lt;/span&gt;(b)">
+                      </div>
                     </div>
                   </div>
 
@@ -3329,7 +3365,6 @@ upper := <span class="fn">string</span>(b)</div>
                       style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                       <span class="col-badge good board-label" style="padding: 2px 8px; margin-bottom: 0px;">GO STANDARD
                         LIBRARY (STRINGS)</span>
-                      <span class="mono board-label" style="color: var(--success);">Native Unicode Support</span>
                     </div>
                     <div class="terminal board-terminal">
                       <div class="terminal-bar" aria-hidden="true">
@@ -3342,11 +3377,9 @@ upper := <span class="fn">string</span>(b)</div>
                             <path d="m3 3 8 8m0-8-8 8"></path>
                           </svg></span>
                       </div>
-                      <div class="code-card board-code"><span class="cm">// Πλήρης υποστήριξη Unicode / UTF-8, μηδενικά boundary bugs</span>
-upper := <span class="go-doc-symbol" data-go-doc="ToUpper" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">ToUpper</span></span>(text)
-
-<span class="cm">// Αντίστοιχα για πεζά:</span>
-lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-describedby="go-doc-tooltip">strings.<span class="fn">ToLower</span></span>(text)</div>
+                      <div class="code-card board-code"
+                        data-snippet-html="&lt;span class=&quot;cm&quot;&gt;// Πλήρης υποστήριξη Unicode / UTF-8, μηδενικά boundary bugs&lt;/span&gt;&#10;upper := &lt;span class=&quot;go-doc-symbol&quot; data-go-doc=&quot;ToUpper&quot; tabindex=&quot;0&quot; aria-describedby=&quot;go-doc-tooltip&quot;&gt;strings.&lt;span class=&quot;fn&quot;&gt;ToUpper&lt;/span&gt;&lt;/span&gt;(text)&#10;&#10;&lt;span class=&quot;cm&quot;&gt;// Αντίστοιχα για πεζά:&lt;/span&gt;&#10;lower := &lt;span class=&quot;go-doc-symbol&quot; data-go-doc=&quot;ToLower&quot; tabindex=&quot;0&quot; aria-describedby=&quot;go-doc-tooltip&quot;&gt;strings.&lt;span class=&quot;fn&quot;&gt;ToLower&lt;/span&gt;&lt;/span&gt;(text)">
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -3355,6 +3388,7 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide split-layout workshop-board" aria-labelledby="slide-04-title" data-theme="night"
         data-board="4" style="--board-size: 31px;">
         <div class="workshop-frame">
@@ -3436,12 +3470,13 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide split-layout workshop-board" aria-labelledby="slide-05-title" data-theme="night"
         data-board="5" style="--board-size: 36px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <div class="eyebrow">Κανόνες κειμένου</div>
-            <h2 id="slide-05-title" class="slide-title">Οι 7 Συναρτήσεις Μετασχηματισμού</h2>
+            <h2 id="slide-05-title" class="slide-title">Οι Μετασχηματισμοί που θέλουμε στο Go Reloaded</h2>
           </header>
 
 
@@ -3518,6 +3553,7 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide diagram-layout workshop-board" aria-labelledby="slide-06-title" data-theme="night"
         data-board="6" style="--board-size: 41px;">
         <div class="workshop-frame">
@@ -3557,19 +3593,19 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
               </div>
               <div class="board-figure-card board-out">
                 <div class="board-figure-kicker" style="color: var(--success);">OUT:</div>
-                <div class="board-figure-copy" style="color: var(--ink);">Harold Wilson: 'I am an optimist, but an
-                  optimist who carries a raincoat.'</div>
+                <div class="board-figure-copy" style="color: var(--ink);">Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
       <section class="slide workshop-board" aria-labelledby="slide-08-title" data-theme="paper"
         data-transition="registration" data-board="8" style="--board-size: 43px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <p class="eyebrow">Προδιαγραφή &amp; δομή</p>
-            <h2 id="slide-08-title" class="slide-title">Τύποι Τεχνικών Εγγράφων στη Μηχανική Λογισμικού</h2>
+            <h2 id="slide-08-title" class="slide-title">Άλλοι κοινοί τύποι Τεχνικών και Μη Εγγράφων</h2>
           </header>
 
 
@@ -3604,12 +3640,12 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide prd-workshop-brief blueprint-docs" aria-labelledby="blueprint-docs-title"
         data-theme="paper">
         <div class="workshop-frame">
           <header>
-            <p class="eyebrow">The Vibe Coding Blueprint · Crissa Systems</p>
-            <h2 id="blueprint-docs-title">Άλλα αρχεία ενός repo</h2>
+            <h2 id="slide-09-title" class="slide-title">Ακόμα περισσότεροι τύποι Εγγράφων</h2>
           </header>
           <dl class="prd-brief-rail">
             <div>
@@ -3651,60 +3687,66 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </dl>
         </div>
       </section>
-      <section class="slide split-layout workshop-board" aria-labelledby="slide-09-title" data-theme="paper"
-        data-board="9" style="--board-size: 33px;">
+
+      <section class="slide workshop-board" aria-labelledby="slide-11-title" data-theme="paper" data-board="11"
+        style="--board-size: 43px;">
         <div class="workshop-frame">
           <header class="slide-header">
-            <div class="eyebrow">Προδιαγραφή &amp; δομή</div>
-            <h2 id="slide-09-title" class="slide-title">Η Δομή του Product Requirements Document</h2>
+            <p class="eyebrow">Δομή έργου</p>
+            <h2 id="slide-11-title" class="slide-title">Πού μπαίνει ο κώδικας;</h2>
           </header>
 
 
           <div class="board-body">
             <div class="split-grid">
-              <div class="split-left">
-                <p class="lead-statement">
-                  Βασισμένο στο επίσημο template (<code>templates/prd-template.md</code>).
-                </p>
+              <div>
+                <p class="lead-statement">Ξεκίνα με μία εντολή και ένα πακέτο για τη λογική του έργου.</p>
                 <ul class="point-list">
-                  <li><strong>Problem Statement:</strong> Μία πρόταση για τον ακριβή ρόλο του προγράμματος.</li>
-                  <li><strong>CLI Contract:</strong> Συμπεριφορά σε λάθος παραμέτρους, αρχεία που λείπουν, permissions.
-                  </li>
-                  <li><strong>Functional Rules:</strong> Καταγραφή των 7 κανόνων με δικά σου παραδείγματα.</li>
-                  <li><strong>Architecture Choice:</strong> Επιλογή Pipeline ή FSM με ρητά trade-offs.</li>
-                  <li><strong>Acceptance Criteria:</strong> Τα 4 audit cases + 2-3 custom edge cases.</li>
+                  <li><strong><code>_docs/PRD.md</code></strong> · Οι απαιτήσεις του workshop.</li>
+                  <li><strong><code>internal/</code></strong> · Όταν ξεχωρίσουν οι ευθύνες, δώσε σε κάθε πακέτο δικό του φάκελο.</li>
+                  <li><strong><code>cmd/go-reloaded/</code></strong> · Μια θέση για την εντολή καθώς μεγαλώνει το repo.</li>
                 </ul>
               </div>
-
-              <div class="split-right">
-                <div class="board-figure board-figure-9">
-                  <div class="board-figure-card ">
-                    <div class="board-figure-kicker" style="color: var(--accent);">1. PROBLEM STATEMENT</div>
-                    <div class="board-figure-copy" style="color: var(--ink-secondary);">1-2 sentences scope</div>
+              <div class="layout-trees">
+              <div data-layout-phase="0">
+                <p class="lead-statement">Απλή δομή</p>
+                <div class="terminal board-terminal">
+                  <div class="terminal-bar" aria-hidden="true">
+                    <span class="terminal-dots"><i></i><i></i><i></i></span>
+                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                        <path d="M2 7h10"></path>
+                      </svg><svg viewBox="0 0 14 14">
+                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                      </svg><svg viewBox="0 0 14 14">
+                        <path d="m3 3 8 8m0-8-8 8"></path>
+                      </svg></span>
                   </div>
-                  <div class="board-figure-card ">
-                    <div class="board-figure-kicker" style="color: var(--accent);">2. CLI CONTRACT</div>
-                    <div class="board-figure-copy" style="color: var(--ink-secondary);">Args validation &amp; exit codes
-                    </div>
-                  </div>
-                  <div class="board-figure-card ">
-                    <div class="board-figure-kicker" style="color: var(--accent);">3. GOALS &amp; NON-GOALS</div>
-                    <div class="board-figure-copy" style="color: var(--ink-secondary);">Scope boundary enforcement</div>
-                  </div>
-                  <div class="board-figure-card ">
-                    <div class="board-figure-kicker" style="color: var(--accent);">4. ARCHITECTURE</div>
-                    <div class="board-figure-copy" style="color: var(--ink-secondary);">Pipeline vs FSM trade-offs</div>
-                  </div>
-                  <div class="board-figure-card ">
-                    <div class="board-figure-kicker" style="color: var(--success);">5. ACCEPTANCE CRITERIA</div>
-                    <div class="board-figure-copy" style="color: var(--ink-secondary);">Golden tests suite</div>
-                  </div>
+                  <pre class="sample-block board-code" data-snippet-html="go-reloaded/&#10;├── go.mod&#10;├── main.go&#10;├── _docs/&#10;│   └── PRD.md&#10;└── internal/&#10;    ├── transform.go&#10;    └── fileio.go" style="font-size: 32px !important"></pre>
                 </div>
+              </div>
+              <div data-layout-phase="1" hidden>
+                <p class="lead-statement">Χωριστά πακέτα</p>
+                <div class="terminal board-terminal">
+                  <div class="terminal-bar" aria-hidden="true">
+                    <span class="terminal-dots"><i></i><i></i><i></i></span>
+                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                        <path d="M2 7h10"></path>
+                      </svg><svg viewBox="0 0 14 14">
+                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                      </svg><svg viewBox="0 0 14 14">
+                        <path d="m3 3 8 8m0-8-8 8"></path>
+                      </svg></span>
+                  </div>
+                  <pre class="sample-block board-code" data-snippet-html="go-reloaded/&#10;├── go.mod&#10;├── _docs/&#10;│   └── PRD.md&#10;├── cmd/&#10;│   └── go-reloaded/&#10;│       └── main.go&#10;└── internal/&#10;    ├── transform/&#10;    │   └── transform.go&#10;    └── fileio/&#10;        └── fileio.go" style="font-size: 32px !important"></pre>
+                </div>
+              </div>
               </div>
             </div>
           </div>
+          <footer class="layout-source"><a href="https://go.dev/doc/modules/layout" target="_blank" rel="noopener noreferrer">Go docs · Organizing a Go module</a></footer>
         </div>
       </section>
+
       <section class="slide comparison-layout workshop-board" aria-labelledby="slide-10-title" data-theme="paper"
         data-board="10" style="--board-size: 43px;">
         <div class="workshop-frame">
@@ -3739,163 +3781,75 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
-      <section class="slide workshop-board" aria-labelledby="slide-11-title" data-theme="paper" data-board="11"
-        style="--board-size: 43px;">
+
+      <section class="slide prd-workshop-brief blueprint-docs" aria-labelledby="test-cases-title" data-theme="indigo">
+        <div class="workshop-frame">
+          <header>
+            <p class="eyebrow">Tests</p>
+            <h2 id="test-cases-title">Τι δοκιμάζουμε;</h2>
+          </header>
+          <p style="text-align: center; font: 700 104px/1.1 var(--font-code); color: var(--accent);">&lt;...&gt;_test.go</p>
+          <dl class="prd-brief-rail">
+            <div><dt>Edge cases</dt><dd>Σπάνια ή ακραία σενάρια που εμφανίζονται στα όρια των παραμέτρων λειτουργίας και συχνά οδηγούν σε σφάλματα (bugs) αν δεν έχουν προβλεφθεί</dd></div>
+            <div><dt>Αναμενόμενο σφάλμα</dt><dd>Δοκιμάζουμε περιπτώσεις που θα αποτύχουν για να δούμε <strong>αν το πρόγραμμα επιστρέψει το σφάλμα που περιμένουμε</strong>.</dd></div>
+            <div><dt>Golden tests</dt><dd>Το τρέχον αποτέλεσμα του προγράμματος συγκρίνεται με ένα προηγούμενο, αποθηκευμένο και εγκεκριμένο αποτέλεσμα αναφοράς (το «χρυσό» αρχείο / golden file).</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="slide prd-workshop-brief" aria-labelledby="slide-13-title" data-theme="paper" data-transition="scorch">
+        <div class="workshop-frame">
+          <header>
+            <p class="eyebrow">Test-Driven Development</p>
+            <h2 id="slide-13-title">Τι είναι το TDD;</h2>
+          </header>
+          <p class="prd-brief-definition">Το TDD είναι μέθοδος ανάπτυξης όπου γράφουμε πρώτα ένα test που ορίζει την αναμενόμενη συμπεριφορά και μετά τον κώδικα που το κάνει να περάσει (Red → Green → Refactor).</p>
+          <div class="prd-brief-example">
+            <h3>Γιατί χρειάζονται tests;</h3>
+            <p>Τα tests ελέγχουν την αναμενόμενη συμπεριφορά και μας δείχνουν αν μια νέα αλλαγή χάλασε κάτι που ήδη δούλευε.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide workshop-board" aria-labelledby="fix-comma-title" data-theme="night" style="--board-size: 38px;">
         <div class="workshop-frame">
           <header class="slide-header">
-            <p class="eyebrow">Δομή έργου</p>
-            <h2 id="slide-11-title" class="slide-title">Πού μπαίνει ο κώδικας;</h2>
+            <p class="eyebrow">TDD στην πράξη</p>
+            <h2 id="fix-comma-title" class="slide-title">Ένα test για το <code>FixComma</code></h2>
+            <p class="lead-statement"><code>FixComma.go</code> · <code>FixComma_test.go</code></p>
           </header>
-
-
           <div class="board-body">
-            <div class="split-grid">
-              <div>
-                <p class="lead-statement">Για ένα μικρό CLI, ξεκίνα με <code>main.go</code> και <code>go.mod</code> στη
-                  ρίζα.</p>
-                <ul class="point-list">
-                  <li><strong><code>main.go</code></strong> · Ορίσματα, μηνύματα σφάλματος και συντονισμός της
-                    εκτέλεσης.</li>
-                  <li><strong><code>internal/transform/</code></strong> · Οι κανόνες επεξεργασίας κειμένου, αν χρειαστεί
-                    χωριστό πακέτο.</li>
-                  <li><strong><code>cmd/&lt;command&gt;/</code></strong> · Συνηθισμένη διάταξη για τα εκτελέσιμα ενός
-                    repo, ειδικά όταν είναι πάνω από ένα.</li>
-                </ul>
-              </div>
-              <div>
-                <p class="lead-statement">Μία εντολή, με χωριστή λογική κειμένου</p>
-                <div class="terminal board-terminal">
-                  <div class="terminal-bar" aria-hidden="true">
-                    <span class="terminal-dots"><i></i><i></i><i></i></span>
-                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
-                        <path d="M2 7h10"></path>
-                      </svg><svg viewBox="0 0 14 14">
-                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
-                      </svg><svg viewBox="0 0 14 14">
-                        <path d="m3 3 8 8m0-8-8 8"></path>
-                      </svg></span>
-                  </div>
-                  <pre class="sample-block board-code">go-reloaded/
-├── go.mod
-├── main.go
-└── internal/
-    └── transform/
-        └── transform.go</pre>
+            <div class="split-grid" style="grid-template-columns: 1.12fr 1fr; align-items: center;">
+              <div class="terminal board-terminal">
+                <div class="terminal-bar" aria-hidden="true">
+                  <span class="terminal-dots"><i></i><i></i><i></i></span>
+                  <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                      <path d="M2 7h10"></path>
+                    </svg><svg viewBox="0 0 14 14">
+                      <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                    </svg><svg viewBox="0 0 14 14">
+                      <path d="m3 3 8 8m0-8-8 8"></path>
+                    </svg></span>
                 </div>
+                <pre class="code-card board-code" data-snippet-html="func TestFixComma(t *testing.T) {&#10;    input := &quot;hello , world&quot;&#10;    got := FixComma(input)&#10;    want := &quot;hello, world&quot;&#10;&#10;    if got != want {&#10;        t.Errorf(&quot;got %q, want %q&quot;, got, want)&#10;    }&#10;}"></pre>
               </div>
+              <ul class="point-list">
+                <li>Η συνάρτηση του test πρέπει να ξεκινά με <strong><code>Test</code></strong> (κεφαλαίο T) και να δέχεται <strong><code>(t *testing.T)</code></strong>.</li>
+                <li><strong>Red.</strong> Η συνάρτηση επιστρέφει το αρχικό κείμενο. Τρέχουμε το test και βλέπουμε το επιπλέον κενό.</li>
+                <li><strong>Green.</strong> Με <code>strings.ReplaceAll</code> αλλάζουμε το <code>" ,"</code> σε <code>","</code>. Ξανατρέχουμε το test.</li>
+                <li><strong>Refactor.</strong> Ελέγχουμε αν η λύση μπορεί να γίνει πιο καθαρή.</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
-      <section class="slide workshop-board" aria-labelledby="slide-12-title" data-theme="paper" data-board="12"
-        style="--board-size: 43px;">
-        <div class="workshop-frame">
-          <header class="slide-header">
-            <p class="eyebrow">Δομή έργου</p>
-            <h2 id="slide-12-title" class="slide-title">Πού μπαίνουν τα tests;</h2>
-          </header>
 
-
-          <div class="board-body">
-            <div class="split-grid">
-              <div>
-                <ul class="point-list">
-                  <li><strong><code>*_test.go</code></strong> · Δίπλα στον κώδικα του πακέτου που ελέγχει, π.χ.
-                    <code>transform_test.go</code>.
-                  </li>
-                  <li><strong><code>testdata/</code></strong> · Αρχεία εισόδου και αναμενόμενης εξόδου, δίπλα στο test
-                    που τα διαβάζει.</li>
-                  <li><strong><code>README.md</code></strong> · Στη ρίζα, με οδηγίες εκτέλεσης και την εντολή
-                    <code>go test ./...</code>.
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <p class="lead-statement">Παράδειγμα μέσα στο <code>internal/transform/</code></p>
-                <div class="terminal board-terminal">
-                  <div class="terminal-bar" aria-hidden="true">
-                    <span class="terminal-dots"><i></i><i></i><i></i></span>
-                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
-                        <path d="M2 7h10"></path>
-                      </svg><svg viewBox="0 0 14 14">
-                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
-                      </svg><svg viewBox="0 0 14 14">
-                        <path d="m3 3 8 8m0-8-8 8"></path>
-                      </svg></span>
-                  </div>
-                  <pre class="sample-block board-code">transform/
-├── transform.go
-├── transform_test.go
-└── testdata/
-    ├── case01.in.txt
-    └── case01.golden</pre>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="slide comparison-layout workshop-board" aria-labelledby="slide-13-title" data-theme="paper"
-        data-transition="scorch" data-board="13" style="--board-size: 38px;">
-        <div class="workshop-frame">
-          <header class="slide-header" style="margin-bottom: 16px;">
-            <div class="eyebrow">Δοκιμές</div>
-            <h2 id="slide-13-title" class="slide-title">TDD (Test-Driven Development) &amp; Σύγκριση με BDD</h2>
-          </header>
-
-          <!-- Top Definition Banner -->
-
-
-
-          <div class="board-body">
-            <div
-              style="background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 14px 22px; margin-bottom: 18px;">
-              <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px;">
-                <span class="mono board-label" style="color: var(--accent); font-weight: 700;">ΟΡΙΣΜΟΣ TDD //</span>
-                <span style="font-weight: 700; color: var(--ink);" class="board-emphasis">Η προδιαγραφή (test) γράφεται
-                  ΠΡΙΝ από τον κώδικα υλοποίησης</span>
-              </div>
-              <p style="color: var(--ink-secondary);" class="board-copy">
-                Ο κύκλος <strong>Red ➔ Green ➔ Refactor</strong>: Πρώτα γράφεις το test που αποτυγχάνει (Red), στη
-                συνέχεια υλοποιείς τον ελάχιστο κώδικα για να περάσει (Green), και τέλος καθαρίζεις τη σχεδίαση
-                (Refactor) διατηρώντας τα tests πράσινα.
-              </p>
-            </div>
-            <div class="comparison-grid" style="margin-top: 0;">
-              <div class="comparison-col neutral">
-                <h3 class="col-title board-emphasis" style="margin-bottom: 10px;">TDD: Εστίαση στη Συνάρτηση</h3>
-                <ul class="col-points">
-                  <li><strong>Κύκλος Red ➔ Green ➔ Refactor:</strong> Απομονωμένος έλεγχος μεμονωμένων functions.</li>
-                  <li><strong>Developer-Facing:</strong> Επαληθεύει εσωτερικά API contracts, edge cases και return
-                    types.</li>
-                  <li><strong>Ερώτημα Ελέγχου:</strong> "Κάνει η συνάρτηση <code>ToUppercase()</code> ακριβώς αυτό που
-                    αναμένεται;"</li>
-                  <li><strong>Υλοποίηση:</strong> Standard library package <code>testing</code> της Go.</li>
-                </ul>
-              </div>
-
-              <div class="comparison-col neutral">
-                <h3 class="col-title board-emphasis" style="margin-bottom: 10px;">BDD: Εστίαση στο Σύστημα</h3>
-                <ul class="col-points">
-                  <li><strong>Μοντέλο Given / When / Then:</strong> Προδιαγραφή ροής από τη σκοπιά του τελικού χρήστη.
-                  </li>
-                  <li><strong>System/User-Facing:</strong> Ελέγχει τη συνολική έξοδο του προγράμματος βάσει
-                    προδιαγραφών.</li>
-                  <li><strong>Ερώτημα Ελέγχου:</strong> "Όταν δοθεί το input αρχείο, παράγεται το ακριβές expected
-                    output;"</li>
-                  <li><strong>Στο go-reloaded:</strong> Golden Master black-box testing με τα 4 audit cases.</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       <section class="slide split-layout workshop-board" aria-labelledby="slide-14-title" data-theme="night"
         data-board="14" style="--board-size: 30px;">
         <div class="workshop-frame">
           <header class="slide-header" style="margin-bottom: 16px;">
             <div class="eyebrow">Δοκιμές</div>
-            <h2 id="slide-14-title" class="slide-title">Γράφοντας ένα Test στην Πράξη: <code>ToUppercase</code></h2>
+            <h2 id="slide-14-title" class="slide-title">Ακόμα ένα παράδειγμα · <code>ToUppercase</code></h2>
           </header>
 
 
@@ -3955,46 +3909,15 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                       <path d="m3 3 8 8m0-8-8 8"></path>
                     </svg></span>
                 </div>
-                <div class="code-card board-code"><span class="cm">// 1. Τα δεδομένα κάθε test case</span>
-                  <span class="kw">type</span> <span class="typ">TestCase</span> <span class="kw">struct</span> {
-                  name <span class="typ">string</span>
-                  input <span class="typ">string</span>
-                  expected <span class="typ">string</span>
-                  }
-
-                  <span class="cm">// 2. Το Unit Test που γράφουμε ΠΡΩΤΑ (Red Phase)</span>
-                  <span class="kw">func</span> <span class="fn">TestToUppercase</span>(t *testing.T) {
-                  cases := []<span class="typ">TestCase</span>{
-                  {name: <span class="str">"simple word"</span>, input: <span class="str">"hello"</span>, expected:
-                  <span class="str">"HELLO"</span>},
-                  {name: <span class="str">"already upper"</span>, input: <span class="str">"GO"</span>, expected: <span
-                    class="str">"GO"</span>},
-                  {name: <span class="str">"empty string"</span>, input: <span class="str">""</span>, expected: <span
-                    class="str">""</span>},
-                  }
-
-                  <span class="kw">for</span> _, tc := <span class="kw">range</span> cases {
-                  <span class="cm">// t.Run δέχεται: (name string, f func(t *testing.T))</span>
-                  t.<span class="fn">Run</span>(tc.name, <span class="kw">func</span>(t *testing.T) {
-                  got := <span class="fn">ToUppercase</span>(tc.input)
-                  <span class="kw">if</span> got != tc.expected {
-                  t.<span class="fn">Errorf</span>(<span class="str">"got %q, want %q"</span>, got, tc.expected)
-                  }
-                  })
-                  }
-                  }
-
-                  <span class="cm">// 3. Η συνάρτηση που γράφουμε ΜΕΤΑ για να περάσει το test (Green Phase)</span>
-                  <span class="kw">func</span> <span class="fn">ToUppercase</span>(s <span class="typ">string</span>)
-                  <span class="typ">string</span> {
-                  <span class="kw">return</span> strings.<span class="fn">ToUpper</span>(s)
-                  }
+                <div class="code-card board-code"
+                  data-snippet-html="&lt;span class=&quot;cm&quot;&gt;// 1. Τα δεδομένα κάθε test case&lt;/span&gt;&#10;&lt;span class=&quot;kw&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;typ&quot;&gt;TestCase&lt;/span&gt; &lt;span class=&quot;kw&quot;&gt;struct&lt;/span&gt; {&#10;    name     &lt;span class=&quot;typ&quot;&gt;string&lt;/span&gt;&#10;    input    &lt;span class=&quot;typ&quot;&gt;string&lt;/span&gt;&#10;    expected &lt;span class=&quot;typ&quot;&gt;string&lt;/span&gt;&#10;}&#10;&#10;&lt;span class=&quot;cm&quot;&gt;// 2. Το Unit Test που γράφουμε ΠΡΩΤΑ (Red Phase)&lt;/span&gt;&#10;&lt;span class=&quot;kw&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;fn&quot;&gt;TestToUppercase&lt;/span&gt;(t *testing.T) {&#10;    cases := []&lt;span class=&quot;typ&quot;&gt;TestCase&lt;/span&gt;{&#10;        {name: &lt;span class=&quot;str&quot;&gt;&quot;simple word&quot;&lt;/span&gt;, input: &lt;span class=&quot;str&quot;&gt;&quot;hello&quot;&lt;/span&gt;, expected: &lt;span class=&quot;str&quot;&gt;&quot;HELLO&quot;&lt;/span&gt;},&#10;        {name: &lt;span class=&quot;str&quot;&gt;&quot;already upper&quot;&lt;/span&gt;, input: &lt;span class=&quot;str&quot;&gt;&quot;GO&quot;&lt;/span&gt;, expected: &lt;span class=&quot;str&quot;&gt;&quot;GO&quot;&lt;/span&gt;},&#10;        {name: &lt;span class=&quot;str&quot;&gt;&quot;empty string&quot;&lt;/span&gt;, input: &lt;span class=&quot;str&quot;&gt;&quot;&quot;&lt;/span&gt;, expected: &lt;span class=&quot;str&quot;&gt;&quot;&quot;&lt;/span&gt;},&#10;    }&#10;&#10;    &lt;span class=&quot;kw&quot;&gt;for&lt;/span&gt; _, tc := &lt;span class=&quot;kw&quot;&gt;range&lt;/span&gt; cases {&#10;        &lt;span class=&quot;cm&quot;&gt;// t.Run δέχεται: (name string, f func(t *testing.T))&lt;/span&gt;&#10;        t.&lt;span class=&quot;fn&quot;&gt;Run&lt;/span&gt;(tc.name, &lt;span class=&quot;kw&quot;&gt;func&lt;/span&gt;(t *testing.T) {&#10;            got := &lt;span class=&quot;fn&quot;&gt;ToUppercase&lt;/span&gt;(tc.input)&#10;            &lt;span class=&quot;kw&quot;&gt;if&lt;/span&gt; got != tc.expected {&#10;                t.&lt;span class=&quot;fn&quot;&gt;Errorf&lt;/span&gt;(&lt;span class=&quot;str&quot;&gt;&quot;got %q, want %q&quot;&lt;/span&gt;, got, tc.expected)&#10;            }&#10;        })&#10;    }&#10;}&#10;&#10;&lt;span class=&quot;cm&quot;&gt;// 3. Η συνάρτηση που γράφουμε ΜΕΤΑ για να περάσει το test (Green Phase)&lt;/span&gt;&#10;&lt;span class=&quot;kw&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;fn&quot;&gt;ToUppercase&lt;/span&gt;(s &lt;span class=&quot;typ&quot;&gt;string&lt;/span&gt;) &lt;span class=&quot;typ&quot;&gt;string&lt;/span&gt; {&#10;    &lt;span class=&quot;kw&quot;&gt;return&lt;/span&gt; strings.&lt;span class=&quot;fn&quot;&gt;ToUpper&lt;/span&gt;(s)&#10;}">
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
       <section class="slide pillars-layout workshop-board" aria-labelledby="slide-15-title" data-theme="night"
         data-board="15" style="--board-size: 37px;">
         <div class="workshop-frame">
@@ -4027,15 +3950,8 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;"
-                    class="board-code"><span style="color: var(--ink-muted);">// Σύγκριση fixture αρχείων</span><br>got,
-                    _ := os.<span style="color: var(--accent);">ReadFile</span>(<span
-                      style="color: var(--success);">"result.txt"</span>)<br>want, _ := os.<span
-                      style="color: var(--accent);">ReadFile</span>(<span
-                      style="color: var(--success);">"testdata/case1.golden"</span>)<br><span
-                      style="color: var(--purple);">if</span> <span style="color: var(--typ);">string</span>(got) !=
-                    <span style="color: var(--typ);">string</span>(want) {<br>&nbsp;&nbsp;t.<span
-                      style="color: var(--accent);">Errorf</span>(<span style="color: var(--danger);">"golden
-                      mismatch"</span>)<br>}
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// Σύγκριση fixture αρχείων&lt;/span&gt;&lt;br&gt;got, _ := os.&lt;span style=&quot;color: var(--accent);&quot;&gt;ReadFile&lt;/span&gt;(&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;result.txt&quot;&lt;/span&gt;)&lt;br&gt;want, _ := os.&lt;span style=&quot;color: var(--accent);&quot;&gt;ReadFile&lt;/span&gt;(&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;testdata/case1.golden&quot;&lt;/span&gt;)&lt;br&gt;&lt;span style=&quot;color: var(--purple);&quot;&gt;if&lt;/span&gt; &lt;span style=&quot;color: var(--typ);&quot;&gt;string&lt;/span&gt;(got) != &lt;span style=&quot;color: var(--typ);&quot;&gt;string&lt;/span&gt;(want) {&lt;br&gt;&amp;nbsp;&amp;nbsp;t.&lt;span style=&quot;color: var(--accent);&quot;&gt;Errorf&lt;/span&gt;(&lt;span style=&quot;color: var(--danger);&quot;&gt;&quot;golden mismatch&quot;&lt;/span&gt;)&lt;br&gt;}">
                   </div>
                 </div>
               </div>
@@ -4061,15 +3977,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;"
-                    class="board-code"><span style="color: var(--ink-muted);">// testing.F fuzzing στη
-                      Go</span><br><span style="color: var(--purple);">func</span> <span
-                      style="color: var(--accent);">FuzzTransform</span>(f *testing.F) {<br>&nbsp;&nbsp;f.<span
-                      style="color: var(--accent);">Add</span>(<span style="color: var(--success);">"sample (hex) 1E
-                      test"</span>)<br>&nbsp;&nbsp;f.<span style="color: var(--accent);">Fuzz</span>(<span
-                      style="color: var(--purple);">func</span>(t *testing.T, s <span
-                      style="color: var(--typ);">string</span>) {<br>&nbsp;&nbsp;&nbsp;&nbsp;transform.<span
-                      style="color: var(--accent);">Run</span>(s) <span style="color: var(--ink-muted);">// 0
-                      crashes</span><br>&nbsp;&nbsp;})<br>}</div>
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// testing.F fuzzing στη Go&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: var(--purple);&quot;&gt;func&lt;/span&gt; &lt;span style=&quot;color: var(--accent);&quot;&gt;FuzzTransform&lt;/span&gt;(f *testing.F) {&lt;br&gt;&amp;nbsp;&amp;nbsp;f.&lt;span style=&quot;color: var(--accent);&quot;&gt;Add&lt;/span&gt;(&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;sample (hex) 1E test&quot;&lt;/span&gt;)&lt;br&gt;&amp;nbsp;&amp;nbsp;f.&lt;span style=&quot;color: var(--accent);&quot;&gt;Fuzz&lt;/span&gt;(&lt;span style=&quot;color: var(--purple);&quot;&gt;func&lt;/span&gt;(t *testing.T, s &lt;span style=&quot;color: var(--typ);&quot;&gt;string&lt;/span&gt;) {&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;transform.&lt;span style=&quot;color: var(--accent);&quot;&gt;Run&lt;/span&gt;(s) &lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// 0 crashes&lt;/span&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;})&lt;br&gt;}">
+                  </div>
                 </div>
               </div>
 
@@ -4094,23 +4004,16 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;"
-                    class="board-code"><span style="color: var(--ink-muted);">// Ακραία edge-case inputs</span><br>cases
-                    := []<span style="color: var(--typ);">string</span>{<br>&nbsp;&nbsp;<span
-                      style="color: var(--success);">""</span>,
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-                      style="color: var(--ink-muted);">// 1. Κενό αρχείο</span><br>&nbsp;&nbsp;<span
-                      style="color: var(--success);">"(up, 3)"</span>, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
-                      style="color: var(--ink-muted);">// 2. Modifier χωρίς λέξη</span><br>&nbsp;&nbsp;<span
-                      style="color: var(--success);">"hello ' world"</span>, &nbsp;&nbsp;<span
-                      style="color: var(--ink-muted);">// 3. Μονό εισαγωγικό</span><br>&nbsp;&nbsp;<span
-                      style="color: var(--success);">"(bin, invalid)"</span>, <span style="color: var(--ink-muted);">//
-                      4. Μη έγκυρος αριθμός</span><br>}</div>
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// Ακραία edge-case inputs&lt;/span&gt;&lt;br&gt;cases := []&lt;span style=&quot;color: var(--typ);&quot;&gt;string&lt;/span&gt;{&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;&quot;&lt;/span&gt;, &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// 1. Κενό αρχείο&lt;/span&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;(up, 3)&quot;&lt;/span&gt;, &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// 2. Modifier χωρίς λέξη&lt;/span&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;hello ' world&quot;&lt;/span&gt;, &amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// 3. Μονό εισαγωγικό&lt;/span&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;(bin, invalid)&quot;&lt;/span&gt;, &lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// 4. Μη έγκυρος αριθμός&lt;/span&gt;&lt;br&gt;}">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
       <section class="slide pillars-layout workshop-board" aria-labelledby="slide-16-title" data-theme="paper"
         data-board="16" style="--board-size: 40px;">
         <div class="workshop-frame">
@@ -4143,14 +4046,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;"
-                    class="board-code"><span style="color: var(--ink-muted);">//
-                      internal/transform/rules_test.go</span><br>got := <span
-                      style="color: var(--accent);">HexToDec</span>(<span
-                      style="color: var(--success);">"1E"</span>)<br><span style="color: var(--purple);">if</span> got
-                    != <span style="color: var(--success);">"30"</span> {<br>&nbsp;&nbsp;t.<span
-                      style="color: var(--accent);">Errorf</span>(<span style="color: var(--danger);">"got %s, want
-                      30"</span>, got)<br>}<br><span style="color: var(--ink-muted);">// Ταχύτητα: &lt; 1ms (άμεσο
-                      feedback)</span></div>
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// internal/transform/rules_test.go&lt;/span&gt;&lt;br&gt;got := &lt;span style=&quot;color: var(--accent);&quot;&gt;HexToDec&lt;/span&gt;(&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;1E&quot;&lt;/span&gt;)&lt;br&gt;&lt;span style=&quot;color: var(--purple);&quot;&gt;if&lt;/span&gt; got != &lt;span style=&quot;color: var(--success);&quot;&gt;&quot;30&quot;&lt;/span&gt; {&lt;br&gt;&amp;nbsp;&amp;nbsp;t.&lt;span style=&quot;color: var(--accent);&quot;&gt;Errorf&lt;/span&gt;(&lt;span style=&quot;color: var(--danger);&quot;&gt;&quot;got %s, want 30&quot;&lt;/span&gt;, got)&lt;br&gt;}&lt;br&gt;&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// Ταχύτητα: &amp;lt; 1ms (άμεσο feedback)&lt;/span&gt;">
+                  </div>
                 </div>
               </div>
 
@@ -4176,12 +4074,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;"
-                    class="board-code"><span style="color: var(--ink-muted);">// internal/file +
-                      internal/transform</span><br>raw := file.<span style="color: var(--accent);">Read</span>(<span
-                      style="color: var(--success);">"sample.txt"</span>)<br>tokens := transform.<span
-                      style="color: var(--accent);">Tokenize</span>(raw)<br>out := transform.<span
-                      style="color: var(--accent);">Pipeline</span>(tokens)<br><span style="color: var(--ink-muted);">//
-                      Επαλήθευση contract επικοινωνίας</span></div>
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// internal/file + internal/transform&lt;/span&gt;&lt;br&gt;raw := file.&lt;span style=&quot;color: var(--accent);&quot;&gt;Read&lt;/span&gt;(&lt;span style=&quot;color: var(--success);&quot;&gt;&quot;sample.txt&quot;&lt;/span&gt;)&lt;br&gt;tokens := transform.&lt;span style=&quot;color: var(--accent);&quot;&gt;Tokenize&lt;/span&gt;(raw)&lt;br&gt;out := transform.&lt;span style=&quot;color: var(--accent);&quot;&gt;Pipeline&lt;/span&gt;(tokens)&lt;br&gt;&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;// Επαλήθευση contract επικοινωνίας&lt;/span&gt;">
+                  </div>
                 </div>
               </div>
 
@@ -4207,17 +4102,74 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; margin-top: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.42;"
-                    class="board-code"><span style="color: var(--ink-muted);"># Black-box CLI εκτέλεση &amp;
-                      diff</span><br><span style="color: var(--accent);">$</span> go run . in.txt out.txt<br><span
-                      style="color: var(--accent);">$</span> diff out.txt expected.txt<br><span
-                      style="color: var(--ink-muted);"># Έλεγχος exit code 1 σε λάθος args</span><br><span
-                      style="color: var(--accent);">$</span> go run . &amp;&amp; echo "FAIL"</div>
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;# Black-box CLI εκτέλεση &amp;amp; diff&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: var(--accent);&quot;&gt;$&lt;/span&gt; go run . in.txt out.txt&lt;br&gt;&lt;span style=&quot;color: var(--accent);&quot;&gt;$&lt;/span&gt; diff out.txt expected.txt&lt;br&gt;&lt;span style=&quot;color: var(--ink-muted);&quot;&gt;# Έλεγχος exit code 1 σε λάθος args&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: var(--accent);&quot;&gt;$&lt;/span&gt; go run . &amp;amp;&amp;amp; echo &quot;FAIL&quot;">
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      <section class="slide workshop-board" aria-labelledby="slide-12-title" data-theme="paper" data-board="12"
+        style="--board-size: 43px;">
+        <div class="workshop-frame">
+          <header class="slide-header">
+            <p class="eyebrow">Δομή έργου</p>
+            <h2 id="slide-12-title" class="slide-title">Πού μπαίνουν τα tests;</h2>
+          </header>
+
+
+          <div class="board-body">
+            <div class="split-grid">
+              <div>
+                <ul class="point-list">
+                  <li><strong><code>*_test.go</code></strong> · Δίπλα στον κώδικα του πακέτου που ελέγχει, π.χ.
+                    <code>transform_test.go</code>.
+                  </li>
+                  <li><strong><code>testdata/</code></strong> · Αρχεία εισόδου και αναμενόμενης εξόδου, δίπλα στο test
+                    που τα διαβάζει.</li>
+                  <li><strong><code>README.md</code></strong> · Στη ρίζα, με οδηγίες εκτέλεσης και την εντολή
+                    <code>go test ./...</code>.
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <p class="lead-statement">Παράδειγμα μέσα στο <code>internal/transform/</code></p>
+                <div class="terminal board-terminal">
+                  <div class="terminal-bar" aria-hidden="true">
+                    <span class="terminal-dots"><i></i><i></i><i></i></span>
+                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                        <path d="M2 7h10"></path>
+                      </svg><svg viewBox="0 0 14 14">
+                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                      </svg><svg viewBox="0 0 14 14">
+                        <path d="m3 3 8 8m0-8-8 8"></path>
+                      </svg></span>
+                  </div>
+                  <pre class="sample-block board-code"
+                    data-snippet-html="transform/&#10;├── transform.go&#10;├── transform_test.go&#10;└── testdata/&#10;    ├── case01.in.txt&#10;    └── case01.golden"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide prd-workshop-brief blueprint-docs" aria-labelledby="architecture-intro-title" data-theme="paper">
+        <div class="workshop-frame">
+          <header>
+            <p class="eyebrow">Αρχιτεκτονική</p>
+            <h2 id="architecture-intro-title">Τι είναι η αρχιτεκτονική;</h2>
+          </header>
+          <p class="prd-brief-definition">Η αρχιτεκτονική ορίζει τα βασικά μέρη ενός συστήματος, τι αναλαμβάνει το καθένα και πώς συνεργάζονται.</p>
+          <div class="prd-brief-example">
+            <p>Monolith · Microservices · Event-Driven<br>ECS (Entity-Component-System)</p>
+          </div>
+        </div>
+      </section>
+
       <section class="slide diagram-layout workshop-board" aria-labelledby="slide-17-title" data-theme="indigo"
         data-transition="registration" data-board="17" style="--board-size: 39px;">
         <div class="workshop-frame">
@@ -4276,6 +4228,7 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide diagram-layout workshop-board" aria-labelledby="slide-18-title" data-theme="indigo"
         data-board="18" style="--board-size: 43px;">
         <div class="workshop-frame">
@@ -4286,32 +4239,33 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
 
 
           <div class="board-body">
-            <div class="board-figure board-figure-18">
-              <div class="board-figure-card board-state-0">
-                <div class="board-figure-kicker" style="color: var(--ink);">NORMAL</div>
-                <div class="board-figure-copy" style="color: var(--purple);">TEXT</div>
+            <p class="lead-statement"><strong>– 1 πέρασμα –</strong> · Το state και ο επόμενος χαρακτήρας καθορίζουν τι κάνουμε.</p>
+            <dl class="board-figure board-figure-9">
+              <div class="board-figure-card board-out" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
+                <dt class="board-figure-kicker"><code>stateText</code> <small>(default)</small></dt>
+                <dd class="board-figure-copy">Στην αρχή, γράμμα → <code>stateWord</code>, κενό → <code>stateSpace</code>, στίξη → <code>statePunct</code>, <code>(</code> → <code>stateParen</code>.</dd>
               </div>
-              <div class="board-state-arrow" style="color: var(--ink-secondary);">char == '('</div>
-              <div class="board-figure-card board-state-1">
-                <div class="board-figure-kicker" style="color: var(--ink);">INSIDE</div>
-                <div class="board-figure-copy" style="color: var(--accent);">MARKER</div>
+              <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
+                <dt class="board-figure-kicker"><code>stateWord</code></dt>
+                <dd class="board-figure-copy">Με γράμμα ή ψηφίο συνεχίζω τη λέξη. Με κενό ή στίξη την ολοκληρώνω.</dd>
               </div>
-              <div class="board-state-arrow" style="color: var(--ink-secondary);">char == '\''</div>
-              <div class="board-figure-card board-state-2">
-                <div class="board-figure-kicker" style="color: var(--ink);">INSIDE</div>
-                <div class="board-figure-copy" style="color: var(--warning);">QUOTES</div>
+              <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
+                <dt class="board-figure-kicker"><code>stateSpace</code></dt>
+                <dd class="board-figure-copy">Όσο έρχονται κενά, μένω εδώ. Μόλις έρθει κάτι άλλο, περνάω στο αντίστοιχο state.</dd>
               </div>
-              <div class="board-state-arrow" style="color: var(--ink-secondary);">isPunct(char)</div>
-              <div class="board-figure-card board-state-3">
-                <div class="board-figure-kicker" style="color: var(--ink);">PUNCT</div>
-                <div class="board-figure-copy" style="color: var(--success);">GROUP</div>
+              <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
+                <dt class="board-figure-kicker"><code>statePunct</code></dt>
+                <dd class="board-figure-copy">Μαζεύω συνεχόμενα σημεία στίξης, όπως <code>...</code> ή <code>!?</code>. Μόλις έρθει άλλος χαρακτήρας, κλείνω την ομάδα.</dd>
               </div>
-              <div class="board-state-loop" style="color: var(--ink-muted);">Επαναφορά σε Normal Text μετά την εκπομπή
-                (flush)</div>
-            </div>
+              <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
+                <dt class="board-figure-kicker"><code>stateParen</code></dt>
+                <dd class="board-figure-copy">Διαβάζω την οδηγία μέσα στην παρένθεση. Με <code>)</code> την ολοκληρώνω, π.χ. <code>(up, 2)</code>.</dd>
+              </div>
+            </dl>
           </div>
         </div>
       </section>
+
       <section class="slide comparison-layout workshop-board" aria-labelledby="slide-19-title" data-theme="indigo"
         data-board="19" style="--board-size: 26px;">
         <div class="workshop-frame">
@@ -4369,11 +4323,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.45; color: var(--ink-secondary); margin-top: auto;"
-                    class="board-code"><span style="color: var(--danger);">// Τυφλός στιγμιαίος έλεγχος</span><br><span
-                      style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>'
-                    {<br>&nbsp;&nbsp;<span style="color: var(--danger);">// Ανοίγει ή
-                      κλείνει;</span><br>&nbsp;&nbsp;<span style="color: var(--danger);">// Αδύνατον να απαντηθεί χωρίς
-                      μνήμη!</span><br>}</div>
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--danger);&quot;&gt;// Τυφλός στιγμιαίος έλεγχος&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: var(--purple);&quot;&gt;if&lt;/span&gt; char == &lt;span style=&quot;color: var(--success);&quot;&gt;'\'&lt;/span&gt;' {&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--danger);&quot;&gt;// Ανοίγει ή κλείνει;&lt;/span&gt;&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--danger);&quot;&gt;// Αδύνατον να απαντηθεί χωρίς μνήμη!&lt;/span&gt;&lt;br&gt;}">
+                  </div>
                 </div>
               </div>
 
@@ -4403,13 +4355,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   </div>
                   <div
                     style="background: var(--code-surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.45; color: var(--ink-secondary); margin-top: auto;"
-                    class="board-code"><span style="color: var(--success);">// Το State δίνει μνήμη, το switch κάνει τη
-                      μετάβαση</span><br><span style="color: var(--purple);">switch</span> state {<br><span
-                      style="color: var(--purple);">case</span> OutsideQuote:<br>&nbsp;&nbsp;<span
-                      style="color: var(--purple);">if</span> char == <span style="color: var(--success);">'\'</span>' {
-                    state = InsideQuote }<br><span style="color: var(--purple);">case</span>
-                    InsideQuote:<br>&nbsp;&nbsp;<span style="color: var(--purple);">if</span> char == <span
-                      style="color: var(--success);">'\'</span>' { state = OutsideQuote }<br>}</div>
+                    class="board-code"
+                    data-snippet-html="&lt;span style=&quot;color: var(--success);&quot;&gt;// Το State δίνει μνήμη, το switch κάνει τη μετάβαση&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;color: var(--purple);&quot;&gt;switch&lt;/span&gt; state {&lt;br&gt;&lt;span style=&quot;color: var(--purple);&quot;&gt;case&lt;/span&gt; OutsideQuote:&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--purple);&quot;&gt;if&lt;/span&gt; char == &lt;span style=&quot;color: var(--success);&quot;&gt;'\'&lt;/span&gt;' { state = InsideQuote }&lt;br&gt;&lt;span style=&quot;color: var(--purple);&quot;&gt;case&lt;/span&gt; InsideQuote:&lt;br&gt;&amp;nbsp;&amp;nbsp;&lt;span style=&quot;color: var(--purple);&quot;&gt;if&lt;/span&gt; char == &lt;span style=&quot;color: var(--success);&quot;&gt;'\'&lt;/span&gt;' { state = OutsideQuote }&lt;br&gt;}">
+                  </div>
                 </div>
               </div>
             </div>
@@ -4425,6 +4373,7 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide workshop-board" aria-labelledby="slide-20-title" data-theme="indigo" data-board="20"
         style="--board-size: 31px;">
         <div class="workshop-frame">
@@ -4480,8 +4429,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                       </svg></span>
                   </div>
                   <div class="mono board-emphasis board-code"
-                    style="font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">
-                    \b\w+\b <span style="color: var(--ink-muted);" class="board-label">ή</span> [^\s]+</div>
+                    style="font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;"
+                    data-snippet-html="\b\w+\b &lt;span style=&quot;color: var(--ink-muted);&quot; class=&quot;board-label&quot;&gt;ή&lt;/span&gt; [^\s]+">
+                  </div>
                 </div>
                 <p style="color: var(--ink-secondary);" class="board-copy">
                   Επιλέγει μία-μία όλες τις διακριτές λέξεις του κειμένου, απομονώνοντάς τες από τα κενά διαστήματα.
@@ -4505,8 +4455,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                       </svg></span>
                   </div>
                   <div class="mono board-emphasis board-code"
-                    style="font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">
-                    \d+ <span style="color: var(--ink-muted);" class="board-label">ή</span> [0-9]+</div>
+                    style="font-weight: 700; color: var(--success); background: rgba(163, 210, 181, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;"
+                    data-snippet-html="\d+ &lt;span style=&quot;color: var(--ink-muted);&quot; class=&quot;board-label&quot;&gt;ή&lt;/span&gt; [0-9]+">
+                  </div>
                 </div>
                 <p style="color: var(--ink-secondary);" class="board-copy">
                   Εντοπίζει αυστηρά μόνο τα ψηφία και τους αριθμούς μέσα στη ροή του κειμένου (π.χ. για modifiers με
@@ -4531,8 +4482,8 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                       </svg></span>
                   </div>
                   <div class="mono board-label board-code"
-                    style="font-weight: 700; color: var(--purple); background: rgba(212, 184, 226, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;">
-                    \((up|low|cap)(?:,\s*(\d+))?\)</div>
+                    style="font-weight: 700; color: var(--purple); background: rgba(212, 184, 226, 0.1); padding: 6px 10px; border-radius: 4px; margin-bottom: 8px;"
+                    data-snippet-html="\((up|low|cap)(?:,\s*(\d+))?\)"></div>
                 </div>
                 <p style="color: var(--ink-secondary);" class="board-copy">
                   Απομονώνει modifiers τύπου <code>(up)</code> ή <code>(up, 2)</code> εξάγοντας απευθείας τον τύπο και
@@ -4589,6 +4540,7 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide split-layout workshop-board" aria-labelledby="slide-21-title" data-theme="indigo"
         data-board="21" style="--board-size: 37px;">
         <div class="workshop-frame">
@@ -4608,7 +4560,8 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   <li><strong>Multi-Pass (Απομονωμένα Στάδια):</strong> Κάθε στάδιο αναλαμβάνει έναν μετασχηματισμό. Εάν
                     υπάρξει σφάλμα στα εισαγωγικά, η διερεύνηση περιορίζεται αποκλειστικά στη συγκεκριμένη συνάρτηση.
                   </li>
-                  <li><strong>Single-Pass Buffer:</strong> Ένα πέρασμα με buffer ολίσθησης. Απαιτεί ταυτόχρονο
+                  <li><strong>Single-Pass Buffer:</strong> Ένα πέρασμα με buffer ολίσθησης (sliding window). Απαιτεί
+                    ταυτόχρονο
                     συγχρονισμό πολλαπλών σημαιών κατάστασης (inQuotes, modifierCount, pendingPunctuation).</li>
                   <li><strong>Γνωστικό Φορτίο:</strong> Το multi-pass μειώνει δραστικά την πιθανότητα απρόβλεπτων
                     παρενεργειών μεταξύ κανόνων.</li>
@@ -4631,8 +4584,9 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
                   <div class="board-figure-card board-single-pass">
                     <div class="board-figure-kicker" style="color: var(--warning);">SINGLE-PASS BUFFER (COUPLED STATE)
                     </div>
-                    <div class="board-figure-code" style="color: var(--warning);">State = [inQuote: true | nextCap: 2 |
-                      lastPunct: '.' | prevRune: 'a']</div>
+                    <div class="board-figure-code" style="color: var(--warning);"
+                      data-snippet-html="State = [inQuote: true | nextCap: 2 |&#10;                      lastPunct: '.' | prevRune: 'a']">
+                    </div>
                     <div class="board-figure-copy" style="color: var(--ink-secondary);">Μικρότερος αριθμός iterations
                       και χαμηλή κατανάλωση μνήμης, αλλά αυξημένη δυσκολία αποσφαλμάτωσης σε συγκρούσεις κανόνων.</div>
                   </div>
@@ -4642,6 +4596,7 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
+
       <section class="slide comparison-layout workshop-board" aria-labelledby="slide-22-title" data-theme="paper"
         data-board="22" style="--board-size: 43px;">
         <div class="workshop-frame">
@@ -4679,50 +4634,95 @@ lower := <span class="go-doc-symbol" data-go-doc="ToLower" tabindex="0" aria-des
           </div>
         </div>
       </section>
-      <section class="slide prd-slide" aria-labelledby="slide-26-title" data-theme="indigo" data-transition="tv-off">
+
+      <section class="slide workshop-board" aria-labelledby="prd-architecture-title" data-theme="paper" style="--board-size: 34px;">
         <div class="workshop-frame">
           <header class="slide-header">
-            <p class="eyebrow">Οδηγός σύνταξης</p>
-            <h2 id="slide-26-title" class="slide-title">Τι είναι το Markdown;</h2>
+            <p class="eyebrow">Παράδειγμα PRD</p>
+            <h2 id="prd-architecture-title" class="slide-title">6. Architecture</h2>
           </header>
-
-          <p class="lead-statement">Απλό κείμενο με σύμβολα που δηλώνουν τίτλους, λίστες και κώδικα. Το αποθηκεύουμε ως
-            <code>.md</code>.
-          </p>
-          <div class="prd-columns markdown-guide">
-            <dl>
-              <dt><code>#</code> <code>##</code> <code>###</code></dt>
-              <dd>Τίτλοι επιπέδων 1, 2 και 3. Βάζουμε κενό μετά τα <code>#</code>.</dd>
-              <dt><code>**έντονα**</code> <code>*πλάγια*</code></dt>
-              <dd>Έμφαση μέσα σε μια πρόταση.</dd>
-              <dt><code>- στοιχείο</code> <code>1. βήμα</code></dt>
-              <dd>Λίστα με κουκκίδες ή με αρίθμηση.</dd>
-              <dt><code>`main.go`</code> <code>[κείμενο](URL)</code></dt>
-              <dd>Κώδικας μέσα στη γραμμή ή σύνδεσμος.</dd>
-            </dl>
-            <div>
-              <p class="lead-statement">Τρεις περισπωμένες <code>~~~</code> ανοίγουν και κλείνουν μπλοκ κώδικα.</p>
-              <div class="terminal workshop-source-terminal">
-                <div class="terminal-bar" aria-hidden="true">
-                  <span class="terminal-dots"><i></i><i></i><i></i></span>
-                  <span class="terminal-controls"><svg viewBox="0 0 14 14">
-                      <path d="M2 7h10" />
-                    </svg><svg viewBox="0 0 14 14">
-                      <rect x="2.5" y="2.5" width="9" height="9" />
-                    </svg><svg viewBox="0 0 14 14">
-                      <path d="m3 3 8 8m0-8-8 8" />
-                    </svg></span>
-                </div>
-                <pre class="sample-block markdown-source"><span class="md-fence">~~~go</span>
-fmt.Println("Hello, Go")
-<span class="md-fence">~~~</span></pre>
+          <div class="board-body">
+            <p class="lead-statement"><strong>We choose:</strong> FSM (Finite State Machine) + Sliding Buffer</p>
+            <div class="split-grid" style="grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);">
+              <div>
+                <h3 class="col-title">Because:</h3>
+                <ul class="point-list">
+                  <li>Enables true single-pass processing</li>
+                  <li>Avoids costly re-parsing</li>
+                  <li>Supports retroactive transformations cleanly</li>
+                </ul>
+                <h3 class="col-title" style="margin-top: 26px;">Tradeoffs we accept:</h3>
+                <ul class="point-list">
+                  <li>More complex implementation</li>
+                  <li>Requires careful state management</li>
+                  <li>Buffer size limits backward operations</li>
+                </ul>
               </div>
-              <p class="code-caption">Το <code>go</code> δηλώνει τη γλώσσα. Μπορείς επίσης να χρησιμοποιήσεις τρία
-                backticks <code>```</code>.</p>
+              <div>
+                <h3 class="col-title">Sketch</h3>
+                <div class="terminal board-terminal">
+                  <div class="terminal-bar" aria-hidden="true">
+                    <span class="terminal-dots"><i></i><i></i><i></i></span>
+                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                        <path d="M2 7h10"></path>
+                      </svg><svg viewBox="0 0 14 14">
+                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                      </svg><svg viewBox="0 0 14 14">
+                        <path d="m3 3 8 8m0-8-8 8"></path>
+                      </svg></span>
+                  </div>
+                  <pre class="code-card board-code" data-snippet-html="[ Reader ]&#10;     ↓&#10;[ FSM Engine ] --states--&amp;gt; TEXT / WORD / PUNCT / OPERATOR / QUOTE&#10;     ↓&#10;[ Sliding Buffer (last N words) ]&#10;     ↓&#10;[ Immediate Transformations ]&#10;     ↓&#10;[ Flush Safe Tokens ]&#10;     ↓&#10;[ Output Builder ]"></pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      <section class="slide prd-workshop-brief" aria-labelledby="prd-milestones-title" data-theme="paper">
+        <div class="workshop-frame">
+          <header>
+            <p class="eyebrow">7 · Definition of Done</p>
+            <h2 id="prd-milestones-title">Milestones</h2>
+          </header>
+          <p class="prd-brief-definition">Χρησιμοποίησε ένα checklist για να βλέπεις τι έχει φτιαχτεί σε κάθε στάδιο και πότε θεωρείται ολοκληρωμένο.</p>
+          <div class="prd-brief-example">
+            <h3>Παράδειγμα · go-reloaded</h3>
+            <p>☐ Κανόνες κειμένου → περνούν τα unit tests.<br>☐ CLI → περνούν και τα τέσσερα audit cases.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide workshop-board" aria-labelledby="prd-risks-title" data-theme="indigo" style="--board-size: 39px;">
+        <div class="workshop-frame">
+          <header class="slide-header">
+            <p class="eyebrow">8 · PRD</p>
+            <h2 id="prd-risks-title" class="slide-title">Risks / Open Questions</h2>
+          </header>
+          <div class="board-body">
+            <div class="comparison-grid">
+              <div class="comparison-col neutral">
+                <h3 class="col-title">Risks</h3>
+                <ul class="col-points">
+                  <li>Buffer too small for <code>(up, N)</code> → incorrect behavior</li>
+                  <li>Premature flushing → breaks transformations</li>
+                  <li>Mis-handling punctuation vs words</li>
+                  <li>Quote state bugs (very common)</li>
+                </ul>
+              </div>
+              <div class="comparison-col neutral">
+                <h3 class="col-title">Open Questions</h3>
+                <ul class="col-points">
+                  <li>Should we error if <code>N &gt; bufferSize</code> or silently fail?</li>
+                  <li>How strict should number validation be for <code>(hex)</code> and <code>(bin)</code>?</li>
+                  <li>Should punctuation be stored as tokens or handled inline only?</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="slide zone01-cover-slide" data-zone01-cover data-transition="tv-off"
         aria-labelledby="discovery-title">
         <div class="zone01-cover-frame" data-theme="dark">
@@ -4934,6 +4934,51 @@ fmt.Println("Hello, Go")
           </div>
         </div>
       </section>
+
+      <section class="slide prd-slide" aria-labelledby="slide-26-title" data-theme="indigo" data-transition="tv-off">
+        <div class="workshop-frame">
+          <header class="slide-header">
+            <p class="eyebrow">Οδηγός σύνταξης</p>
+            <h2 id="slide-26-title" class="slide-title">Τι είναι το Markdown;</h2>
+          </header>
+
+          <p class="lead-statement">Απλό κείμενο με σύμβολα που δηλώνουν τίτλους, λίστες και κώδικα. Το αποθηκεύουμε ως
+            <code>.md</code>.
+          </p>
+          <div class="prd-columns markdown-guide">
+            <dl>
+              <dt><code>#</code> <code>##</code> <code>###</code></dt>
+              <dd>Τίτλοι επιπέδων 1, 2 και 3. Βάζουμε κενό μετά τα <code>#</code>.</dd>
+              <dt><code>**έντονα**</code> <code>*πλάγια*</code></dt>
+              <dd>Έμφαση μέσα σε μια πρόταση.</dd>
+              <dt><code>- στοιχείο</code> <code>1. βήμα</code></dt>
+              <dd>Λίστα με κουκκίδες ή με αρίθμηση.</dd>
+              <dt><code>`main.go`</code> <code>[κείμενο](URL)</code></dt>
+              <dd>Κώδικας μέσα στη γραμμή ή σύνδεσμος.</dd>
+            </dl>
+            <div>
+              <p class="lead-statement">Τρεις περισπωμένες <code>~~~</code> ανοίγουν και κλείνουν μπλοκ κώδικα.</p>
+              <div class="terminal workshop-source-terminal">
+                <div class="terminal-bar" aria-hidden="true">
+                  <span class="terminal-dots"><i></i><i></i><i></i></span>
+                  <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                      <path d="M2 7h10" />
+                    </svg><svg viewBox="0 0 14 14">
+                      <rect x="2.5" y="2.5" width="9" height="9" />
+                    </svg><svg viewBox="0 0 14 14">
+                      <path d="m3 3 8 8m0-8-8 8" />
+                    </svg></span>
+                </div>
+                <pre class="sample-block markdown-source"
+                  data-snippet-html="&lt;span class=&quot;md-fence&quot;&gt;~~~go&lt;/span&gt;&#10;fmt.Println(&quot;Hello, Go&quot;)&#10;&lt;span class=&quot;md-fence&quot;&gt;~~~&lt;/span&gt;"></pre>
+              </div>
+              <p class="code-caption">Το <code>go</code> δηλώνει τη γλώσσα. Μπορείς επίσης να χρησιμοποιήσεις τρία
+                backticks <code>```</code>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="slide io-appendix" data-theme="paper" aria-labelledby="appendix-file-1"
         data-transition="registration">
         <div class="workshop-frame">
@@ -4954,12 +4999,8 @@ fmt.Println("Hello, Go")
                       <path d="m3 3 8 8m0-8-8 8" />
                     </svg></span>
                 </div>
-                <pre class="code-block io-code" dir="ltr"><code>data, err := os.ReadFile(<span class="io-literal">&quot;test.txt&quot;</span>)
-<span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
-    <span class="io-keyword">return</span> err
-}
-fmt.Print(string(data))
-<span class="io-keyword">return</span> <span class="io-keyword">nil</span></code></pre>
+                <pre class="code-block io-code" dir="ltr"
+                  data-snippet-html="&lt;code&gt;data, err := os.ReadFile(&lt;span class=&quot;io-literal&quot;&gt;&amp;quot;test.txt&amp;quot;&lt;/span&gt;)&#10;&lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; err != &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt; {&#10;    &lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; err&#10;}&#10;fmt.Print(string(data))&#10;&lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt;&lt;/code&gt;"></pre>
               </div>
               <figcaption class="io-caption">Μέσα σε συνάρτηση που επιστρέφει <code>error</code>.</figcaption>
             </figure>
@@ -4972,6 +5013,7 @@ fmt.Print(string(data))
           </div>
         </div>
       </section>
+
       <section class="slide io-appendix" data-theme="night" aria-labelledby="appendix-file-2">
         <div class="workshop-frame">
           <header class="slide-header">
@@ -4991,23 +5033,8 @@ fmt.Print(string(data))
                       <path d="m3 3 8 8m0-8-8 8" />
                     </svg></span>
                 </div>
-                <pre class="code-block io-code" dir="ltr"><code>file, err := os.Open(<span class="io-literal">&quot;test.txt&quot;</span>)
-<span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
-    <span class="io-keyword">return</span> err
-}
-<span class="io-keyword">defer</span> file.Close()
-
-buf := <span class="io-keyword">make</span>([]byte, 4096)
-<span class="io-keyword">for</span> {
-    n, err := file.Read(buf)
-    fmt.Print(string(buf[:n]))
-    <span class="io-keyword">if</span> err == io.EOF {
-        <span class="io-keyword">return</span> <span class="io-keyword">nil</span>
-    }
-    <span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
-        <span class="io-keyword">return</span> err
-    }
-}</code></pre>
+                <pre class="code-block io-code" dir="ltr"
+                  data-snippet-html="&lt;code&gt;file, err := os.Open(&lt;span class=&quot;io-literal&quot;&gt;&amp;quot;test.txt&amp;quot;&lt;/span&gt;)&#10;&lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; err != &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt; {&#10;    &lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; err&#10;}&#10;&lt;span class=&quot;io-keyword&quot;&gt;defer&lt;/span&gt; file.Close()&#10;&#10;buf := &lt;span class=&quot;io-keyword&quot;&gt;make&lt;/span&gt;([]byte, 4096)&#10;&lt;span class=&quot;io-keyword&quot;&gt;for&lt;/span&gt; {&#10;    n, err := file.Read(buf)&#10;    fmt.Print(string(buf[:n]))&#10;    &lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; err == io.EOF {&#10;        &lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt;&#10;    }&#10;    &lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; err != &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt; {&#10;        &lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; err&#10;    }&#10;}&lt;/code&gt;"></pre>
               </div>
               <figcaption class="io-caption">Μέσα σε συνάρτηση που επιστρέφει <code>error</code>.</figcaption>
             </figure>
@@ -5021,6 +5048,7 @@ buf := <span class="io-keyword">make</span>([]byte, 4096)
           </div>
         </div>
       </section>
+
       <section class="slide io-appendix" data-theme="paper" aria-labelledby="appendix-file-3">
         <div class="workshop-frame">
           <header class="slide-header">
@@ -5040,11 +5068,8 @@ buf := <span class="io-keyword">make</span>([]byte, 4096)
                       <path d="m3 3 8 8m0-8-8 8" />
                     </svg></span>
                 </div>
-                <pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
-<span class="io-keyword">for</span> scanner.Scan() {
-    fmt.Println(scanner.Text())
-}
-<span class="io-keyword">return</span> scanner.Err()</code></pre>
+                <pre class="code-block io-code" dir="ltr"
+                  data-snippet-html="&lt;code&gt;scanner := bufio.NewScanner(file)&#10;&lt;span class=&quot;io-keyword&quot;&gt;for&lt;/span&gt; scanner.Scan() {&#10;    fmt.Println(scanner.Text())&#10;}&#10;&lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; scanner.Err()&lt;/code&gt;"></pre>
               </div>
               <figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και
                 <code>defer file.Close()</code>.
@@ -5060,6 +5085,7 @@ buf := <span class="io-keyword">make</span>([]byte, 4096)
           </div>
         </div>
       </section>
+
       <section class="slide io-appendix" data-theme="indigo" aria-labelledby="appendix-file-4">
         <div class="workshop-frame">
           <header class="slide-header">
@@ -5079,14 +5105,8 @@ buf := <span class="io-keyword">make</span>([]byte, 4096)
                       <path d="m3 3 8 8m0-8-8 8" />
                     </svg></span>
                 </div>
-                <pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
-scanner.Split(bufio.ScanRunes)
-<span class="io-comment">// Για λέξεις, επίλεξε bufio.ScanWords.</span>
-
-<span class="io-keyword">for</span> scanner.Scan() {
-    fmt.Println(scanner.Text())
-}
-<span class="io-keyword">return</span> scanner.Err()</code></pre>
+                <pre class="code-block io-code" dir="ltr"
+                  data-snippet-html="&lt;code&gt;scanner := bufio.NewScanner(file)&#10;scanner.Split(bufio.ScanRunes)&#10;&lt;span class=&quot;io-comment&quot;&gt;// Για λέξεις, επίλεξε bufio.ScanWords.&lt;/span&gt;&#10;&#10;&lt;span class=&quot;io-keyword&quot;&gt;for&lt;/span&gt; scanner.Scan() {&#10;    fmt.Println(scanner.Text())&#10;}&#10;&lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; scanner.Err()&lt;/code&gt;"></pre>
               </div>
               <figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και
                 <code>defer file.Close()</code>.
@@ -5101,6 +5121,7 @@ scanner.Split(bufio.ScanRunes)
           </div>
         </div>
       </section>
+
       <section class="slide io-appendix" data-theme="paper" aria-labelledby="appendix-file-5">
         <div class="workshop-frame">
           <header class="slide-header">
@@ -5120,18 +5141,8 @@ scanner.Split(bufio.ScanRunes)
                       <path d="m3 3 8 8m0-8-8 8" />
                     </svg></span>
                 </div>
-                <pre class="code-block io-code" dir="ltr"><code>reader := bufio.NewReader(file)
-<span class="io-keyword">for</span> {
-    text, err := reader.ReadString(<span class="io-literal">&#x27;,&#x27;</span>)
-    fmt.Print(text)
-
-    <span class="io-keyword">if</span> err == io.EOF {
-        <span class="io-keyword">return</span> <span class="io-keyword">nil</span>
-    }
-    <span class="io-keyword">if</span> err != <span class="io-keyword">nil</span> {
-        <span class="io-keyword">return</span> err
-    }
-}</code></pre>
+                <pre class="code-block io-code" dir="ltr"
+                  data-snippet-html="&lt;code&gt;reader := bufio.NewReader(file)&#10;&lt;span class=&quot;io-keyword&quot;&gt;for&lt;/span&gt; {&#10;    text, err := reader.ReadString(&lt;span class=&quot;io-literal&quot;&gt;&amp;#x27;,&amp;#x27;&lt;/span&gt;)&#10;    fmt.Print(text)&#10;&#10;    &lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; err == io.EOF {&#10;        &lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt;&#10;    }&#10;    &lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; err != &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt; {&#10;        &lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; err&#10;    }&#10;}&lt;/code&gt;"></pre>
               </div>
               <figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και
                 <code>defer file.Close()</code>.
@@ -5147,6 +5158,7 @@ scanner.Split(bufio.ScanRunes)
           </div>
         </div>
       </section>
+
       <section class="slide io-appendix" data-theme="night" aria-labelledby="appendix-file-6">
         <div class="workshop-frame">
           <header class="slide-header">
@@ -5166,22 +5178,8 @@ scanner.Split(bufio.ScanRunes)
                       <path d="m3 3 8 8m0-8-8 8" />
                     </svg></span>
                 </div>
-                <pre class="code-block io-code" dir="ltr"><code>scanner := bufio.NewScanner(file)
-<span class="io-keyword">var</span> block []string
-<span class="io-keyword">for</span> scanner.Scan() {
-    line := scanner.Text()
-    <span class="io-keyword">if</span> strings.TrimSpace(line) == <span class="io-literal">&quot;&quot;</span> {
-        printBlock(block)
-        block = block[:0]
-        <span class="io-keyword">continue</span>
-    }
-    block = <span class="io-keyword">append</span>(block, line)
-}
-<span class="io-keyword">if</span> err := scanner.Err(); err != <span class="io-keyword">nil</span> {
-    <span class="io-keyword">return</span> err
-}
-printBlock(block)
-<span class="io-keyword">return</span> <span class="io-keyword">nil</span></code></pre>
+                <pre class="code-block io-code" dir="ltr"
+                  data-snippet-html="&lt;code&gt;scanner := bufio.NewScanner(file)&#10;&lt;span class=&quot;io-keyword&quot;&gt;var&lt;/span&gt; block []string&#10;&lt;span class=&quot;io-keyword&quot;&gt;for&lt;/span&gt; scanner.Scan() {&#10;    line := scanner.Text()&#10;    &lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; strings.TrimSpace(line) == &lt;span class=&quot;io-literal&quot;&gt;&amp;quot;&amp;quot;&lt;/span&gt; {&#10;        printBlock(block)&#10;        block = block[:0]&#10;        &lt;span class=&quot;io-keyword&quot;&gt;continue&lt;/span&gt;&#10;    }&#10;    block = &lt;span class=&quot;io-keyword&quot;&gt;append&lt;/span&gt;(block, line)&#10;}&#10;&lt;span class=&quot;io-keyword&quot;&gt;if&lt;/span&gt; err := scanner.Err(); err != &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt; {&#10;    &lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; err&#10;}&#10;printBlock(block)&#10;&lt;span class=&quot;io-keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;io-keyword&quot;&gt;nil&lt;/span&gt;&lt;/code&gt;"></pre>
               </div>
               <figcaption class="io-caption">Το <code>file</code> έχει ήδη ανοίξει με έλεγχο σφάλματος και
                 <code>defer file.Close()</code>.
@@ -5714,6 +5712,12 @@ printBlock(block)
       const W = 1920
       const H = 1080
       const stage = document.getElementById('stage')
+      // Keep snippet whitespace outside the HTML formatter's text nodes.
+      // Hydrate before wiring hover, copy controls, and transition snapshots.
+      for (const snippet of stage.querySelectorAll('[data-snippet-html]')) {
+        snippet.innerHTML = snippet.dataset.snippetHtml
+        snippet.removeAttribute('data-snippet-html')
+      }
       const canvas = document.getElementById('motion')
       const ctx = canvas.getContext('2d')
       const slides = Array.from(stage.querySelectorAll(':scope > .slide'))
@@ -5724,8 +5728,49 @@ printBlock(block)
       const revealSlide = slides[revealIndex]
       const revealTitle = revealSlide.querySelector('.library-intro')
       const revealContent = revealSlide.querySelector('.workshop-frame')
-      const revealEffect = Math.random() < 0.5 ? 'slide-up' : 'wipe'
-      let desiredReveal = false
+      const revealCases = [...revealContent.querySelectorAll('.case-row')]
+      const revealGroups = [
+        [],
+        [],
+        [revealContent.querySelector('.slide-header'),
+        revealCases[0].querySelector('.board-case-title'),
+        revealCases[0].querySelector('.board-case-examples > div:last-child')],
+        [revealCases[1].querySelector('.board-case-title'),
+        revealCases[1].querySelector('.board-case-examples > div:last-child')]
+      ]
+      const lastReveal = revealGroups.length - 1
+      let revealPhase = -1
+      let desiredReveal = 0
+      const layoutIndex = slides.findIndex(slide => slide.querySelector('[data-layout-phase]'))
+      const layouts = [...slides[layoutIndex].querySelectorAll('[data-layout-phase]')]
+      const pipelineIndex = slides.findIndex(slide => slide.querySelector('.board-figure-17 .board-phase'))
+      const pipelineStages = [...slides[pipelineIndex].querySelectorAll('.board-phase')]
+      const pipelineNote = slides[pipelineIndex].querySelector('.board-flow-note')
+      let pipelinePhase = 0
+      const lastPhase = index => index === revealIndex ? lastReveal
+        : index === layoutIndex ? 1 : index === pipelineIndex ? pipelineStages.length : 0
+      const currentPhase = index => index === revealIndex ? revealPhase
+        : index === pipelineIndex ? pipelinePhase : index === layoutIndex && !layouts[1].hidden ? 1 : 0
+
+      function setPipelinePhase(phase) {
+        pipelinePhase = phase
+        const visible = [...pipelineStages, pipelineNote]
+        visible.forEach((node, index) => {
+          const hidden = phase <= Math.min(index, pipelineStages.length - 1)
+          node.classList.toggle('reveal-pending', hidden)
+          node.inert = hidden
+        })
+        cache.delete(pipelineIndex)
+      }
+
+      function setSlidePhase(index, phase) {
+        if (index === revealIndex) setReveal(phase)
+        if (index === pipelineIndex) setPipelinePhase(phase)
+        if (index === layoutIndex) {
+          layouts.forEach((layout, i) => { layout.hidden = i !== phase })
+          cache.delete(index)
+        }
+      }
       const nextKeys = new Set(['ArrowRight', 'ArrowDown', 'Space', 'KeyD', 'KeyS', 'PageDown', 'KeyL', 'Enter'])
       const prevKeys = new Set(['ArrowLeft', 'ArrowUp', 'KeyA', 'KeyW', 'PageUp', 'KeyH', 'Backspace'])
       const edges = new Set(['top', 'right', 'bottom', 'left'])
@@ -5763,10 +5808,10 @@ printBlock(block)
         const target = prdAdvanceTarget
         prdAdvanceTarget = null
         desired = target
-        desiredReveal = false
+        desiredReveal = 0
         for (const animation of entrances) animation.cancel()
         entrances.length = 0
-        if (target === revealIndex) setReveal(false)
+        setSlidePhase(target, 0)
         // The outgoing map is the transition layer over the next slide.
         settle(target)
         setPrdOpen(false, true)
@@ -6203,29 +6248,50 @@ printBlock(block)
         }
       }
 
-      function setReveal(open) {
-        if (revealSlide.classList.contains('is-revealed') === open) return
+      function setReveal(phase) {
+        if (phase === revealPhase) return
+        revealPhase = phase
+        const open = phase > 0
+        revealSlide.dataset.revealPhase = String(phase)
         revealSlide.classList.toggle('is-revealed', open)
         revealTitle.inert = open
         revealContent.inert = !open
         revealTitle.setAttribute('aria-hidden', String(open))
         revealContent.setAttribute('aria-hidden', String(!open))
-        revealSlide.setAttribute('aria-labelledby', open ? 'slide-03-title' : 'library-intro-title')
+        if (phase === 1) {
+          revealSlide.removeAttribute('aria-labelledby')
+          revealSlide.setAttribute('aria-label', 'Δύο χειροκίνητοι βρόχοι')
+        } else {
+          revealSlide.removeAttribute('aria-label')
+          revealSlide.setAttribute('aria-labelledby', open ? 'slide-03-title' : 'library-intro-title')
+        }
+        revealGroups.forEach((group, index) => {
+          for (const element of group) {
+            const hidden = phase < index
+            element.classList.toggle('reveal-pending', hidden)
+            element.inert = hidden
+            element.setAttribute('aria-hidden', String(hidden))
+          }
+        })
         cache.delete(revealIndex)
       }
 
-      async function reveal(open) {
-        setReveal(open)
+      async function reveal(phase) {
+        const previous = revealPhase
+        setReveal(phase)
         if (reduced.matches) return
-        const duration = transitions[revealEffect][0]
-        const keyframes = revealEffect === 'wipe'
-          ? [{ clipPath: 'inset(0 0 0 100%)' }, { clipPath: 'inset(0)' }]
-          : [{ opacity: 0, transform: 'translateY(12%)' }, { opacity: 1, transform: 'none' }]
-        const timing = { duration, easing: 'ease-in-out', direction: open ? 'normal' : 'reverse' }
-        const animations = [
-          revealTitle.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-78%)' }], timing),
-          revealContent.animate(keyframes, timing)
-        ]
+        const timing = {
+          duration: transitions['slide-up'][0],
+          easing: 'ease-in-out',
+          direction: phase > previous ? 'normal' : 'reverse'
+        }
+        const upward = [{ opacity: 0, transform: 'translateY(12%)' }, { opacity: 1, transform: 'none' }]
+        const animations = Math.min(previous, phase) === 0
+          ? [
+            revealTitle.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(-78%)' }], timing),
+            revealContent.animate(upward, timing)
+          ]
+          : phase > previous ? revealGroups[phase].map(element => element.animate(upward, timing)) : []
         const cancel = () => { if (reduced.matches) animations.forEach(animation => animation.cancel()) }
         reduced.addEventListener('change', cancel)
         try {
@@ -6236,29 +6302,31 @@ printBlock(block)
       }
 
       function step(direction) {
-        if (desired === revealIndex && (direction > 0 ? !desiredReveal : desiredReveal)) {
-          navigate(revealIndex, direction > 0)
+        const phase = desiredReveal + direction
+        if (lastPhase(desired) && phase >= 0 && phase <= lastPhase(desired)) {
+          navigate(desired, phase)
         } else {
           const target = desired + direction
-          navigate(target, direction < 0 && target === revealIndex)
+          navigate(target, direction < 0 ? lastPhase(target) : 0)
         }
       }
 
-      async function navigate(index, open = false) {
+      async function navigate(index, phase = 0) {
         hideGoDoc()
         desired = Math.max(0, Math.min(index, slides.length - 1))
-        desiredReveal = desired === revealIndex && open
+        desiredReveal = Math.min(phase, lastPhase(desired))
         if (running) return
         running = true
         try {
           while (prdAdvanceTarget === null && (current !== desired ||
-            (current === revealIndex && revealSlide.classList.contains('is-revealed') !== desiredReveal))) {
+            currentPhase(current) !== desiredReveal)) {
             if (current === desired) {
-              await reveal(desiredReveal)
+              if (current === revealIndex) await reveal(desiredReveal)
+              else setSlidePhase(current, desiredReveal)
               continue
             }
             const to = desired
-            if (to === revealIndex) setReveal(desiredReveal)
+            setSlidePhase(to, desiredReveal)
             const effect = options(current, to)
             for (const animation of entrances) animation.cancel()
             entrances.length = 0
@@ -6313,6 +6381,8 @@ printBlock(block)
       document.addEventListener('fullscreenchange', scaleStage)
       window.addEventListener('hashchange', () => navigate(readHash()))
       scaleStage()
+      setReveal(0)
+      setPipelinePhase(0)
       settle(current)
     }
 
