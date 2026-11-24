@@ -1413,7 +1413,7 @@
       font-size: 18px !important;
     }
 
-    .slide:nth-of-type(20) p {
+    .slide[data-board="20"] p {
       font-size: 18px !important;
       line-height: 1.5;
     }
@@ -2474,38 +2474,28 @@
 
     .slide.workshop-board .board-flow {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 36px 42px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 34px 35px;
     }
 
     .slide.workshop-board .board-phase {
       position: relative;
-      padding: 16px 22px;
+      padding: 14px 17px;
       border: 1px solid var(--border);
       border-top: 4px solid var(--accent);
       background: var(--surface);
     }
 
-    .slide.workshop-board .board-phase:nth-child(4),
-    .slide.workshop-board .board-phase:nth-child(5),
-    .slide.workshop-board .board-phase:nth-child(6) {
-      grid-row: 2;
-    }
-
-    .slide.workshop-board .board-phase:nth-child(4) {
-      grid-column: 3;
-    }
-
-    .slide.workshop-board .board-phase:nth-child(5) {
-      grid-column: 2;
-    }
-
-    .slide.workshop-board .board-phase:nth-child(6) {
+    .slide.workshop-board .board-phase:nth-child(n+5) { grid-row: 2; }
+    .slide.workshop-board .board-phase:nth-child(5) { grid-column: 4; }
+    .slide.workshop-board .board-phase:nth-child(6) { grid-column: 3; }
+    .slide.workshop-board .board-phase:nth-child(7) { grid-column: 2; }
+    .slide.workshop-board .board-phase:nth-child(8) {
       grid-column: 1;
       border-top-color: var(--success);
     }
 
-    .slide.workshop-board .board-phase:nth-child(-n+5)::after {
+    .slide.workshop-board .board-phase:not(:last-child)::after {
       content: '→';
       position: absolute;
       color: var(--accent);
@@ -2514,14 +2504,13 @@
       left: 100%;
     }
 
-    .slide.workshop-board .board-phase:nth-child(3)::after {
+    .slide.workshop-board .board-phase:nth-child(4)::after {
       content: '↓';
       left: 50%;
       top: calc(100% - 2px);
     }
 
-    .slide.workshop-board .board-phase:nth-child(4)::after,
-    .slide.workshop-board .board-phase:nth-child(5)::after {
+    .slide.workshop-board .board-phase:nth-child(n+5):not(:last-child)::after {
       content: '←';
       left: auto;
       right: 100%;
@@ -4157,21 +4146,8 @@
         </div>
       </section>
 
-      <section class="slide prd-workshop-brief blueprint-docs" aria-labelledby="architecture-intro-title" data-theme="paper">
-        <div class="workshop-frame">
-          <header>
-            <p class="eyebrow">Αρχιτεκτονική</p>
-            <h2 id="architecture-intro-title">Τι είναι η αρχιτεκτονική;</h2>
-          </header>
-          <p class="prd-brief-definition">Η αρχιτεκτονική ορίζει τα βασικά μέρη ενός συστήματος, τι αναλαμβάνει το καθένα και πώς συνεργάζονται.</p>
-          <div class="prd-brief-example">
-            <p>Monolith · Microservices · Event-Driven<br>ECS (Entity-Component-System)</p>
-          </div>
-        </div>
-      </section>
-
       <section class="slide diagram-layout workshop-board" aria-labelledby="slide-17-title" data-theme="indigo"
-        data-transition="registration" data-board="17" style="--board-size: 39px;">
+        data-transition="registration" data-board="17" style="--board-size: 33px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <div class="eyebrow">Αρχιτεκτονική</div>
@@ -4184,30 +4160,40 @@
               <div class="board-flow">
                 <div class="board-phase">
                   <div class="board-figure-kicker" style="color: var(--accent);">STAGE 01</div>
+                  <h3 class="board-phase-name">Read os.Args</h3>
+                  <p class="board-figure-copy">Ελέγχουμε τα ορίσματα και παίρνουμε τα ονόματα των αρχείων εισόδου και εξόδου.</p>
+                </div>
+                <div class="board-phase">
+                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 02</div>
+                  <h3 class="board-phase-name">Read inputFile</h3>
+                  <p class="board-figure-copy">Ανοίγουμε το αρχείο εισόδου, διαβάζουμε το κείμενο και ελέγχουμε για σφάλμα.</p>
+                </div>
+                <div class="board-phase">
+                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 03</div>
                   <h3 class="board-phase-name" style="color: var(--ink);">Tokenize</h3>
                   <p class="board-figure-copy" style="color: var(--ink-secondary);">Διαχωρισμός κειμένου σε επιμέρους
                     λέξεις και σημεία στίξης (tokens string slice)</p>
                 </div>
                 <div class="board-phase">
-                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 02</div>
+                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 04</div>
                   <h3 class="board-phase-name" style="color: var(--ink);">Numbers</h3>
                   <p class="board-figure-copy" style="color: var(--ink-secondary);">Μετατροπή (hex) &amp; (bin)
                     προηγούμενης λέξης σε δεκαδική τιμή μέσω του strconv</p>
                 </div>
                 <div class="board-phase">
-                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 03</div>
+                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 05</div>
                   <h3 class="board-phase-name" style="color: var(--ink);">Casing</h3>
                   <p class="board-figure-copy" style="color: var(--ink-secondary);">Εφαρμογή (up), (low) και (cap) σε
                     μία ή σε N προηγούμενες λέξεις αναδρομικά</p>
                 </div>
                 <div class="board-phase">
-                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 04</div>
+                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 06</div>
                   <h3 class="board-phase-name" style="color: var(--ink);">Punctuation</h3>
                   <p class="board-figure-copy" style="color: var(--ink-secondary);">Ένωση συμβόλων με την προηγούμενη
                     λέξη και διατήρηση ομάδων όπως ... και !?</p>
                 </div>
                 <div class="board-phase">
-                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 05</div>
+                  <div class="board-figure-kicker" style="color: var(--accent);">STAGE 07</div>
                   <h3 class="board-phase-name" style="color: var(--ink);">Quotes &amp; a/an</h3>
                   <p class="board-figure-copy" style="color: var(--ink-secondary);">Κλείσιμο ζευγών '' και μετατροπή
                     άρθρου a σε an πριν από φωνήεν ή γράμμα h</p>
@@ -4221,8 +4207,7 @@
               </div>
               <p class="board-flow-note" style="color: var(--ink);">
                 <span style="font-weight: 900; color: var(--accent);">ΑΡΧΙΤΕΚΤΟΝΙΚΗ ΑΠΟΜΟΝΩΣΗ: </span>
-                Κάθε στάδιο δέχεται έγκυρο κείμενο και παράγει έγκυρο κείμενο. Επιτρέπει άμεσο debugging με ενδιάμεσα
-                print statements και αυτόνομα unit tests.
+                Η έξοδος ενός σταδίου τροφοδοτεί το επόμενο. Ελέγχουμε κάθε στάδιο χωριστά και βλέπουμε πού άλλαξε το αποτέλεσμα.
               </p>
             </div>
           </div>
@@ -4541,58 +4526,24 @@
         </div>
       </section>
 
-      <section class="slide split-layout workshop-board" aria-labelledby="slide-21-title" data-theme="indigo"
-        data-board="21" style="--board-size: 37px;">
+      <section class="slide workshop-board" aria-labelledby="slide-21-title" data-theme="indigo" data-board="21" style="--board-size: 49px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <div class="eyebrow">Αρχιτεκτονική</div>
-            <h2 id="slide-21-title" class="slide-title">Πολλά Περάσματα vs Buffer/FSM: Τεχνική Ανάλυση</h2>
+            <h2 id="slide-21-title" class="slide-title">Πολλά περάσματα ή ένα;</h2>
           </header>
-
-
           <div class="board-body">
-            <div class="split-grid">
-              <div class="split-left">
-                <p class="lead-statement">
-                  Διάσπαση σε επιμέρους υποπροβλήματα (Divide &amp; Conquer).
-                </p>
-                <ul class="point-list">
-                  <li><strong>Multi-Pass (Απομονωμένα Στάδια):</strong> Κάθε στάδιο αναλαμβάνει έναν μετασχηματισμό. Εάν
-                    υπάρξει σφάλμα στα εισαγωγικά, η διερεύνηση περιορίζεται αποκλειστικά στη συγκεκριμένη συνάρτηση.
-                  </li>
-                  <li><strong>Single-Pass Buffer:</strong> Ένα πέρασμα με buffer ολίσθησης (sliding window). Απαιτεί
-                    ταυτόχρονο
-                    συγχρονισμό πολλαπλών σημαιών κατάστασης (inQuotes, modifierCount, pendingPunctuation).</li>
-                  <li><strong>Γνωστικό Φορτίο:</strong> Το multi-pass μειώνει δραστικά την πιθανότητα απρόβλεπτων
-                    παρενεργειών μεταξύ κανόνων.</li>
-                </ul>
+            <div class="comparison-grid">
+              <div class="comparison-col neutral">
+                <h3 class="col-title">Πολλά περάσματα</h3>
+                <p class="board-copy">Κάθε πέρασμα εφαρμόζει έναν κανόνα σε όλο το κείμενο.</p>
               </div>
-
-              <div class="split-right">
-                <div class="board-figure board-figure-21">
-                  <div class="board-figure-card board-out">
-                    <div class="board-figure-kicker" style="color: var(--success);">MULTI-PASS (ISOLATED STAGES)</div>
-                    <div class="board-mini-flow">
-                      <div class="board-mini-step" style="color: var(--ink);">Hex/Bin</div>
-                      <div class="board-mini-step" style="color: var(--ink);">Casing</div>
-                      <div class="board-mini-step" style="color: var(--ink);">Punct</div>
-                      <div class="board-mini-step" style="color: var(--ink);">Quotes</div>
-                    </div>
-                    <div class="board-figure-copy" style="color: var(--ink-secondary);">Κάθε πέρασμα παράγει πλήρως
-                      έγκυρο ενδιάμεσο κείμενο. Εύκολη αποσφαλμάτωση με ενδιάμεσα print statements.</div>
-                  </div>
-                  <div class="board-figure-card board-single-pass">
-                    <div class="board-figure-kicker" style="color: var(--warning);">SINGLE-PASS BUFFER (COUPLED STATE)
-                    </div>
-                    <div class="board-figure-code" style="color: var(--warning);"
-                      data-snippet-html="State = [inQuote: true | nextCap: 2 |&#10;                      lastPunct: '.' | prevRune: 'a']">
-                    </div>
-                    <div class="board-figure-copy" style="color: var(--ink-secondary);">Μικρότερος αριθμός iterations
-                      και χαμηλή κατανάλωση μνήμης, αλλά αυξημένη δυσκολία αποσφαλμάτωσης σε συγκρούσεις κανόνων.</div>
-                  </div>
-                </div>
+              <div class="comparison-col neutral">
+                <h3 class="col-title">Ένα πέρασμα</h3>
+                <p class="board-copy">Διαβάζουμε μία φορά. Κρατάμε στον buffer τις λέξεις που μπορεί να αλλάξουν ακόμη (<em>sliding window</em>).</p>
               </div>
             </div>
+            <p class="board-flow-note" style="margin-top: 48px;"><code>(up, 2)</code> → Χρειαζόμαστε τις δύο προηγούμενες λέξεις.</p>
           </div>
         </div>
       </section>
