@@ -4713,10 +4713,11 @@ func reallyChangeString(s *string) {
 
 <h3>Το κλασσικό παράδειγμα του πυρηνικού πολέμου</h3>
 
+<p><strong>❌ Το «κακό» σενάριο (Pass By Value):</strong></p>
+
 <pre><code class="lang-go">func main() {
     redSwitch := true
 
-        // Pass By Value
     AvoidNuclearWar(redSwitch)
 
     if redSwitch {
@@ -4724,7 +4725,18 @@ func reallyChangeString(s *string) {
     } else {
         fmt.Println("🕊️ World saved?") // No, the function only changed a copy!
     }
-        // Pass by Address
+}
+
+func AvoidNuclearWar(redSwitch bool) {
+    redSwitch = false // αλλάζει μόνο το τοπικό αντίγραφο
+}
+</code></pre>
+
+<p><strong>✅ Το «καλό» σενάριο (Pass By Address / Pointer):</strong></p>
+
+<pre><code class="lang-go">func main() {
+    redSwitch := true
+
     ActuallySaveTheWorld(&redSwitch)
 
     if redSwitch {
@@ -4732,10 +4744,6 @@ func reallyChangeString(s *string) {
     } else {
         fmt.Println("🕊️ World saved! The pointer actually changed the real variable!")
     }
-}
-
-func AvoidNuclearWar(redSwitch bool) {
-    redSwitch = false // αλλάζει μόνο το τοπικό αντίγραφο
 }
 
 func ActuallySaveTheWorld(redSwitch *bool) {

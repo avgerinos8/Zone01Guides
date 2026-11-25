@@ -2486,10 +2486,22 @@
       background: var(--surface);
     }
 
-    .slide.workshop-board .board-phase:nth-child(n+5) { grid-row: 2; }
-    .slide.workshop-board .board-phase:nth-child(5) { grid-column: 4; }
-    .slide.workshop-board .board-phase:nth-child(6) { grid-column: 3; }
-    .slide.workshop-board .board-phase:nth-child(7) { grid-column: 2; }
+    .slide.workshop-board .board-phase:nth-child(n+5) {
+      grid-row: 2;
+    }
+
+    .slide.workshop-board .board-phase:nth-child(5) {
+      grid-column: 4;
+    }
+
+    .slide.workshop-board .board-phase:nth-child(6) {
+      grid-column: 3;
+    }
+
+    .slide.workshop-board .board-phase:nth-child(7) {
+      grid-column: 2;
+    }
+
     .slide.workshop-board .board-phase:nth-child(8) {
       grid-column: 1;
       border-top-color: var(--success);
@@ -3582,7 +3594,8 @@
               </div>
               <div class="board-figure-card board-out">
                 <div class="board-figure-kicker" style="color: var(--success);">OUT:</div>
-                <div class="board-figure-copy" style="color: var(--ink);">Harold Wilson: 'I am an optimist, but an optimist who carries a raincoat.'</div>
+                <div class="board-figure-copy" style="color: var(--ink);">Harold Wilson: 'I am an optimist, but an
+                  optimist who carries a raincoat.'</div>
               </div>
             </div>
           </div>
@@ -3692,47 +3705,54 @@
                 <p class="lead-statement">Ξεκίνα με μία εντολή και ένα πακέτο για τη λογική του έργου.</p>
                 <ul class="point-list">
                   <li><strong><code>_docs/PRD.md</code></strong> · Οι απαιτήσεις του workshop.</li>
-                  <li><strong><code>internal/</code></strong> · Όταν ξεχωρίσουν οι ευθύνες, δώσε σε κάθε πακέτο δικό του φάκελο.</li>
-                  <li><strong><code>cmd/go-reloaded/</code></strong> · Μια θέση για την εντολή καθώς μεγαλώνει το repo.</li>
+                  <li><strong><code>internal/</code></strong> · Όταν ξεχωρίσουν οι ευθύνες, δώσε σε κάθε πακέτο δικό του
+                    φάκελο.</li>
+                  <li><strong><code>cmd/go-reloaded/</code></strong> · Μια θέση για την εντολή καθώς μεγαλώνει το repo.
+                  </li>
                 </ul>
               </div>
               <div class="layout-trees">
-              <div data-layout-phase="0">
-                <p class="lead-statement">Απλή δομή</p>
-                <div class="terminal board-terminal">
-                  <div class="terminal-bar" aria-hidden="true">
-                    <span class="terminal-dots"><i></i><i></i><i></i></span>
-                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
-                        <path d="M2 7h10"></path>
-                      </svg><svg viewBox="0 0 14 14">
-                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
-                      </svg><svg viewBox="0 0 14 14">
-                        <path d="m3 3 8 8m0-8-8 8"></path>
-                      </svg></span>
+                <div data-layout-phase="0">
+                  <p class="lead-statement">Απλή δομή</p>
+                  <div class="terminal board-terminal">
+                    <div class="terminal-bar" aria-hidden="true">
+                      <span class="terminal-dots"><i></i><i></i><i></i></span>
+                      <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                          <path d="M2 7h10"></path>
+                        </svg><svg viewBox="0 0 14 14">
+                          <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                        </svg><svg viewBox="0 0 14 14">
+                          <path d="m3 3 8 8m0-8-8 8"></path>
+                        </svg></span>
+                    </div>
+                    <pre class="sample-block board-code"
+                      data-snippet-html="go-reloaded/&#10;├── go.mod&#10;├── main.go&#10;├── _docs/&#10;│   └── PRD.md&#10;└── internal/&#10;    ├── transform.go&#10;    └── fileio.go"
+                      style="font-size: 32px !important"></pre>
                   </div>
-                  <pre class="sample-block board-code" data-snippet-html="go-reloaded/&#10;├── go.mod&#10;├── main.go&#10;├── _docs/&#10;│   └── PRD.md&#10;└── internal/&#10;    ├── transform.go&#10;    └── fileio.go" style="font-size: 32px !important"></pre>
                 </div>
-              </div>
-              <div data-layout-phase="1" hidden>
-                <p class="lead-statement">Χωριστά πακέτα</p>
-                <div class="terminal board-terminal">
-                  <div class="terminal-bar" aria-hidden="true">
-                    <span class="terminal-dots"><i></i><i></i><i></i></span>
-                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
-                        <path d="M2 7h10"></path>
-                      </svg><svg viewBox="0 0 14 14">
-                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
-                      </svg><svg viewBox="0 0 14 14">
-                        <path d="m3 3 8 8m0-8-8 8"></path>
-                      </svg></span>
+                <div data-layout-phase="1" hidden>
+                  <p class="lead-statement">Χωριστά πακέτα</p>
+                  <div class="terminal board-terminal">
+                    <div class="terminal-bar" aria-hidden="true">
+                      <span class="terminal-dots"><i></i><i></i><i></i></span>
+                      <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                          <path d="M2 7h10"></path>
+                        </svg><svg viewBox="0 0 14 14">
+                          <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                        </svg><svg viewBox="0 0 14 14">
+                          <path d="m3 3 8 8m0-8-8 8"></path>
+                        </svg></span>
+                    </div>
+                    <pre class="sample-block board-code"
+                      data-snippet-html="go-reloaded/&#10;├── go.mod&#10;├── _docs/&#10;│   └── PRD.md&#10;├── cmd/&#10;│   └── go-reloaded/&#10;│       └── main.go&#10;└── internal/&#10;    ├── transform/&#10;    │   └── transform.go&#10;    └── fileio/&#10;        └── fileio.go"
+                      style="font-size: 32px !important"></pre>
                   </div>
-                  <pre class="sample-block board-code" data-snippet-html="go-reloaded/&#10;├── go.mod&#10;├── _docs/&#10;│   └── PRD.md&#10;├── cmd/&#10;│   └── go-reloaded/&#10;│       └── main.go&#10;└── internal/&#10;    ├── transform/&#10;    │   └── transform.go&#10;    └── fileio/&#10;        └── fileio.go" style="font-size: 32px !important"></pre>
                 </div>
-              </div>
               </div>
             </div>
           </div>
-          <footer class="layout-source"><a href="https://go.dev/doc/modules/layout" target="_blank" rel="noopener noreferrer">Go docs · Organizing a Go module</a></footer>
+          <footer class="layout-source"><a href="https://go.dev/doc/modules/layout" target="_blank"
+              rel="noopener noreferrer">Go docs · Organizing a Go module</a></footer>
         </div>
       </section>
 
@@ -3777,30 +3797,47 @@
             <p class="eyebrow">Tests</p>
             <h2 id="test-cases-title">Τι δοκιμάζουμε;</h2>
           </header>
-          <p style="text-align: center; font: 700 104px/1.1 var(--font-code); color: var(--accent);">&lt;...&gt;_test.go</p>
+          <p style="text-align: center; font: 700 104px/1.1 var(--font-code); color: var(--accent);">&lt;...&gt;_test.go
+          </p>
           <dl class="prd-brief-rail">
-            <div><dt>Edge cases</dt><dd>Σπάνια ή ακραία σενάρια που εμφανίζονται στα όρια των παραμέτρων λειτουργίας και συχνά οδηγούν σε σφάλματα (bugs) αν δεν έχουν προβλεφθεί</dd></div>
-            <div><dt>Αναμενόμενο σφάλμα</dt><dd>Δοκιμάζουμε περιπτώσεις που θα αποτύχουν για να δούμε <strong>αν το πρόγραμμα επιστρέψει το σφάλμα που περιμένουμε</strong>.</dd></div>
-            <div><dt>Golden tests</dt><dd>Το τρέχον αποτέλεσμα του προγράμματος συγκρίνεται με ένα προηγούμενο, αποθηκευμένο και εγκεκριμένο αποτέλεσμα αναφοράς (το «χρυσό» αρχείο / golden file).</dd></div>
+            <div>
+              <dt>Edge cases</dt>
+              <dd>Σπάνια ή ακραία σενάρια που εμφανίζονται στα όρια των παραμέτρων λειτουργίας και συχνά οδηγούν σε
+                σφάλματα (bugs) αν δεν έχουν προβλεφθεί</dd>
+            </div>
+            <div>
+              <dt>Αναμενόμενο σφάλμα</dt>
+              <dd>Δοκιμάζουμε περιπτώσεις που θα αποτύχουν για να δούμε <strong>αν το πρόγραμμα επιστρέψει το σφάλμα που
+                  περιμένουμε</strong>.</dd>
+            </div>
+            <div>
+              <dt>Golden tests</dt>
+              <dd>Το τρέχον αποτέλεσμα του προγράμματος συγκρίνεται με ένα προηγούμενο, αποθηκευμένο και εγκεκριμένο
+                αποτέλεσμα αναφοράς (το «χρυσό» αρχείο / golden file).</dd>
+            </div>
           </dl>
         </div>
       </section>
 
-      <section class="slide prd-workshop-brief" aria-labelledby="slide-13-title" data-theme="paper" data-transition="scorch">
+      <section class="slide prd-workshop-brief" aria-labelledby="slide-13-title" data-theme="paper"
+        data-transition="scorch">
         <div class="workshop-frame">
           <header>
             <p class="eyebrow">Test-Driven Development</p>
             <h2 id="slide-13-title">Τι είναι το TDD;</h2>
           </header>
-          <p class="prd-brief-definition">Το TDD είναι μέθοδος ανάπτυξης όπου γράφουμε πρώτα ένα test που ορίζει την αναμενόμενη συμπεριφορά και μετά τον κώδικα που το κάνει να περάσει (Red → Green → Refactor).</p>
+          <p class="prd-brief-definition">Το TDD είναι μέθοδος ανάπτυξης όπου γράφουμε πρώτα ένα test που ορίζει την
+            αναμενόμενη συμπεριφορά και μετά τον κώδικα που το κάνει να περάσει (Red → Green → Refactor).</p>
           <div class="prd-brief-example">
             <h3>Γιατί χρειάζονται tests;</h3>
-            <p>Τα tests ελέγχουν την αναμενόμενη συμπεριφορά και μας δείχνουν αν μια νέα αλλαγή χάλασε κάτι που ήδη δούλευε.</p>
+            <p>Τα tests ελέγχουν την αναμενόμενη συμπεριφορά και μας δείχνουν αν μια νέα αλλαγή χάλασε κάτι που ήδη
+              δούλευε.</p>
           </div>
         </div>
       </section>
 
-      <section class="slide workshop-board" aria-labelledby="fix-comma-title" data-theme="night" style="--board-size: 38px;">
+      <section class="slide workshop-board" aria-labelledby="fix-comma-title" data-theme="night"
+        style="--board-size: 38px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <p class="eyebrow">TDD στην πράξη</p>
@@ -3820,12 +3857,16 @@
                       <path d="m3 3 8 8m0-8-8 8"></path>
                     </svg></span>
                 </div>
-                <pre class="code-card board-code" data-snippet-html="func TestFixComma(t *testing.T) {&#10;    input := &quot;hello , world&quot;&#10;    got := FixComma(input)&#10;    want := &quot;hello, world&quot;&#10;&#10;    if got != want {&#10;        t.Errorf(&quot;got %q, want %q&quot;, got, want)&#10;    }&#10;}"></pre>
+                <pre class="code-card board-code"
+                  data-snippet-html="func TestFixComma(t *testing.T) {&#10;    input := &quot;hello , world&quot;&#10;    got := FixComma(input)&#10;    want := &quot;hello, world&quot;&#10;&#10;    if got != want {&#10;        t.Errorf(&quot;got %q, want %q&quot;, got, want)&#10;    }&#10;}"></pre>
               </div>
               <ul class="point-list">
-                <li>Η συνάρτηση του test πρέπει να ξεκινά με <strong><code>Test</code></strong> (κεφαλαίο T) και να δέχεται <strong><code>(t *testing.T)</code></strong>.</li>
-                <li><strong>Red.</strong> Η συνάρτηση επιστρέφει το αρχικό κείμενο. Τρέχουμε το test και βλέπουμε το επιπλέον κενό.</li>
-                <li><strong>Green.</strong> Με <code>strings.ReplaceAll</code> αλλάζουμε το <code>" ,"</code> σε <code>","</code>. Ξανατρέχουμε το test.</li>
+                <li>Η συνάρτηση του test πρέπει να ξεκινά με <strong><code>Test</code></strong> (κεφαλαίο T) και να
+                  δέχεται <strong><code>(t *testing.T)</code></strong>.</li>
+                <li><strong>Red.</strong> Η συνάρτηση επιστρέφει το αρχικό κείμενο. Τρέχουμε το test και βλέπουμε το
+                  επιπλέον κενό.</li>
+                <li><strong>Green.</strong> Με <code>strings.ReplaceAll</code> αλλάζουμε το <code>" ,"</code> σε
+                  <code>","</code>. Ξανατρέχουμε το test.</li>
                 <li><strong>Refactor.</strong> Ελέγχουμε αν η λύση μπορεί να γίνει πιο καθαρή.</li>
               </ul>
             </div>
@@ -4161,12 +4202,14 @@
                 <div class="board-phase">
                   <div class="board-figure-kicker" style="color: var(--accent);">STAGE 01</div>
                   <h3 class="board-phase-name">Read os.Args</h3>
-                  <p class="board-figure-copy">Ελέγχουμε τα ορίσματα και παίρνουμε τα ονόματα των αρχείων εισόδου και εξόδου.</p>
+                  <p class="board-figure-copy">Ελέγχουμε τα ορίσματα και παίρνουμε τα ονόματα των αρχείων εισόδου και
+                    εξόδου.</p>
                 </div>
                 <div class="board-phase">
                   <div class="board-figure-kicker" style="color: var(--accent);">STAGE 02</div>
                   <h3 class="board-phase-name">Read inputFile</h3>
-                  <p class="board-figure-copy">Ανοίγουμε το αρχείο εισόδου, διαβάζουμε το κείμενο και ελέγχουμε για σφάλμα.</p>
+                  <p class="board-figure-copy">Ανοίγουμε το αρχείο εισόδου, διαβάζουμε το κείμενο και ελέγχουμε για
+                    σφάλμα.</p>
                 </div>
                 <div class="board-phase">
                   <div class="board-figure-kicker" style="color: var(--accent);">STAGE 03</div>
@@ -4207,7 +4250,8 @@
               </div>
               <p class="board-flow-note" style="color: var(--ink);">
                 <span style="font-weight: 900; color: var(--accent);">ΑΡΧΙΤΕΚΤΟΝΙΚΗ ΑΠΟΜΟΝΩΣΗ: </span>
-                Η έξοδος ενός σταδίου τροφοδοτεί το επόμενο. Ελέγχουμε κάθε στάδιο χωριστά και βλέπουμε πού άλλαξε το αποτέλεσμα.
+                Η έξοδος ενός σταδίου τροφοδοτεί το επόμενο. Ελέγχουμε κάθε στάδιο χωριστά και βλέπουμε πού άλλαξε το
+                αποτέλεσμα.
               </p>
             </div>
           </div>
@@ -4224,11 +4268,14 @@
 
 
           <div class="board-body">
-            <p class="lead-statement"><strong>– 1 πέρασμα –</strong> · Το state και ο επόμενος χαρακτήρας καθορίζουν τι κάνουμε.</p>
+            <p class="lead-statement"><strong>– 1 πέρασμα –</strong> · Το state και ο επόμενος χαρακτήρας καθορίζουν τι
+              κάνουμε.</p>
             <dl class="board-figure board-figure-9">
               <div class="board-figure-card board-out" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
                 <dt class="board-figure-kicker"><code>stateText</code> <small>(default)</small></dt>
-                <dd class="board-figure-copy">Στην αρχή, γράμμα → <code>stateWord</code>, κενό → <code>stateSpace</code>, στίξη → <code>statePunct</code>, <code>(</code> → <code>stateParen</code>.</dd>
+                <dd class="board-figure-copy">Στην αρχή, γράμμα → <code>stateWord</code>, κενό →
+                  <code>stateSpace</code>, στίξη → <code>statePunct</code>, <code>(</code> → <code>stateParen</code>.
+                </dd>
               </div>
               <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
                 <dt class="board-figure-kicker"><code>stateWord</code></dt>
@@ -4236,15 +4283,18 @@
               </div>
               <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
                 <dt class="board-figure-kicker"><code>stateSpace</code></dt>
-                <dd class="board-figure-copy">Όσο έρχονται κενά, μένω εδώ. Μόλις έρθει κάτι άλλο, περνάω στο αντίστοιχο state.</dd>
+                <dd class="board-figure-copy">Όσο έρχονται κενά, μένω εδώ. Μόλις έρθει κάτι άλλο, περνάω στο αντίστοιχο
+                  state.</dd>
               </div>
               <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
                 <dt class="board-figure-kicker"><code>statePunct</code></dt>
-                <dd class="board-figure-copy">Μαζεύω συνεχόμενα σημεία στίξης, όπως <code>...</code> ή <code>!?</code>. Μόλις έρθει άλλος χαρακτήρας, κλείνω την ομάδα.</dd>
+                <dd class="board-figure-copy">Μαζεύω συνεχόμενα σημεία στίξης, όπως <code>...</code> ή <code>!?</code>.
+                  Μόλις έρθει άλλος χαρακτήρας, κλείνω την ομάδα.</dd>
               </div>
               <div class="board-figure-card" style="grid-template-columns: minmax(0, 350px) minmax(0, 1fr);">
                 <dt class="board-figure-kicker"><code>stateParen</code></dt>
-                <dd class="board-figure-copy">Διαβάζω την οδηγία μέσα στην παρένθεση. Με <code>)</code> την ολοκληρώνω, π.χ. <code>(up, 2)</code>.</dd>
+                <dd class="board-figure-copy">Διαβάζω την οδηγία μέσα στην παρένθεση. Με <code>)</code> την ολοκληρώνω,
+                  π.χ. <code>(up, 2)</code>.</dd>
               </div>
             </dl>
           </div>
@@ -4526,7 +4576,8 @@
         </div>
       </section>
 
-      <section class="slide workshop-board" aria-labelledby="slide-21-title" data-theme="indigo" data-board="21" style="--board-size: 49px;">
+      <section class="slide workshop-board" aria-labelledby="slide-21-title" data-theme="indigo" data-board="21"
+        style="--board-size: 49px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <div class="eyebrow">Αρχιτεκτονική</div>
@@ -4540,10 +4591,12 @@
               </div>
               <div class="comparison-col neutral">
                 <h3 class="col-title">Ένα πέρασμα</h3>
-                <p class="board-copy">Διαβάζουμε μία φορά. Κρατάμε στον buffer τις λέξεις που μπορεί να αλλάξουν ακόμη (<em>sliding window</em>).</p>
+                <p class="board-copy">Διαβάζουμε μία φορά. Κρατάμε στον buffer τις λέξεις που μπορεί να αλλάξουν ακόμη
+                  (<em>sliding window</em>).</p>
               </div>
             </div>
-            <p class="board-flow-note" style="margin-top: 48px;"><code>(up, 2)</code> → Χρειαζόμαστε τις δύο προηγούμενες λέξεις.</p>
+            <p class="board-flow-note" style="margin-top: 48px;"><code>(up, 2)</code> → Χρειαζόμαστε τις δύο
+              προηγούμενες λέξεις.</p>
           </div>
         </div>
       </section>
@@ -4586,7 +4639,8 @@
         </div>
       </section>
 
-      <section class="slide workshop-board" aria-labelledby="prd-architecture-title" data-theme="paper" style="--board-size: 34px;">
+      <section class="slide workshop-board" aria-labelledby="prd-architecture-title" data-theme="paper"
+        style="--board-size: 34px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <p class="eyebrow">Παράδειγμα PRD</p>
@@ -4622,7 +4676,8 @@
                         <path d="m3 3 8 8m0-8-8 8"></path>
                       </svg></span>
                   </div>
-                  <pre class="code-card board-code" data-snippet-html="[ Reader ]&#10;     ↓&#10;[ FSM Engine ] --states--&amp;gt; TEXT / WORD / PUNCT / OPERATOR / QUOTE&#10;     ↓&#10;[ Sliding Buffer (last N words) ]&#10;     ↓&#10;[ Immediate Transformations ]&#10;     ↓&#10;[ Flush Safe Tokens ]&#10;     ↓&#10;[ Output Builder ]"></pre>
+                  <pre class="code-card board-code"
+                    data-snippet-html="[ Reader ]&#10;     ↓&#10;[ FSM Engine ] --states--&amp;gt; TEXT / WORD / PUNCT / OPERATOR / QUOTE&#10;     ↓&#10;[ Sliding Buffer (last N words) ]&#10;     ↓&#10;[ Immediate Transformations ]&#10;     ↓&#10;[ Flush Safe Tokens ]&#10;     ↓&#10;[ Output Builder ]"></pre>
                 </div>
               </div>
             </div>
@@ -4636,7 +4691,8 @@
             <p class="eyebrow">7 · Definition of Done</p>
             <h2 id="prd-milestones-title">Milestones</h2>
           </header>
-          <p class="prd-brief-definition">Χρησιμοποίησε ένα checklist για να βλέπεις τι έχει φτιαχτεί σε κάθε στάδιο και πότε θεωρείται ολοκληρωμένο.</p>
+          <p class="prd-brief-definition">Χρησιμοποίησε ένα checklist για να βλέπεις τι έχει φτιαχτεί σε κάθε στάδιο και
+            πότε θεωρείται ολοκληρωμένο.</p>
           <div class="prd-brief-example">
             <h3>Παράδειγμα · go-reloaded</h3>
             <p>☐ Κανόνες κειμένου → περνούν τα unit tests.<br>☐ CLI → περνούν και τα τέσσερα audit cases.</p>
@@ -4644,7 +4700,8 @@
         </div>
       </section>
 
-      <section class="slide workshop-board" aria-labelledby="prd-tasks-title" data-theme="paper" style="--board-size: 39px;">
+      <section class="slide workshop-board" aria-labelledby="prd-tasks-title" data-theme="paper"
+        style="--board-size: 39px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <p class="eyebrow">7 · Milestones</p>
@@ -4655,29 +4712,32 @@
               <div>
                 <p class="lead-statement">Ένα task είναι μια μικρή δουλειά με σαφές αποτέλεσμα και δικό της έλεγχο.</p>
                 <ul class="point-list">
-                  <li>Σπάσε κάθε milestone σε μικρές αλλαγές. Στη στίξη, ξεκίνα με τη διόρθωση του κενού πριν από κόμμα.</li>
+                  <li>Σπάσε κάθε milestone σε μικρές αλλαγές. Στη στίξη, ξεκίνα με τη διόρθωση του κενού πριν από κόμμα.
+                  </li>
                   <li>Γράψε τα tasks στο Milestones του PRD ή κράτα ένα αρχείο ανά task.</li>
                 </ul>
               </div>
               <div class="terminal board-terminal">
                 <div class="terminal-bar" aria-hidden="true">
-                    <span class="terminal-dots"><i></i><i></i><i></i></span>
-                    <span class="terminal-controls"><svg viewBox="0 0 14 14">
-                        <path d="M2 7h10"></path>
-                      </svg><svg viewBox="0 0 14 14">
-                        <rect x="2.5" y="2.5" width="9" height="9"></rect>
-                      </svg><svg viewBox="0 0 14 14">
-                        <path d="m3 3 8 8m0-8-8 8"></path>
-                      </svg></span>
-                  </div>
-                <pre class="code-card board-code" data-snippet-html="# Task:&#10;&#10;**Goal:**&#10;&#10;**Depends on:**&#10;&#10;## Acceptance criteria&#10;&#10;## Tests to write first&#10;&#10;## Notes"></pre>
+                  <span class="terminal-dots"><i></i><i></i><i></i></span>
+                  <span class="terminal-controls"><svg viewBox="0 0 14 14">
+                      <path d="M2 7h10"></path>
+                    </svg><svg viewBox="0 0 14 14">
+                      <rect x="2.5" y="2.5" width="9" height="9"></rect>
+                    </svg><svg viewBox="0 0 14 14">
+                      <path d="m3 3 8 8m0-8-8 8"></path>
+                    </svg></span>
+                </div>
+                <pre class="code-card board-code"
+                  data-snippet-html="# Task:&#10;&#10;**Goal:**&#10;&#10;**Depends on:**&#10;&#10;## Acceptance criteria&#10;&#10;## Tests to write first&#10;&#10;## Notes"></pre>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="slide workshop-board" aria-labelledby="prd-risks-title" data-theme="indigo" style="--board-size: 39px;">
+      <section class="slide workshop-board" aria-labelledby="prd-risks-title" data-theme="indigo"
+        style="--board-size: 39px;">
         <div class="workshop-frame">
           <header class="slide-header">
             <p class="eyebrow">8 · PRD</p>
@@ -6373,411 +6433,6 @@
     initDeck()
 
   </script>
-  <script type="text/plain" id="deck-licenses">Windows Animations 1.3.7 by ReDrag (redrag2105).
-Source: https://github.com/ramensoftware/windhawk-mods/blob/main/mods/windows-animations.wh.cpp
-The mod declares the MIT license. The upstream credits Abdullah Masood for Classic Genie.
-Only the visual animation logic is adapted here.
-
-Copyright (c) ReDrag
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-
-Copyright 2019 The Sofia Sans Project Authors (https://github.com/lettersoup/Sofia-Sans)
-
-This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-https://scripts.sil.org/OFL
-
-
------------------------------------------------------------
-SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
------------------------------------------------------------
-
-PREAMBLE
-The goals of the Open Font License (OFL) are to stimulate worldwide
-development of collaborative font projects, to support the font creation
-efforts of academic and linguistic communities, and to provide a free and
-open framework in which fonts may be shared and improved in partnership
-with others.
-
-The OFL allows the licensed fonts to be used, studied, modified and
-redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
-redistributed and/or sold with any software provided that any reserved
-names are not used by derivative works. The fonts and derivatives,
-however, cannot be released under any other type of license. The
-requirement for fonts to remain under this license does not apply
-to any document created using the fonts or their derivatives.
-
-DEFINITIONS
-"Font Software" refers to the set of files released by the Copyright
-Holder(s) under this license and clearly marked as such. This may
-include source files, build scripts and documentation.
-
-"Reserved Font Name" refers to any names specified as such after the
-copyright statement(s).
-
-"Original Version" refers to the collection of Font Software components as
-distributed by the Copyright Holder(s).
-
-"Modified Version" refers to any derivative made by adding to, deleting,
-or substituting -- in part or in whole -- any of the components of the
-Original Version, by changing formats or by porting the Font Software to a
-new environment.
-
-"Author" refers to any designer, engineer, programmer, technical
-writer or other person who contributed to the Font Software.
-
-PERMISSION & CONDITIONS
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of the Font Software, to use, study, copy, merge, embed, modify,
-redistribute, and sell modified and unmodified copies of the Font
-Software, subject to the following conditions:
-
-1) Neither the Font Software nor any of its individual components,
-in Original or Modified Versions, may be sold by itself.
-
-2) Original or Modified Versions of the Font Software may be bundled,
-redistributed and/or sold with any software, provided that each copy
-contains the above copyright notice and this license. These can be
-included either as stand-alone text files, human-readable headers or
-in the appropriate machine-readable metadata fields within text or
-binary files as long as those fields can be easily viewed by the user.
-
-3) No Modified Version of the Font Software may use the Reserved Font
-Name(s) unless explicit written permission is granted by the corresponding
-Copyright Holder. This restriction only applies to the primary font name as
-presented to the users.
-
-4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
-Software shall not be used to promote, endorse or advertise any
-Modified Version, except to acknowledge the contribution(s) of the
-Copyright Holder(s) and the Author(s) or with their explicit written
-permission.
-
-5) The Font Software, modified or unmodified, in part or in whole,
-must be distributed entirely under this license, and must not be
-distributed under any other license. The requirement for fonts to
-remain under this license does not apply to any document created
-using the Font Software.
-
-TERMINATION
-This license becomes null and void if any of the above conditions are
-not met.
-
-DISCLAIMER
-THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
-OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
-DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
-OTHER DEALINGS IN THE FONT SOFTWARE.
-
-
-Copyright 2019 The Commissioner Project Authors (https://github.com/kosbarts/Commissioner)
-
-This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-https://scripts.sil.org/OFL
-
-
------------------------------------------------------------
-SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
------------------------------------------------------------
-
-PREAMBLE
-The goals of the Open Font License (OFL) are to stimulate worldwide
-development of collaborative font projects, to support the font creation
-efforts of academic and linguistic communities, and to provide a free and
-open framework in which fonts may be shared and improved in partnership
-with others.
-
-The OFL allows the licensed fonts to be used, studied, modified and
-redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
-redistributed and/or sold with any software provided that any reserved
-names are not used by derivative works. The fonts and derivatives,
-however, cannot be released under any other type of license. The
-requirement for fonts to remain under this license does not apply
-to any document created using the fonts or their derivatives.
-
-DEFINITIONS
-"Font Software" refers to the set of files released by the Copyright
-Holder(s) under this license and clearly marked as such. This may
-include source files, build scripts and documentation.
-
-"Reserved Font Name" refers to any names specified as such after the
-copyright statement(s).
-
-"Original Version" refers to the collection of Font Software components as
-distributed by the Copyright Holder(s).
-
-"Modified Version" refers to any derivative made by adding to, deleting,
-or substituting -- in part or in whole -- any of the components of the
-Original Version, by changing formats or by porting the Font Software to a
-new environment.
-
-"Author" refers to any designer, engineer, programmer, technical
-writer or other person who contributed to the Font Software.
-
-PERMISSION & CONDITIONS
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of the Font Software, to use, study, copy, merge, embed, modify,
-redistribute, and sell modified and unmodified copies of the Font
-Software, subject to the following conditions:
-
-1) Neither the Font Software nor any of its individual components,
-in Original or Modified Versions, may be sold by itself.
-
-2) Original or Modified Versions of the Font Software may be bundled,
-redistributed and/or sold with any software, provided that each copy
-contains the above copyright notice and this license. These can be
-included either as stand-alone text files, human-readable headers or
-in the appropriate machine-readable metadata fields within text or
-binary files as long as those fields can be easily viewed by the user.
-
-3) No Modified Version of the Font Software may use the Reserved Font
-Name(s) unless explicit written permission is granted by the corresponding
-Copyright Holder. This restriction only applies to the primary font name as
-presented to the users.
-
-4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
-Software shall not be used to promote, endorse or advertise any
-Modified Version, except to acknowledge the contribution(s) of the
-Copyright Holder(s) and the Author(s) or with their explicit written
-permission.
-
-5) The Font Software, modified or unmodified, in part or in whole,
-must be distributed entirely under this license, and must not be
-distributed under any other license. The requirement for fonts to
-remain under this license does not apply to any document created
-using the Font Software.
-
-TERMINATION
-This license becomes null and void if any of the above conditions are
-not met.
-
-DISCLAIMER
-THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
-OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
-DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
-OTHER DEALINGS IN THE FONT SOFTWARE.
-
-
-Copyright 2019 The Sofia Sans Project Authors (https://github.com/lettersoup/Sofia-Sans)
-
-This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-https://scripts.sil.org/OFL
-
-
------------------------------------------------------------
-SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
------------------------------------------------------------
-
-PREAMBLE
-The goals of the Open Font License (OFL) are to stimulate worldwide
-development of collaborative font projects, to support the font creation
-efforts of academic and linguistic communities, and to provide a free and
-open framework in which fonts may be shared and improved in partnership
-with others.
-
-The OFL allows the licensed fonts to be used, studied, modified and
-redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
-redistributed and/or sold with any software provided that any reserved
-names are not used by derivative works. The fonts and derivatives,
-however, cannot be released under any other type of license. The
-requirement for fonts to remain under this license does not apply
-to any document created using the fonts or their derivatives.
-
-DEFINITIONS
-"Font Software" refers to the set of files released by the Copyright
-Holder(s) under this license and clearly marked as such. This may
-include source files, build scripts and documentation.
-
-"Reserved Font Name" refers to any names specified as such after the
-copyright statement(s).
-
-"Original Version" refers to the collection of Font Software components as
-distributed by the Copyright Holder(s).
-
-"Modified Version" refers to any derivative made by adding to, deleting,
-or substituting -- in part or in whole -- any of the components of the
-Original Version, by changing formats or by porting the Font Software to a
-new environment.
-
-"Author" refers to any designer, engineer, programmer, technical
-writer or other person who contributed to the Font Software.
-
-PERMISSION & CONDITIONS
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of the Font Software, to use, study, copy, merge, embed, modify,
-redistribute, and sell modified and unmodified copies of the Font
-Software, subject to the following conditions:
-
-1) Neither the Font Software nor any of its individual components,
-in Original or Modified Versions, may be sold by itself.
-
-2) Original or Modified Versions of the Font Software may be bundled,
-redistributed and/or sold with any software, provided that each copy
-contains the above copyright notice and this license. These can be
-included either as stand-alone text files, human-readable headers or
-in the appropriate machine-readable metadata fields within text or
-binary files as long as those fields can be easily viewed by the user.
-
-3) No Modified Version of the Font Software may use the Reserved Font
-Name(s) unless explicit written permission is granted by the corresponding
-Copyright Holder. This restriction only applies to the primary font name as
-presented to the users.
-
-4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
-Software shall not be used to promote, endorse or advertise any
-Modified Version, except to acknowledge the contribution(s) of the
-Copyright Holder(s) and the Author(s) or with their explicit written
-permission.
-
-5) The Font Software, modified or unmodified, in part or in whole,
-must be distributed entirely under this license, and must not be
-distributed under any other license. The requirement for fonts to
-remain under this license does not apply to any document created
-using the Font Software.
-
-TERMINATION
-This license becomes null and void if any of the above conditions are
-not met.
-
-DISCLAIMER
-THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
-OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
-DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
-OTHER DEALINGS IN THE FONT SOFTWARE.
-
-
-Copyright (c) 2012-2013, The Mozilla Corporation and Telefonica S.A.
-
-This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-http://scripts.sil.org/OFL
-
-
------------------------------------------------------------
-SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
------------------------------------------------------------
-
-PREAMBLE
-The goals of the Open Font License (OFL) are to stimulate worldwide
-development of collaborative font projects, to support the font creation
-efforts of academic and linguistic communities, and to provide a free and
-open framework in which fonts may be shared and improved in partnership
-with others.
-
-The OFL allows the licensed fonts to be used, studied, modified and
-redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded,
-redistributed and/or sold with any software provided that any reserved
-names are not used by derivative works. The fonts and derivatives,
-however, cannot be released under any other type of license. The
-requirement for fonts to remain under this license does not apply
-to any document created using the fonts or their derivatives.
-
-DEFINITIONS
-"Font Software" refers to the set of files released by the Copyright
-Holder(s) under this license and clearly marked as such. This may
-include source files, build scripts and documentation.
-
-"Reserved Font Name" refers to any names specified as such after the
-copyright statement(s).
-
-"Original Version" refers to the collection of Font Software components as
-distributed by the Copyright Holder(s).
-
-"Modified Version" refers to any derivative made by adding to, deleting,
-or substituting -- in part or in whole -- any of the components of the
-Original Version, by changing formats or by porting the Font Software to a
-new environment.
-
-"Author" refers to any designer, engineer, programmer, technical
-writer or other person who contributed to the Font Software.
-
-PERMISSION & CONDITIONS
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of the Font Software, to use, study, copy, merge, embed, modify,
-redistribute, and sell modified and unmodified copies of the Font
-Software, subject to the following conditions:
-
-1) Neither the Font Software nor any of its individual components,
-in Original or Modified Versions, may be sold by itself.
-
-2) Original or Modified Versions of the Font Software may be bundled,
-redistributed and/or sold with any software, provided that each copy
-contains the above copyright notice and this license. These can be
-included either as stand-alone text files, human-readable headers or
-in the appropriate machine-readable metadata fields within text or
-binary files as long as those fields can be easily viewed by the user.
-
-3) No Modified Version of the Font Software may use the Reserved Font
-Name(s) unless explicit written permission is granted by the corresponding
-Copyright Holder. This restriction only applies to the primary font name as
-presented to the users.
-
-4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
-Software shall not be used to promote, endorse or advertise any
-Modified Version, except to acknowledge the contribution(s) of the
-Copyright Holder(s) and the Author(s) or with their explicit written
-permission.
-
-5) The Font Software, modified or unmodified, in part or in whole,
-must be distributed entirely under this license, and must not be
-distributed under any other license. The requirement for fonts to
-remain under this license does not apply to any document created
-using the Font Software.
-
-TERMINATION
-This license becomes null and void if any of the above conditions are
-not met.
-
-DISCLAIMER
-THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
-OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
-DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
-OTHER DEALINGS IN THE FONT SOFTWARE.
-</script>
 </body>
 
 </html>
