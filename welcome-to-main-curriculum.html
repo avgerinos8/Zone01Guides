@@ -1105,6 +1105,113 @@
     .editor:has(details[open]) .starter {
       display: none;
     }
+
+    .workshop .headline {
+      font-size: 108px;
+    }
+
+    .workshop-obstacles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin: 68px 0 0;
+      padding: 0;
+      list-style: none;
+      font: 800 60px/1.15 "Deck Display", sans-serif;
+    }
+
+    .workshop-obstacles li {
+      padding: 24px 30px;
+      background: var(--console);
+      border-left: 5px solid var(--accent);
+    }
+
+    .workshop-obstacles small {
+      display: block;
+      margin-top: 12px;
+      font: 600 30px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .flow-code code {
+      display: block;
+    }
+
+    .flow-code[data-branch="1"] [data-flow-branch="2"],
+    .flow-code[data-branch="2"] [data-flow-branch="1"] {
+      opacity: .38;
+    }
+
+    .flow-code[data-branch] .flow-common,
+    .flow-code[data-branch="1"] [data-flow-branch="1"],
+    .flow-code[data-branch="2"] [data-flow-branch="2"] {
+      color: var(--accent);
+      background: var(--chip);
+    }
+
+    .workshop-step {
+      margin-top: 24px;
+      padding: 12px 19px;
+      border: 2px solid var(--accent);
+      color: var(--ink);
+      background: var(--chip);
+      font: 650 25px/1.25 "Deck Body", sans-serif;
+      cursor: pointer;
+    }
+
+    .workshop-step:hover {
+      background: var(--accent);
+      color: var(--contrast);
+    }
+
+    .workshop-step:focus-visible {
+      outline: 4px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    .trace-table {
+      width: 100%;
+      margin-top: 12px;
+      border-collapse: collapse;
+      text-align: left;
+      font: 650 27px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .trace-table :is(th, td) {
+      padding: 5px 18px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .trace-table :is(thead, tbody tr:last-child) {
+      background: var(--console);
+    }
+
+    .breakpoint-line {
+      position: relative;
+      background: var(--chip);
+    }
+
+    .breakpoint-line::before {
+      content: "";
+      position: absolute;
+      top: .38em;
+      left: -.53em;
+      width: .31em;
+      height: .31em;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .scanner-modes {
+      display: grid;
+      gap: 14px;
+      font: 650 30px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .scanner-modes p {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      align-items: baseline;
+    }
   </style>
 </head>
 
@@ -2022,114 +2129,187 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               </g>
             </svg>
           </div>
-          <h2 id="go-review-title">Σύντομη επανάληψη<br>στα βασικά της Go Piscine</h2>
+          <h2 id="go-review-title">Πώς διαβάζουμε<br>κώδικα</h2>
         </div>
       </section>
-      <section class="slide" data-theme="paper" aria-labelledby="loop-quiz">
-        <div class="review">
+      <section class="slide" data-theme="paper" aria-labelledby="execution-flow" data-workshop-interactive>
+        <div class="review workshop">
           <header>
-            <h2 class="headline" id="loop-quiz">Τι θα τυπώσει;</h2>
+            <h2 class="headline" id="execution-flow">Ακολουθώντας τη ροή</h2>
           </header>
-
-          <div class="review-grid quiz">
-            <pre class="code-block" dir="ltr"><code>sum := 0
-<span class="tint">for</span> i := 1; i &lt; 4; i++ {
-    sum += i
-}
-fmt.Println(sum)</code></pre>
-            <div class="discussion">
-              <p class="prompt">Πού σταματάει το loop;</p>
-              <ol class="choices" type="A">
-                <li>3</li>
-                <li>6</li>
-                <li>10</li>
-              </ol>
-              <details>
-                <summary>Δείξε την απάντηση</summary>
-                <div class="reveal">
-                  <p><strong>Β · 6.</strong> Προσθέτουμε τα <code>1, 2, 3</code>. Στο <code>4</code> η συνθήκη γίνεται
-                    false.</p>
-                </div>
-              </details>
+          <div class="review-grid">
+            <pre class="code-block flow-code" dir="ltr"><code>func main() {
+<span class="flow-common">    ready := <span id="flow-condition">true</span></span>
+<span data-flow-branch="1">    if ready {
+        fmt.Println("Ready")
+    }</span> <span data-flow-branch="2">else {
+        fmt.Println("Wait")
+    }</span>
+<span class="flow-common">    fmt.Println("Done")</span>
+<span class="flow-common">}</span></code></pre>
+            <div>
+              <p class="prompt"><code>main</code> → <code>if / else</code> → τέλος</p>
+              <button class="workshop-step" id="flow-step" type="button">Δείξε τη διαδρομή <code>true</code></button>
+              <p class="cue" id="flow-status" aria-live="polite"></p>
             </div>
           </div>
+          <!-- Σημειώσεις ομιλητή: Διαβάζουμε τον κώδικα σαν χάρτη της εκτέλεσης.
+               Ξεκινάμε από την πρώτη εντολή της main και ακολουθούμε τη διαδρομή μέχρι το τέλος.
+               Κρατάμε νοητά τη συνθήκη ως σημείο επιστροφής. Στο δεύτερο κλικ υποθέτουμε ready := false
+               και ξεκινάμε ξανά από εκεί. Και στις δύο εκτελέσεις φτάνουμε στο Done. -->
         </div>
       </section>
-      <section class="slide" data-theme="ink" aria-labelledby="evens">
-        <div class="review">
+      <section class="slide" data-theme="ink" aria-labelledby="reading-obstacles">
+        <div class="review workshop">
           <header>
-            <h2 class="headline" id="evens">Μέτρησε τους ζυγούς</h2>
+            <h2 class="headline" id="reading-obstacles">Πού κολλάμε στη ροή;</h2>
           </header>
-
-          <div class="review-grid drill">
-            <div class="editor">
-              <div class="starter">
-                <pre class="code-block" dir="ltr"><code><span class="tint">func</span> countEven(nums []int) int {
-    <span class="tint">// Τι κρατάμε πριν μπει το for;</span>
-    <span class="tint">return</span> 0
+          <ul class="workshop-obstacles">
+            <li><code>for</code></li>
+            <li>Άγνωστα ονόματα <small>Μεταβλητές, structs, συναρτήσεις</small></li>
+          </ul>
+          <!-- Σημειώσεις ομιλητή: Στο for η ίδια διαδρομή μπορεί να διανυθεί πολλές φορές.
+               Σε μια κλήση συνάρτησης η εκτέλεση συνεχίζει σε άλλο σώμα κώδικα και έπειτα επιστρέφει. -->
+        </div>
+      </section>
+      <section class="slide" data-theme="paper" aria-labelledby="loop-quiz" data-workshop-interactive>
+        <div class="review workshop">
+          <header>
+            <h2 class="headline" id="loop-quiz">Διαβάζοντας ένα <code>for</code></h2>
+          </header>
+          <div class="review-grid">
+            <div>
+              <pre class="code-block" dir="ltr"><code>count := 0
+for i := 0; i &lt; 5; i++ {
+    count += i
 }</code></pre>
-              </div>
               <details>
-                <summary>Δείξε τη λύση</summary>
-                <div class="reveal">
-                  <pre class="code-block" dir="ltr"><code><span class="tint">func</span> countEven(nums []int) int {
-    count := 0
-    <span class="tint">for</span> _, n := <span class="tint">range</span> nums {
-        <span class="tint">if</span> n%2 == 0 {
-            count++
-        }
+                <summary>Δείξε το trace table</summary>
+                <table class="trace-table">
+                  <thead>
+                    <tr><th scope="col"><code>i</code></th><th scope="col"><code>count</code> μετά το βήμα</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>0</td><td>0</td></tr>
+                    <tr><td>1</td><td>1</td></tr>
+                    <tr><td>2</td><td>3</td></tr>
+                    <tr><td>3</td><td>6</td></tr>
+                    <tr><td>4</td><td>10</td></tr>
+                    <tr><td>5 · <code>i &lt; 5</code> είναι false</td><td>10</td></tr>
+                  </tbody>
+                </table>
+              </details>
+            </div>
+            <p class="prompt">Πόσο είναι το <code>count</code> στο τέλος;</p>
+          </div>
+          <!-- Σημειώσεις ομιλητή: Ζητάμε πρώτα τιμή και μετά «Πώς το βρήκες;».
+               Αποκαλύπτουμε τον πίνακα. Σε κάθε γραμμή βάζουμε το i και την τιμή του count
+               μετά την εκτέλεση του σώματος. Στο i = 5 γίνεται μόνο ο έλεγχος της συνθήκης.
+               Αν η συνθήκη αποτύχει από την αρχή, το σώμα εκτελείται μηδέν φορές. -->
+        </div>
+      </section>
+      <section class="slide" data-theme="ink" aria-labelledby="loop-breakpoint">
+        <div class="review workshop">
+          <header>
+            <h2 class="headline" id="loop-breakpoint">Από το πινακάκι στον debugger</h2>
+          </header>
+          <div class="review-grid">
+            <pre class="code-block" dir="ltr"><code>count := 0
+for i := 0; i &lt; 5; i++ {
+<span class="breakpoint-line">    count += i</span>
+}</code></pre>
+            <div>
+              <p class="prompt">VS Code · <code>loops</code></p>
+              <p class="cue">Breakpoint → Step Over → Variables</p>
+              <p class="cue"><code>i</code> · <code>count</code></p>
+            </div>
+          </div>
+          <!-- Σημειώσεις ομιλητή: Ανοίγουμε το loops στο VS Code και βάζουμε breakpoint στο count += i.
+               Όταν σταματήσει, η πρόσθεση εκκρεμεί. Με Step Over εκτελούμε την πρόσθεση, κοιτάμε
+               τις τιμές στο Variables και με Continue πηγαίνουμε στο επόμενο χτύπημα του breakpoint. -->
+        </div>
+      </section>
+      <section class="slide" data-theme="paper" aria-labelledby="tree-breakpoint">
+        <div class="review workshop">
+          <header>
+            <h2 class="headline" id="tree-breakpoint">Debugging σε ένα ASCII δέντρο</h2>
+          </header>
+          <div class="review-grid">
+            <pre class="code-block" dir="ltr"><code>package main
+
+import (
+    "fmt"
+    "strings"
+)
+
+func main() {
+    height := 5
+    for i := 0; i &lt; height; i++ {
+        spaces := height - i - 1
+        padding := strings.Repeat(" ", spaces)
+        stars := strings.Repeat("* ", i) + "*"
+        line := padding + stars
+<span class="breakpoint-line">        fmt.Println(line)</span>
     }
-    <span class="tint">return</span> count
 }</code></pre>
-                </div>
-              </details>
-            </div>
             <div class="discussion">
-              <p class="prompt">Ποια γραμμή γράφουμε πρώτη; Μετά, ποια συνθήκη ξεχωρίζει τους ζυγούς;</p>
-              <p class="label">Δοκιμάζουμε στο main</p>
-              <pre class="code-block" dir="ltr"><code>nums := []int{2, 3, 4, 0}
-fmt.Println(countEven(nums))
-fmt.Println(countEven(<span class="tint">nil</span>))
-<span class="tint">// Περιμένουμε 3 και 0.</span></code></pre>
-              <details>
-                <summary>Μικρή υπόδειξη</summary>
-                <div class="reveal">
-                  <p>Ο μετρητής ξεκινά από <code>0</code>. Δες τι δίνει το <code>n % 2</code>. Και το μηδέν είναι ζυγός.
-                  </p>
-                </div>
-              </details>
+              <pre class="code-block" aria-label="Δέντρο ύψους πέντε γραμμών" dir="ltr"><code>    *
+   * *
+  * * *
+ * * * *
+* * * * *</code></pre>
+              <p class="cue">Breakpoint στο <code>fmt.Println(line)</code></p>
+              <p class="cue">Watch · <code>i</code>, <code>spaces</code>, <code>stars</code>, <code>line</code></p>
             </div>
           </div>
+          <!-- Σημειώσεις ομιλητή: Αλλάζουμε το height και τρέχουμε ξανά. Για height &lt;= 0
+               το loop δεν εκτελείται. Σε κάθε breakpoint το i μετρά από το μηδέν, τα κενά
+               είναι height - i - 1 και τα αστέρια i + 1. Με Continue βλέπουμε την επόμενη
+               γραμμή. Εναλλακτικά, ένα logpoint με i={i}, spaces={spaces}, line={line}
+               κρατά την τιμή κάθε επανάληψης στο Debug Console. -->
         </div>
       </section>
-      <section class="slide" data-theme="paper" aria-labelledby="runes">
-        <div class="review">
+      <section class="slide" data-theme="ink" aria-labelledby="read-hover">
+        <div class="review workshop">
           <header>
-            <h2 class="headline" id="runes">Πόσο μεγάλο είναι το «Go!»;</h2>
+            <h2 class="headline" id="read-hover">Μια άγνωστη λέξη;</h2>
           </header>
-
-          <div class="review-grid quiz">
-            <pre class="code-block" dir="ltr"><code>a := <span class="tint">&quot;Go!&quot;</span>
-b := <span class="tint">&quot;Π!&quot;</span>
-fmt.Println(len(a), len(b))
-fmt.Println(len([]rune(b)))</code></pre>
-            <div class="discussion">
-              <p class="prompt">Ποιο ζευγάρι βγάζει η πρώτη εκτύπωση;</p>
-              <ol class="choices" type="A">
-                <li>3 2</li>
-                <li>3 3</li>
-                <li>2 3</li>
-              </ol>
-              <details>
-                <summary>Δείξε την απάντηση</summary>
-                <div class="reveal">
-                  <p><strong>Β · 3 3.</strong> Το <code>Π</code> πιάνει δύο bytes. Η δεύτερη εκτύπωση δίνει
-                    <code>2</code> runes.
-                  </p>
-                </div>
-              </details>
+          <div class="review-grid">
+            <pre class="code-block" dir="ltr"><code><span class="tint">greeting</span>.Welcome()
+<span class="tint">fmt</span>.Println("Γεια")
+<span class="tint">student</span>.Name</code></pre>
+            <div>
+              <p class="prompt">VS Code · Hover → Tooltip</p>
+              <p class="cue">Αν χρειάζεται, ρώτα το LLM. «Τι σημαίνει package σε αυτό το tooltip;»</p>
             </div>
           </div>
+          <!-- Σημειώσεις ομιλητή: Στο reading-code-demo κάνουμε hover πρώτα πριν από την τελεία.
+               Το greeting είναι package του project, το fmt package της standard library και το
+               student μεταβλητή τύπου struct. Κάνουμε hover και μετά την τελεία για να δούμε
+               υπογραφή συνάρτησης ή τύπο πεδίου. Αν ένα tooltip μας δώσει άγνωστο όρο, ζητάμε
+               από το LLM να εξηγήσει τον όρο με βάση το συγκεκριμένο απόσπασμα. -->
+        </div>
+      </section>
+      <section class="slide" data-theme="paper" aria-labelledby="signature">
+        <div class="review workshop">
+          <header>
+            <h2 class="headline" id="signature">Διαβάζοντας μια υπογραφή</h2>
+          </header>
+          <div class="api-signature" aria-label="func Fields(s string) []string">
+            <span class="api-name">Fields<small>Συνάρτηση</small></span>
+            <span>(s string)<small>Παράμετροι</small></span>
+            <span class="api-output">[]string<small>Τύπος επιστροφής</small></span>
+          </div>
+          <div class="review-grid">
+            <pre class="code-block" dir="ltr"><code>func Welcome() string
+func PrintWelcome()
+func Lookup(key string) (string, bool)</code></pre>
+            <p class="prompt">Τι δίνω; Τι παίρνω πίσω;</p>
+          </div>
+          <!-- Σημειώσεις ομιλητή: Κάνουμε hover στο Fields μέσα στο VS Code και διαβάζουμε τις
+               παραμέτρους με τους τύπους τους και τις τιμές επιστροφής. Οι κενές παρενθέσεις
+               δηλώνουν μηδέν παραμέτρους. Το PrintWelcome δεν δηλώνει αποτέλεσμα επιστροφής,
+               ενώ το Lookup δηλώνει δύο. -->
         </div>
       </section>
       <section class="slide" data-theme="pool" aria-labelledby="non-empty" data-transition="registration">
@@ -2175,38 +2355,6 @@ fmt.Println(len(nonEmpty(<span class="tint">nil</span>)))
                 <summary>Μικρή υπόδειξη</summary>
                 <div class="reveal">
                   <p>Χρησιμοποίησε <code>range</code> και <code>append</code>. Πότε καλούμε την <code>append</code>;</p>
-                </div>
-              </details>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="slide" data-theme="paper" aria-labelledby="signature">
-        <div class="review">
-          <header>
-            <p class="kicker"><a href="https://pkg.go.dev/strings#Fields" target="_blank" rel="noopener">strings.Fields
-                ↗</a></p>
-            <h2 class="headline" id="signature">Διαβάζοντας το Go doc μιας συνάρτησης</h2>
-          </header>
-
-          <div class="api-signature" aria-label="func Fields(s string) []string">
-            <span class="api-name">Fields<small>Συνάρτηση</small></span>
-            <span>(s string)<small>Δέχεται ένα string</small></span>
-            <span class="api-output">[]string<small>Επιστρέφει slice από strings</small></span>
-          </div>
-          <div class="review-grid api-demo">
-            <div>
-              <p class="prompt">«Έχω ένα κείμενο. Θέλω τις λέξεις του σε ένα slice.»</p>
-              <p class="cue">Τα πολλά κενά ανάμεσα στις λέξεις λειτουργούν σαν ένας διαχωριστής.</p>
-            </div>
-            <div class="discussion">
-              <pre class="code-block"
-                dir="ltr"><code>words := strings.Fields(<span class="tint">&quot;go  tea&quot;</span>)</code></pre>
-              <details>
-                <summary>Τι παίρνουμε πίσω;</summary>
-                <div class="reveal">
-                  <pre class="code-block"
-                    dir="ltr"><code>[]string{<span class="tint">&quot;go&quot;</span>, <span class="tint">&quot;tea&quot;</span>}</code></pre>
                 </div>
               </details>
             </div>
@@ -2260,7 +2408,7 @@ fmt.Println(len(nonEmpty(<span class="tint">nil</span>)))
 
 <span class="tint">func</span> Replace(s, old, new string, n int) string</code></pre>
             <div class="discussion">
-              <p class="prompt">Μέσα στις παρενθέσεις βλέπουμε τι δίνουμε. Δεξιά βλέπουμε τι επιστρέφει.</p>
+              <p class="prompt">Μέσα στις παρενθέσεις βλέπουμε τι δίνουμε. <strong>Δεξιά βλέπουμε τι επιστρέφει.</strong></p>
               <p class="cue">Το <code>s, old, new string</code> δηλώνει τρεις παραμέτρους τύπου <code>string</code>.</p>
               <p class="cue">Μόνο από την υπογραφή, ξέρουμε τι ελέγχει το <code>n</code>;</p>
             </div>
@@ -2332,17 +2480,22 @@ fmt.Println(strings.Replace(s, <span class="tint">&quot;go&quot;</span>, <span c
 
           <div class="api-signature" aria-label="func Sort[S ~[]E, E cmp.Ordered](x S)">
             <span class="api-name">Sort<small>Συνάρτηση</small></span>
-            <span>[S ~[]E, E cmp.Ordered]<small>Slice με στοιχεία που έχουν φυσική σειρά, π.χ. int ή
-                string</small></span>
+            <span>[S ~[]E, E cmp.Ordered]<small>Παράμετροι τύπων</small></span>
             <span>(x S)<small>Το slice που δίνουμε</small></span>
           </div>
           <div class="review-grid api-demo">
             <div>
-              <p class="prompt">Τι θα τυπώσει; Μπορούμε να γράψουμε <code>sorted := slices.Sort(nums)</code>;</p>
-              <p class="cue">Στην κλήση, η Go καταλαβαίνει τους τύπους από το <code>nums</code>.</p>
+              <p class="cue"><strong><code>S ~[]E</code></strong> · Το <code>S</code> είναι τύπος slice με στοιχεία
+                τύπου <code>E</code>. Το <code>~</code> επιτρέπει και τύπους με υποκείμενο τύπο <code>[]E</code>,
+                όπως <code>type Scores []int</code>.</p>
+              <p class="cue"><strong><code>E cmp.Ordered</code></strong> · Τα στοιχεία πρέπει να μπορούν να μπουν
+                σε σειρά με <code>&lt;</code>, όπως οι ακέραιοι, οι τύποι κινητής υποδιαστολής και τα strings.
+                <a href="https://pkg.go.dev/cmp#Ordered" target="_blank" rel="noopener">cmp.Ordered ↗</a></p>
+              <p class="cue">Στο παράδειγμα η Go συμπεραίνει <code>S = Scores</code> και <code>E = int</code>.</p>
             </div>
             <div class="discussion">
-              <pre class="code-block" dir="ltr"><code>nums := []int{3, 1, 2}
+              <pre class="code-block" dir="ltr"><code>type Scores []int
+nums := Scores{3, 1, 2}
 slices.Sort(nums)
 fmt.Println(nums)</code></pre>
               <details>
@@ -2351,35 +2504,6 @@ fmt.Println(nums)</code></pre>
                   <p>Τυπώνει <code>[1 2 3]</code>. Μετά το <code>(x S)</code> δεν υπάρχει τύπος επιστροφής. Η
                     <code>Sort</code> ταξινομεί το ίδιο slice.
                   </p>
-                </div>
-              </details>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="slide" data-theme="paper" aria-labelledby="map-quiz">
-        <div class="review">
-          <header>
-            <h2 class="headline" id="map-quiz">Ψηφίζει κανείς για τσάι;</h2>
-          </header>
-
-          <div class="review-grid quiz">
-            <pre class="code-block" dir="ltr"><code>votes := map[string]int{<span class="tint">&quot;καφές&quot;</span>: 0}
-a, aOK := votes[<span class="tint">&quot;καφές&quot;</span>]
-b, bOK := votes[<span class="tint">&quot;τσάι&quot;</span>]
-fmt.Println(a, aOK, b, bOK)</code></pre>
-            <div class="discussion">
-              <p class="prompt">Τι μας λέει το δεύτερο αποτέλεσμα του lookup;</p>
-              <ol class="choices" type="A">
-                <li>0 true 0 false</li>
-                <li>0 false 0 false</li>
-                <li>Το πρόγραμμα κάνει panic.</li>
-              </ol>
-              <details>
-                <summary>Δείξε την απάντηση</summary>
-                <div class="reveal">
-                  <p><strong>Α · 0 true 0 false.</strong> Ο καφές υπάρχει με μηδέν ψήφους. Το τσάι λείπει και παίρνει το
-                    zero value του <code>int</code>.</p>
                 </div>
               </details>
             </div>
@@ -2559,6 +2683,31 @@ text := b.String() <span class="tint">// &quot;go tea&quot;</span></code></pre>
                 buffer μπορεί να επαναχρησιμοποιεί χώρο και να μειώνει τις αντιγραφές του κειμένου.</p>
             </div>
           </div>
+        </div>
+      </section>
+      <section class="slide" data-theme="paper" aria-labelledby="scanner-breakpoint">
+        <div class="review workshop">
+          <header>
+            <h2 class="headline" id="scanner-breakpoint">Διαβάζοντας ένα αρχείο</h2>
+          </header>
+          <div class="review-grid stacked">
+            <pre class="code-block" dir="ltr"><code>scanner := bufio.NewScanner(file)
+for scanner.Scan() {
+    token := scanner.Text()
+<span class="breakpoint-line">    fmt.Printf("%q\n", token)</span>
+}</code></pre>
+            <div class="scanner-modes">
+              <p><strong>Ανά γραμμή</strong><code>Προεπιλογή</code></p>
+              <p><strong>Ανά rune</strong><code>scanner.Split(bufio.ScanRunes)</code></p>
+              <p><strong>Ανά λέξη</strong><code>scanner.Split(bufio.ScanWords)</code></p>
+            </div>
+          </div>
+          <!-- Σημειώσεις ομιλητή: Προαιρετικό live demo. Το file ανοίγει με os.Open. Έλεγξε
+               το σφάλμα ανοίγματος και το scanner.Err() μετά το loop, και κλείσε το αρχείο με defer.
+               Χρησιμοποίησε δύο γραμμές, π.χ. «Γεια Go» και «Go ξανά». Στο breakpoint της εκτύπωσης
+               το token έχει ήδη την τιμή που έδωσε το scanner.Text(). Πάτα Continue για το επόμενο token.
+               Κάνε νέα εκτέλεση για κάθε Split και βάλε μία μόνο επιλογή αμέσως μετά το NewScanner.
+               Το %q κάνει ορατά το κενό και την αλλαγή γραμμής στο ScanRunes. -->
         </div>
       </section>
       <div id="slide-progress" aria-hidden="true"></div>
@@ -3039,6 +3188,7 @@ text := b.String() <span class="tint">// &quot;go tea&quot;</span></code></pre>
       }
 
       function snapshot(index) {
+        if (slides[index].hasAttribute('data-workshop-interactive')) return capture(slides[index])
         if (cache.has(index)) {
           const saved = cache.get(index)
           cache.delete(index)
@@ -3264,6 +3414,19 @@ text := b.String() <span class="tint">// &quot;go tea&quot;</span></code></pre>
             ? document.exitFullscreen?.() : document.documentElement.requestFullscreen?.()
           request?.catch(() => { })
         }
+      })
+
+      const flowStep = document.getElementById('flow-step')
+      const flowCode = document.querySelector('.flow-code')
+      const flowCondition = document.getElementById('flow-condition')
+      const flowStatus = document.getElementById('flow-status')
+
+      flowStep.addEventListener('click', () => {
+        const firstBranch = flowCode.dataset.branch !== '1'
+        flowCode.dataset.branch = firstBranch ? '1' : '2'
+        flowCondition.textContent = firstBranch ? 'true' : 'false'
+        flowStep.querySelector('code').textContent = firstBranch ? 'false' : 'true'
+        flowStatus.textContent = firstBranch ? 'Ready → Done' : 'Wait → Done'
       })
 
       document.getElementById('previous-slide').addEventListener('click', () => navigate(desired - 1))
