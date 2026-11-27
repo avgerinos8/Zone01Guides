@@ -1220,6 +1220,10 @@
       list-style: none;
     }
 
+    [data-reveal-step][data-step-hidden] {
+      visibility: hidden;
+    }
+
     .workshop-obstacles h3 {
       min-height: 160px;
       margin: 0;
@@ -1331,7 +1335,7 @@
 
 <body>
   <main id="viewport">
-    <div id="stage" tabindex="-1" data-transition="fade">
+    <div id="stage" tabindex="-1">
       <section class="zone01-cover-slide slide" id="zone01-cover" data-zone01-cover
         aria-labelledby="zone01-cover-title">
         <style>
@@ -2039,7 +2043,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
         </div>
       </section>
-      <section class="slide" data-theme="black" data-transition="registration" aria-labelledby="go-review-title">
+      <section class="slide" data-theme="black" aria-labelledby="go-review-title">
         <div class="review-divider">
           <p>Zone01 Athens</p>
           <div class="review-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 270" role="img"
@@ -2280,16 +2284,20 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           </header>
           <ul class="workshop-obstacles">
             <li>
-              <h3><code>for</code></h3>
-              <span class="obstacle-arrow" aria-hidden="true">↓</span>
-              <p class="prompt">Πρέπει να υπολογίσουμε νοητά τι αλλάζει σε κάθε επανάληψη.</p>
+              <h3 data-reveal-step data-step-hidden inert aria-hidden="true"><code>for</code></h3>
+              <div data-reveal-step data-step-hidden inert aria-hidden="true">
+                <span class="obstacle-arrow" aria-hidden="true">↓</span>
+                <p class="prompt">Πρέπει να υπολογίσουμε νοητά τι αλλάζει σε κάθε επανάληψη.</p>
+              </div>
             </li>
             <li>
-              <h3>Άγνωστα ονόματα
+              <h3 data-reveal-step data-step-hidden inert aria-hidden="true">Άγνωστα ονόματα
                 <small>(με παρένθεση <code>()</code>) είναι συνήθως → <code class="tint">FUNC</code></small>
               </h3>
-              <span class="obstacle-arrow" aria-hidden="true">↓</span>
-              <p class="prompt">Πρέπει να ακολουθήσουμε τη ροή της εκτέλεσης μέσα στη συνάρτηση.</p>
+              <div data-reveal-step data-step-hidden inert aria-hidden="true">
+                <span class="obstacle-arrow" aria-hidden="true">↓</span>
+                <p class="prompt">Πρέπει να ακολουθήσουμε τη ροή της εκτέλεσης μέσα στη συνάρτηση.</p>
+              </div>
             </li>
           </ul>
           <!-- Σημειώσεις ομιλητή: Στο for η ίδια διαδρομή μπορεί να διανυθεί πολλές φορές.
@@ -2503,7 +2511,7 @@ func Lookup(key string) (string, bool)</code></pre>
                ενώ το Lookup δηλώνει δύο. -->
         </div>
       </section>
-      <section class="slide" data-theme="pool" aria-labelledby="non-empty" data-transition="registration">
+      <section class="slide" data-theme="pool" aria-labelledby="non-empty">
         <div class="review">
           <header>
             <h2 class="headline" id="non-empty">Κράτα τις μη κενές λέξεις</h2>
@@ -2750,7 +2758,7 @@ fmt.Println(stamps, *referenceOnStamps)</code></pre>
           </div>
         </div>
       </section>
-      <section class="slide" data-theme="pool" aria-labelledby="stamps" data-transition="registration">
+      <section class="slide" data-theme="pool" aria-labelledby="stamps">
         <div class="review">
           <header>
             <h2 class="headline" id="stamps">Βάλε μία σφραγίδα</h2>
@@ -2773,7 +2781,7 @@ fmt.Println(stamps) <span class="tint">// 1</span></code></pre>
                δείχνει στην ίδια μεταβλητή, οπότε το ++ αλλάζει το αρχικό stamps. -->
         </div>
       </section>
-      <section class="slide" data-theme="ink" aria-labelledby="final" data-transition="registration">
+      <section class="slide" data-theme="ink" aria-labelledby="final">
         <div class="review">
           <header>
             <h2 class="headline" id="final">Πίνακας αποτελεσμάτων</h2>
@@ -3333,7 +3341,7 @@ for scanner.Scan() {
       }
 
       function snapshot(index) {
-        if (slides[index].hasAttribute('data-workshop-interactive')) return capture(slides[index])
+        if (slides[index].hasAttribute('data-workshop-interactive') || slides[index].querySelector('[data-reveal-step]')) return capture(slides[index])
         if (cache.has(index)) {
           const saved = cache.get(index)
           cache.delete(index)
@@ -3349,10 +3357,26 @@ for scanner.Scan() {
         return image
       }
 
+      function slideLuminance(slide) {
+        const surface = slide.querySelector('.zone01-cover-frame') || slide
+        const [red, green, blue] = getComputedStyle(surface).backgroundColor.match(/\d+/g).map(value => {
+          const channel = Number(value) / 255
+          return channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+        })
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+      }
+
       function options(from, to) {
         const direction = Math.sign(to - from)
         const boundary = slides[direction > 0 ? to : from].dataset
-        const requested = preview?.value || boundary.transition || stage.dataset.transition || 'fade'
+        const fromLuminance = slideLuminance(slides[from])
+        const toLuminance = slideLuminance(slides[to])
+        let requested = 'swell'
+        if (fromLuminance === 0) {
+          requested = 'shatter'
+        } else if (fromLuminance < toLuminance) {
+          requested = 'zoom'
+        }
         const key = requested.trim().toLowerCase().replaceAll('_', '-')
         const name = Object.hasOwn(transitions, key) ? key : 'fade'
         const [normalDuration, make, defaultMode = 'out'] = transitions[name]
@@ -3529,6 +3553,11 @@ for scanner.Scan() {
         try {
           while (current !== desired) {
             const to = desired
+            if (to > current) {
+              for (const element of slides[to].querySelectorAll('[data-reveal-step]')) {
+                setRevealStep(element, false)
+              }
+            }
             const effect = options(current, to)
             for (const animation of entrances) animation.cancel()
             entrances.length = 0
@@ -3541,7 +3570,22 @@ for scanner.Scan() {
         }
       }
 
+      function setRevealStep(element, visible) {
+        element.toggleAttribute('data-step-hidden', !visible)
+        element.inert = !visible
+        element.setAttribute('aria-hidden', String(!visible))
+      }
+
       function step(direction) {
+        if (running) return
+        const steps = Array.from(slides[desired].querySelectorAll('[data-reveal-step]'))
+        const nextStep = direction > 0
+          ? steps.find(element => element.hasAttribute('data-step-hidden'))
+          : steps.findLast(element => !element.hasAttribute('data-step-hidden'))
+        if (nextStep) {
+          setRevealStep(nextStep, direction > 0)
+          return
+        }
         const reveal = slides[desired].querySelector('[data-reveal-on-next]')
         if (reveal && reveal.hidden === (direction > 0)) {
           reveal.hidden = direction < 0
