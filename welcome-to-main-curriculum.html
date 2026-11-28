@@ -1597,9 +1597,27 @@
     }
 
     .poll-board {
+      margin-top: 44px;
+    }
+
+    .poll-footer {
+      display: grid;
       grid-template-columns: 340px minmax(0, 1fr);
-      grid-template-areas: "copy results";
       gap: 54px;
+      align-items: start;
+    }
+
+    .review.poll-enabled {
+      --poll-edge: 32px;
+      --poll-footer-height: 300px;
+      --poll-qr-size: calc(1080px - var(--poll-footer-height) - 3 * var(--poll-edge));
+      position: relative;
+      padding: 50px 72px;
+    }
+
+    .poll-enabled header,
+    .poll-enabled .poll-choices {
+      max-width: calc(100% - var(--poll-qr-size));
     }
 
     .poll-enabled .headline {
@@ -1607,15 +1625,19 @@
     }
 
     .poll-enabled .poll-board {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-areas: "choices qr" "copy results";
-      gap: 28px 54px;
       margin-top: 30px;
     }
 
+    .poll-enabled .poll-footer {
+      position: absolute;
+      inset: auto var(--poll-edge) var(--poll-edge);
+      height: var(--poll-footer-height);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+      gap: var(--poll-edge);
+      align-items: end;
+    }
+
     .poll-choices {
-      grid-area: choices;
-      align-self: center;
       margin: 0;
       padding-left: 1.2em;
       font: 650 40px/1.32 "Deck Notes", sans-serif;
@@ -1626,8 +1648,9 @@
     }
 
     .poll-qr {
-      grid-area: qr;
-      justify-self: end;
+      position: absolute;
+      top: var(--poll-edge);
+      right: var(--poll-edge);
       margin: 0;
     }
 
@@ -1642,22 +1665,15 @@
 
     .poll-qr img {
       display: block;
-      width: 260px;
-      height: 260px;
+      width: var(--poll-qr-size);
+      height: var(--poll-qr-size);
       border: 4px solid var(--accent);
       background: white;
+      image-rendering: pixelated;
     }
 
     .poll-qr figcaption {
       font: 550 30px/1.2 "Deck Notes", sans-serif;
-    }
-
-    .poll-qr figcaption {
-      margin-top: 8px;
-    }
-
-    .poll-copy {
-      grid-area: copy;
     }
 
     .review .poll-copy .cue {
@@ -1666,6 +1682,7 @@
 
     .poll-copy > code {
       font-size: 26px;
+      overflow-wrap: anywhere;
     }
 
     .poll-copy > code:not([hidden]) {
@@ -1674,17 +1691,21 @@
     }
 
     .review .vote-result.code-block {
-      grid-area: results;
       min-height: 220px;
       max-height: 560px;
+    }
+
+    .review :is(.vote-result, .room-result).code-block {
       overflow: auto;
+      overscroll-behavior: contain;
       overflow-wrap: anywhere;
       white-space: pre-wrap;
     }
 
     .review.poll-enabled .vote-result.code-block {
-      min-height: 160px;
-      max-height: 415px;
+      height: 100%;
+      min-height: 0;
+      max-height: none;
       font-size: 27px;
       line-height: 1.23;
     }
@@ -1703,13 +1724,31 @@
 
     .room-result {
       max-height: 400px;
-      overflow: auto;
     }
 
-    .review .room-result.code-block {
-      overflow: auto;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
+    .review.room-poll-enabled {
+      display: flex;
+      flex-direction: column;
+      padding: 50px 32px 32px;
+    }
+
+    .room-poll-enabled :is(.room-map, #room-reveal) {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .room-poll-enabled .room-map {
+      margin-top: 26px;
+    }
+
+    .review.room-poll-enabled .room-result.code-block {
+      flex: 1;
+      min-height: 0;
+      max-height: none;
+      font-size: 29px;
+      line-height: 1.25;
     }
 
     .scanner-grid {
@@ -3077,7 +3116,7 @@ fmt.Println(nums)</code></pre>
           <header>
             <h2 class="headline" id="tally">Μετράμε ψήφους</h2>
           </header>
-          <div class="review-grid poll-board">
+          <div class="poll-board">
             <ul class="poll-choices" hidden>
               <li>Εξήγηση Pointers</li>
               <li>Ερωτήσεις Go Reloaded</li>
@@ -3086,14 +3125,16 @@ fmt.Println(nums)</code></pre>
             </ul>
             <figure class="poll-qr" hidden>
               <a id="poll-link" target="_blank" rel="noopener" hidden></a>
-              <figcaption id="poll-qr-status"></figcaption>
+              <figcaption id="poll-qr-status">Χρειάζεται δημόσιο URL για το QR.</figcaption>
             </figure>
-            <div class="poll-copy">
-              <strong id="poll-status" role="status">Η ζωντανή ψηφοφορία δεν είναι ενεργή.</strong>
-              <p class="cue">Κάθε νέα ψήφος προστίθεται στο <code>votes</code>.</p>
-              <code class="poll-slice" dir="ltr" hidden>[]string{"pointers", "reloaded", "both", "none"}</code>
+            <div class="poll-footer">
+              <div class="poll-copy">
+                <strong id="poll-status" role="status">Η ζωντανή ψηφοφορία δεν είναι ενεργή.</strong>
+                <p class="cue">Κάθε νέα ψήφος προστίθεται στο <code>votes</code>.</p>
+                <code class="poll-slice" dir="ltr" hidden>[]string{"pointers", "reloaded", "both", "none"}</code>
+              </div>
+              <pre class="code-block vote-result" id="poll-result" tabindex="0" dir="ltr" aria-label="Αποτέλεσμα ψηφοφορίας">[]</pre>
             </div>
-            <pre class="code-block vote-result" id="poll-result" tabindex="0" dir="ltr" aria-label="Αποτέλεσμα ψηφοφορίας">[]</pre>
           </div>
         </div>
       </section>
@@ -3111,11 +3152,11 @@ fmt.Println(nums)</code></pre>
               <span><code>3</code> · Back</span>
             </div>
             <div id="room-reveal" data-reveal-step data-step-hidden inert aria-hidden="true">
-              <pre class="code-block room-result" id="room-result" tabindex="0" dir="ltr"><code>map[string]int
+              <pre class="code-block room-result" id="room-result" tabindex="0" dir="ltr" aria-label="Αποτελέσματα θέσεων"><code>map[string]int
 map[marios:2 kostas:2 dimitra:1]</code></pre>
               <p class="cue" id="room-status" role="status">Ενδεικτικά δεδομένα.</p>
             </div>
-            <pre class="code-block" dir="ltr" data-reveal-step data-step-hidden inert aria-hidden="true"><code>map[int][]string</code></pre>
+            <pre class="code-block" id="room-grouped-type" dir="ltr" data-reveal-step data-step-hidden inert aria-hidden="true"><code>map[int][]string</code></pre>
           </div>
         </div>
       </section>
@@ -4049,6 +4090,9 @@ if err := scanner.Err(); err != nil {
         if (e.target instanceof Element) {
           if (e.target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return
           if (['Enter', 'Space'].includes(e.code) && e.target.closest('button, a[href], summary')) return
+          const results = e.target.closest('#poll-result, #room-result')
+          if (results && results.scrollHeight > results.clientHeight &&
+              ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', 'Space'].includes(e.code)) return
         }
         const code = e.code || e.key
         if (!nextKeys.has(code) && !prevKeys.has(code) && !['Home', 'End', 'KeyF'].includes(code)) return
@@ -4107,8 +4151,10 @@ if err := scanner.Err(); err != nil {
       const roomResult = document.getElementById('room-result')
       const roomStatus = document.getElementById('room-status')
       const disconnect = document.getElementById('poll-disconnect')
+      roomReveal.closest('.review').classList.add('room-poll-enabled')
+      document.getElementById('room-grouped-type').remove()
       roomResult.textContent = ''
-      roomStatus.textContent = ''
+      roomStatus.hidden = true
       let qr = ''
       let loading = false
 
@@ -4127,8 +4173,7 @@ if err := scanner.Err(); err != nil {
           }
         }
         qrFigure.hidden = !data.online
-        const hint = qr ? 'Σκάναρε για να ψηφίσεις.' : 'Χρειάζεται δημόσιο URL για το QR.'
-        if (qrStatus.textContent !== hint) qrStatus.textContent = hint
+        qrStatus.hidden = Boolean(qr)
         const description = data.online ? 'Live ψηφοφορία.' : 'Αποθηκευμένες ψήφοι.'
         if (status.textContent !== description) status.textContent = description
         if (result.textContent !== data.result) result.textContent = data.result
