@@ -94,25 +94,28 @@
       right: 0
     }
 
-    #slide-status {
+    .slide-counter {
       position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap
+      right: 12px;
+      bottom: 12px;
+      display: flex;
+      gap: 5px;
+      pointer-events: none;
     }
 
-    #slide-status.visible-counter {
-      left: 12px;
-      bottom: 12px;
-      width: auto;
-      height: auto;
-      clip-path: none;
+    .slide-counter > * {
       padding: 4px 8px;
       background: #14161a;
       color: white;
-      font: 14px system-ui
+      font: 14px/20px system-ui;
+      white-space: nowrap;
+    }
+
+    #slide-more {
+      min-width: 28px;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
     }
 
     #slide-progress {
@@ -1179,6 +1182,262 @@
       font-size: 28px;
     }
 
+    .review .fields-signature,
+    .signature-breakdown {
+      display: grid;
+      grid-template-columns: 280px 530px minmax(0, 1fr);
+      column-gap: 31px;
+    }
+
+    .signature-breakdown {
+      padding-inline: 43px 38px;
+      font: 520 28px/1.25 "Deck Notes", sans-serif;
+    }
+
+    .signature-branch:first-child {
+      grid-column: 2;
+    }
+
+    .signature-branch ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .signature-branch li {
+      position: relative;
+      padding: 7px 0 7px 29px;
+    }
+
+    .signature-branch li::before,
+    .signature-branch li::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      background: var(--accent);
+    }
+
+    .signature-branch li::before {
+      inset-block: 0;
+      width: 2px;
+    }
+
+    .signature-branch li:last-child::before {
+      bottom: 50%;
+    }
+
+    .signature-branch li::after {
+      top: 50%;
+      width: 18px;
+      height: 2px;
+    }
+
+    .signature-branch p {
+      margin: 12px 0 0 29px;
+      font-size: 25px;
+    }
+
+    .fields-hover-demo {
+      position: relative;
+      margin-top: 30px;
+      padding-bottom: 180px;
+    }
+
+    .tooltip-target {
+      color: var(--accent);
+      text-decoration: underline dotted;
+      text-underline-offset: 6px;
+    }
+
+    .editor-tooltip {
+      position: absolute;
+      z-index: 2;
+      width: 880px;
+      padding: 17px 22px;
+      border: 2px solid #4b515b;
+      border-radius: 8px;
+      background: #25262b;
+      color: #eff1f5;
+      box-shadow: 0 9px 30px #0005;
+      font: 450 25px/1.25 "Deck Notes", sans-serif;
+    }
+
+    .editor-tooltip .tooltip-signature {
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #4b515b;
+      color: #b3d5ff;
+    }
+
+    .editor-tooltip a {
+      display: inline-block;
+      margin-top: 8px;
+      color: #a7d6ff;
+    }
+
+    .review .replace-signature {
+      display: grid;
+      grid-template-columns: auto auto auto auto auto 1fr;
+      gap: 30px;
+    }
+
+    .replace-signature small {
+      position: relative;
+      margin-top: 43px;
+      white-space: nowrap;
+    }
+
+    .replace-signature small::before,
+    .replace-signature small::after {
+      content: "";
+      position: absolute;
+      color: var(--accent);
+    }
+
+    .replace-signature small::before {
+      top: -34px;
+      left: var(--arrow-x, 8px);
+      height: 23px;
+      border-left: 2px solid currentColor;
+    }
+
+    .replace-signature small::after {
+      top: -21px;
+      left: calc(var(--arrow-x, 8px) - 4px);
+      width: 10px;
+      height: 10px;
+      border: solid currentColor;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .replace-signature .replace-source {
+      --arrow-x: 34px;
+    }
+
+    .replace-call {
+      position: relative;
+    }
+
+    .review .replace-question,
+    .replace-example,
+    .replace-alternatives {
+      margin-top: 23px;
+    }
+
+    .replace-alternatives {
+      display: grid;
+      grid-template-columns: max-content max-content max-content;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .replace-call .editor-tooltip {
+      display: none;
+      top: 61px;
+      right: 0;
+      width: 740px;
+      pointer-events: none;
+    }
+
+    .replace-call:has(.tooltip-target:is(:hover, :focus)) .editor-tooltip {
+      display: block;
+    }
+
+    .replace-alternatives .editor-tooltip {
+      top: auto;
+      bottom: calc(100% + 8px);
+      left: 0;
+      right: auto;
+    }
+
+    .doc-tooltips {
+      display: grid;
+      gap: 18px;
+    }
+
+    .doc-tooltips .editor-tooltip {
+      position: static;
+      width: auto;
+    }
+
+    .review .doc-terminal .code-block {
+      margin-top: 18px;
+    }
+
+    .sort-example {
+      margin-top: 29px;
+    }
+
+    .sort-explanation .cue {
+      margin-top: 12px;
+    }
+
+    .fields-hover-demo .editor-tooltip {
+      top: 61px;
+      left: 280px;
+    }
+
+    .nonempty-call {
+      position: relative;
+      margin-top: 30px;
+    }
+
+    .nonempty-call .editor-tooltip {
+      display: none;
+      top: 51px;
+      left: 680px;
+      pointer-events: none;
+    }
+
+    .nonempty-demo:has(.nonempty-doc:not([data-step-hidden]))
+      .nonempty-call:has(.tooltip-target:is(:hover, :focus)) .editor-tooltip {
+      display: block;
+    }
+
+    .nonempty-demo .nonempty-body {
+      margin-top: 18px;
+      font-size: 28px;
+      line-height: 1.18;
+    }
+
+    .nonempty-loop {
+      position: relative;
+    }
+
+    .nonempty-body:not([data-step-hidden]) .nonempty-loop[data-step-hidden]::before {
+      content: "    // TODO: ...";
+      position: absolute;
+      inset: 0 auto auto 0;
+      color: var(--accent);
+      visibility: visible;
+    }
+
+    .review .terminal-choices li {
+      padding-left: 15px;
+    }
+
+    .terminal-choices code + code {
+      margin-left: 30px;
+    }
+
+    .stamps-functions {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stamps-example > * + * {
+      margin-top: 22px;
+    }
+
+    .review .stamps-example > pre + pre,
+    .review .stamps-example > .cue + pre {
+      margin-top: 16px;
+    }
+
+    .stamps-example .code-block {
+      font-size: 25px;
+    }
+
     .review .pointer-comparison > pre + pre {
       margin-top: 24px;
     }
@@ -1319,16 +1578,25 @@
       background: var(--accent);
     }
 
-    .scanner-modes {
-      display: grid;
-      gap: 14px;
-      font: 650 30px/1.2 "Deck Notes", sans-serif;
+    .scanner-grid {
+      gap: 42px;
     }
 
-    .scanner-modes p {
+    .review .scanner-grid .code-block {
+      font-size: 26px;
+      line-height: 1.22;
+    }
+
+    .scanner-modes {
       display: grid;
-      grid-template-columns: 250px 1fr;
-      align-items: baseline;
+      gap: 19px;
+      font: 650 28px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .scanner-modes code {
+      display: block;
+      margin-top: 5px;
+      color: var(--accent);
     }
   </style>
 </head>
@@ -2315,22 +2583,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 for i := 0; i &lt; 5; i++ {
     count += i
 }</code></pre>
-              <details>
-                <summary>Δείξε το trace table</summary>
-                <table class="trace-table">
-                  <thead>
-                    <tr><th scope="col"><code>i</code></th><th scope="col"><code>count</code> μετά το βήμα</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>0</td><td>0</td></tr>
-                    <tr><td>1</td><td>1</td></tr>
-                    <tr><td>2</td><td>3</td></tr>
-                    <tr><td>3</td><td>6</td></tr>
-                    <tr><td>4</td><td>10</td></tr>
-                    <tr><td>5 · <code>i &lt; 5</code> είναι false</td><td>10</td></tr>
-                  </tbody>
-                </table>
-              </details>
+              <table class="trace-table" data-reveal-step data-step-hidden inert aria-hidden="true">
+                <thead>
+                  <tr><th scope="col"><code>i</code></th><th scope="col"><code>count</code> μετά το βήμα</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>0</td><td>0</td></tr>
+                  <tr><td>1</td><td>1</td></tr>
+                  <tr><td>2</td><td>3</td></tr>
+                  <tr><td>3</td><td>6</td></tr>
+                  <tr><td>4</td><td>10</td></tr>
+                  <tr><td>5 · <code>i &lt; 5</code> είναι false</td><td>10</td></tr>
+                </tbody>
+              </table>
             </div>
             <p class="prompt">Πόσο είναι το <code>count</code> στο τέλος;</p>
           </div>
@@ -2494,70 +2759,65 @@ main.main</code></pre>
           <header>
             <h2 class="headline" id="signature">Διαβάζοντας μια υπογραφή</h2>
           </header>
-          <div class="api-signature" aria-label="func Fields(s string) []string">
-            <span class="api-name">Fields<small>Συνάρτηση</small></span>
-            <span>(s string)<small>Παράμετροι</small></span>
-            <span class="api-output">[]string<small>Τύπος επιστροφής</small></span>
+          <div class="api-signature fields-signature" aria-label="func Fields(s string) []string">
+            <span class="api-name">Fields<small>Όνομα συνάρτησης</small></span>
+            <span>(s string)<small><strong>Input</strong> parameters / arguments</small></span>
+            <span class="api-output">[]string<small><strong>Return</strong> values (0, 1 ή περισσότερες)</small></span>
           </div>
-          <div class="review-grid">
-            <pre class="code-block" dir="ltr"><code>func Welcome() string
-func PrintWelcome()
-func Lookup(key string) (string, bool)</code></pre>
-            <p class="prompt">Τι δίνω; Τι παίρνω πίσω;</p>
+          <div class="signature-breakdown" data-reveal-step data-step-hidden inert aria-hidden="true">
+            <div class="signature-branch">
+              <ul aria-label="Input">
+                <li>Πόσες παράμετροι (0+)</li>
+                <li>Με ποια σειρά</li>
+                <li>Τι τύπο έχει καθεμία</li>
+              </ul>
+              <p>Τα arguments είναι οι τιμές που δίνουμε στην κλήση.</p>
+            </div>
+            <div class="signature-branch">
+              <ul aria-label="Return">
+                <li>Πόσες τιμές επιστρέφονται (0+)</li>
+                <li>Με ποια σειρά</li>
+                <li>Τι τύπο έχει καθεμία</li>
+              </ul>
+              <p>Μία ανώνυμη επιστροφή γράφεται χωρίς <code>()</code>. Πολλαπλές μέσα σε <code>()</code>.</p>
+            </div>
           </div>
-          <!-- Σημειώσεις ομιλητή: Κάνουμε hover στο Fields μέσα στο VS Code και διαβάζουμε τις
-               παραμέτρους με τους τύπους τους και τις τιμές επιστροφής. Οι κενές παρενθέσεις
-               δηλώνουν μηδέν παραμέτρους. Το PrintWelcome δεν δηλώνει αποτέλεσμα επιστροφής,
-               ενώ το Lookup δηλώνει δύο. -->
+          <div class="fields-hover-demo" data-reveal-step data-step-hidden inert aria-hidden="true">
+            <pre class="code-block" dir="ltr"><code>words := strings.<span class="tooltip-target">Fields</span>("  mars   venus  ")</code></pre>
+            <div class="editor-tooltip">
+              <p class="tooltip-signature"><code>func Fields(s string) []string</code></p>
+              <p>Fields splits the string s around each instance of one or more consecutive white space characters.
+                The result contains only non-empty substrings. A string with only whitespace yields an empty slice.</p>
+              <a href="https://pkg.go.dev/strings#Fields" target="_blank" rel="noopener">Go doc · strings.Fields ↗</a>
+            </div>
+          </div>
         </div>
       </section>
       <section class="slide" data-theme="pool" aria-labelledby="non-empty">
-        <div class="review">
+        <div class="review workshop nonempty-demo">
           <header>
-            <h2 class="headline" id="non-empty">Κράτα τις μη κενές λέξεις</h2>
+            <h2 class="headline" id="non-empty">Η υπογραφή της δικής μας συνάρτησης</h2>
           </header>
-
-          <div class="review-grid drill">
-            <div class="editor">
-              <div class="starter">
-                <pre class="code-block" dir="ltr"><code><span class="tint">func</span> nonEmpty(items []string) []string {
-    var kept []string
-    <span class="tint">// Πρόσθεσε εδώ τις λέξεις που κρατάμε.</span>
-    <span class="tint">return</span> kept
-}</code></pre>
-              </div>
-              <details>
-                <summary>Δείξε τη λύση</summary>
-                <div class="reveal">
-                  <pre class="code-block" dir="ltr"><code><span class="tint">func</span> nonEmpty(items []string) []string {
-    var kept []string
-    <span class="tint">for</span> _, item := <span class="tint">range</span> items {
-        <span class="tint">if</span> item != <span class="tint">&quot;&quot;</span> {
-            kept = append(kept, item)
-        }
-    }
-    <span class="tint">return</span> kept
-}</code></pre>
-                </div>
-              </details>
-            </div>
-            <div class="discussion">
-              <p class="prompt">Επίστρεψε νέο slice στην ίδια σειρά, παραλείποντας κάθε κενό string.</p>
-              <p class="label">Δοκιμάζουμε στο main</p>
-              <pre class="code-block" dir="ltr"><code>items := []string{<span class="tint">&quot;go&quot;</span>, <span class="tint">&quot;&quot;</span>, <span class="tint">&quot;tea&quot;</span>}
-fmt.Println(nonEmpty(items))
-<span class="tint">// [go tea]</span>
-
-fmt.Println(len(nonEmpty(<span class="tint">nil</span>)))
-<span class="tint">// 0</span></code></pre>
-              <details>
-                <summary>Μικρή υπόδειξη</summary>
-                <div class="reveal">
-                  <p>Χρησιμοποίησε <code>range</code> και <code>append</code>. Πότε καλούμε την <code>append</code>;</p>
-                </div>
-              </details>
+          <div class="nonempty-call">
+            <pre class="code-block" dir="ltr"><code>items := []string{"mars", "", "venus"}
+fmt.Println(<span class="tooltip-target" tabindex="-1" id="nonempty-hover">nonEmpty</span>(items))
+<span class="tint">// [mars venus]</span></code></pre>
+            <div class="editor-tooltip" id="nonempty-tooltip" role="tooltip">
+              <p class="tooltip-signature"><code>func nonEmpty(items []string) []string</code></p>
+              <p>nonEmpty returns the non-empty strings in items.<br>It preserves their original order.</p>
             </div>
           </div>
+          <pre class="code-block nonempty-body" dir="ltr" data-reveal-step="1" data-step-hidden inert aria-hidden="true"><code><span class="tint nonempty-doc" data-reveal-step="3" data-step-hidden inert aria-hidden="true">// nonEmpty returns the non-empty strings in items.
+// It preserves their original order.</span>
+func nonEmpty(items []string) []string {
+    var kept []string
+<span class="nonempty-loop" data-reveal-step="2" data-step-hidden inert aria-hidden="true">    for _, item := range items {
+        if item != "" {
+            kept = append(kept, item)
+        }
+    }</span>
+    return kept
+}</code></pre>
         </div>
       </section>
       <section class="slide" data-theme="paper" aria-labelledby="replace">
@@ -2568,48 +2828,44 @@ fmt.Println(len(nonEmpty(<span class="tint">nil</span>)))
             <h2 class="headline" id="replace">Μια πιο σύνθετη <em>function signature</em></h2>
           </header>
 
-          <div class="api-signature" aria-label="func Replace(s, old, new string, n int) string">
-            <span class="api-name">Replace<small>Συνάρτηση</small></span>
-            <span>(s, old, new string,<small>Αρχικό κείμενο · τι ψάχνω · τι βάζω</small></span>
-            <span>n int)<small>Πόσες αλλαγές</small></span>
-            <span class="api-output">string<small>Επιστρέφει το αποτέλεσμα</small></span>
+          <div class="api-signature replace-signature" aria-label="func Replace(s, old, new string, n int) string">
+            <span class="api-name">Replace<small>Όνομα συνάρτησης</small></span>
+            <span class="replace-source">(s,<small>Αρχικό κείμενο</small></span>
+            <span>old,<small>Τι ψάχνω</small></span>
+            <span>new string,<small>Τι βάζω</small></span>
+            <span>n int)<small data-reveal-step data-step-hidden inert aria-hidden="true">Πόσες αλλαγές</small></span>
+            <span class="api-output">string<small>Αποτέλεσμα</small></span>
           </div>
-          <div class="review-grid api-demo">
-            <div>
-              <p class="prompt">«Θέλω να αλλάξω το πρώτο <code>go</code> σε <code>Go</code>. Τι τιμή θα δώσω στο
-                <code>n</code>;»
-              </p>
-              <p class="cue">Το αρχικό string μένει ίδιο. Χρησιμοποιούμε την τιμή που επιστρέφει η συνάρτηση.</p>
-            </div>
-            <div class="discussion">
-              <pre class="code-block" dir="ltr"><code>out := strings.Replace(
-    <span class="tint">&quot;go go&quot;</span>, <span class="tint">&quot;go&quot;</span>, <span class="tint">&quot;Go&quot;</span>, 1,
-)</code></pre>
-              <details>
-                <summary>Τι παίρνουμε πίσω;</summary>
-                <div class="reveal">
-                  <pre class="code-block" dir="ltr"><code><span class="tint">&quot;Go go&quot;</span></code></pre>
-                </div>
-              </details>
+          <p class="prompt replace-question">Μόνο από την υπογραφή, ξέρουμε τι ελέγχει το <code>n</code>;</p>
+          <div class="replace-example" data-reveal-step data-step-hidden inert aria-hidden="true">
+            <div class="replace-call">
+              <pre class="code-block" dir="ltr"><code>out := strings.<span class="tooltip-target" tabindex="0" aria-describedby="replace-tooltip">Replace</span>(<span class="tint">&quot;mars venus mars&quot;</span>, <span class="tint">&quot;mars&quot;</span>, <span class="tint">&quot;saturn&quot;</span>, 1)
+<span class="tint">// out == &quot;saturn venus mars&quot;</span></code></pre>
+              <div class="editor-tooltip" id="replace-tooltip" role="tooltip">
+                <p class="tooltip-signature"><code>func Replace(s, old, new string, n int) string</code></p>
+                <p>Replace returns a copy of s with up to n non-overlapping occurrences of old changed to new.
+                  A negative n replaces every occurrence.</p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      <section class="slide" data-theme="paper" aria-labelledby="read-signature">
-        <div class="review">
-          <header>
-            <p class="kicker">Standard library · 1</p>
-            <h2 class="headline" id="read-signature">Ξεκίνα από τους τύπους</h2>
-          </header>
-
-          <div class="review-grid quiz stacked">
-            <pre class="code-block" dir="ltr"><code><span class="tint">func</span> Fields(s string) []string
-
-<span class="tint">func</span> Replace(s, old, new string, n int) string</code></pre>
-            <div class="discussion">
-              <p class="prompt">Μέσα στις παρενθέσεις βλέπουμε τι δίνουμε. <strong>Δεξιά βλέπουμε τι επιστρέφει.</strong></p>
-              <p class="cue">Το <code>s, old, new string</code> δηλώνει τρεις παραμέτρους τύπου <code>string</code>.</p>
-              <p class="cue">Μόνο από την υπογραφή, ξέρουμε τι ελέγχει το <code>n</code>;</p>
+          <p class="prompt replace-question" data-reveal-step data-step-hidden inert aria-hidden="true">Πού θα βρεις
+            ποια τιμή του <code>n</code> χρειάζεται για να αντικαταστήσεις όλες τις εμφανίσεις του <code>mars</code>;</p>
+          <div class="replace-alternatives" data-reveal-step data-step-hidden inert aria-hidden="true">
+            <div class="replace-call">
+              <pre class="code-block" dir="ltr"><code><span class="tooltip-target" tabindex="0" aria-describedby="replace-all-tooltip">strings.ReplaceAll</span></code></pre>
+              <div class="editor-tooltip" id="replace-all-tooltip" role="tooltip">
+                <p class="tooltip-signature"><code>func ReplaceAll(s, old, new string) string</code></p>
+                <p>ReplaceAll returns a copy of s with every non-overlapping occurrence of old changed to new.</p>
+              </div>
+            </div>
+            <span class="prompt">ή</span>
+            <div class="replace-call">
+              <pre class="code-block" dir="ltr"><code><span class="tooltip-target" tabindex="0" aria-describedby="replace-every-tooltip">strings.Replace</span></code></pre>
+              <div class="editor-tooltip" id="replace-every-tooltip" role="tooltip">
+                <p class="tooltip-signature"><code>func Replace(s, old, new string, n int) string</code></p>
+                <p>Replace returns a copy of s with up to n non-overlapping occurrences of old changed to new.
+                  A negative n replaces every occurrence.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -2617,20 +2873,25 @@ fmt.Println(len(nonEmpty(<span class="tint">nil</span>)))
       <section class="slide" data-theme="paper" aria-labelledby="read-doc">
         <div class="review">
           <header>
-            <p class="kicker">Standard library · 2</p>
+            <p class="kicker">Standard library</p>
             <h2 class="headline" id="read-doc">Διάβασε την περιγραφή</h2>
           </header>
 
           <div class="review-grid quiz">
-            <div class="discussion">
-              <p class="prompt">Τι κάνει η συνάρτηση με τις τιμές που της δίνουμε;</p>
-              <p class="cue"><strong>Fields.</strong> Χωρίζει στα διαστήματα, στα tabs και στις αλλαγές γραμμής. Είσοδος
-                με μόνο κενά δίνει άδειο slice.</p>
-              <p class="cue"><strong>Replace.</strong> Το <code>n</code> περιορίζει πόσες αντικαταστάσεις γίνονται. Με
-                αρνητικό <code>n</code> γίνονται όλες.</p>
+            <div class="doc-tooltips">
+              <div class="editor-tooltip">
+                <p class="tooltip-signature"><code>func Fields(s string) []string</code></p>
+                <p>Fields splits the string s around each instance of one or more consecutive white space characters.
+                  The result contains only non-empty substrings. A string with only whitespace yields an empty slice.</p>
+              </div>
+              <div class="editor-tooltip">
+                <p class="tooltip-signature"><code>func Replace(s, old, new string, n int) string</code></p>
+                <p>Replace returns a copy of s with up to n non-overlapping occurrences of old changed to new.
+                  A negative n replaces every occurrence.</p>
+              </div>
             </div>
-            <div class="discussion">
-              <p class="label">Από το terminal</p>
+            <div class="discussion doc-terminal">
+              <p class="prompt">Εναλλακτικά, από το terminal</p>
               <pre class="code-block" dir="ltr"><code>go doc strings.Fields
 go doc strings.Replace</code></pre>
               <p class="cue">Στην περιγραφή ψάξε τι επιστρέφει και τι κάνει σε ειδικές τιμές, όπως <code>n = 0</code>.
@@ -2652,30 +2913,28 @@ go doc strings.Replace</code></pre>
             <span>[S ~[]E, E cmp.Ordered]<small>Παράμετροι τύπων</small></span>
             <span>(x S)<small>Το slice που δίνουμε</small></span>
           </div>
-          <div class="review-grid api-demo">
-            <div>
-              <p class="cue"><strong><code>S ~[]E</code></strong> · Το <code>S</code> είναι τύπος slice με στοιχεία
-                τύπου <code>E</code>. Το <code>~</code> επιτρέπει και τύπους με υποκείμενο τύπο <code>[]E</code>,
-                όπως <code>type Scores []int</code>.</p>
-              <p class="cue"><strong><code>E cmp.Ordered</code></strong> · Τα στοιχεία πρέπει να μπορούν να μπουν
-                σε σειρά με <code>&lt;</code>, όπως οι ακέραιοι, οι τύποι κινητής υποδιαστολής και τα strings.
-                <a href="https://pkg.go.dev/cmp#Ordered" target="_blank" rel="noopener">cmp.Ordered ↗</a></p>
-              <p class="cue">Στο παράδειγμα η Go συμπεραίνει <code>S = Scores</code> και <code>E = int</code>.</p>
-            </div>
-            <div class="discussion">
-              <pre class="code-block" dir="ltr"><code>type Scores []int
+          <div class="sort-example" data-reveal-step data-step-hidden inert aria-hidden="true">
+            <pre class="code-block" dir="ltr"><code>type Scores []int
 nums := Scores{3, 1, 2}
 slices.Sort(nums)
 fmt.Println(nums)</code></pre>
-              <details>
-                <summary>Δείξε την απάντηση</summary>
-                <div class="reveal">
-                  <p>Τυπώνει <code>[1 2 3]</code>. Μετά το <code>(x S)</code> δεν υπάρχει τύπος επιστροφής. Η
-                    <code>Sort</code> ταξινομεί το ίδιο slice.
-                  </p>
-                </div>
-              </details>
-            </div>
+            <details>
+              <summary>Δείξε την απάντηση</summary>
+              <div class="reveal">
+                <p>Τυπώνει <code>[1 2 3]</code>. Μετά το <code>(x S)</code> δεν υπάρχει τύπος επιστροφής. Η
+                  <code>Sort</code> ταξινομεί το ίδιο slice.
+                </p>
+              </div>
+            </details>
+          </div>
+          <div class="sort-explanation" data-reveal-step data-step-hidden inert aria-hidden="true">
+            <p class="cue"><strong><code>S ~[]E</code></strong> · Το <code>S</code> είναι τύπος slice με στοιχεία
+              τύπου <code>E</code>. Το <code>~</code> επιτρέπει και τύπους με υποκείμενο τύπο <code>[]E</code>,
+              όπως <code>type Scores []int</code>.</p>
+            <p class="cue"><strong><code>E cmp.Ordered</code></strong> · Τα στοιχεία πρέπει να μπορούν να μπουν
+              σε σειρά με <code>&lt;</code>, όπως οι ακέραιοι, οι τύποι κινητής υποδιαστολής και τα strings.
+              <a href="https://pkg.go.dev/cmp#Ordered" target="_blank" rel="noopener">cmp.Ordered ↗</a></p>
+            <p class="cue">Στο παράδειγμα η Go συμπεραίνει <code>S = Scores</code> και <code>E = int</code>.</p>
           </div>
         </div>
       </section>
@@ -2684,69 +2943,30 @@ fmt.Println(nums)</code></pre>
           <header>
             <h2 class="headline" id="tally">Μετράμε ψήφους</h2>
           </header>
-
-          <div class="review-grid drill">
-            <div class="editor">
-              <div class="starter">
-                <pre class="code-block" dir="ltr"><code><span class="tint">func</span> tally(votes []string) map[string]int {
-    <span class="tint">// Ένα κλειδί για κάθε επιλογή.</span>
-    <span class="tint">return</span> <span class="tint">nil</span>
-}</code></pre>
-              </div>
-              <details>
-                <summary>Δείξε τη λύση</summary>
-                <div class="reveal">
-                  <pre class="code-block" dir="ltr"><code><span class="tint">func</span> tally(votes []string) map[string]int {
-    counts := <span class="tint">make</span>(map[string]int)
-    <span class="tint">for</span> _, vote := <span class="tint">range</span> votes {
-        counts[vote]++
-    }
-    <span class="tint">return</span> counts
-}</code></pre>
-                </div>
-              </details>
-            </div>
-            <div class="discussion">
-              <p class="prompt">Στις ψήφους «go, tea, go», πόσες φορές εμφανίζεται κάθε επιλογή;</p>
-              <p class="label">Δοκιμάζουμε στο main</p>
-              <pre class="code-block" dir="ltr"><code>votes := []string{<span class="tint">&quot;go&quot;</span>,<span class="tint">&quot;tea&quot;</span>,<span class="tint">&quot;go&quot;</span>}
-m := tally(votes)
-fmt.Println(m[<span class="tint">&quot;go&quot;</span>], m[<span class="tint">&quot;tea&quot;</span>])
-fmt.Println(len(tally(<span class="tint">nil</span>)))
-<span class="tint">// Περιμένουμε 2 1 και 0.</span></code></pre>
-              <details>
-                <summary>Μικρή υπόδειξη</summary>
-                <div class="reveal">
-                  <p>Φτιάξε το map με <code>make</code>. Για κάθε ψήφο, αύξησε την τιμή στο αντίστοιχο κλειδί.</p>
-                </div>
-              </details>
-            </div>
-          </div>
         </div>
       </section>
-      <section class="slide" data-theme="paper" aria-labelledby="pointer-quiz" data-workshop-interactive>
-        <div class="review">
+      <section class="slide" data-theme="paper" aria-labelledby="pointer-quiz">
+        <div class="review workshop">
           <header>
-            <h2 class="headline" id="pointer-quiz">Πόσες σφραγίδες έμειναν;</h2>
+            <h2 class="headline" id="pointer-quiz">Αντίγραφο τιμής ή διεύθυνση;</h2>
           </header>
-
           <div class="review-grid quiz">
             <div class="pointer-comparison">
               <pre class="code-block" dir="ltr"><code>stamps := 1
 copyOfStamps := stamps
 copyOfStamps++
 fmt.Println(stamps, copyOfStamps)</code></pre>
-              <pre class="code-block" dir="ltr" data-reveal-on-next hidden><code>stamps := 1
+              <pre class="code-block" dir="ltr" data-reveal-step="1" data-step-hidden inert aria-hidden="true"><code>stamps := 1
 referenceOnStamps := &amp;stamps
-(*referenceOnStamps)++
-fmt.Println(stamps, *referenceOnStamps)</code></pre>
+<span data-reveal-step="2" data-step-hidden inert aria-hidden="true">(*referenceOnStamps)++
+fmt.Println(stamps, *referenceOnStamps)</span></code></pre>
             </div>
             <div class="discussion">
-              <p class="prompt">Τι θα δούμε στην οθόνη;</p>
-              <ol class="choices" type="A">
-                <li>2 2</li>
-                <li>1 2</li>
-                <li>1 1</li>
+              <p class="prompt">Τι θα δούμε στο terminal;</p>
+              <ol class="choices terminal-choices" type="A">
+                <li><code>2</code><code>2</code></li>
+                <li><code>1</code><code>2</code></li>
+                <li><code>1</code><code>1</code></li>
               </ol>
               <details>
                 <summary>Δείξε την απάντηση</summary>
@@ -2759,50 +2979,29 @@ fmt.Println(stamps, *referenceOnStamps)</code></pre>
         </div>
       </section>
       <section class="slide" data-theme="pool" aria-labelledby="stamps">
-        <div class="review">
+        <div class="review workshop">
           <header>
-            <h2 class="headline" id="stamps">Βάλε μία σφραγίδα</h2>
+            <h2 class="headline" id="stamps">Μέσα σε μια συνάρτηση</h2>
           </header>
-
-          <div class="review-grid">
-            <pre class="code-block" dir="ltr"><code><span class="tint">func</span> addStamp(referenceOnStamps *int) {
+          <div class="review-grid stamps-functions">
+            <div class="stamps-example">
+              <pre class="code-block" dir="ltr"><code>addStamp(1)</code></pre>
+              <pre class="code-block" dir="ltr"><code>func addStamp(stamps int) {
+    stamps++
+}</code></pre>
+              <p class="cue">Η παράμετρος παίρνει αντίγραφο της τιμής.</p>
+              <pre class="code-block" dir="ltr"><code>copyOfStamps := stamps</code></pre>
+            </div>
+            <div class="stamps-example">
+              <pre class="code-block" dir="ltr" data-reveal-step data-step-hidden inert aria-hidden="true"><code>func addStampForReal(referenceOnStamps *int) {
     (*referenceOnStamps)++
 }</code></pre>
-            <pre class="code-block" dir="ltr"><code>stamps := 1
-referenceOnStamps := &amp;stamps
-addStamp(referenceOnStamps)
-fmt.Println(stamps) <span class="tint">// 2</span>
-
-stamps = 0
-addStamp(&amp;stamps)
-fmt.Println(stamps) <span class="tint">// 1</span></code></pre>
-          </div>
-          <!-- Σημειώσεις ομιλητή: Η addStamp παίρνει αντίγραφο του pointer. Το αντίγραφο
-               δείχνει στην ίδια μεταβλητή, οπότε το ++ αλλάζει το αρχικό stamps. -->
-        </div>
-      </section>
-      <section class="slide" data-theme="ink" aria-labelledby="final">
-        <div class="review">
-          <header>
-            <h2 class="headline" id="final">Πίνακας αποτελεσμάτων</h2>
-          </header>
-
-          <div class="review-grid final">
-            <div>
-              <p class="prompt">Από μια λίστα ψήφων, τύπωσε πόσες πήρε κάθε επιλογή. Αγνόησε τις κενές εγγραφές και τα
-                περιττά κενά. Τα κεφαλαία και τα πεζά μετράνε ως ίδια επιλογή.</p>
-              <p class="cue">Δείξε πρώτα τις επιλογές με τις περισσότερες ψήφους. Στην ισοπαλία, αλφαβητικά.</p>
-              <p class="cue"><strong>Πώς θα χώριζες το πρόβλημα σε μικρότερα κομμάτια;</strong></p>
-            </div>
-            <div class="discussion">
-              <p class="label">Είσοδος</p>
-              <pre class="code-block"
-                dir="ltr"><code>[]string{<span class="tint">&quot; Go &quot;</span>, <span class="tint">&quot;tea&quot;</span>, <span class="tint">&quot;&quot;</span>, <span class="tint">&quot;GO&quot;</span>,
-         <span class="tint">&quot; Cake &quot;</span>, <span class="tint">&quot;  &quot;</span>, <span class="tint">&quot;Tea&quot;</span>}</code></pre>
-              <p class="label">Έξοδος</p>
-              <pre class="code-block" dir="ltr"><code>go: 2
-tea: 2
-cake: 1</code></pre>
+              <div data-reveal-step data-step-hidden inert aria-hidden="true">
+                <pre class="code-block" dir="ltr"><code>stamps := 1
+addStampForReal(<span class="tint">&amp;stamps</span>)
+fmt.Println(stamps) // 2</code></pre>
+                <p class="cue">Στην κλήση περνάμε τη διεύθυνση του <code>stamps</code> με <code>&amp;stamps</code>.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -2819,13 +3018,13 @@ cake: 1</code></pre>
             <div class="discussion">
               <p class="label">Με +</p>
               <pre class="code-block"
-                dir="ltr"><code>text := <span class="tint">&quot;go&quot;</span> + <span class="tint">&quot; &quot;</span> + <span class="tint">&quot;tea&quot;</span></code></pre>
+                dir="ltr"><code>text := <span class="tint">&quot;mars&quot;</span> + <span class="tint">&quot; &quot;</span> + <span class="tint">&quot;venus&quot;</span></code></pre>
               <p class="label">Με Builder</p>
               <pre class="code-block" dir="ltr"><code>var b strings.Builder
-b.WriteString(<span class="tint">&quot;go&quot;</span>)
+b.WriteString(<span class="tint">&quot;mars&quot;</span>)
 b.WriteString(<span class="tint">&quot; &quot;</span>)
-b.WriteString(<span class="tint">&quot;tea&quot;</span>)
-text := b.String() <span class="tint">// &quot;go tea&quot;</span></code></pre>
+b.WriteString(<span class="tint">&quot;venus&quot;</span>)
+text := b.String() <span class="tint">// &quot;mars venus&quot;</span></code></pre>
             </div>
             <div class="discussion">
               <p class="prompt">Ο <code>Builder</code> ξεκινά άδειος και μαζεύει bytes σε έναν εσωτερικό buffer.</p>
@@ -2843,24 +3042,31 @@ text := b.String() <span class="tint">// &quot;go tea&quot;</span></code></pre>
           <header>
             <h2 class="headline" id="scanner-breakpoint">Διαβάζοντας ένα αρχείο</h2>
           </header>
-          <div class="review-grid stacked">
-            <pre class="code-block" dir="ltr"><code>scanner := bufio.NewScanner(file)
+          <div class="review-grid scanner-grid">
+            <pre class="code-block" dir="ltr"><code>file, err := os.Open("input.txt")
+if err != nil {
+    panic(err)
+}
+defer file.Close()
+
+scanner := bufio.NewScanner(file)
+<span class="tint">// Set an optional split function here.</span>
 for scanner.Scan() {
     token := scanner.Text()
 <span class="breakpoint-line">    fmt.Printf("%q\n", token)</span>
+}
+if err := scanner.Err(); err != nil {
+    panic(err)
 }</code></pre>
             <div class="scanner-modes">
-              <p><strong>Ανά γραμμή</strong><code>Προεπιλογή</code></p>
+              <p><strong>Ανά γραμμή · προεπιλογή</strong><code>scanner.Split(bufio.ScanLines)</code></p>
               <p><strong>Ανά rune</strong><code>scanner.Split(bufio.ScanRunes)</code></p>
               <p><strong>Ανά λέξη</strong><code>scanner.Split(bufio.ScanWords)</code></p>
+              <p><strong>Ανά byte</strong><code>scanner.Split(bufio.ScanBytes)</code></p>
             </div>
           </div>
-          <!-- Σημειώσεις ομιλητή: Προαιρετικό live demo. Το file ανοίγει με os.Open. Έλεγξε
-               το σφάλμα ανοίγματος και το scanner.Err() μετά το loop, και κλείσε το αρχείο με defer.
-               Χρησιμοποίησε δύο γραμμές, π.χ. «Γεια Go» και «Go ξανά». Στο breakpoint της εκτύπωσης
-               το token έχει ήδη την τιμή που έδωσε το scanner.Text(). Πάτα Continue για το επόμενο token.
-               Κάνε νέα εκτέλεση για κάθε Split και βάλε μία μόνο επιλογή αμέσως μετά το NewScanner.
-               Το %q κάνει ορατά το κενό και την αλλαγή γραμμής στο ScanRunes. -->
+          <p class="cue"><strong>Δοκιμή με breakpoint.</strong> Άνοιξε το <code>input.txt</code> από το root του repo.
+            Βάλε breakpoint στο <code>fmt.Printf</code> και πάτα Continue για το επόμενο <code>token</code>.</p>
         </div>
       </section>
       <div id="slide-progress" aria-hidden="true"></div>
@@ -2868,7 +3074,10 @@ for scanner.Scan() {
       <button class="nav-zone" id="previous-slide" type="button" aria-label="Προηγούμενη διαφάνεια">‹</button>
       <button class="nav-zone" id="next-slide" type="button" aria-label="Επόμενη διαφάνεια">›</button>
     </div>
-    <output id="slide-status" class="visible-counter" aria-live="polite"></output>
+    <div class="slide-counter">
+      <span id="slide-more" hidden aria-hidden="true">+</span>
+      <output id="slide-status" aria-live="polite"></output>
+    </div>
   </main>
 
   <script>
@@ -3207,6 +3416,7 @@ for scanner.Scan() {
             w, h, 1 - p * 0.73)
         })],
 
+        'black-reveal': [220],
         fade: [360],
         'slide-up': [420, () => (f, t) =>
           f.quad(W / 2, H / 2 + H * 0.12 * smooth(t), 1, 1, 1 - smooth(t)), 'in'],
@@ -3242,6 +3452,8 @@ for scanner.Scan() {
       const prevKeys = new Set(['ArrowLeft', 'ArrowUp', 'KeyA', 'KeyW', 'PageUp', 'KeyH', 'Backspace'])
       const edges = new Set(['top', 'right', 'bottom', 'left'])
       const status = document.getElementById('slide-status')
+      const more = document.getElementById('slide-more')
+      const nextButton = document.getElementById('next-slide')
       const progress = document.getElementById('slide-progress')
       const preview = document.getElementById('effect-preview')
       if (preview) {
@@ -3253,8 +3465,8 @@ for scanner.Scan() {
         })
       }
       let current = readHash()
-      let desired = current
-      let running = false
+      let transition = null
+      let lastNavigation = -Infinity
       const entrances = []
 
       function scaleStage() {
@@ -3285,6 +3497,7 @@ for scanner.Scan() {
         }
         status.textContent = (index + 1) + ' / ' + slides.length
         status.dataset.index = String(index)
+        updateMore()
         if (progress) {
           const fraction = slides.length === 1 ? 1 : index / (slides.length - 1)
           progress.style.transform = 'scaleX(' + fraction + ')'
@@ -3302,10 +3515,12 @@ for scanner.Scan() {
         }
       }
 
-      async function capture(slide) {
+      async function capture(slide, signal) {
         await document.fonts.ready
+        signal.throwIfAborted()
         const images = Array.from(slide.querySelectorAll('img'))
         await Promise.all(images.map(image => image.decode()))
+        signal.throwIfAborted()
         const svgNS = 'http://www.w3.org/2000/svg'
         const htmlNS = 'http://www.w3.org/1999/xhtml'
         const svg = document.createElementNS(svgNS, 'svg')
@@ -3330,28 +3545,37 @@ for scanner.Scan() {
 
         const xml = new XMLSerializer().serializeToString(svg)
         const url = URL.createObjectURL(new Blob([xml], { type: 'image/svg+xml;charset=utf-8' }))
+        const image = new Image()
+        const cancelDecode = () => image.removeAttribute('src')
+        signal.addEventListener('abort', cancelDecode, { once: true })
         try {
-          const image = new Image()
           image.src = url
           await image.decode()
-          return image
+          signal.throwIfAborted()
+          const bitmap = document.createElement('canvas')
+          bitmap.width = W
+          bitmap.height = H
+          bitmap.getContext('2d').drawImage(image, 0, 0)
+          return bitmap
         } finally {
+          signal.removeEventListener('abort', cancelDecode)
           URL.revokeObjectURL(url)
         }
       }
 
-      function snapshot(index) {
-        if (slides[index].hasAttribute('data-workshop-interactive') || slides[index].querySelector('[data-reveal-step]')) return capture(slides[index])
+      async function snapshot(index, signal) {
+        const slide = slides[index]
+        if (slide.hasAttribute('data-workshop-interactive') || slide.querySelector('[data-reveal-step]')) {
+          return capture(slide, signal)
+        }
         if (cache.has(index)) {
           const saved = cache.get(index)
           cache.delete(index)
           cache.set(index, saved)
           return saved
         }
-        const image = capture(slides[index]).catch(error => {
-          if (cache.get(index) === image) cache.delete(index)
-          throw error
-        })
+        const image = await capture(slide, signal)
+        signal.throwIfAborted()
         if (cache.size === 3) cache.delete(cache.keys().next().value)
         cache.set(index, image)
         return image
@@ -3373,7 +3597,7 @@ for scanner.Scan() {
         const toLuminance = slideLuminance(slides[to])
         let requested = 'swell'
         if (fromLuminance === 0) {
-          requested = 'shatter'
+          requested = 'black-reveal'
         } else if (fromLuminance < toLuminance) {
           requested = 'zoom'
         }
@@ -3465,12 +3689,12 @@ for scanner.Scan() {
         }
       }
 
-      async function animateEffect(from, to, effect) {
+      async function animateEffect(from, to, effect, signal) {
         const { duration, mode, direction, edge, seed, make, name } = effect
         const foregroundIndex = mode === 'out' ? from : to
         const backIndex = mode === 'out' ? to : from
-        const [image, back] = await Promise.all([snapshot(foregroundIndex), mode === 'pair' ? snapshot(backIndex) : null])
-        if (reduced.matches) return
+        const [image, back] = await Promise.all([snapshot(foregroundIndex, signal), mode === 'pair' ? snapshot(backIndex, signal) : null])
+        if (signal.aborted || reduced.matches) return
         const draw = make(seed, direction, edge)
         const paper = getComputedStyle(slides[foregroundIndex]).getPropertyValue('--accent').trim() || '#b9b3a9'
         const view = frame(image, back, paper)
@@ -3495,78 +3719,117 @@ for scanner.Scan() {
         // In out mode the real destination is visible below the fragmented foreground.
         show(to, mode === 'in' ? from : -1)
         if (mode === 'in') slides[to].classList.add('is-motion-hidden')
-        try {
-          await new Promise((resolve, reject) => {
-            let start
-            function tick(now) {
-              start ??= now
-              const t = Math.min(1, (now - start) / duration)
-              if (t === 1 || reduced.matches) {
-                resolve()
-                return
-              }
-              try {
-                paint(t)
-              } catch (error) {
-                reject(error)
-                return
-              }
-              requestAnimationFrame(tick)
+        await new Promise((resolve, reject) => {
+          let start
+          let raf
+          function finish(error) {
+            cancelAnimationFrame(raf)
+            signal.removeEventListener('abort', abort)
+            slides[to].classList.remove('is-motion-hidden')
+            canvas.hidden = true
+            canvas.removeAttribute('data-effect')
+            canvas.style.opacity = ''
+            ctx.clearRect(0, 0, W, H)
+            if (error) reject(error)
+            else resolve()
+          }
+          const abort = () => finish()
+          function tick(now) {
+            start ??= now
+            const t = Math.min(1, (now - start) / duration)
+            if (t === 1 || reduced.matches) {
+              finish()
+              return
             }
-            requestAnimationFrame(tick)
-          })
+            try {
+              paint(t)
+              raf = requestAnimationFrame(tick)
+            } catch (error) {
+              finish(error)
+            }
+          }
+          signal.addEventListener('abort', abort, { once: true })
+          raf = requestAnimationFrame(tick)
+        })
+      }
+
+      async function fade(from, to, duration, signal, lift = false) {
+        show(to, from)
+        if (!lift) stagger(to)
+        const keyframes = lift
+          ? [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }]
+          : [{ opacity: 0 }, { opacity: 1 }]
+        const animation = slides[to].animate(keyframes, { duration, easing: 'ease-out' })
+        const cancel = () => animation.cancel()
+        signal.addEventListener('abort', cancel, { once: true })
+        try {
+          await animation.finished
+        } catch (error) {
+          if (!signal.aborted) throw error
         } finally {
-          slides[to].classList.remove('is-motion-hidden')
-          canvas.hidden = true
-          canvas.removeAttribute('data-effect')
-          canvas.style.opacity = ''
-          ctx.clearRect(0, 0, W, H)
+          signal.removeEventListener('abort', cancel)
         }
       }
 
-      async function fade(from, to, duration) {
-        show(to, from)
-        stagger(to)
-        const animation = slides[to].animate([{ opacity: 0 }, { opacity: 1 }],
-          { duration, easing: 'ease-out' })
-        await animation.finished.catch(() => { })
-      }
-
-      async function play(from, to, effect) {
-        if (reduced.matches || effect.duration === 0) return
+      async function play(from, to, effect, signal) {
         if (!effect.make || !ctx) {
-          await fade(from, to, effect.duration)
+          await fade(from, to, effect.duration, signal, effect.name === 'black-reveal')
           return
         }
         try {
-          await animateEffect(from, to, effect)
+          await animateEffect(from, to, effect, signal)
         } catch (error) {
+          if (signal.aborted) return
           console.warn('Cannot paint ' + effect.name + '. Use fade.', error)
-          if (!reduced.matches) await fade(from, to, Math.min(effect.duration, 360))
+          if (!reduced.matches) await fade(from, to, Math.min(effect.duration, 360), signal)
         }
       }
 
       async function navigate(index) {
-        desired = Math.max(0, Math.min(index, slides.length - 1))
-        if (running) return
-        running = true
-        try {
-          while (current !== desired) {
-            const to = desired
-            if (to > current) {
-              for (const element of slides[to].querySelectorAll('[data-reveal-step]')) {
-                setRevealStep(element, false)
-              }
-            }
-            const effect = options(current, to)
-            for (const animation of entrances) animation.cancel()
-            entrances.length = 0
-            await play(current, to, effect)
-            settle(to)
-            if (effect.duration === 0) stagger(to)
+        const to = Math.max(0, Math.min(index, slides.length - 1))
+        const pending = transition
+        if (pending) {
+          transition = null
+          pending.controller.abort()
+          current = pending.to
+        }
+        if (to === current) {
+          if (pending) settle(to)
+          return
+        }
+
+        const now = performance.now()
+        const cut = pending || reduced.matches || now - lastNavigation < 160
+        lastNavigation = now
+        for (const animation of entrances) animation.cancel()
+        entrances.length = 0
+        if (to > current) {
+          for (const element of slides[to].querySelectorAll('[data-reveal-step]')) {
+            setRevealStep(element, false)
           }
+        }
+        if (cut) {
+          settle(to)
+          return
+        }
+        const effect = options(current, to)
+        if (effect.duration === 0) {
+          settle(to)
+          stagger(to)
+          return
+        }
+
+        const active = { to, controller: new AbortController() }
+        transition = active
+        try {
+          await play(current, to, effect, active.controller.signal)
+        } catch (error) {
+          if (!active.controller.signal.aborted) console.warn('Cannot animate slide.', error)
         } finally {
-          running = false
+          if (transition === active) {
+            transition = null
+            settle(to)
+          }
         }
       }
 
@@ -3574,24 +3837,36 @@ for scanner.Scan() {
         element.toggleAttribute('data-step-hidden', !visible)
         element.inert = !visible
         element.setAttribute('aria-hidden', String(!visible))
+        if (element.classList.contains('nonempty-doc')) {
+          const target = document.getElementById('nonempty-hover')
+          target.tabIndex = visible ? 0 : -1
+          if (visible) target.setAttribute('aria-describedby', 'nonempty-tooltip')
+          else target.removeAttribute('aria-describedby')
+        }
+      }
+
+      function updateMore() {
+        const pending = slides[current].querySelector('[data-reveal-step][data-step-hidden]')
+        more.hidden = !pending
+        nextButton.setAttribute('aria-label', pending ? 'Επόμενη αποκάλυψη στη διαφάνεια' : 'Επόμενη διαφάνεια')
       }
 
       function step(direction) {
-        if (running) return
-        const steps = Array.from(slides[desired].querySelectorAll('[data-reveal-step]'))
+        if (transition) {
+          navigate(transition.to + direction)
+          return
+        }
+        const steps = Array.from(slides[current].querySelectorAll('[data-reveal-step]'))
+          .sort((a, b) => Number(a.dataset.revealStep) - Number(b.dataset.revealStep))
         const nextStep = direction > 0
           ? steps.find(element => element.hasAttribute('data-step-hidden'))
           : steps.findLast(element => !element.hasAttribute('data-step-hidden'))
         if (nextStep) {
           setRevealStep(nextStep, direction > 0)
+          updateMore()
           return
         }
-        const reveal = slides[desired].querySelector('[data-reveal-on-next]')
-        if (reveal && reveal.hidden === (direction > 0)) {
-          reveal.hidden = direction < 0
-          return
-        }
-        navigate(desired + direction)
+        navigate(current + direction)
       }
 
       window.addEventListener('keydown', e => {
@@ -3628,7 +3903,7 @@ for scanner.Scan() {
       })
 
       document.getElementById('previous-slide').addEventListener('click', () => step(-1))
-      document.getElementById('next-slide').addEventListener('click', () => step(1))
+      nextButton.addEventListener('click', () => step(1))
       window.addEventListener('resize', scaleStage)
       document.addEventListener('fullscreenchange', scaleStage)
       window.addEventListener('hashchange', () => navigate(readHash()))
