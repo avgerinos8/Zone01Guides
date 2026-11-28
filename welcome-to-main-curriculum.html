@@ -118,6 +118,24 @@
       text-align: center;
     }
 
+    #poll-disconnect {
+      position: relative;
+      padding-inline: 6px;
+      color: #b4bec5;
+      font-family: "Segoe UI Symbol", system-ui, sans-serif;
+    }
+
+    #poll-disconnect::after {
+      content: "";
+      position: absolute;
+      top: 13px;
+      left: 4px;
+      width: 16px;
+      height: 1px;
+      background: currentColor;
+      transform: rotate(-45deg);
+    }
+
     #slide-progress {
       position: absolute;
       z-index: 3;
@@ -1580,10 +1598,36 @@
 
     .poll-board {
       grid-template-columns: 340px minmax(0, 1fr);
+      grid-template-areas: "copy results";
       gap: 54px;
     }
 
+    .poll-enabled .headline {
+      font-size: 105px;
+    }
+
+    .poll-enabled .poll-board {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas: "choices qr" "copy results";
+      gap: 28px 54px;
+      margin-top: 30px;
+    }
+
+    .poll-choices {
+      grid-area: choices;
+      align-self: center;
+      margin: 0;
+      padding-left: 1.2em;
+      font: 650 40px/1.32 "Deck Notes", sans-serif;
+    }
+
+    .poll-choices li + li {
+      margin-top: 14px;
+    }
+
     .poll-qr {
+      grid-area: qr;
+      justify-self: end;
       margin: 0;
     }
 
@@ -1598,8 +1642,8 @@
 
     .poll-qr img {
       display: block;
-      width: 320px;
-      height: 320px;
+      width: 260px;
+      height: 260px;
       border: 4px solid var(--accent);
       background: white;
     }
@@ -1608,53 +1652,64 @@
       font: 550 30px/1.2 "Deck Notes", sans-serif;
     }
 
-    .poll-qr a + figcaption {
-      margin-top: 18px;
+    .poll-qr figcaption {
+      margin-top: 8px;
     }
 
-    .poll-votes {
-      color: var(--ink);
-      font: 28px/1.22 "Deck Mono", monospace;
+    .poll-copy {
+      grid-area: copy;
     }
 
-    .poll-slots {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      grid-template-rows: repeat(10, 43px);
-      gap: 8px;
-      margin: 11px 0;
-      padding: 0;
-      list-style: none;
+    .review .poll-copy .cue {
+      margin-top: 8px;
     }
 
-    .poll-slots li {
-      padding: 4px 11px;
-      border: 1px solid var(--rule);
-      background: var(--console);
+    .poll-copy > code {
+      font-size: 26px;
     }
 
-    .poll-slots li:not(:empty) {
-      color: var(--accent);
-      border-color: var(--accent);
+    .poll-copy > code:not([hidden]) {
+      display: block;
+      margin-top: 14px;
     }
 
-    .poll-count {
-      margin-top: 13px;
-      font: 600 26px/1.2 "Deck Notes", sans-serif;
-    }
-
-    .poll-output {
-      margin-top: 20px;
-      font: 600 26px/1.2 "Deck Notes", sans-serif;
-    }
-
-    .review .poll-output pre {
-      max-height: 195px;
-      margin: 8px 0 0;
+    .review .vote-result.code-block {
+      grid-area: results;
+      min-height: 220px;
+      max-height: 560px;
       overflow: auto;
       overflow-wrap: anywhere;
       white-space: pre-wrap;
-      font-size: 24px;
+    }
+
+    .review.poll-enabled .vote-result.code-block {
+      min-height: 160px;
+      max-height: 415px;
+      font-size: 27px;
+      line-height: 1.23;
+    }
+
+    .room-map {
+      margin-top: 40px;
+    }
+
+    .room-keys {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 35px;
+      margin: 27px 0 32px;
+      font: 600 29px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .room-result {
+      max-height: 400px;
+      overflow: auto;
+    }
+
+    .review .room-result.code-block {
+      overflow: auto;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
     .scanner-grid {
@@ -3023,21 +3078,44 @@ fmt.Println(nums)</code></pre>
             <h2 class="headline" id="tally">Μετράμε ψήφους</h2>
           </header>
           <div class="review-grid poll-board">
-            <figure class="poll-qr">
+            <ul class="poll-choices" hidden>
+              <li>Εξήγηση Pointers</li>
+              <li>Ερωτήσεις Go Reloaded</li>
+              <li>Both</li>
+              <li>None — Πρέπει να φύγω</li>
+            </ul>
+            <figure class="poll-qr" hidden>
               <a id="poll-link" target="_blank" rel="noopener" hidden></a>
-              <figcaption id="poll-status" role="status">Η ζωντανή ψηφοφορία δεν είναι ενεργή.</figcaption>
-              <p class="cue">Κάθε νέα ψήφος προστίθεται στο <code>votes</code>.</p>
-              <div class="poll-output" id="poll-output" hidden>
-                <p>Αποτέλεσμα Go</p>
-                <pre class="code-block" id="poll-result" tabindex="0"></pre>
-              </div>
+              <figcaption id="poll-qr-status"></figcaption>
             </figure>
-            <div class="poll-votes">
-              <code>votes := []string{</code>
-              <ol class="poll-slots" id="poll-slots" aria-label="Ψήφοι με σειρά υποβολής"></ol>
-              <code>}</code>
-              <p class="poll-count" id="poll-count">0 ψήφοι</p>
+            <div class="poll-copy">
+              <strong id="poll-status" role="status">Η ζωντανή ψηφοφορία δεν είναι ενεργή.</strong>
+              <p class="cue">Κάθε νέα ψήφος προστίθεται στο <code>votes</code>.</p>
+              <code class="poll-slice" dir="ltr" hidden>[]string{"pointers", "reloaded", "both", "none"}</code>
             </div>
+            <pre class="code-block vote-result" id="poll-result" tabindex="0" dir="ltr" aria-label="Αποτέλεσμα ψηφοφορίας">[]</pre>
+          </div>
+        </div>
+      </section>
+      <section class="slide" data-theme="pool" aria-labelledby="room-locations">
+        <div class="review workshop">
+          <header>
+            <h2 class="headline" id="room-locations">Ποιοι κάθονται σε κάθε θέση;</h2>
+          </header>
+          <div class="room-map">
+            <p class="prompt">Ξέρουμε τη θέση κάθε ατόμου. Πώς βρίσκουμε τα άτομα κάθε θέσης;</p>
+            <div class="room-keys">
+              <span><code>0</code> · Outside</span>
+              <span><code>1</code> · Left</span>
+              <span><code>2</code> · Right</span>
+              <span><code>3</code> · Back</span>
+            </div>
+            <div id="room-reveal" data-reveal-step data-step-hidden inert aria-hidden="true">
+              <pre class="code-block room-result" id="room-result" tabindex="0" dir="ltr"><code>map[string]int
+map[marios:2 kostas:2 dimitra:1]</code></pre>
+              <p class="cue" id="room-status" role="status">Ενδεικτικά δεδομένα.</p>
+            </div>
+            <pre class="code-block" dir="ltr" data-reveal-step data-step-hidden inert aria-hidden="true"><code>map[int][]string</code></pre>
           </div>
         </div>
       </section>
@@ -3171,6 +3249,7 @@ if err := scanner.Err(); err != nil {
       <button class="nav-zone" id="next-slide" type="button" aria-label="Επόμενη διαφάνεια">›</button>
     </div>
     <div class="slide-counter">
+      <span id="poll-disconnect" hidden role="img" aria-label="Εκτός σύνδεσης">⛓︎</span>
       <span id="slide-more" hidden aria-hidden="true">+</span>
       <output id="slide-status" aria-live="polite"></output>
     </div>
@@ -4007,78 +4086,90 @@ if err := scanner.Err(); err != nil {
       settle(current)
     }
 
-    // initWorkshopPoll fills the vote slots when the local presenter is in use.
+    // initWorkshopPoll shows the two text results from the local presenter.
     function initWorkshopPoll() {
-      const list = document.getElementById('poll-slots')
-      const slide = list.closest('.slide')
-      const cells = []
-      for (let index = 0; index < 50; index++) {
-        const cell = document.createElement('li')
-        cell.setAttribute('aria-hidden', 'true')
-        cells.push(cell)
-        list.appendChild(cell)
-      }
-
       if (!['http:', 'https:'].includes(location.protocol) ||
           new URLSearchParams(location.search).get('poll') !== '1') return
 
       const status = document.getElementById('poll-status')
-      const counter = document.getElementById('poll-count')
       const link = document.getElementById('poll-link')
-      const output = document.getElementById('poll-output')
+      const qrFigure = link.closest('figure')
+      const qrStatus = document.getElementById('poll-qr-status')
       const result = document.getElementById('poll-result')
+      const slide = result.closest('.slide')
+      const review = result.closest('.review')
+      review.classList.add('poll-enabled')
+      document.getElementById('tally').textContent = 'Τι θέλετε στη συνέχεια του workshop;'
+      review.querySelector('.poll-choices').hidden = false
+      review.querySelector('.poll-slice').hidden = false
+      const roomReveal = document.getElementById('room-reveal')
+      const room = roomReveal.closest('.slide')
+      const roomResult = document.getElementById('room-result')
+      const roomStatus = document.getElementById('room-status')
+      const disconnect = document.getElementById('poll-disconnect')
+      roomResult.textContent = ''
+      roomStatus.textContent = ''
       let qr = ''
       let loading = false
 
-      // refreshVotes reads the public choices from the local presenter feed.
-      async function refreshVotes() {
-        if (loading || !slide.classList.contains('is-current')) return
-        loading = true
-        try {
-          const response = await fetch('/api/poll', { cache: 'no-store', signal: AbortSignal.timeout(1800) })
-          if (!response.ok) throw new Error('Cannot read votes')
-          const data = await response.json()
-          const votes = data.votes || []
-          for (const [index, cell] of cells.entries()) {
-            const text = index < votes.length ? JSON.stringify(votes[index]) + ',' : ''
-            if (cell.textContent !== text) {
-              cell.textContent = text
-              cell.setAttribute('aria-hidden', String(!text))
-            }
+      // showVotes updates the QR and prints the result text.
+      function showVotes(data) {
+        if (qr !== data.qr) {
+          qr = data.qr
+          link.replaceChildren()
+          link.hidden = !qr
+          if (qr) {
+            const image = document.createElement('img')
+            image.src = qr
+            image.alt = 'QR για τη φόρμα ψηφοφορίας'
+            link.href = data.publicURL
+            link.appendChild(image)
           }
-          counter.textContent = votes.length === 1 ? '1 ψήφος'
-            : votes.length + ' ψήφοι' + (votes.length > 50 ? ' · εμφανίζονται οι πρώτες 50' : '')
+        }
+        qrFigure.hidden = !data.online
+        const hint = qr ? 'Σκάναρε για να ψηφίσεις.' : 'Χρειάζεται δημόσιο URL για το QR.'
+        if (qrStatus.textContent !== hint) qrStatus.textContent = hint
+        const description = data.online ? 'Live ψηφοφορία.' : 'Αποθηκευμένες ψήφοι.'
+        if (status.textContent !== description) status.textContent = description
+        if (result.textContent !== data.result) result.textContent = data.result
+      }
 
-          if (qr !== data.qr) {
-            qr = data.qr
-            link.replaceChildren()
-            link.hidden = !qr
-            if (qr) {
-              const image = document.createElement('img')
-              image.src = qr
-              image.alt = 'QR για τη φόρμα ψηφοφορίας'
-              link.href = data.publicURL
-              link.appendChild(image)
-            }
+      // refreshSlides checks the connection and reads data for the current slide.
+      async function refreshSlides() {
+        if (loading) return
+        loading = true
+        let endpoint = '/api/health'
+        if (slide.classList.contains('is-current')) endpoint = '/api/poll'
+        else if (room.classList.contains('is-current') && !roomReveal.hasAttribute('data-step-hidden')) {
+          endpoint = '/api/locations'
+        }
+        try {
+          const response = await fetch(endpoint, { cache: 'no-store', signal: AbortSignal.timeout(1800) })
+          if (!response.ok) throw new Error('Cannot reach the Go program')
+          if (endpoint === '/api/poll') showVotes(await response.json())
+          if (endpoint === '/api/locations') {
+            const { text } = await response.json()
+            if (roomResult.textContent !== text) roomResult.textContent = text
           }
-          const description = data.online
-            ? (qr ? 'Σκάναρε για να ψηφίσεις.' : 'Χρειάζεται δημόσιο URL για το QR.')
-            : 'Αποθηκευμένες ψήφοι.'
-          if (status.textContent !== description) status.textContent = description
-          const text = data.result || ''
-          if (result.textContent !== text) result.textContent = text
-          output.hidden = !text
+          disconnect.hidden = true
         } catch {
-          const waiting = 'Αναμονή σύνδεσης με το τοπικό πρόγραμμα.'
-          if (status.textContent !== waiting) status.textContent = waiting
+          disconnect.hidden = false
         } finally {
           loading = false
         }
       }
 
-      new MutationObserver(refreshVotes).observe(slide, { attributes: true, attributeFilter: ['class'] })
-      setInterval(refreshVotes, 1000)
-      refreshVotes()
+      const observer = new MutationObserver(refreshSlides)
+      observer.observe(slide, { attributes: true, attributeFilter: ['class'] })
+      observer.observe(room, { attributes: true, attributeFilter: ['class'] })
+      observer.observe(roomReveal, { attributes: true, attributeFilter: ['data-step-hidden'] })
+      window.addEventListener('keydown', event => {
+        if (event.code !== 'F5' || event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) return
+        event.preventDefault()
+        refreshSlides()
+      })
+      setInterval(refreshSlides, 1000)
+      refreshSlides()
     }
 
     initDeck()
