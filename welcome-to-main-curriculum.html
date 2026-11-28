@@ -1578,6 +1578,85 @@
       background: var(--accent);
     }
 
+    .poll-board {
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 54px;
+    }
+
+    .poll-qr {
+      margin: 0;
+    }
+
+    .poll-qr a {
+      display: block;
+      width: fit-content;
+    }
+
+    .poll-qr a[hidden] {
+      display: none;
+    }
+
+    .poll-qr img {
+      display: block;
+      width: 320px;
+      height: 320px;
+      border: 4px solid var(--accent);
+      background: white;
+    }
+
+    .poll-qr figcaption {
+      font: 550 30px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .poll-qr a + figcaption {
+      margin-top: 18px;
+    }
+
+    .poll-votes {
+      color: var(--ink);
+      font: 28px/1.22 "Deck Mono", monospace;
+    }
+
+    .poll-slots {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-rows: repeat(10, 43px);
+      gap: 8px;
+      margin: 11px 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .poll-slots li {
+      padding: 4px 11px;
+      border: 1px solid var(--rule);
+      background: var(--console);
+    }
+
+    .poll-slots li:not(:empty) {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .poll-count {
+      margin-top: 13px;
+      font: 600 26px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .poll-output {
+      margin-top: 20px;
+      font: 600 26px/1.2 "Deck Notes", sans-serif;
+    }
+
+    .review .poll-output pre {
+      max-height: 195px;
+      margin: 8px 0 0;
+      overflow: auto;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      font-size: 24px;
+    }
+
     .scanner-grid {
       gap: 42px;
     }
@@ -2938,11 +3017,28 @@ fmt.Println(nums)</code></pre>
           </div>
         </div>
       </section>
-      <section class="slide" data-theme="ink" aria-labelledby="tally">
+      <section class="slide" data-theme="ink" aria-labelledby="tally" data-workshop-interactive>
         <div class="review">
           <header>
             <h2 class="headline" id="tally">Μετράμε ψήφους</h2>
           </header>
+          <div class="review-grid poll-board">
+            <figure class="poll-qr">
+              <a id="poll-link" target="_blank" rel="noopener" hidden></a>
+              <figcaption id="poll-status" role="status">Η ζωντανή ψηφοφορία δεν είναι ενεργή.</figcaption>
+              <p class="cue">Κάθε νέα ψήφος προστίθεται στο <code>votes</code>.</p>
+              <div class="poll-output" id="poll-output" hidden>
+                <p>Αποτέλεσμα Go</p>
+                <pre class="code-block" id="poll-result" tabindex="0"></pre>
+              </div>
+            </figure>
+            <div class="poll-votes">
+              <code>votes := []string{</code>
+              <ol class="poll-slots" id="poll-slots" aria-label="Ψήφοι με σειρά υποβολής"></ol>
+              <code>}</code>
+              <p class="poll-count" id="poll-count">0 ψήφοι</p>
+            </div>
+          </div>
         </div>
       </section>
       <section class="slide" data-theme="paper" aria-labelledby="pointer-quiz">
@@ -3911,7 +4007,82 @@ if err := scanner.Err(); err != nil {
       settle(current)
     }
 
+    // initWorkshopPoll fills the vote slots when the local presenter is in use.
+    function initWorkshopPoll() {
+      const list = document.getElementById('poll-slots')
+      const slide = list.closest('.slide')
+      const cells = []
+      for (let index = 0; index < 50; index++) {
+        const cell = document.createElement('li')
+        cell.setAttribute('aria-hidden', 'true')
+        cells.push(cell)
+        list.appendChild(cell)
+      }
+
+      if (!['http:', 'https:'].includes(location.protocol) ||
+          new URLSearchParams(location.search).get('poll') !== '1') return
+
+      const status = document.getElementById('poll-status')
+      const counter = document.getElementById('poll-count')
+      const link = document.getElementById('poll-link')
+      const output = document.getElementById('poll-output')
+      const result = document.getElementById('poll-result')
+      let qr = ''
+      let loading = false
+
+      // refreshVotes reads the public choices from the local presenter feed.
+      async function refreshVotes() {
+        if (loading || !slide.classList.contains('is-current')) return
+        loading = true
+        try {
+          const response = await fetch('/api/poll', { cache: 'no-store', signal: AbortSignal.timeout(1800) })
+          if (!response.ok) throw new Error('Cannot read votes')
+          const data = await response.json()
+          const votes = data.votes || []
+          for (const [index, cell] of cells.entries()) {
+            const text = index < votes.length ? JSON.stringify(votes[index]) + ',' : ''
+            if (cell.textContent !== text) {
+              cell.textContent = text
+              cell.setAttribute('aria-hidden', String(!text))
+            }
+          }
+          counter.textContent = votes.length === 1 ? '1 ψήφος'
+            : votes.length + ' ψήφοι' + (votes.length > 50 ? ' · εμφανίζονται οι πρώτες 50' : '')
+
+          if (qr !== data.qr) {
+            qr = data.qr
+            link.replaceChildren()
+            link.hidden = !qr
+            if (qr) {
+              const image = document.createElement('img')
+              image.src = qr
+              image.alt = 'QR για τη φόρμα ψηφοφορίας'
+              link.href = data.publicURL
+              link.appendChild(image)
+            }
+          }
+          const description = data.online
+            ? (qr ? 'Σκάναρε για να ψηφίσεις.' : 'Χρειάζεται δημόσιο URL για το QR.')
+            : 'Αποθηκευμένες ψήφοι.'
+          if (status.textContent !== description) status.textContent = description
+          const text = data.result || ''
+          if (result.textContent !== text) result.textContent = text
+          output.hidden = !text
+        } catch {
+          const waiting = 'Αναμονή σύνδεσης με το τοπικό πρόγραμμα.'
+          if (status.textContent !== waiting) status.textContent = waiting
+        } finally {
+          loading = false
+        }
+      }
+
+      new MutationObserver(refreshVotes).observe(slide, { attributes: true, attributeFilter: ['class'] })
+      setInterval(refreshVotes, 1000)
+      refreshVotes()
+    }
+
     initDeck()
+    initWorkshopPoll()
 
   </script>
 </body>
